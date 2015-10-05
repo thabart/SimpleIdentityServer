@@ -11,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02. Host", "02. Host", "{52
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "03. Tests", "03. Tests", "{C5C72E14-0135-478A-9E2D-B7BD81692C95}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.Core", "SimpleIdentityServer.Core\SimpleIdentityServer.Core.csproj", "{3D519F94-39F1-45F5-B080-B2D719021A10}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,11 +23,16 @@ Global
 		{F7815B84-F5C1-474B-BB65-90C4F5BBB397}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F7815B84-F5C1-474B-BB65-90C4F5BBB397}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F7815B84-F5C1-474B-BB65-90C4F5BBB397}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D519F94-39F1-45F5-B080-B2D719021A10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D519F94-39F1-45F5-B080-B2D719021A10}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D519F94-39F1-45F5-B080-B2D719021A10}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D519F94-39F1-45F5-B080-B2D719021A10}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{F7815B84-F5C1-474B-BB65-90C4F5BBB397} = {52E4BD73-432A-462A-BC9A-8493301FC6C2}
+		{3D519F94-39F1-45F5-B080-B2D719021A10} = {0FFC0310-E0D1-4825-8427-8D09F9719AC7}
 	EndGlobalSection
 EndGlobal

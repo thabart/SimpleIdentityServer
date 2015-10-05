@@ -13,6 +13,7 @@ namespace SimpleIdentityServer.Api
         public void Configuration(IAppBuilder app)
         {
             var httpConfiguration = new HttpConfiguration();
+            UnityConfig.Configure(httpConfiguration);
             WebApiConfig.Register(httpConfiguration, app);
         }
     }

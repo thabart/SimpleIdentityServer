@@ -1,7 +1,5 @@
 ﻿using System.Web.Http;
 
-using Microsoft.Owin.Security.OAuth;
-
 using Owin;
 
 namespace SimpleIdentityServer.Api
@@ -11,7 +9,6 @@ namespace SimpleIdentityServer.Api
         public static void Register(HttpConfiguration config, IAppBuilder appBuilder)
         {
             config.SuppressDefaultHostAuthentication();
-            config.Filters.Add(new HostAuthenticationFilter(OAuthDefaults.AuthenticationType));
 
             // Web API routes
             config.MapHttpAttributeRoutes();
