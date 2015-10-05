@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.Api", "SimpleIdentityServer\SimpleIdentityServer.Api.csproj", "{F7815B84-F5C1-474B-BB65-90C4F5BBB397}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01. Core", "01. Core", "{0FFC0310-E0D1-4825-8427-8D09F9719AC7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02. Host", "02. Host", "{52E4BD73-432A-462A-BC9A-8493301FC6C2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "03. Tests", "03. Tests", "{C5C72E14-0135-478A-9E2D-B7BD81692C95}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F7815B84-F5C1-474B-BB65-90C4F5BBB397}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7815B84-F5C1-474B-BB65-90C4F5BBB397}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7815B84-F5C1-474B-BB65-90C4F5BBB397}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7815B84-F5C1-474B-BB65-90C4F5BBB397}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F7815B84-F5C1-474B-BB65-90C4F5BBB397} = {52E4BD73-432A-462A-BC9A-8493301FC6C2}
+	EndGlobalSection
+EndGlobal
