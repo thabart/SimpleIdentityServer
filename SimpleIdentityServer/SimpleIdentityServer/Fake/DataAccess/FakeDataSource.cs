@@ -1,4 +1,5 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Data.Entity;
 
 using SimpleIdentityServer.Core.DataAccess;
 using SimpleIdentityServer.Core.DataAccess.Models;
@@ -14,11 +15,14 @@ namespace SimpleIdentityServer.Api.Fake.DataAccess
 
         private FakeDbSet<ResourceOwner> _resourceOwners;
 
+        private FakeDbSet<Client> _clients;
+
         public FakeDataSource(ISecurityHelper securityHelper)
         {
             _securityHelper = securityHelper;
             _grantedTokens = new FakeDbSet<GrantedToken>();
             _resourceOwners = new FakeDbSet<ResourceOwner>();
+            _clients = new FakeDbSet<Client>();
 
             Initialize();
         }
@@ -49,6 +53,19 @@ namespace SimpleIdentityServer.Api.Fake.DataAccess
             }
         }
 
+        public IDbSet<Client> Clients
+        {
+            get
+            {
+                return _clients;
+            }
+
+            set
+            {
+                _clients = (FakeDbSet<Client>)value;
+            }
+        }
+
         public void SaveChanges()
         {
         }
@@ -60,8 +77,13 @@ namespace SimpleIdentityServer.Api.Fake.DataAccess
                 Id = "administrator",
                 Password = _securityHelper.ComputeHash("administrator")
             };
+            var client = new Client
+            {
+                ClientId = "WebSite"
+            };
 
             _resourceOwners.Add(resourceOwner);
+            _clients.Add(client);
         }
     }
 }

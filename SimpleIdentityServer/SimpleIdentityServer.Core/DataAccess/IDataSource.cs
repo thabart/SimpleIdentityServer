@@ -11,6 +11,8 @@ namespace SimpleIdentityServer.Core.DataAccess
         IDbSet<ResourceOwner> ResourceOwners { get; set; }
 
         IDbSet<GrantedToken> GrantedTokens { get; set; }
+        
+        IDbSet<Client> Clients { get; set; }
 
         void SaveChanges();
     }

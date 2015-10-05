@@ -23,7 +23,11 @@ namespace SimpleIdentityServer.Api.Controllers
             switch (tokenRequest.grant_type)
             {
                 case GrantTypeRequest.password:
-                    result = _getTokenByResourceOwnerCredentialsGrantType.Execute(tokenRequest.username, tokenRequest.password, tokenRequest.scope);
+                    result = _getTokenByResourceOwnerCredentialsGrantType.Execute(
+                        tokenRequest.username, 
+                        tokenRequest.password, 
+                        tokenRequest.client_id,
+                        tokenRequest.scope);
                     break;
             }
 

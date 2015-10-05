@@ -11,5 +11,7 @@ namespace SimpleIdentityServer.Api.DTOs.Request
         public string password { get; set; }
 
         public string scope { get; set; }
+
+        public string client_id { get; set; }
     }
 }

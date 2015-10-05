@@ -4,6 +4,7 @@
     {
         None,
         password,
-        client_credentials
+        client_credentials,
+        validate_bearer
     }
 }
