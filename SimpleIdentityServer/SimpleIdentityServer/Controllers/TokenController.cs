@@ -3,6 +3,7 @@
 using SimpleIdentityServer.Api.DTOs.Request;
 using SimpleIdentityServer.Core.Operations;
 using SimpleIdentityServer.Core.DataAccess.Models;
+using System.Net.Http;
 
 namespace SimpleIdentityServer.Api.Controllers
 {

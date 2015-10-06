@@ -153,9 +153,11 @@
     <Compile Include="App_Start\UnityConfig.cs" />
     <Compile Include="App_Start\UnityResolver.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Attributes\IdentityServerExceptionFilter.cs" />
     <Compile Include="Controllers\TokenController.cs" />
     <Compile Include="DTOs\Request\TokenRequest.cs" />
     <Compile Include="DTOs\Request\GrantTypeRequest.cs" />
+    <Compile Include="DTOs\Response\ErrorResponse.cs" />
     <Compile Include="Fake\DataAccess\FakeDataSource.cs" />
     <Compile Include="Fake\DataAccess\FakeDbSet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -170,9 +172,7 @@
       <DependentUpon>Web.config</DependentUpon>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="DTOs\Response\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="packages.config" />
   </ItemGroup>

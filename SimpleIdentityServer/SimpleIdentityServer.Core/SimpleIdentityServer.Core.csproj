@@ -51,8 +51,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataAccess\IDataSource.cs" />
+    <Compile Include="DataAccess\Models\Client.cs" />
     <Compile Include="DataAccess\Models\GrantedToken.cs" />
     <Compile Include="DataAccess\Models\ResourceOwner.cs" />
+    <Compile Include="Errors\ErrorCodes.cs" />
+    <Compile Include="Errors\ErrorDescriptions.cs" />
+    <Compile Include="Errors\IdentityServerException.cs" />
     <Compile Include="Helpers\SecurityHelper.cs" />
     <Compile Include="Helpers\TokenHelper.cs" />
     <Compile Include="Operations\GetTokenByResourceOwnerCredentialsGrantType.cs" />

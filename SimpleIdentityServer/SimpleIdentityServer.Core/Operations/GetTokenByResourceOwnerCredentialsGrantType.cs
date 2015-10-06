@@ -4,6 +4,7 @@ using System.Linq;
 using SimpleIdentityServer.Core.DataAccess;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.DataAccess.Models;
+using SimpleIdentityServer.Core.Errors;
 
 namespace SimpleIdentityServer.Core.Operations
 {
@@ -40,6 +41,21 @@ namespace SimpleIdentityServer.Core.Operations
             string clientId,
             string scope)
         {
+            if (string.IsNullOrWhiteSpace(userName))
+            {
+                throw new IdentityServerException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.MissingParameter, "username"));
+            }
+
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                throw new IdentityServerException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.MissingParameter, "password"));
+            }
+
+            if (string.IsNullOrWhiteSpace(clientId))
+            {
+                throw new IdentityServerException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.MissingParameter, "client_id"));
+            }
+
             var hashPassword = _securityHelper.ComputeHash(password);
             var resourceOwners = _dataSource.ResourceOwners;
             var clients = _dataSource.Clients;
@@ -47,12 +63,12 @@ namespace SimpleIdentityServer.Core.Operations
             var client = clients.FirstOrDefault(c => c.ClientId == clientId);
             if (client == null)
             {
-                throw new Exception("invalid_client");
+                throw new IdentityServerException("invalid_client", string.Format(ErrorDescriptions.ClientIsNotValid, "client_id"));
             }
 
             if (resourceOwner == null)
             {
-                throw new Exception("invalid_grant");
+                throw new IdentityServerException("invalid_grant", ErrorDescriptions.ResourceOwnerCredentialsAreNotValid);
             }
 
             var generatedToken = _tokenHelper.GenerateToken(scope);

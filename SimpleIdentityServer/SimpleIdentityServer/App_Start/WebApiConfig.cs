@@ -2,6 +2,8 @@
 
 using Owin;
 
+using SimpleIdentityServer.Api.Attributes;
+
 namespace SimpleIdentityServer.Api
 {
     public static class WebApiConfig
@@ -18,6 +20,8 @@ namespace SimpleIdentityServer.Api
                 routeTemplate: "api/{controller}/{id}",
                 defaults: new { id = RouteParameter.Optional }
             );
+
+            config.Filters.Add(new IdentityServerExceptionFilter());
 
             appBuilder.UseWebApi(config);
         }
