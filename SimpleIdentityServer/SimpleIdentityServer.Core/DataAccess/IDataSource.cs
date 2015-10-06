@@ -1,7 +1,5 @@
-﻿using System.Linq;
+﻿using SimpleIdentityServer.Core.DataAccess.Models;
 
-using SimpleIdentityServer.Core.DataAccess.Models;
-using System.Collections.Generic;
 using System.Data.Entity;
 
 namespace SimpleIdentityServer.Core.DataAccess
@@ -13,6 +11,8 @@ namespace SimpleIdentityServer.Core.DataAccess
         IDbSet<GrantedToken> GrantedTokens { get; set; }
         
         IDbSet<Client> Clients { get; set; }
+
+        IDbSet<Scope> Scopes { get; set; }
 
         void SaveChanges();
     }

@@ -5,6 +5,7 @@ using SimpleIdentityServer.Core.DataAccess;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.DataAccess.Models;
 using SimpleIdentityServer.Core.Errors;
+using System.Text.RegularExpressions;
 
 namespace SimpleIdentityServer.Core.Operations
 {
@@ -25,14 +26,18 @@ namespace SimpleIdentityServer.Core.Operations
 
         private readonly ITokenHelper _tokenHelper;
 
+        private readonly IValidatorHelper _validatorHelper;
+
         public GetTokenByResourceOwnerCredentialsGrantType(
             IDataSource dataSource,
             ISecurityHelper securityHelper,
-            ITokenHelper tokenHelper)
+            ITokenHelper tokenHelper,
+            IValidatorHelper validatorHelper)
         {
             _dataSource = dataSource;
             _securityHelper = securityHelper;
             _tokenHelper = tokenHelper;
+            _validatorHelper = validatorHelper;
         }
 
         public GrantedToken Execute(
@@ -61,14 +66,26 @@ namespace SimpleIdentityServer.Core.Operations
             var clients = _dataSource.Clients;
             var resourceOwner = resourceOwners.FirstOrDefault(r => r.Id == userName && r.Password == hashPassword);
             var client = clients.FirstOrDefault(c => c.ClientId == clientId);
+            if (!string.IsNullOrWhiteSpace(scope))
+            {
+                if (!_validatorHelper.ValidateScope(scope))
+                {
+                    throw new IdentityServerException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.ParameterIsNotCorrect, "scope"));
+                }
+
+                var scopes = scope.Split(' ');
+
+                // TODO : One whitespace & check if can access to the scope.
+            }
+
             if (client == null)
             {
-                throw new IdentityServerException("invalid_client", string.Format(ErrorDescriptions.ClientIsNotValid, "client_id"));
+                throw new IdentityServerException(ErrorCodes.InvalidClient, string.Format(ErrorDescriptions.ClientIsNotValid, "client_id"));
             }
 
             if (resourceOwner == null)
             {
-                throw new IdentityServerException("invalid_grant", ErrorDescriptions.ResourceOwnerCredentialsAreNotValid);
+                throw new IdentityServerException(ErrorCodes.InvalidGrant, ErrorDescriptions.ResourceOwnerCredentialsAreNotValid);
             }
 
             var generatedToken = _tokenHelper.GenerateToken(scope);

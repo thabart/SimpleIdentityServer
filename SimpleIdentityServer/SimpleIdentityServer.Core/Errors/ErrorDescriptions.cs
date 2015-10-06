@@ -7,5 +7,7 @@
         public static string ClientIsNotValid = "the client_id {0} is not valid";
 
         public static string ResourceOwnerCredentialsAreNotValid = "resource owner credentials are not valid";
+
+        public static string ParameterIsNotCorrect = "the paramater {0} is not correct";
     }
 }

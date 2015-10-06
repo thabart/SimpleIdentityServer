@@ -1,7 +1,11 @@
-﻿namespace SimpleIdentityServer.Core.DataAccess.Models
+﻿using System.Collections.Generic;
+
+namespace SimpleIdentityServer.Core.DataAccess.Models
 {
-    public class Client
+    public partial class Client
     {
         public string ClientId { get; set; }
+
+        public ICollection<Scope> AllowedScopes { get; set; }
     }
 }

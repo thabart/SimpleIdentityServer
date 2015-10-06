@@ -158,8 +158,6 @@
     <Compile Include="DTOs\Request\TokenRequest.cs" />
     <Compile Include="DTOs\Request\GrantTypeRequest.cs" />
     <Compile Include="DTOs\Response\ErrorResponse.cs" />
-    <Compile Include="Fake\DataAccess\FakeDataSource.cs" />
-    <Compile Include="Fake\DataAccess\FakeDbSet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -180,6 +178,10 @@
     <ProjectReference Include="..\SimpleIdentityServer.Core\SimpleIdentityServer.Core.csproj">
       <Project>{3d519f94-39f1-45f5-b080-b2d719021a10}</Project>
       <Name>SimpleIdentityServer.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SimpleIdentityServer.DataAccess.Fake\SimpleIdentityServer.DataAccess.Fake.csproj">
+      <Project>{7b5c6ff2-994b-4a4c-80f3-09f682e34979}</Project>
+      <Name>SimpleIdentityServer.DataAccess.Fake</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

@@ -1,9 +1,9 @@
 ﻿using Microsoft.Practices.Unity;
 
-using SimpleIdentityServer.Api.Fake.DataAccess;
 using SimpleIdentityServer.Core.DataAccess;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Operations;
+using SimpleIdentityServer.DataAccess.Fake;
 
 using System.Web.Http;
 
@@ -18,6 +18,7 @@ namespace SimpleIdentityServer.Api
             container.RegisterType<IGetTokenByResourceOwnerCredentialsGrantType, GetTokenByResourceOwnerCredentialsGrantType>();
             container.RegisterType<ISecurityHelper, SecurityHelper>();
             container.RegisterType<ITokenHelper, TokenHelper>();
+            container.RegisterType<IValidatorHelper, ValidatorHelper>();
 
             container.RegisterInstance<IDataSource>(new FakeDataSource(container.Resolve<ISecurityHelper>()));
 

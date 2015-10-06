@@ -6,7 +6,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace SimpleIdentityServer.Api.Fake.DataAccess
+namespace SimpleIdentityServer.DataAccess.Fake
 {
     public class FakeDbSet<TEntity> : IDbSet<TEntity> where TEntity : class
     {
