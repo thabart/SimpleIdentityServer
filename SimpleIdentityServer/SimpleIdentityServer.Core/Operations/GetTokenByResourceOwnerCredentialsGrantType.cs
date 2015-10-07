@@ -1,11 +1,9 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 
 using SimpleIdentityServer.Core.DataAccess;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.DataAccess.Models;
 using SimpleIdentityServer.Core.Errors;
-using System.Text.RegularExpressions;
 
 namespace SimpleIdentityServer.Core.Operations
 {
@@ -48,17 +46,23 @@ namespace SimpleIdentityServer.Core.Operations
         {
             if (string.IsNullOrWhiteSpace(userName))
             {
-                throw new IdentityServerException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.MissingParameter, "username"));
+                throw new IdentityServerException(
+                    ErrorCodes.InvalidRequestCode, 
+                    string.Format(ErrorDescriptions.MissingParameter, "username"));
             }
 
             if (string.IsNullOrWhiteSpace(password))
             {
-                throw new IdentityServerException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.MissingParameter, "password"));
+                throw new IdentityServerException(
+                    ErrorCodes.InvalidRequestCode, 
+                    string.Format(ErrorDescriptions.MissingParameter, "password"));
             }
 
             if (string.IsNullOrWhiteSpace(clientId))
             {
-                throw new IdentityServerException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.MissingParameter, "client_id"));
+                throw new IdentityServerException(
+                    ErrorCodes.InvalidRequestCode, 
+                    string.Format(ErrorDescriptions.MissingParameter, "client_id"));
             }
 
             var hashPassword = _securityHelper.ComputeHash(password);
@@ -66,29 +70,58 @@ namespace SimpleIdentityServer.Core.Operations
             var clients = _dataSource.Clients;
             var resourceOwner = resourceOwners.FirstOrDefault(r => r.Id == userName && r.Password == hashPassword);
             var client = clients.FirstOrDefault(c => c.ClientId == clientId);
+            var allowedTokenScopes = string.Empty;
+
             if (!string.IsNullOrWhiteSpace(scope))
             {
                 if (!_validatorHelper.ValidateScope(scope))
                 {
-                    throw new IdentityServerException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.ParameterIsNotCorrect, "scope"));
+                    throw new IdentityServerException(
+                        ErrorCodes.InvalidRequestCode, 
+                        string.Format(ErrorDescriptions.ParameterIsNotCorrect, "scope"));
                 }
 
-                var scopes = scope.Split(' ');
+                var scopes = scope.Split(' ').Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+                if (scopes.Any())
+                {
+                    var duplicates = scopes.GroupBy(p => p)
+                        .Where(g => g.Count() > 1)
+                        .Select(g => g.Key);
+                    if (duplicates.Any())
+                    {
+                        throw new IdentityServerException(
+                            ErrorCodes.InvalidRequestCode,
+                            string.Format(ErrorDescriptions.DuplicateScopeValues, string.Join(",", duplicates)));
+                    }
 
-                // TODO : One whitespace & check if can access to the scope.
+                    var scopeAllowed = client.AllowedScopes.Select(a => a.Name).ToList();
+                    var scopesNotAllowedOrInvalid = scopes.Where(s => !scopeAllowed.Contains(s));
+                    if (scopesNotAllowedOrInvalid.Count() > 0)
+                    {
+                        throw new IdentityServerException(
+                            ErrorCodes.InvalidScope,
+                            string.Format(ErrorDescriptions.ScopesAreNotAllowedOrInvalid, string.Join(",", scopesNotAllowedOrInvalid)));
+                    }
+
+                    allowedTokenScopes = string.Join(" ", scopes);
+                }
             }
 
             if (client == null)
             {
-                throw new IdentityServerException(ErrorCodes.InvalidClient, string.Format(ErrorDescriptions.ClientIsNotValid, "client_id"));
+                throw new IdentityServerException(
+                    ErrorCodes.InvalidClient, 
+                    string.Format(ErrorDescriptions.ClientIsNotValid, "client_id"));
             }
 
             if (resourceOwner == null)
             {
-                throw new IdentityServerException(ErrorCodes.InvalidGrant, ErrorDescriptions.ResourceOwnerCredentialsAreNotValid);
+                throw new IdentityServerException(
+                    ErrorCodes.InvalidGrant, 
+                    ErrorDescriptions.ResourceOwnerCredentialsAreNotValid);
             }
 
-            var generatedToken = _tokenHelper.GenerateToken(scope);
+            var generatedToken = _tokenHelper.GenerateToken(allowedTokenScopes);
             _dataSource.GrantedTokens.Add(generatedToken);
             _dataSource.SaveChanges();
 

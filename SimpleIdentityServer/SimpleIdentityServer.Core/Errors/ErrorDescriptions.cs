@@ -9,5 +9,9 @@
         public static string ResourceOwnerCredentialsAreNotValid = "resource owner credentials are not valid";
 
         public static string ParameterIsNotCorrect = "the paramater {0} is not correct";
+
+        public static string ScopesAreNotAllowedOrInvalid = "the scopes {0} are not allowed or invalid";
+
+        public static string DuplicateScopeValues = "the scopes {0} are duplicated";
     }
 }
