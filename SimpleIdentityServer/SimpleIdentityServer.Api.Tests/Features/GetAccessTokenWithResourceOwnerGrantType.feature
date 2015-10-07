@@ -6,3 +6,5 @@ Scenario: Retrieve an access token
 	Given a resource owner with username thierry and password loki is defined
 	And a mobile application MyHolidays is defined
 	When requesting an access token via resource owner grant-type
+	Then http result is 200
+	And access token is generated
