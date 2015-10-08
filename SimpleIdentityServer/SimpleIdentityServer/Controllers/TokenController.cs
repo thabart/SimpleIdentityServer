@@ -1,9 +1,10 @@
-﻿using System.Web.Http;
+﻿using System.Net.Http;
+using System.Web.Http;
 
 using SimpleIdentityServer.Api.DTOs.Request;
 using SimpleIdentityServer.Core.Operations;
 using SimpleIdentityServer.Core.DataAccess.Models;
-using System.Net.Http;
+using SimpleIdentityServer.Api.Attributes;
 
 namespace SimpleIdentityServer.Api.Controllers
 {
@@ -35,6 +36,7 @@ namespace SimpleIdentityServer.Api.Controllers
             return result;
         }
 
+        [RateLimitationFilter(NumberOfRequests = 20, Period = 5000)]
         public string Get()
         {
             return "coucou";
