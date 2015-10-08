@@ -1,11 +1,15 @@
 ﻿using Microsoft.Owin.Testing;
+
 using NUnit.Framework;
+
 using SimpleIdentityServer.Api.Tests.Common;
 using SimpleIdentityServer.Core.DataAccess.Models;
 using SimpleIdentityServer.Core.Helpers;
+
 using System.Net;
 using System.Net.Http;
 using System.Text;
+
 using TechTalk.SpecFlow;
 
 namespace SimpleIdentityServer.Api.Tests.Specs
@@ -57,6 +61,12 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             };
 
             _configureWebApi.DataSource.Clients.Add(client);
+        }
+
+        [Given("scopes (.*) are defined")]
+        public void GivenScope(string scope)
+        {
+            
         }
 
         [When("requesting an access token via resource owner grant-type")]
