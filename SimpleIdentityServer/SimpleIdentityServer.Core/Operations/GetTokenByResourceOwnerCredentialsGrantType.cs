@@ -71,6 +71,19 @@ namespace SimpleIdentityServer.Core.Operations
             var resourceOwner = resourceOwners.FirstOrDefault(r => r.Id == userName && r.Password == hashPassword);
             var client = clients.FirstOrDefault(c => c.ClientId == clientId);
             var allowedTokenScopes = string.Empty;
+            if (client == null)
+            {
+                throw new IdentityServerException(
+                    ErrorCodes.InvalidClient,
+                    string.Format(ErrorDescriptions.ClientIsNotValid, "client_id"));
+            }
+
+            if (resourceOwner == null)
+            {
+                throw new IdentityServerException(
+                    ErrorCodes.InvalidGrant,
+                    ErrorDescriptions.ResourceOwnerCredentialsAreNotValid);
+            }
 
             if (!string.IsNullOrWhiteSpace(scope))
             {
@@ -105,20 +118,6 @@ namespace SimpleIdentityServer.Core.Operations
 
                     allowedTokenScopes = string.Join(" ", scopes);
                 }
-            }
-
-            if (client == null)
-            {
-                throw new IdentityServerException(
-                    ErrorCodes.InvalidClient, 
-                    string.Format(ErrorDescriptions.ClientIsNotValid, "client_id"));
-            }
-
-            if (resourceOwner == null)
-            {
-                throw new IdentityServerException(
-                    ErrorCodes.InvalidGrant, 
-                    ErrorDescriptions.ResourceOwnerCredentialsAreNotValid);
             }
 
             var generatedToken = _tokenHelper.GenerateToken(allowedTokenScopes);

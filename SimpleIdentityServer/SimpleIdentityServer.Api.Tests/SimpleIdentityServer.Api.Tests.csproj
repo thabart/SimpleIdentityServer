@@ -101,6 +101,7 @@
     <Compile Include="Common\ConfigureWebApi.cs" />
     <Compile Include="Common\FakeDataSource.cs" />
     <Compile Include="Common\FakeDbSet.cs" />
+    <Compile Include="Common\Transformations.cs" />
     <Compile Include="Features\GetAccessTokenWithResourceOwnerGrantType.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

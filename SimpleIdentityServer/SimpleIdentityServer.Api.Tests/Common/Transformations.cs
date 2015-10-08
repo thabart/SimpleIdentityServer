@@ -1,13 +1,17 @@
-﻿using TechTalk.SpecFlow;
+﻿using System.Collections.Generic;
+using System.Linq;
+
+using TechTalk.SpecFlow;
 
 namespace SimpleIdentityServer.Api.Tests.Common
 {
+    [Binding]
     public class Transformations
     {
-        [StepArgumentTransformation(@"in (\d+) days?")]
-        public string InXDaysTransform(int days)
+        [StepArgumentTransformation(@"((?:.+,\s+)*(?:.+))")]
+        public List<string> TransformIntoArray(string value)
         {
-
+            return value.Split(',').ToList();
         }
     }
 }
