@@ -4,6 +4,7 @@ using SimpleIdentityServer.Api.DTOs.Request;
 using SimpleIdentityServer.Core.Operations;
 using SimpleIdentityServer.Core.DataAccess.Models;
 using SimpleIdentityServer.Api.Attributes;
+using SimpleIdentityServer.Api.Properties;
 
 namespace SimpleIdentityServer.Api.Controllers
 {
@@ -18,6 +19,7 @@ namespace SimpleIdentityServer.Api.Controllers
             _getTokenByResourceOwnerCredentialsGrantType = getTokenByResourceOwnerCredentialsGrantType;
         }
 
+        [RateLimitationFilter]
         public GrantedToken Post(TokenRequest tokenRequest)
         {
             GrantedToken result = null;

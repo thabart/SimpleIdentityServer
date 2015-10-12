@@ -5,6 +5,7 @@ using System.Web.Http.Filters;
 using Microsoft.Practices.EnterpriseLibrary.Caching;
 using System.Globalization;
 using System.Net;
+using SimpleIdentityServer.Api.Properties;
 
 namespace SimpleIdentityServer.Api.Attributes
 {
@@ -20,6 +21,8 @@ namespace SimpleIdentityServer.Api.Attributes
 
         public RateLimitationFilter()
         {
+            NumberOfRequests = Settings.Default.TokenNumberOfRequests;
+            SlidingTime = Settings.Default.TokenSlidingTime;
         }
 
         public RateLimitationFilter(
