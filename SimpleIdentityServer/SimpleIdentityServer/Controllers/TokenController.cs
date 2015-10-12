@@ -35,7 +35,7 @@ namespace SimpleIdentityServer.Api.Controllers
             return result;
         }
 
-        [RateLimitationFilter(NumberOfRequests = 20, SlidingTime = 5)]
+        [RateLimitationFilter(NumberOfRequests = 2, SlidingTime = 0.2)]
         public string Get()
         {
             return "coucou";
