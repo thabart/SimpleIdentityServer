@@ -19,7 +19,7 @@ using TechTalk.SpecFlow.Assist;
 
 namespace SimpleIdentityServer.Api.Tests.Specs
 {
-    [Binding]
+    [Binding, Scope(Feature = "GetAccessTokenWithResourceOwnerGrantType")]
     public sealed class GetAccessTokenWithResourceOwnerGrantTypeSpec
     {
         private readonly ConfigureWebApi _configureWebApi;

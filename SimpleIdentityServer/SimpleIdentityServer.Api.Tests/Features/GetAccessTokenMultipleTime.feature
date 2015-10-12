@@ -3,7 +3,11 @@
 	I request several times an access token
 
 Scenario: Request 3 times an access token
-	Given I have entered 50 into the calculator
-	And I have entered 70 into the calculator
-	When I press add
-	Then the result should be 120 on the screen
+	Given a resource owner with username thierry and password loki is defined
+	And a mobile application MyHolidays is defined
+
+	When requesting an access token 3 times
+	| client_id  | username | password |
+	| MyHolidays | thierry  | loki     |
+
+	Then the result should be
