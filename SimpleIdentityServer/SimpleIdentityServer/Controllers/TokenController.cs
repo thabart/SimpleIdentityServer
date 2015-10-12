@@ -1,5 +1,4 @@
-﻿using System.Net.Http;
-using System.Web.Http;
+﻿using System.Web.Http;
 
 using SimpleIdentityServer.Api.DTOs.Request;
 using SimpleIdentityServer.Core.Operations;
@@ -36,7 +35,7 @@ namespace SimpleIdentityServer.Api.Controllers
             return result;
         }
 
-        [RateLimitationFilter(NumberOfRequests = 20, Period = 5000)]
+        [RateLimitationFilter(NumberOfRequests = 20, SlidingTime = 5)]
         public string Get()
         {
             return "coucou";

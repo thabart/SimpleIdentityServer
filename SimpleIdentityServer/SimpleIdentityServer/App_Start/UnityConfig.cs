@@ -1,4 +1,5 @@
-﻿using Microsoft.Practices.Unity;using System;
+﻿using Microsoft.Practices.EnterpriseLibrary.Caching;
+using Microsoft.Practices.Unity;using System;
 using System.Web.Http;
 
 using SimpleIdentityServer.Core.DataAccess;
@@ -25,6 +26,8 @@ namespace SimpleIdentityServer.Api
             container.RegisterType<ISecurityHelper, SecurityHelper>();
             container.RegisterType<ITokenHelper, TokenHelper>();
             container.RegisterType<IValidatorHelper, ValidatorHelper>();
+
+            container.RegisterType<ICacheManager, CacheManager>();
 
             _unityRegisterTypesCallback(container);
 

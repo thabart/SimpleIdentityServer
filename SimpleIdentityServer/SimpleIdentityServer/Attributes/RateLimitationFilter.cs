@@ -1,5 +1,8 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Web.Http.Filters;
+
+using Microsoft.Practices.EnterpriseLibrary.Caching;
 
 namespace SimpleIdentityServer.Api.Attributes
 {
@@ -11,22 +14,66 @@ namespace SimpleIdentityServer.Api.Attributes
 
         public RateLimitationFilter(
             int numberOfRequests,
-            int period)
+            double slidingTime)
         {
             NumberOfRequests = numberOfRequests;
-            Period = period;
+            SlidingTime = slidingTime;
         }
 
         public int NumberOfRequests { get; set; }
 
-        public int Period { get; set; }
+        /// <summary>
+        /// Sliding time in minutes.
+        /// </summary>
+        public double SlidingTime { get; set; }
         
         public override void OnActionExecuted(HttpActionExecutedContext httpActionExecutedContext)
         {
+            var responseCacheManager = CacheFactory.GetCacheManager();
+            var owinContext = httpActionExecutedContext.Request.GetOwinContext();
+            var actionContext = httpActionExecutedContext.ActionContext;
+            var ipAdress = owinContext.Request.RemoteIpAddress;
+            var actionName = actionContext.ActionDescriptor.ActionName;
+            var controllerName = actionContext.ControllerContext.ControllerDescriptor.ControllerName;
+
+            var response = new CacheableResponse
+            {
+                ActionName = actionName,
+                ControllerName = controllerName,
+                IpAdress = ipAdress
+            };
+            var jsonResponse = response.GetIdentifier();
+            var cachedData = responseCacheManager.GetData(jsonResponse);
+            if (cachedData == null)
+            {
+                response.UpdateDateTime = DateTime.Now;
+                response.NumberOfRequests = 0;
+                responseCacheManager.Add(jsonResponse, response);
+                return;
+            }
+
+            var cacheableResponse = cachedData as CacheableResponse;
+            if (cacheableResponse == null)
+            {
+                return;
+            }
+
+            responseCacheManager.Remove(jsonResponse);
+            var needToRefresh = cacheableResponse.UpdateDateTime.AddMinutes(SlidingTime) <= DateTime.Now;
+            responseCacheManager.Remove(jsonResponse);
+            if (needToRefresh)
+            {
+                cacheableResponse.UpdateDateTime = DateTime.Now;
+                cacheableResponse.NumberOfRequests = 0;
+            }
+            else
+            {
+                cacheableResponse.NumberOfRequests = cacheableResponse.NumberOfRequests + 1;
+            }
+
+            responseCacheManager.Add(jsonResponse, cacheableResponse);
+
             // store ip & action name & controller & end-date = current-date + period & number of requests
-            var ip = httpActionExecutedContext.Request.GetOwinContext().Request.RemoteIpAddress;
-            var actionName = httpActionExecutedContext.ActionContext.ActionDescriptor.ActionName;
-            var controller = httpActionExecutedContext.ActionContext.ControllerContext.ControllerDescriptor.ControllerName;
 
             // In the header response returns :
             // X-Rate-Limit-Limit
@@ -34,7 +81,6 @@ namespace SimpleIdentityServer.Api.Attributes
             // X-Rate-Limit-Rest
 
             // For the cache use the library : EnterpriseLibrary.Caching, useful for isolated storage ==> scalability
-            string s = "zz";
         }
     }
 }
