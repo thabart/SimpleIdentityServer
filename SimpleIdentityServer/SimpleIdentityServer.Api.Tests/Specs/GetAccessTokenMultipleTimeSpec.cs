@@ -1,10 +1,15 @@
-﻿using SimpleIdentityServer.Api.DTOs.Request;
-using SimpleIdentityServer.Api.DTOs.Response;
+﻿using Microsoft.Owin.Testing;
+using NUnit.Framework;
+using SimpleIdentityServer.Api.DTOs.Request;
 using SimpleIdentityServer.Api.Tests.Common;
 using SimpleIdentityServer.Core.DataAccess.Models;
 using SimpleIdentityServer.Core.Helpers;
+
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Text;
 
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
@@ -18,9 +23,11 @@ namespace SimpleIdentityServer.Api.Tests.Specs
 
         private readonly ISecurityHelper _securityHelper;
 
-        private GrantedToken _token;
+        private List<GrantedToken> _tokens;
 
-        private ErrorResponse _errorResponse;
+        private List<TooManyRequestResponse> _errors;
+
+        private int _numberOfRequest;
 
         private HttpStatusCode _httpStatusCode;
 
@@ -28,6 +35,8 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         {
             _configureWebApi = new ConfigureWebApi();
             _securityHelper = new SecurityHelper();
+            _tokens = new List<GrantedToken>();
+            _errors = new List<TooManyRequestResponse>();
         }
 
         [Given("a resource owner with username (.*) and password (.*) is defined")]
@@ -54,16 +63,54 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             _configureWebApi.DataSource.Clients.Add(client);
         }
 
-        [When("requesting an access token (.*) times")]
-        public void ThenTheResultShouldBe(int result, Table table)
+        [When("requesting access tokens")]
+        public void WhenRequestingAccessTokens(Table table)
         {
-            var tokenRequest = table.CreateInstance<TokenRequest>();
+            var tokenRequests = table.CreateSet<TokenRequest>();
+            using (var server = TestServer.Create<Startup>())
+            {
+                foreach (var tokenRequest in tokenRequests)
+                {
+                    var httpClient = server.HttpClient;
+                    var parameter = string.Format(
+                        "grant_type=password&username={0}&password={1}&client_id={2}&scope={3}",
+                        tokenRequest.username,
+                        tokenRequest.password,
+                        tokenRequest.client_id,
+                        tokenRequest.scope);
+                    var content = new StringContent(parameter, Encoding.UTF8, "application/x-www-form-urlencoded");
+
+                    var result = httpClient.PostAsync("/api/token", content).Result;
+                    _httpStatusCode = result.StatusCode;
+                    if (_httpStatusCode == HttpStatusCode.OK)
+                    {
+                        _tokens.Add(result.Content.ReadAsAsync<GrantedToken>().Result);
+                        continue;
+                    }
+
+                    _errors.Add(new TooManyRequestResponse
+                    {
+                        HttpStatusCode = _httpStatusCode,
+                        Message = result.Content.ReadAsAsync<string>().Result
+                    });
+                }
+            }
         }
 
-        [Then("the result should be")]
-        public void ThenTheResultShouldBe(Table table)
+        [Then("(.*) access tokens are generated")]
+        public void ThenTheResultShouldBe(int numberOfAccessTokens)
         {
+            Assert.That(_tokens.Count, Is.EqualTo(numberOfAccessTokens));
+        }
 
+        [Then("the errors should be returned")]
+        public void ThenErrorsShouldBe(Table table)
+        {
+            var records = table.CreateSet<TooManyRequestResponse>();
+            foreach(var record in records)
+            {
+                Assert.IsTrue(_errors.Any(e => e.HttpStatusCode == record.HttpStatusCode && e.Message == record.Message));
+            }
         }
     }
 }

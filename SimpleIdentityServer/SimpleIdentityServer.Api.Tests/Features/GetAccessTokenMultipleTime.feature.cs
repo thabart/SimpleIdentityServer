@@ -84,10 +84,27 @@ this.ScenarioSetup(scenarioInfo);
                         "MyHolidays",
                         "thierry",
                         "loki"});
+            table1.AddRow(new string[] {
+                        "MyHolidays",
+                        "thierry",
+                        "loki"});
+            table1.AddRow(new string[] {
+                        "MyHolidays",
+                        "thierry",
+                        "loki"});
 #line 9
- testRunner.When("requesting an access token 3 times", ((string)(null)), table1, "When ");
-#line 13
- testRunner.Then("the result should be", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.When("requesting access tokens", ((string)(null)), table1, "When ");
+#line 15
+ testRunner.Then("2 access tokens are generated", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            TechTalk.SpecFlow.Table table2 = new TechTalk.SpecFlow.Table(new string[] {
+                        "HttpStatusCode",
+                        "Message"});
+            table2.AddRow(new string[] {
+                        "429",
+                        "Allow 2 requests per 0.2 minutes"});
+#line 16
+ testRunner.And("the errors should be returned", ((string)(null)), table2, "And ");
 #line hidden
             this.ScenarioCleanup();
         }
