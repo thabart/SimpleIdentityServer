@@ -1,4 +1,5 @@
 ﻿using Microsoft.Owin.Testing;
+using Microsoft.Practices.EnterpriseLibrary.Caching;
 using NUnit.Framework;
 using RateLimitation.Configuration;
 using SimpleIdentityServer.Api.DTOs.Request;
@@ -91,6 +92,8 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         public void WhenRequestingAccessTokens(Table table)
         {
             var tokenRequests = table.CreateSet<TokenRequest>();
+            var responseCacheManager = CacheFactory.GetCacheManager();
+            responseCacheManager.Flush();
             using (var server = TestServer.Create<Startup>())
             {
                 foreach (var tokenRequest in tokenRequests)
