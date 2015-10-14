@@ -1,11 +1,17 @@
 ﻿using Microsoft.Practices.EnterpriseLibrary.Caching;
-using Microsoft.Practices.Unity;using System;
+using Microsoft.Practices.Unity;
+using System;
 using System.Web.Http;
 
 using SimpleIdentityServer.Core.DataAccess;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Operations;
 using SimpleIdentityServer.DataAccess.Fake;
+
+using RateLimitation.Configuration;
+
+using System.Web.Http.Filters;
+using System.Linq;
 
 namespace SimpleIdentityServer.Api
 {
@@ -17,7 +23,7 @@ namespace SimpleIdentityServer.Api
         {
             _unityRegisterTypesCallback = unityRegisterTypesCallback;
         }
-
+        
         public static void Configure(HttpConfiguration httpConfiguration)
         {
             var container = new UnityContainer();
@@ -29,6 +35,7 @@ namespace SimpleIdentityServer.Api
 
             container.RegisterType<ICacheManager, CacheManager>();
 
+            RegisterFilterInjector(httpConfiguration, container);
             _unityRegisterTypesCallback(container);
 
             httpConfiguration.DependencyResolver = new UnityResolver(container);
@@ -37,6 +44,16 @@ namespace SimpleIdentityServer.Api
         private static void RegisterDependencies(UnityContainer container)
         {
             container.RegisterInstance<IDataSource>(new FakeDataSource(container.Resolve<ISecurityHelper>()));
+            container.RegisterType<IGetRateLimitationElementOperation, GetRateLimitationElementOperation>();
+        }
+
+        private static void RegisterFilterInjector(HttpConfiguration config, UnityContainer container)
+        {
+            //Register the filter injector
+            var providers = config.Services.GetFilterProviders().ToList();
+            var defaultprovider = providers.Single(i => i is ActionDescriptorFilterProvider);
+            config.Services.Remove(typeof(IFilterProvider), defaultprovider);
+            config.Services.Add(typeof(IFilterProvider), new UnityFilterProvider(container));
         }
     }
 }

@@ -34,7 +34,10 @@ namespace SimpleIdentityServer.Api.Tests.Specs
 
         public GetAccessTokenWithResourceOwnerGrantTypeSpec()
         {
-            _configureWebApi = new ConfigureWebApi();
+            _configureWebApi = new ConfigureWebApi(new FakeGetRateLimitationElementOperation
+            {
+                Enabled = false
+            });
             _securityHelper = new SecurityHelper();
         }
 

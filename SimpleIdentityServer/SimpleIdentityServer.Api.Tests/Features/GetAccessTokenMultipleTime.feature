@@ -5,6 +5,8 @@
 Scenario: Request 3 times an access token
 	Given a resource owner with username thierry and password loki is defined
 	And a mobile application MyHolidays is defined
+	And allowed number of requests is 2
+	And sliding time is 0.2
 
 	When requesting access tokens
 	| client_id  | username | password |

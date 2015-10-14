@@ -3,8 +3,8 @@
 using SimpleIdentityServer.Api.DTOs.Request;
 using SimpleIdentityServer.Core.Operations;
 using SimpleIdentityServer.Core.DataAccess.Models;
-using SimpleIdentityServer.Api.Attributes;
-using SimpleIdentityServer.Api.Properties;
+
+using RateLimitation.Attributes;
 
 namespace SimpleIdentityServer.Api.Controllers
 {
@@ -19,7 +19,7 @@ namespace SimpleIdentityServer.Api.Controllers
             _getTokenByResourceOwnerCredentialsGrantType = getTokenByResourceOwnerCredentialsGrantType;
         }
 
-        [RateLimitationFilter]
+        [RateLimitationFilter(RateLimitationElementName = "PostToken")]
         public GrantedToken Post(TokenRequest tokenRequest)
         {
             GrantedToken result = null;
@@ -37,7 +37,7 @@ namespace SimpleIdentityServer.Api.Controllers
             return result;
         }
 
-        [RateLimitationFilter(NumberOfRequests = 2, SlidingTime = 0.2)]
+        [RateLimitationFilter(RateLimitationElementName = "PostToken")]
         public string Get()
         {
             return "coucou";

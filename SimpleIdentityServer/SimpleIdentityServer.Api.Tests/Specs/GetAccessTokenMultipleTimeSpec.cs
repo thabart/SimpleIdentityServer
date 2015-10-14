@@ -1,5 +1,6 @@
 ﻿using Microsoft.Owin.Testing;
 using NUnit.Framework;
+using RateLimitation.Configuration;
 using SimpleIdentityServer.Api.DTOs.Request;
 using SimpleIdentityServer.Api.Tests.Common;
 using SimpleIdentityServer.Core.DataAccess.Models;
@@ -29,11 +30,21 @@ namespace SimpleIdentityServer.Api.Tests.Specs
 
         private int _numberOfRequest;
 
+        private FakeGetRateLimitationElementOperation _fakeGetRateLimitationElementOperation;
+
         private HttpStatusCode _httpStatusCode;
 
         public GetAccessTokenMultipleTimeSpec()
         {
-            _configureWebApi = new ConfigureWebApi();
+            _fakeGetRateLimitationElementOperation = new FakeGetRateLimitationElementOperation
+            {
+                Enabled = true,
+                RateLimitationElement = new RateLimitationElement
+                {
+                    Name = "PostToken"
+                }
+            };
+            _configureWebApi = new ConfigureWebApi(_fakeGetRateLimitationElementOperation);
             _securityHelper = new SecurityHelper();
             _tokens = new List<GrantedToken>();
             _errors = new List<TooManyRequestResponse>();
@@ -61,6 +72,18 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             };
 
             _configureWebApi.DataSource.Clients.Add(client);
+        }
+
+        [Given("allowed number of requests is (.*)")]
+        public void GivenAllowedNumberOfRequests(int numberOfRequests)
+        {
+            _fakeGetRateLimitationElementOperation.RateLimitationElement.NumberOfRequests = numberOfRequests;
+        }
+
+        [Given("sliding time is (.*)")]
+        public void GivenSlidingTime(double slidingTime)
+        {
+            _fakeGetRateLimitationElementOperation.RateLimitationElement.SlidingTime = slidingTime;
         }
 
         [When("requesting access tokens")]

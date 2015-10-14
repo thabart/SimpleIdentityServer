@@ -162,21 +162,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\UnityConfig.cs" />
+    <Compile Include="App_Start\UnityFilterProvider.cs" />
     <Compile Include="App_Start\UnityResolver.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Attributes\CacheableResponse.cs" />
     <Compile Include="Attributes\IdentityServerExceptionFilter.cs" />
-    <Compile Include="Attributes\RateLimitationFilter.cs" />
     <Compile Include="Controllers\TokenController.cs" />
     <Compile Include="DTOs\Request\TokenRequest.cs" />
     <Compile Include="DTOs\Request\GrantTypeRequest.cs" />
     <Compile Include="DTOs\Response\ErrorResponse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -189,17 +183,15 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="packages.config">
       <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\RateLimitation\RateLimitation.csproj">
+      <Project>{73d63cc4-559c-47d1-8fba-9ef117e7635d}</Project>
+      <Name>RateLimitation</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SimpleIdentityServer.Core\SimpleIdentityServer.Core.csproj">
       <Project>{3d519f94-39f1-45f5-b080-b2d719021a10}</Project>
       <Name>SimpleIdentityServer.Core</Name>

@@ -75,6 +75,10 @@ this.ScenarioSetup(scenarioInfo);
  testRunner.Given("a resource owner with username thierry and password loki is defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 7
  testRunner.And("a mobile application MyHolidays is defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 8
+ testRunner.And("allowed number of requests is 2", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 9
+ testRunner.And("sliding time is 0.2", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             TechTalk.SpecFlow.Table table1 = new TechTalk.SpecFlow.Table(new string[] {
                         "client_id",
@@ -92,9 +96,9 @@ this.ScenarioSetup(scenarioInfo);
                         "MyHolidays",
                         "thierry",
                         "loki"});
-#line 9
+#line 11
  testRunner.When("requesting access tokens", ((string)(null)), table1, "When ");
-#line 15
+#line 17
  testRunner.Then("2 access tokens are generated", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             TechTalk.SpecFlow.Table table2 = new TechTalk.SpecFlow.Table(new string[] {
@@ -103,7 +107,7 @@ this.ScenarioSetup(scenarioInfo);
             table2.AddRow(new string[] {
                         "429",
                         "Allow 2 requests per 0.2 minutes"});
-#line 16
+#line 18
  testRunner.And("the errors should be returned", ((string)(null)), table2, "And ");
 #line hidden
             this.ScenarioCleanup();
