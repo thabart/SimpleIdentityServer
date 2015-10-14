@@ -19,7 +19,6 @@ namespace SimpleIdentityServer.Api.Tests.Common
         {
             GetRateLimitationElementOperation = getRateLimitationElementOperation;
             DataSource = new FakeDataSource();
-            GetRateLimitationElementOperation = new GetRateLimitationElementOperation();
             ConfigureUnityContainer();
         }
 
@@ -35,6 +34,7 @@ namespace SimpleIdentityServer.Api.Tests.Common
         private void RegisterFakeDependencies(UnityContainer container)
         {
             container.RegisterInstance<IDataSource>(DataSource);
+            container.RegisterInstance<IGetRateLimitationElementOperation>(GetRateLimitationElementOperation);
         }
     }
 }

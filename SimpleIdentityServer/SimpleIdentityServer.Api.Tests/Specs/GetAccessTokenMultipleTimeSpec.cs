@@ -30,21 +30,22 @@ namespace SimpleIdentityServer.Api.Tests.Specs
 
         private int _numberOfRequest;
 
-        private FakeGetRateLimitationElementOperation _fakeGetRateLimitationElementOperation;
+        private RateLimitationElement _rateLimitationElement;
 
         private HttpStatusCode _httpStatusCode;
 
         public GetAccessTokenMultipleTimeSpec()
         {
-            _fakeGetRateLimitationElementOperation = new FakeGetRateLimitationElementOperation
+            _rateLimitationElement = new RateLimitationElement
+            {
+                Name = "PostToken"
+            };
+            var fakeGetRateLimitationElementOperation = new FakeGetRateLimitationElementOperation
             {
                 Enabled = true,
-                RateLimitationElement = new RateLimitationElement
-                {
-                    Name = "PostToken"
-                }
+                RateLimitationElement = _rateLimitationElement
             };
-            _configureWebApi = new ConfigureWebApi(_fakeGetRateLimitationElementOperation);
+            _configureWebApi = new ConfigureWebApi(fakeGetRateLimitationElementOperation);
             _securityHelper = new SecurityHelper();
             _tokens = new List<GrantedToken>();
             _errors = new List<TooManyRequestResponse>();
@@ -77,13 +78,13 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         [Given("allowed number of requests is (.*)")]
         public void GivenAllowedNumberOfRequests(int numberOfRequests)
         {
-            _fakeGetRateLimitationElementOperation.RateLimitationElement.NumberOfRequests = numberOfRequests;
+            _rateLimitationElement.NumberOfRequests = numberOfRequests;
         }
 
         [Given("sliding time is (.*)")]
         public void GivenSlidingTime(double slidingTime)
         {
-            _fakeGetRateLimitationElementOperation.RateLimitationElement.SlidingTime = slidingTime;
+            _rateLimitationElement.SlidingTime = slidingTime;
         }
 
         [When("requesting access tokens")]
