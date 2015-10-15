@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01. Core", "01. Core", "{0F
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02. Host", "02. Host", "{52E4BD73-432A-462A-BC9A-8493301FC6C2}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "03. Tests", "03. Tests", "{C5C72E14-0135-478A-9E2D-B7BD81692C95}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "04. Tests", "04. Tests", "{C5C72E14-0135-478A-9E2D-B7BD81692C95}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.Core", "SimpleIdentityServer.Core\SimpleIdentityServer.Core.csproj", "{3D519F94-39F1-45F5-B080-B2D719021A10}"
 EndProject
@@ -24,6 +24,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.Api.Tests", "SimpleIdentityServer.Api.Tests\SimpleIdentityServer.Api.Tests.csproj", "{0480F5F3-FF5E-4C18-A5F0-CD2D42010CCB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RateLimitation", "RateLimitation\RateLimitation.csproj", "{73D63CC4-559C-47D1-8FBA-9EF117E7635D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "03. Client", "03. Client", "{59B24293-651A-454E-BF97-286BF8D7255D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServerClient", "SimpleIdentityServerClient\SimpleIdentityServerClient.csproj", "{28D047DC-1A85-4F62-8720-05DCF5D7A534}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +59,10 @@ Global
 		{73D63CC4-559C-47D1-8FBA-9EF117E7635D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{73D63CC4-559C-47D1-8FBA-9EF117E7635D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{73D63CC4-559C-47D1-8FBA-9EF117E7635D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28D047DC-1A85-4F62-8720-05DCF5D7A534}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28D047DC-1A85-4F62-8720-05DCF5D7A534}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28D047DC-1A85-4F62-8720-05DCF5D7A534}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28D047DC-1A85-4F62-8720-05DCF5D7A534}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -68,6 +76,7 @@ Global
 		{84927D59-26DE-4EE2-A6A7-DCEEA3FE8016} = {C5C72E14-0135-478A-9E2D-B7BD81692C95}
 		{0480F5F3-FF5E-4C18-A5F0-CD2D42010CCB} = {84927D59-26DE-4EE2-A6A7-DCEEA3FE8016}
 		{73D63CC4-559C-47D1-8FBA-9EF117E7635D} = {52E4BD73-432A-462A-BC9A-8493301FC6C2}
+		{28D047DC-1A85-4F62-8720-05DCF5D7A534} = {59B24293-651A-454E-BF97-286BF8D7255D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.Interception.2.1.505.0\lib\NET35;packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Caching.5.0.505.0\lib\NET35;packages\Unity.2.1.505.0\lib\NET35

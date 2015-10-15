@@ -5,6 +5,7 @@ using SimpleIdentityServer.Core.Operations;
 using SimpleIdentityServer.Core.DataAccess.Models;
 
 using RateLimitation.Attributes;
+using SimpleIdentityServer.Api.Attributes;
 
 namespace SimpleIdentityServer.Api.Controllers
 {
@@ -18,7 +19,8 @@ namespace SimpleIdentityServer.Api.Controllers
         {
             _getTokenByResourceOwnerCredentialsGrantType = getTokenByResourceOwnerCredentialsGrantType;
         }
-
+        
+        [SwaggerOperation("PostToken")]
         [RateLimitationFilter(RateLimitationElementName = "PostToken")]
         public GrantedToken Post(TokenRequest tokenRequest)
         {
@@ -35,12 +37,6 @@ namespace SimpleIdentityServer.Api.Controllers
             }
 
             return result;
-        }
-
-        [RateLimitationFilter(RateLimitationElementName = "PostToken")]
-        public string Get()
-        {
-            return "coucou";
         }
     }
 }

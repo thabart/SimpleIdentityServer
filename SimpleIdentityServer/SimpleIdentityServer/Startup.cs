@@ -14,6 +14,7 @@ namespace SimpleIdentityServer.Api
         {
             var httpConfiguration = new HttpConfiguration();
             UnityConfig.Configure(httpConfiguration);
+            SwaggerConfig.Configure(httpConfiguration);
             WebApiConfig.Register(httpConfiguration, app);
         }
     }
