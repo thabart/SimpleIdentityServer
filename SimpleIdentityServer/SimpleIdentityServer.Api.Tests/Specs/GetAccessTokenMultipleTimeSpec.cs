@@ -2,6 +2,7 @@
 using Microsoft.Practices.EnterpriseLibrary.Caching;
 using NUnit.Framework;
 using RateLimitation.Configuration;
+using RateLimitation.Constants;
 using SimpleIdentityServer.Api.DTOs.Request;
 using SimpleIdentityServer.Api.Tests.Common;
 using SimpleIdentityServer.Core.DataAccess.Models;
@@ -12,7 +13,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
-
+using System.Threading;
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
 
@@ -118,10 +119,18 @@ namespace SimpleIdentityServer.Api.Tests.Specs
                     _errors.Add(new TooManyRequestResponse
                     {
                         HttpStatusCode = _httpStatusCode,
-                        Message = result.Content.ReadAsAsync<string>().Result
+                        Message = result.Content.ReadAsAsync<string>().Result,
+                        NumberOfRequests = result.Headers.GetValues(RateLimitationConstants.XRateLimitLimitName).FirstOrDefault(),
+                        NumberOfRemainingRequests = result.Headers.GetValues(RateLimitationConstants.XRateLimitRemainingName).FirstOrDefault()
                     });
                 }
             }
+        }
+
+        [When("waiting for (.*) seconds")]
+        public void WhenWaitingForSeconds(int milliSeconds)
+        {
+            Thread.Sleep(milliSeconds);
         }
 
         [Then("(.*) access tokens are generated")]
@@ -136,7 +145,11 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             var records = table.CreateSet<TooManyRequestResponse>();
             foreach(var record in records)
             {
-                Assert.IsTrue(_errors.Any(e => e.HttpStatusCode == record.HttpStatusCode && e.Message == record.Message));
+                Assert.IsTrue(_errors.Any(
+                    e => e.HttpStatusCode == record.HttpStatusCode &&
+                    e.Message == record.Message &&
+                    e.NumberOfRequests == record.NumberOfRequests &&
+                    e.NumberOfRemainingRequests == record.NumberOfRemainingRequests));
             }
         }
     }
