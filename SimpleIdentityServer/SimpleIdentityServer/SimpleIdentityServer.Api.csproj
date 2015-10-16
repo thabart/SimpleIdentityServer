@@ -215,7 +215,7 @@
   <ItemGroup>
     <ProjectReference Include="..\RateLimitation\SimpleIdentityServer.RateLimitation.csproj">
       <Project>{73d63cc4-559c-47d1-8fba-9ef117e7635d}</Project>
-      <Name>RateLimitation</Name>
+      <Name>SimpleIdentityServer.RateLimitation</Name>
     </ProjectReference>
     <ProjectReference Include="..\SimpleIdentityServer.Common\SimpleIdentityServer.Common.csproj">
       <Project>{fc7dc959-c366-473c-a95a-fa16d5c71597}</Project>

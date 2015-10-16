@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServerClient.DTOs
+﻿namespace SimpleIdentityServerClient.DTOs.Response
 {
     public class GrantedToken
     {

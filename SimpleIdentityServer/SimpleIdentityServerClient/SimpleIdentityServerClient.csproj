@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SimpleIdentityServerClient</RootNamespace>
     <AssemblyName>SimpleIdentityServerClient</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -30,8 +31,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -40,14 +50,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DTOs\GrantedToken.cs" />
-    <Compile Include="DTOs\TokenRequest.cs" />
+    <Compile Include="DTOs\Request\GrantTypeRequest.cs" />
+    <Compile Include="DTOs\Response\GrantedToken.cs" />
+    <Compile Include="DTOs\Request\TokenRequest.cs" />
     <Compile Include="IdentityServerClient.cs" />
     <Compile Include="IdentityServerClientFactory.cs" />
+    <Compile Include="ModuleInit.cs" />
     <Compile Include="Operations\Token\PostTokenOperation.cs" />
+    <Compile Include="Parameters\GetAccessToken.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SimpleIdentityServer.Common\SimpleIdentityServer.Common.csproj">
+      <Project>{fc7dc959-c366-473c-a95a-fa16d5c71597}</Project>
+      <Name>SimpleIdentityServer.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SwaggerLibrary\SwaggerLibrary.csproj">
       <Project>{34939ee2-aac3-4ddd-b12d-0965468504d4}</Project>
       <Name>SwaggerLibrary</Name>
@@ -55,6 +72,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Operations\Authorization\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

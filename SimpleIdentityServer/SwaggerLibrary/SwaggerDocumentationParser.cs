@@ -19,6 +19,11 @@ namespace SwaggerLibrary
 
         private readonly IHttpClientHelper _httpClientHelper;
 
+        public SwaggerDocumentationParser(IHttpClientHelper httpClientHelper)
+        {
+            _httpClientHelper = httpClientHelper;
+        }
+
         public SwaggerDocumentationParser(string documentationUrl, IHttpClientHelper httpClientHelper)
         {
             _documentationUrl = documentationUrl;

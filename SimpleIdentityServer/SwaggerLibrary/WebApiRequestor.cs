@@ -29,6 +29,11 @@ namespace SwaggerLibrary
 
         private SwaggerOperation _swaggerOperation;
 
+        public WebApiRequestor(IHttpClientHelper httpClientHelper)
+        {
+            _httpClientHelper = httpClientHelper;
+        }
+
         public WebApiRequestor(string host, IHttpClientHelper httpClientHelper)
         {
             _host = host;

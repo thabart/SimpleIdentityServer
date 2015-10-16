@@ -38,11 +38,5 @@ namespace SimpleIdentityServer.Api.Controllers
 
             return result;
         }
-
-        [RateLimitationFilter(RateLimitationElementName = "PostToken")]
-        public string Get()
-        {
-            return "";
-        }
     }
 }

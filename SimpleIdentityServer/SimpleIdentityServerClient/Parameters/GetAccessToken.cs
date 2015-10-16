@@ -1,6 +1,6 @@
-﻿namespace SimpleIdentityServerClient.DTOs
+﻿namespace SimpleIdentityServerClient.Parameters
 {
-    public class TokenRequest
+    public class GetAccessToken
     {
         public string Username { get; set; }
 

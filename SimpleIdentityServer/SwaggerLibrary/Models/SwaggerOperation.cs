@@ -32,6 +32,7 @@ namespace SwaggerLibrary.Models
 
             var result = new SwaggerOperation
             {
+                // TODO : Fix THIS ISSUE IS THE OPERATION ID DOESNT EXIST !!!! TODO //////////////////
                 OperationId = obj.Value["operationId"].ToString(),
                 HttpRequest = _httpRequests[httpMethod]
             };
