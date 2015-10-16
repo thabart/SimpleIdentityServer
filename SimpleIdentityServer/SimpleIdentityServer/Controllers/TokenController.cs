@@ -4,8 +4,8 @@ using SimpleIdentityServer.Api.DTOs.Request;
 using SimpleIdentityServer.Core.Operations;
 using SimpleIdentityServer.Core.DataAccess.Models;
 
-using RateLimitation.Attributes;
 using SimpleIdentityServer.Api.Attributes;
+using SimpleIdentityServer.RateLimitation.Attributes;
 
 namespace SimpleIdentityServer.Api.Controllers
 {
@@ -37,6 +37,12 @@ namespace SimpleIdentityServer.Api.Controllers
             }
 
             return result;
+        }
+
+        [RateLimitationFilter(RateLimitationElementName = "PostToken")]
+        public string Get()
+        {
+            return "";
         }
     }
 }

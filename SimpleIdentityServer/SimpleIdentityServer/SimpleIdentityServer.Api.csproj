@@ -96,6 +96,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Drawing" />
@@ -181,6 +182,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App_Start\ModuleLoader.cs" />
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="App_Start\SwaggerOperationNameFilter.cs" />
     <Compile Include="App_Start\UnityConfig.cs" />
@@ -211,9 +213,13 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\RateLimitation\RateLimitation.csproj">
+    <ProjectReference Include="..\RateLimitation\SimpleIdentityServer.RateLimitation.csproj">
       <Project>{73d63cc4-559c-47d1-8fba-9ef117e7635d}</Project>
       <Name>RateLimitation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SimpleIdentityServer.Common\SimpleIdentityServer.Common.csproj">
+      <Project>{fc7dc959-c366-473c-a95a-fa16d5c71597}</Project>
+      <Name>SimpleIdentityServer.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\SimpleIdentityServer.Core\SimpleIdentityServer.Core.csproj">
       <Project>{3d519f94-39f1-45f5-b080-b2d719021a10}</Project>

@@ -1,4 +1,4 @@
-﻿namespace RateLimitation.Constants
+﻿namespace SimpleIdentityServer.RateLimitation.Constants
 {
     public static class RateLimitationConstants
     {

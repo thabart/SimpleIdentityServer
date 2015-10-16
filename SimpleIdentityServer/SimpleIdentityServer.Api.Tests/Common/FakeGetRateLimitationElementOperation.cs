@@ -1,4 +1,4 @@
-﻿using RateLimitation.Configuration;
+﻿using SimpleIdentityServer.RateLimitation.Configuration;
 
 namespace SimpleIdentityServer.Api.Tests.Common
 {

@@ -1,6 +1,6 @@
 ﻿using System.Configuration;
 
-namespace RateLimitation.Configuration
+namespace SimpleIdentityServer.RateLimitation.Configuration
 {
     public class RateLimitationCollection : ConfigurationElementCollection
     {

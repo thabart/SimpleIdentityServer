@@ -4,16 +4,17 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 
-using Microsoft.Owin.Testing;
+using Microsoft.Practices.Unity;
 
 using NUnit.Framework;
 
 using SimpleIdentityServer.Api.Tests.Common;
+using SimpleIdentityServer.Core.DataAccess;
 using SimpleIdentityServer.Core.DataAccess.Models;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Api.DTOs.Request;
 using SimpleIdentityServer.Api.DTOs.Response;
-
+using SimpleIdentityServer.RateLimitation.Configuration;
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
 
@@ -22,6 +23,8 @@ namespace SimpleIdentityServer.Api.Tests.Specs
     [Binding, Scope(Feature = "GetAccessTokenWithResourceOwnerGrantType")]
     public sealed class GetAccessTokenWithResourceOwnerGrantTypeSpec
     {
+        private readonly IDataSource _dataSource;
+
         private readonly ConfigureWebApi _configureWebApi;
 
         private readonly ISecurityHelper _securityHelper;
@@ -34,10 +37,15 @@ namespace SimpleIdentityServer.Api.Tests.Specs
 
         public GetAccessTokenWithResourceOwnerGrantTypeSpec()
         {
-            _configureWebApi = new ConfigureWebApi(new FakeGetRateLimitationElementOperation
+            _dataSource = new FakeDataSource();
+            var fakeGetRateLimitationElementOperation = new FakeGetRateLimitationElementOperation
             {
                 Enabled = false
-            });
+            };
+
+            _configureWebApi = new ConfigureWebApi();
+            _configureWebApi.Container.RegisterInstance<IDataSource>(_dataSource);
+            _configureWebApi.Container.RegisterInstance<IGetRateLimitationElementOperation>(fakeGetRateLimitationElementOperation);
             _securityHelper = new SecurityHelper();
         }
 
@@ -50,7 +58,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
                 Password = _securityHelper.ComputeHash(password)
             };
 
-            _configureWebApi.DataSource.ResourceOwners.Add(resourceOwner);
+            _dataSource.ResourceOwners.Add(resourceOwner);
         }
         
         [Given("a mobile application (.*) is defined")]
@@ -62,7 +70,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
                 AllowedScopes = new List<Scope>()
             };
 
-            _configureWebApi.DataSource.Clients.Add(client);
+            _dataSource.Clients.Add(client);
         }
 
         [Given("scopes (.*) are defined")]
@@ -74,20 +82,20 @@ namespace SimpleIdentityServer.Api.Tests.Specs
                     Name = scope
                 };
 
-                _configureWebApi.DataSource.Scopes.Add(record);
+                _dataSource.Scopes.Add(record);
             }
         }
 
         [Given("the scopes (.*) are assigned to the client (.*)")]
         public void GivenScopesToTheClients(List<string> scopeNames, string clientId)
         {
-            var client = _configureWebApi.DataSource.Clients.SingleOrDefault(c => c.ClientId == clientId);
+            var client = _dataSource.Clients.SingleOrDefault(c => c.ClientId == clientId);
             if (client == null)
             {
                 return;
             }
 
-            var scopes = _configureWebApi.DataSource.Scopes;
+            var scopes = _dataSource.Scopes;
             foreach(var scopeName in scopeNames)
             {
                 var storedScope = scopes.SingleOrDefault(s => s.Name == scopeName);
@@ -104,7 +112,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         public void WhenRequestingAnAccessToken(Table table)
         {
             var tokenRequest = table.CreateInstance<TokenRequest>();
-            using (var server = TestServer.Create<Startup>())
+            using (var server = _configureWebApi.CreateServer())
             {
                 var httpClient = server.HttpClient;
                 var parameter = string.Format(

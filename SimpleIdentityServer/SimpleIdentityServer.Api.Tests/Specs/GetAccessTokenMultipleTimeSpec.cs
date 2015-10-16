@@ -1,13 +1,13 @@
-﻿using Microsoft.Owin.Testing;
+﻿using Microsoft.Practices.Unity;
 using Microsoft.Practices.EnterpriseLibrary.Caching;
 using NUnit.Framework;
-using RateLimitation.Configuration;
-using RateLimitation.Constants;
 using SimpleIdentityServer.Api.DTOs.Request;
 using SimpleIdentityServer.Api.Tests.Common;
+using SimpleIdentityServer.Core.DataAccess;
 using SimpleIdentityServer.Core.DataAccess.Models;
 using SimpleIdentityServer.Core.Helpers;
-
+using SimpleIdentityServer.RateLimitation.Configuration;
+using SimpleIdentityServer.RateLimitation.Constants;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -22,6 +22,8 @@ namespace SimpleIdentityServer.Api.Tests.Specs
     [Binding, Scope(Feature = "GetAccessTokenMultipleTime")]
     public sealed class GetAccessTokenMultipleTimeSpec
     {
+        private readonly IDataSource _dataSource;
+
         private readonly ConfigureWebApi _configureWebApi;
 
         private readonly ISecurityHelper _securityHelper;
@@ -30,14 +32,13 @@ namespace SimpleIdentityServer.Api.Tests.Specs
 
         private List<TooManyRequestResponse> _errors;
 
-        private int _numberOfRequest;
-
         private RateLimitationElement _rateLimitationElement;
 
         private HttpStatusCode _httpStatusCode;
 
         public GetAccessTokenMultipleTimeSpec()
         {
+            _dataSource = new FakeDataSource();
             _rateLimitationElement = new RateLimitationElement
             {
                 Name = "PostToken"
@@ -47,7 +48,10 @@ namespace SimpleIdentityServer.Api.Tests.Specs
                 Enabled = true,
                 RateLimitationElement = _rateLimitationElement
             };
-            _configureWebApi = new ConfigureWebApi(fakeGetRateLimitationElementOperation);
+            _configureWebApi = new ConfigureWebApi();
+            _configureWebApi.Container.RegisterInstance<IDataSource>(_dataSource);
+            _configureWebApi.Container.RegisterInstance<IGetRateLimitationElementOperation>(fakeGetRateLimitationElementOperation);
+
             _securityHelper = new SecurityHelper();
             _tokens = new List<GrantedToken>();
             _errors = new List<TooManyRequestResponse>();
@@ -62,7 +66,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
                 Password = _securityHelper.ComputeHash(password)
             };
 
-            _configureWebApi.DataSource.ResourceOwners.Add(resourceOwner);
+            _dataSource.ResourceOwners.Add(resourceOwner);
         }
 
         [Given("a mobile application (.*) is defined")]
@@ -74,7 +78,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
                 AllowedScopes = new List<Scope>()
             };
 
-            _configureWebApi.DataSource.Clients.Add(client);
+            _dataSource.Clients.Add(client);
         }
 
         [Given("allowed number of requests is (.*)")]
@@ -95,35 +99,34 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             var tokenRequests = table.CreateSet<TokenRequest>();
             var responseCacheManager = CacheFactory.GetCacheManager();
             responseCacheManager.Flush();
-            using (var server = TestServer.Create<Startup>())
+
+            var server = _configureWebApi.CreateServer();
+            foreach (var tokenRequest in tokenRequests)
             {
-                foreach (var tokenRequest in tokenRequests)
+                var httpClient = server.HttpClient;
+                var parameter = string.Format(
+                    "grant_type=password&username={0}&password={1}&client_id={2}&scope={3}",
+                    tokenRequest.username,
+                    tokenRequest.password,
+                    tokenRequest.client_id,
+                    tokenRequest.scope);
+                var content = new StringContent(parameter, Encoding.UTF8, "application/x-www-form-urlencoded");
+            
+                var result = httpClient.PostAsync("/api/token", content).Result;
+                _httpStatusCode = result.StatusCode;
+                if (_httpStatusCode == HttpStatusCode.OK)
                 {
-                    var httpClient = server.HttpClient;
-                    var parameter = string.Format(
-                        "grant_type=password&username={0}&password={1}&client_id={2}&scope={3}",
-                        tokenRequest.username,
-                        tokenRequest.password,
-                        tokenRequest.client_id,
-                        tokenRequest.scope);
-                    var content = new StringContent(parameter, Encoding.UTF8, "application/x-www-form-urlencoded");
-
-                    var result = httpClient.PostAsync("/api/token", content).Result;
-                    _httpStatusCode = result.StatusCode;
-                    if (_httpStatusCode == HttpStatusCode.OK)
-                    {
-                        _tokens.Add(result.Content.ReadAsAsync<GrantedToken>().Result);
-                        continue;
-                    }
-
-                    _errors.Add(new TooManyRequestResponse
-                    {
-                        HttpStatusCode = _httpStatusCode,
-                        Message = result.Content.ReadAsAsync<string>().Result,
-                        NumberOfRequests = result.Headers.GetValues(RateLimitationConstants.XRateLimitLimitName).FirstOrDefault(),
-                        NumberOfRemainingRequests = result.Headers.GetValues(RateLimitationConstants.XRateLimitRemainingName).FirstOrDefault()
-                    });
+                    _tokens.Add(result.Content.ReadAsAsync<GrantedToken>().Result);
+                    continue;
                 }
+            
+                _errors.Add(new TooManyRequestResponse
+                {
+                    HttpStatusCode = _httpStatusCode,
+                    Message = result.Content.ReadAsAsync<string>().Result,
+                    NumberOfRequests = result.Headers.GetValues(RateLimitationConstants.XRateLimitLimitName).FirstOrDefault(),
+                    NumberOfRemainingRequests = result.Headers.GetValues(RateLimitationConstants.XRateLimitRemainingName).FirstOrDefault()
+                });
             }
         }
 

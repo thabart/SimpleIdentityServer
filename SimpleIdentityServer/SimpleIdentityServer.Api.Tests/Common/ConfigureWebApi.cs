@@ -1,40 +1,57 @@
-﻿using Microsoft.Practices.Unity;
+﻿using System.Linq;
+using System.Web.Http;
+using System.Web.Http.Filters;
+using Microsoft.Owin.Testing;
+using Microsoft.Practices.EnterpriseLibrary.Caching;
+using Microsoft.Practices.Unity;
 
-using RateLimitation.Configuration;
-
-using SimpleIdentityServer.Core.DataAccess;
+using SimpleIdentityServer.Core.Helpers;
+using SimpleIdentityServer.Core.Operations;
+using SimpleIdentityServer.RateLimitation.Configuration;
 
 namespace SimpleIdentityServer.Api.Tests.Common
 {
     public class ConfigureWebApi
     {
+        private readonly UnityContainer _container;
+
         public ConfigureWebApi()
         {
-            DataSource = new FakeDataSource();
-            GetRateLimitationElementOperation = new GetRateLimitationElementOperation();
-            ConfigureUnityContainer();
+            _container = new UnityContainer();
+            _container.RegisterType<ICacheManager, CacheManager>();
+            _container.RegisterType<ISecurityHelper, SecurityHelper>();
+            _container.RegisterType<ITokenHelper, TokenHelper>();
+            _container.RegisterType<IValidatorHelper, ValidatorHelper>();
+            _container
+                .RegisterType<IGetTokenByResourceOwnerCredentialsGrantType, GetTokenByResourceOwnerCredentialsGrantType>
+                ();
         }
 
-        public ConfigureWebApi(IGetRateLimitationElementOperation getRateLimitationElementOperation)
+        public UnityContainer Container
         {
-            GetRateLimitationElementOperation = getRateLimitationElementOperation;
-            DataSource = new FakeDataSource();
-            ConfigureUnityContainer();
+            get { return _container; }
         }
-
-        public IDataSource DataSource { get; private set; }
 
         public IGetRateLimitationElementOperation GetRateLimitationElementOperation { get; private set; }
 
-        private void ConfigureUnityContainer()
+        public TestServer CreateServer()
         {
-            UnityConfig.SetRegisterDependenciesCallback(RegisterFakeDependencies);
+            return TestServer.Create(app =>
+            {
+                var configuration = new HttpConfiguration();
+                RegisterFilterInjector(configuration, _container);
+                configuration.DependencyResolver = new UnityResolver(_container);
+                WebApiConfig.Register(configuration, app);
+            });
         }
 
-        private void RegisterFakeDependencies(UnityContainer container)
+        private static void RegisterFilterInjector(HttpConfiguration config, IUnityContainer container)
         {
-            container.RegisterInstance<IDataSource>(DataSource);
-            container.RegisterInstance<IGetRateLimitationElementOperation>(GetRateLimitationElementOperation);
+            //Register the filter injector
+            var providers = config.Services.GetFilterProviders().ToList();
+            var defaultprovider = providers.Single(i => i is ActionDescriptorFilterProvider);
+            config.Services.Remove(typeof(IFilterProvider), defaultprovider);
+            config.Services.Add(typeof(IFilterProvider), new UnityFilterProvider(container));
         }
     }
 }

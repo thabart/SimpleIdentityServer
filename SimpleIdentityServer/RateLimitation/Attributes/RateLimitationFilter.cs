@@ -5,13 +5,14 @@ using System.Net.Http;
 using System.Web.Http.Filters;
 
 using Microsoft.Practices.EnterpriseLibrary.Caching;
-using RateLimitation.Models;
-using RateLimitation.Constants;
-using RateLimitation.Configuration;
 using Microsoft.Practices.Unity;
-using System.Web.Http.Controllers;
 
-namespace RateLimitation.Attributes
+using System.Web.Http.Controllers;
+using SimpleIdentityServer.RateLimitation.Configuration;
+using SimpleIdentityServer.RateLimitation.Constants;
+using SimpleIdentityServer.RateLimitation.Models;
+
+namespace SimpleIdentityServer.RateLimitation.Attributes
 {
     public class RateLimitationFilter : ActionFilterAttribute
     {
@@ -31,7 +32,6 @@ namespace RateLimitation.Attributes
         /// <summary>
         /// Configure the rate limitation via configuration file.
         /// </summary>
-        /// <param name="rateLimitationElementName"></param>
         public RateLimitationFilter()
         {
             _isEnabled = true;
@@ -123,7 +123,6 @@ namespace RateLimitation.Attributes
             var today = DateTime.UtcNow;
             var responseCacheManager = CacheFactory.GetCacheManager();
             var owinContext = httpActionExecutedContext.Request.GetOwinContext();
-            var request = httpActionExecutedContext.Request;
             var ipAdress = owinContext.Request.RemoteIpAddress;
             var actionContext = httpActionExecutedContext.ActionContext;
             var actionName = actionContext.ActionDescriptor.ActionName;

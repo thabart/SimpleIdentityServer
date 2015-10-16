@@ -7,8 +7,8 @@
     <ProjectGuid>{73D63CC4-559C-47D1-8FBA-9EF117E7635D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RateLimitation</RootNamespace>
-    <AssemblyName>RateLimitation</AssemblyName>
+    <RootNamespace>SimpleIdentityServer.RateLimitation</RootNamespace>
+    <AssemblyName>SimpleIdentityServer.RateLimitation</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -72,6 +72,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -101,12 +102,18 @@
     <Compile Include="Configuration\RateLimitationSection.cs" />
     <Compile Include="Constants\Constants.cs" />
     <Compile Include="Models\CacheableResponse.cs" />
+    <Compile Include="ModuleInit.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\SimpleIdentityServer.Common\SimpleIdentityServer.Common.csproj">
+      <Project>{fc7dc959-c366-473c-a95a-fa16d5c71597}</Project>
+      <Name>SimpleIdentityServer.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

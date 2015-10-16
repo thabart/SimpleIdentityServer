@@ -13,6 +13,13 @@ namespace SimpleIdentityServerClient
 
     public class IdentityServerClient : IIdentityServerClient
     {
+
+
+        public IdentityServerClient()
+        {
+            
+        }
+
         public async Task<GrantedToken> GetAccessTokenViaResourceOwnerGrantTypeAsync()
         {
             return null;

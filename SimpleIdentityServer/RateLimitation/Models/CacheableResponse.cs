@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RateLimitation.Models
+namespace SimpleIdentityServer.RateLimitation.Models
 {
     public class CacheableResponse
     {

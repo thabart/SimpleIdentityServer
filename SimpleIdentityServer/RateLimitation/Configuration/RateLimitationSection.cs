@@ -1,12 +1,12 @@
 ﻿using System.Configuration;
 
-namespace RateLimitation.Configuration
+namespace SimpleIdentityServer.RateLimitation.Configuration
 {
     public class RateLimitationSection : ConfigurationSection
     {
         public const string SectionName = "RateLimitationSection";
 
-        [ConfigurationProperty("isEnabled", DefaultValue = false, IsRequired = false)]
+        [ConfigurationProperty("isEnabled", DefaultValue = true, IsRequired = false)]
         public bool IsEnabled
         {
             get
