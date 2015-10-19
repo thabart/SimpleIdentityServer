@@ -107,7 +107,7 @@ namespace SimpleIdentityServer.Core.Helpers
             if (redirectionUrl == null)
             {
                 throw new IdentityServerException(
-                    ErrorCodes.InvalidRequestCode,
+                    ErrorCodes.InvalidRequestUriCode,
                     string.Format(ErrorDescriptions.RedirectUrlIsNotValid, redirectionUrl));
             }
 

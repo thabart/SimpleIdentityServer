@@ -36,6 +36,13 @@ namespace SimpleIdentityServer.Core.Operations
                 var client = _validatorHelper.ValidateExistingClient(parameter.ClientId);
                 _validatorHelper.ValidateAllowedRedirectionUrl(parameter.RedirectUrl, client);
                 var allowedScopes = _validatorHelper.ValidateAllowedScopes(parameter.Scope, client);
+                if (!allowedScopes.Contains("openid"))
+                {
+                    throw new IdentityServerExceptionWithState(
+                        ErrorCodes.InvalidRequestUriCode,
+                        string.Format(ErrorDescriptions.TheScopesNeedToBeSpecified, "openid"),
+                        parameter.State);
+                }
 
             }
             catch (IdentityServerException ex)

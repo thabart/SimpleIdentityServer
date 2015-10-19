@@ -13,5 +13,7 @@
         public static string UnSupportedGrantType = "unsupported_grant_type";
 
         public static string InvalidScope = "invalid_scope";
+
+        public static string InvalidRequestUriCode = "invalid_request_uri";
     }
 }

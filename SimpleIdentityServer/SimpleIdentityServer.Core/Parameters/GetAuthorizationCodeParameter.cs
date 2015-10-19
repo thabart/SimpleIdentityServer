@@ -12,9 +12,9 @@ namespace SimpleIdentityServer.Core.Parameters
 
         public string Nonce { get; set; }
 
-        public string Display { get; set; }
+        public DisplayParameter Display { get; set; }
 
-        public string Prompt { get; set; }
+        public PromptParameter Prompt { get; set; }
 
         public string MaxAge { get; set; }
 

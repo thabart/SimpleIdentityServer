@@ -15,5 +15,7 @@
         public static string ScopesAreNotAllowedOrInvalid = "the scopes {0} are not allowed or invalid";
 
         public static string DuplicateScopeValues = "the scopes {0} are duplicated";
+
+        public static string TheScopesNeedToBeSpecified = "the scopes {0} need to be specified";
     }
 }
