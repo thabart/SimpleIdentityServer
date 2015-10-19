@@ -39,7 +39,7 @@ namespace SimpleIdentityServer.Core.Operations
 
             if (!string.IsNullOrWhiteSpace(parameter.Scope))
             {
-                allowedTokenScopes = _validatorHelper.ValidateAllowedScopes(parameter.Scope, client);
+                allowedTokenScopes = string.Join("", _validatorHelper.ValidateAllowedScopes(parameter.Scope, client));
             }
 
             var generatedToken = _tokenHelper.GenerateToken(allowedTokenScopes);

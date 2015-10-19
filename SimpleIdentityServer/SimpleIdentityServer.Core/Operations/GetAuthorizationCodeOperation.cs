@@ -34,16 +34,9 @@ namespace SimpleIdentityServer.Core.Operations
             {
                 parameter.Validate();
                 var client = _validatorHelper.ValidateExistingClient(parameter.ClientId);
+                _validatorHelper.ValidateAllowedRedirectionUrl(parameter.RedirectUrl, client);
+                var allowedScopes = _validatorHelper.ValidateAllowedScopes(parameter.Scope, client);
 
-                if (!string.IsNullOrWhiteSpace(parameter.Scope))
-                {
-                    _validatorHelper.ValidateAllowedScopes(parameter.Scope, client);
-                }
-
-                if (!string.IsNullOrWhiteSpace(parameter.RedirectUrl))
-                {
-                    _validatorHelper.ValidateAllowedRedirectionUrl(parameter.RedirectUrl, client);
-                }
             }
             catch (IdentityServerException ex)
             {

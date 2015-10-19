@@ -1,7 +1,7 @@
 ﻿using SimpleIdentityServer.Core.DataAccess;
 using SimpleIdentityServer.Core.DataAccess.Models;
 using SimpleIdentityServer.Core.Errors;
-
+using System.Collections.Generic;
 using System.Linq;
 
 using System.Text.RegularExpressions;
@@ -10,7 +10,7 @@ namespace SimpleIdentityServer.Core.Helpers
 {
     public interface IValidatorHelper
     {
-        string ValidateAllowedScopes(string scope, Client client);
+        List<string> ValidateAllowedScopes(string scope, Client client);
 
         Client ValidateExistingClient(string clientId);
 
@@ -33,9 +33,9 @@ namespace SimpleIdentityServer.Core.Helpers
             _securityHelper = securityHelper;
         }
 
-        public string ValidateAllowedScopes(string scope, Client client)
+        public List<string> ValidateAllowedScopes(string scope, Client client)
         {
-            var result = string.Empty;
+            var result = new List<string>();
             if (!ValidateScope(scope))
             {
                 throw new IdentityServerException(
@@ -65,7 +65,7 @@ namespace SimpleIdentityServer.Core.Helpers
                         string.Format(ErrorDescriptions.ScopesAreNotAllowedOrInvalid, string.Join(",", scopesNotAllowedOrInvalid)));
                 }
 
-                result = string.Join(" ", scopes);
+                result = scopes;
             }
 
             return result;

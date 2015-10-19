@@ -8,6 +8,24 @@ namespace SimpleIdentityServer.Core.Parameters
 
         public string State { get; set; }
 
+        public string ResponseMode { get; set; }
+
+        public string Nonce { get; set; }
+
+        public string Display { get; set; }
+
+        public string Prompt { get; set; }
+
+        public string MaxAge { get; set; }
+
+        public string UiLocales { get; set; }
+
+        public string IdTokenHint { get; set; }
+        
+        public string LoginHint { get; set; }
+
+        public string AcrValues { get; set; }
+
         public override void Validate()
         {
             if (string.IsNullOrWhiteSpace(Scope))
@@ -22,6 +40,13 @@ namespace SimpleIdentityServer.Core.Parameters
                 throw new IdentityServerException(
                     ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.MissingParameter, "clientId"));
+            }
+            
+            if (string.IsNullOrWhiteSpace(RedirectUrl))
+            {
+                throw new IdentityServerException(
+                    ErrorCodes.InvalidRequestCode,
+                    string.Format(ErrorDescriptions.MissingParameter, "redirect_uri"));
             }
         }
     }
