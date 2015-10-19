@@ -11,18 +11,34 @@ namespace SimpleIdentityServer.Api.Attributes
     {
         public override void OnException(HttpActionExecutedContext actionExecutedContext)
         {
-            var exception = actionExecutedContext.Exception as IdentityServerException;
-            if (exception != null)
+            var identityServerExceptionWithState = actionExecutedContext.Exception as IdentityServerExceptionWithState;
+            if (identityServerExceptionWithState != null)
             {
-                var error = new ErrorResponse
+                var error = new ErrorResponseWithState
                 {
-                    error = exception.Code,
-                    error_description = exception.Message
+                    state = identityServerExceptionWithState.State
                 };
 
+                PopulateError(error, identityServerExceptionWithState);
+                var response = actionExecutedContext.Request.CreateResponse(HttpStatusCode.BadRequest, error);
+                actionExecutedContext.Response = response;
+                return;
+            }
+
+            var identityServerException = actionExecutedContext.Exception as IdentityServerException;
+            if (identityServerException != null)
+            {
+                var error = new ErrorResponse();
+                PopulateError(error, identityServerException);
                 var response = actionExecutedContext.Request.CreateResponse(HttpStatusCode.BadRequest, error);
                 actionExecutedContext.Response = response;
             }
+        }
+
+        private static void PopulateError(ErrorResponse errorResponse, IdentityServerException exception)
+        {
+            errorResponse.error = exception.Code;
+            errorResponse.error_description = exception.Message;
         }
     }
 }

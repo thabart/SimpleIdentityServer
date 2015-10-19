@@ -9,6 +9,11 @@ namespace SimpleIdentityServer.Core.Errors
             Code = code;
         }
 
+        public IdentityServerException(string code, string message, Exception innerException) : base(message, innerException)
+        {
+            Code = code;
+        }
+
         public string Code { get; private set; }
     }
 }

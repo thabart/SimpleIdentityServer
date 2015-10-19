@@ -191,10 +191,14 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Attributes\IdentityServerExceptionFilter.cs" />
     <Compile Include="Attributes\SwaggerOperationAttribute.cs" />
+    <Compile Include="Controllers\AuthorizationController.cs" />
     <Compile Include="Controllers\TokenController.cs" />
+    <Compile Include="DTOs\Request\AuthorizationRequest.cs" />
+    <Compile Include="DTOs\Request\ResponseType.cs" />
     <Compile Include="DTOs\Request\TokenRequest.cs" />
     <Compile Include="DTOs\Request\GrantTypeRequest.cs" />
     <Compile Include="DTOs\Response\ErrorResponse.cs" />
+    <Compile Include="DTOs\Response\ErrorResponseWithState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -215,7 +219,7 @@
   <ItemGroup>
     <ProjectReference Include="..\RateLimitation\SimpleIdentityServer.RateLimitation.csproj">
       <Project>{73d63cc4-559c-47d1-8fba-9ef117e7635d}</Project>
-      <Name>SimpleIdentityServer.RateLimitation</Name>
+      <Name>RateLimitation</Name>
     </ProjectReference>
     <ProjectReference Include="..\SimpleIdentityServer.Common\SimpleIdentityServer.Common.csproj">
       <Project>{fc7dc959-c366-473c-a95a-fa16d5c71597}</Project>

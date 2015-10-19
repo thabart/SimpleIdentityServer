@@ -7,5 +7,7 @@ namespace SimpleIdentityServer.Core.DataAccess.Models
         public string ClientId { get; set; }
 
         public ICollection<Scope> AllowedScopes { get; set; }
+
+        public ICollection<RedirectionUrl> RedirectionUrls { get; set; }
     }
 }

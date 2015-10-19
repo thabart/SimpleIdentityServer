@@ -6,6 +6,7 @@ using SimpleIdentityServer.Core.DataAccess.Models;
 
 using SimpleIdentityServer.Api.Attributes;
 using SimpleIdentityServer.RateLimitation.Attributes;
+using SimpleIdentityServer.Core.Parameters;
 
 namespace SimpleIdentityServer.Api.Controllers
 {
@@ -28,11 +29,15 @@ namespace SimpleIdentityServer.Api.Controllers
             switch (tokenRequest.grant_type)
             {
                 case GrantTypeRequest.password:
-                    result = _getTokenByResourceOwnerCredentialsGrantType.Execute(
-                        tokenRequest.username, 
-                        tokenRequest.password, 
-                        tokenRequest.client_id,
-                        tokenRequest.scope);
+                    var parameter = new GetAccessTokenWithResourceOwnerCredentialsParameter
+                    {
+                        ClientId = tokenRequest.client_id,
+                        UserName = tokenRequest.username,
+                        Password = tokenRequest.password,
+                        Scope = tokenRequest.scope
+                    };
+
+                    result = _getTokenByResourceOwnerCredentialsGrantType.Execute(parameter);
                     break;
             }
 
