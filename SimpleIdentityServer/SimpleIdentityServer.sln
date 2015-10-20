@@ -1,19 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.Api", "SimpleIdentityServer\SimpleIdentityServer.Api.csproj", "{F7815B84-F5C1-474B-BB65-90C4F5BBB397}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01. Core", "01. Core", "{0FFC0310-E0D1-4825-8427-8D09F9719AC7}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02. Host", "02. Host", "{52E4BD73-432A-462A-BC9A-8493301FC6C2}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "03. Host Layer", "03. Host Layer", "{52E4BD73-432A-462A-BC9A-8493301FC6C2}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "05. Tests", "05. Tests", "{C5C72E14-0135-478A-9E2D-B7BD81692C95}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "06. Tests", "06. Tests", "{C5C72E14-0135-478A-9E2D-B7BD81692C95}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.Core", "SimpleIdentityServer.Core\SimpleIdentityServer.Core.csproj", "{3D519F94-39F1-45F5-B080-B2D719021A10}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.DataAccess", "SimpleIdentityServer.DataAccess\SimpleIdentityServer.DataAccess.csproj", "{BAD7131C-D6BC-4214-BB87-C703F58208CB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.DataAccess.SqlServer", "SimpleIdentityServer.DataAccess\SimpleIdentityServer.DataAccess.SqlServer.csproj", "{BAD7131C-D6BC-4214-BB87-C703F58208CB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.DataAccess.Fake", "SimpleIdentityServer.DataAccess.Fake\SimpleIdentityServer.DataAccess.Fake.csproj", "{7B5C6FF2-994B-4A4C-80F3-09F682E34979}"
 EndProject
@@ -25,19 +25,21 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.Api.Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.RateLimitation", "RateLimitation\SimpleIdentityServer.RateLimitation.csproj", "{73D63CC4-559C-47D1-8FBA-9EF117E7635D}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "03. Client", "03. Client", "{59B24293-651A-454E-BF97-286BF8D7255D}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "04. Client", "04. Client", "{59B24293-651A-454E-BF97-286BF8D7255D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServerClient", "SimpleIdentityServerClient\SimpleIdentityServerClient.csproj", "{28D047DC-1A85-4F62-8720-05DCF5D7A534}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SwaggerLibrary", "SwaggerLibrary\SwaggerLibrary.csproj", "{34939EE2-AAC3-4DDD-B12D-0965468504D4}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "04. Common", "04. Common", "{57DD4651-A25F-472F-930C-4C6189F43B72}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "05. Common", "05. Common", "{57DD4651-A25F-472F-930C-4C6189F43B72}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.Common", "SimpleIdentityServer.Common\SimpleIdentityServer.Common.csproj", "{FC7DC959-C366-473C-A95A-FA16D5C71597}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "03. Integration Tests", "03. Integration Tests", "{9A27F1E3-D0E9-4D81-8AF2-1B0278F01871}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.Client.Test", "SimpleIdentityServer.Client.Test\SimpleIdentityServer.Client.Test.csproj", "{F305D1AD-8780-42B2-963D-A1FE9B53912F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02. Data Access Layer", "02. Data Access Layer", "{9E0D1075-1513-4CE5-99A5-AC92E84B126D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -92,8 +94,8 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{F7815B84-F5C1-474B-BB65-90C4F5BBB397} = {52E4BD73-432A-462A-BC9A-8493301FC6C2}
 		{3D519F94-39F1-45F5-B080-B2D719021A10} = {0FFC0310-E0D1-4825-8427-8D09F9719AC7}
-		{BAD7131C-D6BC-4214-BB87-C703F58208CB} = {0FFC0310-E0D1-4825-8427-8D09F9719AC7}
-		{7B5C6FF2-994B-4A4C-80F3-09F682E34979} = {0FFC0310-E0D1-4825-8427-8D09F9719AC7}
+		{BAD7131C-D6BC-4214-BB87-C703F58208CB} = {9E0D1075-1513-4CE5-99A5-AC92E84B126D}
+		{7B5C6FF2-994B-4A4C-80F3-09F682E34979} = {9E0D1075-1513-4CE5-99A5-AC92E84B126D}
 		{5C423D4F-E2DD-48D7-842C-BC9D3B8576DE} = {C5C72E14-0135-478A-9E2D-B7BD81692C95}
 		{84927D59-26DE-4EE2-A6A7-DCEEA3FE8016} = {C5C72E14-0135-478A-9E2D-B7BD81692C95}
 		{0480F5F3-FF5E-4C18-A5F0-CD2D42010CCB} = {84927D59-26DE-4EE2-A6A7-DCEEA3FE8016}

@@ -1,6 +1,6 @@
 ﻿namespace SimpleIdentityServer.Common
 {
-    public interface IModuleRegistrar
+    public interface IModuleRegister
     {
         void RegisterType<TFrom, TTo>() where TTo : TFrom;
 

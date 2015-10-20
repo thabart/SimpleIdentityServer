@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Core.DataAccess.Models
+﻿namespace SimpleIdentityServer.Core.Models
 {
     public class RedirectionUrl
     {

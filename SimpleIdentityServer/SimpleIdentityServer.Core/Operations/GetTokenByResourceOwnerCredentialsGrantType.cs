@@ -1,7 +1,8 @@
-﻿using SimpleIdentityServer.Core.DataAccess;
-using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.DataAccess.Models;
+﻿using SimpleIdentityServer.Core.Helpers;
+using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
+using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Validators;
 
 namespace SimpleIdentityServer.Core.Operations
 {
@@ -12,39 +13,46 @@ namespace SimpleIdentityServer.Core.Operations
 
     public class GetTokenByResourceOwnerCredentialsGrantType : IGetTokenByResourceOwnerCredentialsGrantType
     {
-        private readonly IDataSource _dataSource;
+        private readonly IGrantedTokenRepository _grantedTokenRepository;
 
         private readonly ITokenHelper _tokenHelper;
+        
+        private readonly IClientValidator _clientValidator;
 
-        private readonly IValidatorHelper _validatorHelper;
+        private readonly IScopeValidator _scopeValidator;
+
+        private readonly IResourceOwnerValidator _resourceOwnerValidator;
 
         public GetTokenByResourceOwnerCredentialsGrantType(
-            IDataSource dataSource,
+            IGrantedTokenRepository grantedTokenRepository,
             ITokenHelper tokenHelper,
-            IValidatorHelper validatorHelper)
+            IClientValidator clientValidator,
+            IScopeValidator scopeValidator,
+            IResourceOwnerValidator resourceOwnerValidator)
         {
-            _dataSource = dataSource;
+            _grantedTokenRepository = grantedTokenRepository;
             _tokenHelper = tokenHelper;
-            _validatorHelper = validatorHelper;
+            _clientValidator = clientValidator;
+            _scopeValidator = scopeValidator;
+            _resourceOwnerValidator = resourceOwnerValidator;
         }
 
         public GrantedToken Execute(
             GetAccessTokenWithResourceOwnerCredentialsParameter parameter)
         {
             parameter.Validate();
-            var client = _validatorHelper.ValidateExistingClient(parameter.ClientId);
-            _validatorHelper.ValidateResourceOwner(parameter.UserName, parameter.Password);
+            var client = _clientValidator.ValidateClientExist(parameter.ClientId);
+            _resourceOwnerValidator.ValidateResourceOwnerCredentials(parameter.UserName, parameter.Password);
 
             var allowedTokenScopes = string.Empty;
 
             if (!string.IsNullOrWhiteSpace(parameter.Scope))
             {
-                allowedTokenScopes = string.Join("", _validatorHelper.ValidateAllowedScopes(parameter.Scope, client));
+                allowedTokenScopes = string.Join(" ", _scopeValidator.ValidateAllowedScopes(parameter.Scope, client));
             }
 
             var generatedToken = _tokenHelper.GenerateToken(allowedTokenScopes);
-            _dataSource.GrantedTokens.Add(generatedToken);
-            _dataSource.SaveChanges();
+            _grantedTokenRepository.Insert(generatedToken);
 
             return generatedToken;
         }

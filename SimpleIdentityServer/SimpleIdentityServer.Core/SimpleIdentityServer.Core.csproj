@@ -64,6 +64,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.Linq" />
@@ -77,20 +78,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataAccess\IDataSource.cs" />
-    <Compile Include="DataAccess\Models\Client.cs" />
-    <Compile Include="DataAccess\Models\GrantedToken.cs" />
-    <Compile Include="DataAccess\Models\RedirectionUrl.cs" />
-    <Compile Include="DataAccess\Models\ResourceOwner.cs" />
-    <Compile Include="DataAccess\Models\Scope.cs" />
+    <Compile Include="Models\Client.cs" />
+    <Compile Include="Models\GrantedToken.cs" />
+    <Compile Include="Models\RedirectionUrl.cs" />
+    <Compile Include="Models\ResourceOwner.cs" />
+    <Compile Include="Models\Scope.cs" />
     <Compile Include="Errors\ErrorCodes.cs" />
     <Compile Include="Errors\ErrorDescriptions.cs" />
-    <Compile Include="Errors\IdentityServerException.cs" />
-    <Compile Include="Errors\IdentityServerExceptionWithState.cs" />
+    <Compile Include="Exceptions\IdentityServerException.cs" />
+    <Compile Include="Exceptions\IdentityServerExceptionWithState.cs" />
     <Compile Include="Helpers\SecurityHelper.cs" />
     <Compile Include="Helpers\TokenHelper.cs" />
-    <Compile Include="Helpers\ValidatorHelper.cs" />
     <Compile Include="Model.cs" />
+    <Compile Include="ModuleInit.cs" />
     <Compile Include="Operations\GetAuthorizationCodeOperation.cs" />
     <Compile Include="Operations\GetTokenByResourceOwnerCredentialsGrantType.cs" />
     <Compile Include="Parameters\DisplayParameter.cs" />
@@ -99,10 +99,24 @@
     <Compile Include="Parameters\GetAccessTokenWithResourceOwnerCredentialsParameter.cs" />
     <Compile Include="Parameters\PromptParameter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\IClientRepository.cs" />
+    <Compile Include="Repositories\IGrantedTokenRepository.cs" />
+    <Compile Include="Repositories\IResourceOwnerRepository.cs" />
+    <Compile Include="Repositories\IScopeRepository.cs" />
+    <Compile Include="Validators\ClientValidator.cs" />
+    <Compile Include="Validators\ResourceOwnerValidator.cs" />
+    <Compile Include="Validators\ScopeValidator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\SimpleIdentityServer.Common\SimpleIdentityServer.Common.csproj">
+      <Project>{fc7dc959-c366-473c-a95a-fa16d5c71597}</Project>
+      <Name>SimpleIdentityServer.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

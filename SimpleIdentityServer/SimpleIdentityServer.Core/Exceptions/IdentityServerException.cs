@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SimpleIdentityServer.Core.Errors
+namespace SimpleIdentityServer.Core.Exceptions
 {
     public class IdentityServerException : Exception
     {

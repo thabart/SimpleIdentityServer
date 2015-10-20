@@ -1,17 +1,18 @@
 ﻿using System.ComponentModel.Composition;
 
 using SimpleIdentityServer.Common;
-using SimpleIdentityServer.Core.DataAccess;
-using SimpleIdentityServer.Core.Helpers;
+using SimpleIdentityServer.DataAccess.Fake.Repositories;
+using SimpleIdentityServer.Core.Repositories;
 
 namespace SimpleIdentityServer.DataAccess.Fake
 {
     [Export(typeof(IModule))]
     public class ModuleInit : IModule
     {
-        public void Initialize(IModuleRegistrar registrar)
+        public void Initialize(IModuleRegister register)
         {
-            registrar.RegisterInstance<IDataSource>(new FakeDataSource(new SecurityHelper()));
+            register.RegisterType<IClientRepository, FakeClientRepository>();
+            register.RegisterType<IScopeRepository, FakeScopeRepository>();
         }
     }
 }

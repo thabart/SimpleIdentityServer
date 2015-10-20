@@ -8,6 +8,7 @@ using Microsoft.Practices.Unity;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Operations;
 using SimpleIdentityServer.RateLimitation.Configuration;
+using SimpleIdentityServer.Core.Validators;
 
 namespace SimpleIdentityServer.Api.Tests.Common
 {
@@ -21,7 +22,9 @@ namespace SimpleIdentityServer.Api.Tests.Common
             _container.RegisterType<ICacheManager, CacheManager>();
             _container.RegisterType<ISecurityHelper, SecurityHelper>();
             _container.RegisterType<ITokenHelper, TokenHelper>();
-            _container.RegisterType<IValidatorHelper, ValidatorHelper>();
+            _container.RegisterType<IClientValidator, ClientValidator>();
+            _container.RegisterType<IResourceOwnerValidator, ResourceOwnerValidator>();
+            _container.RegisterType<IScopeValidator, ScopeValidator>();
             _container
                 .RegisterType<IGetTokenByResourceOwnerCredentialsGrantType, GetTokenByResourceOwnerCredentialsGrantType>
                 ();

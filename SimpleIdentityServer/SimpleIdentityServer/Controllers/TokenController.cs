@@ -2,11 +2,11 @@
 
 using SimpleIdentityServer.Api.DTOs.Request;
 using SimpleIdentityServer.Core.Operations;
-using SimpleIdentityServer.Core.DataAccess.Models;
 
 using SimpleIdentityServer.Api.Attributes;
 using SimpleIdentityServer.RateLimitation.Attributes;
 using SimpleIdentityServer.Core.Parameters;
+using SimpleIdentityServer.Core.Models;
 
 namespace SimpleIdentityServer.Api.Controllers
 {

@@ -52,9 +52,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FakeDataSource.cs" />
-    <Compile Include="FakeDbSet.cs" />
+    <Compile Include="Models\Client.cs" />
+    <Compile Include="Models\RedirectionUrl.cs" />
+    <Compile Include="Models\ResourceOwner.cs" />
+    <Compile Include="Models\Scope.cs" />
     <Compile Include="ModuleInit.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\FakeClientRepository.cs" />
+    <Compile Include="Repositories\FakeResourceOwnerRepository.cs" />
+    <Compile Include="Repositories\FakeScopeRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SimpleIdentityServer.Common\SimpleIdentityServer.Common.csproj">
@@ -70,6 +76,7 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

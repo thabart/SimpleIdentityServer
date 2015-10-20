@@ -1,113 +1,68 @@
-﻿using System.Data.Entity;
-
-using SimpleIdentityServer.Core.DataAccess;
-using SimpleIdentityServer.Core.DataAccess.Models;
-using SimpleIdentityServer.Core.Helpers;
+﻿using SimpleIdentityServer.DataAccess.Fake.Models;
 using System.Collections.Generic;
 
 namespace SimpleIdentityServer.DataAccess.Fake
 {
-    public class FakeDataSource : IDataSource
+    public class FakeDataSource
     {
-        private readonly ISecurityHelper _securityHelper;
+        private static FakeDataSource _instance = null;
 
-        private FakeDbSet<GrantedToken> _grantedTokens;
+        private readonly List<Client> _clients;
 
-        private FakeDbSet<ResourceOwner> _resourceOwners;
+        private readonly List<RedirectionUrl> _redirectionUrls;
 
-        private FakeDbSet<Client> _clients;
+        private readonly List<ResourceOwner> _resourceOwners;
 
-        private FakeDbSet<Scope> _scopes;
+        private List<Scope> _scopes;
 
-        public FakeDataSource(ISecurityHelper securityHelper)
+        private FakeDataSource()
         {
-            _securityHelper = securityHelper;
-            _grantedTokens = new FakeDbSet<GrantedToken>();
-            _resourceOwners = new FakeDbSet<ResourceOwner>();
-            _clients = new FakeDbSet<Client>();
-            _scopes = new FakeDbSet<Scope>();
-
-            Initialize();
+            _clients = new List<Client>();
+            _redirectionUrls = new List<RedirectionUrl>();
+            _resourceOwners = new List<ResourceOwner>();
+            _scopes = new List<Scope>();
         }
 
-        public IDbSet<GrantedToken> GrantedTokens
+        public static FakeDataSource Instance()
         {
-            get
+            if (_instance == null)
             {
-                return _grantedTokens;
+                _instance = new FakeDataSource();
             }
 
-            set
-            {
-                _grantedTokens = (FakeDbSet<GrantedToken>)value;
-            }
+            return _instance;
         }
 
-        public IDbSet<ResourceOwner> ResourceOwners
-        {
-            get
-            {
-                return _resourceOwners;
-            }
-
-            set
-            {
-                _resourceOwners = (FakeDbSet<ResourceOwner>)value;
-            }
-        }
-
-        public IDbSet<Client> Clients
+        public List<Client> Clients
         {
             get
             {
                 return _clients;
             }
+        }
 
-            set
+        public List<RedirectionUrl> RedirectionUrls
+        {
+            get
             {
-                _clients = (FakeDbSet<Client>)value;
+                return _redirectionUrls;
             }
         }
 
-        public IDbSet<Scope> Scopes
+        public List<ResourceOwner> ResourceOwners
+        {
+            get
+            {
+                return _resourceOwners;
+            }
+        }
+
+        public List<Scope> Scopes
         {
             get
             {
                 return _scopes;
             }
-            set
-            {
-                _scopes = (FakeDbSet<Scope>)value;
-            }
-        }
-
-        public void SaveChanges()
-        {
-        }
-
-        private void Initialize()
-        {
-            var resourceOwner = new ResourceOwner
-            {
-                Id = "administrator",
-                Password = _securityHelper.ComputeHash("administrator")
-            };
-            var scope = new Scope
-            {
-                Name = "firstScope"
-            };
-            var client = new Client
-            {
-                ClientId = "WebSite",
-                AllowedScopes = new List<Scope>
-                {
-                    scope
-                }
-            };
-
-            _resourceOwners.Add(resourceOwner);
-            _clients.Add(client);
-            _scopes.Add(scope);
         }
     }
 }

@@ -50,8 +50,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IModule.cs" />
-    <Compile Include="IModuleRegistrar.cs" />
-    <Compile Include="ModuleRegistrar.cs" />
+    <Compile Include="IModuleRegister.cs" />
+    <Compile Include="ModuleRegister.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

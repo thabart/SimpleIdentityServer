@@ -1,6 +1,6 @@
-﻿namespace SimpleIdentityServer.Core.DataAccess.Models
+﻿namespace SimpleIdentityServer.DataAccess.Fake.Models
 {
-    public partial class ResourceOwner
+    public class ResourceOwner
     {
         public string Id { get; set; }
 

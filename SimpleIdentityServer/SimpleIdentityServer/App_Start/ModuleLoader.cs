@@ -28,7 +28,7 @@ namespace SimpleIdentityServer.Api
                         var exports = compositionContainer.GetExports(importDef);
                         var modules =
                             exports.Select(export => export.Value as IModule).Where(m => m != null);
-                        var registrar = new ModuleRegistrar(container);
+                        var registrar = new ModuleRegister(container);
                         foreach (var module in modules)
                         {
                             module.Initialize(registrar);

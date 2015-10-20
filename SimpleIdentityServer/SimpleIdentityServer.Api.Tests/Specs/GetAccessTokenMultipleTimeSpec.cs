@@ -3,8 +3,6 @@ using Microsoft.Practices.EnterpriseLibrary.Caching;
 using NUnit.Framework;
 using SimpleIdentityServer.Api.DTOs.Request;
 using SimpleIdentityServer.Api.Tests.Common;
-using SimpleIdentityServer.Core.DataAccess;
-using SimpleIdentityServer.Core.DataAccess.Models;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.RateLimitation.Configuration;
 using SimpleIdentityServer.RateLimitation.Constants;
@@ -17,18 +15,20 @@ using System.Threading;
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
 
+using MODELS = SimpleIdentityServer.DataAccess.Fake.Models;
+using DOMAINS = SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.DataAccess.Fake;
+
 namespace SimpleIdentityServer.Api.Tests.Specs
 {
     [Binding, Scope(Feature = "GetAccessTokenMultipleTime")]
     public sealed class GetAccessTokenMultipleTimeSpec
     {
-        private readonly IDataSource _dataSource;
-
         private readonly ConfigureWebApi _configureWebApi;
 
         private readonly ISecurityHelper _securityHelper;
 
-        private List<GrantedToken> _tokens;
+        private List<DOMAINS.GrantedToken> _tokens;
 
         private List<TooManyRequestResponse> _errors;
 
@@ -38,7 +38,6 @@ namespace SimpleIdentityServer.Api.Tests.Specs
 
         public GetAccessTokenMultipleTimeSpec()
         {
-            _dataSource = new FakeDataSource();
             _rateLimitationElement = new RateLimitationElement
             {
                 Name = "PostToken"
@@ -49,36 +48,35 @@ namespace SimpleIdentityServer.Api.Tests.Specs
                 RateLimitationElement = _rateLimitationElement
             };
             _configureWebApi = new ConfigureWebApi();
-            _configureWebApi.Container.RegisterInstance<IDataSource>(_dataSource);
             _configureWebApi.Container.RegisterInstance<IGetRateLimitationElementOperation>(fakeGetRateLimitationElementOperation);
 
             _securityHelper = new SecurityHelper();
-            _tokens = new List<GrantedToken>();
+            _tokens = new List<DOMAINS.GrantedToken>();
             _errors = new List<TooManyRequestResponse>();
         }
 
         [Given("a resource owner with username (.*) and password (.*) is defined")]
         public void GivenResourceOwner(string userName, string password)
         {
-            var resourceOwner = new ResourceOwner
+            var resourceOwner = new MODELS.ResourceOwner
             {
                 Id = userName,
                 Password = _securityHelper.ComputeHash(password)
             };
 
-            _dataSource.ResourceOwners.Add(resourceOwner);
+            FakeDataSource.Instance().ResourceOwners.Add(resourceOwner);
         }
 
         [Given("a mobile application (.*) is defined")]
         public void GivenClient(string clientId)
         {
-            var client = new Client
+            var client = new MODELS.Client
             {
                 ClientId = clientId,
-                AllowedScopes = new List<Scope>()
+                AllowedScopes = new List<MODELS.Scope>()
             };
 
-            _dataSource.Clients.Add(client);
+            FakeDataSource.Instance().Clients.Add(client);
         }
 
         [Given("allowed number of requests is (.*)")]
@@ -116,7 +114,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
                 _httpStatusCode = result.StatusCode;
                 if (_httpStatusCode == HttpStatusCode.OK)
                 {
-                    _tokens.Add(result.Content.ReadAsAsync<GrantedToken>().Result);
+                    _tokens.Add(result.Content.ReadAsAsync<DOMAINS.GrantedToken>().Result);
                     continue;
                 }
             

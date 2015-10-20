@@ -1,7 +1,8 @@
-﻿using SimpleIdentityServer.Core.DataAccess;
-using SimpleIdentityServer.Core.Errors;
+﻿using SimpleIdentityServer.Core.Errors;
+using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Parameters;
+using SimpleIdentityServer.Core.Validators;
 
 namespace SimpleIdentityServer.Core.Operations
 {
@@ -12,20 +13,20 @@ namespace SimpleIdentityServer.Core.Operations
 
     public class GetAuthorizationCodeOperation : IGetAuthorizationCodeOperation
     {
-        private readonly IDataSource _dataSource;
-
         private readonly ITokenHelper _tokenHelper;
 
-        private readonly IValidatorHelper _validatorHelper;
+        private readonly IScopeValidator _scopeValidator;
+        
+        private readonly IClientValidator _clientValidator;
 
         public GetAuthorizationCodeOperation(
-            IDataSource dataSource,
             ITokenHelper tokenHelper,
-            IValidatorHelper validatorHelper)
+            IClientValidator clientValidator,
+            IScopeValidator scopeValidator)
         {
-            _dataSource = dataSource;
             _tokenHelper = tokenHelper;
-            _validatorHelper = validatorHelper;
+            _clientValidator = clientValidator;
+            _scopeValidator = scopeValidator;
         }
 
         public void Execute(GetAuthorizationCodeParameter parameter)
@@ -33,9 +34,9 @@ namespace SimpleIdentityServer.Core.Operations
             try
             {
                 parameter.Validate();
-                var client = _validatorHelper.ValidateExistingClient(parameter.ClientId);
-                _validatorHelper.ValidateAllowedRedirectionUrl(parameter.RedirectUrl, client);
-                var allowedScopes = _validatorHelper.ValidateAllowedScopes(parameter.Scope, client);
+                var client = _clientValidator.ValidateClientExist(parameter.ClientId);
+                _clientValidator.ValidateRedirectionUrl(parameter.RedirectUrl, client);
+                var allowedScopes = _scopeValidator.ValidateAllowedScopes(parameter.Scope, client);
                 if (!allowedScopes.Contains("openid"))
                 {
                     throw new IdentityServerExceptionWithState(

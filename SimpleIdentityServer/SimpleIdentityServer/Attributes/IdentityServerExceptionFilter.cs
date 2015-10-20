@@ -1,5 +1,5 @@
 ﻿using SimpleIdentityServer.Api.DTOs.Response;
-using SimpleIdentityServer.Core.Errors;
+using SimpleIdentityServer.Core.Exceptions;
 
 using System.Net;
 using System.Net.Http;

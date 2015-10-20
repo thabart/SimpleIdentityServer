@@ -1,5 +1,5 @@
 ﻿using System;
-using SimpleIdentityServer.Core.DataAccess.Models;
+using SimpleIdentityServer.Core.Models;
 using System.Text;
 
 namespace SimpleIdentityServer.Core.Helpers

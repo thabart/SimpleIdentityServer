@@ -12,7 +12,5 @@ namespace SimpleIdentityServer.Api.Controllers
         {
             _getAuthorizationCodeOperation = getAuthorizationCodeOperation;
         }
-
-
     }
 }

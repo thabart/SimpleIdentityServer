@@ -1,6 +1,6 @@
-﻿namespace SimpleIdentityServer.Core.DataAccess.Models
+﻿namespace SimpleIdentityServer.Core.Models
 {
-    public partial class GrantedToken
+    public class GrantedToken
     {
         public string AccessToken { get; set; }
 

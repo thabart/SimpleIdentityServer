@@ -9,8 +9,6 @@ using Microsoft.Practices.Unity;
 using NUnit.Framework;
 
 using SimpleIdentityServer.Api.Tests.Common;
-using SimpleIdentityServer.Core.DataAccess;
-using SimpleIdentityServer.Core.DataAccess.Models;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Api.DTOs.Request;
 using SimpleIdentityServer.Api.DTOs.Response;
@@ -18,18 +16,20 @@ using SimpleIdentityServer.RateLimitation.Configuration;
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
 
+using MODELS = SimpleIdentityServer.DataAccess.Fake.Models;
+using DOMAINS = SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.DataAccess.Fake;
+
 namespace SimpleIdentityServer.Api.Tests.Specs
 {
     [Binding, Scope(Feature = "GetAccessTokenWithResourceOwnerGrantType")]
     public sealed class GetAccessTokenWithResourceOwnerGrantTypeSpec
     {
-        private readonly IDataSource _dataSource;
-
         private readonly ConfigureWebApi _configureWebApi;
 
         private readonly ISecurityHelper _securityHelper;
 
-        private GrantedToken _token;
+        private DOMAINS.GrantedToken _token;
 
         private ErrorResponse _errorResponse;
 
@@ -37,14 +37,12 @@ namespace SimpleIdentityServer.Api.Tests.Specs
 
         public GetAccessTokenWithResourceOwnerGrantTypeSpec()
         {
-            _dataSource = new FakeDataSource();
             var fakeGetRateLimitationElementOperation = new FakeGetRateLimitationElementOperation
             {
                 Enabled = false
             };
 
             _configureWebApi = new ConfigureWebApi();
-            _configureWebApi.Container.RegisterInstance<IDataSource>(_dataSource);
             _configureWebApi.Container.RegisterInstance<IGetRateLimitationElementOperation>(fakeGetRateLimitationElementOperation);
             _securityHelper = new SecurityHelper();
         }
@@ -52,50 +50,50 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         [Given("a resource owner with username (.*) and password (.*) is defined")]
         public void GivenResourceOwner(string userName, string password)
         {
-            var resourceOwner = new ResourceOwner
+            var resourceOwner = new MODELS.ResourceOwner
             {
                 Id = userName,
                 Password = _securityHelper.ComputeHash(password)
             };
 
-            _dataSource.ResourceOwners.Add(resourceOwner);
+            FakeDataSource.Instance().ResourceOwners.Add(resourceOwner);
         }
         
         [Given("a mobile application (.*) is defined")]
         public void GivenClient(string clientId)
         {
-            var client = new Client
+            var client = new MODELS.Client
             {
                 ClientId = clientId,
-                AllowedScopes = new List<Scope>()
+                AllowedScopes = new List<MODELS.Scope>()
             };
 
-            _dataSource.Clients.Add(client);
+            FakeDataSource.Instance().Clients.Add(client);
         }
 
         [Given("scopes (.*) are defined")]
         public void GivenScope(List<string> scopes)
         {
             foreach (var scope in scopes) {
-                var record = new Scope
+                var record = new MODELS.Scope
                 {
                     Name = scope
                 };
 
-                _dataSource.Scopes.Add(record);
+                FakeDataSource.Instance().Scopes.Add(record);
             }
         }
 
         [Given("the scopes (.*) are assigned to the client (.*)")]
         public void GivenScopesToTheClients(List<string> scopeNames, string clientId)
         {
-            var client = _dataSource.Clients.SingleOrDefault(c => c.ClientId == clientId);
+            var client = FakeDataSource.Instance().Clients.SingleOrDefault(c => c.ClientId == clientId);
             if (client == null)
             {
                 return;
             }
 
-            var scopes = _dataSource.Scopes;
+            var scopes = FakeDataSource.Instance().Scopes;
             foreach(var scopeName in scopeNames)
             {
                 var storedScope = scopes.SingleOrDefault(s => s.Name == scopeName);
@@ -127,7 +125,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
                 _httpStatusCode = result.StatusCode;
                 if (_httpStatusCode == HttpStatusCode.OK)
                 {
-                    _token = result.Content.ReadAsAsync<GrantedToken>().Result;
+                    _token = result.Content.ReadAsAsync<DOMAINS.GrantedToken>().Result;
                     return;
                 }
 

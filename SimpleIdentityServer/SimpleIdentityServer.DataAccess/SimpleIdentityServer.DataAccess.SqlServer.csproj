@@ -7,8 +7,8 @@
     <ProjectGuid>{BAD7131C-D6BC-4214-BB87-C703F58208CB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SimpleIdentityServer.DataAccess</RootNamespace>
-    <AssemblyName>SimpleIdentityServer.DataAccess</AssemblyName>
+    <RootNamespace>SimpleIdentityServer.DataAccess.SqlServer</RootNamespace>
+    <AssemblyName>SimpleIdentityServer.DataAccess.SqlServer</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -54,7 +54,12 @@
   <ItemGroup>
     <Compile Include="Mappings\ClientMapping.cs" />
     <Compile Include="Model.cs" />
+    <Compile Include="Models\Client.cs" />
+    <Compile Include="Models\RedirectionUrl.cs" />
+    <Compile Include="Models\Scope.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\Clients\ClientRepository.cs" />
+    <Compile Include="Repositories\Scopes\ScopeRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SimpleIdentityServer.Core\SimpleIdentityServer.Core.csproj">
@@ -66,6 +71,7 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

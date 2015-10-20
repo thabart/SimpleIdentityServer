@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Core.Errors
+﻿namespace SimpleIdentityServer.Core.Exceptions
 {
     public class IdentityServerExceptionWithState : IdentityServerException
     {

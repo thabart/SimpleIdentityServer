@@ -2,6 +2,6 @@
 {
     public interface IModule
     {
-        void Initialize(IModuleRegistrar registrar);
+        void Initialize(IModuleRegister register);
     }
 }

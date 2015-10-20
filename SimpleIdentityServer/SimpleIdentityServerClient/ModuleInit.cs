@@ -8,7 +8,7 @@ namespace SimpleIdentityServerClient
     [Export(typeof(IModule))]
     public class ModuleInit : IModule
     {
-        public void Initialize(IModuleRegistrar registrar)
+        public void Initialize(IModuleRegister registrar)
         {
             registrar.RegisterType<IPostTokenOperation, PostTokenOperation>();
         }

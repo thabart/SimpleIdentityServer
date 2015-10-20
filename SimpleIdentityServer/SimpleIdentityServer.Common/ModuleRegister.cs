@@ -2,11 +2,11 @@
 
 namespace SimpleIdentityServer.Common
 {
-    public class ModuleRegistrar : IModuleRegistrar
+    public class ModuleRegister : IModuleRegister
     {
         private readonly IUnityContainer _container;
 
-        public ModuleRegistrar(IUnityContainer container)
+        public ModuleRegister(IUnityContainer container)
         {
             _container = container;
         }

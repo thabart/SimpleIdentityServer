@@ -113,8 +113,6 @@
   <ItemGroup>
     <Compile Include="Common\ConfigureWebApi.cs" />
     <Compile Include="Common\FakeGetRateLimitationElementOperation.cs" />
-    <Compile Include="Common\FakeDataSource.cs" />
-    <Compile Include="Common\FakeDbSet.cs" />
     <Compile Include="Common\TooManyRequestResponse.cs" />
     <Compile Include="Common\Transformations.cs" />
     <Compile Include="Features\GetAccessTokenMultipleTime.feature.cs">
@@ -151,6 +149,10 @@
     <ProjectReference Include="..\SimpleIdentityServer.Core\SimpleIdentityServer.Core.csproj">
       <Project>{3d519f94-39f1-45f5-b080-b2d719021a10}</Project>
       <Name>SimpleIdentityServer.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SimpleIdentityServer.DataAccess.Fake\SimpleIdentityServer.DataAccess.Fake.csproj">
+      <Project>{7b5c6ff2-994b-4a4c-80f3-09f682e34979}</Project>
+      <Name>SimpleIdentityServer.DataAccess.Fake</Name>
     </ProjectReference>
     <ProjectReference Include="..\SimpleIdentityServer\SimpleIdentityServer.Api.csproj">
       <Project>{f7815b84-f5c1-474b-bb65-90c4f5bbb397}</Project>

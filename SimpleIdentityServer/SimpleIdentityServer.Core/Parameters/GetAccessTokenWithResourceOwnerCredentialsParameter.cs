@@ -1,4 +1,5 @@
 ﻿using SimpleIdentityServer.Core.Errors;
+using SimpleIdentityServer.Core.Exceptions;
 
 namespace SimpleIdentityServer.Core.Parameters
 {
