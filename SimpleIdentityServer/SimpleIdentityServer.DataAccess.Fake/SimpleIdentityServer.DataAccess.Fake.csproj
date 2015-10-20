@@ -59,6 +59,7 @@
     <Compile Include="ModuleInit.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\FakeClientRepository.cs" />
+    <Compile Include="Repositories\FakeGrantedTokenRepository.cs" />
     <Compile Include="Repositories\FakeResourceOwnerRepository.cs" />
     <Compile Include="Repositories\FakeScopeRepository.cs" />
   </ItemGroup>

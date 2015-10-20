@@ -13,14 +13,21 @@ namespace SimpleIdentityServer.DataAccess.Fake.Repositories
         public Client GetClientById(string clientId)
         {
             var record = FakeDataSource.Instance().Clients.SingleOrDefault(c => c.ClientId == clientId);
+            if (record == null)
+            {
+                return null;
+            }
+
             var result = new Client
             {
                 ClientId = record.ClientId,
-                AllowedScopes = record.AllowedScopes.Select(r => new Scope
+                AllowedScopes = record.AllowedScopes == null || !record.AllowedScopes.Any() ? null : record.AllowedScopes.Select(r => new Scope
                 {
                     Name = r.Name
                 }).ToList(),
-                RedirectionUrls = record.RedirectionUrls.Select(r => r.Name).ToList()
+                RedirectionUrls = record.RedirectionUrls == null || !record.RedirectionUrls.Any() ? 
+                    null : 
+                    record.RedirectionUrls.Select(r => r.Name).ToList()
             };
 
             return result;

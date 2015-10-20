@@ -13,6 +13,8 @@ namespace SimpleIdentityServer.DataAccess.Fake
         {
             register.RegisterType<IClientRepository, FakeClientRepository>();
             register.RegisterType<IScopeRepository, FakeScopeRepository>();
+            register.RegisterType<IResourceOwnerRepository, FakeResourceOwnerRepository>();
+            register.RegisterType<IGrantedTokenRepository, FakeGrantedTokenRepository>();
         }
     }
 }

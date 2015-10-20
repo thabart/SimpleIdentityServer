@@ -7,20 +7,17 @@ namespace SimpleIdentityServer.DataAccess.Fake
     {
         private static FakeDataSource _instance = null;
 
-        private readonly List<Client> _clients;
+        private List<Client> _clients;
 
-        private readonly List<RedirectionUrl> _redirectionUrls;
+        private List<RedirectionUrl> _redirectionUrls;
 
-        private readonly List<ResourceOwner> _resourceOwners;
+        private List<ResourceOwner> _resourceOwners;
 
         private List<Scope> _scopes;
 
         private FakeDataSource()
         {
-            _clients = new List<Client>();
-            _redirectionUrls = new List<RedirectionUrl>();
-            _resourceOwners = new List<ResourceOwner>();
-            _scopes = new List<Scope>();
+            Init();
         }
 
         public static FakeDataSource Instance()
@@ -63,6 +60,14 @@ namespace SimpleIdentityServer.DataAccess.Fake
             {
                 return _scopes;
             }
+        }
+
+        public void Init()
+        {
+            _clients = new List<Client>();
+            _redirectionUrls = new List<RedirectionUrl>();
+            _resourceOwners = new List<ResourceOwner>();
+            _scopes = new List<Scope>();
         }
     }
 }
