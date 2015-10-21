@@ -7,9 +7,9 @@ namespace SimpleIdentityServer.RateLimitation
     [Export(typeof(IModule))]
     public class ModuleInit : IModule
     {
-        public void Initialize(IModuleRegister registrar)
+        public void Initialize(IModuleRegister register)
         {
-            registrar.RegisterType<IGetRateLimitationElementOperation, GetRateLimitationElementOperation>();
+            register.RegisterType<IGetRateLimitationElementOperation, GetRateLimitationElementOperation>();
         }
     }
 }

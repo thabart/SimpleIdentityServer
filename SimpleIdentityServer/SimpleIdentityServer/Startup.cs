@@ -2,6 +2,8 @@
 
 using Microsoft.Owin;
 using Owin;
+using SimpleIdentityServer.Api.Configuration;
+using SimpleIdentityServer.DataAccess.Fake;
 
 [assembly: OwinStartup(typeof(SimpleIdentityServer.Api.Startup))]
 
@@ -17,11 +19,19 @@ namespace SimpleIdentityServer.Api
             if (_isInitialized == false)
             {
                 UnityConfig.Configure(httpConfiguration);
+                PopupulateFakeDataSource();
                 _isInitialized = true;
             }
 
             SwaggerConfig.Configure(httpConfiguration);
             WebApiConfig.Register(httpConfiguration, app);
+        }
+
+        private static void PopupulateFakeDataSource()
+        {
+            FakeDataSource.Instance().Clients = Clients.Get();
+            FakeDataSource.Instance().Scopes = Scopes.Get();
+            FakeDataSource.Instance().ResourceOwners = ResourceOwners.Get();
         }
     }
 }

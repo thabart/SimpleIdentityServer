@@ -36,6 +36,7 @@ namespace SimpleIdentityServer.DataAccess.Fake
             {
                 return _clients;
             }
+            set { _clients = value; }
         }
 
         public List<RedirectionUrl> RedirectionUrls
@@ -44,6 +45,7 @@ namespace SimpleIdentityServer.DataAccess.Fake
             {
                 return _redirectionUrls;
             }
+            set { _redirectionUrls = value; }
         }
 
         public List<ResourceOwner> ResourceOwners
@@ -52,6 +54,7 @@ namespace SimpleIdentityServer.DataAccess.Fake
             {
                 return _resourceOwners;
             }
+            set { _resourceOwners = value; }
         }
 
         public List<Scope> Scopes
@@ -60,6 +63,7 @@ namespace SimpleIdentityServer.DataAccess.Fake
             {
                 return _scopes;
             }
+            set { _scopes = value; }
         }
 
         public void Init()
