@@ -12,10 +12,10 @@ namespace SimpleIdentityServer.Client.Test
             var client = factory.CreateClient("http://localhost:50470/swagger/docs/v1", "http://localhost:50470");
             var request = new GetAccessToken
             {
-                ClientId = "WebSite",
+                ClientId = "MyBlog",
                 Username = "administrator",
-                Password = "administrator",
-                Scope = "firstScope"
+                Password = "password",
+                Scope = "BlogApi"
             };
             var result = client.GetAccessTokenViaResourceOwnerGrantTypeAsync(request).Result;
 

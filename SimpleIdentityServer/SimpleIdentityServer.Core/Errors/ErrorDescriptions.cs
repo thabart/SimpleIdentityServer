@@ -4,6 +4,8 @@
     {
         public static string MissingParameter = "the parameter {0} is missing";
 
+        public static string RequestIsNotValid =  "the request is not valid";
+
         public static string ClientIsNotValid = "the client_id {0} is not valid";
 
         public static string RedirectUrlIsNotValid = "the redirect url {0} is not valid";

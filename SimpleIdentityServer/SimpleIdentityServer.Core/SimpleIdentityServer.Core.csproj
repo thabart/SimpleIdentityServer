@@ -91,11 +91,9 @@
     <Compile Include="Helpers\TokenHelper.cs" />
     <Compile Include="Model.cs" />
     <Compile Include="ModuleInit.cs" />
-    <Compile Include="Operations\GetAuthorizationCodeOperation.cs" />
+    <Compile Include="Operations\Authorization\GetAuthorizationOperation.cs" />
     <Compile Include="Operations\GetTokenByResourceOwnerCredentialsGrantType.cs" />
-    <Compile Include="Parameters\DisplayParameter.cs" />
-    <Compile Include="Parameters\GetAuthorizationCodeParameter.cs" />
-    <Compile Include="Parameters\BaseRequestParameter.cs" />
+    <Compile Include="Parameters\GetAuthorizationParameter.cs" />
     <Compile Include="Parameters\GetAccessTokenWithResourceOwnerCredentialsParameter.cs" />
     <Compile Include="Parameters\PromptParameter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -4,25 +4,27 @@ using SimpleIdentityServer.Common;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Operations;
 using SimpleIdentityServer.Core.Validators;
+using SimpleIdentityServer.Core.Operations.Authorization;
 
 namespace SimpleIdentityServer.Core
 {
     [Export(typeof(IModule))]
     public class ModuleInit : IModule
     {
-        public void Initialize(IModuleRegister registrar)
+        public void Initialize(IModuleRegister register)
         {
-            registrar.RegisterType<ISecurityHelper, SecurityHelper>();
-            registrar.RegisterType<ITokenHelper, TokenHelper>();
-            registrar.RegisterType<IClientValidator, ClientValidator>();
-            registrar.RegisterType<IResourceOwnerValidator, ResourceOwnerValidator>();
-            registrar.RegisterType<IScopeValidator, ScopeValidator>();
+            register.RegisterType<ISecurityHelper, SecurityHelper>();
+            register.RegisterType<ITokenHelper, TokenHelper>();
+            register.RegisterType<IClientValidator, ClientValidator>();
+            register.RegisterType<IResourceOwnerValidator, ResourceOwnerValidator>();
+            register.RegisterType<IScopeValidator, ScopeValidator>();
 
-            registrar
+
+            register
                 .RegisterType<IGetTokenByResourceOwnerCredentialsGrantType, GetTokenByResourceOwnerCredentialsGrantType>
                 ();
-            registrar
-                .RegisterType<IGetAuthorizationCodeOperation, GetAuthorizationCodeOperation>
+            register
+                .RegisterType<IGetAuthorizationOperation, GetAuthorizationOperation>
                 ();
         }
     }

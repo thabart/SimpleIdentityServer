@@ -21,6 +21,10 @@ namespace SimpleIdentityServer.Api.Configuration
                         new Scope
                         {
                             Name = "BlogApi:AddArticle"
+                        },
+                        new Scope
+                        {
+                            Name = "openid"
                         }
                     }
                 }

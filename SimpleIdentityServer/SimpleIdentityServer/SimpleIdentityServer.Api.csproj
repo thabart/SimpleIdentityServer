@@ -183,6 +183,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\ModuleLoader.cs" />
+    <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="App_Start\SwaggerOperationNameFilter.cs" />
     <Compile Include="App_Start\UnityConfig.cs" />
@@ -194,18 +195,23 @@
     <Compile Include="Configuration\Clients.cs" />
     <Compile Include="Configuration\ResourceOwners.cs" />
     <Compile Include="Configuration\Scopes.cs" />
-    <Compile Include="Controllers\AuthorizationController.cs" />
-    <Compile Include="Controllers\TokenController.cs" />
+    <Compile Include="Controllers\Api\AuthorizationController.cs" />
+    <Compile Include="Controllers\Api\TokenController.cs" />
+    <Compile Include="Controllers\AuthorizeController.cs" />
     <Compile Include="DTOs\Request\AuthorizationRequest.cs" />
-    <Compile Include="DTOs\Request\ResponseType.cs" />
     <Compile Include="DTOs\Request\TokenRequest.cs" />
     <Compile Include="DTOs\Request\GrantTypeRequest.cs" />
     <Compile Include="DTOs\Response\ErrorResponse.cs" />
     <Compile Include="DTOs\Response\ErrorResponseWithState.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Mappings\MappingExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Global.asax" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -236,6 +242,18 @@
       <Project>{7b5c6ff2-994b-4a4c-80f3-09f682e34979}</Project>
       <Name>SimpleIdentityServer.DataAccess.Fake</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\_ViewStart.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Shared\_Layout.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Authorize\Index.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

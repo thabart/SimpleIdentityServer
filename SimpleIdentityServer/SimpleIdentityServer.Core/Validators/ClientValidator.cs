@@ -38,6 +38,11 @@ namespace SimpleIdentityServer.Core.Validators
         
         public string ValidateRedirectionUrl(string url, Client client)
         {
+            if (client.RedirectionUrls == null || !client.RedirectionUrls.Any())
+            {
+                return url;
+            }
+
             var redirectionUrl = client.RedirectionUrls.FirstOrDefault(r => r == url);
             if (redirectionUrl == null)
             {

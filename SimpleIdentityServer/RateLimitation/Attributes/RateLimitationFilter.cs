@@ -176,6 +176,11 @@ namespace SimpleIdentityServer.RateLimitation.Attributes
 
             var timeResetTime = (record.UpdateDateTime.AddMinutes(SlidingTime) - today).TotalSeconds;
 
+            if (httpActionExecutedContext.Response == null)
+            {
+                return;
+            }
+
             httpActionExecutedContext.Response.Headers.Add(RateLimitationConstants.XRateLimitLimitName, NumberOfRequests.ToString(CultureInfo.InvariantCulture));
             httpActionExecutedContext.Response.Headers.Add(RateLimitationConstants.XRateLimitRemainingName, numberOfRemainingRequests.ToString(CultureInfo.InvariantCulture));
             httpActionExecutedContext.Response.Headers.Add(RateLimitationConstants.XRateLimitResetName, timeResetTime.ToString(CultureInfo.InvariantCulture));

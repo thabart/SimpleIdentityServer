@@ -8,7 +8,7 @@ using SimpleIdentityServer.RateLimitation.Attributes;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Models;
 
-namespace SimpleIdentityServer.Api.Controllers
+namespace SimpleIdentityServer.Api.Controllers.Api
 {
     [RoutePrefix("token")]
     public class TokenController : ApiController

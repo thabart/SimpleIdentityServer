@@ -1,10 +1,13 @@
-﻿namespace SimpleIdentityServer.Core.Parameters
+﻿using System;
+
+namespace SimpleIdentityServer.Core.Parameters
 {
+    [Flags]
     public enum PromptParameter
     {
-        None,
-        Login,
-        Consent,
-        SelectAccount
+        none,
+        login,
+        consent,
+        select_account
     }
 }
