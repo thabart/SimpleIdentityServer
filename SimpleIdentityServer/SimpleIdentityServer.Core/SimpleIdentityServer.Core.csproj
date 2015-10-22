@@ -101,6 +101,7 @@
     <Compile Include="Repositories\IGrantedTokenRepository.cs" />
     <Compile Include="Repositories\IResourceOwnerRepository.cs" />
     <Compile Include="Repositories\IScopeRepository.cs" />
+    <Compile Include="Results\AuthorizationResult.cs" />
     <Compile Include="Validators\ClientValidator.cs" />
     <Compile Include="Validators\ResourceOwnerValidator.cs" />
     <Compile Include="Validators\ScopeValidator.cs" />

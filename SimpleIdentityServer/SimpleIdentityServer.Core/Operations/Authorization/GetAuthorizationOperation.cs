@@ -2,16 +2,14 @@
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Parameters;
+using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Validators;
-
-using System;
-using System.Net.Http;
 
 namespace SimpleIdentityServer.Core.Operations.Authorization
 {
     public interface IGetAuthorizationOperation
     {
-        HttpResponseMessage Execute(GetAuthorizationParameter parameter);
+        AuthorizationResult Execute(GetAuthorizationParameter parameter);
     }
 
     public class GetAuthorizationOperation : IGetAuthorizationOperation
@@ -32,7 +30,7 @@ namespace SimpleIdentityServer.Core.Operations.Authorization
             _scopeValidator = scopeValidator;
         }
         
-        public HttpResponseMessage Execute(GetAuthorizationParameter parameter)
+        public AuthorizationResult Execute(GetAuthorizationParameter parameter)
         {
             parameter.Validate();
             var client = _clientValidator.ValidateClientExist(parameter.ClientId);
@@ -46,13 +44,11 @@ namespace SimpleIdentityServer.Core.Operations.Authorization
                     parameter.State);
             }
 
-            var response = new HttpResponseMessage();
             var prompts = parameter.GetPromptParameters();
+            var result = new AuthorizationResult();
             if (prompts.Contains(PromptParameter.login))
             {
-                // TODO : Prompt for login.
-                response.StatusCode = System.Net.HttpStatusCode.Moved;
-                response.Headers.Location = new Uri("~/Authorize");
+                result.Redirection = Redirection.Authorize;
             }
 
             if (prompts.Contains(PromptParameter.none))
@@ -61,7 +57,7 @@ namespace SimpleIdentityServer.Core.Operations.Authorization
                 // TODO : error occured if the client does not have pre-configured consent for the requested claims.
             }
 
-            return response;
+            return result;
         }
     }
 }

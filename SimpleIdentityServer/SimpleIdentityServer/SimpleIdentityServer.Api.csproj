@@ -203,6 +203,7 @@
     <Compile Include="DTOs\Request\GrantTypeRequest.cs" />
     <Compile Include="DTOs\Response\ErrorResponse.cs" />
     <Compile Include="DTOs\Response\ErrorResponseWithState.cs" />
+    <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
