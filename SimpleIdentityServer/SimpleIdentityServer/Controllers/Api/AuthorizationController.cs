@@ -9,6 +9,7 @@ using SimpleIdentityServer.Core.Operations.Authorization;
 using SimpleIdentityServer.Api.Mappings;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Errors;
+using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Results;
 
 using System.Net.Http;
@@ -20,9 +21,14 @@ namespace SimpleIdentityServer.Api.Controllers.Api
     {
         private readonly IGetAuthorizationOperation _getAuthorizationOperation;
 
-        public AuthorizationController(IGetAuthorizationOperation getAuthorizationOperation)
+        private readonly IProtector _protector;
+
+        public AuthorizationController(
+            IGetAuthorizationOperation getAuthorizationOperation,
+            IProtector protector)
         {
             _getAuthorizationOperation = getAuthorizationOperation;
+            _protector = protector;
         }
 
         public HttpResponseMessage Get([FromUri]AuthorizationRequest authorizationRequest)
@@ -36,7 +42,12 @@ namespace SimpleIdentityServer.Api.Controllers.Api
 
             Request.CreateResponse();
             var user = User as ClaimsPrincipal;
+            
             var authorizationResult = _getAuthorizationOperation.Execute(authorizationRequest.ToParameter(), user);
+
+            var encrypted = _protector.Encrypt(authorizationRequest);
+            var decrypted = _protector.Decrypt<AuthorizationRequest>(encrypted);
+
             if (authorizationResult.Redirection != Redirection.No)
             {
                 var url = GetRedirectionUrl(Request, authorizationResult.Redirection);
@@ -45,7 +56,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
                 {
                     Query = authorizationRequest.GetQueryString()
                 };
-
+                
                 response.Headers.Location = new Uri(uri.ToString());
                 return response;
             }

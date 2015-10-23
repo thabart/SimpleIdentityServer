@@ -68,8 +68,10 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.Linq" />
+    <Reference Include="System.IdentityModel" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -78,6 +80,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Protector\Compressor.cs" />
+    <Compile Include="Protector\ICertificateStore.cs" />
+    <Compile Include="Protector\Protector.cs" />
     <Compile Include="Models\Client.cs" />
     <Compile Include="Models\GrantedToken.cs" />
     <Compile Include="Models\RedirectionUrl.cs" />

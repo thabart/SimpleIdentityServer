@@ -5,6 +5,8 @@ using Microsoft.Practices.EnterpriseLibrary.Caching;
 using Microsoft.Practices.Unity;
 
 using System.Web.Http;
+using SimpleIdentityServer.Api.Configuration;
+using SimpleIdentityServer.Core.Protector;
 
 namespace SimpleIdentityServer.Api
 {
@@ -15,6 +17,8 @@ namespace SimpleIdentityServer.Api
             var container = new UnityContainer();
 
             container.RegisterType<ICacheManager, CacheManager>();
+            container.RegisterType<ICertificateStore, CertificateStore>();
+
             ModuleLoader.LoadContainer(container);
 
             RegisterFilterInjector(httpConfiguration, container);

@@ -3,6 +3,7 @@
 using SimpleIdentityServer.Common;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Operations;
+using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Core.Operations.Authorization;
 
@@ -18,6 +19,8 @@ namespace SimpleIdentityServer.Core
             register.RegisterType<IClientValidator, ClientValidator>();
             register.RegisterType<IResourceOwnerValidator, ResourceOwnerValidator>();
             register.RegisterType<IScopeValidator, ScopeValidator>();
+            register.RegisterType<IProtector, Protector.Protector>();
+            register.RegisterType<ICompressor, Compressor>();
 
 
             register

@@ -203,6 +203,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Attributes\IdentityServerExceptionFilter.cs" />
     <Compile Include="Attributes\SwaggerOperationAttribute.cs" />
+    <Compile Include="Configuration\CertificateStore.cs" />
     <Compile Include="Configuration\Clients.cs" />
     <Compile Include="Configuration\ResourceOwners.cs" />
     <Compile Include="Configuration\Scopes.cs" />
@@ -232,6 +233,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
+    <EmbeddedResource Include="IdentityServer.pfx" />
     <None Include="Scripts\jquery-1.9.0.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
@@ -245,6 +247,7 @@
       <DependentUpon>Web.config</DependentUpon>
     </Content>
     <Content Include="Scripts\jquery-1.9.0.min.map" />
+    <EmbeddedResource Include="SimpleIdentityServer.pfx" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config">
