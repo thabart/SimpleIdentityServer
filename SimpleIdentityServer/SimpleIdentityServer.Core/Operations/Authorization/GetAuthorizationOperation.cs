@@ -1,4 +1,7 @@
-﻿using SimpleIdentityServer.Core.Errors;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Parameters;
@@ -9,7 +12,7 @@ namespace SimpleIdentityServer.Core.Operations.Authorization
 {
     public interface IGetAuthorizationOperation
     {
-        AuthorizationResult Execute(GetAuthorizationParameter parameter);
+        AuthorizationResult Execute(GetAuthorizationParameter parameter, ClaimsPrincipal claimsPrincipal);
     }
 
     public class GetAuthorizationOperation : IGetAuthorizationOperation
@@ -30,7 +33,7 @@ namespace SimpleIdentityServer.Core.Operations.Authorization
             _scopeValidator = scopeValidator;
         }
         
-        public AuthorizationResult Execute(GetAuthorizationParameter parameter)
+        public AuthorizationResult Execute(GetAuthorizationParameter parameter, ClaimsPrincipal claimsPrincipal)
         {
             parameter.Validate();
             var client = _clientValidator.ValidateClientExist(parameter.ClientId);
@@ -46,18 +49,39 @@ namespace SimpleIdentityServer.Core.Operations.Authorization
 
             var prompts = parameter.GetPromptParameters();
             var result = new AuthorizationResult();
-            if (prompts.Contains(PromptParameter.login))
+            AuthenticateEndUser(prompts, result, claimsPrincipal, parameter);
+            return result;
+        }
+
+        /// <summary>
+        /// Tries to authenticate the user.
+        /// OPEN-ID-URL : http://openid.net/specs/openid-connect-core-1_0.html#Authenticates
+        /// </summary>
+        private void AuthenticateEndUser(
+            IList<PromptParameter> promptParameters,
+            AuthorizationResult result,
+            ClaimsPrincipal claimsPrincipal,
+            GetAuthorizationParameter parameter)
+        {
+            var endUserIsAuthenticated = claimsPrincipal.Identity.IsAuthenticated;
+            if (promptParameters.Contains(PromptParameter.login)
+                || (!endUserIsAuthenticated && !promptParameters.Contains(PromptParameter.none)))
             {
                 result.Redirection = Redirection.Authorize;
             }
 
-            if (prompts.Contains(PromptParameter.none))
+            if (promptParameters.Contains(PromptParameter.none) && !endUserIsAuthenticated)
             {
-                // TODO : error occured if the end-user is not already authenticated : login_required
-                // TODO : error occured if the client does not have pre-configured consent for the requested claims.
+                throw new IdentityServerExceptionWithState(
+                    ErrorCodes.LoginRequiredCode,
+                    ErrorDescriptions.TheUserNeedsToBeAuthenticated,
+                    parameter.State);
             }
 
-            return result;
+            if (promptParameters.Contains(PromptParameter.none))
+            {
+                // TODO : error occured if the client does not have pre-configured consent for the requested claims.
+            }
         }
     }
 }

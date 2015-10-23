@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Security.Claims;
 using System.Web.Http;
 
 using SimpleIdentityServer.Api.DTOs.Request;
@@ -34,8 +35,8 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             }
 
             Request.CreateResponse();
-
-            var authorizationResult = _getAuthorizationOperation.Execute(authorizationRequest.ToParameter());
+            var user = User as ClaimsPrincipal;
+            var authorizationResult = _getAuthorizationOperation.Execute(authorizationRequest.ToParameter(), user);
             if (authorizationResult.Redirection != Redirection.No)
             {
                 var url = GetRedirectionUrl(Request, authorizationResult.Redirection);

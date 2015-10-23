@@ -15,5 +15,9 @@
         public static string InvalidScope = "invalid_scope";
 
         public static string InvalidRequestUriCode = "invalid_request_uri";
+
+        public static string LoginRequiredCode = "login_required";
+
+        public static string InteractionRequiredCode = "interaction_required";
     }
 }
