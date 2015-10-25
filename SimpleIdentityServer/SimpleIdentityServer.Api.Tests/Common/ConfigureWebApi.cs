@@ -12,6 +12,7 @@ using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.DataAccess.Fake.Repositories;
 using SimpleIdentityServer.DataAccess.Fake;
+using SimpleIdentityServer.Core.Operations.Authorization;
 
 namespace SimpleIdentityServer.Api.Tests.Common
 {
@@ -39,7 +40,7 @@ namespace SimpleIdentityServer.Api.Tests.Common
                 .RegisterType<IGetTokenByResourceOwnerCredentialsGrantType, GetTokenByResourceOwnerCredentialsGrantType>
                 ();
             _container
-                .RegisterType<IGetAuthorizationCodeOperation, GetAuthorizationCodeOperation>
+                .RegisterType<IGetAuthorizationOperation, GetAuthorizationOperation>
                 ();
 
             FakeDataSource.Instance().Init();
