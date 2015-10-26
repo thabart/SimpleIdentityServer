@@ -19,7 +19,7 @@ namespace SimpleIdentityServer.Core.Protector
         private readonly ICertificateStore _certificateStore;
 
         private readonly ICompressor _compressor;
-        
+
         private readonly CookieTransform _encrypt;
 
         private readonly CookieTransform _sign;
@@ -32,7 +32,6 @@ namespace SimpleIdentityServer.Core.Protector
             _compressor = compressor;
 
             var certificate = CheckParameters();
-
             _encrypt = new RsaEncryptionCookieTransform(certificate);
             _sign = new RsaSignatureCookieTransform(certificate);
         }
