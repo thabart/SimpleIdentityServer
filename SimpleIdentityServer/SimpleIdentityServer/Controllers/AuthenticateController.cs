@@ -8,13 +8,12 @@ using System.Web;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Api.Mappings;
 using SimpleIdentityServer.Core.Operations.Authorization;
+using SimpleIdentityServer.Api.Helpers;
 
 namespace SimpleIdentityServer.Api.Controllers
 {
     public class AuthenticateController : Controller
     {
-        private static string _cookieName = "SimpleIdentityServerName";
-
         private readonly IProtector _protector;
 
         private readonly IEncoder _encoder;
@@ -25,18 +24,22 @@ namespace SimpleIdentityServer.Api.Controllers
 
         private readonly IAddConsentOperation _addConsentOperation;
 
+        private readonly ISessionManager _sessionManager;
+
         public AuthenticateController(
             IProtector protector,
             IEncoder encoder,
             IResourceOwnerService resourceOwnerService,
             IConsentRepository consentRepository,
-            IAddConsentOperation addConsentOperation)
+            IAddConsentOperation addConsentOperation,
+            ISessionManager sessionManager)
         {
             _protector = protector;
             _encoder = encoder;
             _resourceOwnerService = resourceOwnerService;
             _consentRepository = consentRepository;
             _addConsentOperation = addConsentOperation;
+            _sessionManager = sessionManager;
         }
 
         [HttpGet]
@@ -64,25 +67,18 @@ namespace SimpleIdentityServer.Api.Controllers
                 return RedirectToAction("Index", new { code = authorize.Code } );
             }
 
-            AddSubjectIntoCookie(subject);
+            _sessionManager.StoreSession(subject);
             var consent = _consentRepository.GetConsentsForGivenUser(subject);
             if (consent == null)
             {
                 var parameter = request.ToParameter();
                 // _addConsentOperation.Execute(parameter, subject);
-                return RedirectToAction("Index", "Consent");
+                return RedirectToAction("Index", "Consent", new { code = code });
             }
 
             // TODO : redirect to the callback.
 
             return View();
-        }
-
-        private void AddSubjectIntoCookie(string subject)
-        {
-            var encodedSubject = _encoder.Encode(subject);
-            var httpCookie = new HttpCookie(_cookieName, encodedSubject);
-            HttpContext.Response.SetCookie(httpCookie);
         }
     }
 }
