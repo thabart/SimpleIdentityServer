@@ -80,7 +80,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\Consent.cs" />
+    <Compile Include="Operations\Authorization\AddConsentOperation.cs" />
     <Compile Include="Protector\Compressor.cs" />
+    <Compile Include="Protector\Encoder.cs" />
     <Compile Include="Protector\ICertificateStore.cs" />
     <Compile Include="Protector\Protector.cs" />
     <Compile Include="Models\Client.cs" />
@@ -103,10 +106,13 @@
     <Compile Include="Parameters\PromptParameter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\IClientRepository.cs" />
+    <Compile Include="Repositories\IConsentRepository.cs" />
     <Compile Include="Repositories\IGrantedTokenRepository.cs" />
     <Compile Include="Repositories\IResourceOwnerRepository.cs" />
     <Compile Include="Repositories\IScopeRepository.cs" />
     <Compile Include="Results\AuthorizationResult.cs" />
+    <Compile Include="Services\InMemoryUserService.cs" />
+    <Compile Include="Services\IResourceOwnerService.cs" />
     <Compile Include="Validators\ClientValidator.cs" />
     <Compile Include="Validators\ResourceOwnerValidator.cs" />
     <Compile Include="Validators\ScopeValidator.cs" />

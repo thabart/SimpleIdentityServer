@@ -15,6 +15,8 @@ namespace SimpleIdentityServer.DataAccess.Fake
 
         private List<Scope> _scopes;
 
+        private List<Consent> _consents;
+
         private FakeDataSource()
         {
             Init();
@@ -66,12 +68,25 @@ namespace SimpleIdentityServer.DataAccess.Fake
             set { _scopes = value; }
         }
 
+
+        public List<Consent> Consents
+        {
+            get
+            {
+                return _consents;
+            } set
+            {
+                _consents = value;
+            }
+        }
+
         public void Init()
         {
             _clients = new List<Client>();
             _redirectionUrls = new List<RedirectionUrl>();
             _resourceOwners = new List<ResourceOwner>();
             _scopes = new List<Scope>();
+            _consents = new List<Consent>();
         }
     }
 }

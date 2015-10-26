@@ -11,9 +11,9 @@ namespace SimpleIdentityServer.DataAccess.Fake.Repositories
 {
     public class FakeResourceOwnerRepository : IResourceOwnerRepository
     {
-        public ResourceOwner GetResourceOwnerByCredentials(string userName, string hashedPassword)
+        public ResourceOwner GetBySubject(string subject)
         {
-            var record = FakeDataSource.Instance().ResourceOwners.SingleOrDefault(r => r.Id == userName && r.Password == hashedPassword);
+            var record = FakeDataSource.Instance().ResourceOwners.SingleOrDefault(r => r.Id == subject);
             if (record == null)
             {
                 return null;
@@ -22,6 +22,23 @@ namespace SimpleIdentityServer.DataAccess.Fake.Repositories
             return new ResourceOwner
             {
                 Id = record.Id,
+                UserName = record.UserName,
+                Password = record.Password
+            };
+        }
+
+        public ResourceOwner GetResourceOwnerByCredentials(string userName, string hashedPassword)
+        {
+            var record = FakeDataSource.Instance().ResourceOwners.SingleOrDefault(r => r.UserName == userName && r.Password == hashedPassword);
+            if (record == null)
+            {
+                return null;
+            }
+
+            return new ResourceOwner
+            {
+                Id = record.Id,
+                UserName = record.UserName,
                 Password = record.Password
             };
         }
@@ -31,6 +48,7 @@ namespace SimpleIdentityServer.DataAccess.Fake.Repositories
             FakeDataSource.Instance().ResourceOwners.Add(new MODELS.ResourceOwner
             {
                 Id = resourceOwner.Id,
+                UserName = resourceOwner.UserName,
                 Password = resourceOwner.Password
             });
 

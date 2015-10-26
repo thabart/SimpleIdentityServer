@@ -60,7 +60,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         {
             var resourceOwner = new MODELS.ResourceOwner
             {
-                Id = userName,
+                UserName = userName,
                 Password = _securityHelper.ComputeHash(password)
             };
 

@@ -30,6 +30,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
         {
             _getAuthorizationOperation = getAuthorizationOperation;
             _protector = protector;
+            _encoder = encoder;
         }
 
         public HttpResponseMessage Get([FromUri]AuthorizationRequest authorizationRequest)
@@ -64,9 +65,9 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             Redirection redirection)
         {
             var uri = request.RequestUri.GetLeftPart(UriPartial.Authority);
-            if (redirection == Redirection.Authorize)
+            if (redirection == Redirection.Authenticate)
             {
-                uri = uri + "/Authorize";
+                uri = uri + "/Authenticate";
             }
 
             return uri;

@@ -3,7 +3,7 @@
     public enum Redirection
     {
         No,
-        Authorize,
+        Authenticate,
         Consent
     }
 

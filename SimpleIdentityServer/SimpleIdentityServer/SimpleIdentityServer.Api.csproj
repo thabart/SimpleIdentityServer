@@ -209,7 +209,8 @@
     <Compile Include="Configuration\Scopes.cs" />
     <Compile Include="Controllers\Api\AuthorizationController.cs" />
     <Compile Include="Controllers\Api\TokenController.cs" />
-    <Compile Include="Controllers\AuthorizeController.cs" />
+    <Compile Include="Controllers\AuthenticateController.cs" />
+    <Compile Include="Controllers\ConsentController.cs" />
     <Compile Include="DTOs\Request\AuthorizationRequest.cs" />
     <Compile Include="Models\Authorize.cs" />
     <Compile Include="DTOs\Request\TokenRequest.cs" />
@@ -249,6 +250,7 @@
     </Content>
     <Content Include="Scripts\jquery-1.9.0.min.map" />
     <EmbeddedResource Include="SimpleIdentityServer.pfx" />
+    <Content Include="Views\Consent\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config">
@@ -283,8 +285,9 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Authorize\Index.cshtml" />
+    <Content Include="Views\Authenticate\Index.cshtml" />
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

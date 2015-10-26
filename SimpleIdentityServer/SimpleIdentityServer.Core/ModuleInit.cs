@@ -30,6 +30,7 @@ namespace SimpleIdentityServer.Core
             register
                 .RegisterType<IGetAuthorizationOperation, GetAuthorizationOperation>
                 ();
+            register.RegisterType<IAddConsentOperation, AddConsentOperation>();
         }
     }
 }

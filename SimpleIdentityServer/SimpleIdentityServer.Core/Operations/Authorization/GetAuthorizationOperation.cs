@@ -67,7 +67,7 @@ namespace SimpleIdentityServer.Core.Operations.Authorization
             if (promptParameters.Contains(PromptParameter.login)
                 || (!endUserIsAuthenticated && !promptParameters.Contains(PromptParameter.none)))
             {
-                result.Redirection = Redirection.Authorize;
+                result.Redirection = Redirection.Authenticate;
             }
 
             if (promptParameters.Contains(PromptParameter.none) && !endUserIsAuthenticated)

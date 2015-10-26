@@ -6,6 +6,8 @@ namespace SimpleIdentityServer.DataAccess.Fake.Models
     {
         public string ClientId { get; set; }
 
+        public string DisplayName { get; set; }
+
         public List<Scope> AllowedScopes { get; set; }
 
         public List<RedirectionUrl> RedirectionUrls { get; set; }

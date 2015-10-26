@@ -7,5 +7,7 @@ namespace SimpleIdentityServer.Core.Repositories
         ResourceOwner GetResourceOwnerByCredentials(string userName, string hashedPassword);
 
         bool Insert(ResourceOwner resourceOwner);
+
+        ResourceOwner GetBySubject(string subject);
     }
 }
