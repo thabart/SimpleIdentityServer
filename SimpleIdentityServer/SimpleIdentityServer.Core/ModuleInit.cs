@@ -21,6 +21,7 @@ namespace SimpleIdentityServer.Core
             register.RegisterType<IScopeValidator, ScopeValidator>();
             register.RegisterType<IProtector, Protector.Protector>();
             register.RegisterType<ICompressor, Compressor>();
+            register.RegisterType<IEncoder, Encoder>();
 
 
             register

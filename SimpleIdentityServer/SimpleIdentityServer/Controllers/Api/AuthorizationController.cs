@@ -2,9 +2,7 @@
 using System.Net;
 using System.Security.Claims;
 using System.Web.Http;
-
 using SimpleIdentityServer.Api.DTOs.Request;
-using SimpleIdentityServer.Api.Extensions;
 using SimpleIdentityServer.Core.Operations.Authorization;
 using SimpleIdentityServer.Api.Mappings;
 using SimpleIdentityServer.Core.Exceptions;
@@ -23,9 +21,12 @@ namespace SimpleIdentityServer.Api.Controllers.Api
 
         private readonly IProtector _protector;
 
+        private readonly IEncoder _encoder;
+
         public AuthorizationController(
             IGetAuthorizationOperation getAuthorizationOperation,
-            IProtector protector)
+            IProtector protector,
+            IEncoder encoder)
         {
             _getAuthorizationOperation = getAuthorizationOperation;
             _protector = protector;
@@ -45,19 +46,13 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             
             var authorizationResult = _getAuthorizationOperation.Execute(authorizationRequest.ToParameter(), user);
 
-            var encrypted = _protector.Encrypt(authorizationRequest);
-            var decrypted = _protector.Decrypt<AuthorizationRequest>(encrypted);
-
             if (authorizationResult.Redirection != Redirection.No)
             {
-                var url = GetRedirectionUrl(Request, authorizationResult.Redirection);
+                var encryptedRequest = _protector.Encrypt(authorizationRequest);
+                var encodedRequest = _encoder.Encode(encryptedRequest);
+                var url = GetRedirectionUrl(Request, authorizationResult.Redirection) + string.Format("?code={0}", encodedRequest);
                 var response = Request.CreateResponse(HttpStatusCode.Moved);
-                var uri = new UriBuilder(url)
-                {
-                    Query = authorizationRequest.GetQueryString()
-                };
-                
-                response.Headers.Location = new Uri(uri.ToString());
+                response.Headers.Location = new Uri(url);
                 return response;
             }
 

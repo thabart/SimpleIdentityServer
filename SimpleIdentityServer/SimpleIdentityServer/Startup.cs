@@ -1,7 +1,12 @@
-﻿using System.Web.Http;
+﻿using System.Linq;
+using System.Web.Http;
+using System.Web.Http.Filters;
 
 using Microsoft.Owin;
+using Microsoft.Practices.Unity;
+
 using Owin;
+
 using SimpleIdentityServer.Api.Configuration;
 using SimpleIdentityServer.DataAccess.Fake;
 
@@ -18,7 +23,7 @@ namespace SimpleIdentityServer.Api
             var httpConfiguration = new HttpConfiguration();
             if (_isInitialized == false)
             {
-                UnityConfig.Configure(httpConfiguration);
+                ConfigureUnity(httpConfiguration);
                 PopupulateFakeDataSource();
                 _isInitialized = true;
             }
@@ -32,6 +37,22 @@ namespace SimpleIdentityServer.Api
             FakeDataSource.Instance().Clients = Clients.Get();
             FakeDataSource.Instance().Scopes = Scopes.Get();
             FakeDataSource.Instance().ResourceOwners = ResourceOwners.Get();
+        }
+
+        private static void ConfigureUnity(HttpConfiguration httpConfiguration)
+        {
+            var container = UnityConfig.Create();
+            RegisterFilterInjector(httpConfiguration, container);
+            httpConfiguration.DependencyResolver = new UnityResolver(container);
+        }
+
+        private static void RegisterFilterInjector(HttpConfiguration config, UnityContainer container)
+        {
+            //Register the filter injector
+            var providers = config.Services.GetFilterProviders().ToList();
+            var defaultprovider = providers.Single(i => i is ActionDescriptorFilterProvider);
+            config.Services.Remove(typeof(IFilterProvider), defaultprovider);
+            config.Services.Add(typeof(IFilterProvider), new UnityFilterProvider(container));
         }
     }
 }

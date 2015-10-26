@@ -40,7 +40,7 @@ namespace SimpleIdentityServer.Core.Protector
         {
             var json = new JavaScriptSerializer().Serialize(obj);
             var compressedJson = _compressor.Compress(json);
-            var bytesToEncrypt = Encoding.UTF8.GetBytes(compressedJson);
+            var bytesToEncrypt = ASCIIEncoding.ASCII.GetBytes(compressedJson);
             var encryptedBytes = _encrypt.Encode(bytesToEncrypt);
             var signedBytes = _sign.Encode(encryptedBytes);
             return Convert.ToBase64String(signedBytes);
@@ -51,7 +51,7 @@ namespace SimpleIdentityServer.Core.Protector
             var bytesToDecrypt = Convert.FromBase64String(encryptedString);
             var validated = _sign.Decode(bytesToDecrypt);
             var plainBytes = _encrypt.Decode(validated);
-            var encoding = new UTF8Encoding();
+            var encoding = new ASCIIEncoding();
             var decryptedJson = encoding.GetString(plainBytes);
             var uncompressedJson = _compressor.Decompress(decryptedJson);
             return new JavaScriptSerializer().Deserialize<T>(uncompressedJson);

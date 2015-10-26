@@ -3,6 +3,8 @@
     ViewBag.ProductName = "Simple Identity Server";
 }
 
+@model SimpleIdentityServer.Api.Models.Authorize
+
 @section PageTitle
 {
     <h1>Login</h1>
@@ -15,24 +17,25 @@
             <h3 class="panel-title">Local Login</h3>
         </div>
         <div class="panel-body">
-            <form name="form" method="POST" action="#">
+            <form name="form" method="POST" action="@Url.Content("~/Authorize/Add")">
                 <fieldset>
+                    <input type="hidden" value="@Model.Code" name="Code" />
                     <div class="form-group">
                         <label>Username</label>
-                        <input maxlength="100" class="form-control"/>
+                        <input maxlength="100" class="form-control" value="@Model.UserName" name="UserName"/>
                     </div>
                     <div class="form-group">
                         <label>Password</label>
-                        <input maxlength="100" class="form-control" />
+                        <input maxlength="100" class="form-control" value="@Model.Password" name="Password" />
                     </div>
                     <div class="form-group">
                         <label>
-                            <input type="checkbox" />
+                            <input type="checkbox" value="@Model.IsChecked" name="IsChecked" />
                             <strong>Remember My login</strong>
                         </label>
                     </div>
                     <div class="form-group">
-                        <button class="btn btn-primary">Login</button>
+                        <button type="submit" class="btn btn-primary">Login</button>
                     </div>
                 </fieldset>
             </form>

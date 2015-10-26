@@ -211,6 +211,7 @@
     <Compile Include="Controllers\Api\TokenController.cs" />
     <Compile Include="Controllers\AuthorizeController.cs" />
     <Compile Include="DTOs\Request\AuthorizationRequest.cs" />
+    <Compile Include="Models\Authorize.cs" />
     <Compile Include="DTOs\Request\TokenRequest.cs" />
     <Compile Include="DTOs\Request\GrantTypeRequest.cs" />
     <Compile Include="DTOs\Response\ErrorResponse.cs" />
@@ -222,6 +223,7 @@
     <Compile Include="Mappings\MappingExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="UnityDependencyResolver.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-theme.css" />
