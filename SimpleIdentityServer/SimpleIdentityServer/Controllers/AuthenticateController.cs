@@ -4,7 +4,9 @@ using SimpleIdentityServer.Api.DTOs.Request;
 using SimpleIdentityServer.Api.Helpers;
 using SimpleIdentityServer.Api.Mappings;
 using SimpleIdentityServer.Api.Models;
+using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Operations.Authorization;
+using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Services;
@@ -28,8 +30,6 @@ namespace SimpleIdentityServer.Api.Controllers
 
         private readonly IAddConsentOperation _addConsentOperation;
 
-        private readonly ISessionManager _sessionManager;
-
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
 
         public AuthenticateController(
@@ -38,7 +38,6 @@ namespace SimpleIdentityServer.Api.Controllers
             IResourceOwnerService resourceOwnerService,
             IConsentRepository consentRepository,
             IAddConsentOperation addConsentOperation,
-            ISessionManager sessionManager,
             IResourceOwnerRepository resourceOwnerRepository)
         {
             _protector = protector;
@@ -46,7 +45,6 @@ namespace SimpleIdentityServer.Api.Controllers
             _resourceOwnerService = resourceOwnerService;
             _consentRepository = consentRepository;
             _addConsentOperation = addConsentOperation;
-            _sessionManager = sessionManager;
             _resourceOwnerRepository = resourceOwnerRepository;
         }
 
@@ -56,7 +54,7 @@ namespace SimpleIdentityServer.Api.Controllers
         /// 2). Otherwise redirect to the authentication screen.
         /// </summary>
         /// <param name="code">Encrypted request</param>
-        /// <returns>consent screen or authentication screen</returns>
+        /// <returns>Consent screen or authentication screen</returns>
         [HttpGet]
         public ActionResult Index(string code)
         {
@@ -65,7 +63,10 @@ namespace SimpleIdentityServer.Api.Controllers
             var authenticationManager = GetAuthenticationManager();
             var user = authenticationManager.User;
             var userIsAuthenticated = user.Identity.IsAuthenticated;
-            if (userIsAuthenticated && request.prompt != "login")
+            var promptParameters = ParserHelper.ParsePromptParameters(request.prompt);
+
+            // 1). Redirect to the consent screen if the user is authenticated and the request doesn't contain a login prompt.
+            if (userIsAuthenticated && !promptParameters.Contains(PromptParameter.login))
             {
                 return RedirectToAction(
                     "Consent", 
@@ -76,6 +77,7 @@ namespace SimpleIdentityServer.Api.Controllers
                     });
             }
 
+            // 2). Return the authenticate screen
             return View(new Authorize
             {
                 Code = code
@@ -84,22 +86,33 @@ namespace SimpleIdentityServer.Api.Controllers
 
         /// <summary>
         /// Authenticate local user account.
+        /// 1). Return an error if the user is already authenticated.
+        /// 2). Redirect to the index action if the user credentials are not correct
+        /// 3). If there's no consent which has already been approved by the resource owner, then redirect the user-agent to the consent screen.
+        /// 4). Redirect the user-agent to the callback-url and pass the authorization code as parameter.
         /// </summary>
-        /// <param name="authorize">Contains user's credentials</param>
-        /// <returns>Redirect to the consent screen or returns the same page.</returns>
+        /// <param name="authorize">User's credentials</param>
+        /// <returns>Consent screen or redirect to the Index page.</returns>
         [HttpPost]
         public ActionResult Local(Authorize authorize)
         {
             var authenticationManager = GetAuthenticationManager();
             var user = authenticationManager.User;
+            var userIsAuthenticated = user.Identity.IsAuthenticated;
             
-            // TODO : Check the user is not authenticated
+            // TODO : 1). Return an error if the user is already authenticated.
+            if (userIsAuthenticated)
+            {
+                return null;
+            }
+            
             var code = _encoder.Decode(authorize.Code);
             var request = _protector.Decrypt<AuthorizationRequest>(code);
             var subject = _resourceOwnerService.Authenticate(
                 authorize.UserName, 
                 authorize.Password);
-            // Redirect to the index page if the authentication is not ok.
+
+            // TODO : 2). Redirect to the index action if the user credentials are not correct.
             if (string.IsNullOrEmpty(subject))
             {
                 return RedirectToAction("Index", new { code = authorize.Code } );
@@ -113,18 +126,17 @@ namespace SimpleIdentityServer.Api.Controllers
                     ExpiresUtc = DateTime.UtcNow.AddDays(7)
                 }, 
                 identity);
-
-            // _sessionManager.StoreSession(subject);
+            
             var consent = _consentRepository.GetConsentsForGivenUser(subject);
+
+            // 3). If there's no consent which has already been approved by the resource owner, then redirect the user-agent to the consent screen.
             if (consent == null)
             {
                 var parameter = request.ToParameter();
-                // _addConsentOperation.Execute(parameter, subject);
-                // return RedirectToAction("Index", "Consent", new { code = code });
+                return RedirectToAction("Index", "Consent", new { code = code });
             }
 
-            // TODO : redirect to the callback.
-
+            // 4). TODO : Redirect the user-agent to the callback-url and pass the authorization code as parameter.
             return View();
         }
 

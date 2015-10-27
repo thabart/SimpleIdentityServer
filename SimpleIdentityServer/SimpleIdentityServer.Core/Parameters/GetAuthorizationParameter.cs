@@ -1,5 +1,6 @@
 ﻿using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
+using SimpleIdentityServer.Core.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -95,27 +96,7 @@ namespace SimpleIdentityServer.Core.Parameters
 
         public List<PromptParameter> GetPromptParameters()
         {
-            var defaultResult = new List<PromptParameter>
-            {
-                PromptParameter.none
-            };
-
-            var promptValues = Enum.GetNames(typeof(PromptParameter));
-            if (string.IsNullOrWhiteSpace(Prompt))
-            {
-                return defaultResult;
-            }
-
-            var prompts = Prompt.Split(' ')
-                .Where(c => !string.IsNullOrWhiteSpace(c) && promptValues.Contains(c))
-                .Select(c => (PromptParameter)Enum.Parse(typeof(PromptParameter), c))
-                .ToList();
-            if (prompts == null || !prompts.Any())
-            {
-                prompts = defaultResult;
-            }
-
-            return prompts;
+            return ParserHelper.ParsePromptParameters(Prompt);            
         }
     }
 }
