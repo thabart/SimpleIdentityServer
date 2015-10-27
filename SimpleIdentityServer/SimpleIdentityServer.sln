@@ -41,8 +41,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.Client
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02. Data Access Layer", "02. Data Access Layer", "{9E0D1075-1513-4CE5-99A5-AC92E84B126D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Owin.Security.Cookies", "Microsoft.Owin.Security.Cookies\Microsoft.Owin.Security.Cookies.csproj", "{2FB9342F-CA85-4903-8667-45ED64AD25A6}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -89,10 +87,6 @@ Global
 		{F305D1AD-8780-42B2-963D-A1FE9B53912F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F305D1AD-8780-42B2-963D-A1FE9B53912F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F305D1AD-8780-42B2-963D-A1FE9B53912F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2FB9342F-CA85-4903-8667-45ED64AD25A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2FB9342F-CA85-4903-8667-45ED64AD25A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2FB9342F-CA85-4903-8667-45ED64AD25A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2FB9342F-CA85-4903-8667-45ED64AD25A6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -111,7 +105,6 @@ Global
 		{FC7DC959-C366-473C-A95A-FA16D5C71597} = {57DD4651-A25F-472F-930C-4C6189F43B72}
 		{9A27F1E3-D0E9-4D81-8AF2-1B0278F01871} = {C5C72E14-0135-478A-9E2D-B7BD81692C95}
 		{F305D1AD-8780-42B2-963D-A1FE9B53912F} = {9A27F1E3-D0E9-4D81-8AF2-1B0278F01871}
-		{2FB9342F-CA85-4903-8667-45ED64AD25A6} = {52E4BD73-432A-462A-BC9A-8493301FC6C2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.Interception.2.1.505.0\lib\NET35;packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Caching.5.0.505.0\lib\NET35;packages\Unity.2.1.505.0\lib\NET35

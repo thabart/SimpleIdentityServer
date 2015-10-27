@@ -50,9 +50,32 @@ namespace SimpleIdentityServer.Api.Controllers
             _resourceOwnerRepository = resourceOwnerRepository;
         }
 
+        /// <summary>
+        /// Return the authentication view.
+        /// 1). Redirect to the consent screen if the user is authenticated && the request doesn't contain a login prompt.
+        /// 2). Otherwise redirect to the authentication screen.
+        /// </summary>
+        /// <param name="code">Encrypted request</param>
+        /// <returns>consent screen or authentication screen</returns>
         [HttpGet]
         public ActionResult Index(string code)
         {
+            var decodedCode = _encoder.Decode(code);
+            var request = _protector.Decrypt<AuthorizationRequest>(decodedCode);
+            var authenticationManager = GetAuthenticationManager();
+            var user = authenticationManager.User;
+            var userIsAuthenticated = user.Identity.IsAuthenticated;
+            if (userIsAuthenticated && request.prompt != "login")
+            {
+                return RedirectToAction(
+                    "Consent", 
+                    "Index", 
+                    new
+                    {
+                        code = code
+                    });
+            }
+
             return View(new Authorize
             {
                 Code = code
@@ -67,8 +90,10 @@ namespace SimpleIdentityServer.Api.Controllers
         [HttpPost]
         public ActionResult Local(Authorize authorize)
         {
-            // TODO : Check the user is not authenticated.
-
+            var authenticationManager = GetAuthenticationManager();
+            var user = authenticationManager.User;
+            
+            // TODO : Check the user is not authenticated
             var code = _encoder.Decode(authorize.Code);
             var request = _protector.Decrypt<AuthorizationRequest>(code);
             var subject = _resourceOwnerService.Authenticate(
@@ -81,9 +106,7 @@ namespace SimpleIdentityServer.Api.Controllers
             }
 
             var identity = GetIdentity(subject);
-            var authentication = Request.GetOwinContext().Authentication;
-            var t = authentication.GetType();
-            authentication.SignIn(
+            authenticationManager.SignIn(
                 new AuthenticationProperties
                 {
                     IsPersistent = true,
@@ -120,6 +143,15 @@ namespace SimpleIdentityServer.Api.Controllers
             };
 
             return new ClaimsIdentity(claims, DefaultAuthenticationTypes.ApplicationCookie);
+        }
+
+        /// <summary>
+        /// Get the authentication manager
+        /// </summary>
+        /// <returns>Authentication manager</returns>
+        private IAuthenticationManager GetAuthenticationManager()
+        {
+            return Request.GetOwinContext().Authentication;
         }
     }
 }
