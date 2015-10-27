@@ -12,7 +12,7 @@ namespace SimpleIdentityServer.Api.Helpers
 
     public class SessionManager : ISessionManager
     {
-        private static string _cookieName = "SimpleIdentityServerName";
+        public static string CookieName = "SimpleIdentityServerName";
 
         private IProtector _protector;
 
@@ -23,7 +23,7 @@ namespace SimpleIdentityServer.Api.Helpers
 
         public string GetSession()
         {
-            var cookie = HttpContext.Current.Request.Cookies[_cookieName];
+            var cookie = HttpContext.Current.Request.Cookies[CookieName];
             if (cookie == null || string.IsNullOrWhiteSpace(cookie.Value))
             {
                 return string.Empty;
@@ -37,7 +37,7 @@ namespace SimpleIdentityServer.Api.Helpers
         public void StoreSession(string subject)
         {
             var encryptedSubject = _protector.Encrypt(subject);
-            var httpCookie = new HttpCookie(_cookieName, encryptedSubject);
+            var httpCookie = new HttpCookie(CookieName, encryptedSubject);
             HttpContext.Current.Response.SetCookie(httpCookie);
         }
     }

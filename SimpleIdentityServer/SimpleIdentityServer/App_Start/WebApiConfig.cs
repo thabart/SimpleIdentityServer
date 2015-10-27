@@ -10,8 +10,6 @@ namespace SimpleIdentityServer.Api
     {
         public static void Register(HttpConfiguration config, IAppBuilder appBuilder)
         {
-            config.SuppressDefaultHostAuthentication();
-
             // Web API routes
             config.MapHttpAttributeRoutes();
 

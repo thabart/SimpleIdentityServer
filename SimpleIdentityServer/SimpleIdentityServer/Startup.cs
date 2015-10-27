@@ -10,6 +10,9 @@ using Owin;
 using SimpleIdentityServer.Api.Configuration;
 using SimpleIdentityServer.DataAccess.Fake;
 
+using Microsoft.Owin.Security.Cookies;
+using Microsoft.AspNet.Identity;
+
 [assembly: OwinStartup(typeof(SimpleIdentityServer.Api.Startup))]
 
 namespace SimpleIdentityServer.Api
@@ -20,6 +23,9 @@ namespace SimpleIdentityServer.Api
 
         public void Configuration(IAppBuilder app)
         {
+            // TODO : check this blog 
+            // http://weblog.west-wind.com/posts/2015/Apr/29/Adding-minimal-OWIN-Identity-Authentication-to-an-Existing-ASPNET-MVC-Application
+
             var httpConfiguration = new HttpConfiguration();
             if (_isInitialized == false)
             {
@@ -27,6 +33,11 @@ namespace SimpleIdentityServer.Api
                 PopupulateFakeDataSource();
                 _isInitialized = true;
             }
+
+            app.UseCookieAuthentication(new CookieAuthenticationOptions
+            {
+                AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie
+            });
 
             SwaggerConfig.Configure(httpConfiguration);
             WebApiConfig.Register(httpConfiguration, app);

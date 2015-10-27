@@ -1,4 +1,5 @@
 ﻿using SimpleIdentityServer.Api.Helpers;
+using System.Web;
 using System.Web.Mvc;
 
 namespace SimpleIdentityServer.Api.Controllers
@@ -12,8 +13,12 @@ namespace SimpleIdentityServer.Api.Controllers
             _sessionManager = sessionManager;
         }
 
+        [Authorize]
+
         public ActionResult Index(string code)
         {
+            var u = Request.GetOwinContext().Authentication.User;
+            var claims = u.Claims;
             var subject = _sessionManager.GetSession();
             return View();
         }
