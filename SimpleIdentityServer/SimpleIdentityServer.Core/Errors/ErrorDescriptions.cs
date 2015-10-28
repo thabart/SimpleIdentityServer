@@ -21,5 +21,7 @@
         public static string TheScopesNeedToBeSpecified = "the scopes {0} need to be specified";
 
         public static string TheUserNeedsToBeAuthenticated = "the user needs to be authenticated";
+
+        public static string TheUserCannotBeReauthenticated = "The user cannot be reauthenticated";
     }
 }

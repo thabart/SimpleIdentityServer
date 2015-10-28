@@ -1,5 +1,5 @@
-﻿using SimpleIdentityServer.Core.Repositories;
-using System.Collections.Generic;
+﻿using System.Linq;
+using SimpleIdentityServer.Core.Repositories;
 
 using MODELS = SimpleIdentityServer.DataAccess.Fake.Models;
 
@@ -15,6 +15,18 @@ namespace SimpleIdentityServer.DataAccess.Fake.Repositories
             });
 
             return true;
+        }
+
+
+        public Core.Models.Scope GetScopeByName(string name)
+        {
+            var scope = FakeDataSource.Instance().Scopes.SingleOrDefault(s => s.Name == name);
+            return new Core.Models.Scope
+            {
+                Name = scope.Name,
+                Description = scope.Description,
+                IsInternal = scope.IsInternal
+            };
         }
     }
 }

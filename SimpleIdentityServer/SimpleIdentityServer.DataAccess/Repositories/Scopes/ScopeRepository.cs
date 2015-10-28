@@ -9,5 +9,10 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories.Scopes
         {
             return true;
         }
+        
+        public Scope GetScopeByName(string name)
+        {
+            return null;
+        }
     }
 }

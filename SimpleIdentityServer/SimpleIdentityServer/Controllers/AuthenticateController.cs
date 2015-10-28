@@ -1,15 +1,17 @@
 ﻿using Microsoft.AspNet.Identity;
 using Microsoft.Owin.Security;
+
 using SimpleIdentityServer.Api.DTOs.Request;
-using SimpleIdentityServer.Api.Helpers;
 using SimpleIdentityServer.Api.Mappings;
 using SimpleIdentityServer.Api.Models;
+using SimpleIdentityServer.Core.Errors;
+using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Operations.Authorization;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Services;
+
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -28,8 +30,6 @@ namespace SimpleIdentityServer.Api.Controllers
 
         private readonly IConsentRepository _consentRepository;
 
-        private readonly IAddConsentOperation _addConsentOperation;
-
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
 
         public AuthenticateController(
@@ -37,14 +37,12 @@ namespace SimpleIdentityServer.Api.Controllers
             IEncoder encoder,
             IResourceOwnerService resourceOwnerService,
             IConsentRepository consentRepository,
-            IAddConsentOperation addConsentOperation,
             IResourceOwnerRepository resourceOwnerRepository)
         {
             _protector = protector;
             _encoder = encoder;
             _resourceOwnerService = resourceOwnerService;
             _consentRepository = consentRepository;
-            _addConsentOperation = addConsentOperation;
             _resourceOwnerRepository = resourceOwnerRepository;
         }
 
@@ -73,7 +71,7 @@ namespace SimpleIdentityServer.Api.Controllers
                     "Index", 
                     new
                     {
-                        code = code
+                        code
                     });
             }
 
@@ -96,18 +94,22 @@ namespace SimpleIdentityServer.Api.Controllers
         [HttpPost]
         public ActionResult Local(Authorize authorize)
         {
+            var code = _encoder.Decode(authorize.Code);
+            var request = _protector.Decrypt<AuthorizationRequest>(code);
+            var promptParameters = ParserHelper.ParsePromptParameters(request.prompt);
+
             var authenticationManager = GetAuthenticationManager();
             var user = authenticationManager.User;
             var userIsAuthenticated = user.Identity.IsAuthenticated;
             
-            // TODO : 1). Return an error if the user is already authenticated.
-            if (userIsAuthenticated)
+            // 1). Return an error if the user is already authenticated.
+            if (userIsAuthenticated && !promptParameters.Contains(PromptParameter.login))
             {
-                return null;
+                throw new IdentityServerException(
+                    ErrorCodes.InvalidRequestCode,
+                    ErrorDescriptions.TheUserCannotBeReauthenticated);
             }
             
-            var code = _encoder.Decode(authorize.Code);
-            var request = _protector.Decrypt<AuthorizationRequest>(code);
             var subject = _resourceOwnerService.Authenticate(
                 authorize.UserName, 
                 authorize.Password);
@@ -115,7 +117,10 @@ namespace SimpleIdentityServer.Api.Controllers
             // TODO : 2). Redirect to the index action if the user credentials are not correct.
             if (string.IsNullOrEmpty(subject))
             {
-                return RedirectToAction("Index", new { code = authorize.Code } );
+                return RedirectToAction("Index", new
+                {
+                    code = authorize.Code
+                });
             }
 
             var identity = GetIdentity(subject);
@@ -133,7 +138,7 @@ namespace SimpleIdentityServer.Api.Controllers
             if (consent == null)
             {
                 var parameter = request.ToParameter();
-                return RedirectToAction("Index", "Consent", new { code = code });
+                return RedirectToAction("Index", "Consent", new { code });
             }
 
             // 4). TODO : Redirect the user-agent to the callback-url and pass the authorization code as parameter.

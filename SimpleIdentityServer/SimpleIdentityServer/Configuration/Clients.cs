@@ -12,6 +12,7 @@ namespace SimpleIdentityServer.Api.Configuration
                 new Client
                 {
                     ClientId = "MyBlog",
+                    DisplayName = "My blog",
                     AllowedScopes = new List<Scope>
                     {
                         new Scope

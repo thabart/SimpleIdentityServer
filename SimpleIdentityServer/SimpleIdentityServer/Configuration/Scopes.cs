@@ -11,11 +11,20 @@ namespace SimpleIdentityServer.Api.Configuration
             {
                 new Scope
                 {
-                    Name = "BlogApi"
+                    Name = "BlogApi",
+                    Description = "Access to the blog API",
+                    IsInternal = false
                 },
                 new Scope
                 {
-                    Name = "BlogApi:AddArticle"
+                    Name = "BlogApi:AddArticle",
+                    Description = "Access to the add article operation",
+                    IsInternal = false
+                },
+                new Scope
+                {
+                    Name = "openid",
+                    IsInternal = true
                 }
             };
         } 

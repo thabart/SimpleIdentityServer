@@ -21,6 +21,7 @@ namespace SimpleIdentityServer.DataAccess.Fake.Repositories
             var result = new Client
             {
                 ClientId = record.ClientId,
+                DisplayName = record.DisplayName,
                 AllowedScopes = record.AllowedScopes == null || !record.AllowedScopes.Any() ? null : record.AllowedScopes.Select(r => new Scope
                 {
                     Name = r.Name
