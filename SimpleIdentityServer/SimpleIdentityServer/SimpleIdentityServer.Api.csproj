@@ -213,7 +213,6 @@
     <Compile Include="Controllers\ConsentController.cs" />
     <Compile Include="DTOs\Request\AuthorizationRequest.cs" />
     <Compile Include="Extensions\UriExtensions.cs" />
-    <Compile Include="Helpers\SessionManager.cs" />
     <Compile Include="Models\Authorize.cs" />
     <Compile Include="DTOs\Request\TokenRequest.cs" />
     <Compile Include="DTOs\Request\GrantTypeRequest.cs" />

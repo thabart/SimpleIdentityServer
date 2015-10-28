@@ -80,6 +80,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Actions\Api\Authorization\AuthorizationActions.cs" />
+    <Compile Include="Actions\WebSite\Authenticate\Actions\AuthenticateResourceOwnerAction.cs" />
+    <Compile Include="Actions\WebSite\Authenticate\AuthenticateActions.cs" />
     <Compile Include="Helpers\ParserHelper.cs" />
     <Compile Include="Models\AuthorizationCode.cs" />
     <Compile Include="Models\Consent.cs" />
@@ -124,7 +127,10 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Actions\Api\Token\" />
+    <Folder Include="Actions\WebSite\Consent\" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SimpleIdentityServer.Common\SimpleIdentityServer.Common.csproj">
       <Project>{fc7dc959-c366-473c-a95a-fa16d5c71597}</Project>
