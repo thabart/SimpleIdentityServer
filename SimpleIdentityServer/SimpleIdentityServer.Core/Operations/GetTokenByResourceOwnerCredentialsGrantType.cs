@@ -8,7 +8,7 @@ namespace SimpleIdentityServer.Core.Operations
 {
     public interface IGetTokenByResourceOwnerCredentialsGrantType
     {
-        GrantedToken Execute(GetAccessTokenWithResourceOwnerCredentialsParameter parameter);
+        GrantedToken Execute(ResourceOwnerGrantTypeParameter parameter);
     }
 
     public class GetTokenByResourceOwnerCredentialsGrantType : IGetTokenByResourceOwnerCredentialsGrantType
@@ -38,7 +38,7 @@ namespace SimpleIdentityServer.Core.Operations
         }
 
         public GrantedToken Execute(
-            GetAccessTokenWithResourceOwnerCredentialsParameter parameter)
+            ResourceOwnerGrantTypeParameter parameter)
         {
             parameter.Validate();
             var client = _clientValidator.ValidateClientExist(parameter.ClientId);

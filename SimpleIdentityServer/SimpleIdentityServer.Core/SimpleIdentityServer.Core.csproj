@@ -106,9 +106,8 @@
     <Compile Include="ModuleInit.cs" />
     <Compile Include="Operations\Authorization\GetAuthorizationOperation.cs" />
     <Compile Include="Operations\GetTokenByResourceOwnerCredentialsGrantType.cs" />
-    <Compile Include="Parameters\GetAuthorizationParameter.cs" />
-    <Compile Include="Parameters\GetAccessTokenWithResourceOwnerCredentialsParameter.cs" />
-    <Compile Include="Parameters\PromptParameter.cs" />
+    <Compile Include="Parameters\AuthorizationCodeGrantTypeParameter.cs" />
+    <Compile Include="Parameters\ResourceOwnerGrantTypeParameter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\IAuthorizationCodeRepository.cs" />
     <Compile Include="Repositories\IClientRepository.cs" />

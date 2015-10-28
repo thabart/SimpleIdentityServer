@@ -29,7 +29,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             switch (tokenRequest.grant_type)
             {
                 case GrantTypeRequest.password:
-                    var parameter = new GetAccessTokenWithResourceOwnerCredentialsParameter
+                    var parameter = new ResourceOwnerGrantTypeParameter
                     {
                         ClientId = tokenRequest.client_id,
                         UserName = tokenRequest.username,
