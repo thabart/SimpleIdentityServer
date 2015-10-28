@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SimpleIdentityServer.Core.Models
+namespace SimpleIdentityServer.DataAccess.Fake.Models
 {
     public class AuthorizationCode
     {

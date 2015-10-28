@@ -17,6 +17,8 @@ namespace SimpleIdentityServer.DataAccess.Fake
 
         private List<Consent> _consents;
 
+        private List<AuthorizationCode> _authorizationCodes;
+
         private FakeDataSource()
         {
             Init();
@@ -80,6 +82,18 @@ namespace SimpleIdentityServer.DataAccess.Fake
             }
         }
 
+        public List<AuthorizationCode> AuthorizationCodes
+        {
+            get
+            {
+                return _authorizationCodes;
+            } 
+            set
+            {
+                _authorizationCodes = value;
+            }
+        }
+
         public void Init()
         {
             _clients = new List<Client>();
@@ -87,6 +101,7 @@ namespace SimpleIdentityServer.DataAccess.Fake
             _resourceOwners = new List<ResourceOwner>();
             _scopes = new List<Scope>();
             _consents = new List<Consent>();
+            _authorizationCodes = new List<AuthorizationCode>();
         }
     }
 }

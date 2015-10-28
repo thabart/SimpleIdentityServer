@@ -5,6 +5,7 @@ using SimpleIdentityServer.Core.Repositories;
 
 using System.Linq;
 using System;
+using SimpleIdentityServer.DataAccess.Fake.Extensions;
 
 namespace SimpleIdentityServer.DataAccess.Fake.Repositories
 {
@@ -18,45 +19,13 @@ namespace SimpleIdentityServer.DataAccess.Fake.Repositories
             {
                 return null;
             }
-            
-            return result.Select(c => new Consent
-                 {
-                     Id = c.Id,
-                     Client = new Client
-                     {
-                         ClientId = c.Client.ClientId,
-                         DisplayName = c.Client.DisplayName
-                     },
-                     ResourceOwner = new ResourceOwner
-                     {
-                         Id = subject
-                     },
-                     GrantedScopes = c.GrantedScopes.Select(s => new Scope
-                     {
-                         Name = s.Name
-                     }).ToList()
-                 }).ToList();
+
+            return result.Select(c => c.ToBusiness()).ToList();
         }
 
         public void InsertConsent(Consent record)
         {
-            var newRecord = new Fake.Models.Consent
-            {
-                Id = record.Id,
-                Client = new Fake.Models.Client
-                {
-                    ClientId = record.Client.ClientId
-                },
-                ResourceOwner = new Fake.Models.ResourceOwner
-                {
-                    Id = record.ResourceOwner.Id
-                },
-                GrantedScopes = record.GrantedScopes.Select(s => new Fake.Models.Scope
-                {
-                    Name = s.Name
-                }).ToList()
-            };
-
+            var newRecord = record.ToFake();
             FakeDataSource.Instance().Consents.Add(newRecord);
         }
     }

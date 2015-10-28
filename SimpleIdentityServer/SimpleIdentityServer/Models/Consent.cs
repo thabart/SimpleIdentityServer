@@ -7,5 +7,7 @@ namespace SimpleIdentityServer.Api.Models
         public string ClientDisplayName { get; set; }
 
         public List<string> AllowedScopeDescriptions { get; set; } 
+
+        public string Code { get; set; }
     }
 }

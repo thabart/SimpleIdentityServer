@@ -16,6 +16,7 @@ namespace SimpleIdentityServer.DataAccess.Fake
             register.RegisterType<IResourceOwnerRepository, FakeResourceOwnerRepository>();
             register.RegisterType<IGrantedTokenRepository, FakeGrantedTokenRepository>();
             register.RegisterType<IConsentRepository, FakeConsentRepository>();
+            register.RegisterType<IAuthorizationCodeRepository, FakeAuthorizationCodeRepository>();
         }
     }
 }

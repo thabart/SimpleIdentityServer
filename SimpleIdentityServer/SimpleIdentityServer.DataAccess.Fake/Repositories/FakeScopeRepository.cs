@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using SimpleIdentityServer.Core.Repositories;
 
-using MODELS = SimpleIdentityServer.DataAccess.Fake.Models;
+using SimpleIdentityServer.DataAccess.Fake.Extensions;
 
 namespace SimpleIdentityServer.DataAccess.Fake.Repositories
 {
@@ -9,11 +9,7 @@ namespace SimpleIdentityServer.DataAccess.Fake.Repositories
     {
         public bool InsertScope(Core.Models.Scope scope)
         {
-            FakeDataSource.Instance().Scopes.Add(new MODELS.Scope
-            {
-                Name = scope.Name
-            });
-
+            FakeDataSource.Instance().Scopes.Add(scope.ToFake());
             return true;
         }
 
@@ -21,12 +17,7 @@ namespace SimpleIdentityServer.DataAccess.Fake.Repositories
         public Core.Models.Scope GetScopeByName(string name)
         {
             var scope = FakeDataSource.Instance().Scopes.SingleOrDefault(s => s.Name == name);
-            return new Core.Models.Scope
-            {
-                Name = scope.Name,
-                Description = scope.Description,
-                IsInternal = scope.IsInternal
-            };
+            return scope.ToBusiness();
         }
     }
 }

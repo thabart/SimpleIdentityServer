@@ -32,7 +32,7 @@
         </ul>
     </div>
     <div class="row">
-        <button type="button" class="btn btn-default">Cancel</button>
-        <button type="button" class="btn btn-default">Confirm</button>
+        <a href="@Url.Action("Cancel", new { code = Model.Code })" class="btn btn-default">Cancel</a>
+        <a href="@Url.Action("Confirm", new { code = Model.Code })" class="btn btn-default">Confirm</a>
     </div>
 </div>

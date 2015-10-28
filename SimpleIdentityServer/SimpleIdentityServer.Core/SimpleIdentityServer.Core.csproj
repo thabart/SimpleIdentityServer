@@ -107,6 +107,7 @@
     <Compile Include="Parameters\GetAccessTokenWithResourceOwnerCredentialsParameter.cs" />
     <Compile Include="Parameters\PromptParameter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\IAuthorizationCodeRepository.cs" />
     <Compile Include="Repositories\IClientRepository.cs" />
     <Compile Include="Repositories\IConsentRepository.cs" />
     <Compile Include="Repositories\IGrantedTokenRepository.cs" />

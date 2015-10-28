@@ -6,6 +6,7 @@ using SimpleIdentityServer.Core.Repositories;
 using MODELS = SimpleIdentityServer.DataAccess.Fake.Models;
 
 using System.Linq;
+using SimpleIdentityServer.DataAccess.Fake.Extensions;
 
 namespace SimpleIdentityServer.DataAccess.Fake.Repositories
 {
@@ -19,12 +20,7 @@ namespace SimpleIdentityServer.DataAccess.Fake.Repositories
                 return null;
             }
 
-            return new ResourceOwner
-            {
-                Id = record.Id,
-                UserName = record.UserName,
-                Password = record.Password
-            };
+            return record.ToBusiness();
         }
 
         public ResourceOwner GetResourceOwnerByCredentials(string userName, string hashedPassword)
@@ -35,23 +31,12 @@ namespace SimpleIdentityServer.DataAccess.Fake.Repositories
                 return null;
             }
 
-            return new ResourceOwner
-            {
-                Id = record.Id,
-                UserName = record.UserName,
-                Password = record.Password
-            };
+            return record.ToBusiness();
         }
 
         public bool Insert(ResourceOwner resourceOwner)
         {
-            FakeDataSource.Instance().ResourceOwners.Add(new MODELS.ResourceOwner
-            {
-                Id = resourceOwner.Id,
-                UserName = resourceOwner.UserName,
-                Password = resourceOwner.Password
-            });
-
+            FakeDataSource.Instance().ResourceOwners.Add(resourceOwner.ToFake());
             return true;
         }
     }

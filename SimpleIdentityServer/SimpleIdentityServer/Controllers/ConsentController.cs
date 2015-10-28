@@ -7,9 +7,13 @@ using SimpleIdentityServer.Api.DTOs.Request;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Repositories;
+using System;
+using SimpleIdentityServer.Api.Extensions;
+using System.Security.Claims;
 
 namespace SimpleIdentityServer.Api.Controllers
 {
+    [Authorize]
     public class ConsentController : Controller
     {
         private readonly IProtector _protector;
@@ -22,22 +26,31 @@ namespace SimpleIdentityServer.Api.Controllers
 
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
 
+        private readonly IAuthorizationCodeRepository _authorizationCodeRepository;
+
         public ConsentController(
             IProtector protector,
             IScopeRepository scopeRepository,
             IClientRepository clientRepository,
             IConsentRepository consentRepository,
-            IResourceOwnerRepository resourceOwnerRepository)
+            IResourceOwnerRepository resourceOwnerRepository,
+            IAuthorizationCodeRepository authorizationCodeRepository)
         {
             _protector = protector;
             _scopeRepository = scopeRepository;
             _clientRepository = clientRepository;
             _consentRepository = consentRepository;
             _resourceOwnerRepository = resourceOwnerRepository;
+            _authorizationCodeRepository = authorizationCodeRepository;
         }
 
-        [Authorize]
 
+        /// <summary>
+        /// Fetch the scopes and client name from the ClientRepository and the encrypted/signed parameter.
+        /// Those informations are used to create the consent screen.
+        /// </summary>
+        /// <param name="code">Encrypted and signed request.</param>
+        /// <returns>Consent screen.</returns>
         public ActionResult Index(string code)
         {
             // TODO : display the user information on the website (base controller ?)
@@ -55,32 +68,61 @@ namespace SimpleIdentityServer.Api.Controllers
             var model = new Models.Consent
             {
                 ClientDisplayName = client.DisplayName,
-                AllowedScopeDescriptions = allowedScopeDescriptions
+                AllowedScopeDescriptions = allowedScopeDescriptions,
+                Code = code
             };
 
             return View(model);
         }
-
-        [Authorize]
+        
+        /// <summary>
+        /// This method is executed when the user confirm the consent
+        /// 1). If there's already consent confirmed in the past by the resource owner
+        /// 1).* then we generate an authorization code and redirects to the callback.
+        /// 2). If there's no consent then we insert it and the authorization code is returned
+       ///  2°.* to the callback url.
+        /// </summary>
+        /// <param name="code">Crypted and signed request.</param>
+        /// <returns>Redirects the authorization code to the callback.</returns>
         public ActionResult Confirm(string code)
         {
             var request = _protector.Decrypt<AuthorizationRequest>(code);
-
-            // Retrieve the user's consent for a client.
+            
             var user = Request.GetOwinContext().Authentication.User;
-            var subject = user.Identity.Name;
+            var subject = user.FindFirst(ClaimTypes.NameIdentifier).Value;
             var consents = _consentRepository.GetConsentsForGivenUser(subject);
-            var consent = consents.SingleOrDefault(c => c.Client.ClientId == request.client_id);
+            // 1).
+            var consent = consents == null ? null : consents.SingleOrDefault(c => c.Client.ClientId == request.client_id);
             if (consent == null)
             {
+                // 2).
                 consent = CreateConsent(request);
                 _consentRepository.InsertConsent(consent);
             }
+            
+            var authorizationCode = new AuthorizationCode
+            {
+                CreateDateTime = DateTime.UtcNow,
+                Consent = consent,
+                Value = Guid.NewGuid().ToString() 
+            };
+            _authorizationCodeRepository.AddAuthorizationCode(authorizationCode);
 
-            var redirectUrl = request.redirect_uri;
+            var redirectUrl = new Uri(request.redirect_uri);
+            var redirectUrlWithAuthCode = redirectUrl.AddParameter("code", authorizationCode.Value);
+            return Redirect(redirectUrlWithAuthCode.ToString());
+        }
 
-                
-            return View();
+        /// <summary>
+        /// Action executed when the user refuse the consent.
+        /// It redirects to the callback without passing the authorization code in parameter.
+        /// </summary>
+        /// <param name="code">Encrypted & signed authorization request</param>
+        /// <returns>Redirect to the callback url.</returns>
+        public ActionResult Cancel(string code)
+        {
+            var request = _protector.Decrypt<AuthorizationRequest>(code);
+            return Redirect(request.redirect_uri);
         }
 
         /// <summary>
@@ -91,7 +133,7 @@ namespace SimpleIdentityServer.Api.Controllers
         private Consent CreateConsent(AuthorizationRequest request)
         {
             var user = Request.GetOwinContext().Authentication.User;
-            var subject = user.Identity.Name;
+            var subject = user.FindFirst(ClaimTypes.NameIdentifier).Value;
             var grantedScopes = GetScopes(request.scope);
             return new Consent
             {
