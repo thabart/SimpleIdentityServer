@@ -81,6 +81,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helpers\ParserHelper.cs" />
+    <Compile Include="Models\AuthorizationCode.cs" />
     <Compile Include="Models\Consent.cs" />
     <Compile Include="Operations\Authorization\AddConsentOperation.cs" />
     <Compile Include="Protector\Compressor.cs" />
