@@ -3,7 +3,7 @@ using SimpleIdentityServer.Core.Exceptions;
 
 namespace SimpleIdentityServer.Core.Parameters
 {
-    public sealed class GetAccessTokenWithResourceOwnerCredentialsParameter
+    public sealed class ResourceOwnerGrantTypeParameter
     {
         public string ClientId { get; set; }
 

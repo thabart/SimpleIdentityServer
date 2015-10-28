@@ -1,9 +1,9 @@
-﻿using SimpleIdentityServer.Core.Errors;
+﻿using System;
+using System.Collections.Generic;
+
+using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace SimpleIdentityServer.Core.Parameters
 {
@@ -29,7 +29,16 @@ namespace SimpleIdentityServer.Core.Parameters
         wap
     }
 
-    public sealed class GetAuthorizationParameter
+    [Flags]
+    public enum PromptParameter
+    {
+        none,
+        login,
+        consent,
+        select_account
+    }
+
+    public sealed class AuthorizationCodeGrantTypeParameter
     {
         public string ClientId { get; set; }
 

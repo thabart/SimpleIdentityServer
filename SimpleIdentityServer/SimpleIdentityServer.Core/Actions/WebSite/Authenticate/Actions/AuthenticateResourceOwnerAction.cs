@@ -6,7 +6,12 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Actions.WebSite.Authenticate.Actions
 {
-    class AuthenticateResourceOwnerAction
+    public interface IAuthenticateResourceOwnerAction
+    {
+
+    }
+
+    public class AuthenticateResourceOwnerAction : IAuthenticateResourceOwnerAction
     {
     }
 }
