@@ -1,9 +1,10 @@
-﻿using Microsoft.Practices.Unity;
-using Microsoft.Practices.EnterpriseLibrary.Caching;
+﻿using Microsoft.Practices.EnterpriseLibrary.Caching;
+using Microsoft.Practices.Unity;
 using NUnit.Framework;
 using SimpleIdentityServer.Api.DTOs.Request;
 using SimpleIdentityServer.Api.Tests.Common;
 using SimpleIdentityServer.Core.Helpers;
+using SimpleIdentityServer.DataAccess.Fake;
 using SimpleIdentityServer.RateLimitation.Configuration;
 using SimpleIdentityServer.RateLimitation.Constants;
 using System.Collections.Generic;
@@ -14,10 +15,8 @@ using System.Text;
 using System.Threading;
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
-
-using MODELS = SimpleIdentityServer.DataAccess.Fake.Models;
 using DOMAINS = SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.DataAccess.Fake;
+using MODELS = SimpleIdentityServer.DataAccess.Fake.Models;
 
 namespace SimpleIdentityServer.Api.Tests.Specs
 {
@@ -34,7 +33,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
 
         private RateLimitationElement _rateLimitationElement;
 
-        private HttpStatusCode _httpStatusCode;
+        private List<HttpResponse> _httpResponses;
 
         public GetAccessTokenMultipleTimeSpec()
         {
@@ -53,6 +52,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             _securityHelper = new SecurityHelper();
             _tokens = new List<DOMAINS.GrantedToken>();
             _errors = new List<TooManyRequestResponse>();
+            _httpResponses = new List<HttpResponse>();
         }
 
         [Given("a resource owner with username (.*) and password (.*) is defined")]
@@ -90,43 +90,6 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         {
             _rateLimitationElement.SlidingTime = slidingTime;
         }
-        
-        [Given("scopes (.*) are defined")]
-        public void GivenScope(List<string> scopes)
-        {
-            foreach (var scope in scopes)
-            {
-                var record = new MODELS.Scope
-                {
-                    Name = scope
-                };
-
-                FakeDataSource.Instance().Scopes.Add(record);
-            }
-        }
-
-
-        [Given("the scopes (.*) are assigned to the client (.*)")]
-        public void GivenScopesToTheClients(List<string> scopeNames, string clientId)
-        {
-            var client = FakeDataSource.Instance().Clients.SingleOrDefault(c => c.ClientId == clientId);
-            if (client == null)
-            {
-                return;
-            }
-
-            var scopes = FakeDataSource.Instance().Scopes;
-            foreach (var scopeName in scopeNames)
-            {
-                var storedScope = scopes.SingleOrDefault(s => s.Name == scopeName);
-                if (storedScope == null)
-                {
-                    continue;
-                }
-
-                client.AllowedScopes.Add(storedScope);
-            }
-        }
 
         [When("requesting access tokens")]
         public void WhenRequestingAccessTokens(Table table)
@@ -148,8 +111,14 @@ namespace SimpleIdentityServer.Api.Tests.Specs
                 var content = new StringContent(parameter, Encoding.UTF8, "application/x-www-form-urlencoded");
             
                 var result = httpClient.PostAsync("/api/token", content).Result;
-                _httpStatusCode = result.StatusCode;
-                if (_httpStatusCode == HttpStatusCode.OK)
+                var httpStatusCode = result.StatusCode;
+                _httpResponses.Add(new HttpResponse
+                {
+                    StatusCode = httpStatusCode,
+                    NumberOfRequests = result.Headers.GetValues(RateLimitationConstants.XRateLimitLimitName).FirstOrDefault(),
+                    NumberOfRemainingRequests = result.Headers.GetValues(RateLimitationConstants.XRateLimitRemainingName).FirstOrDefault()
+                });
+                if (httpStatusCode == HttpStatusCode.OK)
                 {
                     _tokens.Add(result.Content.ReadAsAsync<DOMAINS.GrantedToken>().Result);
                     continue;
@@ -157,10 +126,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             
                 _errors.Add(new TooManyRequestResponse
                 {
-                    HttpStatusCode = _httpStatusCode,
                     Message = result.Content.ReadAsAsync<string>().Result,
-                    NumberOfRequests = result.Headers.GetValues(RateLimitationConstants.XRateLimitLimitName).FirstOrDefault(),
-                    NumberOfRemainingRequests = result.Headers.GetValues(RateLimitationConstants.XRateLimitRemainingName).FirstOrDefault()
                 });
             }
         }
@@ -180,12 +146,28 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         [Then("the errors should be returned")]
         public void ThenErrorsShouldBe(Table table)
         {
-            var records = table.CreateSet<TooManyRequestResponse>();
-            foreach(var record in records)
+            var records = table.CreateSet<TooManyRequestResponse>().ToList();
+            Assert.That(records.Count, Is.EqualTo(_errors.Count()));
+            for (var i = 0; i < records.Count() - 1; i++)
             {
-                Assert.IsTrue(_errors.Any(
-                    e => e.HttpStatusCode == record.HttpStatusCode &&
-                    e.Message == record.Message));
+                var record = records[i];
+                var error = _errors[i];
+                Assert.That(record.Message, Is.EqualTo(error.Message));
+            }
+        }
+
+        [Then("the http responses should be returned")]
+        public void ThenHttpHeadersShouldContain(Table table)
+        {
+            var records = table.CreateSet<HttpResponse>().ToList();
+            Assert.That(records.Count, Is.EqualTo(_httpResponses.Count()));
+            for(var i = 0; i < records.Count() - 1; i++)
+            {
+                var record = records[i];
+                var httpResponse = _httpResponses[i];
+                Assert.That(record.StatusCode, Is.EqualTo(record.StatusCode));
+                Assert.That(record.NumberOfRemainingRequests, Is.EqualTo(record.NumberOfRemainingRequests));
+                Assert.That(record.NumberOfRequests, Is.EqualTo(record.NumberOfRequests));
             }
         }
     }

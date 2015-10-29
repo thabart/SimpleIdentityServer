@@ -102,13 +102,30 @@ this.ScenarioSetup(scenarioInfo);
  testRunner.Then("2 access tokens are generated", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             TechTalk.SpecFlow.Table table2 = new TechTalk.SpecFlow.Table(new string[] {
-                        "HttpStatusCode",
                         "Message"});
             table2.AddRow(new string[] {
-                        "429",
                         "Allow 2 requests per 0.2 minutes"});
 #line 18
  testRunner.And("the errors should be returned", ((string)(null)), table2, "And ");
+#line hidden
+            TechTalk.SpecFlow.Table table3 = new TechTalk.SpecFlow.Table(new string[] {
+                        "StatusCode",
+                        "NumberOfRemainingRequests",
+                        "NumberOfRequests"});
+            table3.AddRow(new string[] {
+                        "200",
+                        "1",
+                        "2"});
+            table3.AddRow(new string[] {
+                        "200",
+                        "0",
+                        "2"});
+            table3.AddRow(new string[] {
+                        "429",
+                        "0",
+                        "2"});
+#line 22
+ testRunner.And("the http responses should be returned", ((string)(null)), table3, "And ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -118,60 +135,83 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void Request5TimesAnAccessToken()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Request 5 times an access token", ((string[])(null)));
-#line 22
+#line 28
 this.ScenarioSetup(scenarioInfo);
-#line 23
+#line 29
  testRunner.Given("a resource owner with username thierry and password loki is defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 24
+#line 30
  testRunner.And("a mobile application MyHolidays is defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 25
+#line 31
  testRunner.And("allowed number of requests is 2", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 26
+#line 32
  testRunner.And("sliding time is 0.2", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-            TechTalk.SpecFlow.Table table3 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table4 = new TechTalk.SpecFlow.Table(new string[] {
                         "client_id",
                         "username",
                         "password"});
-            table3.AddRow(new string[] {
+            table4.AddRow(new string[] {
                         "MyHolidays",
                         "thierry",
                         "loki"});
-            table3.AddRow(new string[] {
+            table4.AddRow(new string[] {
                         "MyHolidays",
                         "thierry",
                         "loki"});
-            table3.AddRow(new string[] {
+            table4.AddRow(new string[] {
                         "MyHolidays",
                         "thierry",
                         "loki"});
-            table3.AddRow(new string[] {
+            table4.AddRow(new string[] {
                         "MyHolidays",
                         "thierry",
                         "loki"});
-            table3.AddRow(new string[] {
+            table4.AddRow(new string[] {
                         "MyHolidays",
                         "thierry",
                         "loki"});
-#line 28
- testRunner.When("requesting access tokens", ((string)(null)), table3, "When ");
-#line 36
+#line 34
+ testRunner.When("requesting access tokens", ((string)(null)), table4, "When ");
+#line 42
  testRunner.Then("2 access tokens are generated", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
-            TechTalk.SpecFlow.Table table4 = new TechTalk.SpecFlow.Table(new string[] {
-                        "HttpStatusCode",
+            TechTalk.SpecFlow.Table table5 = new TechTalk.SpecFlow.Table(new string[] {
                         "Message"});
-            table4.AddRow(new string[] {
-                        "429",
+            table5.AddRow(new string[] {
                         "Allow 2 requests per 0.2 minutes"});
-            table4.AddRow(new string[] {
-                        "429",
+            table5.AddRow(new string[] {
                         "Allow 2 requests per 0.2 minutes"});
-            table4.AddRow(new string[] {
-                        "429",
+            table5.AddRow(new string[] {
                         "Allow 2 requests per 0.2 minutes"});
-#line 37
- testRunner.And("the errors should be returned", ((string)(null)), table4, "And ");
+#line 43
+ testRunner.And("the errors should be returned", ((string)(null)), table5, "And ");
+#line hidden
+            TechTalk.SpecFlow.Table table6 = new TechTalk.SpecFlow.Table(new string[] {
+                        "StatusCode",
+                        "NumberOfRemainingRequests",
+                        "NumberOfRequests"});
+            table6.AddRow(new string[] {
+                        "200",
+                        "1",
+                        "2"});
+            table6.AddRow(new string[] {
+                        "200",
+                        "0",
+                        "2"});
+            table6.AddRow(new string[] {
+                        "429",
+                        "0",
+                        "2"});
+            table6.AddRow(new string[] {
+                        "429",
+                        "0",
+                        "2"});
+            table6.AddRow(new string[] {
+                        "429",
+                        "0",
+                        "2"});
+#line 49
+ testRunner.And("the http responses should be returned", ((string)(null)), table6, "And ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -181,66 +221,88 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void Request3TimesAnAccessTokenWaitFor3SecondsAndRequest2AccessTokens()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Request 3 times an access token wait for 3 seconds and request 2 access tokens", ((string[])(null)));
-#line 43
+#line 57
 this.ScenarioSetup(scenarioInfo);
-#line 44
+#line 58
  testRunner.Given("a resource owner with username thierry and password loki is defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 45
+#line 59
  testRunner.And("a mobile application MyHolidays is defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 46
+#line 60
  testRunner.And("allowed number of requests is 2", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 47
+#line 61
  testRunner.And("sliding time is 0.2", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-            TechTalk.SpecFlow.Table table5 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table7 = new TechTalk.SpecFlow.Table(new string[] {
                         "client_id",
                         "username",
                         "password"});
-            table5.AddRow(new string[] {
+            table7.AddRow(new string[] {
                         "MyHolidays",
                         "thierry",
                         "loki"});
-            table5.AddRow(new string[] {
+            table7.AddRow(new string[] {
                         "MyHolidays",
                         "thierry",
                         "loki"});
-            table5.AddRow(new string[] {
+            table7.AddRow(new string[] {
                         "MyHolidays",
                         "thierry",
                         "loki"});
-#line 49
- testRunner.When("requesting access tokens", ((string)(null)), table5, "When ");
-#line 54
+#line 63
+ testRunner.When("requesting access tokens", ((string)(null)), table7, "When ");
+#line 68
  testRunner.And("waiting for 3000 seconds", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-            TechTalk.SpecFlow.Table table6 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table8 = new TechTalk.SpecFlow.Table(new string[] {
                         "client_id",
                         "username",
                         "password"});
-            table6.AddRow(new string[] {
+            table8.AddRow(new string[] {
                         "MyHolidays",
                         "thierry",
                         "loki"});
-            table6.AddRow(new string[] {
+            table8.AddRow(new string[] {
                         "MyHolidays",
                         "thierry",
                         "loki"});
-#line 55
- testRunner.And("requesting access tokens", ((string)(null)), table6, "And ");
-#line 60
+#line 69
+ testRunner.And("requesting access tokens", ((string)(null)), table8, "And ");
+#line 74
  testRunner.Then("4 access tokens are generated", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
-            TechTalk.SpecFlow.Table table7 = new TechTalk.SpecFlow.Table(new string[] {
-                        "HttpStatusCode",
+            TechTalk.SpecFlow.Table table9 = new TechTalk.SpecFlow.Table(new string[] {
                         "Message"});
-            table7.AddRow(new string[] {
-                        "429",
+            table9.AddRow(new string[] {
                         "Allow 2 requests per 0.2 minutes"});
-            table7.AddRow(new string[] {
+#line 76
+ testRunner.And("the errors should be returned", ((string)(null)), table9, "And ");
+#line hidden
+            TechTalk.SpecFlow.Table table10 = new TechTalk.SpecFlow.Table(new string[] {
+                        "StatusCode",
+                        "NumberOfRemainingRequests",
+                        "NumberOfRequests"});
+            table10.AddRow(new string[] {
+                        "200",
+                        "1",
+                        "2"});
+            table10.AddRow(new string[] {
+                        "200",
+                        "0",
+                        "2"});
+            table10.AddRow(new string[] {
                         "429",
-                        "Allow 2 requests per 0.2 minutes"});
-#line 62
- testRunner.And("the errors should be returned", ((string)(null)), table7, "And ");
+                        "0",
+                        "2"});
+            table10.AddRow(new string[] {
+                        "200",
+                        "1",
+                        "2"});
+            table10.AddRow(new string[] {
+                        "200",
+                        "0",
+                        "2"});
+#line 80
+ testRunner.And("the http responses should be returned", ((string)(null)), table10, "And ");
 #line hidden
             this.ScenarioCleanup();
         }

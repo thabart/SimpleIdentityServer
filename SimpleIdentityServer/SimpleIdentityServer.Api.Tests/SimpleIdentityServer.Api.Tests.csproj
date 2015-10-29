@@ -113,6 +113,7 @@
   <ItemGroup>
     <Compile Include="Common\ConfigureWebApi.cs" />
     <Compile Include="Common\FakeGetRateLimitationElementOperation.cs" />
+    <Compile Include="Common\HttpResponse.cs" />
     <Compile Include="Common\TooManyRequestResponse.cs" />
     <Compile Include="Common\Transformations.cs" />
     <Compile Include="Features\GetAccessTokenMultipleTime.feature.cs">
