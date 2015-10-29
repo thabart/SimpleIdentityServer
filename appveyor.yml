@@ -3,7 +3,7 @@ configuration: Release
 platform: Any CPU
 environment:
   matrix:
-  - solution_name: SimpleIdentityServer\SimpleIdentityServer.sln
+  - solution_name: SimpleIdentityServer.sln
 build_script:
 - msbuild %solution_name%
 install:
@@ -14,5 +14,5 @@ before_build:
 - appveyor DownloadFile https://raw.githubusercontent.com/appveyor/ci/master/scripts/nuget-restore.cmd
 - nuget-restore
 artifacts:
-- path: SimpleIdentityServer\SimpleIdentityServer\bin
+- path: SimpleIdentityServer\bin
   name: SimpleIdentityServer
