@@ -1,6 +1,6 @@
-﻿namespace SimpleIdentityServer.Api.Models
+﻿namespace SimpleIdentityServer.Api.ViewModels
 {
-    public class Authorize
+    public class AuthorizeViewModel
     {
         public string Code { get; set; }
 

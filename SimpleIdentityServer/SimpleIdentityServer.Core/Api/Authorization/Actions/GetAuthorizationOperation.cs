@@ -1,39 +1,46 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
+using System.Security.Principal;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
+using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Validators;
 
-namespace SimpleIdentityServer.Core.Operations.Authorization
+namespace SimpleIdentityServer.Core.Api.Authorization.Actions
 {
-    public interface IGetAuthorizationOperation
+    public interface IGetAuthorizationCodeOperation
     {
-        AuthorizationResult Execute(GetAuthorizationParameter parameter, ClaimsPrincipal claimsPrincipal);
+        ActionResult Execute(AuthorizationCodeGrantTypeParameter parameter, IPrincipal claimsPrincipal);
     }
 
-    public class GetAuthorizationOperation : IGetAuthorizationOperation
+    public class GetAuthorizationCodeOperation : IGetAuthorizationCodeOperation
     {
-        private readonly ITokenHelper _tokenHelper;
 
         private readonly IScopeValidator _scopeValidator;
 
         private readonly IClientValidator _clientValidator;
 
-        public GetAuthorizationOperation(
-            ITokenHelper tokenHelper,
+        private readonly IParameterParserHelper _parameterParserHelper;
+
+        private readonly IActionResultFactory _actionResultFactory;
+
+        public GetAuthorizationCodeOperation(
             IClientValidator clientValidator,
-            IScopeValidator scopeValidator)
+            IScopeValidator scopeValidator,
+            IParameterParserHelper parameterParserHelper,
+            IActionResultFactory actionResultFactory)
         {
-            _tokenHelper = tokenHelper;
             _clientValidator = clientValidator;
             _scopeValidator = scopeValidator;
+            _parameterParserHelper = parameterParserHelper;
+            _actionResultFactory = actionResultFactory;
         }
-        
-        public AuthorizationResult Execute(GetAuthorizationParameter parameter, ClaimsPrincipal claimsPrincipal)
+
+        public ActionResult Execute(
+            AuthorizationCodeGrantTypeParameter parameter,
+            IPrincipal claimsPrincipal)
         {
             parameter.Validate();
             var client = _clientValidator.ValidateClientExist(parameter.ClientId);
@@ -47,8 +54,8 @@ namespace SimpleIdentityServer.Core.Operations.Authorization
                     parameter.State);
             }
 
-            var prompts = parameter.GetPromptParameters();
-            var result = new AuthorizationResult();
+            var result = _actionResultFactory.CreateAnEmptyActionResultWithRedirection();
+            var prompts = _parameterParserHelper.ParsePromptParameters(parameter.Prompt);
             AuthenticateEndUser(prompts, result, claimsPrincipal, parameter);
             return result;
         }
@@ -59,15 +66,15 @@ namespace SimpleIdentityServer.Core.Operations.Authorization
         /// </summary>
         private void AuthenticateEndUser(
             IList<PromptParameter> promptParameters,
-            AuthorizationResult result,
-            ClaimsPrincipal claimsPrincipal,
-            GetAuthorizationParameter parameter)
+            ActionResult result,
+            IPrincipal claimsPrincipal,
+            AuthorizationCodeGrantTypeParameter parameter)
         {
             var endUserIsAuthenticated = claimsPrincipal.Identity.IsAuthenticated;
             if (promptParameters.Contains(PromptParameter.login)
                 || (!endUserIsAuthenticated && !promptParameters.Contains(PromptParameter.none)))
             {
-                result.Redirection = Redirection.Authenticate;
+                result.RedirectInstruction.Action = IdentityServerEndPoints.AuthenticateIndex;
             }
 
             if (promptParameters.Contains(PromptParameter.none) && !endUserIsAuthenticated)

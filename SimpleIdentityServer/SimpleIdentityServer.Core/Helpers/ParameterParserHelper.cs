@@ -1,18 +1,26 @@
-﻿using SimpleIdentityServer.Core.Parameters;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using SimpleIdentityServer.Core.Parameters;
+
 namespace SimpleIdentityServer.Core.Helpers
 {
-    public static class ParserHelper
+    public interface IParameterParserHelper
+    {
+        List<PromptParameter> ParsePromptParameters(string parameter);
+
+        List<string> ParseScopeParameters(string scope);
+    }
+
+    public class ParameterParserHelper : IParameterParserHelper
     {
         /// <summary>
         /// Parse the parameter and returns a list of prompt parameter.
         /// </summary>
-        /// <param name="promptParameter">List of prompts separate by whitespace</param>
+        /// <param name="parameter">List of prompts separate by whitespace</param>
         /// <returns>List of prompts.</returns>
-        public static List<PromptParameter> ParsePromptParameters(string parameter)
+        public List<PromptParameter> ParsePromptParameters(string parameter)
         {
             var defaultResult = new List<PromptParameter>
             {
@@ -35,6 +43,11 @@ namespace SimpleIdentityServer.Core.Helpers
             }
 
             return prompts;
+        }
+
+        public List<string> ParseScopeParameters(string scope)
+        {
+            return scope.Split(' ').ToList();
         }
     }
 }

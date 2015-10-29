@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace SimpleIdentityServer.Api.Models
+namespace SimpleIdentityServer.Api.ViewModels
 {
-    public class Consent
+    public class ConsentViewModel
     {
         public string ClientDisplayName { get; set; }
 

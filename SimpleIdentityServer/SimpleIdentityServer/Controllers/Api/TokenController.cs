@@ -1,11 +1,11 @@
 ﻿using System.Web.Http;
 
 using SimpleIdentityServer.Api.DTOs.Request;
-using SimpleIdentityServer.Core.Operations;
+using SimpleIdentityServer.Api.Extensions;
+using SimpleIdentityServer.Core.Api.Token;
 
 using SimpleIdentityServer.Api.Attributes;
 using SimpleIdentityServer.RateLimitation.Attributes;
-using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Models;
 
 namespace SimpleIdentityServer.Api.Controllers.Api
@@ -13,12 +13,12 @@ namespace SimpleIdentityServer.Api.Controllers.Api
     [RoutePrefix("token")]
     public class TokenController : ApiController
     {
-        private readonly IGetTokenByResourceOwnerCredentialsGrantType _getTokenByResourceOwnerCredentialsGrantType;
+        private readonly ITokenActions _tokenActions;
 
         public TokenController(
-            IGetTokenByResourceOwnerCredentialsGrantType getTokenByResourceOwnerCredentialsGrantType)
+            ITokenActions tokenActions)
         {
-            _getTokenByResourceOwnerCredentialsGrantType = getTokenByResourceOwnerCredentialsGrantType;
+            _tokenActions = tokenActions;
         }
         
         [SwaggerOperation("PostToken")]
@@ -29,15 +29,8 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             switch (tokenRequest.grant_type)
             {
                 case GrantTypeRequest.password:
-                    var parameter = new ResourceOwnerGrantTypeParameter
-                    {
-                        ClientId = tokenRequest.client_id,
-                        UserName = tokenRequest.username,
-                        Password = tokenRequest.password,
-                        Scope = tokenRequest.scope
-                    };
-
-                    result = _getTokenByResourceOwnerCredentialsGrantType.Execute(parameter);
+                    var parameter = tokenRequest.ToParameter();
+                    result = _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(parameter);
                     break;
             }
 

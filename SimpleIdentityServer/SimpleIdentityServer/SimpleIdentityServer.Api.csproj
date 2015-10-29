@@ -212,8 +212,13 @@
     <Compile Include="Controllers\AuthenticateController.cs" />
     <Compile Include="Controllers\ConsentController.cs" />
     <Compile Include="DTOs\Request\AuthorizationRequest.cs" />
+    <Compile Include="Extensions\ApiControllerExtensions.cs" />
+    <Compile Include="Extensions\ControllerExtensions.cs" />
     <Compile Include="Extensions\UriExtensions.cs" />
-    <Compile Include="Models\Authorize.cs" />
+    <Compile Include="Parsers\RedirectInstructionParser.cs" />
+    <Compile Include="Parsers\ActionInformation.cs" />
+    <Compile Include="Parsers\ActionResultParser.cs" />
+    <Compile Include="ViewModels\Authorize.cs" />
     <Compile Include="DTOs\Request\TokenRequest.cs" />
     <Compile Include="DTOs\Request\GrantTypeRequest.cs" />
     <Compile Include="DTOs\Response\ErrorResponse.cs" />
@@ -222,8 +227,8 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Mappings\MappingExtensions.cs" />
-    <Compile Include="Models\Consent.cs" />
+    <Compile Include="Extensions\MappingExtensions.cs" />
+    <Compile Include="ViewModels\Consent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="UnityDependencyResolver.cs" />

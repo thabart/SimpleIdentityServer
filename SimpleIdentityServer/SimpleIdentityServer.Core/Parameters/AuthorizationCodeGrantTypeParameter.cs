@@ -102,10 +102,5 @@ namespace SimpleIdentityServer.Core.Parameters
                     State);
             }
         }
-
-        public List<PromptParameter> GetPromptParameters()
-        {
-            return ParserHelper.ParsePromptParameters(Prompt);            
-        }
     }
 }

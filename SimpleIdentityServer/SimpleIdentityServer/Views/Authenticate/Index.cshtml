@@ -3,7 +3,7 @@
     ViewBag.ProductName = "Simple Identity Server";
 }
 
-@model SimpleIdentityServer.Api.Models.Authorize
+@model SimpleIdentityServer.Api.ViewModels.AuthorizeViewModel
 
 @section PageTitle
 {
@@ -21,7 +21,7 @@
             <h3 class="panel-title">Local Login</h3>
         </div>
         <div class="panel-body">
-            <form name="form" method="POST" action="@Url.Content("~/Authenticate/Local")">
+            <form name="form" method="POST" action="@Url.Action("Index")">
                 <fieldset>
                     <input type="hidden" value="@Model.Code" name="Code" />
                     <div class="form-group">

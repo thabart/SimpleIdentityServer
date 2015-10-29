@@ -4,14 +4,14 @@ using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Validators;
 
-namespace SimpleIdentityServer.Core.Operations
+namespace SimpleIdentityServer.Core.Api.Token.Actions
 {
-    public interface IGetTokenByResourceOwnerCredentialsGrantType
+    public interface IGetTokenByResourceOwnerCredentialsGrantTypeAction
     {
         GrantedToken Execute(ResourceOwnerGrantTypeParameter parameter);
     }
 
-    public class GetTokenByResourceOwnerCredentialsGrantType : IGetTokenByResourceOwnerCredentialsGrantType
+    public class GetTokenByResourceOwnerCredentialsGrantTypeAction : IGetTokenByResourceOwnerCredentialsGrantTypeAction
     {
         private readonly IGrantedTokenRepository _grantedTokenRepository;
 
@@ -23,7 +23,7 @@ namespace SimpleIdentityServer.Core.Operations
 
         private readonly IResourceOwnerValidator _resourceOwnerValidator;
 
-        public GetTokenByResourceOwnerCredentialsGrantType(
+        public GetTokenByResourceOwnerCredentialsGrantTypeAction(
             IGrantedTokenRepository grantedTokenRepository,
             ITokenHelper tokenHelper,
             IClientValidator clientValidator,

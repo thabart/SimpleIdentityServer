@@ -71,6 +71,7 @@
     <Reference Include="System.IdentityModel" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -80,13 +81,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actions\Api\Authorization\AuthorizationActions.cs" />
-    <Compile Include="Actions\WebSite\Authenticate\Actions\AuthenticateResourceOwnerAction.cs" />
-    <Compile Include="Actions\WebSite\Authenticate\AuthenticateActions.cs" />
-    <Compile Include="Helpers\ParserHelper.cs" />
+    <Compile Include="Api\Authorization\AuthorizationActions.cs" />
+    <Compile Include="Api\Token\TokenActions.cs" />
+    <Compile Include="WebSite\Authenticate\Actions\AuthenticateResourceOwnerAction.cs" />
+    <Compile Include="WebSite\Authenticate\Actions\LocalUserAuthenticationAction.cs" />
+    <Compile Include="WebSite\Authenticate\AuthenticateActions.cs" />
+    <Compile Include="WebSite\Consent\Actions\ConfirmConsentAction.cs" />
+    <Compile Include="WebSite\Consent\Actions\DisplayConsentAction.cs" />
+    <Compile Include="WebSite\Consent\ConsentActions.cs" />
+    <Compile Include="Exceptions\IdentityServerAuthenticationException.cs" />
+    <Compile Include="Exceptions\InternalIdentityServerException.cs" />
+    <Compile Include="Extensions\ClaimPrincipalExtensions.cs" />
+    <Compile Include="Extensions\UriExtensions.cs" />
+    <Compile Include="Factories\ActionResultFactory.cs" />
+    <Compile Include="Helpers\ParameterParserHelper.cs" />
     <Compile Include="Models\AuthorizationCode.cs" />
     <Compile Include="Models\Consent.cs" />
-    <Compile Include="Operations\Authorization\AddConsentOperation.cs" />
+    <Compile Include="Parameters\LocalAuthorizationParameter.cs" />
     <Compile Include="Protector\Compressor.cs" />
     <Compile Include="Protector\Encoder.cs" />
     <Compile Include="Protector\ICertificateStore.cs" />
@@ -104,8 +115,8 @@
     <Compile Include="Helpers\TokenHelper.cs" />
     <Compile Include="Model.cs" />
     <Compile Include="ModuleInit.cs" />
-    <Compile Include="Operations\Authorization\GetAuthorizationOperation.cs" />
-    <Compile Include="Operations\GetTokenByResourceOwnerCredentialsGrantType.cs" />
+    <Compile Include="Api\Authorization\Actions\GetAuthorizationOperation.cs" />
+    <Compile Include="Api\Token\Actions\GetTokenByResourceOwnerCredentialsGrantTypeAction.cs" />
     <Compile Include="Parameters\AuthorizationCodeGrantTypeParameter.cs" />
     <Compile Include="Parameters\ResourceOwnerGrantTypeParameter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -115,7 +126,9 @@
     <Compile Include="Repositories\IGrantedTokenRepository.cs" />
     <Compile Include="Repositories\IResourceOwnerRepository.cs" />
     <Compile Include="Repositories\IScopeRepository.cs" />
-    <Compile Include="Results\AuthorizationResult.cs" />
+    <Compile Include="Results\ActionResult.cs" />
+    <Compile Include="Results\IdentityServerEndPoints.cs" />
+    <Compile Include="Results\RedirectInstruction.cs" />
     <Compile Include="Services\InMemoryUserService.cs" />
     <Compile Include="Services\IResourceOwnerService.cs" />
     <Compile Include="Validators\ClientValidator.cs" />
@@ -126,10 +139,7 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Actions\Api\Token\" />
-    <Folder Include="Actions\WebSite\Consent\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\SimpleIdentityServer.Common\SimpleIdentityServer.Common.csproj">
       <Project>{fc7dc959-c366-473c-a95a-fa16d5c71597}</Project>
