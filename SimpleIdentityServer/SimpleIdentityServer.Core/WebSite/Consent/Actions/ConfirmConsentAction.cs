@@ -69,9 +69,16 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
             var subject = claimsPrincipal.GetSubject();
             var consents = _consentRepository.GetConsentsForGivenUser(subject);
             var scopeNames = _parameterParserHelper.ParseScopeParameters(authorizationCodeGrantTypeParameter.Scope);
-            var assignedConsent = consents.FirstOrDefault(
-                    c =>
-                        c.Client.ClientId == authorizationCodeGrantTypeParameter.ClientId && c.GrantedScopes.All(s => !s.IsInternal && scopeNames.Contains(s.Name)));
+            Models.Consent assignedConsent = null;
+            if (consents != null && consents.Any())
+            {
+                assignedConsent = consents.FirstOrDefault(
+                        c =>
+                            c.Client.ClientId == authorizationCodeGrantTypeParameter.ClientId &&
+                            c.GrantedScopes != null && c.GrantedScopes.Any() &&
+                            c.GrantedScopes.All(s => !s.IsInternal && scopeNames.Contains(s.Name)));
+            }
+
             if (assignedConsent == null)
             {
                 assignedConsent = new Models.Consent

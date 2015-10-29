@@ -113,7 +113,9 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
             {
                 var alreadyOneConsentExist = consents.Any(
                     c =>
-                        c.Client.ClientId == parameter.ClientId && c.GrantedScopes.All(s => !s.IsInternal && requestedScopes.Contains(s.Name)));
+                        c.Client.ClientId == parameter.ClientId && 
+                        c.GrantedScopes != null && c.GrantedScopes.Any() &&
+                        c.GrantedScopes.All(s => !s.IsInternal && requestedScopes.Contains(s.Name)));
                 if (alreadyOneConsentExist)
                 {
                     // TODO : redirect user-agent to the callback-url.
