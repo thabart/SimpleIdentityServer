@@ -15,13 +15,6 @@ namespace SimpleIdentityServer.Core.Parameters
 
         public void Validate()
         {
-            if (string.IsNullOrWhiteSpace(Scope))
-            {
-                throw new IdentityServerException(
-                    ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.MissingParameter, "scope"));
-            }
-
             if (string.IsNullOrWhiteSpace(ClientId))
             {
                 throw new IdentityServerException(

@@ -30,12 +30,16 @@ namespace SwaggerLibrary.Models
                 throw new NotSupportedException(string.Format("The httpMethod {0} is not supported", httpMethod));
             }
 
+            var operationId = obj.Value["operationId"];
             var result = new SwaggerOperation
             {
-                // TODO : Fix THIS ISSUE IS THE OPERATION ID DOESNT EXIST !!!! TODO //////////////////
-                OperationId = obj.Value["operationId"].ToString(),
                 HttpRequest = _httpRequests[httpMethod]
             };
+
+            if (operationId != null)
+            {
+                result.OperationId = operationId.ToString();
+            }
 
             result.Parameters = new List<SwaggerParameter>();
             var parameters = obj.Value["parameters"];

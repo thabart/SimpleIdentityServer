@@ -103,14 +103,10 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table2 = new TechTalk.SpecFlow.Table(new string[] {
                         "HttpStatusCode",
-                        "Message",
-                        "NumberOfRequests",
-                        "NumberOfRemainingRequests"});
+                        "Message"});
             table2.AddRow(new string[] {
                         "429",
-                        "Allow 2 requests per 0.2 minutes",
-                        "2",
-                        "0"});
+                        "Allow 2 requests per 0.2 minutes"});
 #line 18
  testRunner.And("the errors should be returned", ((string)(null)), table2, "And ");
 #line hidden
@@ -164,24 +160,16 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table4 = new TechTalk.SpecFlow.Table(new string[] {
                         "HttpStatusCode",
-                        "Message",
-                        "NumberOfRequests",
-                        "NumberOfRemainingRequests"});
+                        "Message"});
             table4.AddRow(new string[] {
                         "429",
-                        "Allow 2 requests per 0.2 minutes",
-                        "2",
-                        "0"});
+                        "Allow 2 requests per 0.2 minutes"});
             table4.AddRow(new string[] {
                         "429",
-                        "Allow 2 requests per 0.2 minutes",
-                        "2",
-                        "0"});
+                        "Allow 2 requests per 0.2 minutes"});
             table4.AddRow(new string[] {
                         "429",
-                        "Allow 2 requests per 0.2 minutes",
-                        "2",
-                        "0"});
+                        "Allow 2 requests per 0.2 minutes"});
 #line 37
  testRunner.And("the errors should be returned", ((string)(null)), table4, "And ");
 #line hidden
@@ -244,19 +232,13 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table7 = new TechTalk.SpecFlow.Table(new string[] {
                         "HttpStatusCode",
-                        "Message",
-                        "NumberOfRequests",
-                        "NumberOfRemainingRequests"});
+                        "Message"});
             table7.AddRow(new string[] {
                         "429",
-                        "Allow 2 requests per 0.2 minutes",
-                        "2",
-                        "0"});
+                        "Allow 2 requests per 0.2 minutes"});
             table7.AddRow(new string[] {
                         "429",
-                        "Allow 2 requests per 0.2 minutes",
-                        "2",
-                        "0"});
+                        "Allow 2 requests per 0.2 minutes"});
 #line 62
  testRunner.And("the errors should be returned", ((string)(null)), table7, "And ");
 #line hidden

@@ -6,13 +6,21 @@ using Microsoft.Practices.EnterpriseLibrary.Caching;
 using Microsoft.Practices.Unity;
 
 using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Operations;
 using SimpleIdentityServer.RateLimitation.Configuration;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.DataAccess.Fake.Repositories;
 using SimpleIdentityServer.DataAccess.Fake;
-using SimpleIdentityServer.Core.Operations.Authorization;
+using SimpleIdentityServer.Core.Api.Authorization;
+using SimpleIdentityServer.Core.Api.Authorization.Actions;
+using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;
+using SimpleIdentityServer.Core.WebSite.Consent.Actions;
+using SimpleIdentityServer.Core.WebSite.Consent;
+using SimpleIdentityServer.Core.WebSite.Authenticate;
+using SimpleIdentityServer.Core.Api.Token;
+using SimpleIdentityServer.Core.Api.Token.Actions;
+using SimpleIdentityServer.Core.Factories;
+using SimpleIdentityServer.Api.Parsers;
 
 namespace SimpleIdentityServer.Api.Tests.Common
 {
@@ -36,12 +44,29 @@ namespace SimpleIdentityServer.Api.Tests.Common
             _container.RegisterType<IResourceOwnerRepository, FakeResourceOwnerRepository>();
             _container.RegisterType<IGrantedTokenRepository, FakeGrantedTokenRepository>();
 
+            _container.RegisterType<IParameterParserHelper, ParameterParserHelper>();
+            _container.RegisterType<IActionResultFactory, ActionResultFactory>();
+
             _container
-                .RegisterType<IGetTokenByResourceOwnerCredentialsGrantType, GetTokenByResourceOwnerCredentialsGrantType>
+                .RegisterType<IAuthorizationActions, AuthorizationActions>
                 ();
             _container
-                .RegisterType<IGetAuthorizationOperation, GetAuthorizationOperation>
+                .RegisterType<IGetAuthorizationCodeOperation, GetAuthorizationCodeOperation>
                 ();
+
+            _container.RegisterType<ITokenActions, TokenActions>();
+            _container.RegisterType<IGetTokenByResourceOwnerCredentialsGrantTypeAction, GetTokenByResourceOwnerCredentialsGrantTypeAction>();
+
+            _container.RegisterType<IConsentActions, ConsentActions>();
+            _container.RegisterType<IConfirmConsentAction, ConfirmConsentAction>();
+            _container.RegisterType<IDisplayConsentAction, DisplayConsentAction>();
+
+            _container.RegisterType<IAuthenticateActions, AuthenticateActions>();
+            _container.RegisterType<IAuthenticateResourceOwnerAction, AuthenticateResourceOwnerAction>();
+            _container.RegisterType<ILocalUserAuthenticationAction, LocalUserAuthenticationAction>();
+
+            _container.RegisterType<IRedirectInstructionParser, RedirectInstructionParser>();
+            _container.RegisterType<IActionResultParser, ActionResultParser>();
 
             FakeDataSource.Instance().Init();
         }

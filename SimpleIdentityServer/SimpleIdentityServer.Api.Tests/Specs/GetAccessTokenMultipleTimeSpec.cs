@@ -90,6 +90,43 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         {
             _rateLimitationElement.SlidingTime = slidingTime;
         }
+        
+        [Given("scopes (.*) are defined")]
+        public void GivenScope(List<string> scopes)
+        {
+            foreach (var scope in scopes)
+            {
+                var record = new MODELS.Scope
+                {
+                    Name = scope
+                };
+
+                FakeDataSource.Instance().Scopes.Add(record);
+            }
+        }
+
+
+        [Given("the scopes (.*) are assigned to the client (.*)")]
+        public void GivenScopesToTheClients(List<string> scopeNames, string clientId)
+        {
+            var client = FakeDataSource.Instance().Clients.SingleOrDefault(c => c.ClientId == clientId);
+            if (client == null)
+            {
+                return;
+            }
+
+            var scopes = FakeDataSource.Instance().Scopes;
+            foreach (var scopeName in scopeNames)
+            {
+                var storedScope = scopes.SingleOrDefault(s => s.Name == scopeName);
+                if (storedScope == null)
+                {
+                    continue;
+                }
+
+                client.AllowedScopes.Add(storedScope);
+            }
+        }
 
         [When("requesting access tokens")]
         public void WhenRequestingAccessTokens(Table table)
@@ -148,9 +185,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             {
                 Assert.IsTrue(_errors.Any(
                     e => e.HttpStatusCode == record.HttpStatusCode &&
-                    e.Message == record.Message &&
-                    e.NumberOfRequests == record.NumberOfRequests &&
-                    e.NumberOfRemainingRequests == record.NumberOfRemainingRequests));
+                    e.Message == record.Message));
             }
         }
     }

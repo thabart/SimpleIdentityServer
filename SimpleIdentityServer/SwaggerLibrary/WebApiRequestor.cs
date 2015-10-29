@@ -111,7 +111,8 @@ namespace SwaggerLibrary
 
             foreach (var path in contract.Paths)
             {
-                var operation = path.Operations.FirstOrDefault(o => o.OperationId.ToUpperInvariant() == operationId.ToUpperInvariant());
+                var operation = path.Operations.FirstOrDefault(o => !string.IsNullOrEmpty(o.OperationId) 
+                    && o.OperationId.ToUpperInvariant() == operationId.ToUpperInvariant());
                 if (operation != null)
                 {
                     return new Tuple<string, SwaggerOperation>(path.Path, operation);
