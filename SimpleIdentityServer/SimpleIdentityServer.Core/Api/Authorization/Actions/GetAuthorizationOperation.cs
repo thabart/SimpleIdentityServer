@@ -1,10 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using System.Security.Principal;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
+using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Helpers;
+using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
+using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Validators;
 
@@ -17,7 +23,6 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
 
     public class GetAuthorizationCodeOperation : IGetAuthorizationCodeOperation
     {
-
         private readonly IScopeValidator _scopeValidator;
 
         private readonly IClientValidator _clientValidator;
@@ -26,69 +31,120 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
 
         private readonly IActionResultFactory _actionResultFactory;
 
+        private readonly IConsentRepository _consentRepository;
+
+        private readonly IAuthorizationCodeRepository _authorizationCodeRepository;
+
         public GetAuthorizationCodeOperation(
             IClientValidator clientValidator,
             IScopeValidator scopeValidator,
             IParameterParserHelper parameterParserHelper,
-            IActionResultFactory actionResultFactory)
+            IActionResultFactory actionResultFactory,
+            IConsentRepository consentRepository,
+            IAuthorizationCodeRepository authorizationCodeRepository)
         {
             _clientValidator = clientValidator;
             _scopeValidator = scopeValidator;
             _parameterParserHelper = parameterParserHelper;
             _actionResultFactory = actionResultFactory;
+            _consentRepository = consentRepository;
+            _authorizationCodeRepository = authorizationCodeRepository;
         }
 
         public ActionResult Execute(
-            AuthorizationCodeGrantTypeParameter parameter,
+            AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter,
             IPrincipal claimsPrincipal)
         {
-            parameter.Validate();
-            var client = _clientValidator.ValidateClientExist(parameter.ClientId);
-            _clientValidator.ValidateRedirectionUrl(parameter.RedirectUrl, client);
-            var allowedScopes = _scopeValidator.ValidateAllowedScopes(parameter.Scope, client);
+            authorizationCodeGrantTypeParameter.Validate();
+            var client = _clientValidator.ValidateClientExist(authorizationCodeGrantTypeParameter.ClientId);
+            _clientValidator.ValidateRedirectionUrl(authorizationCodeGrantTypeParameter.RedirectUrl, client);
+            var allowedScopes = _scopeValidator.ValidateAllowedScopes(authorizationCodeGrantTypeParameter.Scope, client);
             if (!allowedScopes.Contains("openid"))
             {
                 throw new IdentityServerExceptionWithState(
                     ErrorCodes.InvalidRequestUriCode,
                     string.Format(ErrorDescriptions.TheScopesNeedToBeSpecified, "openid"),
-                    parameter.State);
+                    authorizationCodeGrantTypeParameter.State);
             }
 
-            var result = _actionResultFactory.CreateAnEmptyActionResultWithRedirection();
-            var prompts = _parameterParserHelper.ParsePromptParameters(parameter.Prompt);
-            AuthenticateEndUser(prompts, result, claimsPrincipal, parameter);
+            var prompts = _parameterParserHelper.ParsePromptParameters(authorizationCodeGrantTypeParameter.Prompt);
+            var result = ProcessPromptParameters(prompts, claimsPrincipal, authorizationCodeGrantTypeParameter);
             return result;
         }
 
         /// <summary>
-        /// Tries to authenticate the user.
-        /// OPEN-ID-URL : http://openid.net/specs/openid-connect-core-1_0.html#Authenticates
+        /// Process the prompt parameter.
         /// </summary>
-        private void AuthenticateEndUser(
-            IList<PromptParameter> promptParameters,
-            ActionResult result,
+        /// <param name="prompts">Prompt parameter values</param>
+        /// <param name="claimsPrincipal">User's claims</param>
+        /// <param name="authorizationCodeGrantTypeParameter">Authorization code grant-type parameter</param>
+        /// <returns>The action result interpreted by the controller</returns>
+        private ActionResult ProcessPromptParameters(
+            IList<PromptParameter> prompts,
             IPrincipal claimsPrincipal,
-            AuthorizationCodeGrantTypeParameter parameter)
+            AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter)
         {
             var endUserIsAuthenticated = claimsPrincipal.Identity.IsAuthenticated;
-            if (promptParameters.Contains(PromptParameter.login)
-                || (!endUserIsAuthenticated && !promptParameters.Contains(PromptParameter.none)))
+
+            // Redirects to the authentication screen 
+            // if the "prompt" parameter is equal to "login" OR
+            // The user is not authenticated AND the prompt parameter is different from "none"
+            if (prompts.Contains(PromptParameter.login)
+                || (!endUserIsAuthenticated && !prompts.Contains(PromptParameter.none)))
             {
+                var result = _actionResultFactory.CreateAnEmptyActionResultWithRedirection();
                 result.RedirectInstruction.Action = IdentityServerEndPoints.AuthenticateIndex;
+                return result;
             }
 
-            if (promptParameters.Contains(PromptParameter.none) && !endUserIsAuthenticated)
+            // Raise "login_required" exception : if the prompt parameter is "none" AND the user is not authenticated
+            // Raise "interaction_required" exception : if there's no consent from the user.
+            if (prompts.Contains(PromptParameter.none))
             {
-                throw new IdentityServerExceptionWithState(
-                    ErrorCodes.LoginRequiredCode,
-                    ErrorDescriptions.TheUserNeedsToBeAuthenticated,
-                    parameter.State);
+                if (!endUserIsAuthenticated)
+                {
+                    throw new IdentityServerExceptionWithState(
+                        ErrorCodes.LoginRequiredCode,
+                        ErrorDescriptions.TheUserNeedsToBeAuthenticated,
+                        authorizationCodeGrantTypeParameter.State);
+                }
+
+                var principal = claimsPrincipal as ClaimsPrincipal;
+                var subject = principal.GetSubject();
+                var consents = _consentRepository.GetConsentsForGivenUser(subject);
+                Consent confirmedConsent = null;
+                if (consents != null && consents.Any())
+                {
+                    var scopeNames =
+                        _parameterParserHelper.ParseScopeParameters(authorizationCodeGrantTypeParameter.Scope);
+                    confirmedConsent = consents.FirstOrDefault(
+                        c =>
+                            c.Client.ClientId == authorizationCodeGrantTypeParameter.ClientId &&
+                            c.GrantedScopes != null && c.GrantedScopes.Any() &&
+                            c.GrantedScopes.All(s => scopeNames.Contains(s.Name)));
+                }
+
+                if (confirmedConsent == null)
+                {
+                    throw new IdentityServerExceptionWithState(
+                            ErrorCodes.InteractionRequiredCode,
+                            ErrorDescriptions.TheUserNeedsToGiveIsConsent,
+                            authorizationCodeGrantTypeParameter.State);
+                }
+
+                var authorizationCode = new AuthorizationCode()
+                {
+                    CreateDateTime = DateTime.UtcNow,
+                    Consent = confirmedConsent,
+                    Value = Guid.NewGuid().ToString()
+                };
+                _authorizationCodeRepository.AddAuthorizationCode(authorizationCode);
+                var result = _actionResultFactory.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
+                result.RedirectInstruction.AddParameter("code", authorizationCode.Value);
+                return result;
             }
 
-            if (promptParameters.Contains(PromptParameter.none))
-            {
-                // TODO : error occured if the client does not have pre-configured consent for the requested claims.
-            }
+            return null;
         }
     }
 }

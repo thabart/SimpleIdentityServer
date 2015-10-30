@@ -2,6 +2,7 @@
 using SimpleIdentityServer.Api.Extensions;
 using SimpleIdentityServer.Api.Parsers;
 using SimpleIdentityServer.Api.ViewModels;
+using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.WebSite.Consent;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Protector;
@@ -60,11 +61,11 @@ namespace SimpleIdentityServer.Api.Controllers
             var authenticatedUser = this.GetAuthenticatedUser();
             var actionResult =_consentActions.ConfirmConsent(request.ToParameter(),
                 authenticatedUser);
-            var actionInformation = _actionResultParser.GetControllerAndActionFromRedirectionActionResult(actionResult);
-            if (actionInformation != null && actionInformation.IsCallBackUrl)
+            if (actionResult.Type == TypeActionResult.RedirectToCallBackUrl)
             {
+                var parameters = _actionResultParser.GetRedirectionParameters(actionResult);
                 var redirectUrl = new Uri(request.redirect_uri);
-                var redirectUrlWithAuthCode = redirectUrl.AddParameters(actionInformation.RouteValueDictionary);
+                var redirectUrlWithAuthCode = redirectUrl.AddParameters(parameters);
                 return Redirect(redirectUrlWithAuthCode.ToString());
             }
 

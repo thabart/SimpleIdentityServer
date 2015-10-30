@@ -4,6 +4,7 @@ using System.Web.Http;
 
 using SimpleIdentityServer.Api.DTOs.Request;
 using SimpleIdentityServer.Api.Extensions;
+using SimpleIdentityServer.Api.Parsers;
 using SimpleIdentityServer.Core.Api.Authorization;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Errors;
@@ -23,14 +24,18 @@ namespace SimpleIdentityServer.Api.Controllers.Api
 
         private readonly IEncoder _encoder;
 
+        private readonly IActionResultParser _actionResultParser;
+
         public AuthorizationController(
             IAuthorizationActions authorizationActions,
             IProtector protector,
-            IEncoder encoder)
+            IEncoder encoder,
+            IActionResultParser actionResultParser)
         {
             _authorizationActions = authorizationActions;
             _protector = protector;
             _encoder = encoder;
+            _actionResultParser = actionResultParser;
         }
 
         public HttpResponseMessage Get([FromUri]AuthorizationRequest authorizationRequest)
@@ -46,15 +51,20 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             var actionResult = _authorizationActions.GetAuthorization(
                 authorizationRequest.ToParameter(), 
                 authenticatedUser);
-            if (actionResult.Type == TypeActionResult.Redirection)
+            if (actionResult.Type == TypeActionResult.RedirectToCallBackUrl)
             {
-                Request.CreateResponse();
+                var parameters = _actionResultParser.GetRedirectionParameters(actionResult);
+                var redirectUrl = new Uri(authorizationRequest.redirect_uri);
+                var redirectUrlWithAuthCode = redirectUrl.AddParameters(parameters);
+                return CreateMoveHttpResponse(redirectUrlWithAuthCode.ToString());
+            }
+
+            if (actionResult.Type == TypeActionResult.RedirectToAction)
+            {
                 var encryptedRequest = _protector.Encrypt(authorizationRequest);
                 var encodedRequest = _encoder.Encode(encryptedRequest);
                 var url = GetRedirectionUrl(Request, actionResult.RedirectInstruction.Action) + string.Format("?code={0}", encodedRequest);
-                var response = Request.CreateResponse(HttpStatusCode.Moved);
-                response.Headers.Location = new Uri(url);
-                return response;
+                return CreateMoveHttpResponse(url);
             }
 
             return null;
@@ -71,6 +81,13 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             }
 
             return uri;
+        }
+
+        private HttpResponseMessage CreateMoveHttpResponse(string url)
+        {
+            var response = Request.CreateResponse(HttpStatusCode.Moved);
+            response.Headers.Location = new Uri(url);
+            return response;
         }
     }
 }

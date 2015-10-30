@@ -2,7 +2,8 @@
 {
     public enum TypeActionResult
     {
-        Redirection,
+        RedirectToAction,
+        RedirectToCallBackUrl,
         Output,
         None
     }

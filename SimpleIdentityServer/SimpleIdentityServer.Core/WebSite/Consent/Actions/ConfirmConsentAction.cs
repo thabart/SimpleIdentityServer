@@ -76,7 +76,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
                         c =>
                             c.Client.ClientId == authorizationCodeGrantTypeParameter.ClientId &&
                             c.GrantedScopes != null && c.GrantedScopes.Any() &&
-                            c.GrantedScopes.All(s => !s.IsInternal && scopeNames.Contains(s.Name)));
+                            c.GrantedScopes.All(s => scopeNames.Contains(s.Name)));
             }
 
             if (assignedConsent == null)
@@ -87,6 +87,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
                     GrantedScopes = GetScopes(authorizationCodeGrantTypeParameter.Scope),
                     ResourceOwner = _resourceOwnerRepository.GetBySubject(subject)
                 };
+                _consentRepository.InsertConsent(assignedConsent);
             }
 
             var authorizationCode = new AuthorizationCode
@@ -96,8 +97,8 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
                 Value = Guid.NewGuid().ToString()
             };
             _authorizationCodeRepository.AddAuthorizationCode(authorizationCode);
-            var result = _actionResultFactory.CreateAnEmptyActionResultWithRedirection();
-            result.RedirectInstruction.Action = IdentityServerEndPoints.CallBackUrl;
+
+            var result = _actionResultFactory.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
             result.RedirectInstruction.AddParameter("code", authorizationCode.Value);
             return result;
         }

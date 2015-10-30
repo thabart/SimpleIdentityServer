@@ -5,8 +5,6 @@
         // Consent screen
         ConsentIndex,
         // Authenticate screen
-        AuthenticateIndex,
-        // Callback
-        CallBackUrl
+        AuthenticateIndex
     }
 }

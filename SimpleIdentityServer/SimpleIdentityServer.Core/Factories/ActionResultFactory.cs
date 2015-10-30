@@ -4,6 +4,8 @@ namespace SimpleIdentityServer.Core.Factories
 {
     public interface IActionResultFactory
     {
+        ActionResult CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
+
         ActionResult CreateAnEmptyActionResultWithRedirection();
 
         ActionResult CreateAnEmptyActionResultWithOutput();
@@ -22,7 +24,7 @@ namespace SimpleIdentityServer.Core.Factories
             return new ActionResult
             {
                 RedirectInstruction = new RedirectInstruction(),
-                Type = TypeActionResult.Redirection
+                Type = TypeActionResult.RedirectToAction
             };
         }
 
@@ -48,6 +50,19 @@ namespace SimpleIdentityServer.Core.Factories
             return new ActionResult
             {
                 Type = TypeActionResult.None
+            };
+        }
+
+        /// <summary>
+        /// Creates an empty action result with redirection to callbackurl.
+        /// </summary>
+        /// <returns>Empty action with redirection to callbackurl</returns>
+        public ActionResult CreateAnEmptyActionResultWithRedirectionToCallBackUrl()
+        {
+            return new ActionResult
+            {
+                Type = TypeActionResult.RedirectToCallBackUrl,
+                RedirectInstruction = new RedirectInstruction()
             };
         }
     }
