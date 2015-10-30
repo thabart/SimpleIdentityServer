@@ -18,7 +18,10 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
 {
     public interface IGetAuthorizationCodeOperation
     {
-        ActionResult Execute(AuthorizationCodeGrantTypeParameter parameter, IPrincipal claimsPrincipal);
+        ActionResult Execute(
+            AuthorizationCodeGrantTypeParameter parameter, 
+            IPrincipal claimsPrincipal,
+            string code);
     }
 
     public class GetAuthorizationCodeOperation : IGetAuthorizationCodeOperation
@@ -53,7 +56,8 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
 
         public ActionResult Execute(
             AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter,
-            IPrincipal claimsPrincipal)
+            IPrincipal claimsPrincipal,
+            string code)
         {
             authorizationCodeGrantTypeParameter.Validate();
             var client = _clientValidator.ValidateClientExist(authorizationCodeGrantTypeParameter.ClientId);
@@ -68,7 +72,11 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
             }
 
             var prompts = _parameterParserHelper.ParsePromptParameters(authorizationCodeGrantTypeParameter.Prompt);
-            var result = ProcessPromptParameters(prompts, claimsPrincipal, authorizationCodeGrantTypeParameter);
+            var result = ProcessPromptParameters(
+                prompts, 
+                claimsPrincipal, 
+                authorizationCodeGrantTypeParameter,
+                code);
             return result;
         }
 
@@ -78,25 +86,15 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
         /// <param name="prompts">Prompt parameter values</param>
         /// <param name="claimsPrincipal">User's claims</param>
         /// <param name="authorizationCodeGrantTypeParameter">Authorization code grant-type parameter</param>
+        /// <param name="code">Encrypted and signed authorization code grant-type parameter</param>
         /// <returns>The action result interpreted by the controller</returns>
         private ActionResult ProcessPromptParameters(
             IList<PromptParameter> prompts,
             IPrincipal claimsPrincipal,
-            AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter)
+            AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter,
+            string code)
         {
             var endUserIsAuthenticated = claimsPrincipal.Identity.IsAuthenticated;
-
-            // Redirects to the authentication screen 
-            // if the "prompt" parameter is equal to "login" OR
-            // The user is not authenticated AND the prompt parameter is different from "none"
-            if (prompts.Contains(PromptParameter.login)
-                || (!endUserIsAuthenticated && !prompts.Contains(PromptParameter.none)))
-            {
-                var result = _actionResultFactory.CreateAnEmptyActionResultWithRedirection();
-                result.RedirectInstruction.Action = IdentityServerEndPoints.AuthenticateIndex;
-                return result;
-            }
-
             // Raise "login_required" exception : if the prompt parameter is "none" AND the user is not authenticated
             // Raise "interaction_required" exception : if there's no consent from the user.
             if (prompts.Contains(PromptParameter.none))
@@ -142,6 +140,32 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
                 var result = _actionResultFactory.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
                 result.RedirectInstruction.AddParameter("code", authorizationCode.Value);
                 return result;
+            }
+
+            // Redirects to the authentication screen 
+            // if the "prompt" parameter is equal to "login" OR
+            // The user is not authenticated AND the prompt parameter is different from "none"
+            if (prompts.Contains(PromptParameter.login))
+            {
+                var result = _actionResultFactory.CreateAnEmptyActionResultWithRedirection();
+                result.RedirectInstruction.AddParameter("code", code);
+                result.RedirectInstruction.Action = IdentityServerEndPoints.AuthenticateIndex;
+                return result;
+            }
+
+            if (prompts.Contains(PromptParameter.consent))
+            {
+                var result = _actionResultFactory.CreateAnEmptyActionResultWithRedirection();
+                result.RedirectInstruction.AddParameter("code", code);
+                if (!endUserIsAuthenticated)
+                {
+                    result.RedirectInstruction.Action = IdentityServerEndPoints.AuthenticateIndex;
+                    return result;
+                }
+
+                result.RedirectInstruction.Action = IdentityServerEndPoints.ConsentIndex;
+                return result;
+
             }
 
             return null;

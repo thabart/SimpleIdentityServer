@@ -8,7 +8,8 @@ namespace SimpleIdentityServer.Core.Api.Authorization
     public interface IAuthorizationActions
     {
         ActionResult GetAuthorization(AuthorizationCodeGrantTypeParameter parameter,
-            IPrincipal claimsPrincipal);
+            IPrincipal claimsPrincipal,
+            string code);
     }
 
     public class AuthorizationActions : IAuthorizationActions
@@ -21,9 +22,13 @@ namespace SimpleIdentityServer.Core.Api.Authorization
         }
 
         public ActionResult GetAuthorization(AuthorizationCodeGrantTypeParameter parameter,
-            IPrincipal claimsPrincipal)
+            IPrincipal claimsPrincipal,
+            string code)
         {
-            return _getAuthorizationCodeOperation.Execute(parameter, claimsPrincipal);
+            return _getAuthorizationCodeOperation.Execute(
+                parameter, 
+                claimsPrincipal,
+                code);
         }
     }
 }

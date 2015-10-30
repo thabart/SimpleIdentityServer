@@ -65,7 +65,7 @@ namespace SimpleIdentityServer.Api.Controllers
             {
                 var parameters = _actionResultParser.GetRedirectionParameters(actionResult);
                 var redirectUrl = new Uri(request.redirect_uri);
-                var redirectUrlWithAuthCode = redirectUrl.AddParameters(parameters);
+                var redirectUrlWithAuthCode = redirectUrl.AddParametersInQuery(parameters);
                 return Redirect(redirectUrlWithAuthCode.ToString());
             }
 

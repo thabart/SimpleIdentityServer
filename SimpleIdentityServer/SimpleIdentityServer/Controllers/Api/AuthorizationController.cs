@@ -47,24 +47,27 @@ namespace SimpleIdentityServer.Api.Controllers.Api
                     ErrorDescriptions.RequestIsNotValid);
             }
 
+            var encryptedRequest = _protector.Encrypt(authorizationRequest);
+            var encodedRequest = _encoder.Encode(encryptedRequest);
             var authenticatedUser = this.GetAuthenticatedUser();
             var actionResult = _authorizationActions.GetAuthorization(
                 authorizationRequest.ToParameter(), 
-                authenticatedUser);
+                authenticatedUser,
+                encodedRequest);
+            var parameters = _actionResultParser.GetRedirectionParameters(actionResult);
             if (actionResult.Type == TypeActionResult.RedirectToCallBackUrl)
             {
-                var parameters = _actionResultParser.GetRedirectionParameters(actionResult);
                 var redirectUrl = new Uri(authorizationRequest.redirect_uri);
-                var redirectUrlWithAuthCode = redirectUrl.AddParameters(parameters);
+                var redirectUrlWithAuthCode = redirectUrl.AddParametersInQuery(parameters);
                 return CreateMoveHttpResponse(redirectUrlWithAuthCode.ToString());
             }
 
             if (actionResult.Type == TypeActionResult.RedirectToAction)
             {
-                var encryptedRequest = _protector.Encrypt(authorizationRequest);
-                var encodedRequest = _encoder.Encode(encryptedRequest);
-                var url = GetRedirectionUrl(Request, actionResult.RedirectInstruction.Action) + string.Format("?code={0}", encodedRequest);
-                return CreateMoveHttpResponse(url);
+                var url = GetRedirectionUrl(Request, actionResult.RedirectInstruction.Action);
+                var uri = new Uri(url);
+                var redirectionUrl = uri.AddParametersInQuery(parameters);
+                return CreateMoveHttpResponse(redirectionUrl.ToString());
             }
 
             return null;
@@ -75,12 +78,8 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             IdentityServerEndPoints identityServerEndPoints)
         {
             var uri = request.RequestUri.GetLeftPart(UriPartial.Authority);
-            if (identityServerEndPoints == IdentityServerEndPoints.AuthenticateIndex)
-            {
-                uri = uri + "/Authenticate";
-            }
-
-            return uri;
+            var partialUri = Constants.MappingIdentityServerEndPointToPartialUrl[identityServerEndPoints];
+            return uri + partialUri;
         }
 
         private HttpResponseMessage CreateMoveHttpResponse(string url)
