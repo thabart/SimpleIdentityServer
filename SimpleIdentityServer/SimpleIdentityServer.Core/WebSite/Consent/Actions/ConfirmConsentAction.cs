@@ -100,6 +100,11 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
 
             var result = _actionResultFactory.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
             result.RedirectInstruction.AddParameter("code", authorizationCode.Value);
+            if (!string.IsNullOrWhiteSpace(authorizationCodeGrantTypeParameter.State))
+            {
+                result.RedirectInstruction.AddParameter("state", authorizationCodeGrantTypeParameter.State);
+            }
+
             return result;
         }
         

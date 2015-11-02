@@ -56,12 +56,13 @@ Scenario: A resource owner is authenticated and he already has given his consent
 	And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and scopes openid,PlanningApi
 
 	When requesting an authorization code
-	| scope              | response_type | client_id  | redirect_uri     | prompt |
-	| openid PlanningApi | code          | MyHolidays | http://localhost | none   |
+	| scope              | response_type | client_id  | redirect_uri     | prompt | state  |
+	| openid PlanningApi | code          | MyHolidays | http://localhost | none   | state1 |
 
 
 	Then HTTP status code is 301
 	And redirect to callback http://localhost
+	And the state state1 is returned in the callback
 
 # ERRORS
 Scenario: A resource owner is not authenticated but we want to directly retrieve the authorization code into the callback

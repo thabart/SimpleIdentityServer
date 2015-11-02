@@ -19,6 +19,7 @@ using TechTalk.SpecFlow.Assist;
 
 using DOMAINS = SimpleIdentityServer.Core.Models;
 using MODELS = SimpleIdentityServer.DataAccess.Fake.Models;
+using System.Web;
 
 namespace SimpleIdentityServer.Api.Tests.Specs
 {
@@ -181,6 +182,16 @@ namespace SimpleIdentityServer.Api.Tests.Specs
 
             Assert.That(errorResponseWithState.error, Is.EqualTo(result.error));
             Assert.That(errorResponseWithState.state, Is.EqualTo(result.state));
+        }
+
+        [Then("the state (.*) is returned in the callback")]
+        public void ThenTheStateIsReturnedInTheCallback(string state)
+        {
+            var location = _responseMessage.Headers.Location;
+            var query = HttpUtility.ParseQueryString(location.Query);
+
+            var returnedState = query["state"];
+            Assert.That(returnedState, Is.EqualTo(state));
         }
     }
 }

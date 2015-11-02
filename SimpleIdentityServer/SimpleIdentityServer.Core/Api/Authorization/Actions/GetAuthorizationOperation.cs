@@ -142,6 +142,11 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
                 _authorizationCodeRepository.AddAuthorizationCode(authorizationCode);
                 var result = _actionResultFactory.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
                 result.RedirectInstruction.AddParameter("code", authorizationCode.Value);
+                if (!string.IsNullOrWhiteSpace(authorizationCodeGrantTypeParameter.State))
+                {
+                    result.RedirectInstruction.AddParameter("state", authorizationCodeGrantTypeParameter.State);
+                }
+
                 return result;
             }
 
