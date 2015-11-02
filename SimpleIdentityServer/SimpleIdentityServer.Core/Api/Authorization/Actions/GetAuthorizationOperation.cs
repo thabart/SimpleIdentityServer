@@ -94,7 +94,10 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
             AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter,
             string code)
         {
-            var endUserIsAuthenticated = claimsPrincipal.Identity.IsAuthenticated;
+            var endUserIsAuthenticated = 
+                claimsPrincipal == null || claimsPrincipal.Identity == null ?
+                false : 
+                claimsPrincipal.Identity.IsAuthenticated;
             // Raise "login_required" exception : if the prompt parameter is "none" AND the user is not authenticated
             // Raise "interaction_required" exception : if there's no consent from the user.
             if (prompts.Contains(PromptParameter.none))
@@ -165,7 +168,6 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
 
                 result.RedirectInstruction.Action = IdentityServerEndPoints.ConsentIndex;
                 return result;
-
             }
 
             return null;

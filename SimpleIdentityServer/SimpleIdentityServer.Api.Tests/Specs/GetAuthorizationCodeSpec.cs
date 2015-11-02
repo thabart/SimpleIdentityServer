@@ -27,6 +27,8 @@ namespace SimpleIdentityServer.Api.Tests.Specs
 
         private HttpResponseMessage _responseMessage;
 
+        private FakeUserInformation _fakeUserInformation;
+
         public GetAuthorizationCodeSpec()
         {
             var fakeGetRateLimitationElementOperation = new FakeGetRateLimitationElementOperation
@@ -86,17 +88,27 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             }
         }
 
+        [Given("a resource owner is authenticated")]
+        public void GivenAResourceOwnerIsAuthenticated(Table table)
+        {
+            _fakeUserInformation = table.CreateInstance<FakeUserInformation>();
+        }
+
         [When("requesting an authorization code")]
         public void WhenRequestingAnAuthorizationCode(Table table)
         {
             var authorizationRequest = table.CreateInstance<AuthorizationRequest>();
             // Fake the authentication filter.
             var httpConfiguration = new HttpConfiguration();
-            httpConfiguration.Filters.Add(new FakeAuthenticationFilter
+            if (_fakeUserInformation != null)
             {
-                ResourceOwnerId = "habarthierry@hotmail.fr",
-                ResourceOwnerUserName = "UserName"
-            });
+                httpConfiguration.Filters.Add(new FakeAuthenticationFilter
+                {
+                    ResourceOwnerId = _fakeUserInformation.UserId,
+                    ResourceOwnerUserName = _fakeUserInformation.UserName
+                });
+            }
+
             using (var server = _configureWebApi.CreateServer(httpConfiguration))
             {
                 var httpClient = server.HttpClient;
@@ -121,14 +133,6 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         {
             var location = _responseMessage.Headers.Location;
             Assert.That(location.AbsolutePath, Is.EqualTo(controller));
-        }
-
-        [Then("contains authorization code")]
-        public void ThenContainsAuthorizationCode()
-        {
-            var location = _responseMessage.Headers.Location;
-            var queryString = HttpUtility.ParseQueryString(location.Query);
-            Assert.IsNotNullOrEmpty(queryString["code"]);
         }
     }
 }

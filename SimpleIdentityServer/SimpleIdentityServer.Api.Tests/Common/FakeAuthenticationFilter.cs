@@ -18,12 +18,17 @@ namespace SimpleIdentityServer.Api.Tests.Common
 
         public Task AuthenticateAsync(HttpAuthenticationContext context, CancellationToken cancellationToken)
         {
+            if (ResourceOwnerId == null || ResourceOwnerUserName == null)
+            {
+                return Task.FromResult(0);
+            }
+
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, ResourceOwnerId),
                 new Claim(ClaimTypes.Name, ResourceOwnerUserName)
             };
-            var identity = new ClaimsIdentity(claims);
+            var identity = new ClaimsIdentity(claims, "FakeApi");
             context.Principal = new ClaimsPrincipal(identity);
             return Task.FromResult(0);
         }
