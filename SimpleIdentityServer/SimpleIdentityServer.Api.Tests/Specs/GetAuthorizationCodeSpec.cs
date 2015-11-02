@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Web;
 using System.Web.Http;
+
 using Microsoft.Practices.Unity;
+
 using NUnit.Framework;
+
 using SimpleIdentityServer.Api.DTOs.Request;
 using SimpleIdentityServer.Api.DTOs.Response;
 using SimpleIdentityServer.Api.Tests.Common;
@@ -93,6 +94,33 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         public void GivenAResourceOwnerIsAuthenticated(Table table)
         {
             _fakeUserInformation = table.CreateInstance<FakeUserInformation>();
+            var resourceOwner = new MODELS.ResourceOwner
+            {
+                Id = _fakeUserInformation.UserId
+            };
+            FakeDataSource.Instance().ResourceOwners.Add(resourceOwner);
+        }
+
+        [Given("the consent has been given by the resource owner (.*) for the client (.*) and scopes (.*)")]
+
+        public void GivenConsent(string resourceOwnerId, string clientId, List<string> scopeNames)
+        {
+            var client = FakeDataSource.Instance().Clients.SingleOrDefault(c => c.ClientId == clientId);
+            var resourceOwner = FakeDataSource.Instance().ResourceOwners.SingleOrDefault(r => r.Id == resourceOwnerId);
+            var scopes = new List<MODELS.Scope>();
+            foreach (var scopeName in scopeNames)
+            {
+                var storedScope = FakeDataSource.Instance().Scopes.SingleOrDefault(s => s.Name == scopeName);
+                scopes.Add(storedScope);
+            }
+            var consent = new MODELS.Consent
+            {
+                Client = client,
+                GrantedScopes = scopes,
+                ResourceOwner = resourceOwner
+            };
+
+            FakeDataSource.Instance().Consents.Add(consent);
         }
 
         [When("requesting an authorization code")]
@@ -136,6 +164,13 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         {
             var location = _responseMessage.Headers.Location;
             Assert.That(location.AbsolutePath, Is.EqualTo(controller));
+        }
+
+        [Then("redirect to callback (.*)")]
+        public void ThenRedirectToCallback(string callback)
+        {
+            var location = _responseMessage.Headers.Location;
+            Assert.That(location.AbsoluteUri, Is.StringStarting(callback));
         }
 
         [Then("the error returned is")]

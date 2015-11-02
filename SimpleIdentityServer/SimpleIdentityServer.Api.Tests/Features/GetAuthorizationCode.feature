@@ -4,7 +4,7 @@
 
 
 # HAPPY PATH
-Scenario: Whether the user is authenticated or not we want to re-authenticate him
+Scenario: Whether the resource owner is authenticated or not we want to re-authenticate him
 	Given a mobile application MyHolidays is defined
 	And scopes openid,PlanningApi are defined
 	And the scopes openid,PlanningApi are assigned to the client MyHolidays
@@ -17,7 +17,7 @@ Scenario: Whether the user is authenticated or not we want to re-authenticate hi
 	Then HTTP status code is 301
 	And redirect to /Authenticate controller
 
-Scenario: A user is authenticated and we want to display only the consent screen
+Scenario: A resource owner is authenticated and we want to display only the consent screen
 	Given a mobile application MyHolidays is defined
 	And scopes openid,PlanningApi are defined
 	And the scopes openid,PlanningApi are assigned to the client MyHolidays
@@ -33,7 +33,7 @@ Scenario: A user is authenticated and we want to display only the consent screen
 	Then HTTP status code is 301
 	And redirect to /Consent controller
 
-Scenario: A user is not authenticated and we want to display only the consent screen
+Scenario: A resource owner is not authenticated and we want to display only the consent screen
 	Given a mobile application MyHolidays is defined
 	And scopes openid,PlanningApi are defined
 	And the scopes openid,PlanningApi are assigned to the client MyHolidays
@@ -46,9 +46,25 @@ Scenario: A user is not authenticated and we want to display only the consent sc
 	Then HTTP status code is 301
 	And redirect to /Authenticate controller
 
+Scenario: A resource owner is authenticated and he already has given his consent. We want to retrieve an authorization code for his consent
+	Given a mobile application MyHolidays is defined
+	And scopes openid,PlanningApi are defined
+	And the scopes openid,PlanningApi are assigned to the client MyHolidays
+	And a resource owner is authenticated
+	| UserId               | UserName |
+	| habarthierry@loki.be | thabart  |
+	And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and scopes openid,PlanningApi
+
+	When requesting an authorization code
+	| scope              | response_type | client_id  | redirect_uri     | prompt |
+	| openid PlanningApi | code          | MyHolidays | http://localhost | none   |
+
+
+	Then HTTP status code is 301
+	And redirect to callback http://localhost
 
 # ERRORS
-Scenario: A user is not authenticated but we want to directly retrieve the authorization code into the callback
+Scenario: A resource owner is not authenticated but we want to directly retrieve the authorization code into the callback
 	Given a mobile application MyHolidays is defined
 	And scopes openid,PlanningApi are defined
 	And the scopes openid,PlanningApi are assigned to the client MyHolidays
@@ -61,3 +77,20 @@ Scenario: A user is not authenticated but we want to directly retrieve the autho
 	And the error returned is
 	| error          | state  |
 	| login_required | state1 |
+
+Scenario: a resource owner is authenticated and we want to retrieve the authorization code into the callback without his consent
+	Given a mobile application MyHolidays is defined
+	And scopes openid,PlanningApi are defined
+	And the scopes openid,PlanningApi are assigned to the client MyHolidays
+	And a resource owner is authenticated
+	| UserId               | UserName |
+	| habarthierry@loki.be | thabart  |
+
+	When requesting an authorization code
+	| scope              | response_type | client_id  | redirect_uri     | prompt | state  |
+	| openid PlanningApi | code          | MyHolidays | http://localhost | none   | state1 |
+
+	Then HTTP status code is 400
+	And the error returned is
+	| error                | state  |
+	| interaction_required | state1 |
