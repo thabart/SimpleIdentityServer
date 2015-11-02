@@ -8,6 +8,7 @@ using System.Web.Http;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 using SimpleIdentityServer.Api.DTOs.Request;
+using SimpleIdentityServer.Api.DTOs.Response;
 using SimpleIdentityServer.Api.Tests.Common;
 using SimpleIdentityServer.DataAccess.Fake;
 using SimpleIdentityServer.RateLimitation.Configuration;
@@ -112,12 +113,14 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             using (var server = _configureWebApi.CreateServer(httpConfiguration))
             {
                 var httpClient = server.HttpClient;
-                var url = string.Format("/api/authorization?scope={0}&response_type={1}&client_id={2}&redirect_uri={3}&prompt={4}",
+                var url = string.Format(
+                    "/api/authorization?scope={0}&response_type={1}&client_id={2}&redirect_uri={3}&prompt={4}&state={5}",
                     authorizationRequest.scope,
                     authorizationRequest.response_type,
                     authorizationRequest.client_id,
                     authorizationRequest.redirect_uri,
-                    authorizationRequest.prompt);
+                    authorizationRequest.prompt,
+                    authorizationRequest.state);
                 _responseMessage = httpClient.GetAsync(url).Result;
             }
         }
@@ -133,6 +136,16 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         {
             var location = _responseMessage.Headers.Location;
             Assert.That(location.AbsolutePath, Is.EqualTo(controller));
+        }
+
+        [Then("the error returned is")]
+        public void ThenTheErrorReturnedIs(Table table)
+        {
+            var errorResponseWithState = table.CreateInstance<ErrorResponseWithState>();
+            var result = _responseMessage.Content.ReadAsAsync<ErrorResponseWithState>().Result;
+
+            Assert.That(errorResponseWithState.error, Is.EqualTo(result.error));
+            Assert.That(errorResponseWithState.state, Is.EqualTo(result.state));
         }
     }
 }
