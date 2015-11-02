@@ -1,11 +1,14 @@
 ﻿using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Filters;
+
 using Microsoft.Owin.Testing;
 using Microsoft.Practices.EnterpriseLibrary.Caching;
 using Microsoft.Practices.Unity;
 
+using SimpleIdentityServer.Api.Configuration;
 using SimpleIdentityServer.Core.Helpers;
+using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.RateLimitation.Configuration;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Core.Repositories;
@@ -43,6 +46,8 @@ namespace SimpleIdentityServer.Api.Tests.Common
             _container.RegisterType<IScopeRepository, FakeScopeRepository>();
             _container.RegisterType<IResourceOwnerRepository, FakeResourceOwnerRepository>();
             _container.RegisterType<IGrantedTokenRepository, FakeGrantedTokenRepository>();
+            _container.RegisterType<IConsentRepository, FakeConsentRepository>();
+            _container.RegisterType<IAuthorizationCodeRepository, FakeAuthorizationCodeRepository>();
 
             _container.RegisterType<IParameterParserHelper, ParameterParserHelper>();
             _container.RegisterType<IActionResultFactory, ActionResultFactory>();
@@ -68,6 +73,11 @@ namespace SimpleIdentityServer.Api.Tests.Common
             _container.RegisterType<IRedirectInstructionParser, RedirectInstructionParser>();
             _container.RegisterType<IActionResultParser, ActionResultParser>();
 
+            _container.RegisterType<IProtector, Protector>();
+            _container.RegisterType<IEncoder, Encoder>();
+            _container.RegisterType<ICertificateStore, CertificateStore>();
+            _container.RegisterType<ICompressor, Compressor>();
+
             FakeDataSource.Instance().Init();
         }
 
@@ -80,13 +90,12 @@ namespace SimpleIdentityServer.Api.Tests.Common
 
         public TestServer CreateServer()
         {
-            return TestServer.Create(app =>
-            {
-                var configuration = new HttpConfiguration();
-                RegisterFilterInjector(configuration, _container);
-                configuration.DependencyResolver = new UnityResolver(_container);
-                WebApiConfig.Register(configuration, app);
-            });
+            return GetServer(new HttpConfiguration());
+        }
+
+        public TestServer CreateServer(HttpConfiguration configuration)
+        {
+            return GetServer(configuration);
         }
 
         private static void RegisterFilterInjector(HttpConfiguration config, IUnityContainer container)
@@ -96,6 +105,16 @@ namespace SimpleIdentityServer.Api.Tests.Common
             var defaultprovider = providers.Single(i => i is ActionDescriptorFilterProvider);
             config.Services.Remove(typeof(IFilterProvider), defaultprovider);
             config.Services.Add(typeof(IFilterProvider), new UnityFilterProvider(container));
+        }
+
+        private TestServer GetServer(HttpConfiguration configuration)
+        {
+            return TestServer.Create(app =>
+            {
+                RegisterFilterInjector(configuration, _container);
+                configuration.DependencyResolver = new UnityResolver(_container);
+                WebApiConfig.Register(configuration, app);
+            });
         }
     }
 }

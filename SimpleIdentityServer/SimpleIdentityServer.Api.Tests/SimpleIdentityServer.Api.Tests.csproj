@@ -96,6 +96,7 @@
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Web" />
     <Reference Include="System.Web.Http">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
     </Reference>
@@ -112,6 +113,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\ConfigureWebApi.cs" />
+    <Compile Include="Common\FakeAuthenticationFilter.cs" />
     <Compile Include="Common\FakeGetRateLimitationElementOperation.cs" />
     <Compile Include="Common\HttpResponse.cs" />
     <Compile Include="Common\TooManyRequestResponse.cs" />
@@ -126,9 +128,15 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>GetAccessTokenWithResourceOwnerGrantType.feature</DependentUpon>
     </Compile>
+    <Compile Include="Features\GetAuthorizationCode.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GetAuthorizationCode.feature</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Specs\GetAccessTokenMultipleTimeSpec.cs" />
     <Compile Include="Specs\GetAccessTokenWithResourceOwnerGrantTypeSpec.cs" />
+    <Compile Include="Specs\GetAuthorizationCodeSpec.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -139,6 +147,10 @@
     <None Include="Features\GetAccessTokenWithResourceOwnerGrantType.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>GetAccessTokenWithResourceOwnerGrantType.feature.cs</LastGenOutput>
+    </None>
+    <None Include="Features\GetAuthorizationCode.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>GetAuthorizationCode.feature.cs</LastGenOutput>
     </None>
     <None Include="packages.config" />
   </ItemGroup>
