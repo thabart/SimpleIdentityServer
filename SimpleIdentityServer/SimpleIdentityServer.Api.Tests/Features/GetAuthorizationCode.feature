@@ -95,3 +95,17 @@ Scenario: a resource owner is authenticated and we want to retrieve the authoriz
 	And the error returned is
 	| error                | state  |
 	| interaction_required | state1 |
+
+Scenario: a resource owner is not authenticated and we want to retrieve an authorization code by passing a malformed redirection_uri
+	Given a mobile application MyHolidays is defined
+	And scopes openid,PlanningApi are defined
+	And the scopes openid,PlanningApi are assigned to the client MyHolidays
+
+	When requesting an authorization code
+	| scope              | response_type | client_id  | redirect_uri        | prompt | state  |
+	| openid PlanningApi | code          | MyHolidays | localhost?invalid+2 | none   | state1 |
+
+	Then HTTP status code is 400
+	And the error returned is
+	| error               | state  |
+	| invalid_request_uri | state1 |

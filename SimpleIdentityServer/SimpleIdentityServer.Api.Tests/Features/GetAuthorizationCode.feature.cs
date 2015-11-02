@@ -342,6 +342,53 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             this.ScenarioCleanup();
         }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("a resource owner is not authenticated and we want to retrieve an authorization co" +
+            "de by passing a malformed redirection_uri")]
+        public virtual void AResourceOwnerIsNotAuthenticatedAndWeWantToRetrieveAnAuthorizationCodeByPassingAMalformedRedirection_Uri()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("a resource owner is not authenticated and we want to retrieve an authorization co" +
+                    "de by passing a malformed redirection_uri", ((string[])(null)));
+#line 99
+this.ScenarioSetup(scenarioInfo);
+#line 100
+ testRunner.Given("a mobile application MyHolidays is defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 101
+ testRunner.And("scopes openid,PlanningApi are defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 102
+ testRunner.And("the scopes openid,PlanningApi are assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            TechTalk.SpecFlow.Table table12 = new TechTalk.SpecFlow.Table(new string[] {
+                        "scope",
+                        "response_type",
+                        "client_id",
+                        "redirect_uri",
+                        "prompt",
+                        "state"});
+            table12.AddRow(new string[] {
+                        "openid PlanningApi",
+                        "code",
+                        "MyHolidays",
+                        "localhost?invalid+2",
+                        "none",
+                        "state1"});
+#line 104
+ testRunner.When("requesting an authorization code", ((string)(null)), table12, "When ");
+#line 108
+ testRunner.Then("HTTP status code is 400", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            TechTalk.SpecFlow.Table table13 = new TechTalk.SpecFlow.Table(new string[] {
+                        "error",
+                        "state"});
+            table13.AddRow(new string[] {
+                        "invalid_request_uri",
+                        "state1"});
+#line 109
+ testRunner.And("the error returned is", ((string)(null)), table13, "And ");
+#line hidden
+            this.ScenarioCleanup();
+        }
     }
 }
 #pragma warning restore

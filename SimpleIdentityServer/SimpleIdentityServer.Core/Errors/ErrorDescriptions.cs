@@ -25,5 +25,7 @@
         public static string TheUserNeedsToGiveIsConsent = "the user needs to give his consent";
 
         public static string TheUserCannotBeReauthenticated = "The user cannot be reauthenticated";
+
+        public static string TheRedirectionUriIsNotWellFormed = "Based on the RFC-3986 the redirection-uri is not well formed";
     }
 }

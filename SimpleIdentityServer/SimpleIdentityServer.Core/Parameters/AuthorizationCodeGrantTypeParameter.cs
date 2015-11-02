@@ -101,6 +101,17 @@ namespace SimpleIdentityServer.Core.Parameters
                     string.Format(ErrorDescriptions.MissingParameter, "response_type"),
                     State);
             }
+
+            // With this instruction
+            // The redirect_uri is considered well-formed according to the RFC-3986
+            var redirectUrlIsCorrect = Uri.IsWellFormedUriString(RedirectUrl, UriKind.Absolute);
+            if (!redirectUrlIsCorrect)
+            {
+                throw new IdentityServerExceptionWithState(
+                    ErrorCodes.InvalidRequestUriCode,
+                    ErrorDescriptions.TheRedirectionUriIsNotWellFormed,
+                    State);
+            }
         }
     }
 }
