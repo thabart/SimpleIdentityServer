@@ -51,7 +51,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             var encodedRequest = _encoder.Encode(encryptedRequest);
             var authenticatedUser = this.GetAuthenticatedUser();
             var actionResult = _authorizationActions.GetAuthorization(
-                authorizationRequest.ToParameter(), 
+                authorizationRequest.ToParameter(),
                 authenticatedUser,
                 encodedRequest);
             var parameters = _actionResultParser.GetRedirectionParameters(actionResult);

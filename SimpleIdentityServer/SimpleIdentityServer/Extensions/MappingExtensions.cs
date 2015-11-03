@@ -20,7 +20,7 @@ namespace SimpleIdentityServer.Api.Extensions
                 Prompt = request.prompt,
                 RedirectUrl = request.redirect_uri,
                 ResponseMode  = (Core.Parameters.ResponseMode)request.response_mode,
-                ResponseType = (Core.Parameters.ResponseType)request.response_type,
+                ResponseType = request.response_type,
                 Scope = request.scope,
                 State = request.state,
                 UiLocales = request.ui_locales

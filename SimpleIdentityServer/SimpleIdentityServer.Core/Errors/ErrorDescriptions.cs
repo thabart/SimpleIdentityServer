@@ -27,5 +27,15 @@
         public static string TheUserCannotBeReauthenticated = "The user cannot be reauthenticated";
 
         public static string TheRedirectionUriIsNotWellFormed = "Based on the RFC-3986 the redirection-uri is not well formed";
+
+        public static string AtLeastOneResponseTypeIsNotSupported =
+            "at least one response_type parameter is not supported";
+
+        public static string AtLeastOnePromptIsNotSupported =
+            "at least one prompt parameter is not supported";
+
+        public static string PromptParameterShouldHaveOnlyNoneValue = "prompt parameter should have only none value";
+
+        public static string TheAuthorizationFlowIsNotSupported = "the authorization flow is not supported";
     }
 }

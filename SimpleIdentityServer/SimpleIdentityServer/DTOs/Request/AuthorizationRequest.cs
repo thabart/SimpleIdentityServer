@@ -26,7 +26,7 @@
     {
         public string scope { get; set; }
 
-        public ResponseType response_type { get; set; }
+        public string response_type { get; set; }
 
         public string client_id { get; set; }
 

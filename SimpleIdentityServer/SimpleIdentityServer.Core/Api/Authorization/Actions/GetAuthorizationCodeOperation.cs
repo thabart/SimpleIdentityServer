@@ -59,7 +59,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
             IPrincipal claimsPrincipal,
             string code)
         {
-            authorizationCodeGrantTypeParameter.Validate();
+            var prompts = _parameterParserHelper.ParsePromptParameters(authorizationCodeGrantTypeParameter.Prompt);
             var client = _clientValidator.ValidateClientExist(authorizationCodeGrantTypeParameter.ClientId);
             _clientValidator.ValidateRedirectionUrl(authorizationCodeGrantTypeParameter.RedirectUrl, client);
             var allowedScopes = _scopeValidator.ValidateAllowedScopes(authorizationCodeGrantTypeParameter.Scope, client);
@@ -71,7 +71,6 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
                     authorizationCodeGrantTypeParameter.State);
             }
 
-            var prompts = _parameterParserHelper.ParsePromptParameters(authorizationCodeGrantTypeParameter.Prompt);
             var result = ProcessPromptParameters(
                 prompts, 
                 claimsPrincipal, 

@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Helpers;
 
 namespace SimpleIdentityServer.Core.Parameters
 {
@@ -12,13 +7,6 @@ namespace SimpleIdentityServer.Core.Parameters
         None,
         query,
         fragment
-    }
-
-    public enum ResponseType
-    {
-        None,
-        code,
-        token
     }
 
     public enum Display
@@ -38,13 +26,21 @@ namespace SimpleIdentityServer.Core.Parameters
         select_account
     }
 
+    [Flags]
+    public enum ResponseType
+    {
+        code,
+        token,
+        id_token
+    }
+
     public sealed class AuthorizationCodeGrantTypeParameter
     {
         public string ClientId { get; set; }
 
         public string Scope { get; set; }
 
-        public ResponseType ResponseType { get; set; }
+        public string ResponseType { get; set; }
 
         public string RedirectUrl { get; set; }
 
@@ -67,51 +63,5 @@ namespace SimpleIdentityServer.Core.Parameters
         public string LoginHint { get; set; }
 
         public string AcrValues { get; set; }
-
-        public void Validate()
-        {
-            if (string.IsNullOrWhiteSpace(Scope))
-            {
-                throw new IdentityServerExceptionWithState(
-                    ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.MissingParameter, "scope"),
-                    State);
-            }
-
-            if (string.IsNullOrWhiteSpace(ClientId))
-            {
-                throw new IdentityServerExceptionWithState(
-                    ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.MissingParameter, "clientId"),
-                    State);
-            }
-            
-            if (string.IsNullOrWhiteSpace(RedirectUrl))
-            {
-                throw new IdentityServerExceptionWithState(
-                    ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.MissingParameter, "redirect_uri"),
-                    State);
-            }
-
-            if (ResponseType == ResponseType.None)
-            {
-                throw new IdentityServerExceptionWithState(
-                    ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.MissingParameter, "response_type"),
-                    State);
-            }
-
-            // With this instruction
-            // The redirect_uri is considered well-formed according to the RFC-3986
-            var redirectUrlIsCorrect = Uri.IsWellFormedUriString(RedirectUrl, UriKind.Absolute);
-            if (!redirectUrlIsCorrect)
-            {
-                throw new IdentityServerExceptionWithState(
-                    ErrorCodes.InvalidRequestUriCode,
-                    ErrorDescriptions.TheRedirectionUriIsNotWellFormed,
-                    State);
-            }
-        }
     }
 }

@@ -40,7 +40,6 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
         public GrantedToken Execute(
             ResourceOwnerGrantTypeParameter parameter)
         {
-            parameter.Validate();
             var client = _clientValidator.ValidateClientExist(parameter.ClientId);
             _resourceOwnerValidator.ValidateResourceOwnerCredentials(parameter.UserName, parameter.Password);
 

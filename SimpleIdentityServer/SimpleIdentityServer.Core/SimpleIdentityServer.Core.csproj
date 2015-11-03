@@ -81,8 +81,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Api\Authorization\Actions\GetTokenViaImplicitWorkflowOperation.cs" />
     <Compile Include="Api\Authorization\AuthorizationActions.cs" />
+    <Compile Include="Api\Authorization\AuthorizationFlow.cs" />
     <Compile Include="Api\Token\TokenActions.cs" />
+    <Compile Include="Validators\AuthorizationCodeGrantTypeParameterValidator.cs" />
+    <Compile Include="Validators\ResourceOwnerGrantTypeParameterValidator.cs" />
     <Compile Include="WebSite\Authenticate\Actions\AuthenticateResourceOwnerAction.cs" />
     <Compile Include="WebSite\Authenticate\Actions\LocalUserAuthenticationAction.cs" />
     <Compile Include="WebSite\Authenticate\AuthenticateActions.cs" />
@@ -115,7 +119,7 @@
     <Compile Include="Helpers\TokenHelper.cs" />
     <Compile Include="Model.cs" />
     <Compile Include="ModuleInit.cs" />
-    <Compile Include="Api\Authorization\Actions\GetAuthorizationOperation.cs" />
+    <Compile Include="Api\Authorization\Actions\GetAuthorizationCodeOperation.cs" />
     <Compile Include="Api\Token\Actions\GetTokenByResourceOwnerCredentialsGrantTypeAction.cs" />
     <Compile Include="Parameters\AuthorizationCodeGrantTypeParameter.cs" />
     <Compile Include="Parameters\ResourceOwnerGrantTypeParameter.cs" />

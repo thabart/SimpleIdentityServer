@@ -7,6 +7,7 @@ using Microsoft.Practices.EnterpriseLibrary.Caching;
 using Microsoft.Practices.Unity;
 
 using SimpleIdentityServer.Api.Configuration;
+using SimpleIdentityServer.Api.Controllers.Api;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.RateLimitation.Configuration;
@@ -41,6 +42,10 @@ namespace SimpleIdentityServer.Api.Tests.Common
             _container.RegisterType<IClientValidator, ClientValidator>();
             _container.RegisterType<IResourceOwnerValidator, ResourceOwnerValidator>();
             _container.RegisterType<IScopeValidator, ScopeValidator>();
+            _container
+                .RegisterType
+                <IAuthorizationCodeGrantTypeParameterValidator, AuthorizationCodeGrantTypeParameterValidator>();
+            _container.RegisterType<IResourceOwnerValidator, ResourceOwnerValidator>();
 
             _container.RegisterType<IClientRepository, FakeClientRepository>();
             _container.RegisterType<IScopeRepository, FakeScopeRepository>();
@@ -58,6 +63,7 @@ namespace SimpleIdentityServer.Api.Tests.Common
             _container
                 .RegisterType<IGetAuthorizationCodeOperation, GetAuthorizationCodeOperation>
                 ();
+            _container.RegisterType<IGetTokenViaImplicitWorkflowOperation, GetTokenViaImplicitWorkflowOperation>();
 
             _container.RegisterType<ITokenActions, TokenActions>();
             _container.RegisterType<IGetTokenByResourceOwnerCredentialsGrantTypeAction, GetTokenByResourceOwnerCredentialsGrantTypeAction>();
@@ -77,6 +83,8 @@ namespace SimpleIdentityServer.Api.Tests.Common
             _container.RegisterType<IEncoder, Encoder>();
             _container.RegisterType<ICertificateStore, CertificateStore>();
             _container.RegisterType<ICompressor, Compressor>();
+
+            var t = _container.Resolve<AuthorizationController>();
 
             FakeDataSource.Instance().Init();
         }
