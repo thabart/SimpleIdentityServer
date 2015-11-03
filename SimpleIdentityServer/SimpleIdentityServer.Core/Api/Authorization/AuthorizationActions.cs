@@ -107,7 +107,10 @@ namespace SimpleIdentityServer.Core.Api.Authorization
                         code);
                     break;
                 case AuthorizationFlow.ImplicitFlow:
-
+                    return _getTokenViaImplicitWorkflowOperation.Execute(
+                        parameter,
+                        claimsPrincipal,
+                        code);
                     break;
                 case AuthorizationFlow.HybridFlow:
 
