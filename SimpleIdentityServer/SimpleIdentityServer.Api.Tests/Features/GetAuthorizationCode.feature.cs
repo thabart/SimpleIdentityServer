@@ -417,7 +417,7 @@ this.ScenarioSetup(scenarioInfo);
                         "openid PlanningApi",
                         "code",
                         "MyHolidays",
-                        "localhost?invalid+2",
+                        "http://localhost",
                         "none login",
                         "state1"});
 #line 118
@@ -429,7 +429,7 @@ this.ScenarioSetup(scenarioInfo);
                         "error",
                         "state"});
             table15.AddRow(new string[] {
-                        "invalid_request_uri",
+                        "invalid_request",
                         "state1"});
 #line 123
  testRunner.And("the error returned is", ((string)(null)), table15, "And ");

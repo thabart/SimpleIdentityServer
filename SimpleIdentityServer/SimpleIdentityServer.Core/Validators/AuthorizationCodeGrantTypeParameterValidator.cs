@@ -124,9 +124,9 @@ namespace SimpleIdentityServer.Core.Validators
 
             var prompts = _parameterParserHelper.ParsePromptParameters(prompt);
             if (prompts.Contains(PromptParameter.none) &&
-                prompts.Contains(PromptParameter.login) ||
+                (prompts.Contains(PromptParameter.login) ||
                 prompts.Contains(PromptParameter.consent) ||
-                prompts.Contains(PromptParameter.select_account))
+                prompts.Contains(PromptParameter.select_account)))
             {
                 throw new IdentityServerExceptionWithState(
                     ErrorCodes.InvalidRequestCode,

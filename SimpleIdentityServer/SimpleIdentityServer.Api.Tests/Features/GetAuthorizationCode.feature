@@ -116,10 +116,10 @@ Scenario: a resource owner is not authenticated and we want to retrieve an autho
 	And the scopes openid,PlanningApi are assigned to the client MyHolidays
 
 	When requesting an authorization code
-	| scope              | response_type | client_id  | redirect_uri        | prompt     | state  |
-	| openid PlanningApi | code          | MyHolidays | localhost?invalid+2 | none login | state1 |
+	| scope              | response_type | client_id  | redirect_uri     | prompt     | state  |
+	| openid PlanningApi | code          | MyHolidays | http://localhost | none login | state1 |
 
 	Then HTTP status code is 400
 	And the error returned is
-	| error               | state  |
-	| invalid_request_uri | state1 |
+	| error           | state  |
+	| invalid_request | state1 |

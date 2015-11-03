@@ -46,6 +46,8 @@ namespace SimpleIdentityServer.Api.Tests.Common
                 .RegisterType
                 <IAuthorizationCodeGrantTypeParameterValidator, AuthorizationCodeGrantTypeParameterValidator>();
             _container.RegisterType<IResourceOwnerValidator, ResourceOwnerValidator>();
+            _container.RegisterType<IResourceOwnerGrantTypeParameterValidator, ResourceOwnerGrantTypeParameterValidator>
+                ();
 
             _container.RegisterType<IClientRepository, FakeClientRepository>();
             _container.RegisterType<IScopeRepository, FakeScopeRepository>();
