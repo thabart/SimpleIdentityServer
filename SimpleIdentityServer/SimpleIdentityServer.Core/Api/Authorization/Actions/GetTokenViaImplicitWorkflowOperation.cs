@@ -70,7 +70,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
                 }
 
                 var responses = _parameterParserHelper.ParseResponseType(authorizationParameter.ResponseType);
-                if (responses.Contains(ResponseTypeParameter.id_token))
+                if (responses.Contains(ResponseType.id_token))
                 {
                     // TODO : generate id_token
 
@@ -91,7 +91,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
                     };
                 }
 
-                if (responses.Contains(ResponseTypeParameter.token))
+                if (responses.Contains(ResponseType.token))
                 {
                     var allowedTokenScopes = string.Empty;
                     if (!string.IsNullOrWhiteSpace(authorizationParameter.Scope))

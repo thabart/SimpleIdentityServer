@@ -51,14 +51,30 @@ namespace SimpleIdentityServer.Core.Validators
                 return false;
             }
 
+            if (client.GrantTypes == null || !client.GrantTypes.Any())
+            {
+                client.GrantTypes = new List<GrantType>
+                {
+                    GrantType.authorization_code
+                };
+            }
+
             return client.GrantTypes != null && client.GrantTypes.Contains(grantType);
         }
 
         public bool ValidateResponseType(List<ResponseType> responseTypes, Client client)
         {
-            if (client == null || responseTypes == null)
+            if (client == null)
             {
                 return false;
+            }
+
+            if (client.ResponseTypes == null || !client.ResponseTypes.Any())
+            {
+                client.ResponseTypes = new List<ResponseType>
+                {
+                    ResponseType.code
+                };
             }
 
             return client.ResponseTypes != null && responseTypes.All(rt => client.ResponseTypes.Contains(rt));

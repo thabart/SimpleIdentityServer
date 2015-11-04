@@ -83,7 +83,13 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
                 ClientId = client.ClientId,
                 DisplayName = client.DisplayName,
                 AllowedScopes = client.AllowedScopes == null ? null : client.AllowedScopes.Select(s => s.ToBusiness()).ToList(),
-                RedirectionUrls = client.RedirectionUrls == null ? null : client.RedirectionUrls.Select(r => r.Url).ToList()
+                RedirectionUrls = client.RedirectionUrls == null ? null : client.RedirectionUrls.Select(r => r.Url).ToList(),
+                ClientUri = client.ClientUri,
+                LogoUri = client.LogoUri,
+                TosUri = client.TosUri,
+                PolicyUri = client.PolicyUri,
+                GrantTypes = client.GrantTypes.Select(gt => gt.ToBusiness()).ToList(),
+                ResponseTypes = client.ResponseTypes.Select(rt => rt.ToBusiness()).ToList()
             };
         }
 
@@ -134,6 +140,16 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
                 Description = scope.Description,
                 IsInternal = scope.IsInternal
             };
+        }
+
+        public static MODELS.GrantType ToBusiness(this FAKEMODELS.GrantType grantType)
+        {
+            return (MODELS.GrantType)grantType;
+        }
+
+        public static MODELS.ResponseType ToBusiness(this FAKEMODELS.ResponseType responseType)
+        {
+            return (MODELS.ResponseType)responseType;
         }
 
         #endregion

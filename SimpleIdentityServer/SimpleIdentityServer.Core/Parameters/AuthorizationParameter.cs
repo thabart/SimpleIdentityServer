@@ -26,14 +26,6 @@ namespace SimpleIdentityServer.Core.Parameters
         select_account
     }
 
-    [Flags]
-    public enum ResponseTypeParameter
-    {
-        code,
-        token,
-        id_token
-    }
-
     public sealed class AuthorizationParameter
     {
         public string ClientId { get; set; }

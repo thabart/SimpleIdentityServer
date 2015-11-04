@@ -106,6 +106,17 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
                     authorizationParameter.State);
             }
 
+            var responseTypes = _parameterParserHelper.ParseResponseType(authorizationParameter.ResponseType);
+            if (!_clientValidator.ValidateResponseType(responseTypes, client))
+            {
+                throw new IdentityServerExceptionWithState(
+                    ErrorCodes.InvalidRequestUriCode,
+                    string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType,
+                        authorizationParameter.ClientId,
+                        string.Join(",", responseTypes)),
+                    authorizationParameter.State);
+            }
+
             var result = ProcessPromptParameters(
                 prompts,
                 claimsPrincipal,

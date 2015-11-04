@@ -5,6 +5,7 @@ using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Models;
 
 namespace SimpleIdentityServer.Core.Validators
 {
@@ -88,7 +89,7 @@ namespace SimpleIdentityServer.Core.Validators
                 return;
             }
 
-            var responseTypeNames = Enum.GetNames(typeof(ResponseTypeParameter));
+            var responseTypeNames = Enum.GetNames(typeof(ResponseType));
             var atLeastOneResonseTypeIsNotSupported = responseType.Split(' ')
                 .Any(r => !string.IsNullOrWhiteSpace(r) && !responseTypeNames.Contains(r));
             if (atLeastOneResonseTypeIsNotSupported)
