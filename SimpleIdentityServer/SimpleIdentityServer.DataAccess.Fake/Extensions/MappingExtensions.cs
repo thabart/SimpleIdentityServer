@@ -88,8 +88,8 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
                 LogoUri = client.LogoUri,
                 TosUri = client.TosUri,
                 PolicyUri = client.PolicyUri,
-                GrantTypes = client.GrantTypes.Select(gt => gt.ToBusiness()).ToList(),
-                ResponseTypes = client.ResponseTypes.Select(rt => rt.ToBusiness()).ToList()
+                GrantTypes = client.GrantTypes == null ? null : client.GrantTypes.Select(gt => gt.ToBusiness()).ToList(),
+                ResponseTypes = client.ResponseTypes == null ? null : client.ResponseTypes.Select(rt => rt.ToBusiness()).ToList()
             };
         }
 
