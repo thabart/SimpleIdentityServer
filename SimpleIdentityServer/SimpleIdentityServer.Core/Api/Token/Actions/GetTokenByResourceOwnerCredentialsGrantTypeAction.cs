@@ -1,4 +1,6 @@
-﻿using SimpleIdentityServer.Core.Helpers;
+﻿using SimpleIdentityServer.Core.Errors;
+using SimpleIdentityServer.Core.Exceptions;
+using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
@@ -41,6 +43,13 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             ResourceOwnerGrantTypeParameter parameter)
         {
             var client = _clientValidator.ValidateClientExist(parameter.ClientId);
+            if (client == null)
+            {
+                throw new IdentityServerException(
+                    ErrorCodes.InvalidClient,
+                    string.Format(ErrorDescriptions.ClientIsNotValid, "client_id"));
+            }
+
             _resourceOwnerValidator.ValidateResourceOwnerCredentials(parameter.UserName, parameter.Password);
 
             var allowedTokenScopes = string.Empty;

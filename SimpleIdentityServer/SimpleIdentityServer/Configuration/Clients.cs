@@ -27,6 +27,18 @@ namespace SimpleIdentityServer.Api.Configuration
                         {
                             Name = "openid"
                         }
+                    },
+                    GrantTypes = new List<GrantType>
+                    {
+                        GrantType.authorization_code,
+                        GrantType.@implicit,
+                        GrantType.authorization_code
+                    },
+                    ResponseTypes = new List<ResponseType>
+                    {
+                        ResponseType.token,
+                        ResponseType.code,
+                        ResponseType.id_token
                     }
                 }
             };

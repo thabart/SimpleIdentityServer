@@ -1,4 +1,5 @@
-﻿using SimpleIdentityServer.Core.Errors;
+﻿using System.Collections.Generic;
+using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
@@ -12,28 +13,25 @@ namespace SimpleIdentityServer.Core.Validators
         Client ValidateClientExist(string clientId);
 
         string ValidateRedirectionUrl(string url, Client client);
+
+        bool ValidateGrantType(GrantType grantType, Client client);
+
+        bool ValidateResponseType(List<ResponseType> responseTypes, Client client);
     }
 
     public class ClientValidator : IClientValidator
     {
         private readonly IClientRepository _clientRepository;
 
-        public ClientValidator(IClientRepository clientRepository)
+        public ClientValidator(
+            IClientRepository clientRepository)
         {
             _clientRepository = clientRepository;
         }
 
         public Client ValidateClientExist(string clientId)
         {
-            var client = _clientRepository.GetClientById(clientId);
-            if (client == null)
-            {
-                throw new IdentityServerException(
-                    ErrorCodes.InvalidClient,
-                    string.Format(ErrorDescriptions.ClientIsNotValid, "client_id"));
-            }
-
-            return client;
+            return _clientRepository.GetClientById(clientId);
         }
         
         public string ValidateRedirectionUrl(string url, Client client)
@@ -43,15 +41,27 @@ namespace SimpleIdentityServer.Core.Validators
                 return url;
             }
 
-            var redirectionUrl = client.RedirectionUrls.FirstOrDefault(r => r == url);
-            if (redirectionUrl == null)
+            return client.RedirectionUrls.FirstOrDefault(r => r == url);
+        }
+
+        public bool ValidateGrantType(GrantType grantType, Client client)
+        {
+            if (client == null)
             {
-                throw new IdentityServerException(
-                    ErrorCodes.InvalidRequestUriCode,
-                    string.Format(ErrorDescriptions.RedirectUrlIsNotValid, redirectionUrl));
+                return false;
             }
 
-            return redirectionUrl;
+            return client.GrantTypes != null && client.GrantTypes.Contains(grantType);
+        }
+
+        public bool ValidateResponseType(List<ResponseType> responseTypes, Client client)
+        {
+            if (client == null || responseTypes == null)
+            {
+                return false;
+            }
+
+            return client.ResponseTypes != null && responseTypes.All(rt => client.ResponseTypes.Contains(rt));
         }
     }
 }

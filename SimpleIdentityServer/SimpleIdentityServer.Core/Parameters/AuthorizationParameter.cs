@@ -27,7 +27,7 @@ namespace SimpleIdentityServer.Core.Parameters
     }
 
     [Flags]
-    public enum ResponseType
+    public enum ResponseTypeParameter
     {
         code,
         token,

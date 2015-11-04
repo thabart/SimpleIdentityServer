@@ -4,6 +4,7 @@ using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Parameters;
+using SimpleIdentityServer.Core.Repositories;
 
 namespace SimpleIdentityServer.Core.Validators
 {
@@ -16,7 +17,9 @@ namespace SimpleIdentityServer.Core.Validators
     {
         private readonly IParameterParserHelper _parameterParserHelper;
 
-        public AuthorizationCodeGrantTypeParameterValidator(IParameterParserHelper parameterParserHelper)
+        public AuthorizationCodeGrantTypeParameterValidator(
+            IParameterParserHelper parameterParserHelper,
+            IClientRepository clientRepository)
         {
             _parameterParserHelper = parameterParserHelper;
         }
@@ -85,7 +88,7 @@ namespace SimpleIdentityServer.Core.Validators
                 return;
             }
 
-            var responseTypeNames = Enum.GetNames(typeof(ResponseType));
+            var responseTypeNames = Enum.GetNames(typeof(ResponseTypeParameter));
             var atLeastOneResonseTypeIsNotSupported = responseType.Split(' ')
                 .Any(r => !string.IsNullOrWhiteSpace(r) && !responseTypeNames.Contains(r));
             if (atLeastOneResonseTypeIsNotSupported)

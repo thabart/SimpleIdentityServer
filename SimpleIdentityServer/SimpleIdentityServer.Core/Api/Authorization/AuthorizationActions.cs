@@ -28,52 +28,52 @@ namespace SimpleIdentityServer.Core.Api.Authorization
 
         private readonly IParameterParserHelper _parameterParserHelper;
 
-        private static readonly Dictionary<List<ResponseType>, AuthorizationFlow> MappingResponseTypesToAuthorizationFlows = new Dictionary<List<ResponseType>, AuthorizationFlow>
+        private static readonly Dictionary<List<ResponseTypeParameter>, AuthorizationFlow> MappingResponseTypesToAuthorizationFlows = new Dictionary<List<ResponseTypeParameter>, AuthorizationFlow>
         {
             {
-                new List<ResponseType>
+                new List<ResponseTypeParameter>
                 {
-                    ResponseType.code
+                    ResponseTypeParameter.code
                 },
                 AuthorizationFlow.AuthorizationCodeFlow
             },
             {
-                new List<ResponseType>
+                new List<ResponseTypeParameter>
                 {
-                    ResponseType.id_token
+                    ResponseTypeParameter.id_token
                 }, 
                 AuthorizationFlow.ImplicitFlow
             },
             {
-                new List<ResponseType>
+                new List<ResponseTypeParameter>
                 {
-                    ResponseType.id_token,
-                    ResponseType.token
+                    ResponseTypeParameter.id_token,
+                    ResponseTypeParameter.token
                 }, 
                 AuthorizationFlow.ImplicitFlow
             },
             {
-                new List<ResponseType>
+                new List<ResponseTypeParameter>
                 {
-                    ResponseType.code,
-                    ResponseType.id_token
+                    ResponseTypeParameter.code,
+                    ResponseTypeParameter.id_token
                 }, 
                 AuthorizationFlow.HybridFlow
             },
             {
-                new List<ResponseType>
+                new List<ResponseTypeParameter>
                 {
-                    ResponseType.code,
-                    ResponseType.token
+                    ResponseTypeParameter.code,
+                    ResponseTypeParameter.token
                 }, 
                 AuthorizationFlow.HybridFlow
             },
             {
-                new List<ResponseType>
+                new List<ResponseTypeParameter>
                 {
-                    ResponseType.code,
-                    ResponseType.id_token,
-                    ResponseType.token
+                    ResponseTypeParameter.code,
+                    ResponseTypeParameter.id_token,
+                    ResponseTypeParameter.token
                 }, 
                 AuthorizationFlow.ImplicitFlow
             }
@@ -120,7 +120,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization
             return null;
         }
 
-        private static AuthorizationFlow GetAuthorizationFlow(ICollection<ResponseType> responseTypes, string state)
+        private static AuthorizationFlow GetAuthorizationFlow(ICollection<ResponseTypeParameter> responseTypes, string state)
         {
             var record = MappingResponseTypesToAuthorizationFlows.Keys
                 .SingleOrDefault(k => k.Count == responseTypes.Count && k.All(key => responseTypes.Contains(key)));

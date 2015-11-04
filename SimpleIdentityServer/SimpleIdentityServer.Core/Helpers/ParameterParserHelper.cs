@@ -20,7 +20,7 @@ namespace SimpleIdentityServer.Core.Helpers
         /// </summary>
         /// <param name="parameter">List of response types separated by whitespace</param>
         /// <returns>List of response types</returns>
-        List<ResponseType> ParseResponseType(string parameter);
+        List<ResponseTypeParameter> ParseResponseType(string parameter);
 
         List<string> ParseScopeParameters(string scope);
     }
@@ -53,9 +53,9 @@ namespace SimpleIdentityServer.Core.Helpers
         /// </summary>
         /// <param name="parameter">List of response types separated by whitespace</param>
         /// <returns>List of response types</returns>
-        public List<ResponseType> ParseResponseType(string parameter)
+        public List<ResponseTypeParameter> ParseResponseType(string parameter)
         {
-            var responseTypeNames = Enum.GetNames(typeof (ResponseType));
+            var responseTypeNames = Enum.GetNames(typeof (ResponseTypeParameter));
             if (string.IsNullOrWhiteSpace(parameter))
             {
                 return null;
@@ -63,7 +63,7 @@ namespace SimpleIdentityServer.Core.Helpers
 
             var responses = parameter.Split(' ')
                 .Where(r => !string.IsNullOrWhiteSpace(r) && responseTypeNames.Contains(r))
-                .Select(r => (ResponseType) Enum.Parse(typeof (ResponseType), r))
+                .Select(r => (ResponseTypeParameter) Enum.Parse(typeof (ResponseTypeParameter), r))
                 .ToList();
             return responses;
         } 

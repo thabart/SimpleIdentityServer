@@ -80,7 +80,23 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
             }
 
             var client = _clientValidator.ValidateClientExist(authorizationParameter.ClientId);
-            _clientValidator.ValidateRedirectionUrl(authorizationParameter.RedirectUrl, client);
+            if (client == null)
+            {
+                throw new IdentityServerExceptionWithState(
+                    ErrorCodes.InvalidClient,
+                    string.Format(ErrorDescriptions.ClientIsNotValid, "client_id"),
+                    authorizationParameter.State);
+            }
+
+            var redirectionUrl = _clientValidator.ValidateRedirectionUrl(authorizationParameter.RedirectUrl, client);
+            if (redirectionUrl == null)
+            {
+                throw new IdentityServerExceptionWithState(
+                    ErrorCodes.InvalidRequestUriCode,
+                    string.Format(ErrorDescriptions.RedirectUrlIsNotValid, redirectionUrl),
+                    authorizationParameter.State);
+            }
+
             var allowedScopes = _scopeValidator.ValidateAllowedScopes(authorizationParameter.Scope, client);
             if (!allowedScopes.Contains("openid"))
             {
