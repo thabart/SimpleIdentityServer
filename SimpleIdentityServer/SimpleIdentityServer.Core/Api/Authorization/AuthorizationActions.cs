@@ -13,7 +13,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization
 {
     public interface IAuthorizationActions
     {
-        ActionResult GetAuthorization(AuthorizationCodeGrantTypeParameter parameter,
+        ActionResult GetAuthorization(AuthorizationParameter parameter,
             IPrincipal claimsPrincipal,
             string code);
     }
@@ -91,7 +91,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization
             _parameterParserHelper = parameterParserHelper;
         }
 
-        public ActionResult GetAuthorization(AuthorizationCodeGrantTypeParameter parameter,
+        public ActionResult GetAuthorization(AuthorizationParameter parameter,
             IPrincipal claimsPrincipal,
             string code)
         {

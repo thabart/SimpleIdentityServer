@@ -15,7 +15,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
     public interface IConfirmConsentAction
     {
         ActionResult Execute(
-            AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter,
+            AuthorizationParameter authorizationParameter,
             ClaimsPrincipal claimsPrincipal);
     }
 
@@ -60,21 +60,21 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
         /// 2). If there's no consent then we insert it and the authorization code is returned
         ///  2°.* to the callback url.
         /// </summary>
-        /// <param name="authorizationCodeGrantTypeParameter">Authorization code grant-type</param>
+        /// <param name="authorizationParameter">Authorization code grant-type</param>
         /// <param name="claimsPrincipal">Resource owner's claims</param>
         /// <returns>Redirects the authorization code to the callback.</returns>
-        public ActionResult Execute(AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter,
+        public ActionResult Execute(AuthorizationParameter authorizationParameter,
             ClaimsPrincipal claimsPrincipal)
         {
             var subject = claimsPrincipal.GetSubject();
             var consents = _consentRepository.GetConsentsForGivenUser(subject);
-            var scopeNames = _parameterParserHelper.ParseScopeParameters(authorizationCodeGrantTypeParameter.Scope);
+            var scopeNames = _parameterParserHelper.ParseScopeParameters(authorizationParameter.Scope);
             Models.Consent assignedConsent = null;
             if (consents != null && consents.Any())
             {
                 assignedConsent = consents.FirstOrDefault(
                         c =>
-                            c.Client.ClientId == authorizationCodeGrantTypeParameter.ClientId &&
+                            c.Client.ClientId == authorizationParameter.ClientId &&
                             c.GrantedScopes != null && c.GrantedScopes.Any() &&
                             c.GrantedScopes.All(s => scopeNames.Contains(s.Name)));
             }
@@ -83,8 +83,8 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
             {
                 assignedConsent = new Models.Consent
                 {
-                    Client = _clientRepository.GetClientById(authorizationCodeGrantTypeParameter.ClientId),
-                    GrantedScopes = GetScopes(authorizationCodeGrantTypeParameter.Scope),
+                    Client = _clientRepository.GetClientById(authorizationParameter.ClientId),
+                    GrantedScopes = GetScopes(authorizationParameter.Scope),
                     ResourceOwner = _resourceOwnerRepository.GetBySubject(subject)
                 };
                 _consentRepository.InsertConsent(assignedConsent);
@@ -100,9 +100,9 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
 
             var result = _actionResultFactory.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
             result.RedirectInstruction.AddParameter("code", authorizationCode.Value);
-            if (!string.IsNullOrWhiteSpace(authorizationCodeGrantTypeParameter.State))
+            if (!string.IsNullOrWhiteSpace(authorizationParameter.State))
             {
-                result.RedirectInstruction.AddParameter("state", authorizationCodeGrantTypeParameter.State);
+                result.RedirectInstruction.AddParameter("state", authorizationParameter.State);
             }
 
             return result;

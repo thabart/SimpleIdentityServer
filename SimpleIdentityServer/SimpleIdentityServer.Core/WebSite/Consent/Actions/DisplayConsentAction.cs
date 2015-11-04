@@ -15,12 +15,12 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
         /// Fetch the scopes and client name from the ClientRepository and the parameter
         /// Those informations are used to create the consent screen.
         /// </summary>
-        /// <param name="authorizationCodeGrantTypeParameter">Authorization code grant type parameter.</param>
+        /// <param name="authorizationParameter">Authorization code grant type parameter.</param>
         /// <param name="client">Information about the client</param>
         /// <param name="allowedScopes">Allowed scopes</param>
         /// <returns>Action result.</returns>
         ActionResult Execute(
-            AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter,
+            AuthorizationParameter authorizationParameter,
             out Client client,
             out List<Scope> allowedScopes);
     }
@@ -51,19 +51,19 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
         /// Fetch the scopes and client name from the ClientRepository and the parameter
         /// Those informations are used to create the consent screen.
         /// </summary>
-        /// <param name="authorizationCodeGrantTypeParameter">Authorization code grant type parameter.</param>
+        /// <param name="authorizationParameter">Authorization code grant type parameter.</param>
         /// <param name="client">Information about the client</param>
         /// <param name="allowedScopes">Allowed scopes</param>
         /// <returns>Action result.</returns>
         public ActionResult Execute(
-            AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter,
+            AuthorizationParameter authorizationParameter,
             out Client client,
             out List<Scope> allowedScopes)
         {
-            allowedScopes = GetScopes(authorizationCodeGrantTypeParameter.Scope)
+            allowedScopes = GetScopes(authorizationParameter.Scope)
                 .Where(s => !s.IsInternal)
                 .ToList();
-            client = _clientRepository.GetClientById(authorizationCodeGrantTypeParameter.ClientId);
+            client = _clientRepository.GetClientById(authorizationParameter.ClientId);
             return _actionResultFactory.CreateAnEmptyActionResultWithOutput();
         }
 

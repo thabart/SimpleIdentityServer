@@ -32,7 +32,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
         /// <returns>Consent screen or redirect to the Index page.</returns>
         ActionResult Execute(
             LocalAuthorizationParameter localAuthorizationParameter,
-            AuthorizationCodeGrantTypeParameter parameter,
+            AuthorizationParameter parameter,
             ClaimsPrincipal resourceOwnerPrincipal,
             string code,
             out List<Claim> claims);
@@ -81,7 +81,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
         /// <returns>Consent screen or redirect to the Index page.</returns>
         public ActionResult Execute(
             LocalAuthorizationParameter localAuthorizationParameter,
-            AuthorizationCodeGrantTypeParameter parameter,
+            AuthorizationParameter parameter,
             ClaimsPrincipal resourceOwnerPrincipal,
             string code,
             out List<Claim> claims)

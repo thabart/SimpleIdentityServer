@@ -10,12 +10,12 @@ namespace SimpleIdentityServer.Core.WebSite.Consent
     public interface IConsentActions
     {
         ActionResult DisplayConsent(
-            AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter,
+            AuthorizationParameter authorizationParameter,
             out Client client,
             out List<Scope> allowedScopes);
 
         ActionResult ConfirmConsent(
-            AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter,
+            AuthorizationParameter authorizationParameter,
             ClaimsPrincipal claimsPrincipal);
     }
 
@@ -34,20 +34,20 @@ namespace SimpleIdentityServer.Core.WebSite.Consent
         }
 
         public ActionResult DisplayConsent(
-            AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter,
+            AuthorizationParameter authorizationParameter,
             out Client client,
             out List<Scope> allowedScopes)
         {
-            return _displayConsentAction.Execute(authorizationCodeGrantTypeParameter,
+            return _displayConsentAction.Execute(authorizationParameter,
                 out client,
                 out allowedScopes);
         }
 
         public ActionResult ConfirmConsent(
-            AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter,
+            AuthorizationParameter authorizationParameter,
             ClaimsPrincipal claimsPrincipal)
         {
-            return _confirmConsentAction.Execute(authorizationCodeGrantTypeParameter,
+            return _confirmConsentAction.Execute(authorizationParameter,
                 claimsPrincipal);
         }
     }

@@ -70,7 +70,7 @@ namespace SimpleIdentityServer.Core.Helpers
 
         public List<string> ParseScopeParameters(string scope)
         {
-            return scope.Split(' ').ToList();
+            return scope.Split(' ').Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
         }
     }
 }

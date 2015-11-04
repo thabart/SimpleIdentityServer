@@ -20,7 +20,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
         /// <param name="code">Encrypted parameter</param>
         /// <returns>Action result to the controller's action</returns>
         ActionResult Execute(
-            AuthorizationCodeGrantTypeParameter parameter,
+            AuthorizationParameter parameter,
             ClaimsPrincipal resourceOwnerPrincipal,
             string code);
     }
@@ -50,7 +50,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
         /// <param name="code">Encrypted parameter</param>
         /// <returns>Action result to the controller's action</returns>
         public ActionResult Execute(
-            AuthorizationCodeGrantTypeParameter parameter,
+            AuthorizationParameter parameter,
             ClaimsPrincipal resourceOwnerPrincipal,
             string code)
         {

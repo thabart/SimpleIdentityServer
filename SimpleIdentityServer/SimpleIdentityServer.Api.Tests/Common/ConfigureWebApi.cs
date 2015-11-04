@@ -8,6 +8,7 @@ using Microsoft.Practices.Unity;
 
 using SimpleIdentityServer.Api.Configuration;
 using SimpleIdentityServer.Api.Controllers.Api;
+using SimpleIdentityServer.Core.Api.Authorization.Common;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.RateLimitation.Configuration;
@@ -86,7 +87,8 @@ namespace SimpleIdentityServer.Api.Tests.Common
             _container.RegisterType<ICertificateStore, CertificateStore>();
             _container.RegisterType<ICompressor, Compressor>();
 
-            var t = _container.Resolve<AuthorizationController>();
+            _container.RegisterType<IProcessAuthorizationRequest, ProcessAuthorizationRequest>();
+
 
             FakeDataSource.Instance().Init();
         }

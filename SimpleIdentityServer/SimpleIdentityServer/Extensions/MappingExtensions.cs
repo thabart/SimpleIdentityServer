@@ -6,9 +6,9 @@ namespace SimpleIdentityServer.Api.Extensions
 {
     public static class MappingExtensions
     {
-        public static AuthorizationCodeGrantTypeParameter ToParameter(this AuthorizationRequest request)
+        public static AuthorizationParameter ToParameter(this AuthorizationRequest request)
         {
-            return new AuthorizationCodeGrantTypeParameter
+            return new AuthorizationParameter
             {
                 AcrValues = request.acr_values,
                 ClientId = request.client_id,

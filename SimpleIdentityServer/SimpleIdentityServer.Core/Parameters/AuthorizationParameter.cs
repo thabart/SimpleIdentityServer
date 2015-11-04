@@ -34,7 +34,7 @@ namespace SimpleIdentityServer.Core.Parameters
         id_token
     }
 
-    public sealed class AuthorizationCodeGrantTypeParameter
+    public sealed class AuthorizationParameter
     {
         public string ClientId { get; set; }
 

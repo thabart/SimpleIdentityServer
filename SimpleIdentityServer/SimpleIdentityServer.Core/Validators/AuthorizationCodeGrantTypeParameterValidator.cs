@@ -9,7 +9,7 @@ namespace SimpleIdentityServer.Core.Validators
 {
     public interface IAuthorizationCodeGrantTypeParameterValidator
     {
-        void Validate(AuthorizationCodeGrantTypeParameter parameter);
+        void Validate(AuthorizationParameter parameter);
     }
 
     public sealed class AuthorizationCodeGrantTypeParameterValidator : IAuthorizationCodeGrantTypeParameterValidator
@@ -21,7 +21,7 @@ namespace SimpleIdentityServer.Core.Validators
             _parameterParserHelper = parameterParserHelper;
         }
 
-        public void Validate(AuthorizationCodeGrantTypeParameter parameter)
+        public void Validate(AuthorizationParameter parameter)
         {
             if (string.IsNullOrWhiteSpace(parameter.Scope))
             {

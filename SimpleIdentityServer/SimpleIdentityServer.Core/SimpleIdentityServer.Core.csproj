@@ -84,7 +84,11 @@
     <Compile Include="Api\Authorization\Actions\GetTokenViaImplicitWorkflowOperation.cs" />
     <Compile Include="Api\Authorization\AuthorizationActions.cs" />
     <Compile Include="Api\Authorization\AuthorizationFlow.cs" />
+    <Compile Include="Api\Authorization\Common\ProcessAuthorizationRequest.cs" />
     <Compile Include="Api\Token\TokenActions.cs" />
+    <Compile Include="Constants.cs" />
+    <Compile Include="Models\JwtClaims.cs" />
+    <Compile Include="Models\JwtHeader.cs" />
     <Compile Include="Validators\AuthorizationCodeGrantTypeParameterValidator.cs" />
     <Compile Include="Validators\ResourceOwnerGrantTypeParameterValidator.cs" />
     <Compile Include="WebSite\Authenticate\Actions\AuthenticateResourceOwnerAction.cs" />
@@ -121,7 +125,7 @@
     <Compile Include="ModuleInit.cs" />
     <Compile Include="Api\Authorization\Actions\GetAuthorizationCodeOperation.cs" />
     <Compile Include="Api\Token\Actions\GetTokenByResourceOwnerCredentialsGrantTypeAction.cs" />
-    <Compile Include="Parameters\AuthorizationCodeGrantTypeParameter.cs" />
+    <Compile Include="Parameters\AuthorizationParameter.cs" />
     <Compile Include="Parameters\ResourceOwnerGrantTypeParameter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\IAuthorizationCodeRepository.cs" />

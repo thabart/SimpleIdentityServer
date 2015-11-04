@@ -10,13 +10,13 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
     public interface IAuthenticateActions
     {
         ActionResult AuthenticateResourceOwner(
-            AuthorizationCodeGrantTypeParameter parameter,
+            AuthorizationParameter parameter,
             ClaimsPrincipal claimsPrincipal,
             string code);
 
         ActionResult LocalUserAuthentication(
             LocalAuthorizationParameter localAuthorizationParameter,
-            AuthorizationCodeGrantTypeParameter parameter,
+            AuthorizationParameter parameter,
             ClaimsPrincipal claimsPrincipal,
             string code,
             out List<Claim> claims);
@@ -37,7 +37,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
         }
 
         public ActionResult AuthenticateResourceOwner(
-            AuthorizationCodeGrantTypeParameter parameter,
+            AuthorizationParameter parameter,
             ClaimsPrincipal claimsPrincipal,
             string code)
         {
@@ -46,7 +46,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
 
         public ActionResult LocalUserAuthentication(
             LocalAuthorizationParameter localAuthorizationParameter,
-            AuthorizationCodeGrantTypeParameter parameter,
+            AuthorizationParameter parameter,
             ClaimsPrincipal claimsPrincipal,
             string code,
             out List<Claim> claims)

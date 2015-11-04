@@ -1,5 +1,6 @@
 ﻿using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
+using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Models;
 
 using System.Collections.Generic;
@@ -15,6 +16,13 @@ namespace SimpleIdentityServer.Core.Validators
 
     public class ScopeValidator : IScopeValidator
     {
+        private readonly IParameterParserHelper _parameterParserHelper;
+
+        public ScopeValidator(IParameterParserHelper parameterParserHelper)
+        {
+            _parameterParserHelper = parameterParserHelper;
+        }
+
         public List<string> ValidateAllowedScopes(string scope, Client client)
         {
             var result = new List<string>();
@@ -25,7 +33,7 @@ namespace SimpleIdentityServer.Core.Validators
                     string.Format(ErrorDescriptions.ParameterIsNotCorrect, "scope"));
             }
 
-            var scopes = scope.Split(' ').Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+            var scopes = _parameterParserHelper.ParseScopeParameters(scope);
             if (scopes.Any())
             {
                 var duplicates = scopes.GroupBy(p => p)
