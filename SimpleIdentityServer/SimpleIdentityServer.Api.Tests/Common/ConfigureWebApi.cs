@@ -81,7 +81,7 @@ namespace SimpleIdentityServer.Api.Tests.Common
             _container.RegisterType<IRedirectInstructionParser, RedirectInstructionParser>();
             _container.RegisterType<IActionResultParser, ActionResultParser>();
 
-            _container.RegisterType<IProtector, Protector>();
+            _container.RegisterType<IProtector, FakeProtector>();
             _container.RegisterType<IEncoder, Encoder>();
             _container.RegisterType<ICertificateStore, CertificateStore>();
             _container.RegisterType<ICompressor, Compressor>();

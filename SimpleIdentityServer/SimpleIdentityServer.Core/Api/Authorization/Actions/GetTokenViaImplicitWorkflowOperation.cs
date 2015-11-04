@@ -16,6 +16,13 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
 
     public class GetTokenViaImplicitWorkflowOperation : IGetTokenViaImplicitWorkflowOperation
     {
+        private readonly IGetAuthorizationCodeOperation _getAuthorizationCodeOperation;
+
+        public GetTokenViaImplicitWorkflowOperation(IGetAuthorizationCodeOperation getAuthorizationCodeOperation)
+        {
+            _getAuthorizationCodeOperation = getAuthorizationCodeOperation;
+        }
+
         public ActionResult Execute(
             AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter,
             IPrincipal principal,
@@ -29,7 +36,10 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
                     authorizationCodeGrantTypeParameter.State);
             }
 
-            return null;
+            return _getAuthorizationCodeOperation.Execute(
+                authorizationCodeGrantTypeParameter,
+                principal,
+                code);
         }
     }
 }

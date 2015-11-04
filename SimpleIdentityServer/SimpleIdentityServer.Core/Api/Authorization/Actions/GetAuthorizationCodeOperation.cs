@@ -60,6 +60,30 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
             string code)
         {
             var prompts = _parameterParserHelper.ParsePromptParameters(authorizationCodeGrantTypeParameter.Prompt);
+            if (prompts == null || !prompts.Any())
+            {
+                prompts = new List<PromptParameter>();
+                var endUserIsAuthenticated = IsAuthenticated(claimsPrincipal);
+                if (!endUserIsAuthenticated)
+                {
+                    prompts.Add(PromptParameter.login);
+                }
+                else
+                {
+                    var confirmedConsent = GetResourceOwnerConsent(
+                        claimsPrincipal, 
+                        authorizationCodeGrantTypeParameter);
+                    if (confirmedConsent == null)
+                    {
+                        prompts.Add(PromptParameter.consent);
+                    }
+                    else
+                    {
+                        prompts.Add(PromptParameter.none);
+                    }
+                }
+            }
+
             var client = _clientValidator.ValidateClientExist(authorizationCodeGrantTypeParameter.ClientId);
             _clientValidator.ValidateRedirectionUrl(authorizationCodeGrantTypeParameter.RedirectUrl, client);
             var allowedScopes = _scopeValidator.ValidateAllowedScopes(authorizationCodeGrantTypeParameter.Scope, client);
@@ -93,10 +117,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
             AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter,
             string code)
         {
-            var endUserIsAuthenticated = 
-                claimsPrincipal == null || claimsPrincipal.Identity == null ?
-                false : 
-                claimsPrincipal.Identity.IsAuthenticated;
+            var endUserIsAuthenticated = IsAuthenticated(claimsPrincipal);
             // Raise "login_required" exception : if the prompt parameter is "none" AND the user is not authenticated
             // Raise "interaction_required" exception : if there's no consent from the user.
             if (prompts.Contains(PromptParameter.none))
@@ -109,21 +130,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
                         authorizationCodeGrantTypeParameter.State);
                 }
 
-                var principal = claimsPrincipal as ClaimsPrincipal;
-                var subject = principal.GetSubject();
-                var consents = _consentRepository.GetConsentsForGivenUser(subject);
-                Consent confirmedConsent = null;
-                if (consents != null && consents.Any())
-                {
-                    var scopeNames =
-                        _parameterParserHelper.ParseScopeParameters(authorizationCodeGrantTypeParameter.Scope);
-                    confirmedConsent = consents.FirstOrDefault(
-                        c =>
-                            c.Client.ClientId == authorizationCodeGrantTypeParameter.ClientId &&
-                            c.GrantedScopes != null && c.GrantedScopes.Any() &&
-                            c.GrantedScopes.All(s => scopeNames.Contains(s.Name)));
-                }
-
+                var confirmedConsent = GetResourceOwnerConsent(claimsPrincipal, authorizationCodeGrantTypeParameter);
                 if (confirmedConsent == null)
                 {
                     throw new IdentityServerExceptionWithState(
@@ -175,6 +182,35 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
             }
 
             return null;
+        }
+
+        private Consent GetResourceOwnerConsent(
+            IPrincipal claimsPrincipal,
+            AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter)
+        {
+            var principal = claimsPrincipal as ClaimsPrincipal;
+            var subject = principal.GetSubject();
+            var consents = _consentRepository.GetConsentsForGivenUser(subject);
+            Consent confirmedConsent = null;
+            if (consents != null && consents.Any())
+            {
+                var scopeNames =
+                    _parameterParserHelper.ParseScopeParameters(authorizationCodeGrantTypeParameter.Scope);
+                confirmedConsent = consents.FirstOrDefault(
+                    c =>
+                        c.Client.ClientId == authorizationCodeGrantTypeParameter.ClientId &&
+                        c.GrantedScopes != null && c.GrantedScopes.Any() &&
+                        c.GrantedScopes.All(s => scopeNames.Contains(s.Name)));
+            }
+
+            return confirmedConsent;
+        }
+
+        private static bool IsAuthenticated(IPrincipal principal)
+        {
+            return principal == null || principal.Identity == null ?
+                false :
+                principal.Identity.IsAuthenticated;
         }
     }
 }

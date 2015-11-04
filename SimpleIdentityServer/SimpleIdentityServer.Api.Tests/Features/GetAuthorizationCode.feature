@@ -63,6 +63,37 @@ Scenario: A resource owner is authenticated and he already has given his consent
 	Then HTTP status code is 301
 	And redirect to callback http://localhost
 	And the state state1 is returned in the callback
+		
+# THE PROMPT PARAMETER IS NOT SPECIFIED
+Scenario: a resource owner is not authenticated. We want to retrieve an authorization code and the prompt parameter value is not specified
+	Given a mobile application MyHolidays is defined
+	And scopes openid,PlanningApi are defined
+	And the scopes openid,PlanningApi are assigned to the client MyHolidays
+	And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and scopes openid,PlanningApi
+
+	When requesting an authorization code
+	| scope              | response_type | client_id  | redirect_uri     | state  |
+	| openid PlanningApi | code          | MyHolidays | http://localhost | state1 |
+	
+	
+	Then HTTP status code is 301
+	And redirect to /Authenticate controller
+
+Scenario: a resource owner is authenticated. We want to retrieve an authorization code and the prompt parameter value is not specified
+	Given a mobile application MyHolidays is defined
+	And scopes openid,PlanningApi are defined
+	And the scopes openid,PlanningApi are assigned to the client MyHolidays
+	And a resource owner is authenticated
+	| UserId               | UserName |
+	| habarthierry@loki.be | thabart  |
+
+	When requesting an authorization code
+	| scope              | response_type | client_id  | redirect_uri     | state  |
+	| openid PlanningApi | code          | MyHolidays | http://localhost | state1 |
+	
+	
+	Then HTTP status code is 301
+	And redirect to /Consent controller
 
 # ERRORS
 Scenario: A resource owner is not authenticated but we want to directly retrieve the authorization code into the callback
