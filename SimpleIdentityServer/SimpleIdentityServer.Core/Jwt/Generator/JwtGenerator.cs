@@ -92,6 +92,30 @@ namespace SimpleIdentityServer.Core.Jwt.Generator
                 }
             }
 
+            // Set the nonce value in the id token. The value is coming from the authorization request
+            if (!string.IsNullOrWhiteSpace(authorizationParameter.Nonce))
+            {
+                result.nonce = authorizationParameter.Nonce;
+            }
+
+            // Set the ACR : Authentication Context Class Reference
+            // Set the AMR : Authentication Methods Reference
+            // For the moment we support a level 1 because only password via HTTPS is supported.
+            if (!string.IsNullOrWhiteSpace(authorizationParameter.AcrValues))
+            {
+                result.acr = Constants.StandardArcParameterNames.OpenIdCustomAuthLevel + ".password=1";
+                result.amr = "password";
+            }
+
+            // Set the client_id
+            // This claim is only needed when the ID token has a single audience value & that audience is different than the authorized party.
+            if (audiences != null && 
+                audiences.Count() == 1 && 
+                audiences.First() == authorizationParameter.ClientId)
+            {
+                result.azp = authorizationParameter.ClientId;
+            }
+
             return result;
         }
     }
