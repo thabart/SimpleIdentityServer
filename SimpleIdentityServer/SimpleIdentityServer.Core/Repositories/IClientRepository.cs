@@ -1,4 +1,5 @@
-﻿using SimpleIdentityServer.Core.Models;
+﻿using System.Collections.Generic;
+using SimpleIdentityServer.Core.Models;
 
 namespace SimpleIdentityServer.Core.Repositories
 {
@@ -7,5 +8,7 @@ namespace SimpleIdentityServer.Core.Repositories
         Client GetClientById(string clientId);
 
         bool InsertClient(Client client);
+
+        IList<Client> GetAll();
     }
 }

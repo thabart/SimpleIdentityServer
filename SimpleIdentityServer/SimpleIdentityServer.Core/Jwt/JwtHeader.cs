@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Core.Models
+﻿namespace SimpleIdentityServer.Core.Jwt
 {
     public class JwtHeader
     {

@@ -28,5 +28,10 @@ namespace SimpleIdentityServer.DataAccess.Fake.Repositories
             FakeDataSource.Instance().Clients.Add(record);
             return true;
         }
+        
+        public IList<Client> GetAll()
+        {
+            return FakeDataSource.Instance().Clients.Select(c => c.ToBusiness()).ToList();
+        }
     }
 }

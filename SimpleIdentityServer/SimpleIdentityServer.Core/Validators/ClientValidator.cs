@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Exceptions;
+
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
 
@@ -16,7 +15,11 @@ namespace SimpleIdentityServer.Core.Validators
 
         bool ValidateGrantType(GrantType grantType, Client client);
 
-        bool ValidateResponseType(List<ResponseType> responseTypes, Client client);
+        bool ValidateGrantTypes(IList<GrantType> grantTypes, Client client);
+
+        bool ValidateResponseType(ResponseType responseType, Client client);
+
+        bool ValidateResponseTypes(IList<ResponseType> responseType, Client client);
     }
 
     public class ClientValidator : IClientValidator
@@ -51,6 +54,45 @@ namespace SimpleIdentityServer.Core.Validators
                 return false;
             }
 
+            SetDefaultClientGrantType(client);
+            return client.GrantTypes != null && client.GrantTypes.Contains(grantType);
+        }
+
+        public bool ValidateGrantTypes(IList<GrantType> grantTypes, Client client)
+        {
+            if (client == null)
+            {
+                return false;
+            }
+
+            SetDefaultClientGrantType(client);
+            return client.GrantTypes != null && grantTypes.All(gt => client.GrantTypes.Contains(gt));
+        }
+
+        public bool ValidateResponseType(ResponseType responseType, Client client)
+        {
+            if (client == null)
+            {
+                return false;
+            }
+
+            SetDefaultClientResponseType(client);
+            return client.ResponseTypes != null && client.ResponseTypes.Contains(responseType);
+        }
+
+        public bool ValidateResponseTypes(IList<ResponseType> responseTypes, Client client)
+        {
+            if (client == null)
+            {
+                return false;
+            }
+
+            SetDefaultClientResponseType(client);
+            return client.ResponseTypes != null && responseTypes.All(rt => client.ResponseTypes.Contains(rt));
+        }
+
+        private static void SetDefaultClientGrantType(Client client)
+        {
             if (client.GrantTypes == null || !client.GrantTypes.Any())
             {
                 client.GrantTypes = new List<GrantType>
@@ -58,17 +100,10 @@ namespace SimpleIdentityServer.Core.Validators
                     GrantType.authorization_code
                 };
             }
-
-            return client.GrantTypes != null && client.GrantTypes.Contains(grantType);
         }
 
-        public bool ValidateResponseType(List<ResponseType> responseTypes, Client client)
+        private static void SetDefaultClientResponseType(Client client)
         {
-            if (client == null)
-            {
-                return false;
-            }
-
             if (client.ResponseTypes == null || !client.ResponseTypes.Any())
             {
                 client.ResponseTypes = new List<ResponseType>
@@ -76,8 +111,6 @@ namespace SimpleIdentityServer.Core.Validators
                     ResponseType.code
                 };
             }
-
-            return client.ResponseTypes != null && responseTypes.All(rt => client.ResponseTypes.Contains(rt));
         }
     }
 }

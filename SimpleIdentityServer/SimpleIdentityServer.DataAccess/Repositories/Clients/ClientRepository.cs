@@ -1,4 +1,4 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
 
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
@@ -15,6 +15,11 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories.Clients
         public bool InsertClient(Client client)
         {
             return true;
+        }
+
+        public IList<Client> GetAll()
+        {
+            return null;
         }
     }
 }

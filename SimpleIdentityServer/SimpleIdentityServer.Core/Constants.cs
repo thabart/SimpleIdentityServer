@@ -2,7 +2,7 @@
 {
     public static class Constants
     {
-        public static class StandardClaimNames
+        public static class StandardResourceOwnerClaimNames
         {
             public static string Subject = "sub";
 

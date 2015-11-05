@@ -6,8 +6,10 @@ using SimpleIdentityServer.Core.Api.Authorization.Actions;
 using SimpleIdentityServer.Core.Api.Authorization.Common;
 using SimpleIdentityServer.Core.Api.Token;
 using SimpleIdentityServer.Core.Api.Token.Actions;
+using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Helpers;
+using SimpleIdentityServer.Core.Jwt.Generator;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Core.WebSite.Authenticate;
@@ -55,6 +57,9 @@ namespace SimpleIdentityServer.Core
             register.RegisterType<ILocalUserAuthenticationAction, LocalUserAuthenticationAction>();
 
             register.RegisterType<IProcessAuthorizationRequest, ProcessAuthorizationRequest>();
+
+            register.RegisterType<IJwtGenerator, JwtGenerator>();
+            register.RegisterType<ISimpleIdentityServerConfigurator, SimpleIdentityServerConfigurator>();
         }
     }
 }

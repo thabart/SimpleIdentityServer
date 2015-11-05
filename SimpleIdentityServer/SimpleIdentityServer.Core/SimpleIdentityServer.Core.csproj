@@ -86,9 +86,12 @@
     <Compile Include="Api\Authorization\AuthorizationFlow.cs" />
     <Compile Include="Api\Authorization\Common\ProcessAuthorizationRequest.cs" />
     <Compile Include="Api\Token\TokenActions.cs" />
+    <Compile Include="Configuration\SimpleIdentityServerConfigurator.cs" />
     <Compile Include="Constants.cs" />
-    <Compile Include="Models\JwtClaims.cs" />
-    <Compile Include="Models\JwtHeader.cs" />
+    <Compile Include="Extensions\DateTimeExtensions.cs" />
+    <Compile Include="Jwt\Generator\JwtGenerator.cs" />
+    <Compile Include="Jwt\JwtClaims.cs" />
+    <Compile Include="Jwt\JwtHeader.cs" />
     <Compile Include="Validators\AuthorizationCodeGrantTypeParameterValidator.cs" />
     <Compile Include="Validators\ResourceOwnerGrantTypeParameterValidator.cs" />
     <Compile Include="WebSite\Authenticate\Actions\AuthenticateResourceOwnerAction.cs" />

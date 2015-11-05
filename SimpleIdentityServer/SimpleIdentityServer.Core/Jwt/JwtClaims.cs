@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Security.Claims;
 
-namespace SimpleIdentityServer.Core.Models
+namespace SimpleIdentityServer.Core.Jwt
 {
     /// <summary>
     /// Represents a JSON Web Token
@@ -21,17 +21,17 @@ namespace SimpleIdentityServer.Core.Models
         /// <summary>
         /// Gets or sets the expiration time
         /// </summary>
-        public ulong exp { get; set; }
+        public double exp { get; set; }
 
         /// <summary>
         /// Gets or sets the IAT
         /// </summary>
-        public ulong iat { get; set; }
+        public double iat { get; set; }
 
         /// <summary>
         /// Gets or sets the authentication time
         /// </summary>
-        public ulong auth_time { get; set; }
+        public double auth_time { get; set; }
 
         /// <summary>
         /// Gets or sets the NONCE

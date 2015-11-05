@@ -107,7 +107,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
             }
 
             var responseTypes = _parameterParserHelper.ParseResponseType(authorizationParameter.ResponseType);
-            if (!_clientValidator.ValidateResponseType(responseTypes, client))
+            if (!_clientValidator.ValidateResponseTypes(responseTypes, client))
             {
                 throw new IdentityServerExceptionWithState(
                     ErrorCodes.InvalidRequestUriCode,

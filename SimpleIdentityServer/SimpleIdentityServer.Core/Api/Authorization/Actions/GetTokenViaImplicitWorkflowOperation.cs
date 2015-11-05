@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using System.Security.Principal;
 using SimpleIdentityServer.Core.Api.Authorization.Common;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Helpers;
+using SimpleIdentityServer.Core.Jwt.Generator;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
@@ -31,16 +30,20 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
 
         private readonly ITokenHelper _tokenHelper;
 
+        private readonly IJwtGenerator _jwtGenerator;
+
         public GetTokenViaImplicitWorkflowOperation(
             IProcessAuthorizationRequest processAuthorizationRequest,
             IParameterParserHelper parameterParserHelper,
             IGrantedTokenRepository grantedTokenRepository,
-            ITokenHelper tokenHelper)
+            ITokenHelper tokenHelper,
+            IJwtGenerator jwtGenerator)
         {
             _processAuthorizationRequest = processAuthorizationRequest;
             _parameterParserHelper = parameterParserHelper;
             _grantedTokenRepository = grantedTokenRepository;
             _tokenHelper = tokenHelper;
+            _jwtGenerator = jwtGenerator;
         }
 
         public ActionResult Execute(
@@ -72,23 +75,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
                 var responses = _parameterParserHelper.ParseResponseType(authorizationParameter.ResponseType);
                 if (responses.Contains(ResponseType.id_token))
                 {
-                    // TODO : generate id_token
-
-                    // TODO : Provide the possibility to configure the the issuer of the response.
-                    var audiences = new List<string>();
-                    var claims = new List<Claim>
-                    {
-                        new Claim(Constants.StandardClaimNames.Subject, claimsPrincipal.GetSubject())
-                    };
-
-                    // TODO : the claim "azp" is only needed when the ID token has a single audience value & that audience is different than the authorized party.
-
-
-                    var jwtClaims = new JwtClaims
-                    {
-                        iss = "http://localhost/simpleidentityserver",
-                        Claims = claims
-                    };
+                    var jwtClaims = _jwtGenerator.GenerateJwtClaims(claimsPrincipal, authorizationParameter);
                 }
 
                 if (responses.Contains(ResponseType.token))

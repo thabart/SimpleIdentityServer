@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
 using SimpleIdentityServer.Core.Errors;
@@ -107,6 +109,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
             var resourceOwner = _resourceOwnerRepository.GetBySubject(subject);
             claims.Add(new Claim(ClaimTypes.NameIdentifier, resourceOwner.Id));
             claims.Add(new Claim(ClaimTypes.Name, resourceOwner.UserName));
+            claims.Add(new Claim(ClaimTypes.AuthenticationInstant, DateTime.Now.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture)));
             var requestedScopes = _parameterParserHelper.ParseScopeParameters(parameter.Scope);
             var consents = _consentRepository.GetConsentsForGivenUser(subject);
             if (consents != null && consents.Any())
@@ -118,7 +121,6 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                         c.GrantedScopes.All(s => !s.IsInternal && requestedScopes.Contains(s.Name)));
                 if (alreadyOneConsentExist)
                 {
-                    // TODO : redirect user-agent to the callback-url.
                     return _actionResultFactory.CreateAnEmptyActionResultWithNoEffect();
                 }
             }
