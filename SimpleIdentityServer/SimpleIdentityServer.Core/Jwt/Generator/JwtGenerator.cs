@@ -45,11 +45,7 @@ namespace SimpleIdentityServer.Core.Jwt.Generator
             var issuerName = _simpleIdentityServerConfigurator.GetIssuerName();
             // Audience can be used to disambiguate the intended recipients.
             // Fill-in the list with the list of client_id suspected to parse the JWT tokens.
-            var audiences = new List<string>
-            {
-                authorizationParameter.ClientId
-            };
-
+            var audiences = new List<string>();
             var clients = _clientRepository.GetAll();
             clients.ForEach(client =>
             {
