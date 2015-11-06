@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using System.Security.Claims;
+
 using Microsoft.Practices.ObjectBuilder2;
+
 using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Models;
@@ -10,7 +13,7 @@ using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Validators;
 
-namespace SimpleIdentityServer.Core.Jwt.Generator
+namespace SimpleIdentityServer.Core.IdToken.Generator
 {
     public interface IJwtGenerator
     {
@@ -115,6 +118,8 @@ namespace SimpleIdentityServer.Core.Jwt.Generator
             {
                 result.azp = authorizationParameter.ClientId;
             }
+
+            // TODO : Add another claims in it ...
 
             return result;
         }

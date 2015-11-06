@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Security.Claims;
 
-namespace SimpleIdentityServer.Core.Jwt
+namespace SimpleIdentityServer.Core.IdToken
 {
     /// <summary>
     /// Represents a JSON Web Token

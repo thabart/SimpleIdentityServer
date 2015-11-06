@@ -7,11 +7,10 @@ using Microsoft.Practices.EnterpriseLibrary.Caching;
 using Microsoft.Practices.Unity;
 
 using SimpleIdentityServer.Api.Configuration;
-using SimpleIdentityServer.Api.Controllers.Api;
 using SimpleIdentityServer.Core.Api.Authorization.Common;
 using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Jwt.Generator;
+using SimpleIdentityServer.Core.IdToken.Generator;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.RateLimitation.Configuration;
 using SimpleIdentityServer.Core.Validators;

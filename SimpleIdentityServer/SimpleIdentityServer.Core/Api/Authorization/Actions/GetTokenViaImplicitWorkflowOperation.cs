@@ -4,7 +4,7 @@ using SimpleIdentityServer.Core.Api.Authorization.Common;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Jwt.Generator;
+using SimpleIdentityServer.Core.IdToken.Generator;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;

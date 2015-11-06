@@ -39,6 +39,28 @@ namespace SimpleIdentityServer.Core.Models
         /// </summary>
         public string TosUri { get; set; }
 
+        #region Encryption mechanism for ID TOKEN
+
+        /// <summary>
+        /// Gets or sets the JWS alg algorithm for signing the ID token issued to this client.
+        /// The default is RS256. The public key for validating the signature is provided by retrieving the JWK Set referenced by the JWKS_URI
+        /// </summary>
+        public string IdTokenSignedTResponseAlg { get; set; }
+
+        /// <summary>
+        /// Gets or sets the JWE alg algorithm. REQUIRED for encrypting the ID token issued to this client.
+        /// The default is that no encryption is performed
+        /// </summary>
+        public string IdTokenEncryptedResponseAlg { get; set; }
+
+        /// <summary>
+        /// Gets or sets the JWE enc algorithm. REQUIRED for encrypting the ID token issued to this client.
+        /// If IdTokenEncryptedResponseAlg is specified then the value is A128CBC-HS256
+        /// </summary>
+        public string IdTokenEncryptedResponseEnc { get; set; }
+
+        #endregion
+
         /// <summary>
         /// Gets or sets an array containing a list of OAUTH2.0 response_type values
         /// </summary>

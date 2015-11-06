@@ -88,10 +88,13 @@
     <Compile Include="Api\Token\TokenActions.cs" />
     <Compile Include="Configuration\SimpleIdentityServerConfigurator.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="Cryptography\JsonWebKey.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
-    <Compile Include="Jwt\Generator\JwtGenerator.cs" />
-    <Compile Include="Jwt\JwtClaims.cs" />
-    <Compile Include="Jwt\JwtHeader.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="IdToken\Generator\JwsGenerator.cs" />
+    <Compile Include="IdToken\Generator\JwtGenerator.cs" />
+    <Compile Include="IdToken\JwtClaims.cs" />
+    <Compile Include="IdToken\JwsProtectedHeader.cs" />
     <Compile Include="Validators\AuthorizationCodeGrantTypeParameterValidator.cs" />
     <Compile Include="Validators\ResourceOwnerGrantTypeParameterValidator.cs" />
     <Compile Include="WebSite\Authenticate\Actions\AuthenticateResourceOwnerAction.cs" />

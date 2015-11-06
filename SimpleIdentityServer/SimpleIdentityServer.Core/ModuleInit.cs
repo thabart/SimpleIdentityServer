@@ -9,7 +9,7 @@ using SimpleIdentityServer.Core.Api.Token.Actions;
 using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Jwt.Generator;
+using SimpleIdentityServer.Core.IdToken.Generator;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Core.WebSite.Authenticate;
