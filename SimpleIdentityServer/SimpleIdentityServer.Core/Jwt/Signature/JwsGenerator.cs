@@ -85,9 +85,11 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
             // Calculate the time in seconds which the JWT was issued.
             var iatInSeconds = currentDateTime.ConvertToUnixTimestamp();
             // Populate the claims
-            var claims = new List<Claim>
+            var claims = new Dictionary<string, string>
             {
-                new Claim(Constants.StandardResourceOwnerClaimNames.Subject, claimPrincipal.GetSubject())
+                {
+                    Constants.StandardResourceOwnerClaimNames.Subject, claimPrincipal.GetSubject()
+                }
             };
 
             var result = new JwsPayload
@@ -96,7 +98,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
                 aud = audiences.ToArray(),
                 exp = expirationInSeconds,
                 iat = iatInSeconds,
-                Claims = claims
+                claims = claims
             };
 
             // If the max_age request is made or when auth_time is requesed as an Essential claim then we calculate the auth_time

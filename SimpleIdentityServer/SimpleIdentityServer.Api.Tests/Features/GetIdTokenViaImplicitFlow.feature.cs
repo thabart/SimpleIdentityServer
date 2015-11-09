@@ -32,8 +32,8 @@ namespace SimpleIdentityServer.Api.Tests.Features
         public virtual void FeatureSetup()
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "GetIdTokenViaImplicitWorkflow", "As a client\nI want authenticate the user and retrieve his id_token via the implic" +
-                    "it_workflow", ProgrammingLanguage.CSharp, ((string[])(null)));
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "GetIdTokenViaImplicitWorkflow", "As a client\r\nI want authenticate the user and retrieve his id_token via the impli" +
+                    "cit_workflow", ProgrammingLanguage.CSharp, ((string[])(null)));
             testRunner.OnFeatureStart(featureInfo);
         }
         
@@ -112,7 +112,7 @@ this.ScenarioSetup(scenarioInfo);
                         "http://localhost",
                         "none",
                         "state1",
-                        "nonce"});
+                        "parameterNonce"});
 #line 17
  testRunner.When("requesting an authorization code", ((string)(null)), table2, "When ");
 #line 21
@@ -126,6 +126,12 @@ this.ScenarioSetup(scenarioInfo);
                         "none"});
 #line 23
  testRunner.And("the protected JWS header is returned", ((string)(null)), table3, "And ");
+#line 26
+ testRunner.And("the audience parameter with value MyHolidays is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 27
+ testRunner.And("the parameter nonce with value parameterNonce is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 28
+ testRunner.And("the claim sub with value habarthierry@lokie.be is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
         }

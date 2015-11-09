@@ -56,6 +56,16 @@ namespace SimpleIdentityServer.Core.Jwt
         /// <summary>
         /// Gets or sets the claims
         /// </summary>
-        public List<Claim> Claims { get; set; }
+        public Dictionary<string, string> claims { get; set; }
+
+        public string GetClaimValue(string claimName)
+        {
+            if (!claims.ContainsKey(claimName))
+            {
+                return null;
+            }
+
+            return claims[claimName];
+        }
     }
 }

@@ -227,7 +227,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
 
             var javascriptSerializer = new JavaScriptSerializer();
             _jwsProtectedHeader = javascriptSerializer.Deserialize<JwsProtectedHeader>(parts[0].Base64Decode());
-            // _jwsPayLoad = javascriptSerializer.Deserialize<JwsPayload>(secondPart);
+            _jwsPayLoad = javascriptSerializer.Deserialize<JwsPayload>(secondPart);
         }
 
         [Then("the protected JWS header is returned")]
@@ -238,10 +238,25 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             Assert.That(record.alg, Is.EqualTo(_jwsProtectedHeader.alg));
         }
 
-        [Then("the jws payload is returned")]
-        public void ThenJwsPayLoadIsReturned(Table table)
+        [Then("the audience parameter with value (.*) is returned by the JWS payload")]
+        public void ThenAudienceIsReturnedInJwsPayLoad(string audience)
         {
-            var record = table.CreateInstance<JwsPayload>();
+            Assert.That(_jwsPayLoad.aud.Contains(audience), Is.True);
+        }
+
+        [Then("the parameter nonce with value (.*) is returned by the JWS payload")]
+        public void ThenNonceIsReturnedInJwsPayLoad(string nonce)
+        {
+            Assert.That(_jwsPayLoad.nonce, Is.EqualTo(nonce));
+        }
+
+        [Then("the claim (.*) with value (.*) is returned by the JWS payload")]
+        public void ThenTheClaimWithValueIsReturnedByJwsPayLoad(string claimName, string val)
+        {
+            var claimValue = _jwsPayLoad.GetClaimValue(claimName);
+
+            // Assert.IsNotNull(claimValue);
+            // Assert.That(claimValue, Is.EqualTo(val));
         }
 
         private static MODELS.Client GetClient(string clientId)

@@ -15,12 +15,15 @@ Scenario: Get the id token	Given a mobile application MyHolidays is defined
 	And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and scopes openid,PlanningApi
 	
 	When requesting an authorization code
-	| scope              | response_type | client_id  | redirect_uri     | prompt | state  | nonce |
-	| openid PlanningApi | id_token      | MyHolidays | http://localhost | none   | state1 | nonce |
+	| scope              | response_type | client_id  | redirect_uri     | prompt | state  | nonce          |
+	| openid PlanningApi | id_token      | MyHolidays | http://localhost | none   | state1 | parameterNonce |
 
 	Then the http status code is 301
 	And decrypt the id_token parameter from the query string
 	And the protected JWS header is returned
 	| alg  |
 	| none |
+	And the audience parameter with value MyHolidays is returned by the JWS payload
+	And the parameter nonce with value parameterNonce is returned by the JWS payload
+	And the claim sub with value habarthierry@lokie.be is returned by the JWS payload
 
