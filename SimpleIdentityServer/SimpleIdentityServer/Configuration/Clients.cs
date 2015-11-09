@@ -30,7 +30,6 @@ namespace SimpleIdentityServer.Api.Configuration
                     },
                     GrantTypes = new List<GrantType>
                     {
-                        GrantType.authorization_code,
                         GrantType.@implicit,
                         GrantType.authorization_code
                     },
@@ -39,7 +38,8 @@ namespace SimpleIdentityServer.Api.Configuration
                         ResponseType.token,
                         ResponseType.code,
                         ResponseType.id_token
-                    }
+                    },
+                    IdTokenSignedTResponseAlg = "none"
                 }
             };
         }

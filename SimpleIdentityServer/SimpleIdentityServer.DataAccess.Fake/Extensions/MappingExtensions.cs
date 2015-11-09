@@ -15,6 +15,9 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
         {
             return new FAKEMODELS.Client
             {
+                IdTokenEncryptedResponseAlg = client.IdTokenEncryptedResponseAlg,
+                IdTokenEncryptedResponseEnc = client.IdTokenEncryptedResponseEnc,
+                IdTokenSignedTResponseAlg = client.IdTokenSignedTResponseAlg,
                 ClientId = client.ClientId,
                 DisplayName = client.DisplayName,
                 AllowedScopes = client.AllowedScopes == null ? null : client.AllowedScopes.Select(s => s.ToFake()).ToList(),
@@ -115,7 +118,10 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
                 TosUri = client.TosUri,
                 PolicyUri = client.PolicyUri,
                 GrantTypes = client.GrantTypes == null ? null : client.GrantTypes.Select(gt => gt.ToBusiness()).ToList(),
-                ResponseTypes = client.ResponseTypes == null ? null : client.ResponseTypes.Select(rt => rt.ToBusiness()).ToList()
+                ResponseTypes = client.ResponseTypes == null ? null : client.ResponseTypes.Select(rt => rt.ToBusiness()).ToList(),
+                IdTokenEncryptedResponseAlg = client.IdTokenEncryptedResponseAlg,
+                IdTokenEncryptedResponseEnc = client.IdTokenEncryptedResponseEnc,
+                IdTokenSignedTResponseAlg = client.IdTokenSignedTResponseAlg,
             };
         }
 
