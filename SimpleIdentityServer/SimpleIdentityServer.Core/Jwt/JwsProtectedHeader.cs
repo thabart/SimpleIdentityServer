@@ -15,6 +15,6 @@
         /// <summary>
         /// Gets or sets the identifier indicating the key that was used to secure the token.
         /// </summary>
-        public string Kid { get; set; }
+        public string kid { get; set; }
     }
 }

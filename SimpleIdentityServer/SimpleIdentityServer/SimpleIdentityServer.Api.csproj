@@ -205,6 +205,7 @@
     <Compile Include="Attributes\SwaggerOperationAttribute.cs" />
     <Compile Include="Configuration\CertificateStore.cs" />
     <Compile Include="Configuration\Clients.cs" />
+    <Compile Include="Configuration\JsonWebKeys.cs" />
     <Compile Include="Configuration\ResourceOwners.cs" />
     <Compile Include="Configuration\Scopes.cs" />
     <Compile Include="Constants.cs" />

@@ -30,6 +30,8 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
 
     public class JwsGenerator : IJwsGenerator
     {
+        private const string JwsType = "JWT";
+
         private readonly ISimpleIdentityServerConfigurator _simpleIdentityServerConfigurator;
 
         private readonly IClientRepository _clientRepository;
@@ -143,58 +145,52 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
             AuthorizationParameter authorizationParameter)
         {
             var client = _clientRepository.GetClientById(authorizationParameter.ClientId);
-            var jwsProtectedHeader = GetProtectedHeader(client);
+            var jwsProtectedHeader = ConstructProtectedHeader(client);
+
+            // In the "open-id-connect-discovery" there's an endpoint jwks_uri :
+            // This url contains the signing key's) the RP uses to validate signatures from the OP
+            // The JWS set may also contain the Server's encryption key(s) which are used by the RP to encrypt requests to the server.
+            var signedAlgorithm = (JwsAlg)Enum.Parse(typeof(JwsAlg), jwsProtectedHeader.alg);
+            JsonWebKey jsonWebKey = null;
+
+            var jsonWebKeys = _jsonWebKeyRepository.GetByAlgorithm(
+                Use.Sig,
+                signedAlgorithm.ToAllAlg(),
+                new[] { KeyOperations.Sign });
+            if (jsonWebKeys != null && jsonWebKeys.Any())
+            {
+                jsonWebKey = jsonWebKeys.First();
+            }
+
+            // If there's no algorithm available to sign the ID_TOKEN then don't secure the JWT
+            if (jsonWebKey != null &&
+                jwsProtectedHeader.alg.ToLowerInvariant() != "none")
+            {
+                jwsProtectedHeader.kid = jsonWebKey.Kid;
+            }
 
             var javascriptSerializer = new JavaScriptSerializer();
             var jsonJwsProtectedHeader = javascriptSerializer.Serialize(jwsProtectedHeader);
             var jwsProtectedHeaderBase64Encoded = jsonJwsProtectedHeader.Base64Encode();
             var jwsPayLoad = javascriptSerializer.Serialize(jwsPayload);
             var jwsPayLoadBase64Encoded = jwsPayLoad.Base64Encode();
-
-            var combined = string.Format("{0}.{1}", jwsProtectedHeaderBase64Encoded, jwsPayLoadBase64Encoded);
-
-            // Based on the client settings we'll encrypt & signed the id_token in different ways.
-            // In the "open-id-connect-discovery" there's an endpoint jwks_uri :
-            // This url contains the signing key's) the RP uses to validate signatures from the OP
-            // The JWS set may also contain the Server's encryption key(s) which are used by the RP to encrypt requests to the server.
-            var signedAlgorithm = (JwsAlg)Enum.Parse(typeof(JwsAlg), jwsProtectedHeader.alg);
-
-            // If there's no signed algorithm then we return the combined result.
-            if (signedAlgorithm == JwsAlg.none)
-            {
-                return combined;
-            }
-
-            // If there's no algorithm available to sign the ID_TOKEN then return nothing.
-            var algorithms = _jsonWebKeyRepository.GetByAlgorithm(
-                Use.Sig, 
-                signedAlgorithm.ToAllAlg(),
-                new [] { KeyOperations.Sign });
-            if (algorithms == null || !algorithms.Any())
-            {
-                return null;
-            }
-
-            var firstAlgorithm = algorithms.First();
+            var combinedProtectedHeaderAndPayLoad = string.Format("{0}.{1}", jwsProtectedHeaderBase64Encoded, jwsPayLoadBase64Encoded);            
+            
             var signedJws = string.Empty;
-            switch (firstAlgorithm.Kty)
+            if (jsonWebKey != null)
             {
-                case KeyType.RSA:
-                    signedJws = _createJwsSignature.SignWithRsa(signedAlgorithm, firstAlgorithm.SerializedKey, combined);
-                    break;
+                switch (jsonWebKey.Kty)
+                {
+                    case KeyType.RSA:
+                        signedJws = _createJwsSignature.SignWithRsa(signedAlgorithm, jsonWebKey.SerializedKey, combinedProtectedHeaderAndPayLoad);
+                        break;
+                }
             }
 
-            if (signedJws == null)
-            {
-                throw new IdentityServerExceptionWithState(ErrorCodes.InvalidRequestCode,
-                    ErrorDescriptions.TheIdTokenCannotBeSigned,
-                    authorizationParameter.State);
-            }
-
-            return string.Format("{0}.{1}", combined, signedJws);
+            return string.Format("{0}.{1}", combinedProtectedHeaderAndPayLoad, signedJws);
         }
 
-        private JwsProtectedHeader GetProtectedHeader(Client client)
+        private JwsProtectedHeader ConstructProtectedHeader(Client client)
         {
             var signedAlgorithm = JwsAlg.RS256;
             if (!string.IsNullOrWhiteSpace(client.IdTokenSignedTResponseAlg))
@@ -204,8 +200,8 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
 
             return new JwsProtectedHeader
             {
-                typ = Enum.GetName(typeof(JwsAlg), signedAlgorithm),
-                alg = client.IdTokenSignedTResponseAlg
+                alg = Enum.GetName(typeof(JwsAlg), signedAlgorithm),
+                typ = JwsType
             };
         }
     }

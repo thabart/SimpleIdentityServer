@@ -38,11 +38,12 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
                 return null;
             }
 
+            var hashMethod = _mappingJwsAlgorithmToRsaHashingAlgorithms[algorithm];
             using (var rsa = new RSACryptoServiceProvider())
             {
                 var bytesToBeSigned = ASCIIEncoding.ASCII.GetBytes(combinedJwsNotSigned);
                 rsa.FromXmlString(serializedKeys);
-                var byteToBeConverted = rsa.SignData(bytesToBeSigned, "");
+                var byteToBeConverted = rsa.SignData(bytesToBeSigned, hashMethod);
                 return Convert.ToBase64String(byteToBeConverted);
             }
         }
