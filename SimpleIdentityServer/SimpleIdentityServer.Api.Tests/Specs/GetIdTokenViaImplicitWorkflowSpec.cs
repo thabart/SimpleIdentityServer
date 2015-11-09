@@ -255,8 +255,8 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         {
             var claimValue = _jwsPayLoad.GetClaimValue(claimName);
 
-            // Assert.IsNotNull(claimValue);
-            // Assert.That(claimValue, Is.EqualTo(val));
+            Assert.IsNotNull(claimValue);
+            Assert.That(claimValue, Is.EqualTo(val));
         }
 
         private static MODELS.Client GetClient(string clientId)

@@ -25,5 +25,5 @@ Scenario: Get the id token	Given a mobile application MyHolidays is defined
 	| none |
 	And the audience parameter with value MyHolidays is returned by the JWS payload
 	And the parameter nonce with value parameterNonce is returned by the JWS payload
-	And the claim sub with value habarthierry@lokie.be is returned by the JWS payload
+	And the claim sub with value habarthierry@loki.be is returned by the JWS payload
 
