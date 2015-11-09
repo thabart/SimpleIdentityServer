@@ -56,6 +56,7 @@
     <Compile Include="Models\AuthorizationCode.cs" />
     <Compile Include="Models\Client.cs" />
     <Compile Include="Models\Consent.cs" />
+    <Compile Include="Models\JsonWebKey.cs" />
     <Compile Include="Models\RedirectionUrl.cs" />
     <Compile Include="Models\ResourceOwner.cs" />
     <Compile Include="Models\Scope.cs" />
@@ -67,6 +68,7 @@
     <Compile Include="Repositories\FakeGrantedTokenRepository.cs" />
     <Compile Include="Repositories\FakeResourceOwnerRepository.cs" />
     <Compile Include="Repositories\FakeScopeRepository.cs" />
+    <Compile Include="Repositories\FakeJsonWebKeyRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SimpleIdentityServer.Common\SimpleIdentityServer.Common.csproj">

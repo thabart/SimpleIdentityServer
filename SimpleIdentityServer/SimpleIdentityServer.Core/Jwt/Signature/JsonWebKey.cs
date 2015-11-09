@@ -1,4 +1,6 @@
-﻿namespace SimpleIdentityServer.Core.Cryptography
+﻿using System;
+
+namespace SimpleIdentityServer.Core.Jwt.Signature
 {
     /// <summary>
     /// Key types
@@ -74,9 +76,53 @@
     }
 
     /// <summary>
+    /// Algorithms used to create JWS
+    /// </summary>
+    public enum JwsAlg
+    {
+        HS256,
+        HS384,
+        HS512,
+        RS256,
+        RS384,
+        RS512,
+        ES256,
+        ES384,
+        ES512,
+        PS256,
+        PS384,
+        PS512,
+        none
+    }
+
+    /// <summary>
+    /// Algorithms used to create JWE
+    /// </summary>
+    public enum JweAlg
+    {
+        RSA15,
+        RSAOAEP,
+        RSAOAEP256,
+        A128KW,
+        A192KW,
+        A256KW,
+        dir,
+        ECDHES,
+        ECDHESA128KW,
+        ECDHESA192KW,
+        ECDHESA256KW,
+        A128GCMKW,
+        A192GCMKW,
+        A256GCMKW,
+        PBES2HS256A128KW,
+        PBES2HS384A192KW,
+        PBES2HS512A256KW
+    }
+
+    /// <summary>
     /// Algorithm for JWS & JWE
     /// </summary>
-    public enum Alg
+    public enum AllAlg
     {
         #region JWS ALGORITHMS
         HS256,
@@ -140,8 +186,31 @@
         /// <summary>
         /// Gets or sets the algorithm intended for use with the key
         /// </summary>
-        public Alg Alg { get; set; }
+        public AllAlg Alg { get; set; }
 
-        // TODO : continue to implement the other parameters : https://tools.ietf.org/html/draft-ietf-jose-json-web-key-41#section-4.6
+        /// <summary>
+        /// Gets or sets the KID (key id). 
+        /// </summary>
+        public string Kid { get; set; }
+
+        /// <summary>
+        /// Gets or sets the X5U. It's a URI that refers to a resource for an X509 public key certificate or certificate chain.
+        /// </summary>
+        public Uri X5u { get; set; }
+
+        /// <summary>
+        /// Gets or sets the X5T. Is a base64url encoded SHA-1 thumbprint of the DER encoding of an X509 certificate.
+        /// </summary>
+        public string X5t { get; set; }
+
+        /// <summary>
+        /// Gets or sets the X5T#S256. Is a base64url encoded SHA-256 thumbprint.
+        /// </summary>
+        public string X5tS256 { get; set; }
+
+        /// <summary>
+        /// Gets or sets the serialized key in XML
+        /// </summary>
+        public string SerializedKey { get; set; }
     }
 }

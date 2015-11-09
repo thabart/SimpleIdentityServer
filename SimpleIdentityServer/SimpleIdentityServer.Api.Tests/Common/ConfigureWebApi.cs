@@ -7,10 +7,11 @@ using Microsoft.Practices.EnterpriseLibrary.Caching;
 using Microsoft.Practices.Unity;
 
 using SimpleIdentityServer.Api.Configuration;
+using SimpleIdentityServer.Api.Controllers.Api;
 using SimpleIdentityServer.Core.Api.Authorization.Common;
 using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.IdToken.Generator;
+using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.RateLimitation.Configuration;
 using SimpleIdentityServer.Core.Validators;
@@ -57,6 +58,7 @@ namespace SimpleIdentityServer.Api.Tests.Common
             _container.RegisterType<IGrantedTokenRepository, FakeGrantedTokenRepository>();
             _container.RegisterType<IConsentRepository, FakeConsentRepository>();
             _container.RegisterType<IAuthorizationCodeRepository, FakeAuthorizationCodeRepository>();
+            _container.RegisterType<IJsonWebKeyRepository, FakeJsonWebKeyRepository>();
 
             _container.RegisterType<IParameterParserHelper, ParameterParserHelper>();
             _container.RegisterType<IActionResultFactory, ActionResultFactory>();
@@ -89,9 +91,9 @@ namespace SimpleIdentityServer.Api.Tests.Common
             _container.RegisterType<ICompressor, Compressor>();
 
             _container.RegisterType<IProcessAuthorizationRequest, ProcessAuthorizationRequest>();
-            _container.RegisterType<IJwtGenerator, JwtGenerator>();
+            _container.RegisterType<IJwsGenerator, JwsGenerator>();
             _container.RegisterType<ISimpleIdentityServerConfigurator, SimpleIdentityServerConfigurator>();
-
+            _container.RegisterType<ICreateJwsSignature, CreateJwsSignature>();
 
             FakeDataSource.Instance().Init();
         }

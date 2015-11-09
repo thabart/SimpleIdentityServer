@@ -1,5 +1,4 @@
-﻿using System;
-using SimpleIdentityServer.Core.Models;
+﻿using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
 
 namespace SimpleIdentityServer.DataAccess.Fake.Repositories

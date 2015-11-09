@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Security.Claims;
 
-namespace SimpleIdentityServer.Core.IdToken
+namespace SimpleIdentityServer.Core.Jwt
 {
     /// <summary>
     /// Represents a JSON Web Token
     /// </summary>
-    public class JwtClaims
+    public class JwsPayload
     {
         /// <summary>
         /// Gets or sets the issuer.

@@ -1,7 +1,9 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 
 using FAKEMODELS = SimpleIdentityServer.DataAccess.Fake.Models;
 using MODELS = SimpleIdentityServer.Core.Models;
+using JSON = SimpleIdentityServer.Core.Jwt.Signature;
 
 namespace SimpleIdentityServer.DataAccess.Fake.Extensions
 {
@@ -70,6 +72,30 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
                 Description = scope.Description,
                 IsInternal = scope.IsInternal
             };
+        }
+
+        public static FAKEMODELS.AllAlg ToFake(this JSON.AllAlg alg)
+        {
+            var algName = Enum.GetName(typeof(JSON.AllAlg), alg);
+            return (FAKEMODELS.AllAlg)Enum.Parse(typeof(FAKEMODELS.AllAlg), algName);
+        }
+
+        public static FAKEMODELS.KeyType ToFake(this JSON.KeyType kt)
+        {
+            var ktName = Enum.GetName(typeof(JSON.KeyType), kt);
+            return (FAKEMODELS.KeyType)Enum.Parse(typeof(FAKEMODELS.KeyType), ktName);
+        }
+
+        public static FAKEMODELS.Use ToFake(this JSON.Use use)
+        {
+            var useName = Enum.GetName(typeof(JSON.Use), use);
+            return (FAKEMODELS.Use)Enum.Parse(typeof(FAKEMODELS.Use), useName);
+        }
+
+        public static FAKEMODELS.KeyOperations ToFake(this JSON.KeyOperations kop)
+        {
+            var kopName = Enum.GetName(typeof(JSON.KeyOperations), kop);
+            return (FAKEMODELS.KeyOperations)Enum.Parse(typeof(FAKEMODELS.KeyOperations), kopName);
         }
 
         #endregion
@@ -150,6 +176,46 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
         public static MODELS.ResponseType ToBusiness(this FAKEMODELS.ResponseType responseType)
         {
             return (MODELS.ResponseType)responseType;
+        }
+
+        public static JSON.JsonWebKey ToBusiness(this FAKEMODELS.JsonWebKey jsonWebKey)
+        {
+            return new JSON.JsonWebKey
+            {
+                X5u = jsonWebKey.X5u,
+                X5tS256 = jsonWebKey.X5tS256,
+                X5t = jsonWebKey.X5t,
+                Kid = jsonWebKey.Kid,
+                Alg = jsonWebKey.Alg.ToBusiness(),
+                Kty = jsonWebKey.Kty.ToBusiness(),
+                Use = jsonWebKey.Use.ToBusiness(),
+                KeyOps = jsonWebKey.KeyOps == null ? null : jsonWebKey.KeyOps.Select(ko => ko.ToBusiness()).ToArray(),
+                SerializedKey = jsonWebKey.SerializedKey
+            };
+        }
+
+        public static JSON.AllAlg ToBusiness(this FAKEMODELS.AllAlg alg)
+        {
+            var algName = Enum.GetName(typeof (FAKEMODELS.AllAlg), alg);
+            return (JSON.AllAlg)Enum.Parse(typeof(JSON.AllAlg), algName);
+        }
+
+        public static JSON.KeyType ToBusiness(this FAKEMODELS.KeyType kt)
+        {
+            var ktName = Enum.GetName(typeof (FAKEMODELS.KeyType), kt);
+            return (JSON.KeyType) Enum.Parse(typeof (JSON.KeyType), ktName);
+        }
+
+        public static JSON.Use ToBusiness(this FAKEMODELS.Use use)
+        {
+            var useName = Enum.GetName(typeof (FAKEMODELS.Use), use);
+            return (JSON.Use) Enum.Parse(typeof (JSON.Use), useName);
+        }
+
+        public static JSON.KeyOperations ToBusiness(this FAKEMODELS.KeyOperations kop)
+        {
+            var kopName = Enum.GetName(typeof(FAKEMODELS.KeyOperations), kop);
+            return (JSON.KeyOperations) Enum.Parse(typeof (JSON.KeyOperations), kopName);
         }
 
         #endregion

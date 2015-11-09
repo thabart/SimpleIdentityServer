@@ -41,5 +41,7 @@
         public static string TheClientDoesntSupportTheResponseType = "the client {0} doesn't support the response type {1}";
 
         public static string TheClientDoesntSupportTheGrantType = "the client {0} doesn't support the grant type {1}";
+
+        public static string TheIdTokenCannotBeSigned = "the id token cannot be signed";
     }
 }

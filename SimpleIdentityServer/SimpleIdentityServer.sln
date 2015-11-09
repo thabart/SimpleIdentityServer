@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.Api", "SimpleIdentityServer\SimpleIdentityServer.Api.csproj", "{F7815B84-F5C1-474B-BB65-90C4F5BBB397}"
 EndProject
@@ -40,6 +40,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.Client.Test", "SimpleIdentityServer.Client.Test\SimpleIdentityServer.Client.Test.csproj", "{F305D1AD-8780-42B2-963D-A1FE9B53912F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02. Data Access Layer", "02. Data Access Layer", "{9E0D1075-1513-4CE5-99A5-AC92E84B126D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestProj", "TestProj\TestProj.csproj", "{3A63CFD9-C94D-4D3A-8DDB-A67222829872}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -87,6 +89,10 @@ Global
 		{F305D1AD-8780-42B2-963D-A1FE9B53912F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F305D1AD-8780-42B2-963D-A1FE9B53912F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F305D1AD-8780-42B2-963D-A1FE9B53912F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A63CFD9-C94D-4D3A-8DDB-A67222829872}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A63CFD9-C94D-4D3A-8DDB-A67222829872}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A63CFD9-C94D-4D3A-8DDB-A67222829872}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A63CFD9-C94D-4D3A-8DDB-A67222829872}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -105,6 +111,7 @@ Global
 		{FC7DC959-C366-473C-A95A-FA16D5C71597} = {57DD4651-A25F-472F-930C-4C6189F43B72}
 		{9A27F1E3-D0E9-4D81-8AF2-1B0278F01871} = {C5C72E14-0135-478A-9E2D-B7BD81692C95}
 		{F305D1AD-8780-42B2-963D-A1FE9B53912F} = {9A27F1E3-D0E9-4D81-8AF2-1B0278F01871}
+		{3A63CFD9-C94D-4D3A-8DDB-A67222829872} = {9A27F1E3-D0E9-4D81-8AF2-1B0278F01871}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.Interception.2.1.505.0\lib\NET35;packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Caching.5.0.505.0\lib\NET35;packages\Unity.2.1.505.0\lib\NET35

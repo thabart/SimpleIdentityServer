@@ -88,13 +88,16 @@
     <Compile Include="Api\Token\TokenActions.cs" />
     <Compile Include="Configuration\SimpleIdentityServerConfigurator.cs" />
     <Compile Include="Constants.cs" />
-    <Compile Include="Cryptography\JsonWebKey.cs" />
+    <Compile Include="Extensions\AlgorithmExtensions.cs" />
+    <Compile Include="Jwt\Signature\CreateJwsSignature.cs" />
+    <Compile Include="Jwt\Signature\JsonWebKey.cs" />
+    <Compile Include="Jwt\Signature\JsonWebKeySet.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
-    <Compile Include="IdToken\Generator\JwsGenerator.cs" />
-    <Compile Include="IdToken\Generator\JwtGenerator.cs" />
-    <Compile Include="IdToken\JwtClaims.cs" />
-    <Compile Include="IdToken\JwsProtectedHeader.cs" />
+    <Compile Include="Jwt\Signature\JwsGenerator.cs" />
+    <Compile Include="Jwt\JwsPayload.cs" />
+    <Compile Include="Jwt\JwsProtectedHeader.cs" />
+    <Compile Include="Repositories\IJsonWebKeyRepository.cs" />
     <Compile Include="Validators\AuthorizationCodeGrantTypeParameterValidator.cs" />
     <Compile Include="Validators\ResourceOwnerGrantTypeParameterValidator.cs" />
     <Compile Include="WebSite\Authenticate\Actions\AuthenticateResourceOwnerAction.cs" />
@@ -153,7 +156,9 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Jwt\Encrypt\" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SimpleIdentityServer.Common\SimpleIdentityServer.Common.csproj">
       <Project>{fc7dc959-c366-473c-a95a-fa16d5c71597}</Project>

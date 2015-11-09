@@ -3,26 +3,32 @@ using System.Collections.Generic;
 using System.Linq;
 
 using System.Security.Claims;
-
+using System.Web.Script.Serialization;
 using Microsoft.Practices.ObjectBuilder2;
 
 using SimpleIdentityServer.Core.Configuration;
+using SimpleIdentityServer.Core.Errors;
+using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Validators;
 
-namespace SimpleIdentityServer.Core.IdToken.Generator
+namespace SimpleIdentityServer.Core.Jwt.Signature
 {
-    public interface IJwtGenerator
+    public interface IJwsGenerator
     {
-        JwtClaims GenerateJwtClaims(
+        JwsPayload GenerateJwsPayload(
             ClaimsPrincipal claimPrincipal,
+            AuthorizationParameter authorizationParameter);
+
+        string GenerateJws(
+            JwsPayload jwsPayload,
             AuthorizationParameter authorizationParameter);
     }
 
-    public class JwtGenerator : IJwtGenerator
+    public class JwsGenerator : IJwsGenerator
     {
         private readonly ISimpleIdentityServerConfigurator _simpleIdentityServerConfigurator;
 
@@ -30,17 +36,25 @@ namespace SimpleIdentityServer.Core.IdToken.Generator
 
         private readonly IClientValidator _clientValidator;
 
-        public JwtGenerator(
+        private readonly IJsonWebKeyRepository _jsonWebKeyRepository;
+
+        private readonly ICreateJwsSignature _createJwsSignature;
+
+        public JwsGenerator(
             ISimpleIdentityServerConfigurator simpleIdentityServerConfigurator,
             IClientRepository clientRepository,
-            IClientValidator clientValidator)
+            IClientValidator clientValidator,
+            IJsonWebKeyRepository jsonWebKeyRepository,
+            ICreateJwsSignature createJwsSignature)
         {
             _simpleIdentityServerConfigurator = simpleIdentityServerConfigurator;
             _clientRepository = clientRepository;
             _clientValidator = clientValidator;
+            _jsonWebKeyRepository = jsonWebKeyRepository;
+            _createJwsSignature = createJwsSignature;
         }
 
-        public JwtClaims GenerateJwtClaims(
+        public JwsPayload GenerateJwsPayload(
             ClaimsPrincipal claimPrincipal,
             AuthorizationParameter authorizationParameter)
         {
@@ -73,8 +87,8 @@ namespace SimpleIdentityServer.Core.IdToken.Generator
             {
                 new Claim(Constants.StandardResourceOwnerClaimNames.Subject, claimPrincipal.GetSubject())
             };
-            
-            var result = new JwtClaims
+
+            var result = new JwsPayload
             {
                 iss = issuerName,
                 aud = audiences.ToArray(),
@@ -122,6 +136,77 @@ namespace SimpleIdentityServer.Core.IdToken.Generator
             // TODO : Add another claims in it ...
 
             return result;
+        }
+
+        public string GenerateJws(
+            JwsPayload jwsPayload,
+            AuthorizationParameter authorizationParameter)
+        {
+            var client = _clientRepository.GetClientById(authorizationParameter.ClientId);
+            var jwsProtectedHeader = GetProtectedHeader(client);
+
+            var javascriptSerializer = new JavaScriptSerializer();
+            var jsonJwsProtectedHeader = javascriptSerializer.Serialize(jwsProtectedHeader);
+            var jwsProtectedHeaderBase64Encoded = jsonJwsProtectedHeader.Base64Encode();
+            var jwsPayLoad = javascriptSerializer.Serialize(jwsPayload);
+            var jwsPayLoadBase64Encoded = jwsPayLoad.Base64Encode();
+
+            var combined = string.Format("{0}.{1}", jwsProtectedHeaderBase64Encoded, jwsPayLoadBase64Encoded);
+
+            // Based on the client settings we'll encrypt & signed the id_token in different ways.
+            // In the "open-id-connect-discovery" there's an endpoint jwks_uri :
+            // This url contains the signing key's) the RP uses to validate signatures from the OP
+            // The JWS set may also contain the Server's encryption key(s) which are used by the RP to encrypt requests to the server.
+            var signedAlgorithm = (JwsAlg)Enum.Parse(typeof(JwsAlg), jwsProtectedHeader.alg);
+
+            // If there's no signed algorithm then we return the combined result.
+            if (signedAlgorithm == JwsAlg.none)
+            {
+                return combined;
+            }
+
+            // If there's no algorithm available to sign the ID_TOKEN then return nothing.
+            var algorithms = _jsonWebKeyRepository.GetByAlgorithm(
+                Use.Sig, 
+                signedAlgorithm.ToAllAlg(),
+                new [] { KeyOperations.Sign });
+            if (algorithms == null || !algorithms.Any())
+            {
+                return null;
+            }
+
+            var firstAlgorithm = algorithms.First();
+            var signedJws = string.Empty;
+            switch (firstAlgorithm.Kty)
+            {
+                case KeyType.RSA:
+                    signedJws = _createJwsSignature.SignWithRsa(signedAlgorithm, firstAlgorithm.SerializedKey, combined);
+                    break;
+            }
+
+            if (signedJws == null)
+            {
+                throw new IdentityServerExceptionWithState(ErrorCodes.InvalidRequestCode,
+                    ErrorDescriptions.TheIdTokenCannotBeSigned,
+                    authorizationParameter.State);
+            }
+
+            return string.Format("{0}.{1}", combined, signedJws);
+        }
+
+        private JwsProtectedHeader GetProtectedHeader(Client client)
+        {
+            var signedAlgorithm = JwsAlg.RS256;
+            if (!string.IsNullOrWhiteSpace(client.IdTokenSignedTResponseAlg))
+            {
+                signedAlgorithm = client.IdTokenSignedTResponseAlg.ToJwsAlg();
+            }
+
+            return new JwsProtectedHeader
+            {
+                typ = Enum.GetName(typeof(JwsAlg), signedAlgorithm),
+                alg = client.IdTokenSignedTResponseAlg
+            };
         }
     }
 }

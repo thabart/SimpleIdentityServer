@@ -19,6 +19,8 @@ namespace SimpleIdentityServer.DataAccess.Fake
 
         private List<AuthorizationCode> _authorizationCodes;
 
+        private List<JsonWebKey> _jsonWebKeys;
+
         private FakeDataSource()
         {
             Init();
@@ -94,6 +96,12 @@ namespace SimpleIdentityServer.DataAccess.Fake
             }
         }
 
+        public List<JsonWebKey> JsonWebKeys
+        {
+            get { return _jsonWebKeys; }
+            set { _jsonWebKeys = value; }
+        } 
+
         public void Init()
         {
             _clients = new List<Client>();
@@ -102,6 +110,7 @@ namespace SimpleIdentityServer.DataAccess.Fake
             _scopes = new List<Scope>();
             _consents = new List<Consent>();
             _authorizationCodes = new List<AuthorizationCode>();
+            _jsonWebKeys = new List<JsonWebKey>();
         }
     }
 }

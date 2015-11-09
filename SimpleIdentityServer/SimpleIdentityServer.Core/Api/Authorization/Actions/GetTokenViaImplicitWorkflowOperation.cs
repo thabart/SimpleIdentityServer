@@ -4,7 +4,8 @@ using SimpleIdentityServer.Core.Api.Authorization.Common;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.IdToken.Generator;
+
+using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
@@ -30,20 +31,20 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
 
         private readonly ITokenHelper _tokenHelper;
 
-        private readonly IJwtGenerator _jwtGenerator;
+        private readonly IJwsGenerator _jwsGenerator;
 
         public GetTokenViaImplicitWorkflowOperation(
             IProcessAuthorizationRequest processAuthorizationRequest,
             IParameterParserHelper parameterParserHelper,
             IGrantedTokenRepository grantedTokenRepository,
             ITokenHelper tokenHelper,
-            IJwtGenerator jwtGenerator)
+            IJwsGenerator jwsGenerator)
         {
             _processAuthorizationRequest = processAuthorizationRequest;
             _parameterParserHelper = parameterParserHelper;
             _grantedTokenRepository = grantedTokenRepository;
             _tokenHelper = tokenHelper;
-            _jwtGenerator = jwtGenerator;
+            _jwsGenerator = jwsGenerator;
         }
 
         public ActionResult Execute(
@@ -75,7 +76,9 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
                 var responses = _parameterParserHelper.ParseResponseType(authorizationParameter.ResponseType);
                 if (responses.Contains(ResponseType.id_token))
                 {
-                    var jwtClaims = _jwtGenerator.GenerateJwtClaims(claimsPrincipal, authorizationParameter);
+                    var jwsPayLoad = _jwsGenerator.GenerateJwsPayload(claimsPrincipal, authorizationParameter);
+                    var idToken = _jwsGenerator.GenerateJws(jwsPayLoad, authorizationParameter);
+                    result.RedirectInstruction.AddParameter("id_token", idToken);
                 }
 
                 if (responses.Contains(ResponseType.token))
