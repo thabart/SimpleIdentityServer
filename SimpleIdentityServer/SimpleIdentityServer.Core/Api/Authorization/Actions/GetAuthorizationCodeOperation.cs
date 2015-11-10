@@ -1,14 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using System.Security.Principal;
 
 using SimpleIdentityServer.Core.Api.Authorization.Common;
-using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.Core.Helpers;
+using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Core.Exceptions;
@@ -28,26 +24,18 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
     {
         private readonly IProcessAuthorizationRequest _processAuthorizationRequest;
 
-        private readonly IAuthorizationCodeRepository _authorizationCodeRepository;
-
-        private readonly IConsentRepository _consentRepository;
-
-        private readonly IParameterParserHelper _parameterParserHelper;
-
         private IClientValidator _clientValidator;
+
+        private readonly IGenerateAuthorizationResponse _generateAuthorizationResponse;
 
         public GetAuthorizationCodeOperation(
             IProcessAuthorizationRequest processAuthorizationRequest,
-            IAuthorizationCodeRepository authorizationCodeRepository,
-            IConsentRepository consentRepository,
-            IParameterParserHelper parameterParserHelper,
-            IClientValidator clientValidator)
+            IClientValidator clientValidator,
+            IGenerateAuthorizationResponse generateAuthorizationResponse)
         {
             _processAuthorizationRequest = processAuthorizationRequest;
-            _authorizationCodeRepository = authorizationCodeRepository;
-            _consentRepository = consentRepository;
-            _parameterParserHelper = parameterParserHelper;
             _clientValidator = clientValidator;
+            _generateAuthorizationResponse = generateAuthorizationResponse;
         }
 
         public ActionResult Execute(
@@ -71,41 +59,17 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
 
             if (result.Type == TypeActionResult.RedirectToCallBackUrl)
             {
-                var confirmedConsent = GetResourceOwnerConsent(claimsPrincipal, authorizationParameter);
-                var authorizationCode = new AuthorizationCode()
+                var principal = claimsPrincipal as ClaimsPrincipal;
+                if (principal == null)
                 {
-                    CreateDateTime = DateTime.UtcNow,
-                    Consent = confirmedConsent,
-                    Value = Guid.NewGuid().ToString()
-                };
+                    return result;
+                }
 
-                _authorizationCodeRepository.AddAuthorizationCode(authorizationCode);
-                result.RedirectInstruction.AddParameter("code", authorizationCode.Value);
+                _generateAuthorizationResponse.Execute(result, authorizationParameter,
+                    principal);
             }
 
             return result;
-        }
-
-        private Consent GetResourceOwnerConsent(
-            IPrincipal claimsPrincipal,
-            AuthorizationParameter authorizationParameter)
-        {
-            var principal = claimsPrincipal as ClaimsPrincipal;
-            var subject = principal.GetSubject();
-            var consents = _consentRepository.GetConsentsForGivenUser(subject);
-            Consent confirmedConsent = null;
-            if (consents != null && consents.Any())
-            {
-                var scopeNames =
-                    _parameterParserHelper.ParseScopeParameters(authorizationParameter.Scope);
-                confirmedConsent = consents.FirstOrDefault(
-                    c =>
-                        c.Client.ClientId == authorizationParameter.ClientId &&
-                        c.GrantedScopes != null && c.GrantedScopes.Any() &&
-                        c.GrantedScopes.All(s => scopeNames.Contains(s.Name)));
-            }
-
-            return confirmedConsent;
         }
     }
 }

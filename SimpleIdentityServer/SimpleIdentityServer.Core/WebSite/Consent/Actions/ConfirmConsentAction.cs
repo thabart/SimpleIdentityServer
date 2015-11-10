@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Helpers;
@@ -27,30 +27,30 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
 
         private readonly IScopeRepository _scopeRepository;
 
-        private readonly IAuthorizationCodeRepository _authorizationCodeRepository;
-
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
 
         private readonly IParameterParserHelper _parameterParserHelper;
 
         private readonly IActionResultFactory _actionResultFactory;
 
+        private readonly IGenerateAuthorizationResponse _generateAuthorizationResponse;
+
         public ConfirmConsentAction(
             IConsentRepository consentRepository,
             IClientRepository clientRepository,
             IScopeRepository scopeRepository,
             IResourceOwnerRepository resourceOwnerRepository,
-            IAuthorizationCodeRepository authorizationCodeRepository,
             IParameterParserHelper parameterParserHelper,
-            IActionResultFactory actionResultFactory)
+            IActionResultFactory actionResultFactory,
+            IGenerateAuthorizationResponse generateAuthorizationResponse)
         {
             _consentRepository = consentRepository;
             _clientRepository = clientRepository;
             _scopeRepository = scopeRepository;
             _resourceOwnerRepository = resourceOwnerRepository;
-            _authorizationCodeRepository = authorizationCodeRepository;
             _parameterParserHelper = parameterParserHelper;
             _actionResultFactory = actionResultFactory;
+            _generateAuthorizationResponse = generateAuthorizationResponse;
         }
 
         /// <summary>
@@ -90,21 +90,8 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
                 _consentRepository.InsertConsent(assignedConsent);
             }
 
-            var authorizationCode = new AuthorizationCode
-            {
-                CreateDateTime = DateTime.UtcNow,
-                Consent = assignedConsent,
-                Value = Guid.NewGuid().ToString()
-            };
-            _authorizationCodeRepository.AddAuthorizationCode(authorizationCode);
-
             var result = _actionResultFactory.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
-            result.RedirectInstruction.AddParameter("code", authorizationCode.Value);
-            if (!string.IsNullOrWhiteSpace(authorizationParameter.State))
-            {
-                result.RedirectInstruction.AddParameter("state", authorizationParameter.State);
-            }
-
+            _generateAuthorizationResponse.Execute(result, authorizationParameter, claimsPrincipal);
             return result;
         }
         

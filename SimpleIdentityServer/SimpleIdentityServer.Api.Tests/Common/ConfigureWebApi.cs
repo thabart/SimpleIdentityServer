@@ -9,6 +9,7 @@ using Microsoft.Practices.Unity;
 using SimpleIdentityServer.Api.Configuration;
 using SimpleIdentityServer.Api.Controllers.Api;
 using SimpleIdentityServer.Core.Api.Authorization.Common;
+using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Jwt.Signature;
@@ -94,6 +95,7 @@ namespace SimpleIdentityServer.Api.Tests.Common
             _container.RegisterType<IJwsGenerator, JwsGenerator>();
             _container.RegisterType<ISimpleIdentityServerConfigurator, SimpleIdentityServerConfigurator>();
             _container.RegisterType<ICreateJwsSignature, CreateJwsSignature>();
+            _container.RegisterType<IGenerateAuthorizationResponse, GenerateAuthorizationResponse>();
 
             FakeDataSource.Instance().Init();
         }

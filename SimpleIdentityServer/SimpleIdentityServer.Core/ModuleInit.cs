@@ -6,6 +6,7 @@ using SimpleIdentityServer.Core.Api.Authorization.Actions;
 using SimpleIdentityServer.Core.Api.Authorization.Common;
 using SimpleIdentityServer.Core.Api.Token;
 using SimpleIdentityServer.Core.Api.Token.Actions;
+using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Helpers;
@@ -61,6 +62,7 @@ namespace SimpleIdentityServer.Core
             register.RegisterType<IJwsGenerator, JwsGenerator>();
             register.RegisterType<ISimpleIdentityServerConfigurator, SimpleIdentityServerConfigurator>();
             register.RegisterType<ICreateJwsSignature, CreateJwsSignature>();
+            register.RegisterType<IGenerateAuthorizationResponse, GenerateAuthorizationResponse>();
         }
     }
 }

@@ -1,14 +1,11 @@
 ﻿using System.Security.Claims;
 using System.Security.Principal;
 using SimpleIdentityServer.Core.Api.Authorization.Common;
+using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Helpers;
 
-using SimpleIdentityServer.Core.Jwt.Signature;
-using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Results;
 
 namespace SimpleIdentityServer.Core.Api.Authorization.Actions
@@ -25,26 +22,15 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
     {
         private readonly IProcessAuthorizationRequest _processAuthorizationRequest;
 
-        private readonly IParameterParserHelper _parameterParserHelper;
+        private IGenerateAuthorizationResponse _generateAuthorizationResponse;
 
-        private readonly IGrantedTokenRepository _grantedTokenRepository;
-
-        private readonly ITokenHelper _tokenHelper;
-
-        private readonly IJwsGenerator _jwsGenerator;
 
         public GetTokenViaImplicitWorkflowOperation(
             IProcessAuthorizationRequest processAuthorizationRequest,
-            IParameterParserHelper parameterParserHelper,
-            IGrantedTokenRepository grantedTokenRepository,
-            ITokenHelper tokenHelper,
-            IJwsGenerator jwsGenerator)
+            IGenerateAuthorizationResponse generateAuthorizationResponse)
         {
             _processAuthorizationRequest = processAuthorizationRequest;
-            _parameterParserHelper = parameterParserHelper;
-            _grantedTokenRepository = grantedTokenRepository;
-            _tokenHelper = tokenHelper;
-            _jwsGenerator = jwsGenerator;
+            _generateAuthorizationResponse = generateAuthorizationResponse;
         }
 
         public ActionResult Execute(
@@ -73,26 +59,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
                     return result;
                 }
 
-                var responses = _parameterParserHelper.ParseResponseType(authorizationParameter.ResponseType);
-                if (responses.Contains(ResponseType.id_token))
-                {
-                    var jwsPayLoad = _jwsGenerator.GenerateJwsPayload(claimsPrincipal, authorizationParameter);
-                    var idToken = _jwsGenerator.GenerateJws(jwsPayLoad, authorizationParameter);
-                    result.RedirectInstruction.AddParameter("id_token", idToken);
-                }
-
-                if (responses.Contains(ResponseType.token))
-                {
-                    var allowedTokenScopes = string.Empty;
-                    if (!string.IsNullOrWhiteSpace(authorizationParameter.Scope))
-                    {
-                        allowedTokenScopes = string.Join(" ", _parameterParserHelper.ParseScopeParameters(authorizationParameter.Scope));
-                    }
-
-                    var generatedToken = _tokenHelper.GenerateToken(allowedTokenScopes);
-                    _grantedTokenRepository.Insert(generatedToken);
-                    result.RedirectInstruction.AddParameter("access_token", generatedToken.AccessToken);
-                }
+                _generateAuthorizationResponse.Execute(result, authorizationParameter, claimsPrincipal);
             }
 
             return result;

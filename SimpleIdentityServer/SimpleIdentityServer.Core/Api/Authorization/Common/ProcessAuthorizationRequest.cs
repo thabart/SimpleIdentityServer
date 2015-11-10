@@ -162,11 +162,6 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
                 }
 
                 var result = _actionResultFactory.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
-                if (!string.IsNullOrWhiteSpace(authorizationParameter.State))
-                {
-                    result.RedirectInstruction.AddParameter("state", authorizationParameter.State);
-                }
-
                 return result;
             }
 

@@ -86,6 +86,7 @@
     <Compile Include="Api\Authorization\AuthorizationFlow.cs" />
     <Compile Include="Api\Authorization\Common\ProcessAuthorizationRequest.cs" />
     <Compile Include="Api\Token\TokenActions.cs" />
+    <Compile Include="Common\GenerateAuthorizationResponse.cs" />
     <Compile Include="Configuration\SimpleIdentityServerConfigurator.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Extensions\AlgorithmExtensions.cs" />
