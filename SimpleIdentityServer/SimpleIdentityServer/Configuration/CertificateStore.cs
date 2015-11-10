@@ -11,7 +11,8 @@ namespace SimpleIdentityServer.Api.Configuration
             var assembly = typeof (CertificateStore).Assembly;
             using (var stream = assembly.GetManifestResourceStream("SimpleIdentityServer.Api.SimpleIdentityServer.pfx"))
             {
-                return new X509Certificate2(ReadStream(stream), "loki", X509KeyStorageFlags.Exportable);
+                return new X509Certificate2(ReadStream(stream), "loki", X509KeyStorageFlags.Exportable 
+                    | X509KeyStorageFlags.MachineKeySet);
             }
         }
 
