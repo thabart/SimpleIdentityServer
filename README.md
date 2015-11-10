@@ -5,4 +5,5 @@
 [![Deploy to Azure](http://azuredeploy.net/deploybutton.png)](https://azuredeploy.net/)
 
 __Live demo__: http://simpleidentityserver.azurewebsites.net
+
 __Swagger contract__ : http://simpleidentityserver.azurewebsites.net/swagger/ui/index
