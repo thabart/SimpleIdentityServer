@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Cryptography;
+using System.Text;
 using System.Web.Http;
 
 using Microsoft.Practices.Unity;
@@ -9,7 +12,6 @@ using Microsoft.Practices.Unity;
 using NUnit.Framework;
 
 using SimpleIdentityServer.Api.DTOs.Request;
-using SimpleIdentityServer.Api.DTOs.Response;
 using SimpleIdentityServer.Api.Tests.Common;
 using SimpleIdentityServer.DataAccess.Fake;
 using SimpleIdentityServer.RateLimitation.Configuration;
@@ -39,6 +41,12 @@ namespace SimpleIdentityServer.Api.Tests.Specs
 
         private JwsPayload _jwsPayLoad;
 
+        private string _signedPayLoad;
+
+        private string _serializedRsa;
+
+        private string _combinedHeaderAndPayload;
+
         public GetIdTokenViaImplicitWorkflowSpec()
         {
             var fakeGetRateLimitationElementOperation = new FakeGetRateLimitationElementOperation
@@ -60,6 +68,27 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             };
 
             FakeDataSource.Instance().Clients.Add(client);
+        }
+
+        [Given("create a RSA key")]
+        public void GivenCreateRsaKey()
+        {
+            using (var provider = new RSACryptoServiceProvider())
+            {
+                _serializedRsa = provider.ToXmlString(true);
+            }
+
+            FakeDataSource.Instance().JsonWebKeys.Add(new MODELS.JsonWebKey
+            {
+                Alg = MODELS.AllAlg.RS256,
+                KeyOps = new[]
+                    {
+                        MODELS.KeyOperations.Sign
+                    },
+                Kid = "1",
+                Kty = MODELS.KeyType.RSA,
+                SerializedKey = _serializedRsa
+            });
         }
         
         [Given("scopes (.*) are defined")]
@@ -125,8 +154,8 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             };
         }
 
-        [Given("the response-type (.*) is supported by the client (.*)")]
-        public void GivenResponseIsSupportedByTheClient(MODELS.ResponseType responseType, string clientId)
+        [Given("the response-types (.*) are supported by the client (.*)")]
+        public void GivenResponseIsSupportedByTheClient(List<string> responseTypes, string clientId)
         {
             var client = GetClient(clientId);
             if (client == null)
@@ -134,10 +163,12 @@ namespace SimpleIdentityServer.Api.Tests.Specs
                 return;
             }
 
-            client.ResponseTypes = new List<MODELS.ResponseType>
+            client.ResponseTypes = new List<MODELS.ResponseType>();
+            foreach (var responseType in responseTypes)
             {
-                responseType
-            };
+                var resp = (MODELS.ResponseType)Enum.Parse(typeof (ResponseType), responseType);
+                client.ResponseTypes.Add(resp);
+            }
         }
 
         [Given("a resource owner is authenticated")]
@@ -173,7 +204,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             FakeDataSource.Instance().Consents.Add(consent);
         }
 
-        [When("requesting an authorization code")]
+        [When("requesting an authorization")]
         public void WhenRequestingAnAuthorizationCode(Table table)
         {
             var authorizationRequest = table.CreateInstance<AuthorizationRequest>();
@@ -210,6 +241,13 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             Assert.That(code, Is.EqualTo(_httpResponseMessage.StatusCode));
         }
 
+        [Then("redirect to (.*) controller")]
+        public void ThenRedirectToController(string controller)
+        {
+            var location = _httpResponseMessage.Headers.Location;
+            Assert.That(location.AbsolutePath, Is.EqualTo(controller));
+        }
+
         [Then("decrypt the id_token parameter from the query string")]
         public void ThenDecryptTheIdTokenFromTheQueryString()
         {
@@ -221,13 +259,28 @@ namespace SimpleIdentityServer.Api.Tests.Specs
 
             var parts = idToken.Split('.');
 
-            Assert.That(parts.Count() >= 2, Is.True);
+            Assert.That(parts.Count() >= 3, Is.True);
 
             var secondPart = parts[1].Base64Decode();
 
             var javascriptSerializer = new JavaScriptSerializer();
             _jwsProtectedHeader = javascriptSerializer.Deserialize<JwsProtectedHeader>(parts[0].Base64Decode());
             _jwsPayLoad = javascriptSerializer.Deserialize<JwsPayload>(secondPart);
+            _combinedHeaderAndPayload = parts[0] + "." + parts[1];
+            _signedPayLoad = parts[2];
+        }
+
+        [Then("the signature of the JWS payload is valid")]
+        public void ThenTheSignatureIsCorrect()
+        {
+            using (var provider = new RSACryptoServiceProvider())
+            {
+                provider.FromXmlString(_serializedRsa);
+                var signature = Convert.FromBase64String(_signedPayLoad);
+                var payLoad = ASCIIEncoding.ASCII.GetBytes(_combinedHeaderAndPayload);
+                var signatureIsCorrect = provider.VerifyData(payLoad, "SHA256", signature);
+                Assert.IsTrue(signatureIsCorrect);
+            }
         }
 
         [Then("the protected JWS header is returned")]
@@ -257,6 +310,15 @@ namespace SimpleIdentityServer.Api.Tests.Specs
 
             Assert.IsNotNull(claimValue);
             Assert.That(claimValue, Is.EqualTo(val));
+        }
+
+        [Then("the callback contains the following query name (.*)")]
+        public void ThenTheCallbackContainsTheQueryName(string queryName)
+        {
+            var location = _httpResponseMessage.Headers.Location;
+            var query = HttpUtility.ParseQueryString(location.Query);
+            var queryValue = query[queryName];
+            Assert.IsNotNullOrEmpty(queryValue);
         }
 
         private static MODELS.Client GetClient(string clientId)

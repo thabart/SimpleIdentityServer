@@ -9,9 +9,9 @@
 
     public enum ResponseType
     {
-        None,
         code,
-        token
+        token,
+        id_token
     }
 
     public enum Display

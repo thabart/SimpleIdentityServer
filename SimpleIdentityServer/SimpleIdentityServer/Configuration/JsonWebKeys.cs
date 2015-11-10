@@ -11,7 +11,6 @@ namespace SimpleIdentityServer.Api.Configuration
             var serializedRsa = string.Empty;
             using (var provider = new RSACryptoServiceProvider())
             {
-                var parameters = provider.ExportParameters(false);
                 serializedRsa = provider.ToXmlString(true);
             }
 
