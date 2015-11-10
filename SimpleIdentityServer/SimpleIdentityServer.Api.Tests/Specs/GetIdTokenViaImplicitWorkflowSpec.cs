@@ -276,7 +276,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             using (var provider = new RSACryptoServiceProvider())
             {
                 provider.FromXmlString(_serializedRsa);
-
+                _signedPayLoad = _signedPayLoad.Replace(" ", "+");
                 var signature = Convert.FromBase64String(_signedPayLoad);
                 var payLoad = ASCIIEncoding.ASCII.GetBytes(_combinedHeaderAndPayload);
                 var signatureIsCorrect = provider.VerifyData(payLoad, "SHA256", signature);
