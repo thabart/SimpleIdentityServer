@@ -6,7 +6,11 @@
 
 Scenario: Get the id token
 	Given a mobile application MyHolidays is defined
-	And scopes openid,PlanningApi are defined
+	And the scopes are defined
+	| Name        | IsInternal |
+	| openid      | true       |
+	| PlanningApi | false      |
+
 	And the id_token signature algorithm is set to none for the client MyHolidays
 	And the scopes openid,PlanningApi are assigned to the client MyHolidays
 	And the grant-type implicit is supported by the client MyHolidays
@@ -30,8 +34,11 @@ Scenario: Get the id token
 	And the claim sub with value habarthierry@loki.be is returned by the JWS payload
 
 Scenario: Get the id token and access token via implicit workflow
-	Given a mobile application MyHolidays is defined
-	And scopes openid,PlanningApi are defined
+	Given a mobile application MyHolidays is defined	
+	And the scopes are defined
+	| Name        | IsInternal |
+	| openid      | true       |
+	| PlanningApi | false      |
 	And the id_token signature algorithm is set to none for the client MyHolidays
 	And the scopes openid,PlanningApi are assigned to the client MyHolidays
 	And the grant-type implicit is supported by the client MyHolidays
@@ -60,7 +67,11 @@ Scenario: Get the id token and access token via implicit workflow
 Scenario: Get a signed id_token
 	Given a mobile application MyHolidays is defined
 	And create a RSA key
-	And scopes openid,PlanningApi are defined
+	And the scopes are defined
+	| Name        | IsInternal |
+	| openid      | true       |
+	| PlanningApi | false      |
+
 	And the id_token signature algorithm is set to RS256 for the client MyHolidays
 	And the scopes openid,PlanningApi are assigned to the client MyHolidays
 	And the grant-type implicit is supported by the client MyHolidays
@@ -84,5 +95,35 @@ Scenario: Get a signed id_token
 	And the claim sub with value habarthierry@loki.be is returned by the JWS payload
 	And the signature of the JWS payload is valid
 
+Scenario: Get an id token and check if the claims returned in the token are correct	
+	Given a mobile application MyHolidays is defined
+	And the scopes are defined
+	| Name    | IsInternal | Claims |
+	| openid  | true       |        |
+	| profile | true       | name   |
+
+	And the id_token signature algorithm is set to none for the client MyHolidays
+	And the scopes openid,profile are assigned to the client MyHolidays
+	And the grant-type implicit is supported by the client MyHolidays
+	And the response-types id_token are supported by the client MyHolidays
+	And a resource owner is authenticated
+	| UserId               | UserName |
+	| habarthierry@loki.be | thabart  |
+	And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and scopes openid,profile
+	
+	When requesting an authorization
+	| scope          | response_type | client_id  | redirect_uri     | prompt | state  | nonce          |
+	| openid profile | id_token      | MyHolidays | http://localhost | none   | state1 | parameterNonce |
+
+	Then the http status code is 301
+	And decrypt the id_token parameter from the query string
+	And the protected JWS header is returned
+	| alg  |
+	| none |
+	And the audience parameter with value MyHolidays is returned by the JWS payload
+	And the parameter nonce with value parameterNonce is returned by the JWS payload
+	And the claim sub with value habarthierry@loki.be is returned by the JWS payload
+	And the claim name with value thabart is returned by the JWS payload
+	
 
 

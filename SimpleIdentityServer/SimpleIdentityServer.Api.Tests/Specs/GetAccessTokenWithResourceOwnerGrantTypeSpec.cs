@@ -16,9 +16,8 @@ using SimpleIdentityServer.RateLimitation.Configuration;
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
 
-using MODELS = SimpleIdentityServer.DataAccess.Fake.Models;
 using DOMAINS = SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.DataAccess.Fake;
+using SimpleIdentityServer.Api.Tests.Common.Fakes;
 
 namespace SimpleIdentityServer.Api.Tests.Specs
 {
@@ -45,65 +44,6 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             _configureWebApi = new ConfigureWebApi();
             _configureWebApi.Container.RegisterInstance<IGetRateLimitationElementOperation>(fakeGetRateLimitationElementOperation);
             _securityHelper = new SecurityHelper();
-        }
-
-        [Given("a resource owner with username (.*) and password (.*) is defined")]
-        public void GivenResourceOwner(string userName, string password)
-        {
-            var resourceOwner = new MODELS.ResourceOwner
-            {
-                UserName = userName,
-                Password = _securityHelper.ComputeHash(password)
-            };
-
-            FakeDataSource.Instance().ResourceOwners.Add(resourceOwner);
-        }
-        
-        [Given("a mobile application (.*) is defined")]
-        public void GivenClient(string clientId)
-        {
-            var client = new MODELS.Client
-            {
-                ClientId = clientId,
-                AllowedScopes = new List<MODELS.Scope>()
-            };
-
-            FakeDataSource.Instance().Clients.Add(client);
-        }
-
-        [Given("scopes (.*) are defined")]
-        public void GivenScope(List<string> scopes)
-        {
-            foreach (var scope in scopes) {
-                var record = new MODELS.Scope
-                {
-                    Name = scope
-                };
-
-                FakeDataSource.Instance().Scopes.Add(record);
-            }
-        }
-
-        [Given("the scopes (.*) are assigned to the client (.*)")]
-        public void GivenScopesToTheClients(List<string> scopeNames, string clientId)
-        {
-            var client = FakeDataSource.Instance().Clients.SingleOrDefault(c => c.ClientId == clientId);
-            if (client == null)
-            {
-                return;
-            }
-
-            var scopes = FakeDataSource.Instance().Scopes;
-            foreach(var scopeName in scopeNames)
-            {
-                var storedScope = scopes.SingleOrDefault(s => s.Name == scopeName);
-                if (storedScope == null)
-                {
-                    continue;
-                }
-
-                client.AllowedScopes.Add(storedScope);
-            }
         }
 
         [When("requesting an access token via resource owner grant-type")]

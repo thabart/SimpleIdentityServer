@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using System.Web.Http.Filters;
 
-namespace SimpleIdentityServer.Api.Tests.Common
+namespace SimpleIdentityServer.Api.Tests.Common.Fakes
 {
     public class FakeAuthenticationFilter : IAuthenticationFilter
     {

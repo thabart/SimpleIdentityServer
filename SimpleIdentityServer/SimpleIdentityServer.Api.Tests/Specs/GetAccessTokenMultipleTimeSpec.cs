@@ -3,8 +3,9 @@ using Microsoft.Practices.Unity;
 using NUnit.Framework;
 using SimpleIdentityServer.Api.DTOs.Request;
 using SimpleIdentityServer.Api.Tests.Common;
+using SimpleIdentityServer.Api.Tests.Common.Fakes;
+using SimpleIdentityServer.Api.Tests.Common.Fakes.Models;
 using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.DataAccess.Fake;
 using SimpleIdentityServer.RateLimitation.Configuration;
 using SimpleIdentityServer.RateLimitation.Constants;
 using System.Collections.Generic;
@@ -29,11 +30,11 @@ namespace SimpleIdentityServer.Api.Tests.Specs
 
         private List<DOMAINS.GrantedToken> _tokens;
 
-        private List<TooManyRequestResponse> _errors;
+        private List<FakeTooManyRequestResponse> _errors;
 
         private RateLimitationElement _rateLimitationElement;
 
-        private List<HttpResponse> _httpResponses;
+        private List<FakeHttpResponse> _httpResponses;
 
         public GetAccessTokenMultipleTimeSpec()
         {
@@ -51,32 +52,8 @@ namespace SimpleIdentityServer.Api.Tests.Specs
 
             _securityHelper = new SecurityHelper();
             _tokens = new List<DOMAINS.GrantedToken>();
-            _errors = new List<TooManyRequestResponse>();
-            _httpResponses = new List<HttpResponse>();
-        }
-
-        [Given("a resource owner with username (.*) and password (.*) is defined")]
-        public void GivenResourceOwner(string userName, string password)
-        {
-            var resourceOwner = new MODELS.ResourceOwner
-            {
-                UserName = userName,
-                Password = _securityHelper.ComputeHash(password)
-            };
-
-            FakeDataSource.Instance().ResourceOwners.Add(resourceOwner);
-        }
-
-        [Given("a mobile application (.*) is defined")]
-        public void GivenClient(string clientId)
-        {
-            var client = new MODELS.Client
-            {
-                ClientId = clientId,
-                AllowedScopes = new List<MODELS.Scope>()
-            };
-
-            FakeDataSource.Instance().Clients.Add(client);
+            _errors = new List<FakeTooManyRequestResponse>();
+            _httpResponses = new List<FakeHttpResponse>();
         }
 
         [Given("allowed number of requests is (.*)")]
@@ -112,7 +89,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             
                 var result = httpClient.PostAsync("/token", content).Result;
                 var httpStatusCode = result.StatusCode;
-                _httpResponses.Add(new HttpResponse
+                _httpResponses.Add(new FakeHttpResponse
                 {
                     StatusCode = httpStatusCode,
                     NumberOfRequests = result.Headers.GetValues(RateLimitationConstants.XRateLimitLimitName).FirstOrDefault(),
@@ -124,7 +101,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
                     continue;
                 }
             
-                _errors.Add(new TooManyRequestResponse
+                _errors.Add(new FakeTooManyRequestResponse
                 {
                     Message = result.Content.ReadAsAsync<string>().Result,
                 });
@@ -146,7 +123,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         [Then("the errors should be returned")]
         public void ThenErrorsShouldBe(Table table)
         {
-            var records = table.CreateSet<TooManyRequestResponse>().ToList();
+            var records = table.CreateSet<FakeTooManyRequestResponse>().ToList();
             Assert.That(records.Count, Is.EqualTo(_errors.Count()));
             for (var i = 0; i < records.Count() - 1; i++)
             {
@@ -159,7 +136,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         [Then("the http responses should be returned")]
         public void ThenHttpHeadersShouldContain(Table table)
         {
-            var records = table.CreateSet<HttpResponse>().ToList();
+            var records = table.CreateSet<FakeHttpResponse>().ToList();
             Assert.That(records.Count, Is.EqualTo(_httpResponses.Count()));
             for(var i = 0; i < records.Count() - 1; i++)
             {

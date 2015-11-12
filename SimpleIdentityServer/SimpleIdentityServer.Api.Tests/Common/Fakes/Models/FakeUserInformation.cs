@@ -1,4 +1,4 @@
-﻿namespace SimpleIdentityServer.Api.Tests.Common
+﻿namespace SimpleIdentityServer.Api.Tests.Common.Fakes.Models
 {
     public class FakeUserInformation
     {

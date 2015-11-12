@@ -19,12 +19,14 @@ using SimpleIdentityServer.RateLimitation.Configuration;
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
 
-using DOMAINS = SimpleIdentityServer.Core.Models;
 using MODELS = SimpleIdentityServer.DataAccess.Fake.Models;
+
 using System.Web;
 using SimpleIdentityServer.Core.Extensions;
 using System.Web.Script.Serialization;
 using SimpleIdentityServer.Core.Jwt;
+using SimpleIdentityServer.Api.Tests.Common.Fakes.Models;
+using SimpleIdentityServer.Api.Tests.Common.Fakes;
 
 namespace SimpleIdentityServer.Api.Tests.Specs
 {
@@ -43,8 +45,6 @@ namespace SimpleIdentityServer.Api.Tests.Specs
 
         private string _signedPayLoad;
 
-        private string _serializedRsa;
-
         private string _combinedHeaderAndPayload;
 
         public GetIdTokenViaImplicitWorkflowSpec()
@@ -58,119 +58,6 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             _configureWebApi.Container.RegisterInstance<IGetRateLimitationElementOperation>(fakeGetRateLimitationElementOperation);
         }
 
-        [Given("a mobile application (.*) is defined")]
-        public void GivenClient(string clientId)
-        {
-            var client = new MODELS.Client
-            {
-                ClientId = clientId,
-                AllowedScopes = new List<MODELS.Scope>()
-            };
-
-            FakeDataSource.Instance().Clients.Add(client);
-        }
-
-        [Given("create a RSA key")]
-        public void GivenCreateRsaKey()
-        {
-            using (var provider = new RSACryptoServiceProvider())
-            {
-                _serializedRsa = provider.ToXmlString(true);
-            }
-
-            FakeDataSource.Instance().JsonWebKeys.Add(new MODELS.JsonWebKey
-            {
-                Alg = MODELS.AllAlg.RS256,
-                KeyOps = new[]
-                    {
-                        MODELS.KeyOperations.Sign
-                    },
-                Kid = "1",
-                Kty = MODELS.KeyType.RSA,
-                SerializedKey = _serializedRsa
-            });
-        }
-        
-        [Given("scopes (.*) are defined")]
-        public void GivenScope(List<string> scopes)
-        {
-            foreach (var scope in scopes)
-            {
-                var record = new MODELS.Scope
-                {
-                    Name = scope
-                };
-
-                FakeDataSource.Instance().Scopes.Add(record);
-            }
-        }
-
-        [Given("the scopes (.*) are assigned to the client (.*)")]
-        public void GivenScopesToTheClients(List<string> scopeNames, string clientId)
-        {
-            var client = GetClient(clientId);
-            if (client == null)
-            {
-                return;
-            }
-
-            var scopes = FakeDataSource.Instance().Scopes;
-            foreach (var scopeName in scopeNames)
-            {
-                var storedScope = scopes.SingleOrDefault(s => s.Name == scopeName);
-                if (storedScope == null)
-                {
-                    continue;
-                }
-
-                client.AllowedScopes.Add(storedScope);
-            }
-        }
-
-        [Given("the id_token signature algorithm is set to (.*) for the client (.*)")]
-        public void GivenIdTokenSignatureAlgorithmIsSetForTheClient(string algorithm, string clientId)
-        {
-            var client = GetClient(clientId);
-            if (client == null)
-            {
-                return;
-            }
-
-            client.IdTokenSignedTResponseAlg = algorithm;
-        }
-
-        [Given("the grant-type (.*) is supported by the client (.*)")]
-        public void GivenGrantTypesAreSupportedByClient(MODELS.GrantType grantType, string clientId)
-        {
-            var client = GetClient(clientId);
-            if (client == null)
-            {
-                return;
-            }
-
-            client.GrantTypes = new List<MODELS.GrantType>
-            {
-                grantType
-            };
-        }
-
-        [Given("the response-types (.*) are supported by the client (.*)")]
-        public void GivenResponseIsSupportedByTheClient(List<string> responseTypes, string clientId)
-        {
-            var client = GetClient(clientId);
-            if (client == null)
-            {
-                return;
-            }
-
-            client.ResponseTypes = new List<MODELS.ResponseType>();
-            foreach (var responseType in responseTypes)
-            {
-                var resp = (MODELS.ResponseType)Enum.Parse(typeof (ResponseType), responseType);
-                client.ResponseTypes.Add(resp);
-            }
-        }
-
         [Given("a resource owner is authenticated")]
         public void GivenAResourceOwnerIsAuthenticated(Table table)
         {
@@ -180,28 +67,6 @@ namespace SimpleIdentityServer.Api.Tests.Specs
                 Id = _fakeUserInformation.UserId
             };
             FakeDataSource.Instance().ResourceOwners.Add(resourceOwner);
-        }
-        
-        [Given("the consent has been given by the resource owner (.*) for the client (.*) and scopes (.*)")]
-
-        public void GivenConsent(string resourceOwnerId, string clientId, List<string> scopeNames)
-        {
-            var client = FakeDataSource.Instance().Clients.SingleOrDefault(c => c.ClientId == clientId);
-            var resourceOwner = FakeDataSource.Instance().ResourceOwners.SingleOrDefault(r => r.Id == resourceOwnerId);
-            var scopes = new List<MODELS.Scope>();
-            foreach (var scopeName in scopeNames)
-            {
-                var storedScope = FakeDataSource.Instance().Scopes.SingleOrDefault(s => s.Name == scopeName);
-                scopes.Add(storedScope);
-            }
-            var consent = new MODELS.Consent
-            {
-                Client = client,
-                GrantedScopes = scopes,
-                ResourceOwner = resourceOwner
-            };
-
-            FakeDataSource.Instance().Consents.Add(consent);
         }
 
         [When("requesting an authorization")]
@@ -275,7 +140,8 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         {
             using (var provider = new RSACryptoServiceProvider())
             {
-                provider.FromXmlString(_serializedRsa);
+                var serializedRsa = FakeDataSource.Instance().JsonWebKeys.First().SerializedKey;
+                provider.FromXmlString(serializedRsa);
                 _signedPayLoad = _signedPayLoad.Replace(" ", "+");
                 var signature = Convert.FromBase64String(_signedPayLoad);
                 var payLoad = ASCIIEncoding.ASCII.GetBytes(_combinedHeaderAndPayload);

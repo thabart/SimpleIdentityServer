@@ -7,7 +7,6 @@ using Microsoft.Practices.EnterpriseLibrary.Caching;
 using Microsoft.Practices.Unity;
 
 using SimpleIdentityServer.Api.Configuration;
-using SimpleIdentityServer.Api.Controllers.Api;
 using SimpleIdentityServer.Core.Api.Authorization.Common;
 using SimpleIdentityServer.Core.Api.Discovery;
 using SimpleIdentityServer.Core.Api.Discovery.Actions;
@@ -32,6 +31,7 @@ using SimpleIdentityServer.Core.Api.Token;
 using SimpleIdentityServer.Core.Api.Token.Actions;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Api.Parsers;
+using SimpleIdentityServer.Api.Tests.Common.Fakes;
 
 namespace SimpleIdentityServer.Api.Tests.Common
 {
@@ -104,8 +104,6 @@ namespace SimpleIdentityServer.Api.Tests.Common
             _container.RegisterType<IGenerateAuthorizationResponse, GenerateAuthorizationResponse>();
             
             _container.RegisterType<IClaimsMapping, ClaimsMapping>();
-            
-            FakeDataSource.Instance().Init();
         }
 
         public UnityContainer Container

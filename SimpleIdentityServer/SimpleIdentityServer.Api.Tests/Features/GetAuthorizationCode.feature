@@ -6,7 +6,10 @@
 # HAPPY PATH
 Scenario: Whether the resource owner is authenticated or not we want to re-authenticate him
 	Given a mobile application MyHolidays is defined
-	And scopes openid,PlanningApi are defined
+	And the scopes are defined
+	| Name        | IsInternal |
+	| PlanningApi | true       |
+	| openid      | true       |
 	And the scopes openid,PlanningApi are assigned to the client MyHolidays
 
 	When requesting an authorization code
@@ -19,7 +22,10 @@ Scenario: Whether the resource owner is authenticated or not we want to re-authe
 
 Scenario: A resource owner is authenticated and we want to display only the consent screen
 	Given a mobile application MyHolidays is defined
-	And scopes openid,PlanningApi are defined
+	And the scopes are defined
+	| Name        | IsInternal |
+	| PlanningApi | true       |
+	| openid      | true       |
 	And the scopes openid,PlanningApi are assigned to the client MyHolidays
 	And a resource owner is authenticated
 	| UserId               | UserName |
@@ -35,7 +41,10 @@ Scenario: A resource owner is authenticated and we want to display only the cons
 
 Scenario: A resource owner is not authenticated and we want to display only the consent screen
 	Given a mobile application MyHolidays is defined
-	And scopes openid,PlanningApi are defined
+	And the scopes are defined
+	| Name        | IsInternal |
+	| PlanningApi | true       |
+	| openid      | true       |
 	And the scopes openid,PlanningApi are assigned to the client MyHolidays
 
 	When requesting an authorization code
@@ -48,7 +57,10 @@ Scenario: A resource owner is not authenticated and we want to display only the 
 
 Scenario: A resource owner is authenticated and he already has given his consent. We want to retrieve an authorization code for his consent
 	Given a mobile application MyHolidays is defined
-	And scopes openid,PlanningApi are defined
+	And the scopes are defined
+	| Name        | IsInternal |
+	| PlanningApi | true       |
+	| openid      | true       |
 	And the scopes openid,PlanningApi are assigned to the client MyHolidays
 	And a resource owner is authenticated
 	| UserId               | UserName |
@@ -67,7 +79,10 @@ Scenario: A resource owner is authenticated and he already has given his consent
 # THE PROMPT PARAMETER IS NOT SPECIFIED
 Scenario: a resource owner is not authenticated. We want to retrieve an authorization code and the prompt parameter value is not specified
 	Given a mobile application MyHolidays is defined
-	And scopes openid,PlanningApi are defined
+	And the scopes are defined
+	| Name        | IsInternal |
+	| PlanningApi | true       |
+	| openid      | true       |
 	And the scopes openid,PlanningApi are assigned to the client MyHolidays
 	And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and scopes openid,PlanningApi
 
@@ -81,7 +96,10 @@ Scenario: a resource owner is not authenticated. We want to retrieve an authoriz
 
 Scenario: a resource owner is authenticated. We want to retrieve an authorization code and the prompt parameter value is not specified
 	Given a mobile application MyHolidays is defined
-	And scopes openid,PlanningApi are defined
+	And the scopes are defined
+	| Name        | IsInternal |
+	| PlanningApi | true       |
+	| openid      | true       |
 	And the scopes openid,PlanningApi are assigned to the client MyHolidays
 	And a resource owner is authenticated
 	| UserId               | UserName |
@@ -98,7 +116,10 @@ Scenario: a resource owner is authenticated. We want to retrieve an authorizatio
 # ERRORS
 Scenario: A resource owner is not authenticated but we want to directly retrieve the authorization code into the callback
 	Given a mobile application MyHolidays is defined
-	And scopes openid,PlanningApi are defined
+	And the scopes are defined
+	| Name        | IsInternal |
+	| PlanningApi | true       |
+	| openid      | true       |
 	And the scopes openid,PlanningApi are assigned to the client MyHolidays
 
 	When requesting an authorization code
@@ -112,7 +133,10 @@ Scenario: A resource owner is not authenticated but we want to directly retrieve
 
 Scenario: a resource owner is authenticated and we want to retrieve the authorization code into the callback without his consent
 	Given a mobile application MyHolidays is defined
-	And scopes openid,PlanningApi are defined
+	And the scopes are defined
+	| Name        | IsInternal |
+	| PlanningApi | true       |
+	| openid      | true       |
 	And the scopes openid,PlanningApi are assigned to the client MyHolidays
 	And a resource owner is authenticated
 	| UserId               | UserName |
@@ -129,7 +153,10 @@ Scenario: a resource owner is authenticated and we want to retrieve the authoriz
 
 Scenario: a resource owner is not authenticated and we want to retrieve an authorization code by passing a malformed redirection_uri
 	Given a mobile application MyHolidays is defined
-	And scopes openid,PlanningApi are defined
+	And the scopes are defined
+	| Name        | IsInternal |
+	| PlanningApi | true       |
+	| openid      | true       |
 	And the scopes openid,PlanningApi are assigned to the client MyHolidays
 
 	When requesting an authorization code
@@ -143,7 +170,10 @@ Scenario: a resource owner is not authenticated and we want to retrieve an autho
 
 Scenario: a resource owner is not authenticated and we want to retrieve an authorization code with prompt equal to none and login
 	Given a mobile application MyHolidays is defined
-	And scopes openid,PlanningApi are defined
+	And the scopes are defined
+	| Name        | IsInternal |
+	| PlanningApi | true       |
+	| openid      | true       |
 	And the scopes openid,PlanningApi are assigned to the client MyHolidays
 
 	When requesting an authorization code

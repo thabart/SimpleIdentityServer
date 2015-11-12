@@ -106,28 +106,38 @@ this.ScenarioSetup(scenarioInfo);
  testRunner.Given("a resource owner with username thierry and password loki is defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 19
  testRunner.And("a mobile application MyHolidays is defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 20
- testRunner.And("scopes roles,openid are defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 21
- testRunner.And("the scopes roles,openid are assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             TechTalk.SpecFlow.Table table2 = new TechTalk.SpecFlow.Table(new string[] {
+                        "Name",
+                        "IsInternal"});
+            table2.AddRow(new string[] {
+                        "roles",
+                        "true"});
+            table2.AddRow(new string[] {
+                        "openid",
+                        "true"});
+#line 20
+ testRunner.And("the scopes are defined", ((string)(null)), table2, "And ");
+#line 25
+ testRunner.And("the scopes roles,openid are assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            TechTalk.SpecFlow.Table table3 = new TechTalk.SpecFlow.Table(new string[] {
                         "client_id",
                         "username",
                         "password",
                         "scope"});
-            table2.AddRow(new string[] {
+            table3.AddRow(new string[] {
                         "MyHolidays",
                         "thierry",
                         "loki",
                         "roles openid"});
-#line 23
- testRunner.When("requesting an access token via resource owner grant-type", ((string)(null)), table2, "When ");
 #line 27
+ testRunner.When("requesting an access token via resource owner grant-type", ((string)(null)), table3, "When ");
+#line 31
  testRunner.Then("http result is 200", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line 28
+#line 32
  testRunner.And("access token is generated", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 29
+#line 33
  testRunner.And("access token have the correct scopes : roles,roles", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
@@ -138,30 +148,40 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void RetrieveAnAccessTokenWithMissingUsername()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Retrieve an access token with missing username", ((string[])(null)));
-#line 32
-this.ScenarioSetup(scenarioInfo);
-#line 33
- testRunner.Given("a resource owner with username thierry and password loki is defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 34
- testRunner.And("a mobile application MyHolidays is defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 35
- testRunner.And("scopes roles,openid are defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 36
+this.ScenarioSetup(scenarioInfo);
+#line 37
+ testRunner.Given("a resource owner with username thierry and password loki is defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 38
+ testRunner.And("a mobile application MyHolidays is defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            TechTalk.SpecFlow.Table table4 = new TechTalk.SpecFlow.Table(new string[] {
+                        "Name",
+                        "IsInternal"});
+            table4.AddRow(new string[] {
+                        "roles",
+                        "true"});
+            table4.AddRow(new string[] {
+                        "openid",
+                        "true"});
+#line 39
+ testRunner.And("the scopes are defined", ((string)(null)), table4, "And ");
+#line 44
  testRunner.And("the scopes roles,openid are assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-            TechTalk.SpecFlow.Table table3 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table5 = new TechTalk.SpecFlow.Table(new string[] {
                         "client_id",
                         "password",
                         "scope"});
-            table3.AddRow(new string[] {
+            table5.AddRow(new string[] {
                         "MyHolidays",
                         "loki",
                         "roles openid"});
-#line 38
- testRunner.When("requesting an access token via resource owner grant-type", ((string)(null)), table3, "When ");
-#line 42
+#line 46
+ testRunner.When("requesting an access token via resource owner grant-type", ((string)(null)), table5, "When ");
+#line 50
  testRunner.Then("http result is 400", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line 43
+#line 51
  testRunner.And("the error is invalid_request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
@@ -172,30 +192,40 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void RetrieveAnAccessTokenWithMissingClientId()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Retrieve an access token with missing client id", ((string[])(null)));
-#line 45
+#line 53
 this.ScenarioSetup(scenarioInfo);
-#line 46
+#line 54
  testRunner.Given("a resource owner with username thierry and password loki is defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 47
+#line 55
  testRunner.And("a mobile application MyHolidays is defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 48
- testRunner.And("scopes roles,openid are defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 49
+#line hidden
+            TechTalk.SpecFlow.Table table6 = new TechTalk.SpecFlow.Table(new string[] {
+                        "Name",
+                        "IsInternal"});
+            table6.AddRow(new string[] {
+                        "roles",
+                        "true"});
+            table6.AddRow(new string[] {
+                        "openid",
+                        "true"});
+#line 56
+ testRunner.And("the scopes are defined", ((string)(null)), table6, "And ");
+#line 61
  testRunner.And("the scopes roles,openid are assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-            TechTalk.SpecFlow.Table table4 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table7 = new TechTalk.SpecFlow.Table(new string[] {
                         "username",
                         "password",
                         "scope"});
-            table4.AddRow(new string[] {
+            table7.AddRow(new string[] {
                         "thierry",
                         "loki",
                         "roles openid"});
-#line 51
- testRunner.When("requesting an access token via resource owner grant-type", ((string)(null)), table4, "When ");
-#line 55
+#line 63
+ testRunner.When("requesting an access token via resource owner grant-type", ((string)(null)), table7, "When ");
+#line 67
  testRunner.Then("http result is 400", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line 56
+#line 68
  testRunner.And("the error is invalid_request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
@@ -206,159 +236,25 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void RetrieveAnAccessTokenWithNoneExistingScope()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Retrieve an access token with none existing scope", ((string[])(null)));
-#line 58
+#line 70
 this.ScenarioSetup(scenarioInfo);
-#line 59
- testRunner.Given("a resource owner with username thierry and password loki is defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 60
- testRunner.And("a mobile application MyHolidays is defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 61
- testRunner.And("scopes roles,openid are defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 62
- testRunner.And("the scopes roles,openid are assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line hidden
-            TechTalk.SpecFlow.Table table5 = new TechTalk.SpecFlow.Table(new string[] {
-                        "client_id",
-                        "username",
-                        "password",
-                        "scope"});
-            table5.AddRow(new string[] {
-                        "MyHolidays",
-                        "thierry",
-                        "loki",
-                        "roles openid profile"});
-#line 64
- testRunner.When("requesting an access token via resource owner grant-type", ((string)(null)), table5, "When ");
-#line 68
- testRunner.Then("http result is 400", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line 69
- testRunner.And("the error is invalid_scope", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line hidden
-            this.ScenarioCleanup();
-        }
-        
-        [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("Retrieve an access token with a scope not allowed")]
-        public virtual void RetrieveAnAccessTokenWithAScopeNotAllowed()
-        {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Retrieve an access token with a scope not allowed", ((string[])(null)));
 #line 71
-this.ScenarioSetup(scenarioInfo);
+ testRunner.Given("a resource owner with username thierry and password loki is defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 72
- testRunner.Given("a resource owner with username thierry and password loki is defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 73
  testRunner.And("a mobile application MyHolidays is defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 74
- testRunner.And("scopes roles,openid are defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 75
- testRunner.And("the scopes roles are assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line hidden
-            TechTalk.SpecFlow.Table table6 = new TechTalk.SpecFlow.Table(new string[] {
-                        "client_id",
-                        "username",
-                        "password",
-                        "scope"});
-            table6.AddRow(new string[] {
-                        "MyHolidays",
-                        "thierry",
-                        "loki",
-                        "roles openid"});
-#line 77
- testRunner.When("requesting an access token via resource owner grant-type", ((string)(null)), table6, "When ");
-#line 81
- testRunner.Then("http result is 400", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line 82
- testRunner.And("the error is invalid_scope", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line hidden
-            this.ScenarioCleanup();
-        }
-        
-        [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("Retrieve an access token with duplicate scopes")]
-        public virtual void RetrieveAnAccessTokenWithDuplicateScopes()
-        {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Retrieve an access token with duplicate scopes", ((string[])(null)));
-#line 84
-this.ScenarioSetup(scenarioInfo);
-#line 85
- testRunner.Given("a resource owner with username thierry and password loki is defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 86
- testRunner.And("a mobile application MyHolidays is defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 87
- testRunner.And("scopes roles,openid are defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 88
- testRunner.And("the scopes roles are assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line hidden
-            TechTalk.SpecFlow.Table table7 = new TechTalk.SpecFlow.Table(new string[] {
-                        "client_id",
-                        "username",
-                        "password",
-                        "scope"});
-            table7.AddRow(new string[] {
-                        "MyHolidays",
-                        "thierry",
-                        "loki",
-                        "roles roles"});
-#line 90
- testRunner.When("requesting an access token via resource owner grant-type", ((string)(null)), table7, "When ");
-#line 94
- testRunner.Then("http result is 400", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line 95
- testRunner.And("the error is invalid_request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line hidden
-            this.ScenarioCleanup();
-        }
-        
-        [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("Retrieve an access token for a none existing client_id")]
-        public virtual void RetrieveAnAccessTokenForANoneExistingClient_Id()
-        {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Retrieve an access token for a none existing client_id", ((string[])(null)));
-#line 97
-this.ScenarioSetup(scenarioInfo);
-#line 98
- testRunner.Given("a resource owner with username thierry and password loki is defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 99
- testRunner.And("a mobile application MyHolidays is defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 100
- testRunner.And("scopes roles,openid are defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 101
- testRunner.And("the scopes roles,openid are assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             TechTalk.SpecFlow.Table table8 = new TechTalk.SpecFlow.Table(new string[] {
-                        "client_id",
-                        "username",
-                        "password",
-                        "scope"});
+                        "Name",
+                        "IsInternal"});
             table8.AddRow(new string[] {
-                        "ClientNotAllowed",
-                        "thierry",
-                        "loki",
-                        "roles openid"});
-#line 103
- testRunner.When("requesting an access token via resource owner grant-type", ((string)(null)), table8, "When ");
-#line 107
- testRunner.Then("http result is 400", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line 108
- testRunner.And("the error is invalid_client", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line hidden
-            this.ScenarioCleanup();
-        }
-        
-        [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("Retrieve an access token with not valid credentials")]
-        public virtual void RetrieveAnAccessTokenWithNotValidCredentials()
-        {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Retrieve an access token with not valid credentials", ((string[])(null)));
-#line 110
-this.ScenarioSetup(scenarioInfo);
-#line 111
- testRunner.Given("a resource owner with username thierry and password loki is defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 112
- testRunner.And("a mobile application MyHolidays is defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 113
- testRunner.And("scopes roles,openid are defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 114
+                        "roles",
+                        "true"});
+            table8.AddRow(new string[] {
+                        "openid",
+                        "true"});
+#line 73
+ testRunner.And("the scopes are defined", ((string)(null)), table8, "And ");
+#line 77
  testRunner.And("the scopes roles,openid are assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             TechTalk.SpecFlow.Table table9 = new TechTalk.SpecFlow.Table(new string[] {
@@ -369,13 +265,197 @@ this.ScenarioSetup(scenarioInfo);
             table9.AddRow(new string[] {
                         "MyHolidays",
                         "thierry",
+                        "loki",
+                        "roles openid profile"});
+#line 79
+ testRunner.When("requesting an access token via resource owner grant-type", ((string)(null)), table9, "When ");
+#line 83
+ testRunner.Then("http result is 400", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 84
+ testRunner.And("the error is invalid_scope", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Retrieve an access token with a scope not allowed")]
+        public virtual void RetrieveAnAccessTokenWithAScopeNotAllowed()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Retrieve an access token with a scope not allowed", ((string[])(null)));
+#line 86
+this.ScenarioSetup(scenarioInfo);
+#line 87
+ testRunner.Given("a resource owner with username thierry and password loki is defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 88
+ testRunner.And("a mobile application MyHolidays is defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            TechTalk.SpecFlow.Table table10 = new TechTalk.SpecFlow.Table(new string[] {
+                        "Name",
+                        "IsInternal"});
+            table10.AddRow(new string[] {
+                        "roles",
+                        "true"});
+            table10.AddRow(new string[] {
+                        "openid",
+                        "true"});
+#line 89
+ testRunner.And("the scopes are defined", ((string)(null)), table10, "And ");
+#line 94
+ testRunner.And("the scopes roles are assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            TechTalk.SpecFlow.Table table11 = new TechTalk.SpecFlow.Table(new string[] {
+                        "client_id",
+                        "username",
+                        "password",
+                        "scope"});
+            table11.AddRow(new string[] {
+                        "MyHolidays",
+                        "thierry",
+                        "loki",
+                        "roles openid"});
+#line 96
+ testRunner.When("requesting an access token via resource owner grant-type", ((string)(null)), table11, "When ");
+#line 100
+ testRunner.Then("http result is 400", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 101
+ testRunner.And("the error is invalid_scope", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Retrieve an access token with duplicate scopes")]
+        public virtual void RetrieveAnAccessTokenWithDuplicateScopes()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Retrieve an access token with duplicate scopes", ((string[])(null)));
+#line 103
+this.ScenarioSetup(scenarioInfo);
+#line 104
+ testRunner.Given("a resource owner with username thierry and password loki is defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 105
+ testRunner.And("a mobile application MyHolidays is defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            TechTalk.SpecFlow.Table table12 = new TechTalk.SpecFlow.Table(new string[] {
+                        "Name",
+                        "IsInternal"});
+            table12.AddRow(new string[] {
+                        "roles",
+                        "true"});
+            table12.AddRow(new string[] {
+                        "openid",
+                        "true"});
+#line 106
+ testRunner.And("the scopes are defined", ((string)(null)), table12, "And ");
+#line 110
+ testRunner.And("the scopes roles are assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            TechTalk.SpecFlow.Table table13 = new TechTalk.SpecFlow.Table(new string[] {
+                        "client_id",
+                        "username",
+                        "password",
+                        "scope"});
+            table13.AddRow(new string[] {
+                        "MyHolidays",
+                        "thierry",
+                        "loki",
+                        "roles roles"});
+#line 112
+ testRunner.When("requesting an access token via resource owner grant-type", ((string)(null)), table13, "When ");
+#line 116
+ testRunner.Then("http result is 400", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 117
+ testRunner.And("the error is invalid_request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Retrieve an access token for a none existing client_id")]
+        public virtual void RetrieveAnAccessTokenForANoneExistingClient_Id()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Retrieve an access token for a none existing client_id", ((string[])(null)));
+#line 119
+this.ScenarioSetup(scenarioInfo);
+#line 120
+ testRunner.Given("a resource owner with username thierry and password loki is defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 121
+ testRunner.And("a mobile application MyHolidays is defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            TechTalk.SpecFlow.Table table14 = new TechTalk.SpecFlow.Table(new string[] {
+                        "Name",
+                        "IsInternal"});
+            table14.AddRow(new string[] {
+                        "roles",
+                        "true"});
+            table14.AddRow(new string[] {
+                        "openid",
+                        "true"});
+#line 122
+ testRunner.And("the scopes are defined", ((string)(null)), table14, "And ");
+#line 126
+ testRunner.And("the scopes roles,openid are assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            TechTalk.SpecFlow.Table table15 = new TechTalk.SpecFlow.Table(new string[] {
+                        "client_id",
+                        "username",
+                        "password",
+                        "scope"});
+            table15.AddRow(new string[] {
+                        "ClientNotAllowed",
+                        "thierry",
+                        "loki",
+                        "roles openid"});
+#line 128
+ testRunner.When("requesting an access token via resource owner grant-type", ((string)(null)), table15, "When ");
+#line 132
+ testRunner.Then("http result is 400", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 133
+ testRunner.And("the error is invalid_client", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Retrieve an access token with not valid credentials")]
+        public virtual void RetrieveAnAccessTokenWithNotValidCredentials()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Retrieve an access token with not valid credentials", ((string[])(null)));
+#line 135
+this.ScenarioSetup(scenarioInfo);
+#line 136
+ testRunner.Given("a resource owner with username thierry and password loki is defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 137
+ testRunner.And("a mobile application MyHolidays is defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            TechTalk.SpecFlow.Table table16 = new TechTalk.SpecFlow.Table(new string[] {
+                        "Name",
+                        "IsInternal"});
+            table16.AddRow(new string[] {
+                        "roles",
+                        "true"});
+            table16.AddRow(new string[] {
+                        "openid",
+                        "true"});
+#line 138
+ testRunner.And("the scopes are defined", ((string)(null)), table16, "And ");
+#line 142
+ testRunner.And("the scopes roles,openid are assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            TechTalk.SpecFlow.Table table17 = new TechTalk.SpecFlow.Table(new string[] {
+                        "client_id",
+                        "username",
+                        "password",
+                        "scope"});
+            table17.AddRow(new string[] {
+                        "MyHolidays",
+                        "thierry",
                         "notvalid",
                         "roles openid"});
-#line 116
- testRunner.When("requesting an access token via resource owner grant-type", ((string)(null)), table9, "When ");
-#line 120
+#line 144
+ testRunner.When("requesting an access token via resource owner grant-type", ((string)(null)), table17, "When ");
+#line 148
  testRunner.Then("http result is 400", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line 121
+#line 149
  testRunner.And("the error is invalid_grant", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();

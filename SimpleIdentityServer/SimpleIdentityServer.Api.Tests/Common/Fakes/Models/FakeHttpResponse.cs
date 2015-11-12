@@ -1,8 +1,8 @@
 ﻿using System.Net;
 
-namespace SimpleIdentityServer.Api.Tests.Common
+namespace SimpleIdentityServer.Api.Tests.Common.Fakes.Models
 {
-    public class HttpResponse
+    public class FakeHttpResponse
     {
         public HttpStatusCode StatusCode { get; set; }
 

@@ -1,6 +1,6 @@
 ﻿using SimpleIdentityServer.RateLimitation.Configuration;
 
-namespace SimpleIdentityServer.Api.Tests.Common
+namespace SimpleIdentityServer.Api.Tests.Common.Fakes
 {
     public class FakeGetRateLimitationElementOperation : IGetRateLimitationElementOperation
     {

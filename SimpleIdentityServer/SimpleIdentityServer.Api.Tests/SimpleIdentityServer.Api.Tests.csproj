@@ -114,13 +114,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\ConfigureWebApi.cs" />
-    <Compile Include="Common\FakeAuthenticationFilter.cs" />
-    <Compile Include="Common\FakeGetRateLimitationElementOperation.cs" />
-    <Compile Include="Common\FakeProtector.cs" />
-    <Compile Include="Common\HttpResponse.cs" />
-    <Compile Include="Common\TooManyRequestResponse.cs" />
+    <Compile Include="Common\Fakes\FakeAuthenticationFilter.cs" />
+    <Compile Include="Common\Fakes\FakeGetRateLimitationElementOperation.cs" />
+    <Compile Include="Common\Fakes\FakeProtector.cs" />
+    <Compile Include="Common\Fakes\Models\FakeScope.cs" />
+    <Compile Include="Common\Fakes\Models\FakeHttpResponse.cs" />
+    <Compile Include="Common\Fakes\Models\FakeTooManyRequestResponse.cs" />
+    <Compile Include="Common\GlobalGivenInstructions.cs" />
     <Compile Include="Common\Transformations.cs" />
-    <Compile Include="Common\FakeUserInformation.cs" />
+    <Compile Include="Common\Fakes\Models\FakeUserInformation.cs" />
+    <Compile Include="Extensions\MappingExtensions.cs" />
     <Compile Include="Features\GetAccessTokenMultipleTime.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

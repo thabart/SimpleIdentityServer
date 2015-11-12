@@ -16,8 +16,12 @@ Scenario: Retrieve an access token without defining scopes
 
 Scenario: Retrieve an access token with two scopes
 	Given a resource owner with username thierry and password loki is defined
-	And a mobile application MyHolidays is defined
-	And scopes roles,openid are defined
+	And a mobile application MyHolidays is defined	
+	And the scopes are defined
+	| Name   | IsInternal |
+	| roles  | true       |
+	| openid | true       |
+
 	And the scopes roles,openid are assigned to the client MyHolidays
 
 	When requesting an access token via resource owner grant-type
@@ -32,7 +36,11 @@ Scenario: Retrieve an access token with two scopes
 Scenario: Retrieve an access token with missing username
 	Given a resource owner with username thierry and password loki is defined
 	And a mobile application MyHolidays is defined
-	And scopes roles,openid are defined
+	And the scopes are defined
+	| Name   | IsInternal |
+	| roles  | true       |
+	| openid | true       |
+
 	And the scopes roles,openid are assigned to the client MyHolidays
 
 	When requesting an access token via resource owner grant-type
@@ -45,7 +53,11 @@ Scenario: Retrieve an access token with missing username
 Scenario: Retrieve an access token with missing client id
 	Given a resource owner with username thierry and password loki is defined
 	And a mobile application MyHolidays is defined
-	And scopes roles,openid are defined
+	And the scopes are defined
+	| Name   | IsInternal |
+	| roles  | true       |
+	| openid | true       |
+
 	And the scopes roles,openid are assigned to the client MyHolidays
 
 	When requesting an access token via resource owner grant-type
@@ -57,8 +69,11 @@ Scenario: Retrieve an access token with missing client id
 
 Scenario: Retrieve an access token with none existing scope
 	Given a resource owner with username thierry and password loki is defined
-	And a mobile application MyHolidays is defined
-	And scopes roles,openid are defined
+	And a mobile application MyHolidays is defined	
+	And the scopes are defined
+	| Name   | IsInternal |
+	| roles  | true       |
+	| openid | true       |
 	And the scopes roles,openid are assigned to the client MyHolidays
 
 	When requesting an access token via resource owner grant-type
@@ -71,7 +86,11 @@ Scenario: Retrieve an access token with none existing scope
 Scenario: Retrieve an access token with a scope not allowed
 	Given a resource owner with username thierry and password loki is defined
 	And a mobile application MyHolidays is defined
-	And scopes roles,openid are defined
+	And the scopes are defined
+	| Name   | IsInternal |
+	| roles  | true       |
+	| openid | true       |
+
 	And the scopes roles are assigned to the client MyHolidays
 
 	When requesting an access token via resource owner grant-type
@@ -84,7 +103,10 @@ Scenario: Retrieve an access token with a scope not allowed
 Scenario: Retrieve an access token with duplicate scopes
 	Given a resource owner with username thierry and password loki is defined
 	And a mobile application MyHolidays is defined
-	And scopes roles,openid are defined
+	And the scopes are defined
+	| Name   | IsInternal |
+	| roles  | true       |
+	| openid | true       |
 	And the scopes roles are assigned to the client MyHolidays
 
 	When requesting an access token via resource owner grant-type
@@ -97,7 +119,10 @@ Scenario: Retrieve an access token with duplicate scopes
 Scenario: Retrieve an access token for a none existing client_id
 	Given a resource owner with username thierry and password loki is defined
 	And a mobile application MyHolidays is defined
-	And scopes roles,openid are defined
+	And the scopes are defined
+	| Name   | IsInternal |
+	| roles  | true       |
+	| openid | true       |
 	And the scopes roles,openid are assigned to the client MyHolidays
 
 	When requesting an access token via resource owner grant-type
@@ -110,7 +135,10 @@ Scenario: Retrieve an access token for a none existing client_id
 Scenario: Retrieve an access token with not valid credentials
 	Given a resource owner with username thierry and password loki is defined
 	And a mobile application MyHolidays is defined
-	And scopes roles,openid are defined
+	And the scopes are defined
+	| Name   | IsInternal |
+	| roles  | true       |
+	| openid | true       |
 	And the scopes roles,openid are assigned to the client MyHolidays
 
 	When requesting an access token via resource owner grant-type

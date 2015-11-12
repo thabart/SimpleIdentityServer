@@ -2,7 +2,7 @@
 
 using SimpleIdentityServer.Core.Protector;
 
-namespace SimpleIdentityServer.Api.Tests.Common
+namespace SimpleIdentityServer.Api.Tests.Common.Fakes
 {
     /// <summary>
     /// Fake the protector because it taking some time to execute the UTs.
