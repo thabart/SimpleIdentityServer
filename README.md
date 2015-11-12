@@ -7,3 +7,5 @@
 __Live demo__: http://simpleidentityserver.azurewebsites.net
 
 __Swagger contract__ : http://simpleidentityserver.azurewebsites.net/swagger/ui/index
+
+Testing : https://op.certification.openid.net:60360/

@@ -295,13 +295,13 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         [Then("the audience parameter with value (.*) is returned by the JWS payload")]
         public void ThenAudienceIsReturnedInJwsPayLoad(string audience)
         {
-            Assert.That(_jwsPayLoad.aud.Contains(audience), Is.True);
+            Assert.That(_jwsPayLoad.Audiences.Contains(audience), Is.True);
         }
 
         [Then("the parameter nonce with value (.*) is returned by the JWS payload")]
         public void ThenNonceIsReturnedInJwsPayLoad(string nonce)
         {
-            Assert.That(_jwsPayLoad.nonce, Is.EqualTo(nonce));
+            Assert.That(_jwsPayLoad.Nonce, Is.EqualTo(nonce));
         }
 
         [Then("the claim (.*) with value (.*) is returned by the JWS payload")]

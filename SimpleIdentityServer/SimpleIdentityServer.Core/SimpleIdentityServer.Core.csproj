@@ -92,6 +92,7 @@
     <Compile Include="Configuration\SimpleIdentityServerConfigurator.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Extensions\AlgorithmExtensions.cs" />
+    <Compile Include="Jwt\Mapping\ClaimsMapping.cs" />
     <Compile Include="Jwt\Signature\CreateJwsSignature.cs" />
     <Compile Include="Jwt\Signature\JsonWebKey.cs" />
     <Compile Include="Jwt\Signature\JsonWebKeySet.cs" />

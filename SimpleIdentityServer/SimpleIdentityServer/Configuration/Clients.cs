@@ -15,6 +15,7 @@ namespace SimpleIdentityServer.Api.Configuration
                     DisplayName = "My blog",
                     AllowedScopes = new List<Scope>
                     {
+                        // PROTECTED API SCOPES
                         new Scope
                         {
                             Name = "BlogApi"
@@ -25,7 +26,37 @@ namespace SimpleIdentityServer.Api.Configuration
                         },
                         new Scope
                         {
-                            Name = "openid"
+                            Name = "openid",
+                            IsExposed = true,
+                            IsInternal = true,
+                            Description = "openid",
+                            Type = ScopeType.ProtectedApi
+                        },
+                        // RO SCOPES
+                        new Scope
+                        {
+                            Name = "profile",
+                            IsExposed = true,
+                            IsInternal = true,
+                            Description = "Access to the profile",
+                            Claims = new List<string>
+                            {
+                                Core.Constants.StandardResourceOwnerClaimNames.Name,
+                                Core.Constants.StandardResourceOwnerClaimNames.FamilyName,
+                                Core.Constants.StandardResourceOwnerClaimNames.GivenName,
+                                Core.Constants.StandardResourceOwnerClaimNames.MiddleName,
+                                Core.Constants.StandardResourceOwnerClaimNames.NickName,
+                                Core.Constants.StandardResourceOwnerClaimNames.PreferredUserName,
+                                Core.Constants.StandardResourceOwnerClaimNames.Profile,
+                                Core.Constants.StandardResourceOwnerClaimNames.Picture,
+                                Core.Constants.StandardResourceOwnerClaimNames.WebSite,
+                                Core.Constants.StandardResourceOwnerClaimNames.Gender,
+                                Core.Constants.StandardResourceOwnerClaimNames.BirthDate,
+                                Core.Constants.StandardResourceOwnerClaimNames.ZoneInfo,
+                                Core.Constants.StandardResourceOwnerClaimNames.Locale,
+                                Core.Constants.StandardResourceOwnerClaimNames.UpdatedAt
+                            },
+                            Type = ScopeType.ResourceOwner
                         }
                     },
                     GrantTypes = new List<GrantType>

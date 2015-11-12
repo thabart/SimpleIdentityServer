@@ -29,8 +29,6 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
     {
         private readonly IScopeRepository _scopeRepository;
 
-        private readonly IParameterParserHelper _parameterParserHelper;
-
         private readonly IClientRepository _clientRepository;
 
         private readonly IActionResultFactory _actionResultFactory;
@@ -38,12 +36,10 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
         public DisplayConsentAction(
             IScopeRepository scopeRepository,
             IClientRepository clientRepository,
-            IParameterParserHelper parameterParserHelper,
             IActionResultFactory actionResultFactory)
         {
             _scopeRepository = scopeRepository;
             _clientRepository = clientRepository;
-            _parameterParserHelper = parameterParserHelper;
             _actionResultFactory = actionResultFactory;
         }
 
@@ -61,7 +57,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
             out List<Scope> allowedScopes)
         {
             allowedScopes = GetScopes(authorizationParameter.Scope)
-                .Where(s => !s.IsInternal)
+                .Where(s => s.IsDisplayedInConsent)
                 .ToList();
             client = _clientRepository.GetClientById(authorizationParameter.ClientId);
             return _actionResultFactory.CreateAnEmptyActionResultWithOutput();

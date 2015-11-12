@@ -12,6 +12,7 @@ using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Helpers;
+using SimpleIdentityServer.Core.Jwt.Mapping;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Validators;
@@ -68,6 +69,8 @@ namespace SimpleIdentityServer.Core
             register.RegisterType<ISimpleIdentityServerConfigurator, SimpleIdentityServerConfigurator>();
             register.RegisterType<ICreateJwsSignature, CreateJwsSignature>();
             register.RegisterType<IGenerateAuthorizationResponse, GenerateAuthorizationResponse>();
+
+            register.RegisterType<IClaimsMapping, ClaimsMapping>();
         }
     }
 }

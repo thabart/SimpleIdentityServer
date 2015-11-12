@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Security.Claims;
 using SimpleIdentityServer.Core.Api.Authorization;
 using SimpleIdentityServer.Core.Models;
 
@@ -6,6 +7,8 @@ namespace SimpleIdentityServer.Core
 {
     public static class Constants
     {
+        #region Standard definitions
+
         public static class StandardResourceOwnerClaimNames
         {
             public static string Subject = "sub";
@@ -47,6 +50,9 @@ namespace SimpleIdentityServer.Core
             public static string Address = "address";
 
             public static string UpdatedAt = "updated_at";
+
+            // Check where this claims is defined.
+            public static string Role = "role";
         }
 
         // Open-Id Provider Authentication Policy Extension 1.0
@@ -77,20 +83,109 @@ namespace SimpleIdentityServer.Core
             public static string OpenIdPhysicalMultiFactorAuth = "http://schemas.openid.net/pape/policies/2007/06/multi-factor-physical";
         }
 
-        // Custom authentication policies defined by Simple Identity Server
-        public static class CustomAuthenticationPolicies
+        // Standard scopes defined by OPEN-ID
+        public static class StandardScopes
         {
-            public static string CustomPasswordAuth = "http://schemas.simpleidentityserver.net/pape/policies/2015/05/password";
+            public static Scope ProfileScope = new Scope
+            {
+                Name = "profile",
+                IsExposed = true,
+                IsInternal = true,
+                IsDisplayedInConsent = true,
+                Description = "Access to the profile",
+                Claims = new List<string>
+                {
+                    StandardResourceOwnerClaimNames.Name,
+                    StandardResourceOwnerClaimNames.FamilyName,
+                    StandardResourceOwnerClaimNames.GivenName,
+                    StandardResourceOwnerClaimNames.MiddleName,
+                    StandardResourceOwnerClaimNames.NickName,
+                    StandardResourceOwnerClaimNames.PreferredUserName,
+                    StandardResourceOwnerClaimNames.Profile,
+                    StandardResourceOwnerClaimNames.Picture,
+                    StandardResourceOwnerClaimNames.WebSite,
+                    StandardResourceOwnerClaimNames.Gender,
+                    StandardResourceOwnerClaimNames.BirthDate,
+                    StandardResourceOwnerClaimNames.ZoneInfo,
+                    StandardResourceOwnerClaimNames.Locale,
+                    StandardResourceOwnerClaimNames.UpdatedAt
+                },
+                Type = ScopeType.ResourceOwner
+            };
+
+            public static Scope Email = new Scope
+            {
+                Name = "email",
+                IsExposed = true,
+                IsInternal = true,
+                IsDisplayedInConsent = true,
+                Description = "Access to the email",
+                Claims = new List<string>
+                {
+                    StandardResourceOwnerClaimNames.Email,
+                    StandardResourceOwnerClaimNames.EmailVerified
+                },
+                Type = ScopeType.ResourceOwner
+            };
+
+            public static Scope Address = new Scope
+            {
+                Name = "address",
+                IsExposed = true,
+                IsInternal = true,
+                IsDisplayedInConsent = true,
+                Description = "Access to the address",
+                Claims = new List<string>
+                {
+                    StandardResourceOwnerClaimNames.Address
+                },
+                Type = ScopeType.ResourceOwner
+            };
+
+            public static Scope Phone = new Scope
+            {
+                Name = "phone",
+                IsExposed = true,
+                IsInternal = true,
+                IsDisplayedInConsent = true,
+                Description = "Access to the phone",
+                Claims = new List<string>
+                {
+                    StandardResourceOwnerClaimNames.PhoneNumber,
+                    StandardResourceOwnerClaimNames.PhoneNumberVerified
+                },
+                Type = ScopeType.ResourceOwner
+            };
+
+            public static Scope OpenId = new Scope
+            {
+                Name = "openid",
+                IsExposed = true,
+                IsInternal = true,
+                IsDisplayedInConsent = false,
+                Description = "openid",
+                Type = ScopeType.ProtectedApi
+            };
         }
 
         // Defines the Assurance Level
         // For more information check this documentation : http://csrc.nist.gov/publications/nistpubs/800-63/SP800-63V1_0_2.pdf
-        public enum NistAssuranceLevel
+        public enum StandardNistAssuranceLevel
         {
             Level1 = 1,
             Level2 = 2,
             Level3 = 3,
             Level4 = 4
+        }
+
+        #endregion
+
+        #region Internal definitions
+
+        // Custom authentication policies defined by Simple Identity Server
+        public static class CustomAuthenticationPolicies
+        {
+            public static string CustomPasswordAuth = "http://schemas.simpleidentityserver.net/pape/policies/2015/05/password";
         }
 
         public static readonly Dictionary<List<ResponseType>, AuthorizationFlow> MappingResponseTypesToAuthorizationFlows = new Dictionary<List<ResponseType>, AuthorizationFlow>
@@ -143,6 +238,43 @@ namespace SimpleIdentityServer.Core
                 AuthorizationFlow.ImplicitFlow
             }
         };
+        
+        public static readonly Dictionary<string, string> MapWifClaimsToOpenIdClaims = new Dictionary<string, string>
+        {
+            {
+                ClaimTypes.Name, StandardResourceOwnerClaimNames.Name
+            },
+            {
+                ClaimTypes.GivenName, StandardResourceOwnerClaimNames.GivenName
+            },
+            {
+                ClaimTypes.Webpage, StandardResourceOwnerClaimNames.WebSite
+            },
+            {
+                ClaimTypes.Email, StandardResourceOwnerClaimNames.Email
+            },
+            {
+                ClaimTypes.Gender, StandardResourceOwnerClaimNames.Gender
+            },
+            {
+                ClaimTypes.DateOfBirth, StandardResourceOwnerClaimNames.BirthDate
+            },
+            {
+                ClaimTypes.Locality, StandardResourceOwnerClaimNames.Locale
+            },
+            {
+                ClaimTypes.HomePhone, StandardResourceOwnerClaimNames.PhoneNumber
+            },
+            {
+                ClaimTypes.MobilePhone, StandardResourceOwnerClaimNames.PhoneNumberVerified
+            },
+            {
+                ClaimTypes.StreetAddress, StandardResourceOwnerClaimNames.Address
+            },
+            {
+                ClaimTypes.Role, StandardResourceOwnerClaimNames.Role
+            }
+        };
 
         public static class Supported
         {
@@ -167,7 +299,9 @@ namespace SimpleIdentityServer.Core
             {
                 // Same subject value to all clients.
                 "public"
-            }; 
+            };
         }
+
+        #endregion
     }
 }

@@ -74,8 +74,16 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
                 Name = scope.Name,
                 Description = scope.Description,
                 IsInternal = scope.IsInternal,
-                IsExposed = scope.IsExposed
+                IsExposed = scope.IsExposed,
+                Claims = scope.Claims,
+                Type = scope.Type.ToFake(),
+                IsDisplayedInConsent = scope.IsDisplayedInConsent
             };
+        }
+
+        public static FAKEMODELS.ScopeType ToFake(this MODELS.ScopeType scopeType)
+        {
+            return (FAKEMODELS.ScopeType) scopeType;
         }
 
         public static FAKEMODELS.AllAlg ToFake(this JSON.AllAlg alg)
@@ -172,8 +180,16 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
                 Name = scope.Name,
                 Description = scope.Description,
                 IsInternal = scope.IsInternal,
-                IsExposed = scope.IsExposed
+                IsExposed = scope.IsExposed,
+                Claims = scope.Claims,
+                Type = scope.Type.ToBusiness(),
+                IsDisplayedInConsent = scope.IsDisplayedInConsent
             };
+        }
+
+        public static MODELS.ScopeType ToBusiness(this FAKEMODELS.ScopeType scopeType)
+        {
+            return (MODELS.ScopeType) scopeType;
         }
 
         public static MODELS.GrantType ToBusiness(this FAKEMODELS.GrantType grantType)

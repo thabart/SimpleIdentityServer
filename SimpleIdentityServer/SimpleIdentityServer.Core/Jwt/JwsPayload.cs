@@ -1,71 +1,82 @@
 ﻿using System.Collections.Generic;
-using System.Security.Claims;
+using System.Runtime.Serialization;
 
 namespace SimpleIdentityServer.Core.Jwt
 {
     /// <summary>
     /// Represents a JSON Web Token
     /// </summary>
+    [DataContract]
     public class JwsPayload
     {
         /// <summary>
         /// Gets or sets the issuer.
         /// </summary>
-        public string iss { get; set; }
+        [DataMember(Name = "iss")]
+        public string Issuer { get; set; }
 
         /// <summary>
         /// Gets or sets the audience(s)
         /// </summary>
-        public string[] aud { get; set; }
+        [DataMember(Name = "aud")]
+        public string[] Audiences { get; set; }
 
         /// <summary>
         /// Gets or sets the expiration time
         /// </summary>
-        public double exp { get; set; }
+        [DataMember(Name = "exp")]
+        public double ExpirationTime { get; set; }
 
         /// <summary>
         /// Gets or sets the IAT
         /// </summary>
-        public double iat { get; set; }
+        [DataMember(Name = "iat")]
+        public double Iat { get; set; }
 
         /// <summary>
         /// Gets or sets the authentication time
         /// </summary>
-        public double auth_time { get; set; }
+        [DataMember(Name = "auth_time")]
+        public double AuthenticationTime { get; set; }
 
         /// <summary>
         /// Gets or sets the NONCE
         /// </summary>
-        public string nonce { get; set; }
+        [DataMember(Name = "nonce")]
+        public string Nonce { get; set; }
 
         /// <summary>
         /// Gets or sets the authentication context class reference
         /// </summary>
-        public string acr { get; set; }
+        [DataMember(Name = "acr")]
+        public string Acr { get; set; }
 
         /// <summary>
         /// Gets or sets the Authentication Methods References
         /// </summary>
-        public string amr { get; set; }
+        [DataMember(Name = "amr")]
+        public string Amr { get; set; }
 
         /// <summary>
         /// Gets or sets the Authorized party
         /// </summary>
-        public string azp { get; set; }
+        [DataMember(Name = "azp")]
+        public string Azp { get; set; }
 
         /// <summary>
         /// Gets or sets the claims
         /// </summary>
-        public Dictionary<string, string> claims { get; set; }
+        [DataMember(Name = "claims")]
+        public Dictionary<string, string> Claims { get; set; }
 
         public string GetClaimValue(string claimName)
         {
-            if (!claims.ContainsKey(claimName))
+            if (!Claims.ContainsKey(claimName))
             {
                 return null;
             }
 
-            return claims[claimName];
+            return Claims[claimName];
         }
     }
 }

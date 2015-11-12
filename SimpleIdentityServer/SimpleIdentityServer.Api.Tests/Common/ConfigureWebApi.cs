@@ -9,9 +9,12 @@ using Microsoft.Practices.Unity;
 using SimpleIdentityServer.Api.Configuration;
 using SimpleIdentityServer.Api.Controllers.Api;
 using SimpleIdentityServer.Core.Api.Authorization.Common;
+using SimpleIdentityServer.Core.Api.Discovery;
+using SimpleIdentityServer.Core.Api.Discovery.Actions;
 using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Helpers;
+using SimpleIdentityServer.Core.Jwt.Mapping;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.RateLimitation.Configuration;
@@ -86,6 +89,9 @@ namespace SimpleIdentityServer.Api.Tests.Common
             _container.RegisterType<IRedirectInstructionParser, RedirectInstructionParser>();
             _container.RegisterType<IActionResultParser, ActionResultParser>();
 
+            _container.RegisterType<IDiscoveryActions, DiscoveryActions>();
+            _container.RegisterType<ICreateDiscoveryDocumentationAction, CreateDiscoveryDocumentationAction>();
+
             _container.RegisterType<IProtector, FakeProtector>();
             _container.RegisterType<IEncoder, Encoder>();
             _container.RegisterType<ICertificateStore, CertificateStore>();
@@ -96,7 +102,9 @@ namespace SimpleIdentityServer.Api.Tests.Common
             _container.RegisterType<ISimpleIdentityServerConfigurator, SimpleIdentityServerConfigurator>();
             _container.RegisterType<ICreateJwsSignature, CreateJwsSignature>();
             _container.RegisterType<IGenerateAuthorizationResponse, GenerateAuthorizationResponse>();
-
+            
+            _container.RegisterType<IClaimsMapping, ClaimsMapping>();
+            
             FakeDataSource.Instance().Init();
         }
 

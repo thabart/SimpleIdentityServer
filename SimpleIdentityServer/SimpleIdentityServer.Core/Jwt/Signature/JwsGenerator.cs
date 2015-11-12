@@ -7,9 +7,9 @@ using System.Web.Script.Serialization;
 using Microsoft.Practices.ObjectBuilder2;
 
 using SimpleIdentityServer.Core.Configuration;
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
+using SimpleIdentityServer.Core.Helpers;
+using SimpleIdentityServer.Core.Jwt.Mapping;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
@@ -42,18 +42,30 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
 
         private readonly ICreateJwsSignature _createJwsSignature;
 
+        private readonly IScopeRepository _scopeRepository;
+
+        private readonly IClaimsMapping _claimsMapping;
+
+        private readonly IParameterParserHelper _parameterParserHelper;
+
         public JwsGenerator(
             ISimpleIdentityServerConfigurator simpleIdentityServerConfigurator,
             IClientRepository clientRepository,
             IClientValidator clientValidator,
             IJsonWebKeyRepository jsonWebKeyRepository,
-            ICreateJwsSignature createJwsSignature)
+            ICreateJwsSignature createJwsSignature,
+            IScopeRepository scopeRepository,
+            IClaimsMapping claimsMapping,
+            IParameterParserHelper parameterParserHelper)
         {
             _simpleIdentityServerConfigurator = simpleIdentityServerConfigurator;
             _clientRepository = clientRepository;
             _clientValidator = clientValidator;
             _jsonWebKeyRepository = jsonWebKeyRepository;
             _createJwsSignature = createJwsSignature;
+            _scopeRepository = scopeRepository;
+            _claimsMapping = claimsMapping;
+            _parameterParserHelper = parameterParserHelper;
         }
 
         public JwsPayload GenerateJwsPayload(
@@ -85,20 +97,16 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
             // Calculate the time in seconds which the JWT was issued.
             var iatInSeconds = currentDateTime.ConvertToUnixTimestamp();
             // Populate the claims
-            var claims = new Dictionary<string, string>
-            {
-                {
-                    Constants.StandardResourceOwnerClaimNames.Subject, claimPrincipal.GetSubject()
-                }
-            };
+            var scopes = _parameterParserHelper.ParseScopeParameters(authorizationParameter.Scope);
+            var claims = GetClaimsFromRequestedScopes(scopes, claimPrincipal);
 
             var result = new JwsPayload
             {
-                iss = issuerName,
-                aud = audiences.ToArray(),
-                exp = expirationInSeconds,
-                iat = iatInSeconds,
-                claims = claims
+                Issuer = issuerName,
+                Audiences = audiences.ToArray(),
+                ExpirationTime = expirationInSeconds,
+                Iat = iatInSeconds,
+                Claims = claims
             };
 
             // If the max_age request is made or when auth_time is requesed as an Essential claim then we calculate the auth_time
@@ -109,14 +117,14 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
                 var authenticationInstant = claimPrincipal.Claims.SingleOrDefault(c => c.Type == ClaimTypes.AuthenticationInstant);
                 if (authenticationInstant != null)
                 {
-                    result.auth_time = double.Parse(authenticationInstant.Value);
+                    result.AuthenticationTime = double.Parse(authenticationInstant.Value);
                 }
             }
 
             // Set the nonce value in the id token. The value is coming from the authorization request
             if (!string.IsNullOrWhiteSpace(authorizationParameter.Nonce))
             {
-                result.nonce = authorizationParameter.Nonce;
+                result.Nonce = authorizationParameter.Nonce;
             }
 
             // Set the ACR : Authentication Context Class Reference
@@ -124,8 +132,8 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
             // For the moment we support a level 1 because only password via HTTPS is supported.
             if (!string.IsNullOrWhiteSpace(authorizationParameter.AcrValues))
             {
-                result.acr = Constants.StandardArcParameterNames.OpenIdCustomAuthLevel + ".password=1";
-                result.amr = "password";
+                result.Acr = Constants.StandardArcParameterNames.OpenIdCustomAuthLevel + ".password=1";
+                result.Amr = "password";
             }
 
             // Set the client_id
@@ -134,7 +142,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
                 audiences.Count() == 1 && 
                 audiences.First() == authorizationParameter.ClientId)
             {
-                result.azp = authorizationParameter.ClientId;
+                result.Azp = authorizationParameter.ClientId;
             }
 
             // TODO : Add another claims in it ...
@@ -206,5 +214,32 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
                 typ = JwsType
             };
         }
+
+        private Dictionary<string, string> GetClaimsFromRequestedScopes(
+            IEnumerable<string> scopes,
+            ClaimsPrincipal claimsPrincipal)
+        {
+            var result = new Dictionary<string, string>
+            {
+                {
+                    Constants.StandardResourceOwnerClaimNames.Subject, claimsPrincipal.GetSubject()
+                }
+            };
+            foreach (var scope in scopes)
+            {
+                var scopeClaims = _scopeRepository.GetScopeByName(scope).Claims;
+                if (scopeClaims == null)
+                {
+                    continue;
+                }
+
+                var openIdClaims = _claimsMapping.MapToOpenIdClaims(claimsPrincipal.Claims);
+                openIdClaims.Where(oc => scopeClaims.Contains(oc.Key))
+                    .Select(oc => new { key = oc.Key, val = oc.Value })
+                    .ForEach(r => result.Add(r.key, r.val));
+            }
+
+            return result;
+        } 
     }
 }
