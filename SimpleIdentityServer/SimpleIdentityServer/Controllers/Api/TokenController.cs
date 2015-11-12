@@ -28,8 +28,12 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             switch (tokenRequest.grant_type)
             {
                 case GrantTypeRequest.password:
-                    var parameter = tokenRequest.ToParameter();
-                    result = _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(parameter);
+                    var resourceOwnerParameter = tokenRequest.ToResourceOwnerGrantTypeParameter();
+                    result = _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(resourceOwnerParameter);
+                    break;
+                case GrantTypeRequest.authorization_code:
+                    var authCodeParameter = tokenRequest.ToAuthorizationCodeGrantTypeParameter();
+                    result = _tokenActions.GetTokenByAuthorizationCodeGrantType(authCodeParameter);
                     break;
             }
 

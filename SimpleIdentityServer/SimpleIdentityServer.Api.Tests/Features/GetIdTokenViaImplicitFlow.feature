@@ -124,6 +124,3 @@ Scenario: Get an id token and check if the claims returned in the token are corr
 	And the parameter nonce with value parameterNonce is returned by the JWS payload
 	And the claim sub with value habarthierry@loki.be is returned by the JWS payload
 	And the claim name with value thabart is returned by the JWS payload
-	
-
-

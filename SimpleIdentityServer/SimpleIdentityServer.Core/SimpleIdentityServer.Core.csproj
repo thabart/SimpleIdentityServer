@@ -101,9 +101,11 @@
     <Compile Include="Jwt\Signature\JwsGenerator.cs" />
     <Compile Include="Jwt\JwsPayload.cs" />
     <Compile Include="Jwt\JwsProtectedHeader.cs" />
+    <Compile Include="Parameters\AuthorizationCodeGrantTypeParameter.cs" />
     <Compile Include="Repositories\IJsonWebKeyRepository.cs" />
     <Compile Include="Results\DiscoveryInformation.cs" />
     <Compile Include="Validators\AuthorizationCodeGrantTypeParameterValidator.cs" />
+    <Compile Include="Validators\AuthorizationCodeGrantTypeParamterTokenEdpValidator.cs" />
     <Compile Include="Validators\ResourceOwnerGrantTypeParameterValidator.cs" />
     <Compile Include="WebSite\Authenticate\Actions\AuthenticateResourceOwnerAction.cs" />
     <Compile Include="WebSite\Authenticate\Actions\LocalUserAuthenticationAction.cs" />

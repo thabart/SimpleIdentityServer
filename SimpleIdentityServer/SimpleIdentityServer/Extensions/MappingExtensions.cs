@@ -36,7 +36,7 @@ namespace SimpleIdentityServer.Api.Extensions
             };
         }
 
-        public static ResourceOwnerGrantTypeParameter ToParameter(this TokenRequest request)
+        public static ResourceOwnerGrantTypeParameter ToResourceOwnerGrantTypeParameter(this TokenRequest request)
         {
             return new ResourceOwnerGrantTypeParameter
             {
@@ -44,6 +44,16 @@ namespace SimpleIdentityServer.Api.Extensions
                 UserName = request.username,
                 Password = request.password,
                 Scope = request.scope
+            };
+        }
+
+        public static AuthorizationCodeGrantTypeParameter ToAuthorizationCodeGrantTypeParameter(this TokenRequest request)
+        {
+            return new AuthorizationCodeGrantTypeParameter
+            {
+                ClientId = request.client_id,
+                Code = request.code,
+                RedirectUri = request.redirect_uri
             };
         }
     }

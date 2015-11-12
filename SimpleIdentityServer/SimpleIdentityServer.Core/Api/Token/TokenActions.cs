@@ -9,6 +9,9 @@ namespace SimpleIdentityServer.Core.Api.Token
     {
         GrantedToken GetTokenByResourceOwnerCredentialsGrantType(
             ResourceOwnerGrantTypeParameter parameter);
+
+        GrantedToken GetTokenByAuthorizationCodeGrantType(
+            AuthorizationCodeGrantTypeParameter parameter);
     }
 
     public class TokenActions : ITokenActions
@@ -30,6 +33,12 @@ namespace SimpleIdentityServer.Core.Api.Token
         {
             _resourceOwnerGrantTypeParameterValidator.Validate(parameter);
             return _getTokenByResourceOwnerCredentialsGrantType.Execute(parameter);
+        }
+
+        public GrantedToken GetTokenByAuthorizationCodeGrantType(AuthorizationCodeGrantTypeParameter parameter)
+        {
+
+            return null;
         }
     }
 }
