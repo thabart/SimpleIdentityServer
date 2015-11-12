@@ -1,4 +1,8 @@
-﻿namespace SimpleIdentityServer.Core
+﻿using System.Collections.Generic;
+using SimpleIdentityServer.Core.Api.Authorization;
+using SimpleIdentityServer.Core.Models;
+
+namespace SimpleIdentityServer.Core
 {
     public static class Constants
     {
@@ -87,6 +91,83 @@
             Level2 = 2,
             Level3 = 3,
             Level4 = 4
+        }
+
+        public static readonly Dictionary<List<ResponseType>, AuthorizationFlow> MappingResponseTypesToAuthorizationFlows = new Dictionary<List<ResponseType>, AuthorizationFlow>
+        {
+            {
+                new List<ResponseType>
+                {
+                    ResponseType.code
+                },
+                AuthorizationFlow.AuthorizationCodeFlow
+            },
+            {
+                new List<ResponseType>
+                {
+                    ResponseType.id_token
+                }, 
+                AuthorizationFlow.ImplicitFlow
+            },
+            {
+                new List<ResponseType>
+                {
+                    ResponseType.id_token,
+                    ResponseType.token
+                }, 
+                AuthorizationFlow.ImplicitFlow
+            },
+            {
+                new List<ResponseType>
+                {
+                    ResponseType.code,
+                    ResponseType.id_token
+                }, 
+                AuthorizationFlow.HybridFlow
+            },
+            {
+                new List<ResponseType>
+                {
+                    ResponseType.code,
+                    ResponseType.token
+                }, 
+                AuthorizationFlow.HybridFlow
+            },
+            {
+                new List<ResponseType>
+                {
+                    ResponseType.code,
+                    ResponseType.id_token,
+                    ResponseType.token
+                }, 
+                AuthorizationFlow.ImplicitFlow
+            }
+        };
+
+        public static class Supported
+        {
+            public static List<AuthorizationFlow> SupportedAuthorizationFlows = new List<AuthorizationFlow>
+            {
+                AuthorizationFlow.AuthorizationCodeFlow,
+                AuthorizationFlow.ImplicitFlow
+            };
+
+            public static List<GrantType> SupportedGrantTypes = new List<GrantType>
+            {
+                GrantType.@implicit,
+                GrantType.authorization_code
+            }; 
+
+            public static List<string> SupportedResponseModes = new List<string>
+            {
+                "query"
+            }; 
+
+            public static List<string> SupportedSubjectTypes = new List<string>
+            {
+                // Same subject value to all clients.
+                "public"
+            }; 
         }
     }
 }

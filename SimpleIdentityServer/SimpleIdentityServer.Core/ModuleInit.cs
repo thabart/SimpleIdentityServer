@@ -4,6 +4,8 @@ using SimpleIdentityServer.Common;
 using SimpleIdentityServer.Core.Api.Authorization;
 using SimpleIdentityServer.Core.Api.Authorization.Actions;
 using SimpleIdentityServer.Core.Api.Authorization.Common;
+using SimpleIdentityServer.Core.Api.Discovery;
+using SimpleIdentityServer.Core.Api.Discovery.Actions;
 using SimpleIdentityServer.Core.Api.Token;
 using SimpleIdentityServer.Core.Api.Token.Actions;
 using SimpleIdentityServer.Core.Common;
@@ -56,6 +58,9 @@ namespace SimpleIdentityServer.Core
             register.RegisterType<IAuthenticateActions, AuthenticateActions>();
             register.RegisterType<IAuthenticateResourceOwnerAction, AuthenticateResourceOwnerAction>();
             register.RegisterType<ILocalUserAuthenticationAction, LocalUserAuthenticationAction>();
+
+            register.RegisterType<IDiscoveryActions, DiscoveryActions>();
+            register.RegisterType<ICreateDiscoveryDocumentationAction, CreateDiscoveryDocumentationAction>();
 
             register.RegisterType<IProcessAuthorizationRequest, ProcessAuthorizationRequest>();
 

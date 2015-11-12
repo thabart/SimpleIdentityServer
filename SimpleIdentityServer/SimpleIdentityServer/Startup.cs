@@ -19,7 +19,7 @@ namespace SimpleIdentityServer.Api
 {
     public class Startup
     {
-        private static bool _isInitialized = false;
+        private static bool _isInitialized;
 
         public void Configuration(IAppBuilder app)
         {
@@ -40,6 +40,7 @@ namespace SimpleIdentityServer.Api
             });
 
             SwaggerConfig.Configure(httpConfiguration);
+
             WebApiConfig.Register(httpConfiguration, app);
         }
 

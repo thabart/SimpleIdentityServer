@@ -15,7 +15,6 @@ using System.Net.Http;
 
 namespace SimpleIdentityServer.Api.Controllers.Api
 {
-    [RoutePrefix("authorization")]
     public class AuthorizationController : ApiController
     {
         private readonly IAuthorizationActions _authorizationActions;

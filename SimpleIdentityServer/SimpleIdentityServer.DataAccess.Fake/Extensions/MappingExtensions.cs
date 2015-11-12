@@ -73,7 +73,8 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
             {
                 Name = scope.Name,
                 Description = scope.Description,
-                IsInternal = scope.IsInternal
+                IsInternal = scope.IsInternal,
+                IsExposed = scope.IsExposed
             };
         }
 
@@ -170,7 +171,8 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
             {
                 Name = scope.Name,
                 Description = scope.Description,
-                IsInternal = scope.IsInternal
+                IsInternal = scope.IsInternal,
+                IsExposed = scope.IsExposed
             };
         }
 

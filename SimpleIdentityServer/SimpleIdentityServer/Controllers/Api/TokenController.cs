@@ -10,7 +10,6 @@ using SimpleIdentityServer.Core.Models;
 
 namespace SimpleIdentityServer.Api.Controllers.Api
 {
-    [RoutePrefix("token")]
     public class TokenController : ApiController
     {
         private readonly ITokenActions _tokenActions;

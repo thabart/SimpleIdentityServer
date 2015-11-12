@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using SimpleIdentityServer.Core.Repositories;
 
 using SimpleIdentityServer.DataAccess.Fake.Extensions;
@@ -18,6 +19,11 @@ namespace SimpleIdentityServer.DataAccess.Fake.Repositories
         {
             var scope = FakeDataSource.Instance().Scopes.SingleOrDefault(s => s.Name == name);
             return scope.ToBusiness();
+        }
+        
+        public IList<Core.Models.Scope> GetAllScopes()
+        {
+            return FakeDataSource.Instance().Scopes.Select(s => s.ToBusiness()).ToList();
         }
     }
 }

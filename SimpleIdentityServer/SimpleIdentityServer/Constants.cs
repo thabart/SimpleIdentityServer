@@ -15,6 +15,21 @@ namespace SimpleIdentityServer.Api
                 IdentityServerEndPoints.ConsentIndex,
                 "/Consent"
             }
-        }; 
+        };
+
+        public static class EndPoints
+        {
+            public static string DiscoveryAction = ".well-known/openid-configuration";
+
+            public static string Authorization = "authorization";
+
+            public static string Token = "token";
+
+            public static string UserInfo = "userinfo";
+
+            public static string Jwks = "jwks";
+
+            public static string Registration = "registration";
+        }
     }
 }

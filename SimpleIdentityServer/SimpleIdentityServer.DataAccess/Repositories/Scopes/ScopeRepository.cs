@@ -14,5 +14,10 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories.Scopes
         {
             return null;
         }
+        
+        public System.Collections.Generic.IList<Scope> GetAllScopes()
+        {
+            return null;
+        }
     }
 }

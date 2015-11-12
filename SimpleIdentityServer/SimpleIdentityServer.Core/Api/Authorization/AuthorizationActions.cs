@@ -28,58 +28,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization
         private readonly IAuthorizationCodeGrantTypeParameterValidator _authorizationCodeGrantTypeParameterValidator;
 
         private readonly IParameterParserHelper _parameterParserHelper;
-
-        private static readonly Dictionary<List<ResponseType>, AuthorizationFlow> MappingResponseTypesToAuthorizationFlows = new Dictionary<List<ResponseType>, AuthorizationFlow>
-        {
-            {
-                new List<ResponseType>
-                {
-                    ResponseType.code
-                },
-                AuthorizationFlow.AuthorizationCodeFlow
-            },
-            {
-                new List<ResponseType>
-                {
-                    ResponseType.id_token
-                }, 
-                AuthorizationFlow.ImplicitFlow
-            },
-            {
-                new List<ResponseType>
-                {
-                    ResponseType.id_token,
-                    ResponseType.token
-                }, 
-                AuthorizationFlow.ImplicitFlow
-            },
-            {
-                new List<ResponseType>
-                {
-                    ResponseType.code,
-                    ResponseType.id_token
-                }, 
-                AuthorizationFlow.HybridFlow
-            },
-            {
-                new List<ResponseType>
-                {
-                    ResponseType.code,
-                    ResponseType.token
-                }, 
-                AuthorizationFlow.HybridFlow
-            },
-            {
-                new List<ResponseType>
-                {
-                    ResponseType.code,
-                    ResponseType.id_token,
-                    ResponseType.token
-                }, 
-                AuthorizationFlow.ImplicitFlow
-            }
-        }; 
-
+        
         public AuthorizationActions(
             IGetAuthorizationCodeOperation getAuthorizationCodeOperation,
             IGetTokenViaImplicitWorkflowOperation getTokenViaImplicitWorkflowOperation,
@@ -123,7 +72,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization
 
         private static AuthorizationFlow GetAuthorizationFlow(ICollection<ResponseType> responseTypes, string state)
         {
-            var record = MappingResponseTypesToAuthorizationFlows.Keys
+            var record = Constants.MappingResponseTypesToAuthorizationFlows.Keys
                 .SingleOrDefault(k => k.Count == responseTypes.Count && k.All(key => responseTypes.Contains(key)));
             if (record == null)
             {
@@ -133,7 +82,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization
                     state);
             }
 
-            return MappingResponseTypesToAuthorizationFlows[record];
+            return Constants.MappingResponseTypesToAuthorizationFlows[record];
         }
     }
 }

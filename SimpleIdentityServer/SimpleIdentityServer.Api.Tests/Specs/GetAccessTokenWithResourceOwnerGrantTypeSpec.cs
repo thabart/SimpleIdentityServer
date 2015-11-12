@@ -121,7 +121,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
                     tokenRequest.scope);
                 var content = new StringContent(parameter, Encoding.UTF8, "application/x-www-form-urlencoded");
 
-                var result = httpClient.PostAsync("/api/token", content).Result;
+                var result = httpClient.PostAsync("/token", content).Result;
                 _httpStatusCode = result.StatusCode;
                 if (_httpStatusCode == HttpStatusCode.OK)
                 {

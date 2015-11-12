@@ -85,6 +85,8 @@
     <Compile Include="Api\Authorization\AuthorizationActions.cs" />
     <Compile Include="Api\Authorization\AuthorizationFlow.cs" />
     <Compile Include="Api\Authorization\Common\ProcessAuthorizationRequest.cs" />
+    <Compile Include="Api\Discovery\Actions\CreateDiscoveryDocumentationAction.cs" />
+    <Compile Include="Api\Discovery\DiscoveryActions.cs" />
     <Compile Include="Api\Token\TokenActions.cs" />
     <Compile Include="Common\GenerateAuthorizationResponse.cs" />
     <Compile Include="Configuration\SimpleIdentityServerConfigurator.cs" />
@@ -99,6 +101,7 @@
     <Compile Include="Jwt\JwsPayload.cs" />
     <Compile Include="Jwt\JwsProtectedHeader.cs" />
     <Compile Include="Repositories\IJsonWebKeyRepository.cs" />
+    <Compile Include="Results\DiscoveryInformation.cs" />
     <Compile Include="Validators\AuthorizationCodeGrantTypeParameterValidator.cs" />
     <Compile Include="Validators\ResourceOwnerGrantTypeParameterValidator.cs" />
     <Compile Include="WebSite\Authenticate\Actions\AuthenticateResourceOwnerAction.cs" />

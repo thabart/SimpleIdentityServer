@@ -13,14 +13,29 @@ namespace SimpleIdentityServer.Api
             // Web API routes
             config.MapHttpAttributeRoutes();
 
-            config.Routes.MapHttpRoute(
-                "DefaultApi",
-                "api/{controller}/{id}",
+            config.Routes.MapHttpRoute("DiscoveryRoute",
+                Constants.EndPoints.DiscoveryAction,
                 new
                 {
-                    id = RouteParameter.Optional
-                }
-            );
+                    controller = "Discovery",
+                    action = "Get"
+                });
+
+            config.Routes.MapHttpRoute("AuthorizationRoute",
+                Constants.EndPoints.Authorization,
+                new
+                {
+                    controller = "Authorization",
+                    action = "Get"
+                });
+
+            config.Routes.MapHttpRoute("TokenRoute",
+                Constants.EndPoints.Token,
+                new
+                {
+                    controller = "Token",
+                    action = "Post"
+                });
 
             config.Filters.Add(new IdentityServerExceptionFilter());
 

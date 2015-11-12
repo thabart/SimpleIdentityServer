@@ -7,5 +7,7 @@
         public string Description { get; set; }
 
         public bool IsInternal { get; set; }
+
+        public bool IsExposed { get; set; }
     }
 }

@@ -210,12 +210,14 @@
     <Compile Include="Configuration\Scopes.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Controllers\Api\AuthorizationController.cs" />
+    <Compile Include="Controllers\Api\DiscoveryController.cs" />
     <Compile Include="Controllers\Api\TokenController.cs" />
     <Compile Include="Controllers\AuthenticateController.cs" />
     <Compile Include="Controllers\ConsentController.cs" />
     <Compile Include="DTOs\Request\AuthorizationRequest.cs" />
     <Compile Include="Extensions\ApiControllerExtensions.cs" />
     <Compile Include="Extensions\ControllerExtensions.cs" />
+    <Compile Include="Extensions\HttpRequestMessageExtensions.cs" />
     <Compile Include="Extensions\UriExtensions.cs" />
     <Compile Include="Parsers\RedirectInstructionParser.cs" />
     <Compile Include="Parsers\ActionInformation.cs" />

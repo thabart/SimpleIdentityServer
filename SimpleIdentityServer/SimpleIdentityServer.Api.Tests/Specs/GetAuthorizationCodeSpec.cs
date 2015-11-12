@@ -143,7 +143,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             {
                 var httpClient = server.HttpClient;
                 var url = string.Format(
-                    "/api/authorization?scope={0}&response_type={1}&client_id={2}&redirect_uri={3}&prompt={4}&state={5}",
+                    "/authorization?scope={0}&response_type={1}&client_id={2}&redirect_uri={3}&prompt={4}&state={5}",
                     authorizationRequest.scope,
                     authorizationRequest.response_type,
                     authorizationRequest.client_id,

@@ -1,4 +1,6 @@
-﻿using SimpleIdentityServer.Core.Models;
+﻿using System.Collections.Generic;
+
+using SimpleIdentityServer.Core.Models;
 
 namespace SimpleIdentityServer.Core.Repositories
 {
@@ -7,5 +9,7 @@ namespace SimpleIdentityServer.Core.Repositories
         bool InsertScope(Scope scope);
 
         Scope GetScopeByName(string name);
+
+        IList<Scope> GetAllScopes();
     }
 }
