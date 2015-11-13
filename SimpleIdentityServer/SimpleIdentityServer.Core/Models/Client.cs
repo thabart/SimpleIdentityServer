@@ -16,9 +16,27 @@ namespace SimpleIdentityServer.Core.Models
         refresh_token
     }
 
+    public enum TokenEndPointAuthenticationMethods
+    {
+        // Defaut value
+        client_secret_basic,
+        client_secret_post,
+        client_secret_jwt,
+        private_key_jwt,
+        none
+    }
+
     public class Client
     {
+        /// <summary>
+        /// Gets or sets the client identifier.
+        /// </summary>
         public string ClientId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the client secret.
+        /// </summary>
+        public string ClientSecret { get; set; }
 
         public string DisplayName { get; set; }
 
@@ -60,6 +78,11 @@ namespace SimpleIdentityServer.Core.Models
         public string IdTokenEncryptedResponseEnc { get; set; }
 
         #endregion
+
+        /// <summary>
+        /// Gets or sets the client authentication method for the Token Endpoint. 
+        /// </summary>
+        public TokenEndPointAuthenticationMethods TokenEndPointAuthMethod { get; set; }
 
         /// <summary>
         /// Gets or sets an array containing a list of OAUTH2.0 response_type values

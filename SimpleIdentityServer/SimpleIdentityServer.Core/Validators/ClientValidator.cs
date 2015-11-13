@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
-
+﻿using System;
+using System.Collections.Generic;
+using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
 
@@ -20,6 +21,11 @@ namespace SimpleIdentityServer.Core.Validators
         bool ValidateResponseType(ResponseType responseType, Client client);
 
         bool ValidateResponseTypes(IList<ResponseType> responseType, Client client);
+
+        bool ValidateClientIsAuthenticated(
+            string clientId, 
+            string clientSecret, 
+            string authorizationHeaderValue);
     }
 
     public class ClientValidator : IClientValidator
@@ -111,6 +117,37 @@ namespace SimpleIdentityServer.Core.Validators
                     ResponseType.code
                 };
             }
+        }
+
+        public bool ValidateClientIsAuthenticated(
+            string clientId,
+            string clientSecret,
+            string authorizationHeaderValue)
+        {
+            var client = ValidateClientExist(clientId);
+            if (client == null)
+            {
+                return false;
+            }
+            
+            switch (client.TokenEndPointAuthMethod)
+            {
+                case TokenEndPointAuthenticationMethods.client_secret_basic:
+                    var decodedParameter = authorizationHeaderValue.Base64Decode();
+                    var parameters = decodedParameter.Split(':');
+                    var clientSecretParameter = parameters[1];
+                    return
+                        string.Compare(client.ClientSecret, 
+                            clientSecretParameter, 
+                            StringComparison.InvariantCultureIgnoreCase) ==
+                        0;
+                case TokenEndPointAuthenticationMethods.client_secret_post:
+                    return string.Compare(clientSecret, client.ClientSecret, StringComparison.InvariantCultureIgnoreCase) == 0;
+                case TokenEndPointAuthenticationMethods.none:
+                    return true;
+            }
+
+            return false;
         }
     }
 }

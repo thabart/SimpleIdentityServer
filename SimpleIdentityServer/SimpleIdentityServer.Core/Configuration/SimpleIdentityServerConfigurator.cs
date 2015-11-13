@@ -5,6 +5,8 @@
         string GetIssuerName();
 
         double GetTokenValidityPeriodInSeconds();
+
+        double GetAuthorizationCodeValidityPeriodInSeconds();
     }
 
     public class SimpleIdentityServerConfigurator : ISimpleIdentityServerConfigurator
@@ -25,7 +27,16 @@
         /// <returns>Validity of an access token or identity token in seconds</returns>
         public double GetTokenValidityPeriodInSeconds()
         {
-            return 20;
+            return 3000000;
+        }
+
+        /// <summary>
+        /// Returns the validity period of an authorization token in seconds.
+        /// </summary>
+        /// <returns>Validity period is seconds</returns>
+        public double GetAuthorizationCodeValidityPeriodInSeconds()
+        {
+            return 3000000;
         }
     }
 }

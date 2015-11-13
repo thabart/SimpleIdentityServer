@@ -1,11 +1,12 @@
 ﻿using Microsoft.Practices.EnterpriseLibrary.Caching;
 using Microsoft.Practices.Unity;
+
 using NUnit.Framework;
+
 using SimpleIdentityServer.Api.DTOs.Request;
 using SimpleIdentityServer.Api.Tests.Common;
 using SimpleIdentityServer.Api.Tests.Common.Fakes;
 using SimpleIdentityServer.Api.Tests.Common.Fakes.Models;
-using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.RateLimitation.Configuration;
 using SimpleIdentityServer.RateLimitation.Constants;
 using System.Collections.Generic;
@@ -13,9 +14,10 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
-using System.Threading;
+
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
+
 using DOMAINS = SimpleIdentityServer.Core.Models;
 using MODELS = SimpleIdentityServer.DataAccess.Fake.Models;
 
@@ -24,9 +26,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
     [Binding, Scope(Feature = "GetAccessTokenMultipleTime")]
     public sealed class GetAccessTokenMultipleTimeSpec
     {
-        private readonly ConfigureWebApi _configureWebApi;
-
-        private readonly ISecurityHelper _securityHelper;
+        private readonly GlobalContext _context;
 
         private List<DOMAINS.GrantedToken> _tokens;
 
@@ -36,8 +36,10 @@ namespace SimpleIdentityServer.Api.Tests.Specs
 
         private List<FakeHttpResponse> _httpResponses;
 
-        public GetAccessTokenMultipleTimeSpec()
+        public GetAccessTokenMultipleTimeSpec(GlobalContext context)
         {
+            _context = context;
+
             _rateLimitationElement = new RateLimitationElement
             {
                 Name = "PostToken"
@@ -47,10 +49,9 @@ namespace SimpleIdentityServer.Api.Tests.Specs
                 Enabled = true,
                 RateLimitationElement = _rateLimitationElement
             };
-            _configureWebApi = new ConfigureWebApi();
-            _configureWebApi.Container.RegisterInstance<IGetRateLimitationElementOperation>(fakeGetRateLimitationElementOperation);
 
-            _securityHelper = new SecurityHelper();
+            _context.UnityContainer.RegisterInstance<IGetRateLimitationElementOperation>(fakeGetRateLimitationElementOperation);
+
             _tokens = new List<DOMAINS.GrantedToken>();
             _errors = new List<FakeTooManyRequestResponse>();
             _httpResponses = new List<FakeHttpResponse>();
@@ -75,7 +76,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             var responseCacheManager = CacheFactory.GetCacheManager();
             responseCacheManager.Flush();
 
-            var server = _configureWebApi.CreateServer();
+            var server = _context.CreateServer();
             foreach (var tokenRequest in tokenRequests)
             {
                 var httpClient = server.HttpClient;
@@ -106,12 +107,6 @@ namespace SimpleIdentityServer.Api.Tests.Specs
                     Message = result.Content.ReadAsAsync<string>().Result,
                 });
             }
-        }
-
-        [When("waiting for (.*) seconds")]
-        public void WhenWaitingForSeconds(int milliSeconds)
-        {
-            Thread.Sleep(milliSeconds);
         }
 
         [Then("(.*) access tokens are generated")]

@@ -43,5 +43,17 @@
         public static string TheClientDoesntSupportTheGrantType = "the client {0} doesn't support the grant type {1}";
 
         public static string TheIdTokenCannotBeSigned = "the id token cannot be signed";
+
+        public static string TheClientCannotBeAuthenticated = "the client cannot be authenticated";
+
+        public static string TheAuthorizationCodeIsNotCorrect = "the authorization code is not correct";
+
+        public static string TheAuthorizationCodeHasNotBeenIssuedForTheGivenClientId =
+            "the authorization code has not been issued for the given client id {0}";
+
+        public static string TheAuthorizationCodeIsObsolete = "the authorization code is obsolete";
+
+        public static string TheRedirectionUrlIsNotTheSame =
+            "the redirection url is not the same than the one passed in the authorization request";
     }
 }

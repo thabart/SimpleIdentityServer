@@ -82,14 +82,20 @@ namespace SimpleIdentityServer.Core.Common
                 var assignedConsent = GetResourceOwnerConsent(claimsPrincipal, authorizationParameter);
                 if (assignedConsent != null)
                 {
+                    var jwsPayLoad = _jwsGenerator.GenerateJwsPayload(claimsPrincipal, authorizationParameter);
+                    var idToken = _jwsGenerator.GenerateJws(jwsPayLoad, authorizationParameter);
                     var authorizationCode = new AuthorizationCode
                     {
+                        Code = Guid.NewGuid().ToString(),
+                        RedirectUri = authorizationParameter.RedirectUrl,
                         CreateDateTime = DateTime.UtcNow,
-                        Consent = assignedConsent,
-                        Value = Guid.NewGuid().ToString()
+                        ClientId = authorizationParameter.ClientId,
+                        IdToken = idToken,
+                        Scopes = authorizationParameter.Scope
                     };
+
                     _authorizationCodeRepository.AddAuthorizationCode(authorizationCode);
-                    actionResult.RedirectInstruction.AddParameter("code", authorizationCode.Value);
+                    actionResult.RedirectInstruction.AddParameter("code", authorizationCode.Code);
                 }
             }
 

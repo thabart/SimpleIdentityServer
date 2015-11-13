@@ -9,16 +9,16 @@ using SimpleIdentityServer.Core.Models;
 
 namespace SimpleIdentityServer.Core.Validators
 {
-    public interface IAuthorizationCodeGrantTypeParameterValidator
+    public interface IAuthorizationCodeGrantTypeParameterAuthEdpValidator
     {
         void Validate(AuthorizationParameter parameter);
     }
 
-    public sealed class AuthorizationCodeGrantTypeParameterValidator : IAuthorizationCodeGrantTypeParameterValidator
+    public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidator : IAuthorizationCodeGrantTypeParameterAuthEdpValidator
     {
         private readonly IParameterParserHelper _parameterParserHelper;
 
-        public AuthorizationCodeGrantTypeParameterValidator(
+        public AuthorizationCodeGrantTypeParameterAuthEdpValidator(
             IParameterParserHelper parameterParserHelper,
             IClientRepository clientRepository)
         {

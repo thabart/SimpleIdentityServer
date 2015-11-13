@@ -124,6 +124,7 @@ namespace SimpleIdentityServer.Core.Results
         /// <summary>
         /// Gets or sets the list of Client Authentication methods supported by the TokenEndpoint : client_secret_post, client_secret_basic etc ...
         /// </summary>
+        [DataMember(Name = "token_endpoint_auth_methods_supported")]
         public string[] TokenEndpointAuthMethodSupported { get; set; }
 
         /// <summary>

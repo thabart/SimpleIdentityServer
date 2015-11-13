@@ -33,7 +33,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
     [Binding, Scope(Feature = "GetIdTokenViaImplicitWorkflow")]
     public sealed class GetIdTokenViaImplicitWorkflowSpec
     {
-        private readonly ConfigureWebApi _configureWebApi;
+        private readonly GlobalContext _context;
 
         private HttpResponseMessage _httpResponseMessage;
 
@@ -47,15 +47,15 @@ namespace SimpleIdentityServer.Api.Tests.Specs
 
         private string _combinedHeaderAndPayload;
 
-        public GetIdTokenViaImplicitWorkflowSpec()
+        public GetIdTokenViaImplicitWorkflowSpec(GlobalContext context)
         {
             var fakeGetRateLimitationElementOperation = new FakeGetRateLimitationElementOperation
             {
                 Enabled = false
             };
             
-            _configureWebApi = new ConfigureWebApi();
-            _configureWebApi.Container.RegisterInstance<IGetRateLimitationElementOperation>(fakeGetRateLimitationElementOperation);
+            _context = context;
+            _context.UnityContainer.RegisterInstance<IGetRateLimitationElementOperation>(fakeGetRateLimitationElementOperation);
         }
 
         [Given("a resource owner is authenticated")]
@@ -84,7 +84,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
                 });
             }
 
-            using (var server = _configureWebApi.CreateServer(httpConfiguration))
+            using (var server = _context.CreateServer(httpConfiguration))
             {
                 var httpClient = server.HttpClient;
                 var url = string.Format(

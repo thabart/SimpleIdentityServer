@@ -104,6 +104,18 @@ namespace SimpleIdentityServer.Api.Tests.Common
             }
         }
 
+        [Given("the client secret (.*) is assigned to the client (.*)")]
+        public void GivenScopesToTheClients(string clientSecret, string clientId)
+        {
+            var client = GetClient(clientId);
+            if (client == null)
+            {
+                return;
+            }
+
+            client.ClientSecret = clientSecret;
+        }
+
         [Given("the id_token signature algorithm is set to (.*) for the client (.*)")]
         public void GivenIdTokenSignatureAlgorithmIsSetForTheClient(string algorithm, string clientId)
         {

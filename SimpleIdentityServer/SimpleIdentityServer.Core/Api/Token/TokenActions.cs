@@ -1,4 +1,5 @@
-﻿using SimpleIdentityServer.Core.Api.Token.Actions;
+﻿using System.Net.Http.Headers;
+using SimpleIdentityServer.Core.Api.Token.Actions;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Validators;
@@ -11,7 +12,8 @@ namespace SimpleIdentityServer.Core.Api.Token
             ResourceOwnerGrantTypeParameter parameter);
 
         GrantedToken GetTokenByAuthorizationCodeGrantType(
-            AuthorizationCodeGrantTypeParameter parameter);
+            AuthorizationCodeGrantTypeParameter parameter,
+            AuthenticationHeaderValue authenticationHeaderValue);
     }
 
     public class TokenActions : ITokenActions
@@ -20,12 +22,20 @@ namespace SimpleIdentityServer.Core.Api.Token
 
         private readonly IResourceOwnerGrantTypeParameterValidator _resourceOwnerGrantTypeParameterValidator;
 
+        private readonly IGetTokenByAuthorizationCodeGrantTypeAction _getTokenByAuthorizationCodeGrantTypeAction;
+
+        private readonly IAuthorizationCodeGrantTypeParameterTokenEdpValidator _authorizationCodeGrantTypeParameterTokenEdpValidator;
+
         public TokenActions(
             IGetTokenByResourceOwnerCredentialsGrantTypeAction getTokenByResourceOwnerCredentialsGrantType,
-            IResourceOwnerGrantTypeParameterValidator resourceOwnerGrantTypeParameterValidator)
+            IGetTokenByAuthorizationCodeGrantTypeAction getTokenByAuthorizationCodeGrantTypeAction,
+            IResourceOwnerGrantTypeParameterValidator resourceOwnerGrantTypeParameterValidator,
+            IAuthorizationCodeGrantTypeParameterTokenEdpValidator authorizationCodeGrantTypeParameterTokenEdpValidator)
         {
             _getTokenByResourceOwnerCredentialsGrantType = getTokenByResourceOwnerCredentialsGrantType;
+            _getTokenByAuthorizationCodeGrantTypeAction = getTokenByAuthorizationCodeGrantTypeAction;
             _resourceOwnerGrantTypeParameterValidator = resourceOwnerGrantTypeParameterValidator;
+            _authorizationCodeGrantTypeParameterTokenEdpValidator = authorizationCodeGrantTypeParameterTokenEdpValidator;
         }
 
         public GrantedToken GetTokenByResourceOwnerCredentialsGrantType(
@@ -35,10 +45,12 @@ namespace SimpleIdentityServer.Core.Api.Token
             return _getTokenByResourceOwnerCredentialsGrantType.Execute(parameter);
         }
 
-        public GrantedToken GetTokenByAuthorizationCodeGrantType(AuthorizationCodeGrantTypeParameter parameter)
+        public GrantedToken GetTokenByAuthorizationCodeGrantType(
+            AuthorizationCodeGrantTypeParameter parameter,
+            AuthenticationHeaderValue authenticationHeaderValue)
         {
-
-            return null;
+            _authorizationCodeGrantTypeParameterTokenEdpValidator.Validate(parameter);
+            return _getTokenByAuthorizationCodeGrantTypeAction.Execute(parameter, authenticationHeaderValue);
         }
     }
 }

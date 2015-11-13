@@ -25,14 +25,14 @@ namespace SimpleIdentityServer.Core.Api.Authorization
 
         private readonly IGetTokenViaImplicitWorkflowOperation _getTokenViaImplicitWorkflowOperation;
 
-        private readonly IAuthorizationCodeGrantTypeParameterValidator _authorizationCodeGrantTypeParameterValidator;
+        private readonly IAuthorizationCodeGrantTypeParameterAuthEdpValidator _authorizationCodeGrantTypeParameterValidator;
 
         private readonly IParameterParserHelper _parameterParserHelper;
         
         public AuthorizationActions(
             IGetAuthorizationCodeOperation getAuthorizationCodeOperation,
             IGetTokenViaImplicitWorkflowOperation getTokenViaImplicitWorkflowOperation,
-            IAuthorizationCodeGrantTypeParameterValidator authorizationCodeGrantTypeParameterValidator,
+            IAuthorizationCodeGrantTypeParameterAuthEdpValidator authorizationCodeGrantTypeParameterValidator,
             IParameterParserHelper parameterParserHelper)
         {
             _getAuthorizationCodeOperation = getAuthorizationCodeOperation;

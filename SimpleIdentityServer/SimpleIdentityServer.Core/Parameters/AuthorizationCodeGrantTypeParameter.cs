@@ -17,5 +17,10 @@
         /// </summary>
         public string ClientId { get; set; }
 
+        /// <summary>
+        /// Gets or sets the clients secret.
+        /// </summary>
+        public string ClientSecret { get; set; }
+
     }
 }

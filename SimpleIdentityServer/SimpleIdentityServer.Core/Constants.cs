@@ -178,6 +178,11 @@ namespace SimpleIdentityServer.Core
             Level4 = 4
         }
 
+        public static class StandardTokenTypes
+        {
+            public static string Bearer = "Bearer";
+        }
+
         #endregion
 
         #region Internal definitions
@@ -299,6 +304,13 @@ namespace SimpleIdentityServer.Core
             {
                 // Same subject value to all clients.
                 "public"
+            };
+
+            public static List<TokenEndPointAuthenticationMethods> SupportedTokenEndPointAuthenticationMethods = new List
+                <TokenEndPointAuthenticationMethods>
+            {
+                TokenEndPointAuthenticationMethods.client_secret_basic,
+                TokenEndPointAuthenticationMethods.client_secret_post
             };
         }
 

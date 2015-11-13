@@ -53,7 +53,6 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             _resourceOwnerValidator.ValidateResourceOwnerCredentials(parameter.UserName, parameter.Password);
 
             var allowedTokenScopes = string.Empty;
-
             if (!string.IsNullOrWhiteSpace(parameter.Scope))
             {
                 allowedTokenScopes = string.Join(" ", _scopeValidator.ValidateAllowedScopes(parameter.Scope, client));

@@ -87,6 +87,7 @@
     <Compile Include="Api\Authorization\Common\ProcessAuthorizationRequest.cs" />
     <Compile Include="Api\Discovery\Actions\CreateDiscoveryDocumentationAction.cs" />
     <Compile Include="Api\Discovery\DiscoveryActions.cs" />
+    <Compile Include="Api\Token\Actions\GetTokenByAuthorizationCodeGrantTypeAction.cs" />
     <Compile Include="Api\Token\TokenActions.cs" />
     <Compile Include="Common\GenerateAuthorizationResponse.cs" />
     <Compile Include="Configuration\SimpleIdentityServerConfigurator.cs" />
@@ -104,8 +105,8 @@
     <Compile Include="Parameters\AuthorizationCodeGrantTypeParameter.cs" />
     <Compile Include="Repositories\IJsonWebKeyRepository.cs" />
     <Compile Include="Results\DiscoveryInformation.cs" />
-    <Compile Include="Validators\AuthorizationCodeGrantTypeParameterValidator.cs" />
-    <Compile Include="Validators\AuthorizationCodeGrantTypeParamterTokenEdpValidator.cs" />
+    <Compile Include="Validators\AuthorizationCodeGrantTypeParameterAuthEdpValidator.cs" />
+    <Compile Include="Validators\AuthorizationCodeGrantTypeParameterTokenEdpValidator.cs" />
     <Compile Include="Validators\ResourceOwnerGrantTypeParameterValidator.cs" />
     <Compile Include="WebSite\Authenticate\Actions\AuthenticateResourceOwnerAction.cs" />
     <Compile Include="WebSite\Authenticate\Actions\LocalUserAuthenticationAction.cs" />

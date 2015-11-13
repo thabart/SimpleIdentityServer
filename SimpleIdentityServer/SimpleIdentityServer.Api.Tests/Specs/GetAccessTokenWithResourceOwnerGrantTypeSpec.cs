@@ -9,7 +9,6 @@ using Microsoft.Practices.Unity;
 using NUnit.Framework;
 
 using SimpleIdentityServer.Api.Tests.Common;
-using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Api.DTOs.Request;
 using SimpleIdentityServer.Api.DTOs.Response;
 using SimpleIdentityServer.RateLimitation.Configuration;
@@ -24,9 +23,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
     [Binding, Scope(Feature = "GetAccessTokenWithResourceOwnerGrantType")]
     public sealed class GetAccessTokenWithResourceOwnerGrantTypeSpec
     {
-        private readonly ConfigureWebApi _configureWebApi;
-
-        private readonly ISecurityHelper _securityHelper;
+        private readonly GlobalContext _context;
 
         private DOMAINS.GrantedToken _token;
 
@@ -34,23 +31,22 @@ namespace SimpleIdentityServer.Api.Tests.Specs
 
         private HttpStatusCode _httpStatusCode;
 
-        public GetAccessTokenWithResourceOwnerGrantTypeSpec()
+        public GetAccessTokenWithResourceOwnerGrantTypeSpec(GlobalContext context)
         {
             var fakeGetRateLimitationElementOperation = new FakeGetRateLimitationElementOperation
             {
                 Enabled = false
             };
 
-            _configureWebApi = new ConfigureWebApi();
-            _configureWebApi.Container.RegisterInstance<IGetRateLimitationElementOperation>(fakeGetRateLimitationElementOperation);
-            _securityHelper = new SecurityHelper();
+            _context = context;
+            _context.UnityContainer.RegisterInstance<IGetRateLimitationElementOperation>(fakeGetRateLimitationElementOperation);
         }
 
         [When("requesting an access token via resource owner grant-type")]
         public void WhenRequestingAnAccessToken(Table table)
         {
             var tokenRequest = table.CreateInstance<TokenRequest>();
-            using (var server = _configureWebApi.CreateServer())
+            using (var server = _context.CreateServer())
             {
                 var httpClient = server.HttpClient;
                 var parameter = string.Format(

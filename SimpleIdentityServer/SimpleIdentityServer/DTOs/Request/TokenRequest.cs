@@ -1,6 +1,4 @@
-﻿using System.Runtime.Serialization;
-
-namespace SimpleIdentityServer.Api.DTOs.Request
+﻿namespace SimpleIdentityServer.Api.DTOs.Request
 {
     public class TokenRequest
     {
@@ -13,6 +11,8 @@ namespace SimpleIdentityServer.Api.DTOs.Request
         public string scope { get; set; }
 
         public string client_id { get; set; }
+
+        public string client_secret { get; set; }
 
         public string code { get; set; }
 

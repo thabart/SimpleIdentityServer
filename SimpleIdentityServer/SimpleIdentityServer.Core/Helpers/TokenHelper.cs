@@ -18,9 +18,9 @@ namespace SimpleIdentityServer.Core.Helpers
             return new GrantedToken
             {
                 AccessToken = Convert.ToBase64String(accessTokenId),
-                ExpiredIn = 3600,
+                ExpiresIn = 3600,
                 Scope = scope,
-                TokenType = "resource",
+                TokenType = Constants.StandardTokenTypes.Bearer,
                 RefreshToken = Convert.ToBase64String(refreshTokenId)
             };
         }

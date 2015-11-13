@@ -33,8 +33,10 @@ namespace SimpleIdentityServer.Core
             register.RegisterType<IClientValidator, ClientValidator>();
             register.RegisterType<IResourceOwnerValidator, ResourceOwnerValidator>();
             register.RegisterType<IScopeValidator, ScopeValidator>();
-            register.RegisterType<IAuthorizationCodeGrantTypeParameterValidator, AuthorizationCodeGrantTypeParameterValidator>();
+            register.RegisterType<IAuthorizationCodeGrantTypeParameterAuthEdpValidator, AuthorizationCodeGrantTypeParameterAuthEdpValidator>();
             register.RegisterType<IResourceOwnerGrantTypeParameterValidator, ResourceOwnerGrantTypeParameterValidator>();
+            register.RegisterType<IAuthorizationCodeGrantTypeParameterTokenEdpValidator,
+                AuthorizationCodeGrantTypeParameterTokenEdpValidator>();
             register.RegisterType<IProtector, Protector.Protector>();
             register.RegisterType<ICompressor, Compressor>();
             register.RegisterType<IEncoder, Encoder>();
@@ -51,6 +53,7 @@ namespace SimpleIdentityServer.Core
 
             register.RegisterType<ITokenActions, TokenActions>();
             register.RegisterType<IGetTokenByResourceOwnerCredentialsGrantTypeAction, GetTokenByResourceOwnerCredentialsGrantTypeAction>();
+            register.RegisterType<IGetTokenByAuthorizationCodeGrantTypeAction, GetTokenByAuthorizationCodeGrantTypeAction>();
 
             register.RegisterType<IConsentActions, ConsentActions>();
             register.RegisterType<IConfirmConsentAction, ConfirmConsentAction>();

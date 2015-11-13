@@ -1,4 +1,5 @@
-﻿using System.Web.Http;
+﻿using System.Web;
+using System.Web.Http;
 
 using SimpleIdentityServer.Api.DTOs.Request;
 using SimpleIdentityServer.Api.Extensions;
@@ -33,7 +34,10 @@ namespace SimpleIdentityServer.Api.Controllers.Api
                     break;
                 case GrantTypeRequest.authorization_code:
                     var authCodeParameter = tokenRequest.ToAuthorizationCodeGrantTypeParameter();
-                    result = _tokenActions.GetTokenByAuthorizationCodeGrantType(authCodeParameter);
+                    var authorizationHeader = Request.Headers.Authorization;
+                    result = _tokenActions.GetTokenByAuthorizationCodeGrantType(
+                        authCodeParameter,
+                        authorizationHeader);
                     break;
             }
 

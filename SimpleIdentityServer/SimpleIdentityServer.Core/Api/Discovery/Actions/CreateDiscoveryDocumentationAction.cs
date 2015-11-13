@@ -33,12 +33,14 @@ namespace SimpleIdentityServer.Core.Api.Discovery.Actions
             var responseTypesSupported = GetSupportedResponseTypes(Constants.Supported.SupportedAuthorizationFlows);
 
             var grantTypesSupported = GetSupportedGrantTypes();
+            var tokenAuthMethodSupported = GetSupportedTokenEndPointAuthMethods();
 
             result.ScopesSupported = scopeSupportedNames;
             result.ResponseTypesSupported = responseTypesSupported;
             result.ResponseModesSupported = Constants.Supported.SupportedResponseModes.ToArray();
             result.GrantTypesSupported = grantTypesSupported;
             result.SubjectTypesSupported = Constants.Supported.SupportedSubjectTypes.ToArray();
+            result.TokenEndpointAuthMethodSupported = tokenAuthMethodSupported;
 
             return result;
         }
@@ -64,6 +66,18 @@ namespace SimpleIdentityServer.Core.Api.Discovery.Actions
             foreach (var supportedGrantType in Constants.Supported.SupportedGrantTypes)
             {
                 var record = Enum.GetName(typeof (GrantType), supportedGrantType);
+                result.Add(record);
+            }
+
+            return result.ToArray();
+        }
+
+        private static string[] GetSupportedTokenEndPointAuthMethods()
+        {
+            var result = new List<string>();
+            foreach (var supportedAuthMethod in Constants.Supported.SupportedTokenEndPointAuthenticationMethods)
+            {
+                var record = Enum.GetName(typeof(TokenEndPointAuthenticationMethods), supportedAuthMethod);
                 result.Add(record);
             }
 

@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Security.Cryptography;
 using System.Text;
-using System.Web.Script.Serialization;
+using SimpleIdentityServer.Core.Extensions;
 
 namespace TestProj
 {
     class Program
     {
-        static void Main(string[] args)
+        private static void Sign()
         {
             var toEncrypt = "coucou";
             byte[] b,
@@ -37,6 +37,13 @@ namespace TestProj
             {
                 ec.ToXmlString(ECKeyXmlFormat.Rfc4050);
             }
+        }
+
+        static void Main(string[] args)
+        {
+            var encoded = "TXlCbG9nOk15QmxvZw==";
+            var b = encoded.Base64Decode();
+            Console.WriteLine(b);
         }
     }
 }

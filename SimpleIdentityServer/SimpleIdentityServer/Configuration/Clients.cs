@@ -13,6 +13,7 @@ namespace SimpleIdentityServer.Api.Configuration
                 {
                     ClientId = "MyBlog",
                     DisplayName = "My blog",
+                    ClientSecret = "MyBlog",
                     AllowedScopes = new List<Scope>
                     {
                         // PROTECTED API SCOPES

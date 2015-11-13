@@ -19,6 +19,8 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
                 IdTokenEncryptedResponseEnc = client.IdTokenEncryptedResponseEnc,
                 IdTokenSignedTResponseAlg = client.IdTokenSignedTResponseAlg,
                 ClientId = client.ClientId,
+                ClientSecret = client.ClientSecret,
+                TokenEndPointAuthMethod = client.TokenEndPointAuthMethod.ToFake(),
                 DisplayName = client.DisplayName,
                 AllowedScopes = client.AllowedScopes == null ? null : client.AllowedScopes.Select(s => s.ToFake()).ToList(),
                 RedirectionUrls = client.RedirectionUrls == null ? null : client.RedirectionUrls.Select(r => new FAKEMODELS.RedirectionUrl
@@ -50,9 +52,12 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
         {
             return new FAKEMODELS.AuthorizationCode
             {
-                Value = authorizationCode.Value,
+                Code = authorizationCode.Code,
+                RedirectUri = authorizationCode.RedirectUri,
                 CreateDateTime = authorizationCode.CreateDateTime,
-                Consent = authorizationCode.Consent.ToFake()
+                ClientId = authorizationCode.ClientId,
+                IdToken = authorizationCode.IdToken,
+                Scopes = authorizationCode.Scopes
             };
         }
 
@@ -81,9 +86,14 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
             };
         }
 
+        public static FAKEMODELS.TokenEndPointAuthenticationMethods ToFake(this MODELS.TokenEndPointAuthenticationMethods tokenEdp)
+        {
+            return (FAKEMODELS.TokenEndPointAuthenticationMethods)tokenEdp;
+        }
+
         public static FAKEMODELS.ScopeType ToFake(this MODELS.ScopeType scopeType)
         {
-            return (FAKEMODELS.ScopeType) scopeType;
+            return (FAKEMODELS.ScopeType)scopeType;
         }
 
         public static FAKEMODELS.AllAlg ToFake(this JSON.AllAlg alg)
@@ -119,6 +129,8 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
             return new MODELS.Client
             {
                 ClientId = client.ClientId,
+                ClientSecret = client.ClientSecret,
+                TokenEndPointAuthMethod = client.TokenEndPointAuthMethod.ToBusiness(),
                 DisplayName = client.DisplayName,
                 AllowedScopes = client.AllowedScopes == null ? null : client.AllowedScopes.Select(s => s.ToBusiness()).ToList(),
                 RedirectionUrls = client.RedirectionUrls == null ? null : client.RedirectionUrls.Select(r => r.Url).ToList(),
@@ -156,9 +168,12 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
         {
             return new MODELS.AuthorizationCode
             {
-                Value = authorizationCode.Value,
+                Code = authorizationCode.Code,
+                RedirectUri = authorizationCode.RedirectUri,
                 CreateDateTime = authorizationCode.CreateDateTime,
-                Consent = authorizationCode.Consent.ToBusiness()
+                ClientId = authorizationCode.ClientId,
+                IdToken = authorizationCode.IdToken,
+                Scopes = authorizationCode.Scopes
             };
         }
 
@@ -190,6 +205,11 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
         public static MODELS.ScopeType ToBusiness(this FAKEMODELS.ScopeType scopeType)
         {
             return (MODELS.ScopeType) scopeType;
+        }
+
+        public static MODELS.TokenEndPointAuthenticationMethods ToBusiness(this FAKEMODELS.TokenEndPointAuthenticationMethods tokenEdp)
+        {
+            return (MODELS.TokenEndPointAuthenticationMethods)tokenEdp;
         }
 
         public static MODELS.GrantType ToBusiness(this FAKEMODELS.GrantType grantType)
