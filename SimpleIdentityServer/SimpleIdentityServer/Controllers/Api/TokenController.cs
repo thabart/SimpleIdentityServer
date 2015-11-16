@@ -1,5 +1,4 @@
-﻿using System.Web;
-using System.Web.Http;
+﻿using System.Web.Http;
 
 using SimpleIdentityServer.Api.DTOs.Request;
 using SimpleIdentityServer.Api.Extensions;

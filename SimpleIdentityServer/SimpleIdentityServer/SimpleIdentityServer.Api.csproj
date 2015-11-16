@@ -212,6 +212,7 @@
     <Compile Include="Controllers\Api\AuthorizationController.cs" />
     <Compile Include="Controllers\Api\DiscoveryController.cs" />
     <Compile Include="Controllers\Api\TokenController.cs" />
+    <Compile Include="Controllers\Api\UserInfoController.cs" />
     <Compile Include="Controllers\AuthenticateController.cs" />
     <Compile Include="Controllers\ConsentController.cs" />
     <Compile Include="DTOs\Request\AuthorizationRequest.cs" />

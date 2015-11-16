@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-
+using SimpleIdentityServer.Core;
 using FAKEMODELS = SimpleIdentityServer.DataAccess.Fake.Models;
 using MODELS = SimpleIdentityServer.Core.Models;
 using JSON = SimpleIdentityServer.Core.Jwt.Signature;
@@ -35,6 +35,19 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
             return new FAKEMODELS.RedirectionUrl
             {
                 Url = redirectionUrl.Url
+            };
+        }
+
+        public static FAKEMODELS.GrantedToken ToFake(this MODELS.GrantedToken grantedToken)
+        {
+            return new FAKEMODELS.GrantedToken
+            {
+                AccessToken = grantedToken.AccessToken,
+                ExpiresIn = grantedToken.ExpiresIn,
+                IdToken = grantedToken.IdToken,
+                RefreshToken = grantedToken.RefreshToken,
+                Scope = grantedToken.Scope,
+                TokenType = grantedToken.TokenType
             };
         }
 
@@ -199,6 +212,19 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
                 Claims = scope.Claims,
                 Type = scope.Type.ToBusiness(),
                 IsDisplayedInConsent = scope.IsDisplayedInConsent
+            };
+        }
+
+        public static MODELS.GrantedToken ToBusiness(this FAKEMODELS.GrantedToken grantedToken)
+        {
+            return new MODELS.GrantedToken
+            {
+                AccessToken = grantedToken.AccessToken,
+                ExpiresIn = grantedToken.ExpiresIn,
+                IdToken = grantedToken.IdToken,
+                RefreshToken = grantedToken.RefreshToken,
+                Scope = grantedToken.Scope,
+                TokenType = grantedToken.TokenType
             };
         }
 

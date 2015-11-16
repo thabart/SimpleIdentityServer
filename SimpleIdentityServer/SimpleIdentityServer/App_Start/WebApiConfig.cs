@@ -37,6 +37,14 @@ namespace SimpleIdentityServer.Api
                     action = "Post"
                 });
 
+            config.Routes.MapHttpRoute("UserInfoRoute",
+                Constants.EndPoints.UserInfo,
+                new
+                {
+                    controller = "UserInfo"
+
+                });
+
             config.Filters.Add(new IdentityServerExceptionFilter());
 
             appBuilder.UseWebApi(config);

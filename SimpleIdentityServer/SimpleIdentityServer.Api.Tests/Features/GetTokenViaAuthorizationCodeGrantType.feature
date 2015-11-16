@@ -4,6 +4,7 @@
 
 Background:
 	Given a mobile application MyHolidays is defined
+	And the redirection uri http://localhost is assigned to the client MyHolidays
 	And the scopes are defined
 	| Name        | IsInternal | Claims |
 	| openid      | true       |        |

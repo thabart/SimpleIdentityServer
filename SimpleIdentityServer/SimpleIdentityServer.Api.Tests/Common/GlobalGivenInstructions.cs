@@ -116,6 +116,21 @@ namespace SimpleIdentityServer.Api.Tests.Common
             client.TokenEndPointAuthMethod = tokenEndPtAuthMethod;
         }
 
+        [Given("the redirection uri (.*) is assigned to the client (.*)")]
+        public void GivenRedirectionUriIsAssignedTo(string redirectionUri, string clientId)
+        {
+            var client = GetClient(clientId);
+            if (client == null)
+            {
+                return;
+            }
+
+            client.RedirectionUrls = new List<RedirectionUrl>
+            {
+                new RedirectionUrl { Url = redirectionUri}
+            };
+        }
+
         [Given("the client secret (.*) is assigned to the client (.*)")]
         public void GivenScopesToTheClients(string clientSecret, string clientId)
         {

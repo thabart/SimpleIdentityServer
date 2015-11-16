@@ -5,7 +5,7 @@ namespace SimpleIdentityServer.DataAccess.Fake
 {
     public class FakeDataSource
     {
-        private static FakeDataSource _instance = null;
+        private static FakeDataSource _instance;
 
         private List<Client> _clients;
 
@@ -20,6 +20,8 @@ namespace SimpleIdentityServer.DataAccess.Fake
         private List<AuthorizationCode> _authorizationCodes;
 
         private List<JsonWebKey> _jsonWebKeys;
+
+        private List<GrantedToken> _grantedTokens; 
 
         private FakeDataSource()
         {
@@ -100,6 +102,12 @@ namespace SimpleIdentityServer.DataAccess.Fake
         {
             get { return _jsonWebKeys; }
             set { _jsonWebKeys = value; }
+        }
+
+        public List<GrantedToken> GrantedTokens
+        {
+            get { return _grantedTokens; }
+            set { _grantedTokens = value; }
         } 
 
         public void Init()
@@ -111,6 +119,7 @@ namespace SimpleIdentityServer.DataAccess.Fake
             _consents = new List<Consent>();
             _authorizationCodes = new List<AuthorizationCode>();
             _jsonWebKeys = new List<JsonWebKey>();
+            _grantedTokens = new List<GrantedToken>();
         }
     }
 }

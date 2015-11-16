@@ -6,6 +6,7 @@
 
 Scenario: Get the id token
 	Given a mobile application MyHolidays is defined
+	And the redirection uri http://localhost is assigned to the client MyHolidays
 	And the scopes are defined
 	| Name        | IsInternal |
 	| openid      | true       |
@@ -35,6 +36,7 @@ Scenario: Get the id token
 
 Scenario: Get the id token and access token via implicit workflow
 	Given a mobile application MyHolidays is defined	
+	And the redirection uri http://localhost is assigned to the client MyHolidays
 	And the scopes are defined
 	| Name        | IsInternal |
 	| openid      | true       |
@@ -66,6 +68,7 @@ Scenario: Get the id token and access token via implicit workflow
 
 Scenario: Get a signed id_token
 	Given a mobile application MyHolidays is defined
+	And the redirection uri http://localhost is assigned to the client MyHolidays
 	And create a RSA key
 	And the scopes are defined
 	| Name        | IsInternal |
@@ -97,6 +100,7 @@ Scenario: Get a signed id_token
 
 Scenario: Get an id token and check if the claims returned in the token are correct	
 	Given a mobile application MyHolidays is defined
+	And the redirection uri http://localhost is assigned to the client MyHolidays
 	And the scopes are defined
 	| Name    | IsInternal | Claims |
 	| openid  | true       |        |
