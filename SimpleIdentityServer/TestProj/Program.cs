@@ -41,6 +41,7 @@ namespace TestProj
 
         static void Main(string[] args)
         {
+            var today = DateTime.UtcNow.AddDays(2).ToString();
             var encoded =
                 "eyJ0eXAiOiJKV1QiLCJhbGciOiJub25lIiwia2lkIjpudWxsfQ==.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0L2lkZW50aXR5IiwiYXVkIjpbIk15QmxvZyJdLCJleHAiOjE0NTA2ODYzMDcsImlhdCI6MTQ0NzY4NjMwNywic3ViIjoiYWRtaW5pc3RyYXRvckBob3RtYWlsLmJlIiwiYWNyIjoib3BlbmlkLnBhcGUuYXV0aF9sZXZlbC5ucy5wYXNzd29yZD0xIiwiYW1yIjoicGFzc3dvcmQiLCJhenAiOiJNeUJsb2cifQ==.";
             var arr = encoded.Split('.');

@@ -55,5 +55,11 @@
 
         public static string TheRedirectionUrlIsNotTheSame =
             "the redirection url is not the same than the one passed in the authorization request";
+
+        public static string TheIdServerIsNotPresentInTheAudience = "the identity server is not present in the audience";
+
+        public static string TheJwtTokenHasAlreadyBeenUsed = "the jwt token has already been used";
+
+        public static string TheJwtTokenIsExpired = "the jwt token is expired";
     }
 }

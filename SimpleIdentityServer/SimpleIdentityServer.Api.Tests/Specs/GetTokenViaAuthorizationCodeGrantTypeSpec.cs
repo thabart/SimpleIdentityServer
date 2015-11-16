@@ -47,6 +47,8 @@ namespace SimpleIdentityServer.Api.Tests.Specs
 
         private string _combinedHeaderAndPayload;
 
+        private Dictionary<string, string> _clientSecretJwtParameters;
+
         public GetTokenViaAuthorizationCodeGrantTypeSpec(GlobalContext context)
         {
             context.Init(new FakeGetRateLimitationElementOperation
@@ -168,6 +170,54 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             var httpClient = _testServer.HttpClient;
             httpClient.DefaultRequestHeaders.Clear();
             var response = httpClient.PostAsync("/token", new FormUrlEncodedContent(dic)).Result;
+            _grantedToken = response.Content.ReadAsAsync<DOMAINS.GrantedToken>().Result;
+        }
+
+        [When("requesting a token by using a client_secret_jwt authentication mechanism")]
+        public void WhenRequestingATokenByUsingClientSecretJwtAuthMech(
+            Table table)
+        {
+            var request = table.CreateInstance<TokenRequest>();
+            var query = HttpUtility.ParseQueryString(_authorizationResponseMessage.Headers.Location.Query);
+            var authorizationCode = query["code"];
+            request.code = authorizationCode;
+
+            _clientSecretJwtParameters = new Dictionary<string, string>
+            {
+                {
+                    "grant_type",
+                    Enum.GetName(typeof (GrantTypeRequest), request.grant_type)
+                },
+                {
+                    "code",
+                    authorizationCode
+                },
+                {
+                    "redirect_uri",
+                    request.redirect_uri
+                },
+                {
+                    "client_assertion_type",
+                    request.client_assertion_type
+                }
+            };
+        }
+
+        [When("passes the following JSON Web Token which will expired in (.*) days and is valid for the following audiences (.*)")]
+        public void WhenTheJsonWebTokenIs(double days, List<string> audiences, Table table)
+        {
+            var record = table.CreateInstance<FakeJwt>();
+            record.aud = audiences.ToArray();
+            record.exp = DateTime.UtcNow.AddDays(days).ConvertToUnixTimestamp();
+
+            var serialized = record.SerializeWithJavascript();
+            var base64Encoded = serialized.Base64Encode();
+
+            _clientSecretJwtParameters.Add("client_assertion", base64Encoded);
+
+            var httpClient = _testServer.HttpClient;
+            httpClient.DefaultRequestHeaders.Clear();
+            var response = httpClient.PostAsync("/token", new FormUrlEncodedContent(_clientSecretJwtParameters)).Result;
             _grantedToken = response.Content.ReadAsAsync<DOMAINS.GrantedToken>().Result;
         }
 

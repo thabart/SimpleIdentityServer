@@ -24,8 +24,8 @@ namespace SimpleIdentityServer.Core.Validators
         bool ValidateResponseTypes(IList<ResponseType> responseType, Client client);
 
         bool ValidateClientIsAuthenticated(string clientId,
-            string clientSecretFromHttpBody,
-            string clientSecretFromHttpHeader);
+            string clientSecretPost,
+            string clientSecretBasic);
     }
 
     public class ClientValidator : IClientValidator
@@ -120,8 +120,8 @@ namespace SimpleIdentityServer.Core.Validators
         }
 
         public bool ValidateClientIsAuthenticated(string clientId,
-            string clientSecretFromHttpBody,
-            string clientSecretFromHttpHeader)
+            string clientSecretPost,
+            string clientSecretBasic)
         {
             var client = ValidateClientExist(clientId);
             if (client == null)
@@ -134,13 +134,14 @@ namespace SimpleIdentityServer.Core.Validators
                 case TokenEndPointAuthenticationMethods.client_secret_basic:
                     return
                         string.Compare(client.ClientSecret,
-                            clientSecretFromHttpHeader, 
+                            clientSecretBasic, 
                             StringComparison.InvariantCultureIgnoreCase) ==
                         0;
                 case TokenEndPointAuthenticationMethods.client_secret_post:
                     return string.Compare(client.ClientSecret,
-                        clientSecretFromHttpBody,
+                        clientSecretPost,
                         StringComparison.InvariantCultureIgnoreCase) == 0;
+                case TokenEndPointAuthenticationMethods.client_secret_jwt:
                 case TokenEndPointAuthenticationMethods.none:
                     return true;
             }

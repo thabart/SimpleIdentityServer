@@ -42,6 +42,17 @@ namespace SimpleIdentityServer.Core.Jwt
         }
 
         /// <summary>
+        /// Gets or sets the unique identifier.
+        /// </summary>
+        public string Jti
+        {
+            get
+            {
+                return GetStringClaim(Constants.StandardClaimNames.Jti);
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the authentication time
         /// </summary>
         public double AuthenticationTime
@@ -93,7 +104,7 @@ namespace SimpleIdentityServer.Core.Jwt
             return this[claimName].ToString();
         }
 
-        public string GetStringClaim(string claimName)
+        private string GetStringClaim(string claimName)
         {
             if (!ContainsKey(claimName))
             {
@@ -103,7 +114,7 @@ namespace SimpleIdentityServer.Core.Jwt
             return this[claimName].ToString();
         }
 
-        public double GetDoubleClaim(string claimName)
+        private double GetDoubleClaim(string claimName)
         {
             if (!ContainsKey(claimName))
             {
@@ -120,7 +131,7 @@ namespace SimpleIdentityServer.Core.Jwt
             return default(double);
         }
 
-        public string[] GetArrayClaim(string claimName)
+        private string[] GetArrayClaim(string claimName)
         {
             if (!ContainsKey(claimName))
             {

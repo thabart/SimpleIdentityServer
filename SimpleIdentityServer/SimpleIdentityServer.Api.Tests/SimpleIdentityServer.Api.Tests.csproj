@@ -116,6 +116,7 @@
     <Compile Include="Common\Fakes\FakeAuthenticationFilter.cs" />
     <Compile Include="Common\Fakes\FakeGetRateLimitationElementOperation.cs" />
     <Compile Include="Common\Fakes\FakeProtector.cs" />
+    <Compile Include="Common\Fakes\Models\FakeJwt.cs" />
     <Compile Include="Common\Fakes\Models\FakeScope.cs" />
     <Compile Include="Common\Fakes\Models\FakeHttpResponse.cs" />
     <Compile Include="Common\Fakes\Models\FakeTooManyRequestResponse.cs" />

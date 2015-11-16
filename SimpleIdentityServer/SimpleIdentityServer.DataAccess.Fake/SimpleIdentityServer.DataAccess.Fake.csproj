@@ -67,6 +67,7 @@
     <Compile Include="Repositories\FakeClientRepository.cs" />
     <Compile Include="Repositories\FakeConsentRepository.cs" />
     <Compile Include="Repositories\FakeGrantedTokenRepository.cs" />
+    <Compile Include="Repositories\FakeJwtBearerClientRepository.cs" />
     <Compile Include="Repositories\FakeResourceOwnerRepository.cs" />
     <Compile Include="Repositories\FakeScopeRepository.cs" />
     <Compile Include="Repositories\FakeJsonWebKeyRepository.cs" />

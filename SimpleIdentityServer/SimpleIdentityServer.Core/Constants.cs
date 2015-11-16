@@ -74,6 +74,11 @@ namespace SimpleIdentityServer.Core
             public static string Amr = "amr";
 
             public static string Azp = "azp";
+
+            /// <summary>
+            /// Unique identifier of the JWT.
+            /// </summary>
+            public static string Jti = "jti";
         }
 
         // Open-Id Provider Authentication Policy Extension 1.0
@@ -89,6 +94,11 @@ namespace SimpleIdentityServer.Core
             public static string OpenIdCustomAuthLevel = "openid.pape.auth_level.ns";
             
             public static string OpenIdPreferredCustomAuthLevel = "openid.pape.preferred_auth_levels";
+        }
+
+        public static class StandardClientAssertionTypes
+        {
+            public static string JwtBearer = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer";
         }
 
         // Standard authentication policies.
@@ -331,7 +341,8 @@ namespace SimpleIdentityServer.Core
                 <TokenEndPointAuthenticationMethods>
             {
                 TokenEndPointAuthenticationMethods.client_secret_basic,
-                TokenEndPointAuthenticationMethods.client_secret_post
+                TokenEndPointAuthenticationMethods.client_secret_post,
+                TokenEndPointAuthenticationMethods.client_secret_jwt
             };
         }
 

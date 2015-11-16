@@ -54,7 +54,9 @@ namespace SimpleIdentityServer.Api.Extensions
                 ClientId = request.client_id,
                 ClientSecret = request.client_secret,
                 Code = request.code,
-                RedirectUri = request.redirect_uri
+                RedirectUri = request.redirect_uri,
+                ClientAssertion = request.client_assertion,
+                ClientAssertionType = request.client_assertion_type
             };
         }
     }

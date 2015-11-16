@@ -32,5 +32,11 @@ namespace SimpleIdentityServer.Core.Extensions
             var serializer = new JavaScriptSerializer();
             return serializer.Serialize(parameter);
         }
+
+        public static T DeserializeWithJavascript<T>(this string parameter)
+        {
+            var serializer = new JavaScriptSerializer();
+            return serializer.Deserialize<T>(parameter);
+        }
     }
 }

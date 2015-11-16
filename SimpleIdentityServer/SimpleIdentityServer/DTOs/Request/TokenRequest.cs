@@ -17,5 +17,9 @@
         public string code { get; set; }
 
         public string redirect_uri { get; set; }
+
+        public string client_assertion_type { get; set; }
+
+        public string client_assertion { get; set; }
     }
 }
