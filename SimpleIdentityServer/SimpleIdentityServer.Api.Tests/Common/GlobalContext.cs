@@ -95,7 +95,7 @@ namespace SimpleIdentityServer.Api.Tests.Common
                 ();
             UnityContainer.RegisterType<IAuthorizationCodeGrantTypeParameterTokenEdpValidator,
                 AuthorizationCodeGrantTypeParameterTokenEdpValidator>();
-            UnityContainer.RegisterType<IJwtParameterValidator, JwtParameterValidator>();
+            UnityContainer.RegisterType<IJwtClientParameterValidator, JwtClientParameterValidator>();
 
             UnityContainer.RegisterType<IClientRepository, FakeClientRepository>();
             UnityContainer.RegisterType<IScopeRepository, FakeScopeRepository>();

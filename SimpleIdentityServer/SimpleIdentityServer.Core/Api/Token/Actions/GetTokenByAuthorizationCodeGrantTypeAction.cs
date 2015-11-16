@@ -35,7 +35,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
         private readonly IClientRepository _clientRepository;
 
-        private readonly IJwtParameterValidator _jwtParameterValidator;
+        private readonly IJwtClientParameterValidator _jwtClientParameterValidator;
 
         public GetTokenByAuthorizationCodeGrantTypeAction(
             IClientValidator clientValidator,
@@ -43,14 +43,14 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             ISimpleIdentityServerConfigurator simpleIdentityServerConfigurator,
             ITokenHelper tokenHelper,
             IClientRepository clientRepository,
-            IJwtParameterValidator jwtParameterValidator)
+            IJwtClientParameterValidator jwtClientParameterValidator)
         {
             _clientValidator = clientValidator;
             _authorizationCodeRepository = authorizationCodeRepository;
             _simpleIdentityServerConfigurator = simpleIdentityServerConfigurator;
             _tokenHelper = tokenHelper;
             _clientRepository = clientRepository;
-            _jwtParameterValidator = jwtParameterValidator;
+            _jwtClientParameterValidator = jwtClientParameterValidator;
         }
 
         public GrantedToken Execute(
@@ -165,7 +165,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
                 string errorCode;
                 string errorDescription;
-                var isValid = _jwtParameterValidator.Validate(
+                var isValid = _jwtClientParameterValidator.Validate(
                     authorizationCodeGrantTypeParameter.ClientAssertion,
                     out errorCode,
                     out errorDescription);

@@ -99,6 +99,7 @@
     <Compile Include="Extensions\AlgorithmExtensions.cs" />
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Jwt\Mapping\ClaimsMapping.cs" />
+    <Compile Include="Jwt\Parser\JwtParser.cs" />
     <Compile Include="Jwt\Signature\CreateJwsSignature.cs" />
     <Compile Include="Jwt\Signature\JsonWebKey.cs" />
     <Compile Include="Jwt\Signature\JsonWebKeySet.cs" />
@@ -107,6 +108,7 @@
     <Compile Include="Jwt\Signature\JwsGenerator.cs" />
     <Compile Include="Jwt\JwsPayload.cs" />
     <Compile Include="Jwt\JwsProtectedHeader.cs" />
+    <Compile Include="Jwt\Signature\JwsParser.cs" />
     <Compile Include="Parameters\AuthorizationCodeGrantTypeParameter.cs" />
     <Compile Include="Parameters\ClientCredentialsParameter.cs" />
     <Compile Include="Repositories\IJsonWebKeyRepository.cs" />
@@ -115,7 +117,7 @@
     <Compile Include="Validators\AuthorizationCodeGrantTypeParameterAuthEdpValidator.cs" />
     <Compile Include="Validators\AuthorizationCodeGrantTypeParameterTokenEdpValidator.cs" />
     <Compile Include="Validators\GrantedTokenValidator.cs" />
-    <Compile Include="Jwt\Validator\JwtParameterValidator.cs" />
+    <Compile Include="Jwt\Validator\JwtClientParameterValidator.cs" />
     <Compile Include="Validators\ResourceOwnerGrantTypeParameterValidator.cs" />
     <Compile Include="WebSite\Authenticate\Actions\AuthenticateResourceOwnerAction.cs" />
     <Compile Include="WebSite\Authenticate\Actions\LocalUserAuthenticationAction.cs" />

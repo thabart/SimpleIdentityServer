@@ -38,7 +38,7 @@ namespace SimpleIdentityServer.Core
             register.RegisterType<IResourceOwnerGrantTypeParameterValidator, ResourceOwnerGrantTypeParameterValidator>();
             register.RegisterType<IAuthorizationCodeGrantTypeParameterTokenEdpValidator,
                 AuthorizationCodeGrantTypeParameterTokenEdpValidator>();
-            register.RegisterType<IJwtParameterValidator, JwtParameterValidator>();
+            register.RegisterType<IJwtClientParameterValidator, JwtClientParameterValidator>();
             register.RegisterType<IProtector, Protector.Protector>();
             register.RegisterType<ICompressor, Compressor>();
             register.RegisterType<IEncoder, Encoder>();

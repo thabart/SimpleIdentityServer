@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace SimpleIdentityServer.Core.Jwt.Validators
 {
-    public interface IJwtParameterValidator
+    public interface IJwtClientParameterValidator
     {
         /// <summary>
         /// Validate the JSON Web Token (JWT) and returns the errors
@@ -22,7 +22,7 @@ namespace SimpleIdentityServer.Core.Jwt.Validators
             out string errorDescription);
     }
 
-    public class JwtParameterValidator : IJwtParameterValidator
+    public class JwtClientParameterValidator : IJwtClientParameterValidator
     {
         private readonly IClientValidator _clientValidator;
 
@@ -30,7 +30,7 @@ namespace SimpleIdentityServer.Core.Jwt.Validators
 
         private readonly IJwtBearerClientRepository _jwtBearerClientRepository;
 
-        public JwtParameterValidator(
+        public JwtClientParameterValidator(
             IClientValidator clientValidator,
             ISimpleIdentityServerConfigurator configurator,
             IJwtBearerClientRepository jwtBearerClientRepository)
