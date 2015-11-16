@@ -23,7 +23,9 @@ namespace SimpleIdentityServer.Core.Validators
 
         bool ValidateResponseTypes(IList<ResponseType> responseType, Client client);
 
-        bool ValidateClientIsAuthenticated(ClientCredentialsParameter clientCredentials);
+        bool ValidateClientIsAuthenticated(string clientId,
+            string clientSecretFromHttpBody,
+            string clientSecretFromHttpHeader);
     }
 
     public class ClientValidator : IClientValidator
@@ -45,7 +47,7 @@ namespace SimpleIdentityServer.Core.Validators
         {
             if (client.RedirectionUrls == null || !client.RedirectionUrls.Any())
             {
-                return url;
+                return null;
             }
 
             return client.RedirectionUrls.FirstOrDefault(r => r == url);
@@ -117,15 +119,12 @@ namespace SimpleIdentityServer.Core.Validators
             }
         }
 
-        public bool ValidateClientIsAuthenticated(ClientCredentialsParameter clientCredentials)
+        public bool ValidateClientIsAuthenticated(string clientId,
+            string clientSecretFromHttpBody,
+            string clientSecretFromHttpHeader)
         {
-            var client = ValidateClientExist(clientCredentials.ClientId);
+            var client = ValidateClientExist(clientId);
             if (client == null)
-            {
-                return false;
-            }
-
-            if (client.TokenEndPointAuthMethod != clientCredentials.AuthenticationMethod)
             {
                 return false;
             }
@@ -135,11 +134,13 @@ namespace SimpleIdentityServer.Core.Validators
                 case TokenEndPointAuthenticationMethods.client_secret_basic:
                     return
                         string.Compare(client.ClientSecret,
-                            clientCredentials.ClientSecret, 
+                            clientSecretFromHttpHeader, 
                             StringComparison.InvariantCultureIgnoreCase) ==
                         0;
                 case TokenEndPointAuthenticationMethods.client_secret_post:
-                    return string.Compare(clientCredentials.ClientSecret, client.ClientSecret, StringComparison.InvariantCultureIgnoreCase) == 0;
+                    return string.Compare(client.ClientSecret,
+                        clientSecretFromHttpBody,
+                        StringComparison.InvariantCultureIgnoreCase) == 0;
                 case TokenEndPointAuthenticationMethods.none:
                     return true;
             }

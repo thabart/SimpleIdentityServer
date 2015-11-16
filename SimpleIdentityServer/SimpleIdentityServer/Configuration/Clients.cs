@@ -71,7 +71,18 @@ namespace SimpleIdentityServer.Api.Configuration
                         ResponseType.code,
                         ResponseType.id_token
                     },
-                    IdTokenSignedTResponseAlg = "none"
+                    IdTokenSignedTResponseAlg = "none",
+                    RedirectionUrls = new List<RedirectionUrl>
+                    {
+                        new RedirectionUrl
+                        {
+                            Url = "https://op.certification.openid.net:60360/authz_cb"
+                        },
+                        new RedirectionUrl
+                        {
+                            Url = "http://localhost"
+                        }
+                    }
                 }
             };
         }

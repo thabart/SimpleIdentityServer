@@ -26,8 +26,8 @@ Background:
 
 Scenario: request an id token and access token via the authorization grant type flow	
 	When requesting a token with basic client authentication for the client id MyHolidays and client secret MyHolidays
-	| grant_type         | redirect_uri     |
-	| authorization_code | http://localhost |
+	| grant_type         | redirect_uri     | client_id  |
+	| authorization_code | http://localhost | MyHolidays |
 
 	Then the following token is returned
 	| TokenType |

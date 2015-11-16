@@ -18,11 +18,14 @@ namespace SimpleIdentityServer.Core.Validators
     {
         private readonly IParameterParserHelper _parameterParserHelper;
 
+        private readonly IClientValidator _clientValidator;
+
         public AuthorizationCodeGrantTypeParameterAuthEdpValidator(
             IParameterParserHelper parameterParserHelper,
-            IClientRepository clientRepository)
+            IClientValidator clientValidator)
         {
             _parameterParserHelper = parameterParserHelper;
+            _clientValidator = clientValidator;
         }
 
         public void Validate(AuthorizationParameter parameter)
@@ -70,6 +73,23 @@ namespace SimpleIdentityServer.Core.Validators
                 throw new IdentityServerExceptionWithState(
                     ErrorCodes.InvalidRequestUriCode,
                     ErrorDescriptions.TheRedirectionUriIsNotWellFormed,
+                    parameter.State);
+            }
+
+            var client = _clientValidator.ValidateClientExist(parameter.ClientId);
+            if (client == null)
+            {
+                throw new IdentityServerExceptionWithState(
+                    ErrorCodes.InvalidRequestCode,
+                    string.Format(ErrorDescriptions.ClientIsNotValid, parameter.ClientId),
+                    parameter.State);
+            }
+
+            if (string.IsNullOrWhiteSpace(_clientValidator.ValidateRedirectionUrl(parameter.RedirectUrl, client)))
+            {
+                throw new IdentityServerExceptionWithState(
+                    ErrorCodes.InvalidRequestCode,
+                    string.Format(ErrorDescriptions.RedirectUrlIsNotValid, parameter.RedirectUrl),
                     parameter.State);
             }
         }

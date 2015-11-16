@@ -148,10 +148,12 @@ this.FeatureBackground();
 #line hidden
             TechTalk.SpecFlow.Table table4 = new TechTalk.SpecFlow.Table(new string[] {
                         "grant_type",
-                        "redirect_uri"});
+                        "redirect_uri",
+                        "client_id"});
             table4.AddRow(new string[] {
                         "authorization_code",
-                        "http://localhost"});
+                        "http://localhost",
+                        "MyHolidays"});
 #line 28
  testRunner.When("requesting a token with basic client authentication for the client id MyHolidays " +
                     "and client secret MyHolidays", ((string)(null)), table4, "When ");

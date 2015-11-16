@@ -73,11 +73,17 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             AuthenticationHeaderValue authenticationHeaderValue)
         {
             // Try to get the client id & client secret from the HTTP BODY or the header.
-            var clientCredential = TryGettingClientCredentials(authorizationCodeGrantTypeParameter,
+            var clientId = TryGettingClientId(authorizationCodeGrantTypeParameter,
                 authenticationHeaderValue);
 
+            var clientSecretFromHttpBody = authorizationCodeGrantTypeParameter.ClientSecret;
+            var clientSecretFromHttpHeader = GetClientSecret(authenticationHeaderValue.Parameter);
+
             // Authenticate the client
-            var isAuthenticated = _clientValidator.ValidateClientIsAuthenticated(clientCredential);
+            var isAuthenticated = _clientValidator.ValidateClientIsAuthenticated(
+                clientId, 
+                clientSecretFromHttpBody, 
+                clientSecretFromHttpHeader);
 
             if (!isAuthenticated)
             {
@@ -95,7 +101,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
             // Ensure the authorization code was issued to the authenticated client.
             var authorizationClientId = authorizationCode.ClientId;
-            if (authorizationClientId != clientCredential.ClientId)
+            if (authorizationClientId != clientId)
             {
                 throw new IdentityServerException(ErrorCodes.InvalidGrant,
                     string.Format(ErrorDescriptions.TheAuthorizationCodeHasNotBeenIssuedForTheGivenClientId,
@@ -119,7 +125,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             }
 
             // Ensure that the redirect_uri parameter value is identical to the redirect_uri parameter value.
-            var client = _clientRepository.GetClientById(clientCredential.ClientId);
+            var client = _clientRepository.GetClientById(clientId);
             var redirectionUrl = _clientValidator.ValidateRedirectionUrl(authorizationCodeGrantTypeParameter.RedirectUri, client);
             if (redirectionUrl == null)
             {
@@ -132,21 +138,17 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
         }
 
         /// <summary>
-        /// Get the client credentials from the HTTP body or the HTTP header.
+        /// Try to get the client id from the HTTP body or HTTP header.
         /// </summary>
         /// <param name="authorizationCodeGrantTypeParameter"></param>
         /// <param name="authenticationHeaderValue"></param>
         /// <returns></returns>
-        private static ClientCredentialsParameter TryGettingClientCredentials(
+        private static string TryGettingClientId(
             AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter,
             AuthenticationHeaderValue authenticationHeaderValue)
         {
-            var result = new ClientCredentialsParameter
-            {
-                ClientId = authorizationCodeGrantTypeParameter.ClientId,
-                ClientSecret = authorizationCodeGrantTypeParameter.ClientSecret
-            };
-            if (string.IsNullOrWhiteSpace(result.ClientId))
+            var result = authorizationCodeGrantTypeParameter.ClientId;
+            if (string.IsNullOrWhiteSpace(result))
             {
                 var authenticationHeaderParameter = authenticationHeaderValue.Parameter;
                 var parameters = GetParameters(authenticationHeaderParameter);
@@ -156,13 +158,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                         ErrorDescriptions.TheClientCannotBeAuthenticated);
                 }
 
-                result.ClientId = parameters[0];
-                result.ClientSecret = parameters[1];
-                result.AuthenticationMethod = TokenEndPointAuthenticationMethods.client_secret_basic;
-            }
-            else
-            {
-                result.AuthenticationMethod = TokenEndPointAuthenticationMethods.client_secret_post;
+                result = parameters[0];
             }
 
             return result;
@@ -177,6 +173,17 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
             var decodedParameter = authorizationHeaderValue.Base64Decode();
             return decodedParameter.Split(':');
+        }
+
+        private static string GetClientSecret(string authorizationHeaderValue)
+        {
+            var parameters = GetParameters(authorizationHeaderValue);
+            if (!parameters.Any())
+            {
+                return null;
+            }
+
+            return parameters[1];
         }
     }
 }
