@@ -99,6 +99,9 @@ namespace SimpleIdentityServer.Api.Tests.Features
  testRunner.And("the grant-type authorization_code is supported by the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 17
  testRunner.And("the response-types code are supported by the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 18
+ testRunner.And("the token endpoint authentication method client_secret_basic is assigned to the c" +
+                    "lient MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             TechTalk.SpecFlow.Table table2 = new TechTalk.SpecFlow.Table(new string[] {
                         "UserId",
@@ -106,9 +109,9 @@ namespace SimpleIdentityServer.Api.Tests.Features
             table2.AddRow(new string[] {
                         "habarthierry@loki.be",
                         "thabart"});
-#line 18
+#line 19
  testRunner.And("a resource owner is authenticated", ((string)(null)), table2, "And ");
-#line 21
+#line 22
  testRunner.And("the consent has been given by the resource owner habarthierry@loki.be for the cli" +
                     "ent MyHolidays and scopes openid,PlanningApi,profile", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
@@ -128,7 +131,7 @@ namespace SimpleIdentityServer.Api.Tests.Features
                         "none",
                         "state1",
                         "parameterNonce"});
-#line 22
+#line 23
  testRunner.And("requesting an authorization code", ((string)(null)), table3, "And ");
 #line hidden
         }
@@ -138,20 +141,18 @@ namespace SimpleIdentityServer.Api.Tests.Features
         public virtual void RequestAnIdTokenAndAccessTokenViaTheAuthorizationGrantTypeFlow()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("request an id token and access token via the authorization grant type flow", ((string[])(null)));
-#line 26
+#line 27
 this.ScenarioSetup(scenarioInfo);
 #line 5
 this.FeatureBackground();
 #line hidden
             TechTalk.SpecFlow.Table table4 = new TechTalk.SpecFlow.Table(new string[] {
                         "grant_type",
-                        "client_id",
                         "redirect_uri"});
             table4.AddRow(new string[] {
                         "authorization_code",
-                        "MyHolidays",
                         "http://localhost"});
-#line 27
+#line 28
  testRunner.When("requesting a token with basic client authentication for the client id MyHolidays " +
                     "and client secret MyHolidays", ((string)(null)), table4, "When ");
 #line hidden
@@ -159,20 +160,20 @@ this.FeatureBackground();
                         "TokenType"});
             table5.AddRow(new string[] {
                         "Bearer"});
-#line 31
+#line 32
  testRunner.Then("the following token is returned", ((string)(null)), table5, "Then ");
-#line 34
+#line 35
  testRunner.And("decrypt the id_token parameter from the response", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             TechTalk.SpecFlow.Table table6 = new TechTalk.SpecFlow.Table(new string[] {
                         "alg"});
             table6.AddRow(new string[] {
                         "none"});
-#line 35
+#line 36
  testRunner.And("the protected JWS header is returned", ((string)(null)), table6, "And ");
-#line 38
- testRunner.And("the parameter nonce with value parameterNonce is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 39
+ testRunner.And("the parameter nonce with value parameterNonce is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 40
  testRunner.And("the claim sub with value habarthierry@loki.be is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();

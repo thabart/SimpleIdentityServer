@@ -55,6 +55,27 @@ namespace SimpleIdentityServer.Core
             public static string Role = "role";
         }
 
+        public static class StandardClaimNames
+        {
+            public static string Issuer = "iss";
+
+            public static string Audiences = "aud";
+
+            public static string ExpirationTime = "exp";
+
+            public static string Iat = "iat";
+
+            public static string AuthenticationTime = "auth_time";
+
+            public static string Nonce = "nonce";
+
+            public static string Acr = "acr";
+
+            public static string Amr = "amr";
+
+            public static string Azp = "azp";
+        }
+
         // Open-Id Provider Authentication Policy Extension 1.0
         public static class StandardArcParameterNames
         {

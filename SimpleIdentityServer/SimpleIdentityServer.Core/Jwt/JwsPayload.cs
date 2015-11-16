@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 
 namespace SimpleIdentityServer.Core.Jwt
@@ -6,77 +7,134 @@ namespace SimpleIdentityServer.Core.Jwt
     /// <summary>
     /// Represents a JSON Web Token
     /// </summary>
-    [DataContract]
-    public class JwsPayload
+    public class JwsPayload : Dictionary<string, object>
     {
         /// <summary>
         /// Gets or sets the issuer.
         /// </summary>
-        [DataMember(Name = "iss")]
-        public string Issuer { get; set; }
+        public string Issuer
+        {
+            get { return GetStringClaim(Constants.StandardClaimNames.Issuer); }
+        }
 
         /// <summary>
         /// Gets or sets the audience(s)
         /// </summary>
-        [DataMember(Name = "aud")]
-        public string[] Audiences { get; set; }
+        public string[] Audiences
+        {
+            get { return GetArrayClaim(Constants.StandardClaimNames.Audiences); }
+        }
 
         /// <summary>
         /// Gets or sets the expiration time
         /// </summary>
-        [DataMember(Name = "exp")]
-        public double ExpirationTime { get; set; }
+        public double ExpirationTime
+        {
+            get { return GetDoubleClaim(Constants.StandardClaimNames.ExpirationTime); }
+        }
 
         /// <summary>
         /// Gets or sets the IAT
         /// </summary>
-        [DataMember(Name = "iat")]
-        public double Iat { get; set; }
+        public double Iat
+        {
+            get { return GetDoubleClaim(Constants.StandardClaimNames.Iat); }
+        }
 
         /// <summary>
         /// Gets or sets the authentication time
         /// </summary>
-        [DataMember(Name = "auth_time")]
-        public double AuthenticationTime { get; set; }
+        public double AuthenticationTime
+        {
+            get { return GetDoubleClaim(Constants.StandardClaimNames.AuthenticationTime); }
+        }
 
         /// <summary>
         /// Gets or sets the NONCE
         /// </summary>
-        [DataMember(Name = "nonce")]
-        public string Nonce { get; set; }
+        public string Nonce
+        {
+            get { return GetStringClaim(Constants.StandardClaimNames.Nonce); }
+        }
 
         /// <summary>
         /// Gets or sets the authentication context class reference
         /// </summary>
-        [DataMember(Name = "acr")]
-        public string Acr { get; set; }
+        public string Acr
+        {
+            get { return GetStringClaim(Constants.StandardClaimNames.Acr); }
+        }
 
         /// <summary>
         /// Gets or sets the Authentication Methods References
         /// </summary>
         [DataMember(Name = "amr")]
-        public string Amr { get; set; }
+        public string Amr
+        {
+            get { return GetStringClaim(Constants.StandardClaimNames.Amr); }
+        }
 
         /// <summary>
         /// Gets or sets the Authorized party
         /// </summary>
         [DataMember(Name = "azp")]
-        public string Azp { get; set; }
-
-        /// <summary>
-        /// Gets or sets the claims
-        /// </summary>
-        [DataMember(Name = "claims")]
-        public Dictionary<string, string> Claims { get; set; }
+        public string Azp
+        {
+            get { return GetStringClaim(Constants.StandardClaimNames.Azp); }
+        }
 
         public string GetClaimValue(string claimName)
         {
-            if (!Claims.ContainsKey(claimName))
+            if (!ContainsKey(claimName))
             {
                 return null;
             }
 
-            return Claims[claimName];
+            return this[claimName].ToString();
+        }
+
+        public string GetStringClaim(string claimName)
+        {
+            if (!ContainsKey(claimName))
+            {
+                return null;
+            }
+
+            return this[claimName].ToString();
+        }
+
+        public double GetDoubleClaim(string claimName)
+        {
+            if (!ContainsKey(claimName))
+            {
+                return default(double);
+            }
+
+            double result;
+            var claim = this[claimName].ToString();
+            if (double.TryParse(claim, out result))
+            {
+                return result;
+            }
+
+            return default(double);
+        }
+
+        public string[] GetArrayClaim(string claimName)
+        {
+            if (!ContainsKey(claimName))
+            {
+                return new string[0];
+            }
+
+            var claim = this[claimName];
+            var type = claim.GetType();
+            if (!type.IsArray)
+            {
+                return new string[0];
+            }
+
+            return ((object[]) claim).Select(c => c.ToString()).ToArray();
         }
     }
 }

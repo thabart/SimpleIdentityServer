@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
 
 using System.Linq;
@@ -22,10 +23,7 @@ namespace SimpleIdentityServer.Core.Validators
 
         bool ValidateResponseTypes(IList<ResponseType> responseType, Client client);
 
-        bool ValidateClientIsAuthenticated(
-            string clientId, 
-            string clientSecret, 
-            string authorizationHeaderValue);
+        bool ValidateClientIsAuthenticated(ClientCredentialsParameter clientCredentials);
     }
 
     public class ClientValidator : IClientValidator
@@ -119,30 +117,29 @@ namespace SimpleIdentityServer.Core.Validators
             }
         }
 
-        public bool ValidateClientIsAuthenticated(
-            string clientId,
-            string clientSecret,
-            string authorizationHeaderValue)
+        public bool ValidateClientIsAuthenticated(ClientCredentialsParameter clientCredentials)
         {
-            var client = ValidateClientExist(clientId);
+            var client = ValidateClientExist(clientCredentials.ClientId);
             if (client == null)
             {
                 return false;
             }
-            
+
+            if (client.TokenEndPointAuthMethod != clientCredentials.AuthenticationMethod)
+            {
+                return false;
+            }
+
             switch (client.TokenEndPointAuthMethod)
             {
                 case TokenEndPointAuthenticationMethods.client_secret_basic:
-                    var decodedParameter = authorizationHeaderValue.Base64Decode();
-                    var parameters = decodedParameter.Split(':');
-                    var clientSecretParameter = parameters[1];
                     return
-                        string.Compare(client.ClientSecret, 
-                            clientSecretParameter, 
+                        string.Compare(client.ClientSecret,
+                            clientCredentials.ClientSecret, 
                             StringComparison.InvariantCultureIgnoreCase) ==
                         0;
                 case TokenEndPointAuthenticationMethods.client_secret_post:
-                    return string.Compare(clientSecret, client.ClientSecret, StringComparison.InvariantCultureIgnoreCase) == 0;
+                    return string.Compare(clientCredentials.ClientSecret, client.ClientSecret, StringComparison.InvariantCultureIgnoreCase) == 0;
                 case TokenEndPointAuthenticationMethods.none:
                     return true;
             }

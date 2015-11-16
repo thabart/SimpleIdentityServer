@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 
 using System.Security.Claims;
-using System.Web.Script.Serialization;
 using Microsoft.Practices.ObjectBuilder2;
 
 using SimpleIdentityServer.Core.Configuration;
@@ -82,9 +81,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
             {
                 var isClientSupportIdTokenResponseType =
                     _clientValidator.ValidateResponseType(ResponseType.id_token, client);
-                var isClientSupportImplicitGrantTypeFlow =
-                    _clientValidator.ValidateGrantType(GrantType.@implicit, client);
-                if (isClientSupportIdTokenResponseType && isClientSupportImplicitGrantTypeFlow)
+                if (isClientSupportIdTokenResponseType)
                 {
                     audiences.Add(client.ClientId);
                 }
@@ -102,12 +99,24 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
 
             var result = new JwsPayload
             {
-                Issuer = issuerName,
-                Audiences = audiences.ToArray(),
-                ExpirationTime = expirationInSeconds,
-                Iat = iatInSeconds,
-                Claims = claims
+                {
+                    Constants.StandardClaimNames.Issuer, issuerName
+                },
+                {
+                    Constants.StandardClaimNames.Audiences, audiences.ToArray()
+                },
+                {
+                    Constants.StandardClaimNames.ExpirationTime, expirationInSeconds
+                },
+                {
+                    Constants.StandardClaimNames.Iat, iatInSeconds
+                }
             };
+
+            foreach (var claim in claims)
+            {
+                result.Add(claim.Key, claim.Value);
+            }
 
             // If the max_age request is made or when auth_time is requesed as an Essential claim then we calculate the auth_time
             // The auth_time corresponds to the time when the End-User authentication occured. 
@@ -117,24 +126,24 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
                 var authenticationInstant = claimPrincipal.Claims.SingleOrDefault(c => c.Type == ClaimTypes.AuthenticationInstant);
                 if (authenticationInstant != null)
                 {
-                    result.AuthenticationTime = double.Parse(authenticationInstant.Value);
+                    result.Add(Constants.StandardClaimNames.AuthenticationTime, double.Parse(authenticationInstant.Value));
                 }
             }
 
             // Set the nonce value in the id token. The value is coming from the authorization request
             if (!string.IsNullOrWhiteSpace(authorizationParameter.Nonce))
             {
-                result.Nonce = authorizationParameter.Nonce;
+                result.Add(Constants.StandardClaimNames.Nonce, authorizationParameter.Nonce);
             }
 
             // Set the ACR : Authentication Context Class Reference
             // Set the AMR : Authentication Methods Reference
             // For the moment we support a level 1 because only password via HTTPS is supported.
-            if (!string.IsNullOrWhiteSpace(authorizationParameter.AcrValues))
-            {
-                result.Acr = Constants.StandardArcParameterNames.OpenIdCustomAuthLevel + ".password=1";
-                result.Amr = "password";
-            }
+            /*if (!string.IsNullOrWhiteSpace(authorizationParameter.AcrValues))
+            {*/
+            result.Add(Constants.StandardClaimNames.Acr, Constants.StandardArcParameterNames.OpenIdCustomAuthLevel + ".password=1");
+            result.Add(Constants.StandardClaimNames.Amr, "password");
+            //}
 
             // Set the client_id
             // This claim is only needed when the ID token has a single audience value & that audience is different than the authorized party.
@@ -142,7 +151,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
                 audiences.Count() == 1 && 
                 audiences.First() == authorizationParameter.ClientId)
             {
-                result.Azp = authorizationParameter.ClientId;
+                result.Add(Constants.StandardClaimNames.Azp, authorizationParameter.ClientId);
             }
 
             // TODO : Add another claims in it ...
@@ -179,10 +188,9 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
                 jwsProtectedHeader.kid = jsonWebKey.Kid;
             }
 
-            var javascriptSerializer = new JavaScriptSerializer();
-            var jsonJwsProtectedHeader = javascriptSerializer.Serialize(jwsProtectedHeader);
+            var jsonJwsProtectedHeader = jwsProtectedHeader.SerializeWithJavascript();
             var jwsProtectedHeaderBase64Encoded = jsonJwsProtectedHeader.Base64Encode();
-            var jwsPayLoad = javascriptSerializer.Serialize(jwsPayload);
+            var jwsPayLoad = jwsPayload.SerializeWithJavascript();
             var jwsPayLoadBase64Encoded = jwsPayLoad.Base64Encode();
             var combinedProtectedHeaderAndPayLoad = string.Format("{0}.{1}", jwsProtectedHeaderBase64Encoded, jwsPayLoadBase64Encoded);            
             

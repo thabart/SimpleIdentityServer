@@ -52,6 +52,7 @@ namespace SimpleIdentityServer.Api.Extensions
             return new AuthorizationCodeGrantTypeParameter
             {
                 ClientId = request.client_id,
+                ClientSecret = request.client_secret,
                 Code = request.code,
                 RedirectUri = request.redirect_uri
             };

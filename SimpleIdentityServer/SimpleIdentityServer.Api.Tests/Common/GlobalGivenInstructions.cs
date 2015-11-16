@@ -103,6 +103,18 @@ namespace SimpleIdentityServer.Api.Tests.Common
                 client.AllowedScopes.Add(storedScope);
             }
         }
+        
+        [Given("the token endpoint authentication method (.*) is assigned to the client (.*)")]
+        public void GivenTokenEndPointAuthenticationMethodIsAssigned(TokenEndPointAuthenticationMethods tokenEndPtAuthMethod, string clientId)
+        {
+            var client = GetClient(clientId);
+            if (client == null)
+            {
+                return;
+            }
+
+            client.TokenEndPointAuthMethod = tokenEndPtAuthMethod;
+        }
 
         [Given("the client secret (.*) is assigned to the client (.*)")]
         public void GivenScopesToTheClients(string clientSecret, string clientId)

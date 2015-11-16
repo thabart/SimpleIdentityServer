@@ -14,12 +14,14 @@ namespace SimpleIdentityServer.Core.Validators
     {
         public void Validate(AuthorizationCodeGrantTypeParameter parameter)
         {
+            /*
             if (string.IsNullOrWhiteSpace(parameter.ClientId))
             {
                 throw new IdentityServerException(
                     ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.MissingParameter, "client_id"));
             }
+            */
 
             if (string.IsNullOrWhiteSpace(parameter.Code))
             {

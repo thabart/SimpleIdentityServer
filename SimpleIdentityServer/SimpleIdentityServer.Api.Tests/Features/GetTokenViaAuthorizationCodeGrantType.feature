@@ -15,6 +15,7 @@ Background:
 	And the client secret MyHolidays is assigned to the client MyHolidays
 	And the grant-type authorization_code is supported by the client MyHolidays
 	And the response-types code are supported by the client MyHolidays
+	And the token endpoint authentication method client_secret_basic is assigned to the client MyHolidays
 	And a resource owner is authenticated
 	| UserId               | UserName |
 	| habarthierry@loki.be | thabart  |
@@ -25,8 +26,8 @@ Background:
 
 Scenario: request an id token and access token via the authorization grant type flow	
 	When requesting a token with basic client authentication for the client id MyHolidays and client secret MyHolidays
-	| grant_type         | client_id  | redirect_uri     |
-	| authorization_code | MyHolidays | http://localhost |
+	| grant_type         | redirect_uri     |
+	| authorization_code | http://localhost |
 
 	Then the following token is returned
 	| TokenType |
