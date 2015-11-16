@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
@@ -129,6 +128,45 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             var credentials = clientId + ":" + clientSecret;
             httpClient.DefaultRequestHeaders.Add("Authorization", string.Format("Basic {0}", credentials.Base64Encode()));
 
+            var response = httpClient.PostAsync("/token", new FormUrlEncodedContent(dic)).Result;
+            _grantedToken = response.Content.ReadAsAsync<DOMAINS.GrantedToken>().Result;
+        }
+
+        [When("requesting a token by using a client_secret_post authentication mechanism")]
+        public void WhenRequestingATokenByUsingClientSecretPostAuthMech(
+            Table table)
+        {
+            var request = table.CreateInstance<TokenRequest>();
+            var query = HttpUtility.ParseQueryString(_authorizationResponseMessage.Headers.Location.Query);
+            var authorizationCode = query["code"];
+            request.code = authorizationCode;
+
+            var dic = new Dictionary<string, string>
+            {
+                {
+                    "grant_type",
+                    Enum.GetName(typeof (GrantTypeRequest), request.grant_type)
+                },
+                {
+                    "client_id",
+                    request.client_id
+                },
+                {
+                    "client_secret",
+                    request.client_secret
+                },
+                {
+                    "code",
+                    authorizationCode
+                },
+                {
+                    "redirect_uri",
+                    request.redirect_uri
+                }
+            };
+
+            var httpClient = _testServer.HttpClient;
+            httpClient.DefaultRequestHeaders.Clear();
             var response = httpClient.PostAsync("/token", new FormUrlEncodedContent(dic)).Result;
             _grantedToken = response.Content.ReadAsAsync<DOMAINS.GrantedToken>().Result;
         }

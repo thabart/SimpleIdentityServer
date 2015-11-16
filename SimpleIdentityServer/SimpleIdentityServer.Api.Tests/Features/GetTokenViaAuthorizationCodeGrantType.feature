@@ -16,7 +16,6 @@ Background:
 	And the client secret MyHolidays is assigned to the client MyHolidays
 	And the grant-type authorization_code is supported by the client MyHolidays
 	And the response-types code are supported by the client MyHolidays
-	And the token endpoint authentication method client_secret_basic is assigned to the client MyHolidays
 	And a resource owner is authenticated
 	| UserId               | UserName |
 	| habarthierry@loki.be | thabart  |
@@ -25,7 +24,9 @@ Background:
 	| scope                      | response_type | client_id  | redirect_uri     | prompt | state  | nonce          |
 	| openid PlanningApi profile | code          | MyHolidays | http://localhost | none   | state1 | parameterNonce |
 
-Scenario: request an id token and access token via the authorization grant type flow	
+# Check the authentication mechanism : client_secret_basic
+Scenario: request an id token and access token via the authorization grant type flow. The client credentials are passed via client_secret_basic
+	Given the token endpoint authentication method client_secret_basic is assigned to the client MyHolidays
 	When requesting a token with basic client authentication for the client id MyHolidays and client secret MyHolidays
 	| grant_type         | redirect_uri     | client_id  |
 	| authorization_code | http://localhost | MyHolidays |
@@ -40,4 +41,20 @@ Scenario: request an id token and access token via the authorization grant type 
 	And the parameter nonce with value parameterNonce is returned by the JWS payload
 	And the claim sub with value habarthierry@loki.be is returned by the JWS payload
 
-	
+# Check the authentication mechanism : client_secret_post
+Scenario: request an id token and access token via the authorization grant type flow. The client credentials are passed via client_secret_post method
+	Given the token endpoint authentication method client_secret_post is assigned to the client MyHolidays
+	When requesting a token by using a client_secret_post authentication mechanism
+	| grant_type         | redirect_uri     | client_id  | client_secret |
+	| authorization_code | http://localhost | MyHolidays | MyHolidays    |
+
+	Then the following token is returned
+	| TokenType |
+	| Bearer    |
+	And decrypt the id_token parameter from the response
+	And the protected JWS header is returned
+	| alg  |
+	| none |
+	And the parameter nonce with value parameterNonce is returned by the JWS payload
+	And the claim sub with value habarthierry@loki.be is returned by the JWS payload
+

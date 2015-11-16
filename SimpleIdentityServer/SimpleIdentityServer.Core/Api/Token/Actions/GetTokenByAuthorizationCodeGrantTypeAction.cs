@@ -77,7 +77,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                 authenticationHeaderValue);
 
             var clientSecretFromHttpBody = authorizationCodeGrantTypeParameter.ClientSecret;
-            var clientSecretFromHttpHeader = GetClientSecret(authenticationHeaderValue.Parameter);
+            var clientSecretFromHttpHeader = GetClientSecret(authenticationHeaderValue);
 
             // Authenticate the client
             var isAuthenticated = _clientValidator.ValidateClientIsAuthenticated(
@@ -175,9 +175,14 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             return decodedParameter.Split(':');
         }
 
-        private static string GetClientSecret(string authorizationHeaderValue)
+        private static string GetClientSecret(AuthenticationHeaderValue authorizationHeader)
         {
-            var parameters = GetParameters(authorizationHeaderValue);
+            if (authorizationHeader == null)
+            {
+                return string.Empty;
+            }
+
+            var parameters = GetParameters(authorizationHeader.Parameter);
             if (!parameters.Any())
             {
                 return null;
