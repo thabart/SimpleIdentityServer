@@ -46,30 +46,12 @@ namespace TestProj
                 ec.ToXmlString(ECKeyXmlFormat.Rfc4050);
             }
         }
-        
-        private static byte[] Encrypt(byte[] dataToEncrypt, out string parameters)
-        {
-            using (var rsa = new RSACryptoServiceProvider())
-            {
-                parameters = rsa.ToXmlString(true);
-                return RsaEncrypt(dataToEncrypt, rsa.ExportParameters(false), false);
-            }
-        }
 
         private static string Decrypt(string parameter, string parameters)
         {
             var dataToEncrypt = Convert.FromBase64String(parameter);
             var encryptedBytes = RsaDecrypt(dataToEncrypt, parameters, false);
             return ASCIIEncoding.ASCII.GetString(encryptedBytes);
-        }
-
-        private static byte[] RsaEncrypt(byte[] dataToEncrypt, RSAParameters rsaKeyInfo, bool DoOAEPPadding)
-        {
-            using (var rsa = new RSACryptoServiceProvider())
-            {
-                rsa.ImportParameters(rsaKeyInfo);
-                return rsa.Encrypt(dataToEncrypt, DoOAEPPadding);
-            }
         }
 
         private static byte[] RsaDecrypt(byte[] dataToEncrypt, string rsaKeyInfo, bool DoOAEPPadding)
@@ -130,7 +112,32 @@ namespace TestProj
                 : new[] { (byte)(_value & 0xFF), (byte)((_value >> 8) & 0xFF), (byte)((_value >> 16) & 0xFF), (byte)((_value >> 24) & 0xFF), (byte)((_value >> 32) & 0xFF), (byte)((_value >> 40) & 0xFF), (byte)((_value >> 48) & 0xFF), (byte)((_value >> 56) & 0xFF) };
         }
 
-        private static string GenerateJwe(string toEncrypt)
+        public static bool ConstantTimeEquals(byte[] expected, byte[] actual)
+        {
+            if (expected == actual)
+                return true;
+
+            if (expected == null || actual == null)
+                return false;
+
+            if (expected.Length != actual.Length)
+                return false;
+
+            bool equals = true;
+
+            for (int i = 0; i < expected.Length; i++)
+                if (expected[i] != actual[i])
+                    equals = false;
+
+            return equals;
+        }
+
+        #region Encryption
+
+        private static string GenerateJwe(
+            string toEncrypt,
+            out string rsaXml,
+            Func<byte[][], byte[]> hmacKeyParser = null)
         {
             var cekSize = 256;
             string parameters;
@@ -142,12 +149,27 @@ namespace TestProj
             var contentEncryptionKey = GenerateRandomBytes(cekSize);
 
             // Encrypt the Content Encryption Key with RSA algorithm : RSA1_5
-            var encryptedEncryptionKey = Encrypt(contentEncryptionKey, out parameters);
-
-            var contentEncryptionKeySplitted = SplitByteArrayInHalf(contentEncryptionKey);
-
+            // Encrypt the "Content encryption key" with the public key of the client.
+            byte[] encryptedEncryptionKey;
+            using (var rsa = new RSACryptoServiceProvider())
+            {
+                rsaXml = rsa.ToXmlString(true);
+                encryptedEncryptionKey = rsa.Encrypt(contentEncryptionKey, false);
+            }
+            
             // Fetch the MAC_KEY
-            var hmacKey = contentEncryptionKeySplitted[0];
+            // In some case the HASH_MAC KEY is the client_secret : shared key
+            var contentEncryptionKeySplitted = SplitByteArrayInHalf(contentEncryptionKey);
+            byte[] hmacKey;
+            if (hmacKeyParser == null)
+            {
+                hmacKey = contentEncryptionKeySplitted[0];
+            }
+            else
+            {
+                hmacKey = hmacKeyParser(contentEncryptionKeySplitted);
+            }
+
             var aesCbcKey = contentEncryptionKeySplitted[1];
 
             // Initialize the vector value.
@@ -209,12 +231,12 @@ namespace TestProj
             var base64EncodedCipherText = Convert.ToBase64String(ciptherText);
 
             // Calculate the additional authenticated data
-            var add = Encoding.UTF8.GetBytes(jweProtectedHeaderSerialized);
-            var base64EncodedAdd = Convert.ToBase64String(add);
+            var aad = Encoding.UTF8.GetBytes(jweProtectedHeaderSerialized);
+            var base64EncodedAdd = Convert.ToBase64String(aad);
 
             // Calculate the authentication tag
-            var al = LongToBytes(add.Length * 8);
-            var hmacInput = Concat(add, iv, ciptherText, al);
+            var al = LongToBytes(aad.Length * 8);
+            var hmacInput = Concat(aad, iv, ciptherText, al);
 
             byte[] hmacValue;
             // Sign the HMAC input with HMAC KEY
@@ -238,28 +260,119 @@ namespace TestProj
             return result;
         }
 
-        private static string DecodeJwe(string jwe)
+
+        private static string GenerateJweWithClientSecretAsHmacKey(
+            string toEncrypt,
+            string clientSecret,
+            out string rsaXml)
+        {
+            var callback = new Func<byte[][], byte[]>((arg) => Encoding.UTF8.GetBytes(clientSecret));
+            return GenerateJwe(toEncrypt, out rsaXml, callback);
+        }
+
+        #endregion
+
+        #region Decryption
+
+        private static string DecodeJwe(
+            string jwe,
+            string rsaXml,
+            Func<byte[]> getHmacKeyCallback = null)
         {
             var jweSplitted = jwe.Split('.');
 
-            var protectedHeader = jweSplitted[0].Base64Decode();
+            var jweEncryptedKeyBytes = Convert.FromBase64String(jweSplitted[1]);
+            var ivBytes = Convert.FromBase64String(jweSplitted[2]);
+            var cipherTextBytes = Convert.FromBase64String(jweSplitted[3]);
+            var authenticationTagBytes = Convert.FromBase64String(jweSplitted[4]);
+
+            var jweProtectedHeaderSerialized = jweSplitted[0].Base64Decode();
             var jweEncryptedKey = jweSplitted[1].Base64Decode();
-            var vi = jweSplitted[2].Base64Decode();
-            var ciptherText = jweSplitted[3].Base64Decode();
+            var iv = jweSplitted[2].Base64Decode();
+            var cipherText = jweSplitted[3].Base64Decode();
             var authenticationTag = jweSplitted[4].Base64Decode();
+            
+            // Decrypt the encryption key with the private key of the client.
+            byte[] contentEncryptionKey;
+            using (var rsa = new RSACryptoServiceProvider())
+            {
+                rsa.FromXmlString(rsaXml);
+                contentEncryptionKey = rsa.Decrypt(jweEncryptedKeyBytes, false);
+            }
 
+            // Calculate the AAD
+            var aad = Encoding.UTF8.GetBytes(jweProtectedHeaderSerialized);
+            
+            var contentEncryptionKeySplitted = SplitByteArrayInHalf(contentEncryptionKey);
+            byte[] hmacKey;
+            if (getHmacKeyCallback == null)
+            {
+                hmacKey = contentEncryptionKeySplitted[0];
+            }
+            else
+            {
+                hmacKey = getHmacKeyCallback();
+            }
 
+            var aesCbcKey = contentEncryptionKeySplitted[1];
+            
+            // Calculate the authentication tag
+            var al = LongToBytes(aad.Length * 8);
+            var hmacInput = Concat(aad, ivBytes, cipherTextBytes, al);
 
-            Console.WriteLine(protectedHeader);
+            byte[] hmacValue;
+            // Sign the HMAC input with HMAC KEY
+            using (var crypt = new HMACSHA256(hmacKey))
+            {
+                hmacValue = crypt.ComputeHash(hmacInput);
+            }
 
-            return string.Empty;
+            var authenticationTagCalculated = SplitByteArrayInHalf(hmacValue)[0];
+            var macAreEquals = ConstantTimeEquals(authenticationTagCalculated, authenticationTagBytes);
+
+            byte[] decryption;
+            // Encrypt the plain text to create ciphertext.
+            using (var aes = new AesManaged())
+            {
+                aes.Key = aesCbcKey;
+                aes.IV = ivBytes;
+
+                using (var decryptor = aes.CreateDecryptor(aes.Key, aes.IV))
+                {
+                    using (var msDecrypt = new MemoryStream())
+                    {
+                        using (var cs = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Write))
+                        {
+                            cs.Write(cipherTextBytes, 0, cipherTextBytes.Length);
+                            decryption = msDecrypt.ToArray();
+                        }
+                    }
+                }
+            }
+
+            var result = Encoding.UTF8.GetString(decryption);
+            return result;
         }
         
+        private static string DecodeJweWithClientSecret(
+            string jwe,
+            string rsaXml,
+            string clientSecret)
+        {
+            var callback = new Func<byte[]>(() => Encoding.UTF8.GetBytes(clientSecret));
+            return DecodeJwe(jwe, rsaXml, callback);
+        }
+
+        #endregion
+
         static void Main(string[] args)
         {
-            var jwe = GenerateJwe("hello");
-            DecodeJwe(jwe);
+            var clientSecret = "ClientSecret";
+            string rsaXml;
+            var jwe = GenerateJweWithClientSecretAsHmacKey("hello", clientSecret, out rsaXml);
 
+            var decrypted = DecodeJweWithClientSecret(jwe, rsaXml, clientSecret);
+            Console.WriteLine(decrypted);
             Console.ReadLine();
             /*
             string parameters;
