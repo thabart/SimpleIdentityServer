@@ -141,10 +141,7 @@ namespace TestProj
         {
             var cekSize = 256;
             string parameters;
-
-            // Get the plain text
-            var plainText = Encoding.UTF8.GetBytes(toEncrypt);
-
+            
             // Generate a random Content encryption key with 256 bit.
             var contentEncryptionKey = GenerateRandomBytes(cekSize);
 
@@ -192,7 +189,7 @@ namespace TestProj
                         {
                             using (var swEncrypt = new StreamWriter(csEncrypt))
                             {
-                                swEncrypt.Write(plainText);
+                                swEncrypt.Write(toEncrypt);
                             }
 
                             ciptherText = msEncrypt.ToArray();
@@ -330,7 +327,7 @@ namespace TestProj
             var authenticationTagCalculated = SplitByteArrayInHalf(hmacValue)[0];
             var macAreEquals = ConstantTimeEquals(authenticationTagCalculated, authenticationTagBytes);
 
-            byte[] decryption;
+            string result;
             // Encrypt the plain text to create ciphertext.
             using (var aes = new AesManaged())
             {
@@ -339,18 +336,19 @@ namespace TestProj
 
                 using (var decryptor = aes.CreateDecryptor(aes.Key, aes.IV))
                 {
-                    using (var msDecrypt = new MemoryStream())
+                    using (var msDecrypt = new MemoryStream(cipherTextBytes))
                     {
-                        using (var cs = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Write))
+                        using (var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
                         {
-                            cs.Write(cipherTextBytes, 0, cipherTextBytes.Length);
-                            decryption = msDecrypt.ToArray();
+                            using (StreamReader srDecrypt = new StreamReader(csDecrypt))
+                            {
+                                result = srDecrypt.ReadToEnd();
+                            }
                         }
                     }
                 }
             }
 
-            var result = Encoding.UTF8.GetString(decryption);
             return result;
         }
         
