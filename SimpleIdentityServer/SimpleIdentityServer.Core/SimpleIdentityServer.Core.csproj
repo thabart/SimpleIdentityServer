@@ -93,15 +93,21 @@
     <Compile Include="Api\Discovery\DiscoveryActions.cs" />
     <Compile Include="Api\Token\Actions\GetTokenByAuthorizationCodeGrantTypeAction.cs" />
     <Compile Include="Api\Token\TokenActions.cs" />
+    <Compile Include="Authenticate\AuthenticateClient.cs" />
+    <Compile Include="Authenticate\AuthenticateInstruction.cs" />
+    <Compile Include="Authenticate\ClientSecretBasicAuthentication.cs" />
+    <Compile Include="Authenticate\ClientSecretPostAuthentication.cs" />
+    <Compile Include="Authenticate\ClientAssertionAuthentication.cs" />
     <Compile Include="Common\GenerateAuthorizationResponse.cs" />
     <Compile Include="Configuration\SimpleIdentityServerConfigurator.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Extensions\AlgorithmExtensions.cs" />
     <Compile Include="Extensions\ObjectExtensions.cs" />
+    <Compile Include="Jwt\Encrypt\JweGenerator.cs" />
     <Compile Include="Jwt\Mapping\ClaimsMapping.cs" />
     <Compile Include="Jwt\Parser\JwtParser.cs" />
     <Compile Include="Jwt\Signature\CreateJwsSignature.cs" />
-    <Compile Include="Jwt\Signature\JsonWebKey.cs" />
+    <Compile Include="Jwt\JsonWebKey.cs" />
     <Compile Include="Jwt\Signature\JsonWebKeySet.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
@@ -175,9 +181,7 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Jwt\Encrypt\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\SimpleIdentityServer.Common\SimpleIdentityServer.Common.csproj">
       <Project>{fc7dc959-c366-473c-a95a-fa16d5c71597}</Project>

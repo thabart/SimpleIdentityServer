@@ -3,7 +3,7 @@ using System.Linq;
 using SimpleIdentityServer.Core;
 using FAKEMODELS = SimpleIdentityServer.DataAccess.Fake.Models;
 using MODELS = SimpleIdentityServer.Core.Models;
-using JSON = SimpleIdentityServer.Core.Jwt.Signature;
+using JSON = SimpleIdentityServer.Core.Jwt;
 
 namespace SimpleIdentityServer.DataAccess.Fake.Extensions
 {

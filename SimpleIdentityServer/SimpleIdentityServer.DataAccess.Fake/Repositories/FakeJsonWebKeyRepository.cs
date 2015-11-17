@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-
-using SimpleIdentityServer.Core.Jwt.Signature;
+using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.DataAccess.Fake.Extensions;
 

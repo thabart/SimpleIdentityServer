@@ -2,17 +2,35 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SimpleIdentityServer.Core.Repositories;
 
 namespace SimpleIdentityServer.Core.Jwt.Signature
 {
     public interface IJwsParser
     {
-        JwsPayload UnSigned(string jws);
+        JwsPayload ValidateSignature(string jws);
     }
 
     public class JwsParser
     {
-        public JwsPayload UnSigned(string jws)
+        private readonly IJsonWebKeyRepository _jsonWebKeyRepository;
+
+        private readonly ICreateJwsSignature _createJwsSignature;
+
+        public JwsParser(
+            IJsonWebKeyRepository jsonWebKeyRepository,
+            ICreateJwsSignature createJwsSignature)
+        {
+            _jsonWebKeyRepository = jsonWebKeyRepository;
+            _createJwsSignature = createJwsSignature;
+        }
+
+        /// <summary>
+        /// Validate the signature and returns the JWSPayLoad.
+        /// </summary>
+        /// <param name="jws"></param>
+        /// <returns></returns>
+        public JwsPayload ValidateSignature(string jws)
         {
             var parts = GetParts(jws);
             if (!parts.Any())
@@ -20,12 +38,16 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
                 return null;
             }
 
-            var serializedProtectedHeader = parts[0].Base64Decode();
-            var serializedPayload = parts[1].Base64Decode();
+            var base64EncodedProtectedHeader = parts[0];
+            var base64EncodedSerialized = parts[1];
+            var combinedProtectedHeaderAndPayLoad = string.Format("{0}.{1}", base64EncodedProtectedHeader,
+                base64EncodedSerialized);
+
+            var serializedProtectedHeader = base64EncodedProtectedHeader.Base64Decode();
+            var serializedPayload = base64EncodedSerialized.Base64Decode();
             var signature = parts[2].Base64Decode();
 
             var protectedHeader = serializedProtectedHeader.DeserializeWithJavascript<JwsProtectedHeader>();
-            var payload = serializedPayload.DeserializeWithJavascript<JwsPayload>();
             
             JwsAlg jwsAlg;
             if (!Enum.TryParse(protectedHeader.alg, out jwsAlg))
@@ -34,7 +56,33 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
                 return null;
             }
 
-            return null;
+            var jsonWebKey = _jsonWebKeyRepository.GetByKid(protectedHeader.kid);
+            // Checks the JWK exist.
+            if (jsonWebKey == null)
+            {
+                // TODO : throw an exception
+                return null;
+            }
+
+            var signatureIsCorrect = false;
+            switch (jsonWebKey.Kty)
+            {
+                case KeyType.RSA:
+                    // To validate we need the parameters : modulus & exponent.
+                    signatureIsCorrect = _createJwsSignature.VerifyWithRsa(
+                        jwsAlg, 
+                        jsonWebKey.SerializedKey,
+                        combinedProtectedHeaderAndPayLoad,
+                        signature);
+                    break;
+            }
+
+            if (!signatureIsCorrect)
+            {
+                return null;
+            }
+
+            return serializedPayload.DeserializeWithJavascript<JwsPayload>();
         }
 
         /// <summary>
@@ -45,12 +93,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
         private static List<string> GetParts(string jws)
         {
             var parts = jws.Split('.');
-            if (parts == null || parts.Length < 3)
-            {
-                return new List<string>();
-            }
-        
-            return parts.ToList();
+            return parts.Length < 3 ? new List<string>() : parts.ToList();
         }
     }
 }

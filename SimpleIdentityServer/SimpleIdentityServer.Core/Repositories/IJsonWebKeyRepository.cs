@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
-
-using SimpleIdentityServer.Core.Jwt.Signature;
+using SimpleIdentityServer.Core.Jwt;
 
 namespace SimpleIdentityServer.Core.Repositories
 {

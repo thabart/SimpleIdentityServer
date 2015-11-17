@@ -11,6 +11,12 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
             JwsAlg algorithm,
             string serializedKeys,
             string combinedJwsNotSigned);
+
+        bool VerifyWithRsa(
+            JwsAlg algorithm,
+            string serializedKeys,
+            string input,
+            string signature);
     }
 
     public class CreateJwsSignature : ICreateJwsSignature
@@ -51,6 +57,22 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
         public string SignWithEllipseCurve(JwsAlg algorithm)
         {
             return string.Empty;
+        }
+
+        public bool VerifyWithRsa(
+            JwsAlg algorithm,
+            string serializedKeys,
+            string input,
+            string signature)
+        {
+            var plainBytes = ASCIIEncoding.ASCII.GetBytes(input);
+            var signatureBytes = ASCIIEncoding.ASCII.GetBytes(signature);
+            var hashMethod = _mappingJwsAlgorithmToRsaHashingAlgorithms[algorithm];
+            using (var rsa = new RSACryptoServiceProvider())
+            {
+                rsa.FromXmlString(serializedKeys);
+                return rsa.VerifyData(plainBytes, hashMethod, signatureBytes);
+            }
         }
     }
 }

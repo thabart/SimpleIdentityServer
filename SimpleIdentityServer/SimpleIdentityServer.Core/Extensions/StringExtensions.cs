@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
-
-using SimpleIdentityServer.Core.Jwt.Signature;
+using SimpleIdentityServer.Core.Jwt;
 
 namespace SimpleIdentityServer.Core.Extensions
 {
