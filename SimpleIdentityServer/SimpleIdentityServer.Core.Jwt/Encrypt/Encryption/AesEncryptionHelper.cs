@@ -15,6 +15,11 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt.Encryption
             JweAlg alg,
             JsonWebKey jsonWebKey);
 
+        byte[] DecryptContentEncryptionKey(
+            byte[] encryptedContentEncryptionKey,
+            JweAlg alg,
+            JsonWebKey jsonWebKey);
+
         byte[] EncryptWithAesAlgorithm(
             string toEncrypt,
             byte[] key,
@@ -46,6 +51,17 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt.Encryption
             var algorithm = _mappingJweAlgToAlgorithms[alg];
             return algorithm.Encrypt(
                 contentEncryptionKey, 
+                jsonWebKey);
+        }
+
+        public byte[] DecryptContentEncryptionKey(
+            byte[] encryptedContentEncryptionKey,
+            JweAlg alg,
+            JsonWebKey jsonWebKey)
+        {
+            var algorithm = _mappingJweAlgToAlgorithms[alg];
+            return algorithm.Decrypt(
+                encryptedContentEncryptionKey,
                 jsonWebKey);
         }
 

@@ -5,5 +5,9 @@
         byte[] Encrypt(
             byte[] toBeEncrypted,
             JsonWebKey jsonWebKey);
+
+        byte[] Decrypt(
+            byte[] toBeDecrypted,
+            JsonWebKey jsonWebKey);
     }
 }

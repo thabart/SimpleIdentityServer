@@ -1,6 +1,6 @@
-﻿using SimpleIdentityServer.Core.Common.Extensions;
-using System;
-using System.Linq;
+﻿using System.Linq;
+
+using SimpleIdentityServer.Core.Common.Extensions;
 
 namespace SimpleIdentityServer.Core.Jwt.Encrypt
 {

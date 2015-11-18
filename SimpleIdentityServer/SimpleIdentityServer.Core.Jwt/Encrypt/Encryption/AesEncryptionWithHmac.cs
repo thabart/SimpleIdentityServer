@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 using SimpleIdentityServer.Core.Common.Extensions;
-
+using System;
 
 namespace SimpleIdentityServer.Core.Jwt.Encrypt.Encryption
 {
@@ -21,7 +21,7 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt.Encryption
 
         public AesEncryptionResult Encrypt(
             string toEncrypt,
-            JweAlg alg, 
+            JweAlg alg,
             JweProtectedHeader protectedHeader,
             JsonWebKey jsonWebKey)
         {
@@ -76,11 +76,20 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt.Encryption
         {
             var toDecryptSplitted = toDecrypt.Split('.');
 
+            var encryptedContentEncryptionKeyBytes = 
+                Convert.FromBase64String(toDecryptSplitted[1]);
+            var contentEncryption = _aesEncryptionHelper.DecryptContentEncryptionKey(
+                encryptedContentEncryptionKeyBytes,
+                alg,
+                jsonWebKey);
+
+
+
             return string.Empty;
         }
 
         private byte[] ComputeHmac(
-            int keySize, 
+            int keySize,
             byte[] key,
             byte[] input)
         {
