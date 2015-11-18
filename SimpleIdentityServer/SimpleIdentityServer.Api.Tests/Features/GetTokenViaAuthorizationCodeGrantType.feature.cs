@@ -172,7 +172,7 @@ this.FeatureBackground();
  testRunner.And("decrypt the id_token parameter from the response", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             TechTalk.SpecFlow.Table table6 = new TechTalk.SpecFlow.Table(new string[] {
-                        "alg"});
+                        "Alg"});
             table6.AddRow(new string[] {
                         "none"});
 #line 38
@@ -223,7 +223,7 @@ this.FeatureBackground();
  testRunner.And("decrypt the id_token parameter from the response", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             TechTalk.SpecFlow.Table table9 = new TechTalk.SpecFlow.Table(new string[] {
-                        "alg"});
+                        "Alg"});
             table9.AddRow(new string[] {
                         "none"});
 #line 55
@@ -284,7 +284,7 @@ this.FeatureBackground();
  testRunner.And("decrypt the id_token parameter from the response", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             TechTalk.SpecFlow.Table table13 = new TechTalk.SpecFlow.Table(new string[] {
-                        "alg"});
+                        "Alg"});
             table13.AddRow(new string[] {
                         "none"});
 #line 75

@@ -1,13 +1,12 @@
 ﻿using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Validators;
 using System;
 using System.Linq;
 
-namespace SimpleIdentityServer.Core.Jwt.Validators
+namespace SimpleIdentityServer.Core.Jwt.Validator
 {
     public interface IJwtClientParameterValidator
     {

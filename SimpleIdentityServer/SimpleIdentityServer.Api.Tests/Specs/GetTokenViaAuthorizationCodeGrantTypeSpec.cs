@@ -267,7 +267,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         {
             var record = table.CreateInstance<JwsProtectedHeader>();
 
-            Assert.That(record.alg, Is.EqualTo(_jwsProtectedHeader.alg));
+            Assert.That(record.Alg, Is.EqualTo(_jwsProtectedHeader.Alg));
         }
 
         [Then("the parameter nonce with value (.*) is returned by the JWS payload")]

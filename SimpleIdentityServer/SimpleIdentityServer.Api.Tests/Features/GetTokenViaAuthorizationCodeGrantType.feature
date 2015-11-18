@@ -36,7 +36,7 @@ Scenario: request an id token and access token via the authorization grant type 
 	| Bearer    |
 	And decrypt the id_token parameter from the response
 	And the protected JWS header is returned
-	| alg  |
+	| Alg  |
 	| none |
 	And the parameter nonce with value parameterNonce is returned by the JWS payload
 	And the claim sub with value habarthierry@loki.be is returned by the JWS payload
@@ -53,7 +53,7 @@ Scenario: request an id token and access token via the authorization grant type 
 	| Bearer    |
 	And decrypt the id_token parameter from the response
 	And the protected JWS header is returned
-	| alg  |
+	| Alg  |
 	| none |
 	And the parameter nonce with value parameterNonce is returned by the JWS payload
 	And the claim sub with value habarthierry@loki.be is returned by the JWS payload
@@ -73,7 +73,7 @@ Scenario: request an id token and access token via the authorization grant type 
 	| Bearer    |
 	And decrypt the id_token parameter from the response
 	And the protected JWS header is returned
-	| alg  |
+	| Alg  |
 	| none |
 	And the parameter nonce with value parameterNonce is returned by the JWS payload
 	And the claim sub with value habarthierry@loki.be is returned by the JWS payload

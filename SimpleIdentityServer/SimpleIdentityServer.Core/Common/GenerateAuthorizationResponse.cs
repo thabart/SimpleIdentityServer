@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Jwt.Signature;
+using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
@@ -27,7 +26,7 @@ namespace SimpleIdentityServer.Core.Common
 
         private readonly IParameterParserHelper _parameterParserHelper;
 
-        private readonly IJwsGenerator _jwsGenerator;
+        private readonly IJwtGenerator _jwtGenerator;
 
         private readonly ITokenHelper _tokenHelper;
 
@@ -38,14 +37,14 @@ namespace SimpleIdentityServer.Core.Common
         public GenerateAuthorizationResponse(
             IAuthorizationCodeRepository authorizationCodeRepository,
             IParameterParserHelper parameterParserHelper,
-            IJwsGenerator jwsGenerator,
+            IJwtGenerator jwtGenerator,
             ITokenHelper tokenHelper,
             IGrantedTokenRepository grantedTokenRepository,
             IConsentRepository consentRepository)
         {
             _authorizationCodeRepository = authorizationCodeRepository;
             _parameterParserHelper = parameterParserHelper;
-            _jwsGenerator = jwsGenerator;
+            _jwtGenerator = jwtGenerator;
             _tokenHelper = tokenHelper;
             _grantedTokenRepository = grantedTokenRepository;
             _consentRepository = consentRepository;
@@ -59,8 +58,8 @@ namespace SimpleIdentityServer.Core.Common
             var responses = _parameterParserHelper.ParseResponseType(authorizationParameter.ResponseType);
             if (responses.Contains(ResponseType.id_token))
             {
-                var jwsPayLoad = _jwsGenerator.GenerateJwsPayload(claimsPrincipal, authorizationParameter);
-                var idToken = _jwsGenerator.GenerateJws(jwsPayLoad, authorizationParameter);
+                var jwsPayLoad = _jwtGenerator.GenerateJwsPayload(claimsPrincipal, authorizationParameter);
+                var idToken = _jwtGenerator.Sign(jwsPayLoad, authorizationParameter);
                 actionResult.RedirectInstruction.AddParameter("id_token", idToken);
             }
 
@@ -82,8 +81,8 @@ namespace SimpleIdentityServer.Core.Common
                 var assignedConsent = GetResourceOwnerConsent(claimsPrincipal, authorizationParameter);
                 if (assignedConsent != null)
                 {
-                    var jwsPayLoad = _jwsGenerator.GenerateJwsPayload(claimsPrincipal, authorizationParameter);
-                    var idToken = _jwsGenerator.GenerateJws(jwsPayLoad, authorizationParameter);
+                    var jwsPayLoad = _jwtGenerator.GenerateJwsPayload(claimsPrincipal, authorizationParameter);
+                    var idToken = _jwtGenerator.Sign(jwsPayLoad, authorizationParameter);
                     var authorizationCode = new AuthorizationCode
                     {
                         Code = Guid.NewGuid().ToString(),

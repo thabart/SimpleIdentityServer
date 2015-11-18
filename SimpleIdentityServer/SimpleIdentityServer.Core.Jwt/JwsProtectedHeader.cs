@@ -1,20 +1,26 @@
-﻿namespace SimpleIdentityServer.Core.Jwt
+﻿using System.Runtime.Serialization;
+
+namespace SimpleIdentityServer.Core.Jwt
 {
+    [DataContract]
     public class JwsProtectedHeader
     {
         /// <summary>
         /// Gets or sets the encoded object type. In general its value is JWT
         /// </summary>
-        public string typ { get; set; }
+        [DataMember(Name = "typ")]
+        public string Type { get; set; }
 
         /// <summary>
         /// Gets or sets the algorithm used to secure the JwsProtectedHeader & the JWS payload.
         /// </summary>
-        public string alg { get; set; }
+        [DataMember(Name = "alg")]
+        public string Alg { get; set; }
 
         /// <summary>
         /// Gets or sets the identifier indicating the key that was used to secure the token.
         /// </summary>
-        public string kid { get; set; }
+        [DataMember(Name = "kid")]
+        public string Kid { get; set; }
     }
 }

@@ -48,7 +48,7 @@ namespace SimpleIdentityServer.Core.Validators
 
                 var scopeAllowed = client.AllowedScopes.Select(a => a.Name).ToList();
                 var scopesNotAllowedOrInvalid = scopes.Where(s => !scopeAllowed.Contains(s));
-                if (scopesNotAllowedOrInvalid.Count() > 0)
+                if (scopesNotAllowedOrInvalid.Any())
                 {
                     throw new IdentityServerException(
                         ErrorCodes.InvalidScope,
@@ -63,7 +63,7 @@ namespace SimpleIdentityServer.Core.Validators
         
         private static bool ValidateScope(string scope)
         {
-            var pattern = @"^\w+( +\w+)*$";
+            const string pattern = @"^\w+( +\w+)*$";
             var regularExpression = new Regex(pattern, RegexOptions.IgnoreCase);
             return regularExpression.IsMatch(scope);
         }

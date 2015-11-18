@@ -133,7 +133,7 @@ this.ScenarioSetup(scenarioInfo);
  testRunner.And("decrypt the id_token parameter from the query string", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             TechTalk.SpecFlow.Table table4 = new TechTalk.SpecFlow.Table(new string[] {
-                        "alg"});
+                        "Alg"});
             table4.AddRow(new string[] {
                         "none"});
 #line 30
@@ -216,7 +216,7 @@ this.ScenarioSetup(scenarioInfo);
  testRunner.And("decrypt the id_token parameter from the query string", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             TechTalk.SpecFlow.Table table8 = new TechTalk.SpecFlow.Table(new string[] {
-                        "alg"});
+                        "Alg"});
             table8.AddRow(new string[] {
                         "none"});
 #line 60
@@ -303,7 +303,7 @@ this.ScenarioSetup(scenarioInfo);
  testRunner.And("decrypt the id_token parameter from the query string", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             TechTalk.SpecFlow.Table table12 = new TechTalk.SpecFlow.Table(new string[] {
-                        "alg"});
+                        "Alg"});
             table12.AddRow(new string[] {
                         "RS256"});
 #line 93
@@ -391,7 +391,7 @@ this.ScenarioSetup(scenarioInfo);
  testRunner.And("decrypt the id_token parameter from the query string", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             TechTalk.SpecFlow.Table table16 = new TechTalk.SpecFlow.Table(new string[] {
-                        "alg"});
+                        "Alg"});
             table16.AddRow(new string[] {
                         "none"});
 #line 124

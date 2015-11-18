@@ -9,28 +9,29 @@ using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Jwt.Mapping;
+using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Validators;
 
-namespace SimpleIdentityServer.Core.Jwt.Signature
+namespace SimpleIdentityServer.Core.Jwt
 {
-    public interface IJwsGenerator
+    public interface IJwtGenerator
     {
         JwsPayload GenerateJwsPayload(
             ClaimsPrincipal claimPrincipal,
             AuthorizationParameter authorizationParameter);
 
-        string GenerateJws(
+        string Sign(
             JwsPayload jwsPayload,
             AuthorizationParameter authorizationParameter);
+
+        string Encrypt();
     }
 
-    public class JwsGenerator : IJwsGenerator
+    public class JwtGenerator : IJwtGenerator
     {
-        private const string JwsType = "JWT";
-
         private readonly ISimpleIdentityServerConfigurator _simpleIdentityServerConfigurator;
 
         private readonly IClientRepository _clientRepository;
@@ -39,32 +40,32 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
 
         private readonly IJsonWebKeyRepository _jsonWebKeyRepository;
 
-        private readonly ICreateJwsSignature _createJwsSignature;
-
         private readonly IScopeRepository _scopeRepository;
 
         private readonly IClaimsMapping _claimsMapping;
 
         private readonly IParameterParserHelper _parameterParserHelper;
 
-        public JwsGenerator(
+        private readonly IJwsGenerator _jwsGenerator;
+
+        public JwtGenerator(
             ISimpleIdentityServerConfigurator simpleIdentityServerConfigurator,
             IClientRepository clientRepository,
             IClientValidator clientValidator,
             IJsonWebKeyRepository jsonWebKeyRepository,
-            ICreateJwsSignature createJwsSignature,
             IScopeRepository scopeRepository,
             IClaimsMapping claimsMapping,
-            IParameterParserHelper parameterParserHelper)
+            IParameterParserHelper parameterParserHelper,
+            IJwsGenerator jwsGenerator)
         {
             _simpleIdentityServerConfigurator = simpleIdentityServerConfigurator;
             _clientRepository = clientRepository;
             _clientValidator = clientValidator;
             _jsonWebKeyRepository = jsonWebKeyRepository;
-            _createJwsSignature = createJwsSignature;
             _scopeRepository = scopeRepository;
             _claimsMapping = claimsMapping;
             _parameterParserHelper = parameterParserHelper;
+            _jwsGenerator = jwsGenerator;
         }
 
         public JwsPayload GenerateJwsPayload(
@@ -141,7 +142,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
             // For the moment we support a level 1 because only password via HTTPS is supported.
             /*if (!string.IsNullOrWhiteSpace(authorizationParameter.AcrValues))
             {*/
-            result.Add(Constants.StandardClaimNames.Acr, Constants.StandardArcParameterNames.OpenIdCustomAuthLevel + ".password=1");
+            result.Add(Constants.StandardClaimNames.Acr, Core.Constants.StandardArcParameterNames.OpenIdCustomAuthLevel + ".password=1");
             result.Add(Constants.StandardClaimNames.Amr, "password");
             //}
 
@@ -159,19 +160,23 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
             return result;
         }
 
-        public string GenerateJws(
+        public string Sign(
             JwsPayload jwsPayload,
             AuthorizationParameter authorizationParameter)
         {
             var client = _clientRepository.GetClientById(authorizationParameter.ClientId);
-            var jwsProtectedHeader = ConstructProtectedHeader(client);
-
+            var signedAlg = client.IdTokenSignedTResponseAlg;
+            JwsAlg signedAlgorithm;
+            if (string.IsNullOrWhiteSpace(signedAlg)
+                || !Enum.TryParse(signedAlg, out signedAlgorithm))
+            {
+                signedAlgorithm = JwsAlg.none;
+            }
+            
             // In the "open-id-connect-discovery" there's an endpoint jwks_uri :
             // This url contains the signing key's) the RP uses to validate signatures from the OP
             // The JWS set may also contain the Server's encryption key(s) which are used by the RP to encrypt requests to the server.
-            var signedAlgorithm = (JwsAlg)Enum.Parse(typeof(JwsAlg), jwsProtectedHeader.alg);
             JsonWebKey jsonWebKey = null;
-
             var jsonWebKeys = _jsonWebKeyRepository.GetByAlgorithm(
                 Use.Sig,
                 signedAlgorithm.ToAllAlg(),
@@ -181,46 +186,15 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
                 jsonWebKey = jsonWebKeys.First();
             }
 
-            // If there's no algorithm available to sign the ID_TOKEN then don't secure the JWT
-            if (jsonWebKey != null &&
-                jwsProtectedHeader.alg.ToLowerInvariant() != "none")
-            {
-                jwsProtectedHeader.kid = jsonWebKey.Kid;
-            }
-
-            var jsonJwsProtectedHeader = jwsProtectedHeader.SerializeWithJavascript();
-            var jwsProtectedHeaderBase64Encoded = jsonJwsProtectedHeader.Base64Encode();
-            var jwsPayLoad = jwsPayload.SerializeWithJavascript();
-            var jwsPayLoadBase64Encoded = jwsPayLoad.Base64Encode();
-            var combinedProtectedHeaderAndPayLoad = string.Format("{0}.{1}", jwsProtectedHeaderBase64Encoded, jwsPayLoadBase64Encoded);            
-            
-            var signedJws = string.Empty;
-            if (jsonWebKey != null)
-            {
-                switch (jsonWebKey.Kty)
-                {
-                    case KeyType.RSA:
-                        signedJws = _createJwsSignature.SignWithRsa(signedAlgorithm, jsonWebKey.SerializedKey, combinedProtectedHeaderAndPayLoad);
-                        break;
-                }
-            }
-
-            return string.Format("{0}.{1}", combinedProtectedHeaderAndPayLoad, signedJws);
+            return _jwsGenerator.Generate(
+                jwsPayload, 
+                signedAlgorithm, 
+                jsonWebKey);
         }
 
-        private JwsProtectedHeader ConstructProtectedHeader(Client client)
+        public string Encrypt()
         {
-            var signedAlgorithm = JwsAlg.RS256;
-            if (!string.IsNullOrWhiteSpace(client.IdTokenSignedTResponseAlg))
-            {
-                signedAlgorithm = client.IdTokenSignedTResponseAlg.ToJwsAlg();
-            }
-
-            return new JwsProtectedHeader
-            {
-                alg = Enum.GetName(typeof(JwsAlg), signedAlgorithm),
-                typ = JwsType
-            };
+            return string.Empty;
         }
 
         private Dictionary<string, string> GetClaimsFromRequestedScopes(

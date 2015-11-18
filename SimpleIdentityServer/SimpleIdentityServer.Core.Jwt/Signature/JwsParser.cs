@@ -1,27 +1,25 @@
-﻿using SimpleIdentityServer.Core.Extensions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SimpleIdentityServer.Core.Repositories;
+
+using SimpleIdentityServer.Core.Common.Extensions;
 
 namespace SimpleIdentityServer.Core.Jwt.Signature
 {
     public interface IJwsParser
     {
-        JwsPayload ValidateSignature(string jws);
+        JwsPayload ValidateSignature(
+            string jws,
+            JsonWebKey jsonWebKey);
     }
 
-    public class JwsParser
+    public class JwsParser : IJwsParser
     {
-        private readonly IJsonWebKeyRepository _jsonWebKeyRepository;
-
         private readonly ICreateJwsSignature _createJwsSignature;
 
         public JwsParser(
-            IJsonWebKeyRepository jsonWebKeyRepository,
             ICreateJwsSignature createJwsSignature)
         {
-            _jsonWebKeyRepository = jsonWebKeyRepository;
             _createJwsSignature = createJwsSignature;
         }
 
@@ -30,7 +28,9 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
         /// </summary>
         /// <param name="jws"></param>
         /// <returns></returns>
-        public JwsPayload ValidateSignature(string jws)
+        public JwsPayload ValidateSignature(
+            string jws,
+            JsonWebKey jsonWebKey)
         {
             var parts = GetParts(jws);
             if (!parts.Any())
@@ -50,13 +50,12 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
             var protectedHeader = serializedProtectedHeader.DeserializeWithJavascript<JwsProtectedHeader>();
             
             JwsAlg jwsAlg;
-            if (!Enum.TryParse(protectedHeader.alg, out jwsAlg))
+            if (!Enum.TryParse(protectedHeader.Alg, out jwsAlg))
             {
                 // TODO : maybe throw an exception.
                 return null;
             }
 
-            var jsonWebKey = _jsonWebKeyRepository.GetByKid(protectedHeader.kid);
             // Checks the JWK exist.
             if (jsonWebKey == null)
             {

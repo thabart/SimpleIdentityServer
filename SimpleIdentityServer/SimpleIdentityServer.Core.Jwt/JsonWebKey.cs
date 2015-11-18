@@ -156,23 +156,23 @@ namespace SimpleIdentityServer.Core.Jwt
         #endregion
 
         #region JWE ALGORITHMS
-        RSA15,
-        RSAOAEP,
-        RSAOAEP256,
+        RSA1_5,
+        RSA_OAEP,
+        RSA_OAEP_256,
         A128KW,
         A192KW,
         A256KW,
-        dir,
-        ECDHES,
-        ECDHESA128KW,
-        ECDHESA192KW,
-        ECDHESA256KW,
+        DIR,
+        ECDH_ES,
+        ECDH_ESA_128KW,
+        ECDH_ESA_192KW,
+        ECDH_ESA_256_KW,
         A128GCMKW,
         A192GCMKW,
         A256GCMKW,
-        PBES2HS256A128KW,
-        PBES2HS384A192KW,
-        PBES2HS512A256KW
+        PBES2_HS256_A128KW,
+        PBES2_HS384_A192KW,
+        PBES2_HS512_A256KW
         #endregion
     }
 

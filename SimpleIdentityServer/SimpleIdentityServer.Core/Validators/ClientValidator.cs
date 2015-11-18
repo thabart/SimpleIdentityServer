@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
 
 using System.Linq;

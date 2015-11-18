@@ -7,11 +7,12 @@ using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Helpers;
+using SimpleIdentityServer.Core.Jwt.Validator;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.Core.Jwt.Validators;
+
 using SimpleIdentityServer.Core.Jwt;
 
 namespace SimpleIdentityServer.Core.Api.Token.Actions
@@ -175,7 +176,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
                 var decodedJwt = authorizationCodeGrantTypeParameter.ClientAssertion.Base64Decode();
                 var jwsPayload = decodedJwt.DeserializeWithJavascript<JwsPayload>();
-                return jwsPayload.GetClaimValue(Constants.StandardResourceOwnerClaimNames.Subject);
+                return jwsPayload.GetClaimValue(Jwt.Constants.StandardResourceOwnerClaimNames.Subject);
             }
 
             var result = authorizationCodeGrantTypeParameter.ClientId;

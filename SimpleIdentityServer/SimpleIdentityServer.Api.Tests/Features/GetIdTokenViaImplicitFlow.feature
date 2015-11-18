@@ -28,7 +28,7 @@ Scenario: Get the id token
 	Then the http status code is 301
 	And decrypt the id_token parameter from the query string
 	And the protected JWS header is returned
-	| alg  |
+	| Alg  |
 	| none |
 	And the audience parameter with value MyHolidays is returned by the JWS payload
 	And the parameter nonce with value parameterNonce is returned by the JWS payload
@@ -58,7 +58,7 @@ Scenario: Get the id token and access token via implicit workflow
 	Then the http status code is 301
 	And decrypt the id_token parameter from the query string
 	And the protected JWS header is returned
-	| alg  |
+	| Alg  |
 	| none |
 	And the audience parameter with value MyHolidays is returned by the JWS payload
 	And the parameter nonce with value parameterNonce is returned by the JWS payload
@@ -91,7 +91,7 @@ Scenario: Get a signed id_token
 	Then the http status code is 301
 	And decrypt the id_token parameter from the query string
 	And the protected JWS header is returned
-	| alg   |
+	| Alg   |
 	| RS256 |
 	And the audience parameter with value MyHolidays is returned by the JWS payload
 	And the parameter nonce with value parameterNonce is returned by the JWS payload
@@ -122,7 +122,7 @@ Scenario: Get an id token and check if the claims returned in the token are corr
 	Then the http status code is 301
 	And decrypt the id_token parameter from the query string
 	And the protected JWS header is returned
-	| alg  |
+	| Alg  |
 	| none |
 	And the audience parameter with value MyHolidays is returned by the JWS payload
 	And the parameter nonce with value parameterNonce is returned by the JWS payload
