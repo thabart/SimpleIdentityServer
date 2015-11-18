@@ -81,6 +81,10 @@ namespace SimpleIdentityServer.Api.Configuration
                         new RedirectionUrl
                         {
                             Url = "http://localhost"
+                        },
+                        new RedirectionUrl
+                        {
+                            Url = "https://op.certification.openid.net:60186/authz_cb"
                         }
                     }
                 }
