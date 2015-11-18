@@ -14,7 +14,7 @@ namespace SimpleIdentityServer.Api.Configuration
                 serializedRsa = provider.ToXmlString(true);
             }
 
-                return new List<JsonWebKey>
+            return new List<JsonWebKey>
             {
                 new JsonWebKey
                 {
@@ -25,7 +25,20 @@ namespace SimpleIdentityServer.Api.Configuration
                     },
                     Kid = "1",
                     Kty = KeyType.RSA,
-                    SerializedKey = serializedRsa
+                    SerializedKey = serializedRsa,
+                    Use = Use.Sig
+                },
+                new JsonWebKey
+                {
+                    Alg = AllAlg.RSA1_5,
+                    KeyOps = new []
+                    {
+                        KeyOperations.Encrypt
+                    },
+                    Kid = "2",
+                    Kty = KeyType.RSA,
+                    SerializedKey = serializedRsa,
+                    Use = Use.Enc
                 }
             };
         }

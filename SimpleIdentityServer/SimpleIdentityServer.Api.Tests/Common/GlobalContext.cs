@@ -23,7 +23,6 @@ using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Encrypt;
 using SimpleIdentityServer.Core.Jwt.Mapping;
 using SimpleIdentityServer.Core.Jwt.Signature;
-using SimpleIdentityServer.Core.Jwt.Validator;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Validators;
@@ -33,6 +32,11 @@ using SimpleIdentityServer.Core.WebSite.Consent;
 using SimpleIdentityServer.Core.WebSite.Consent.Actions;
 using SimpleIdentityServer.DataAccess.Fake.Repositories;
 using SimpleIdentityServer.RateLimitation.Configuration;
+using SimpleIdentityServer.Core.JwtToken.Validator;
+using SimpleIdentityServer.Core.JwtToken;
+using SimpleIdentityServer.Api.Controllers.Api;
+using System;
+using SimpleIdentityServer.Core.Jwt.Encrypt.Encryption;
 
 namespace SimpleIdentityServer.Api.Tests.Common
 {
@@ -146,6 +150,7 @@ namespace SimpleIdentityServer.Api.Tests.Common
             UnityContainer.RegisterType<IJwsGenerator, JwsGenerator>();
             UnityContainer.RegisterType<IJweGenerator, JweGenerator>();
             UnityContainer.RegisterType<IJwtGenerator, JwtGenerator>();
+            UnityContainer.RegisterType<IAesEncryptionHelper, AesEncryptionHelper>();
             UnityContainer.RegisterType<IJwsParser, JwsParser>();
             UnityContainer.RegisterType<ISimpleIdentityServerConfigurator, SimpleIdentityServerConfigurator>();
             UnityContainer.RegisterType<ICreateJwsSignature, CreateJwsSignature>();

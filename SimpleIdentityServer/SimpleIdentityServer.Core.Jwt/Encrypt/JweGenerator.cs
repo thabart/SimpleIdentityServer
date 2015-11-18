@@ -40,6 +40,11 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt
             JweEnc enc,
             JsonWebKey jsonWebKey)
         {
+            if (jsonWebKey == null)
+            {
+                return entry;
+            }
+
             // Construct the JWE protected header
             var jweProtectedHeader = new JweProtectedHeader
             {

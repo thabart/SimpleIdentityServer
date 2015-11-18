@@ -122,7 +122,7 @@ namespace SimpleIdentityServer.Core.Jwt
     }
 
     /// <summary>
-    /// Encryptions algorithms for JWE
+    /// Encryptions algorithms for JWE : https://tools.ietf.org/html/rfc7518#page-22
     /// </summary>
     public enum JweEnc
     {

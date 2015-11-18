@@ -14,8 +14,10 @@ using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Validators;
+using SimpleIdentityServer.Core.Jwt;
+using SimpleIdentityServer.Core.Jwt.Encrypt;
 
-namespace SimpleIdentityServer.Core.Jwt
+namespace SimpleIdentityServer.Core.JwtToken
 {
     public interface IJwtGenerator
     {
@@ -27,7 +29,9 @@ namespace SimpleIdentityServer.Core.Jwt
             JwsPayload jwsPayload,
             AuthorizationParameter authorizationParameter);
 
-        string Encrypt();
+        string Encrypt(
+            string toEncrypt,
+            AuthorizationParameter authorizationParameter);
     }
 
     public class JwtGenerator : IJwtGenerator
@@ -48,6 +52,8 @@ namespace SimpleIdentityServer.Core.Jwt
 
         private readonly IJwsGenerator _jwsGenerator;
 
+        private readonly IJweGenerator _jweGenerator;
+
         public JwtGenerator(
             ISimpleIdentityServerConfigurator simpleIdentityServerConfigurator,
             IClientRepository clientRepository,
@@ -56,7 +62,8 @@ namespace SimpleIdentityServer.Core.Jwt
             IScopeRepository scopeRepository,
             IClaimsMapping claimsMapping,
             IParameterParserHelper parameterParserHelper,
-            IJwsGenerator jwsGenerator)
+            IJwsGenerator jwsGenerator,
+            IJweGenerator jweGenerator)
         {
             _simpleIdentityServerConfigurator = simpleIdentityServerConfigurator;
             _clientRepository = clientRepository;
@@ -66,6 +73,7 @@ namespace SimpleIdentityServer.Core.Jwt
             _claimsMapping = claimsMapping;
             _parameterParserHelper = parameterParserHelper;
             _jwsGenerator = jwsGenerator;
+            _jweGenerator = jweGenerator;
         }
 
         public JwsPayload GenerateJwsPayload(
@@ -101,16 +109,16 @@ namespace SimpleIdentityServer.Core.Jwt
             var result = new JwsPayload
             {
                 {
-                    Constants.StandardClaimNames.Issuer, issuerName
+                    Jwt.Constants.StandardClaimNames.Issuer, issuerName
                 },
                 {
-                    Constants.StandardClaimNames.Audiences, audiences.ToArray()
+                    Jwt.Constants.StandardClaimNames.Audiences, audiences.ToArray()
                 },
                 {
-                    Constants.StandardClaimNames.ExpirationTime, expirationInSeconds
+                    Jwt.Constants.StandardClaimNames.ExpirationTime, expirationInSeconds
                 },
                 {
-                    Constants.StandardClaimNames.Iat, iatInSeconds
+                    Jwt.Constants.StandardClaimNames.Iat, iatInSeconds
                 }
             };
 
@@ -127,14 +135,14 @@ namespace SimpleIdentityServer.Core.Jwt
                 var authenticationInstant = claimPrincipal.Claims.SingleOrDefault(c => c.Type == ClaimTypes.AuthenticationInstant);
                 if (authenticationInstant != null)
                 {
-                    result.Add(Constants.StandardClaimNames.AuthenticationTime, double.Parse(authenticationInstant.Value));
+                    result.Add(Jwt.Constants.StandardClaimNames.AuthenticationTime, double.Parse(authenticationInstant.Value));
                 }
             }
 
             // Set the nonce value in the id token. The value is coming from the authorization request
             if (!string.IsNullOrWhiteSpace(authorizationParameter.Nonce))
             {
-                result.Add(Constants.StandardClaimNames.Nonce, authorizationParameter.Nonce);
+                result.Add(Jwt.Constants.StandardClaimNames.Nonce, authorizationParameter.Nonce);
             }
 
             // Set the ACR : Authentication Context Class Reference
@@ -142,8 +150,8 @@ namespace SimpleIdentityServer.Core.Jwt
             // For the moment we support a level 1 because only password via HTTPS is supported.
             /*if (!string.IsNullOrWhiteSpace(authorizationParameter.AcrValues))
             {*/
-            result.Add(Constants.StandardClaimNames.Acr, Core.Constants.StandardArcParameterNames.OpenIdCustomAuthLevel + ".password=1");
-            result.Add(Constants.StandardClaimNames.Amr, "password");
+            result.Add(Jwt.Constants.StandardClaimNames.Acr, Core.Constants.StandardArcParameterNames.OpenIdCustomAuthLevel + ".password=1");
+            result.Add(Jwt.Constants.StandardClaimNames.Amr, "password");
             //}
 
             // Set the client_id
@@ -152,7 +160,7 @@ namespace SimpleIdentityServer.Core.Jwt
                 audiences.Count() == 1 && 
                 audiences.First() == authorizationParameter.ClientId)
             {
-                result.Add(Constants.StandardClaimNames.Azp, authorizationParameter.ClientId);
+                result.Add(Jwt.Constants.StandardClaimNames.Azp, authorizationParameter.ClientId);
             }
 
             // TODO : Add another claims in it ...
@@ -170,31 +178,59 @@ namespace SimpleIdentityServer.Core.Jwt
             if (string.IsNullOrWhiteSpace(signedAlg)
                 || !Enum.TryParse(signedAlg, out signedAlgorithm))
             {
-                signedAlgorithm = JwsAlg.none;
+                signedAlgorithm = JwsAlg.HS256;
             }
             
             // In the "open-id-connect-discovery" there's an endpoint jwks_uri :
             // This url contains the signing key's) the RP uses to validate signatures from the OP
             // The JWS set may also contain the Server's encryption key(s) which are used by the RP to encrypt requests to the server.
-            JsonWebKey jsonWebKey = null;
-            var jsonWebKeys = _jsonWebKeyRepository.GetByAlgorithm(
-                Use.Sig,
-                signedAlgorithm.ToAllAlg(),
-                new[] { KeyOperations.Sign });
-            if (jsonWebKeys != null && jsonWebKeys.Any())
-            {
-                jsonWebKey = jsonWebKeys.First();
-            }
-
+            var jsonWebKey = GetJsonWebKey(
+                signedAlgorithm.ToAllAlg(), 
+                KeyOperations.Sign, 
+                Use.Sig);
             return _jwsGenerator.Generate(
                 jwsPayload, 
                 signedAlgorithm, 
                 jsonWebKey);
         }
 
-        public string Encrypt()
+        public string Encrypt(
+            string jwe,
+            AuthorizationParameter authorizationParameter)
         {
-            return string.Empty;
+            var client = _clientRepository.GetClientById(authorizationParameter.ClientId);
+            var algName = client.IdTokenEncryptedResponseAlg;
+            var encName = client.IdTokenEncryptedResponseEnc;
+            
+            if (string.IsNullOrWhiteSpace(algName) || 
+                !Constants.MappingNameToJweAlgEnum.Keys.Contains(algName))
+            {
+                return jwe;
+            }
+
+            JweEnc encEnum;
+            if (string.IsNullOrWhiteSpace(encName) ||
+                !Constants.MappingNameToJweEncEnum.Keys.Contains(encName))
+            {
+                encEnum = JweEnc.A128CBC_HS256;
+            }
+            else
+            {
+                encEnum = Constants.MappingNameToJweEncEnum[encName];
+            }
+
+            var algEnum = Constants.MappingNameToJweAlgEnum[algName];
+
+            var jsonWebKey = GetJsonWebKey(
+                algEnum.ToAllAlg(),
+                KeyOperations.Encrypt,
+                Use.Enc);
+
+            return _jweGenerator.GenerateJwe(
+                jwe, 
+                algEnum, 
+                encEnum, 
+                jsonWebKey);
         }
 
         private Dictionary<string, string> GetClaimsFromRequestedScopes(
@@ -204,7 +240,7 @@ namespace SimpleIdentityServer.Core.Jwt
             var result = new Dictionary<string, string>
             {
                 {
-                    Constants.StandardResourceOwnerClaimNames.Subject, claimsPrincipal.GetSubject()
+                    Jwt.Constants.StandardResourceOwnerClaimNames.Subject, claimsPrincipal.GetSubject()
                 }
             };
             foreach (var scope in scopes)
@@ -223,5 +259,23 @@ namespace SimpleIdentityServer.Core.Jwt
 
             return result;
         } 
+
+        private JsonWebKey GetJsonWebKey(
+            AllAlg alg,
+            KeyOperations operation,
+            Use use)
+        {
+            JsonWebKey result = null;
+            var jsonWebKeys = _jsonWebKeyRepository.GetByAlgorithm(
+                use,
+                alg,
+                new[] { operation });
+            if (jsonWebKeys != null && jsonWebKeys.Any())
+            {
+                result = jsonWebKeys.First();
+            }
+
+            return result;
+        }
     }
 }

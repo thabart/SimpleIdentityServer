@@ -7,13 +7,13 @@ using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Jwt.Validator;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Validators;
 
 using SimpleIdentityServer.Core.Jwt;
+using SimpleIdentityServer.Core.JwtToken.Validator;
 
 namespace SimpleIdentityServer.Core.Api.Token.Actions
 {

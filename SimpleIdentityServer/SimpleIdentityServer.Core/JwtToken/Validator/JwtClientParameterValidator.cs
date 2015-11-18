@@ -6,7 +6,7 @@ using SimpleIdentityServer.Core.Validators;
 using System;
 using System.Linq;
 
-namespace SimpleIdentityServer.Core.Jwt.Validator
+namespace SimpleIdentityServer.Core.JwtToken.Validator
 {
     public interface IJwtClientParameterValidator
     {
@@ -56,8 +56,8 @@ namespace SimpleIdentityServer.Core.Jwt.Validator
             errorDescription = string.Empty;
 
             var decodedJwt = jwt.Base64Decode();
-            var jwsPayload = decodedJwt.DeserializeWithJavascript<JwsPayload>();
-            var subject = jwsPayload.GetClaimValue(Constants.StandardResourceOwnerClaimNames.Subject);
+            var jwsPayload = decodedJwt.DeserializeWithJavascript<Jwt.JwsPayload>();
+            var subject = jwsPayload.GetClaimValue(Jwt.Constants.StandardResourceOwnerClaimNames.Subject);
             var issuer = jwsPayload.Issuer;
             var audiences = jwsPayload.Audiences;
             var expirationTime = jwsPayload.ExpirationTime;

@@ -77,6 +77,7 @@ namespace SimpleIdentityServer.DataAccess.Fake.Models
 
     /// <summary>
     /// Algorithms used to create JWS
+    /// Links to documentation : https://tools.ietf.org/html/rfc7518#page-6
     /// </summary>
     public enum JwsAlg
     {
@@ -97,26 +98,40 @@ namespace SimpleIdentityServer.DataAccess.Fake.Models
 
     /// <summary>
     /// Algorithms used to create JWE
+    /// Link to documentation : https://tools.ietf.org/html/rfc7518#page-12
     /// </summary>
     public enum JweAlg
     {
-        RSA15,
-        RSAOAEP,
-        RSAOAEP256,
+        RSA1_5,
+        RSA_OAEP,
+        RSA_OAEP_256,
         A128KW,
         A192KW,
         A256KW,
-        dir,
-        ECDHES,
-        ECDHESA128KW,
-        ECDHESA192KW,
-        ECDHESA256KW,
+        DIR,
+        ECDH_ES,
+        ECDH_ESA_128KW,
+        ECDH_ESA_192KW,
+        ECDH_ESA_256_KW,
         A128GCMKW,
         A192GCMKW,
         A256GCMKW,
-        PBES2HS256A128KW,
-        PBES2HS384A192KW,
-        PBES2HS512A256KW
+        PBES2_HS256_A128KW,
+        PBES2_HS384_A192KW,
+        PBES2_HS512_A256KW
+    }
+
+    /// <summary>
+    /// Encryptions algorithms for JWE : https://tools.ietf.org/html/rfc7518#page-22
+    /// </summary>
+    public enum JweEnc
+    {
+        A128CBC_HS256, //AES_128_CBC_HMAC_SHA_256 authenticated encryption using a 256 bit key. : documentation : https://tools.ietf.org/html/draft-ietf-jose-json-web-encryption-40#appendix-B
+        A192CBC_HS384,
+        A256CBC_HS512,
+        A128GCM,
+        A192GCM,
+        A256GCM
     }
 
     /// <summary>
@@ -141,23 +156,23 @@ namespace SimpleIdentityServer.DataAccess.Fake.Models
         #endregion
 
         #region JWE ALGORITHMS
-        RSA15,
-        RSAOAEP,
-        RSAOAEP256,
+        RSA1_5,
+        RSA_OAEP,
+        RSA_OAEP_256,
         A128KW,
         A192KW,
         A256KW,
-        dir,
-        ECDHES,
-        ECDHESA128KW,
-        ECDHESA192KW,
-        ECDHESA256KW,
+        DIR,
+        ECDH_ES,
+        ECDH_ESA_128KW,
+        ECDH_ESA_192KW,
+        ECDH_ESA_256_KW,
         A128GCMKW,
         A192GCMKW,
         A256GCMKW,
-        PBES2HS256A128KW,
-        PBES2HS384A192KW,
-        PBES2HS512A256KW
+        PBES2_HS256_A128KW,
+        PBES2_HS384_A192KW,
+        PBES2_HS512_A256KW
         #endregion
     }
 

@@ -114,8 +114,8 @@
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
-    <Compile Include="Jwt\JwtGenerator.cs" />
-    <Compile Include="Jwt\Validator\JwtClientParameterValidator.cs" />
+    <Compile Include="JwtToken\JwtGenerator.cs" />
+    <Compile Include="JwtToken\Validator\JwtClientParameterValidator.cs" />
     <Compile Include="Parameters\AuthorizationCodeGrantTypeParameter.cs" />
     <Compile Include="Parameters\ClientCredentialsParameter.cs" />
     <Compile Include="Repositories\IJsonWebKeyRepository.cs" />
