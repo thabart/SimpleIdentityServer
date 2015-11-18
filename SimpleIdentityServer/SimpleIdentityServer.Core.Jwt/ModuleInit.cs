@@ -18,7 +18,7 @@ namespace SimpleIdentityServer.Core.Jwt
 
             register.RegisterType<IClaimsMapping, ClaimsMapping>();
 
-            register.RegisterType<IJwsGenerator, IJwsGenerator>();
+            register.RegisterType<IJwsGenerator, JwsGenerator>();
             register.RegisterType<ICreateJwsSignature, CreateJwsSignature>();
             register.RegisterType<IJwsParser, JwsParser>();
         }
