@@ -203,23 +203,23 @@ namespace SimpleIdentityServer.Core.JwtToken
             var encName = client.IdTokenEncryptedResponseEnc;
             
             if (string.IsNullOrWhiteSpace(algName) || 
-                !Constants.MappingNameToJweAlgEnum.Keys.Contains(algName))
+                !Jwt.Constants.MappingNameToJweAlgEnum.Keys.Contains(algName))
             {
                 return jwe;
             }
 
             JweEnc encEnum;
             if (string.IsNullOrWhiteSpace(encName) ||
-                !Constants.MappingNameToJweEncEnum.Keys.Contains(encName))
+                !Jwt.Constants.MappingNameToJweEncEnum.Keys.Contains(encName))
             {
                 encEnum = JweEnc.A128CBC_HS256;
             }
             else
             {
-                encEnum = Constants.MappingNameToJweEncEnum[encName];
+                encEnum = Jwt.Constants.MappingNameToJweEncEnum[encName];
             }
 
-            var algEnum = Constants.MappingNameToJweAlgEnum[algName];
+            var algEnum = Jwt.Constants.MappingNameToJweAlgEnum[algName];
 
             var jsonWebKey = GetJsonWebKey(
                 algEnum.ToAllAlg(),

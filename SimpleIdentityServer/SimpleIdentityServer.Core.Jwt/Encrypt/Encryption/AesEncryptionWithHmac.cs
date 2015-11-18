@@ -69,6 +69,16 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt.Encryption
             };
         }
 
+        public string Decrypt(
+            string toDecrypt,
+            JweAlg alg,
+            JsonWebKey jsonWebKey)
+        {
+            var toDecryptSplitted = toDecrypt.Split('.');
+
+            return string.Empty;
+        }
+
         private byte[] ComputeHmac(
             int keySize, 
             byte[] key,

@@ -14,7 +14,9 @@ namespace SimpleIdentityServer.Core.Jwt
         public void Initialize(IModuleRegister register)
         {
             register.RegisterType<IJweGenerator, JweGenerator>();
+            register.RegisterType<IJweParser, JweParser>();
             register.RegisterType<IAesEncryptionHelper, AesEncryptionHelper>();
+            register.RegisterType<IJweHelper, JweHelper>();
 
             register.RegisterType<IClaimsMapping, ClaimsMapping>();
 

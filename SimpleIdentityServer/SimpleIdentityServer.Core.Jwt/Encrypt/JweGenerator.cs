@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Jwt.Encrypt.Encryption;
+using System.Linq;
+using SimpleIdentityServer.Core.Jwt.Extensions;
 
 namespace SimpleIdentityServer.Core.Jwt.Encrypt
 {
@@ -16,22 +18,11 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt
 
     public class JweGenerator : IJweGenerator
     {
-        private readonly Dictionary<JweEnc, IEncryption> _mappingJweEncToKeySize;
+        private readonly IJweHelper _jweHelper;
 
-        public JweGenerator(IAesEncryptionHelper aesEncryptionHelper)
+        public JweGenerator(IJweHelper jweHelper)
         {
-            _mappingJweEncToKeySize = new Dictionary<JweEnc, IEncryption>
-            {
-                {
-                    JweEnc.A128CBC_HS256, new AesEncryptionWithHmac(aesEncryptionHelper, 256)
-                },
-                {
-                    JweEnc.A192CBC_HS384, new AesEncryptionWithHmac(aesEncryptionHelper, 384)
-                },
-                {
-                    JweEnc.A256CBC_HS512, new AesEncryptionWithHmac(aesEncryptionHelper, 512)
-                }
-            };
+            _jweHelper = jweHelper;
         }
 
         public string GenerateJwe(
@@ -40,7 +31,13 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt
             JweEnc enc,
             JsonWebKey jsonWebKey)
         {
-            if (jsonWebKey == null)
+            var algo = Constants.MappingNameToJweAlgEnum
+                .SingleOrDefault(k => k.Value == alg);
+            var encryption = Constants.MappingNameToJweEncEnum
+                .SingleOrDefault(k => k.Value == enc);
+            if (jsonWebKey == null ||
+                algo.IsDefault() || 
+                encryption.IsDefault())
             {
                 return entry;
             }
@@ -48,12 +45,12 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt
             // Construct the JWE protected header
             var jweProtectedHeader = new JweProtectedHeader
             {
-                Alg = Enum.GetName(typeof(JweAlg), alg),
-                Enc = Enum.GetName(typeof(JweEnc), enc),
+                Alg = algo.Key,
+                Enc = encryption.Key,
                 Kid = jsonWebKey.Kid
             };
 
-            var algorithm = _mappingJweEncToKeySize[enc];
+            var algorithm = _jweHelper.GetEncryptor(enc);
             var encryptionResult = algorithm.Encrypt(entry, 
                 alg, 
                 jweProtectedHeader, 

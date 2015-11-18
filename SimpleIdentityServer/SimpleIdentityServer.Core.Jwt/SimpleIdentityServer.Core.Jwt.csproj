@@ -51,8 +51,11 @@
     <Compile Include="Encrypt\Encryption\AesEncryptionWithHmac.cs" />
     <Compile Include="Encrypt\Encryption\IEncryption.cs" />
     <Compile Include="Encrypt\JweGenerator.cs" />
+    <Compile Include="Encrypt\JweHelper.cs" />
+    <Compile Include="Encrypt\JweParser.cs" />
     <Compile Include="Encrypt\JweProtectedHeader.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Extensions\StructExtensions.cs" />
     <Compile Include="JsonWebKey.cs" />
     <Compile Include="JwsPayload.cs" />
     <Compile Include="JwsProtectedHeader.cs" />

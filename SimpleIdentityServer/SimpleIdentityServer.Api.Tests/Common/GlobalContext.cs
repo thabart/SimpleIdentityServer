@@ -149,6 +149,8 @@ namespace SimpleIdentityServer.Api.Tests.Common
             UnityContainer.RegisterType<IProcessAuthorizationRequest, ProcessAuthorizationRequest>();
             UnityContainer.RegisterType<IJwsGenerator, JwsGenerator>();
             UnityContainer.RegisterType<IJweGenerator, JweGenerator>();
+            UnityContainer.RegisterType<IJweParser, JweParser>();
+            UnityContainer.RegisterType<IJweHelper, JweHelper>();
             UnityContainer.RegisterType<IJwtGenerator, JwtGenerator>();
             UnityContainer.RegisterType<IAesEncryptionHelper, AesEncryptionHelper>();
             UnityContainer.RegisterType<IJwsParser, JwsParser>();

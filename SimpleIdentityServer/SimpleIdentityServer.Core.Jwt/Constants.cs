@@ -113,5 +113,31 @@ namespace SimpleIdentityServer.Core.Jwt
                 ClaimTypes.Role, StandardResourceOwnerClaimNames.Role
             }
         };
+                
+        public static readonly Dictionary<string, JweAlg> MappingNameToJweAlgEnum = new Dictionary<string, JweAlg>
+        {
+            {
+                "RSA1_5", JweAlg.RSA1_5
+            },
+            {
+                "RSA-OAEP", JweAlg.RSA_OAEP
+            },
+            {
+                "RSA-OAEP-256", JweAlg.RSA_OAEP_256
+            }
+        };
+
+        public static readonly Dictionary<string, JweEnc> MappingNameToJweEncEnum = new Dictionary<string, JweEnc>
+        {
+            {
+                "A128CBC-HS256", JweEnc.A128CBC_HS256
+            },
+            {
+                "A192CBC-HS384", JweEnc.A192CBC_HS384
+            },
+            {
+                "A256CBC-HS512", JweEnc.A256CBC_HS512
+            }
+        };
     }
 }
