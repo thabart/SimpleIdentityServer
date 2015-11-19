@@ -2,6 +2,7 @@
 using System.IO;
 using System.IO.Compression;
 using System.Text;
+using SimpleIdentityServer.Core.Common.Extensions;
 
 namespace SimpleIdentityServer.Core.Protector
 {
@@ -36,7 +37,7 @@ namespace SimpleIdentityServer.Core.Protector
 
         public string Decompress(string compressedText)
         {
-            var gzBuffer = Convert.FromBase64String(compressedText);
+            var gzBuffer = compressedText.Base64DecodeBytes();
             using (var ms = new MemoryStream())
             {
                 var msgLength = BitConverter.ToInt32(gzBuffer, 0);

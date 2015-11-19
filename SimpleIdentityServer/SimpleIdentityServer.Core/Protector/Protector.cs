@@ -3,6 +3,7 @@ using System.IdentityModel;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Web.Script.Serialization;
+using SimpleIdentityServer.Core.Common.Extensions;
 
 namespace SimpleIdentityServer.Core.Protector
 {
@@ -47,7 +48,7 @@ namespace SimpleIdentityServer.Core.Protector
 
         public T Decrypt<T>(string encryptedString)
         {
-            var bytesToDecrypt = Convert.FromBase64String(encryptedString);
+            var bytesToDecrypt = encryptedString.Base64DecodeBytes();
             var validated = _sign.Decode(bytesToDecrypt);
             var plainBytes = _encrypt.Decode(validated);
             var encoding = new ASCIIEncoding();

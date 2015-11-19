@@ -45,7 +45,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
 
             var serializedProtectedHeader = base64EncodedProtectedHeader.Base64Decode();
             var serializedPayload = base64EncodedSerialized.Base64Decode();
-            var signature = Convert.FromBase64String(parts[2]);
+            var signature = parts[2].Base64DecodeBytes();
 
             var protectedHeader = serializedProtectedHeader.DeserializeWithJavascript<JwsProtectedHeader>();
             

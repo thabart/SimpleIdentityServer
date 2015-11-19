@@ -50,7 +50,7 @@ namespace TestProj
 
         private static string Decrypt(string parameter, string parameters)
         {
-            var dataToEncrypt = Convert.FromBase64String(parameter);
+            var dataToEncrypt = parameter.Base64DecodeBytes();
             var encryptedBytes = RsaDecrypt(dataToEncrypt, parameters, false);
             return ASCIIEncoding.ASCII.GetString(encryptedBytes);
         }

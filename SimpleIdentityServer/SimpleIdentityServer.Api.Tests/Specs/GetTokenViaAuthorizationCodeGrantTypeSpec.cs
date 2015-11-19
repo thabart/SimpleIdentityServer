@@ -255,8 +255,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             {
                 var serializedRsa = FakeDataSource.Instance().JsonWebKeys.First().SerializedKey;
                 provider.FromXmlString(serializedRsa);
-                _signedPayLoad = _signedPayLoad.Replace(" ", "+");
-                var signature = Convert.FromBase64String(_signedPayLoad);
+                var signature = _signedPayLoad.Base64DecodeBytes();
                 var payLoad = ASCIIEncoding.ASCII.GetBytes(_combinedHeaderAndPayload);
                 var signatureIsCorrect = provider.VerifyData(payLoad, "SHA256", signature);
                 Assert.IsTrue(signatureIsCorrect);

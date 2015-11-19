@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using SimpleIdentityServer.Core.Common.Extensions;
 
 namespace SimpleIdentityServer.Core.Protector
 {
@@ -14,7 +15,7 @@ namespace SimpleIdentityServer.Core.Protector
     {
         public string Decode(string code)
         {
-            var base64Bytes = Convert.FromBase64String(code);
+            var base64Bytes = code.Base64DecodeBytes();
             return new ASCIIEncoding().GetString(base64Bytes);
         }
 
