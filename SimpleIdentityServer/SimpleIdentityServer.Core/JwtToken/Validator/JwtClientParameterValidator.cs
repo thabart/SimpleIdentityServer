@@ -1,4 +1,5 @@
-﻿using SimpleIdentityServer.Core.Configuration;
+﻿using SimpleIdentityServer.Core.Common.Extensions;
+using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Repositories;

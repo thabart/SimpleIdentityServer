@@ -50,6 +50,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SimpleIdentityServer.Core.Common\SimpleIdentityServer.Core.Common.csproj">
+      <Project>{070f36eb-dc27-4cde-b5f7-2cc63b78e150}</Project>
+      <Name>SimpleIdentityServer.Core.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SimpleIdentityServer.Core\SimpleIdentityServer.Core.csproj">
       <Project>{3d519f94-39f1-45f5-b080-b2d719021a10}</Project>
       <Name>SimpleIdentityServer.Core</Name>

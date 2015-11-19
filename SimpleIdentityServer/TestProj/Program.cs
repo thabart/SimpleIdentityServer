@@ -6,6 +6,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Web.Script.Serialization;
+using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Extensions;
 
 namespace TestProj

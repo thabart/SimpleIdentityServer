@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Http.Headers;
-
+using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;

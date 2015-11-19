@@ -111,7 +111,6 @@
     <Compile Include="Configuration\SimpleIdentityServerConfigurator.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Extensions\AlgorithmExtensions.cs" />
-    <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="JwtToken\JwtGenerator.cs" />

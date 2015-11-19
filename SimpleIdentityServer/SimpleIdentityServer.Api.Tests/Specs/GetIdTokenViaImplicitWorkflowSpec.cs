@@ -12,6 +12,7 @@ using NUnit.Framework;
 
 using SimpleIdentityServer.Api.DTOs.Request;
 using SimpleIdentityServer.Api.Tests.Common;
+using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Jwt.Encrypt;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.DataAccess.Fake;

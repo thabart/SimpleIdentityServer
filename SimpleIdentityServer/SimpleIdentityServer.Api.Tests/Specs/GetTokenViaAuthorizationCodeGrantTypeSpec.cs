@@ -20,6 +20,7 @@ using TechTalk.SpecFlow.Assist;
 
 using SimpleIdentityServer.Api.Tests.Common.Fakes;
 using SimpleIdentityServer.Api.Tests.Common.Fakes.Models;
+using SimpleIdentityServer.Core.Common.Extensions;
 
 using DOMAINS = SimpleIdentityServer.Core.Models;
 using MODELS = SimpleIdentityServer.DataAccess.Fake.Models;

@@ -74,11 +74,10 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt.Encryption
             var toDecryptSplitted = toDecrypt.Split('.');
 
             var serializedProtectedHeader = toDecryptSplitted[0].Base64Decode();
-            var encryptedContentEncryptionKeyBytes =
-                Convert.FromBase64String(toDecryptSplitted[1]);
-            var ivBytes = Convert.FromBase64String(toDecryptSplitted[2]);
-            var cipherText = Convert.FromBase64String(toDecryptSplitted[3]);
-            var authenticationTag = Convert.FromBase64String(toDecryptSplitted[4]);
+            var encryptedContentEncryptionKeyBytes = toDecryptSplitted[1].Base64DecodeBytes();
+            var ivBytes = toDecryptSplitted[2].Base64DecodeBytes();
+            var cipherText = toDecryptSplitted[3].Base64DecodeBytes();
+            var authenticationTag = toDecryptSplitted[4].Base64DecodeBytes();
 
             var contentEncryptionKey = _aesEncryptionHelper.DecryptContentEncryptionKey(
                 encryptedContentEncryptionKeyBytes,
