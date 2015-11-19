@@ -1,40 +1,62 @@
-﻿using System.Web.Http;
+﻿using SimpleIdentityServer.Core.Api.UserInfo;
+using SimpleIdentityServer.Core.Errors;
+using SimpleIdentityServer.Core.Exceptions;
+using System.Net;
+using System.Net.Http;
+using System.Web.Http;
 
 namespace SimpleIdentityServer.Api.Controllers.Api
 {
     public class UserInfoController : ApiController
     {
-        public void Get()
+        private readonly IUserInfoActions _userInfoActions;
+
+        public UserInfoController(IUserInfoActions userInfoActions)
         {
-            
+            _userInfoActions = userInfoActions;
         }
 
-        public void Post()
+        public HttpResponseMessage Get()
         {
-            
+            return ProcessRequest();
         }
 
-        private void ProcessRequest()
+        public HttpResponseMessage Post()
         {
-            var authorization = Request.Headers.Authorization;
-            if (authorization == null)
-            {
-                // TODO throw the appropriate exception.
-            }
+            return ProcessRequest();
+        }
 
-            var scheme = authorization.Scheme;
-            if (scheme != "Bearer")
+        private HttpResponseMessage ProcessRequest()
+        {
+            try
             {
-                // TODO throw the appropriate exception
-            }
+                var authorization = Request.Headers.Authorization;
+                if (authorization == null)
+                {
+                    throw new AuthorizationException(ErrorCodes.InvalidToken, string.Empty);
+                }
 
-            var accessToken = authorization.Parameter;
-            if (string.IsNullOrWhiteSpace(accessToken))
+                var scheme = authorization.Scheme;
+                if (scheme != "Bearer")
+                {
+                    throw new AuthorizationException(ErrorCodes.InvalidToken, string.Empty);
+                }
+
+                var accessToken = authorization.Parameter;
+                if (string.IsNullOrWhiteSpace(accessToken))
+                {
+                    throw new AuthorizationException(ErrorCodes.InvalidToken, string.Empty);
+                }
+                
+                var result = _userInfoActions.GetUserInformation(accessToken);
+                return Request.CreateResponse(HttpStatusCode.OK, result);
+            }
+            catch (AuthorizationException authorizationException)
             {
-                // TODO throw the appropriate exception
+                var response = Request.CreateResponse(HttpStatusCode.Unauthorized);
+                // TODO : add the code & description into the WWW-Authenticate response header.
+                return response;
             }
-
-            // Check the token
         }
     }
 }
