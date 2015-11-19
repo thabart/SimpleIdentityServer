@@ -366,6 +366,15 @@ namespace TestProj
 
         static void Main(string[] args)
         {
+            var m =
+                "eyJhbGciOiJSU0ExXzUiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2Iiwia2lkIjoiMSJ9.J45WSQ1Fo0MfckoSs8biMg7TesTXmRK4Z zrSyMPA56lWcgG1vPb22a8e29lggHzFl8q1XIpOOyDuC6xjfHGi7lQNQ/Q8TojhCkvsBGu89u0bb1iW11lfA2TVXAgPjQ/8fCUPrX/qfgacmRppb5hx JpuEhhuG8S5JYi12idEc0=.U yNJ8HQPyVBEF82rKvadw==. re5SzBHiiIcQjXTVB3patsXCQcnFx6GPIvqdLNP 7Y6SX8W/s/iYn612jHIikeAqfYrwL0AVyuicrRNRLjFyDHQm82EA4m8oXkCRVAavZjhxwYuA2rPeS/doH0pyCSSxWUb h5w0mvh1olv2mHeQ13L CwWkD Grj3SUOhBSZCp8qyjMooaZEgrAnXqAIJty3mPTDevFfLP4i3xTD6m8s58CqiqtAChXfryIwnOP1tmm6 NOw7uDqFoQiCih4d5eFPgjjTFpgnf6CybnVu1iqITpWexstOblAoPPsPvcfv LcU5D6JtwT5y3KUJhwaeinuicdSw78ZIEH6GNjlov InQqqo680HlPqwet3Em 1z1VJz9gJ7FTRBrdhcF5rfVnCyaKAMO1imLHqBRQxPst6lgfGDb/WT4ThgU3VpXgM0Jw58/YjLTsnxi8T0e0Rt3hXb89UfSwDbnptQvvT0hB7LpZiEwlVZwmFzIhqJQfbX rqNw4E00BjqjKLxzOiw/tduBidSDreLG2BhILRkwsnvGvOv4Y3EBJSWTeZBZPw6Ckymk4ObZ/PH3PpCSeEkfUeWJxc/Q7S7AemHJLlPvC7RwxLIF/mUDLiVfWMScWZfnGAycZjr3jkQz/Qr67anKxBIMF9FvnGHw3J9GW5dqOwa7XM2EAzGC ED3mnYvPs4m0z9SqJSVhN0CuBUnBVJiEd oaB37 SH6G5jhk2yw4SjA1qSyYXYWH63OVrBk2c=.mJ89L VkCIcq4KSIxj3hxA==";
+            var r = m.Split('.');
+            var serializedProtectedHeader = r[0].Base64Decode();
+            var encryptedContentEncryptionKeyBytes = r[1].Base64DecodeBytes();
+            var ivBytes = r[2].Base64DecodeBytes();
+            var cipherText = r[3].Base64DecodeBytes();
+            var authenticationTag = r[4].Base64DecodeBytes();
+
             var clientSecret = "ClientSecret";
             string rsaXml;
             var jwe = GenerateJweWithClientSecretAsHmacKey("hello", clientSecret, out rsaXml);

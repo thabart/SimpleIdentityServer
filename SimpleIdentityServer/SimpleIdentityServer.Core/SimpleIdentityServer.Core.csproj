@@ -102,6 +102,8 @@
     <Compile Include="Api\Discovery\DiscoveryActions.cs" />
     <Compile Include="Api\Token\Actions\GetTokenByAuthorizationCodeGrantTypeAction.cs" />
     <Compile Include="Api\Token\TokenActions.cs" />
+    <Compile Include="Api\UserInfo\Actions\GetJwsPayload.cs" />
+    <Compile Include="Api\UserInfo\UserInfoActions.cs" />
     <Compile Include="Authenticate\AuthenticateClient.cs" />
     <Compile Include="Authenticate\AuthenticateInstruction.cs" />
     <Compile Include="Authenticate\ClientSecretBasicAuthentication.cs" />

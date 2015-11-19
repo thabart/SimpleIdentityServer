@@ -47,7 +47,8 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
                 IdToken = grantedToken.IdToken,
                 RefreshToken = grantedToken.RefreshToken,
                 Scope = grantedToken.Scope,
-                TokenType = grantedToken.TokenType
+                TokenType = grantedToken.TokenType,
+                CreateDateTime = grantedToken.CreateDateTime
             };
         }
 
@@ -224,7 +225,8 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
                 IdToken = grantedToken.IdToken,
                 RefreshToken = grantedToken.RefreshToken,
                 Scope = grantedToken.Scope,
-                TokenType = grantedToken.TokenType
+                TokenType = grantedToken.TokenType,
+                CreateDateTime = grantedToken.CreateDateTime
             };
         }
 

@@ -1,4 +1,5 @@
-﻿using SimpleIdentityServer.Core.Repositories;
+﻿using System;
+using SimpleIdentityServer.Core.Repositories;
 
 namespace SimpleIdentityServer.Core.Validators
 {
@@ -20,12 +21,13 @@ namespace SimpleIdentityServer.Core.Validators
             string accessToken)
         {
             var grantedToken = _grantedTokenRepository.GetToken(accessToken);
-            if (grantedToken == null)
+            var expirationDateTime = grantedToken.CreateDateTime.AddSeconds(grantedToken.ExpiresIn);
+            var tokenIsExpired = DateTime.UtcNow > expirationDateTime;
+            if (grantedToken == null || tokenIsExpired)
             {
                 return false;
             }
-
-
+            
             return true;
         }
     }

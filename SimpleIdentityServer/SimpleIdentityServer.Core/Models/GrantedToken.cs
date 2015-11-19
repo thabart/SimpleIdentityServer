@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using System;
+using System.Runtime.Serialization;
 
 namespace SimpleIdentityServer.Core.Models
 {
@@ -22,5 +23,7 @@ namespace SimpleIdentityServer.Core.Models
 
         [DataMember(Name = "scope")]
         public string Scope { get; set; }
+
+        public DateTime CreateDateTime { get; set; }
     }
 }

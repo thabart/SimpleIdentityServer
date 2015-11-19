@@ -21,7 +21,8 @@ namespace SimpleIdentityServer.Core.Helpers
                 ExpiresIn = 3600,
                 Scope = scope,
                 TokenType = Constants.StandardTokenTypes.Bearer,
-                RefreshToken = Convert.ToBase64String(refreshTokenId)
+                RefreshToken = Convert.ToBase64String(refreshTokenId),
+                CreateDateTime = DateTime.UtcNow
             };
         }
     }

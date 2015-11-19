@@ -1,4 +1,6 @@
-﻿namespace SimpleIdentityServer.DataAccess.Fake.Models
+﻿using System;
+
+namespace SimpleIdentityServer.DataAccess.Fake.Models
 {
     public class GrantedToken
     {
@@ -13,5 +15,7 @@
         public int ExpiresIn { get; set; }
 
         public string Scope { get; set; }
+
+        public DateTime CreateDateTime { get; set; }
     }
 }
