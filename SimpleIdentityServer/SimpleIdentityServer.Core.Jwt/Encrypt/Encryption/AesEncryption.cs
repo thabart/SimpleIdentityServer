@@ -6,5 +6,11 @@
         {
             return null;
         }
+
+
+        public string Decrypt(string toDecrypt, JweAlg alg, JsonWebKey jsonWebKey)
+        {
+            return string.Empty;
+        }
     }
 }

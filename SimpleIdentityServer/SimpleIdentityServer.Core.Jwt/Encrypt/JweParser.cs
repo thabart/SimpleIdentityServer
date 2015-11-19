@@ -6,7 +6,9 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt
 {
     public interface IJweParser
     {
-
+        string Parse(
+            string jwe,
+            JsonWebKey jsonWebKey);
     }
 
     public class JweParser : IJweParser
@@ -40,8 +42,7 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt
             var encryptionEnum = Constants.MappingNameToJweEncEnum[encryptionName];
 
             var algorithm = _jweHelper.GetEncryptor(encryptionEnum);
-            
-            return string.Empty;
+            return algorithm.Decrypt(jwe, algorithmEnum, jsonWebKey);
         }
 
         public JweProtectedHeader GetHeader(string jwe)

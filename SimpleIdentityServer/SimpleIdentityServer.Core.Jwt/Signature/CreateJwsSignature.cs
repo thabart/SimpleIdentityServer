@@ -16,7 +16,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
             JwsAlg algorithm,
             string serializedKeys,
             string input,
-            string signature);
+            byte[] signature);
     }
 
     public class CreateJwsSignature : ICreateJwsSignature
@@ -63,15 +63,14 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
             JwsAlg algorithm,
             string serializedKeys,
             string input,
-            string signature)
+            byte[] signature)
         {
             var plainBytes = ASCIIEncoding.ASCII.GetBytes(input);
-            var signatureBytes = ASCIIEncoding.ASCII.GetBytes(signature);
             var hashMethod = _mappingJwsAlgorithmToRsaHashingAlgorithms[algorithm];
             using (var rsa = new RSACryptoServiceProvider())
             {
                 rsa.FromXmlString(serializedKeys);
-                return rsa.VerifyData(plainBytes, hashMethod, signatureBytes);
+                return rsa.VerifyData(plainBytes, hashMethod, signature);
             }
         }
     }

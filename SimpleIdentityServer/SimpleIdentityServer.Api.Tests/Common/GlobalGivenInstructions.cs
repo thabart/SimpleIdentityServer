@@ -1,4 +1,5 @@
-﻿using SimpleIdentityServer.Api.Tests.Common.Fakes.Models;
+﻿using SimpleIdentityServer.Api.Tests.Common.Fakes;
+using SimpleIdentityServer.Api.Tests.Common.Fakes.Models;
 using SimpleIdentityServer.Api.Tests.Extensions;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.DataAccess.Fake;
@@ -51,24 +52,29 @@ namespace SimpleIdentityServer.Api.Tests.Common
 
             FakeDataSource.Instance().ResourceOwners.Add(resourceOwner);
         }
-        
-        [Given("create a RSA key")]
-        public void GivenCreateRsaKey()
+
+        [Given("add json web keys")]
+        public void AddJsonWebKeys(Table table)
         {
+            var jsonWebKeys = table.CreateSet<FakeJsonWebKey>();
             using (var provider = new RSACryptoServiceProvider())
             {
-                var serializedRsa = provider.ToXmlString(true);
-                FakeDataSource.Instance().JsonWebKeys.Add(new JsonWebKey
+                foreach (var jsonWebKey in jsonWebKeys)
                 {
-                    Alg = AllAlg.RS256,
-                    KeyOps = new[]
+                    var serializedRsa = provider.ToXmlString(true);
+                    FakeDataSource.Instance().JsonWebKeys.Add(new JsonWebKey
+                    {
+                        Alg = jsonWebKey.Alg,
+                        KeyOps = new[]
                         {
-                        KeyOperations.Sign
+                        jsonWebKey.Operation
                     },
-                    Kid = "1",
-                    Kty = KeyType.RSA,
-                    SerializedKey = serializedRsa
-                });
+                        Kid = jsonWebKey.Kid,
+                        Kty = jsonWebKey.Kty,
+                        Use = jsonWebKey.Use,
+                        SerializedKey = serializedRsa
+                    });
+                }
             }
         }
 
@@ -132,7 +138,7 @@ namespace SimpleIdentityServer.Api.Tests.Common
         }
 
         [Given("the client secret (.*) is assigned to the client (.*)")]
-        public void GivenScopesToTheClients(string clientSecret, string clientId)
+        public void GivenScopesToTheClient(string clientSecret, string clientId)
         {
             var client = GetClient(clientId);
             if (client == null)
@@ -141,6 +147,30 @@ namespace SimpleIdentityServer.Api.Tests.Common
             }
 
             client.ClientSecret = clientSecret;
+        }
+
+        [Given("the id_token encrypted response alg is set to (.*) for the client (.*)")]
+        public void GivenEncryptedResponseAlgToTheClient(string algorithm, string clientId)
+        {
+            var client = GetClient(clientId);
+            if (client == null)
+            {
+                return;
+            }
+
+            client.IdTokenEncryptedResponseAlg = algorithm;
+        }
+
+        [Given("the id_token encrypted response enc is set to (.*) for the client (.*)")]
+        public void GivenEncryptedResponseEncToTheClient(string enc, string clientId)
+        {
+            var client = GetClient(clientId);
+            if (client == null)
+            {
+                return;
+            }
+
+            client.IdTokenEncryptedResponseEnc = enc;
         }
 
         [Given("the id_token signature algorithm is set to (.*) for the client (.*)")]

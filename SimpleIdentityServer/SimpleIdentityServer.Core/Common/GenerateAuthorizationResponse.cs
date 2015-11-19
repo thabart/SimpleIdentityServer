@@ -9,7 +9,6 @@ using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Core.Jwt.Encrypt;
 
 namespace SimpleIdentityServer.Core.Common
 {
@@ -41,8 +40,7 @@ namespace SimpleIdentityServer.Core.Common
             IJwtGenerator jwtGenerator,
             ITokenHelper tokenHelper,
             IGrantedTokenRepository grantedTokenRepository,
-            IConsentRepository consentRepository,
-            IJweGenerator jweGenerator)
+            IConsentRepository consentRepository)
         {
             _authorizationCodeRepository = authorizationCodeRepository;
             _parameterParserHelper = parameterParserHelper;

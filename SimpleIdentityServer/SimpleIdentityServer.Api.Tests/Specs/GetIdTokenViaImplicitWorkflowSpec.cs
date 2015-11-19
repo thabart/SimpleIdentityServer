@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -13,7 +12,10 @@ using NUnit.Framework;
 
 using SimpleIdentityServer.Api.DTOs.Request;
 using SimpleIdentityServer.Api.Tests.Common;
+using SimpleIdentityServer.Core.Jwt.Encrypt;
+using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.DataAccess.Fake;
+using SimpleIdentityServer.DataAccess.Fake.Extensions;
 using SimpleIdentityServer.RateLimitation.Configuration;
 
 using TechTalk.SpecFlow;
@@ -40,6 +42,8 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         private FakeUserInformation _fakeUserInformation;
 
         private JwsProtectedHeader _jwsProtectedHeader;
+
+        private string _jws;
 
         private JwsPayload _jwsPayLoad;
 
@@ -125,6 +129,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             var parts = idToken.Split('.');
 
             Assert.That(parts.Count() >= 3, Is.True);
+            _jws = idToken;
 
             var secondPart = parts[1].Base64Decode();
 
@@ -133,6 +138,46 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             _jwsPayLoad = javascriptSerializer.Deserialize<JwsPayload>(secondPart);
             _combinedHeaderAndPayload = parts[0] + "." + parts[1];
             _signedPayLoad = parts[2];
+        }
+
+        [Then("decrypt the jwe parameter from the query string with the following kid (.*)")]
+        public void ThenDecryptTheJweParameterFromTheQueryString(string kid)
+        {
+            var location = _httpResponseMessage.Headers.Location;
+            var query = HttpUtility.ParseQueryString(location.Query);
+            var idToken = query["id_token"];
+
+            Assert.IsNotNull(idToken);
+
+            var jsonWebKey = FakeDataSource.Instance().JsonWebKeys.FirstOrDefault(j => j.Kid == kid);
+            Assert.IsNotNull(jsonWebKey);
+
+            var jweParser = _context.UnityContainer.Resolve<IJweParser>();
+            var result = jweParser.Parse(idToken, jsonWebKey.ToBusiness());
+            _jws = result;
+            var parts = result.Split('.');
+
+            Assert.That(parts.Count() >= 3, Is.True);
+
+            var secondPart = parts[1].Base64Decode();
+
+            var javascriptSerializer = new JavaScriptSerializer();
+            _jwsProtectedHeader = javascriptSerializer.Deserialize<JwsProtectedHeader>(parts[0].Base64Decode());
+            _jwsPayLoad = javascriptSerializer.Deserialize<JwsPayload>(secondPart);
+            _combinedHeaderAndPayload = parts[0] + "." + parts[1];
+            _signedPayLoad = parts[2];
+        }
+
+        [Then("check the signature is correct with the kid (.*)")]
+        public void ThenCheckSignatureIsCorrectWithKid(string kid)
+        {
+            var jsonWebKey = FakeDataSource.Instance().JsonWebKeys.FirstOrDefault(j => j.Kid == kid);
+            Assert.IsNotNull(jsonWebKey);
+
+            var jwsParser = _context.UnityContainer.Resolve<IJwsParser>();
+            var result = jwsParser.ValidateSignature(_jws, jsonWebKey.ToBusiness());
+
+            Assert.IsNotNull(result);
         }
 
         [Then("the signature of the JWS payload is valid")]

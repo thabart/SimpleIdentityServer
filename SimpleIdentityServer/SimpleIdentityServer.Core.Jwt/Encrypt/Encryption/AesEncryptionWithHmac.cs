@@ -34,12 +34,9 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt.Encryption
                 alg, 
                 jsonWebKey);
 
-            var contentEncryptionKeySplitted = ByteManipulator.SplitByteArrayInHalf(contentEncryptionKey);
+            var contentEncryptionKeySplitted = GetKeysFromContentEncryptionKey(contentEncryptionKey);
 
-            // Fetch the MAC_KEY
             var hmacKey = contentEncryptionKeySplitted[0];
-
-            // Fetch the AES CBC KEY
             var aesCbcKey = contentEncryptionKeySplitted[1];
 
             var iv = ByteManipulator.GenerateRandomBytes(_keySize/2);
@@ -76,16 +73,45 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt.Encryption
         {
             var toDecryptSplitted = toDecrypt.Split('.');
 
-            var encryptedContentEncryptionKeyBytes = 
+            var serializedProtectedHeader = toDecryptSplitted[0].Base64Decode();
+            var encryptedContentEncryptionKeyBytes =
                 Convert.FromBase64String(toDecryptSplitted[1]);
-            var contentEncryption = _aesEncryptionHelper.DecryptContentEncryptionKey(
+            var ivBytes = Convert.FromBase64String(toDecryptSplitted[2]);
+            var cipherText = Convert.FromBase64String(toDecryptSplitted[3]);
+            var authenticationTag = Convert.FromBase64String(toDecryptSplitted[4]);
+
+            var contentEncryptionKey = _aesEncryptionHelper.DecryptContentEncryptionKey(
                 encryptedContentEncryptionKeyBytes,
                 alg,
                 jsonWebKey);
+            var contentEncryptionKeySplitted = GetKeysFromContentEncryptionKey(contentEncryptionKey);
 
+            var hmacKey = contentEncryptionKeySplitted[0];
+            var aesCbcKey = contentEncryptionKeySplitted[1];
 
+            // Encrypt the plain text & create cipher text.
+            var decrypted = _aesEncryptionHelper.DecryptWithAesAlgorithm(
+                cipherText,
+                aesCbcKey,
+                ivBytes);
+            
+            // Calculate the additional authenticated data.
+            var aad = Encoding.UTF8.GetBytes(serializedProtectedHeader);
 
-            return string.Empty;
+            // Calculate the authentication tag.
+            var al = ByteManipulator.LongToBytes(aad.Length * 8);
+            var hmacInput = ByteManipulator.Concat(aad, ivBytes, cipherText, al);
+            var hmacValue = ComputeHmac(_keySize, hmacKey, hmacInput);
+            var newAuthenticationTag = ByteManipulator.SplitByteArrayInHalf(hmacValue)[0];
+
+            // Check if the authentication tags are equal other raise an exception.
+            if (!ByteManipulator.ConstantTimeEquals(newAuthenticationTag, authenticationTag))
+            {
+                // TODO : raise an exception.
+                return string.Empty;
+            }
+
+            return decrypted;
         }
 
         private byte[] ComputeHmac(
@@ -110,6 +136,23 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt.Encryption
             }
 
             return hashMacAlg.ComputeHash(input);
+        }
+
+        private static byte[][] GetKeysFromContentEncryptionKey(byte[] contentEncryptionKey)
+        {
+            var contentEncryptionKeySplitted = ByteManipulator.SplitByteArrayInHalf(contentEncryptionKey);
+
+            // Fetch the MAC_KEY
+            var hmacKey = contentEncryptionKeySplitted[0];
+
+            // Fetch the AES CBC KEY
+            var aesCbcKey = contentEncryptionKeySplitted[1];
+
+            return new[]
+            {
+                hmacKey,
+                aesCbcKey
+            };
         }
     }
 }

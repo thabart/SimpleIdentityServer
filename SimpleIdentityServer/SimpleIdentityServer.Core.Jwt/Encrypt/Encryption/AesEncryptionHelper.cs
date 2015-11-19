@@ -24,6 +24,11 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt.Encryption
             string toEncrypt,
             byte[] key,
             byte[] iv);
+
+        string DecryptWithAesAlgorithm(
+            byte[] cipherText,
+            byte[] key,
+            byte[] iv);
     }
 
     public class AesEncryptionHelper : IAesEncryptionHelper
@@ -88,6 +93,32 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt.Encryption
                             }
 
                             result = msEncrypt.ToArray();
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public string DecryptWithAesAlgorithm(byte[] cipherText, byte[] key, byte[] iv)
+        {
+            string result;
+            using (var aes = new AesManaged())
+            {
+                aes.Key = key;
+                aes.IV = iv;
+
+                using (var decryptor = aes.CreateDecryptor(aes.Key, aes.IV))
+                {
+                    using (var msDecrypt = new MemoryStream(cipherText))
+                    {
+                        using (var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
+                        {
+                            using (var srDecrypt = new StreamReader(csDecrypt))
+                            {
+                                result = srDecrypt.ReadToEnd();
+                            }
                         }
                     }
                 }

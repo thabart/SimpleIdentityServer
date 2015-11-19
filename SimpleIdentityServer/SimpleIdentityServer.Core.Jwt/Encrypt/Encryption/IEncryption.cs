@@ -7,5 +7,10 @@
             JweAlg alg,
             JweProtectedHeader protectedHeader,
             JsonWebKey jsonWebKey);
+
+        string Decrypt(
+            string toDecrypt,
+            JweAlg alg,
+            JsonWebKey jsonWebKey);
     }
 }
