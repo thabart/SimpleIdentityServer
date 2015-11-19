@@ -30,6 +30,9 @@ namespace SimpleIdentityServer.Core.Common.Extensions
                 case 3:
                     base64EncodedData += "=";
                     break;
+                default:
+                    throw new Exception("INVALID BASE 64 " + base64EncodedData);
+                    break;
             }
             return Convert.FromBase64String(base64EncodedData);
         }

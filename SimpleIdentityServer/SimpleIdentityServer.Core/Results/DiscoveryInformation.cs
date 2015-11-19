@@ -79,6 +79,7 @@ namespace SimpleIdentityServer.Core.Results
         /// <summary>
         /// Gets or sets the list of the JWS signing algorithms (alg values) supported.
         /// </summary>
+        [DataMember(Name = "id_token_signing_alg_values_supported")]
         public string[] IdTokenSigningAlgValuesSupported { get; set; }
 
         /// <summary>
@@ -124,12 +125,12 @@ namespace SimpleIdentityServer.Core.Results
         /// <summary>
         /// Gets or sets the list of Client Authentication methods supported by the TokenEndpoint : client_secret_post, client_secret_basic etc ...
         /// </summary>
-        [DataMember(Name = "token_endpoint_auth_methods_supported")]
         public string[] TokenEndpointAuthMethodSupported { get; set; }
 
         /// <summary>
         /// Gets or sets the list of the JWS algorithms (alg values) suppported by the Token Endpoint for the signature on the JWT.
         /// </summary>
+        [DataMember(Name = "token_endpoint_auth_methods_supported")]
         public string[] TokenEndpointAuthSigningAlgValuesSupported { get; set; }
 
         /// <summary>

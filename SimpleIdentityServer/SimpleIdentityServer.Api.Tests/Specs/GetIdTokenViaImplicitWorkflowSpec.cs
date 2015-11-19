@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Security.Cryptography;
@@ -25,7 +24,6 @@ using TechTalk.SpecFlow.Assist;
 using MODELS = SimpleIdentityServer.DataAccess.Fake.Models;
 
 using System.Web;
-using SimpleIdentityServer.Core.Extensions;
 using System.Web.Script.Serialization;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Api.Tests.Common.Fakes.Models;

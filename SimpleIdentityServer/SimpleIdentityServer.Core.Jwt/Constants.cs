@@ -117,27 +117,50 @@ namespace SimpleIdentityServer.Core.Jwt
         public static readonly Dictionary<string, JweAlg> MappingNameToJweAlgEnum = new Dictionary<string, JweAlg>
         {
             {
-                "RSA1_5", JweAlg.RSA1_5
+                JweAlgNames.RSA1_5, JweAlg.RSA1_5
             },
             {
-                "RSA-OAEP", JweAlg.RSA_OAEP
+                JweAlgNames.RSA_OAEP, JweAlg.RSA_OAEP
             },
             {
-                "RSA-OAEP-256", JweAlg.RSA_OAEP_256
+                JweAlgNames.RSA_OAEP_256, JweAlg.RSA_OAEP_256
             }
         };
 
         public static readonly Dictionary<string, JweEnc> MappingNameToJweEncEnum = new Dictionary<string, JweEnc>
         {
             {
-                "A128CBC-HS256", JweEnc.A128CBC_HS256
+                JweEncNames.A128CBC_HS256, JweEnc.A128CBC_HS256
             },
             {
-                "A192CBC-HS384", JweEnc.A192CBC_HS384
+                JweEncNames.A192CBC_HS384, JweEnc.A192CBC_HS384
             },
             {
-                "A256CBC-HS512", JweEnc.A256CBC_HS512
+                JweEncNames.A256CBC_HS512, JweEnc.A256CBC_HS512
             }
         };
+
+        public static class JweEncNames 
+        {
+            public static string A128CBC_HS256 = "A128CBC-HS256";
+
+            public static string A192CBC_HS384 = "A192CBC-HS384";
+
+            public static string A256CBC_HS512 = "A256CBC-HS512";
+        }
+
+        public static class JweAlgNames
+        {
+            public static string RSA1_5 = "RSA1_5";
+
+            public static string RSA_OAEP = "RSA-OAEP";
+
+            public static string RSA_OAEP_256 = "RSA-OAEP-256";
+        }
+
+        public static class JwsAlgNames
+        {
+            public static string RS256 = "RS256";
+        }
     }
 }

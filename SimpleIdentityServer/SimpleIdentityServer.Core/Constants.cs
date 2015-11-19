@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using SimpleIdentityServer.Core.Api.Authorization;
 using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Jwt;
 
 namespace SimpleIdentityServer.Core
 {
@@ -227,6 +226,11 @@ namespace SimpleIdentityServer.Core
                 // Same subject value to all clients.
                 "public"
             };
+
+            public static List<string> SupportedJwsAlgs = new List<string>
+            {
+                Jwt.Constants.JwsAlgNames.RS256
+            }; 
 
             public static List<TokenEndPointAuthenticationMethods> SupportedTokenEndPointAuthenticationMethods = new List
                 <TokenEndPointAuthenticationMethods>
