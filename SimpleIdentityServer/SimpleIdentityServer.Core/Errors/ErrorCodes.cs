@@ -8,6 +8,8 @@
 
         public static string InvalidGrant = "invalid_grant";
 
+        public static string InvalidToken = "invalid_token";
+
         public static string UnAuthorizedClient = "unauthorized_client";
 
         public static string UnSupportedGrantType = "unsupported_grant_type";

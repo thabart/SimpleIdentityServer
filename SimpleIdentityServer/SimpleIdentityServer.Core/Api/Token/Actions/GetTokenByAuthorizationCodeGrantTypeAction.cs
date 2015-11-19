@@ -63,7 +63,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
             // Remove the authorization code. Don't reuse it !
             _authorizationCodeRepository.RemoveAuthorizationCode(authorizationCode.Code);
-            var grantedToken = _tokenHelper.GenerateToken(authorizationCode.Scopes);
+            var grantedToken = _tokenHelper.GenerateToken(authorizationCode.Scopes, string.Empty);
             grantedToken.IdToken = authorizationCode.IdToken;
             return grantedToken;
         }

@@ -1,4 +1,5 @@
-﻿using SimpleIdentityServer.Core.Jwt;
+﻿using SimpleIdentityServer.Core.Api.UserInfo.Actions;
+using SimpleIdentityServer.Core.Jwt;
 
 namespace SimpleIdentityServer.Core.Api.UserInfo
 {
@@ -9,9 +10,16 @@ namespace SimpleIdentityServer.Core.Api.UserInfo
 
     public class UserInfoActions : IUserInfoActions
     {
+        private readonly IGetJwsPayload _getJwsPayload;
+
+        public UserInfoActions(IGetJwsPayload getJwsPayload)
+        {
+            _getJwsPayload = getJwsPayload;
+        }
+
         public JwsPayload GetUserInformation(string accessToken)
         {
-            return null;
+            return _getJwsPayload.Execute(accessToken);
         }
     }
 }

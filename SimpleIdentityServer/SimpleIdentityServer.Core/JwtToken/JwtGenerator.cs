@@ -173,21 +173,8 @@ namespace SimpleIdentityServer.Core.JwtToken
             AuthorizationParameter authorizationParameter)
         {
             var client = _clientRepository.GetClientById(authorizationParameter.ClientId);
-            var signedAlg = client.IdTokenSignedTResponseAlg;
-            JwsAlg signedAlgorithm;
-            if (string.IsNullOrWhiteSpace(signedAlg)
-                || !Enum.TryParse(signedAlg, out signedAlgorithm))
-            {
-                signedAlgorithm = JwsAlg.HS256;
-            }
-            
-            // In the "open-id-connect-discovery" there's an endpoint jwks_uri :
-            // This url contains the signing key's) the RP uses to validate signatures from the OP
-            // The JWS set may also contain the Server's encryption key(s) which are used by the RP to encrypt requests to the server.
-            var jsonWebKey = GetJsonWebKey(
-                signedAlgorithm.ToAllAlg(), 
-                KeyOperations.Sign, 
-                Use.Sig);
+            var jsonWebKey = GetSignJsonWebKey(client);
+            var signedAlgorithm = GetJwsAlg(client);
             return _jwsGenerator.Generate(
                 jwsPayload, 
                 signedAlgorithm, 
@@ -199,32 +186,14 @@ namespace SimpleIdentityServer.Core.JwtToken
             AuthorizationParameter authorizationParameter)
         {
             var client = _clientRepository.GetClientById(authorizationParameter.ClientId);
-            var algName = client.IdTokenEncryptedResponseAlg;
-            var encName = client.IdTokenEncryptedResponseEnc;
-            
-            if (string.IsNullOrWhiteSpace(algName) || 
-                !Jwt.Constants.MappingNameToJweAlgEnum.Keys.Contains(algName))
+            var jsonWebKey = GetEncJsonWebKey(client);
+            if (jsonWebKey == null)
             {
                 return jwe;
             }
 
-            JweEnc encEnum;
-            if (string.IsNullOrWhiteSpace(encName) ||
-                !Jwt.Constants.MappingNameToJweEncEnum.Keys.Contains(encName))
-            {
-                encEnum = JweEnc.A128CBC_HS256;
-            }
-            else
-            {
-                encEnum = Jwt.Constants.MappingNameToJweEncEnum[encName];
-            }
-
-            var algEnum = Jwt.Constants.MappingNameToJweAlgEnum[algName];
-
-            var jsonWebKey = GetJsonWebKey(
-                algEnum.ToAllAlg(),
-                KeyOperations.Encrypt,
-                Use.Enc);
+            var algEnum = GetJweAlg(client);
+            var encEnum = GetJweEnc(client);
 
             return _jweGenerator.GenerateJwe(
                 jwe, 
@@ -258,7 +227,74 @@ namespace SimpleIdentityServer.Core.JwtToken
             }
 
             return result;
-        } 
+        }
+
+        private JsonWebKey GetEncJsonWebKey(Client client)
+        {
+            var algName = client.IdTokenEncryptedResponseAlg;
+            if (string.IsNullOrWhiteSpace(algName) ||
+                !Jwt.Constants.MappingNameToJweAlgEnum.Keys.Contains(algName))
+            {
+                return null;
+            }
+
+            var encEnum = GetJweEnc(client);
+            var algEnum = GetJweAlg(client);
+
+            return GetJsonWebKey(
+                algEnum.ToAllAlg(),
+                KeyOperations.Encrypt,
+                Use.Enc);
+        }
+
+        private JsonWebKey GetSignJsonWebKey(Client client)
+        {
+            var signedAlgorithm = GetJwsAlg(client);
+
+            // In the "open-id-connect-discovery" there's an endpoint jwks_uri :
+            // This url contains the signing key's) the RP uses to validate signatures from the OP
+            // The JWS set may also contain the Server's encryption key(s) which are used by the RP to encrypt requests to the server.
+            return GetJsonWebKey(
+                signedAlgorithm.ToAllAlg(),
+                KeyOperations.Sign,
+                Use.Sig);
+        }
+
+        private JweEnc GetJweEnc(Client client)
+        {
+            var encName = client.IdTokenEncryptedResponseEnc;
+            JweEnc encEnum;
+            if (string.IsNullOrWhiteSpace(encName) ||
+                !Jwt.Constants.MappingNameToJweEncEnum.Keys.Contains(encName))
+            {
+                encEnum = JweEnc.A128CBC_HS256;
+            }
+            else
+            {
+                encEnum = Jwt.Constants.MappingNameToJweEncEnum[encName];
+            }
+
+            return encEnum;
+        }
+
+        private JweAlg GetJweAlg(Client client)
+        {
+            var algName = client.IdTokenEncryptedResponseAlg;
+            return Jwt.Constants.MappingNameToJweAlgEnum[algName];
+        }
+
+        private JwsAlg GetJwsAlg(Client client)
+        {
+            var signedAlg = client.IdTokenSignedTResponseAlg;
+            JwsAlg signedAlgorithm;
+            if (string.IsNullOrWhiteSpace(signedAlg)
+                || !Enum.TryParse(signedAlg, out signedAlgorithm))
+            {
+                signedAlgorithm = JwsAlg.HS256;
+            }
+
+            return signedAlgorithm;
+        }
 
         private JsonWebKey GetJsonWebKey(
             AllAlg alg,

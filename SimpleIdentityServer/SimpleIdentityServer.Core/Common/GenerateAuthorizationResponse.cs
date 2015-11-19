@@ -56,11 +56,10 @@ namespace SimpleIdentityServer.Core.Common
             ClaimsPrincipal claimsPrincipal)
         {
             var responses = _parameterParserHelper.ParseResponseType(authorizationParameter.ResponseType);
+            var idToken = GenerateIdToken(claimsPrincipal, authorizationParameter);
+
             if (responses.Contains(ResponseType.id_token))
             {
-                var jwsPayLoad = _jwtGenerator.GenerateJwsPayload(claimsPrincipal, authorizationParameter);
-                var idToken = _jwtGenerator.Sign(jwsPayLoad, authorizationParameter);
-                idToken = _jwtGenerator.Encrypt(idToken, authorizationParameter);
                 actionResult.RedirectInstruction.AddParameter("id_token", idToken);
             }
 
@@ -72,7 +71,9 @@ namespace SimpleIdentityServer.Core.Common
                     allowedTokenScopes = string.Join(" ", _parameterParserHelper.ParseScopeParameters(authorizationParameter.Scope));
                 }
 
-                var generatedToken = _tokenHelper.GenerateToken(allowedTokenScopes);
+                var generatedToken = _tokenHelper.GenerateToken(
+                    allowedTokenScopes, 
+                    idToken);
                 _grantedTokenRepository.Insert(generatedToken);
                 actionResult.RedirectInstruction.AddParameter("access_token", generatedToken.AccessToken);
             }
@@ -82,17 +83,16 @@ namespace SimpleIdentityServer.Core.Common
                 var assignedConsent = GetResourceOwnerConsent(claimsPrincipal, authorizationParameter);
                 if (assignedConsent != null)
                 {
-                    var jwsPayLoad = _jwtGenerator.GenerateJwsPayload(claimsPrincipal, authorizationParameter);
-                    var idToken = _jwtGenerator.Sign(jwsPayLoad, authorizationParameter);
-                    idToken = _jwtGenerator.Encrypt(idToken, authorizationParameter);
+                    // Insert a temporary authorization code 
+                    // It will be used later to retrieve tha id_token or an access token.
                     var authorizationCode = new AuthorizationCode
                     {
                         Code = Guid.NewGuid().ToString(),
                         RedirectUri = authorizationParameter.RedirectUrl,
                         CreateDateTime = DateTime.UtcNow,
                         ClientId = authorizationParameter.ClientId,
+                        Scopes = authorizationParameter.Scope,
                         IdToken = idToken,
-                        Scopes = authorizationParameter.Scope
                     };
 
                     _authorizationCodeRepository.AddAuthorizationCode(authorizationCode);
@@ -125,6 +125,15 @@ namespace SimpleIdentityServer.Core.Common
             }
 
             return confirmedConsent;
+        }
+
+        private string GenerateIdToken(
+            ClaimsPrincipal claimsPrincipal,
+            AuthorizationParameter authorizationParameter)
+        {
+            var jwsPayLoad = _jwtGenerator.GenerateJwsPayload(claimsPrincipal, authorizationParameter);
+            var idToken = _jwtGenerator.Sign(jwsPayLoad, authorizationParameter);
+            return _jwtGenerator.Encrypt(idToken, authorizationParameter);
         }
     }
 }

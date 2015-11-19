@@ -11,6 +11,8 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
         JwsPayload ValidateSignature(
             string jws,
             JsonWebKey jsonWebKey);
+
+        JwsProtectedHeader GetHeader(string jws);
     }
 
     public class JwsParser : IJwsParser
@@ -82,6 +84,19 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
             }
 
             return serializedPayload.DeserializeWithJavascript<JwsPayload>();
+        }
+
+        public JwsProtectedHeader GetHeader(string jws)
+        {
+            var parts = GetParts(jws);
+            if (!parts.Any())
+            {
+                return null;
+            }
+
+            var base64EncodedProtectedHeader = parts[0];
+            var serializedProtectedHeader = base64EncodedProtectedHeader.Base64Decode();
+            return serializedProtectedHeader.DeserializeWithJavascript<JwsProtectedHeader>();
         }
 
         /// <summary>

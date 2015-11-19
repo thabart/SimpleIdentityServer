@@ -112,10 +112,12 @@
     <Compile Include="Common\GenerateAuthorizationResponse.cs" />
     <Compile Include="Configuration\SimpleIdentityServerConfigurator.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="Exceptions\AuthorizationException.cs" />
     <Compile Include="Extensions\AlgorithmExtensions.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="JwtToken\JwtGenerator.cs" />
+    <Compile Include="JwtToken\JwtParser.cs" />
     <Compile Include="JwtToken\Validator\JwtClientParameterValidator.cs" />
     <Compile Include="Parameters\AuthorizationCodeGrantTypeParameter.cs" />
     <Compile Include="Parameters\ClientCredentialsParameter.cs" />

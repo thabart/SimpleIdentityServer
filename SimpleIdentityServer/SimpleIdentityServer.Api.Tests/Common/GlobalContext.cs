@@ -37,6 +37,8 @@ using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Api.Controllers.Api;
 using System;
 using SimpleIdentityServer.Core.Jwt.Encrypt.Encryption;
+using SimpleIdentityServer.Core.Api.UserInfo;
+using SimpleIdentityServer.Core.Api.UserInfo.Actions;
 
 namespace SimpleIdentityServer.Api.Tests.Common
 {
@@ -89,10 +91,14 @@ namespace SimpleIdentityServer.Api.Tests.Common
             UnityContainer.RegisterType<ICacheManager, CacheManager>();
             UnityContainer.RegisterType<ISecurityHelper, SecurityHelper>();
             UnityContainer.RegisterType<ITokenHelper, TokenHelper>();
+            
+            UnityContainer.RegisterType<IUserInfoActions, UserInfoActions>();
+            UnityContainer.RegisterType<IGetJwsPayload, GetJwsPayload>();
 
             UnityContainer.RegisterType<IClientValidator, ClientValidator>();
             UnityContainer.RegisterType<IResourceOwnerValidator, ResourceOwnerValidator>();
             UnityContainer.RegisterType<IScopeValidator, ScopeValidator>();
+            UnityContainer.RegisterType<IGrantedTokenValidator, GrantedTokenValidator>();
             UnityContainer
                 .RegisterType
                 <IAuthorizationCodeGrantTypeParameterAuthEdpValidator, AuthorizationCodeGrantTypeParameterAuthEdpValidator>();
@@ -149,6 +155,7 @@ namespace SimpleIdentityServer.Api.Tests.Common
             UnityContainer.RegisterType<IProcessAuthorizationRequest, ProcessAuthorizationRequest>();
             UnityContainer.RegisterType<IJwsGenerator, JwsGenerator>();
             UnityContainer.RegisterType<IJweGenerator, JweGenerator>();
+            UnityContainer.RegisterType<IJwtParser, JwtParser>();
             UnityContainer.RegisterType<IJweParser, JweParser>();
             UnityContainer.RegisterType<IJweHelper, JweHelper>();
             UnityContainer.RegisterType<IJwtGenerator, JwtGenerator>();

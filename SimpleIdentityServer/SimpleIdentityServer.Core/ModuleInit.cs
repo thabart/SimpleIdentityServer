@@ -20,6 +20,8 @@ using SimpleIdentityServer.Core.WebSite.Consent;
 using SimpleIdentityServer.Core.WebSite.Consent.Actions;
 using SimpleIdentityServer.Core.JwtToken.Validator;
 using SimpleIdentityServer.Core.JwtToken;
+using SimpleIdentityServer.Core.Api.UserInfo;
+using SimpleIdentityServer.Core.Api.UserInfo.Actions;
 
 namespace SimpleIdentityServer.Core
 {
@@ -33,6 +35,7 @@ namespace SimpleIdentityServer.Core
             register.RegisterType<IClientValidator, ClientValidator>();
             register.RegisterType<IResourceOwnerValidator, ResourceOwnerValidator>();
             register.RegisterType<IScopeValidator, ScopeValidator>();
+            register.RegisterType<IGrantedTokenValidator, GrantedTokenValidator>();
             register.RegisterType<IAuthorizationCodeGrantTypeParameterAuthEdpValidator, AuthorizationCodeGrantTypeParameterAuthEdpValidator>();
             register.RegisterType<IResourceOwnerGrantTypeParameterValidator, ResourceOwnerGrantTypeParameterValidator>();
             register.RegisterType<IAuthorizationCodeGrantTypeParameterTokenEdpValidator,
@@ -52,6 +55,9 @@ namespace SimpleIdentityServer.Core
                 ();
             register.RegisterType<IGetTokenViaImplicitWorkflowOperation, GetTokenViaImplicitWorkflowOperation>();
 
+            register.RegisterType<IUserInfoActions, UserInfoActions>();
+            register.RegisterType<IGetJwsPayload, GetJwsPayload>();
+
             register.RegisterType<ITokenActions, TokenActions>();
             register.RegisterType<IGetTokenByResourceOwnerCredentialsGrantTypeAction, GetTokenByResourceOwnerCredentialsGrantTypeAction>();
             register.RegisterType<IGetTokenByAuthorizationCodeGrantTypeAction, GetTokenByAuthorizationCodeGrantTypeAction>();
@@ -70,6 +76,7 @@ namespace SimpleIdentityServer.Core
             register.RegisterType<IProcessAuthorizationRequest, ProcessAuthorizationRequest>();
 
             register.RegisterType<IJwtGenerator, JwtGenerator>();
+            register.RegisterType<IJwtParser, JwtParser>();
             register.RegisterType<ISimpleIdentityServerConfigurator, SimpleIdentityServerConfigurator>();
             register.RegisterType<IGenerateAuthorizationResponse, GenerateAuthorizationResponse>();
         }

@@ -58,7 +58,10 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                 allowedTokenScopes = string.Join(" ", _scopeValidator.ValidateAllowedScopes(parameter.Scope, client));
             }
 
-            var generatedToken = _tokenHelper.GenerateToken(allowedTokenScopes);
+            // TODO : authenticate the user & create the JWT token
+            var generatedToken = _tokenHelper.GenerateToken(
+                allowedTokenScopes,
+                string.Empty);
             _grantedTokenRepository.Insert(generatedToken);
 
             return generatedToken;

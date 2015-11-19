@@ -61,5 +61,9 @@
         public static string TheJwtTokenHasAlreadyBeenUsed = "the jwt token has already been used";
 
         public static string TheJwtTokenIsExpired = "the jwt token is expired";
+
+        public static string TheAccessTokenIsExpired = "the access token is expired";
+
+        public static string TheAccessTokenIsNotValid = "the access token is not valid";
     }
 }

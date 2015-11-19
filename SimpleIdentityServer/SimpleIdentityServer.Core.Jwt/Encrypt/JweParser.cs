@@ -9,6 +9,8 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt
         string Parse(
             string jwe,
             JsonWebKey jsonWebKey);
+
+        JweProtectedHeader GetHeader(string jwe);
     }
 
     public class JweParser : IJweParser
