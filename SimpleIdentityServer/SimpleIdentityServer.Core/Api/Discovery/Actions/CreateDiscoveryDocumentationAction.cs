@@ -41,7 +41,7 @@ namespace SimpleIdentityServer.Core.Api.Discovery.Actions
             result.GrantTypesSupported = grantTypesSupported;
             result.SubjectTypesSupported = Constants.Supported.SupportedSubjectTypes.ToArray();
             result.TokenEndpointAuthMethodSupported = tokenAuthMethodSupported;
-            result.TokenEndpointAuthSigningAlgValuesSupported = Constants.Supported.SupportedJwsAlgs.ToArray();
+            result.IdTokenSigningAlgValuesSupported = Constants.Supported.SupportedJwsAlgs.ToArray();
 
             return result;
         }

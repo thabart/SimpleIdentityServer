@@ -130,7 +130,6 @@ namespace SimpleIdentityServer.Core.Results
         /// <summary>
         /// Gets or sets the list of the JWS algorithms (alg values) suppported by the Token Endpoint for the signature on the JWT.
         /// </summary>
-        [DataMember(Name = "token_endpoint_auth_methods_supported")]
         public string[] TokenEndpointAuthSigningAlgValuesSupported { get; set; }
 
         /// <summary>

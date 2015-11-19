@@ -36,5 +36,27 @@ namespace SimpleIdentityServer.Core.Common.Extensions
 
             return Convert.FromBase64String(base64EncodedData);
         }
+
+        public static string Base64EncodeBytes(this byte[] bytes)
+        {
+            var base64Str = Convert.ToBase64String(bytes);
+            base64Str = base64Str.Trim();
+            base64Str = base64Str.Replace("-", "+");
+            base64Str = base64Str.Replace("_", "/");
+            base64Str = base64Str.Replace(" ", "+");
+            switch (base64Str.Length % 4)
+            {
+                case 0:
+                    break;
+                case 2:
+                    base64Str += "==";
+                    break;
+                case 3:
+                    base64Str += "=";
+                    break;
+            }
+
+            return base64Str;
+        }
     }
 }

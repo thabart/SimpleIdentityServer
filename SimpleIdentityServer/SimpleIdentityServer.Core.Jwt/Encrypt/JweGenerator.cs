@@ -56,10 +56,10 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt
                 jsonWebKey);
 
             var base64EncodedjweProtectedHeaderSerialized = jweProtectedHeader.SerializeWithDataContract().Base64Encode();
-            var base64EncodedJweEncryptedKey = Convert.ToBase64String(encryptionResult.EncryptedContentEncryptionKey);
-            var base64EncodedIv = Convert.ToBase64String(encryptionResult.Iv);
-            var base64EncodedCipherText = Convert.ToBase64String(encryptionResult.CipherText);
-            var base64EncodedAuthenticationTag = Convert.ToBase64String(encryptionResult.AuthenticationTag);
+            var base64EncodedJweEncryptedKey = encryptionResult.EncryptedContentEncryptionKey.Base64EncodeBytes();
+            var base64EncodedIv = encryptionResult.Iv.Base64EncodeBytes();
+            var base64EncodedCipherText = encryptionResult.CipherText.Base64EncodeBytes();
+            var base64EncodedAuthenticationTag = encryptionResult.AuthenticationTag.Base64EncodeBytes();
 
             return base64EncodedjweProtectedHeaderSerialized + "." +
                    base64EncodedJweEncryptedKey + "." +
