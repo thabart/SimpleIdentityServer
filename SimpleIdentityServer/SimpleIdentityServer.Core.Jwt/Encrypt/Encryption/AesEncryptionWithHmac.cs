@@ -72,51 +72,44 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt.Encryption
             JsonWebKey jsonWebKey)
         {
             var toDecryptSplitted = toDecrypt.Split('.');
-            try
+            var serializedProtectedHeader = toDecryptSplitted[0].Base64Decode();
+            var encryptedContentEncryptionKeyBytes = toDecryptSplitted[1].Base64DecodeBytes();
+            var ivBytes = toDecryptSplitted[2].Base64DecodeBytes();
+            var cipherText = toDecryptSplitted[3].Base64DecodeBytes();
+            var authenticationTag = toDecryptSplitted[4].Base64DecodeBytes();
+            
+            var contentEncryptionKey = _aesEncryptionHelper.DecryptContentEncryptionKey(
+                encryptedContentEncryptionKeyBytes,
+                alg,
+                jsonWebKey);
+            var contentEncryptionKeySplitted = GetKeysFromContentEncryptionKey(contentEncryptionKey);
+            
+            var hmacKey = contentEncryptionKeySplitted[0];
+            var aesCbcKey = contentEncryptionKeySplitted[1];
+            
+            // Encrypt the plain text & create cipher text.
+            var decrypted = _aesEncryptionHelper.DecryptWithAesAlgorithm(
+                cipherText,
+                aesCbcKey,
+                ivBytes);
+            
+            // Calculate the additional authenticated data.
+            var aad = Encoding.UTF8.GetBytes(serializedProtectedHeader);
+            
+            // Calculate the authentication tag.
+            var al = ByteManipulator.LongToBytes(aad.Length*8);
+            var hmacInput = ByteManipulator.Concat(aad, ivBytes, cipherText, al);
+            var hmacValue = ComputeHmac(_keySize, hmacKey, hmacInput);
+            var newAuthenticationTag = ByteManipulator.SplitByteArrayInHalf(hmacValue)[0];
+            
+            // Check if the authentication tags are equal other raise an exception.
+            if (!ByteManipulator.ConstantTimeEquals(newAuthenticationTag, authenticationTag))
             {
-                var serializedProtectedHeader = toDecryptSplitted[0].Base64Decode();
-                var encryptedContentEncryptionKeyBytes = toDecryptSplitted[1].Base64DecodeBytes();
-                var ivBytes = toDecryptSplitted[2].Base64DecodeBytes();
-                var cipherText = toDecryptSplitted[3].Base64DecodeBytes();
-                var authenticationTag = toDecryptSplitted[4].Base64DecodeBytes();
-
-                var contentEncryptionKey = _aesEncryptionHelper.DecryptContentEncryptionKey(
-                    encryptedContentEncryptionKeyBytes,
-                    alg,
-                    jsonWebKey);
-                var contentEncryptionKeySplitted = GetKeysFromContentEncryptionKey(contentEncryptionKey);
-
-                var hmacKey = contentEncryptionKeySplitted[0];
-                var aesCbcKey = contentEncryptionKeySplitted[1];
-
-                // Encrypt the plain text & create cipher text.
-                var decrypted = _aesEncryptionHelper.DecryptWithAesAlgorithm(
-                    cipherText,
-                    aesCbcKey,
-                    ivBytes);
-
-                // Calculate the additional authenticated data.
-                var aad = Encoding.UTF8.GetBytes(serializedProtectedHeader);
-
-                // Calculate the authentication tag.
-                var al = ByteManipulator.LongToBytes(aad.Length*8);
-                var hmacInput = ByteManipulator.Concat(aad, ivBytes, cipherText, al);
-                var hmacValue = ComputeHmac(_keySize, hmacKey, hmacInput);
-                var newAuthenticationTag = ByteManipulator.SplitByteArrayInHalf(hmacValue)[0];
-
-                // Check if the authentication tags are equal other raise an exception.
-                if (!ByteManipulator.ConstantTimeEquals(newAuthenticationTag, authenticationTag))
-                {
-                    // TODO : raise an exception.
-                    return string.Empty;
-                }
-
-                return decrypted;
+                // TODO : raise an exception.
+                return string.Empty;
             }
-            catch (Exception ex)
-            {
-                throw new Exception("to decrypt : " + toDecrypt);
-            }
+            
+            return decrypted;
         }
 
         private byte[] ComputeHmac(

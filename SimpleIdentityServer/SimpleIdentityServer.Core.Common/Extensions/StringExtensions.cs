@@ -18,8 +18,10 @@ namespace SimpleIdentityServer.Core.Common.Extensions
 
         public static byte[] Base64DecodeBytes(this string base64EncodedData)
         {
+            base64EncodedData = base64EncodedData.Trim();
             base64EncodedData = base64EncodedData.Replace("-", "+");
             base64EncodedData = base64EncodedData.Replace("_", "/");
+            base64EncodedData = base64EncodedData.Replace(" ", "+");
             switch (base64EncodedData.Length % 4)
             {
                 case 0:
@@ -30,10 +32,8 @@ namespace SimpleIdentityServer.Core.Common.Extensions
                 case 3:
                     base64EncodedData += "=";
                     break;
-                default:
-                    throw new Exception("INVALID BASE 64 " + base64EncodedData);
-                    break;
             }
+
             return Convert.FromBase64String(base64EncodedData);
         }
     }
