@@ -8,7 +8,12 @@ namespace SimpleIdentityServer.Core.Common.Extensions
         public static string Base64Encode(this string plainText)
         {
             var plainTextBytes = Encoding.UTF8.GetBytes(plainText);
-            return Convert.ToBase64String(plainTextBytes);
+            return plainTextBytes.Base64EncodeBytes();
+        }
+
+        public static string Base64EncodeBytes(this byte[] bytes)
+        {
+            return Convert.ToBase64String(bytes).Split('=')[0].Replace('+', '-').Replace('/', '_');
         }
 
         public static string Base64Decode(this string base64EncodedData)
@@ -18,45 +23,20 @@ namespace SimpleIdentityServer.Core.Common.Extensions
 
         public static byte[] Base64DecodeBytes(this string base64EncodedData)
         {
-            base64EncodedData = base64EncodedData.Trim();
-            base64EncodedData = base64EncodedData.Replace("-", "+");
-            base64EncodedData = base64EncodedData.Replace("_", "/");
-            base64EncodedData = base64EncodedData.Replace(" ", "+");
-            switch (base64EncodedData.Length % 4)
+            var s = base64EncodedData.Replace('-', '+').Replace('_', '/');
+            switch (s.Length % 4)
             {
                 case 0:
-                    break;
+                    return Convert.FromBase64String(s);
                 case 2:
-                    base64EncodedData += "==";
-                    break;
+                    s += "==";
+                    goto case 0;
                 case 3:
-                    base64EncodedData += "=";
-                    break;
+                    s += "=";
+                    goto case 0;
+                default:
+                    throw new Exception("Illegal base64url string!");
             }
-
-            return Convert.FromBase64String(base64EncodedData);
-        }
-
-        public static string Base64EncodeBytes(this byte[] bytes)
-        {
-            var base64Str = Convert.ToBase64String(bytes);
-            base64Str = base64Str.Trim();
-            base64Str = base64Str.Replace("-", "+");
-            base64Str = base64Str.Replace("_", "/");
-            base64Str = base64Str.Replace(" ", "+");
-            switch (base64Str.Length % 4)
-            {
-                case 0:
-                    break;
-                case 2:
-                    base64Str += "==";
-                    break;
-                case 3:
-                    base64Str += "=";
-                    break;
-            }
-
-            return base64Str;
         }
     }
 }
