@@ -42,7 +42,13 @@ namespace SimpleIdentityServer.Api
                 new
                 {
                     controller = "UserInfo"
+                });
 
+            config.Routes.MapHttpRoute("JwksRoute",
+                Constants.EndPoints.Jwks,
+                new
+                {
+                    controller = "Jwks"
                 });
 
             config.Filters.Add(new IdentityServerExceptionFilter());
