@@ -13,7 +13,10 @@ namespace SimpleIdentityServer.Core.Common.Extensions
 
         public static string Base64EncodeBytes(this byte[] bytes)
         {
-            return Convert.ToBase64String(bytes).Split('=')[0].Replace('+', '-').Replace('/', '_');
+            return Convert.ToBase64String(bytes)
+                .Split('=')[0]
+                .Replace('+', '-')
+                .Replace('/', '_');
         }
 
         public static string Base64Decode(this string base64EncodedData)
@@ -23,27 +26,23 @@ namespace SimpleIdentityServer.Core.Common.Extensions
 
         public static byte[] Base64DecodeBytes(this string base64EncodedData)
         {
-            try
+            var s = base64EncodedData
+                .Trim()
+                .Replace(" ", "+")
+                .Replace('-', '+')
+                .Replace('_', '/');
+            switch (s.Length%4)
             {
-
-                var s = base64EncodedData.Replace('-', '+').Replace('_', '/');
-                switch (s.Length%4)
-                {
-                    case 0:
-                        return Convert.FromBase64String(s);
-                    case 2:
-                        s += "==";
-                        goto case 0;
-                    case 3:
-                        s += "=";
-                        goto case 0;
-                    default:
-                        throw new Exception("Illegal base64url string!");
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("error : " + ex.Message);
+                case 0:
+                    return Convert.FromBase64String(s);
+                case 2:
+                    s += "==";
+                    goto case 0;
+                case 3:
+                    s += "=";
+                    goto case 0;
+                default:
+                    throw new Exception("Illegal base64url string!");
             }
         }
     }
