@@ -100,6 +100,9 @@
     <Compile Include="Api\Authorization\Common\ProcessAuthorizationRequest.cs" />
     <Compile Include="Api\Discovery\Actions\CreateDiscoveryDocumentationAction.cs" />
     <Compile Include="Api\Discovery\DiscoveryActions.cs" />
+    <Compile Include="Api\Jwks\Actions\GetSetOfPublicKeysUsedToValidateJwsAction.cs" />
+    <Compile Include="Api\Jwks\Actions\JsonWebKeyEnricher.cs" />
+    <Compile Include="Api\Jwks\JwksActions.cs" />
     <Compile Include="Api\Token\Actions\GetTokenByAuthorizationCodeGrantTypeAction.cs" />
     <Compile Include="Api\Token\TokenActions.cs" />
     <Compile Include="Api\UserInfo\Actions\GetJwsPayload.cs" />

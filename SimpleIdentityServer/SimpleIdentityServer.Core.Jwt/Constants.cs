@@ -162,5 +162,76 @@ namespace SimpleIdentityServer.Core.Jwt
         {
             public static string RS256 = "RS256";
         }
+
+        public static class JsonWebKeyParameterNames
+        {
+            public static string KeyTypeName = "kty";
+
+            public static string UseName = "use";
+
+            public static string KeyOperationsName = "key_ops";
+
+            public static string Algorithm = "alg";
+
+            public static string KeyIdentifierName = "kid";
+
+            public static class RsaKey
+            {
+                public static string ModulusName = "n";
+
+                public static string ExponentName = "e";
+            }
+        }
+
+        public static Dictionary<KeyType, string> MappingKeyTypeEnumToName = new Dictionary<KeyType, string>
+        {
+            {
+                KeyType.RSA, "RSA"
+            },
+            {
+                KeyType.EC, "EC"
+            },
+            {
+                KeyType.oct, "oct"
+            }
+        };
+
+        public static Dictionary<Use, string> MappingUseEnumerationToName  = new Dictionary<Use, string>
+        {
+            {
+                Use.Sig, "sig"
+            },
+            {
+                Use.Enc, "enc"
+            }
+        };
+
+        public static Dictionary<KeyOperations, string> MappingKeyOperationToName = new Dictionary<KeyOperations, string>
+        {
+            {
+                KeyOperations.Sign, "sign"
+            },
+            {
+                KeyOperations.Verify, "verify"
+            },
+            {
+                KeyOperations.Encrypt, "encrypt"
+            },
+            {
+                KeyOperations.Decrypt, "decrypt"
+            },
+            {
+                KeyOperations.WrapKey, "wrapKey"
+            },
+            {
+                KeyOperations.UnWrapKey, "unwrapKey"
+            },
+            {
+                KeyOperations.DeriveKey, "deriveKey"
+            },
+            {
+                KeyOperations.DeriveBits, "deriveBits"
+            }
+        };
     }
 }
