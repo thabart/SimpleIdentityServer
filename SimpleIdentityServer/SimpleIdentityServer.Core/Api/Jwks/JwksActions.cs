@@ -1,26 +1,42 @@
 ﻿using System.Collections.Generic;
 using SimpleIdentityServer.Core.Api.Jwks.Actions;
-using SimpleIdentityServer.Core.Jwt;
+using SimpleIdentityServer.Core.Jwt.Signature;
 
 namespace SimpleIdentityServer.Core.Api.Jwks
 {
     public interface IJwksActions
     {
-        List<JsonWebKey> GetSetOfPublicKeysUsedToValidateJws();
+        JsonWebKeySet GetJwks();
     }
 
     public class JwksActions : IJwksActions
     {
         private readonly IGetSetOfPublicKeysUsedToValidateJwsAction _getSetOfPublicKeysUsedToValidateJwsAction;
 
-        public JwksActions(IGetSetOfPublicKeysUsedToValidateJwsAction getSetOfPublicKeysUsedToValidateJwsAction)
+        private readonly IGetSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction
+            _getSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction;
+
+        public JwksActions(
+            IGetSetOfPublicKeysUsedToValidateJwsAction getSetOfPublicKeysUsedToValidateJwsAction,
+            IGetSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction getSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction)
         {
             _getSetOfPublicKeysUsedToValidateJwsAction = getSetOfPublicKeysUsedToValidateJwsAction;
+            _getSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction =
+                getSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction;
         }
 
-        public List<JsonWebKey> GetSetOfPublicKeysUsedToValidateJws()
+        public JsonWebKeySet GetJwks()
         {
-            return _getSetOfPublicKeysUsedToValidateJwsAction.Execute();
+            var publicKeysUsedToValidateSignature = _getSetOfPublicKeysUsedToValidateJwsAction.Execute();
+            var publicKeysUsedForClientEncryption = _getSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction.Execute();
+            var result = new JsonWebKeySet
+            {
+                Keys = new List<Dictionary<string, object>>()
+            };
+
+            result.Keys.AddRange(publicKeysUsedToValidateSignature);
+            result.Keys.AddRange(publicKeysUsedForClientEncryption);
+            return result;
         }
     }
 }

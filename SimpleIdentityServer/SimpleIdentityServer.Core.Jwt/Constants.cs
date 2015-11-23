@@ -171,7 +171,7 @@ namespace SimpleIdentityServer.Core.Jwt
 
             public static string KeyOperationsName = "key_ops";
 
-            public static string Algorithm = "alg";
+            public static string AlgorithmName = "alg";
 
             public static string KeyIdentifierName = "kid";
 

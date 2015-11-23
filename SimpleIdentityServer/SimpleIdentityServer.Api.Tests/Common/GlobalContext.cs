@@ -13,6 +13,8 @@ using SimpleIdentityServer.Core.Api.Authorization.Actions;
 using SimpleIdentityServer.Core.Api.Authorization.Common;
 using SimpleIdentityServer.Core.Api.Discovery;
 using SimpleIdentityServer.Core.Api.Discovery.Actions;
+using SimpleIdentityServer.Core.Api.Jwks;
+using SimpleIdentityServer.Core.Api.Jwks.Actions;
 using SimpleIdentityServer.Core.Api.Token;
 using SimpleIdentityServer.Core.Api.Token.Actions;
 using SimpleIdentityServer.Core.Common;
@@ -146,6 +148,12 @@ namespace SimpleIdentityServer.Api.Tests.Common
 
             UnityContainer.RegisterType<IDiscoveryActions, DiscoveryActions>();
             UnityContainer.RegisterType<ICreateDiscoveryDocumentationAction, CreateDiscoveryDocumentationAction>();
+
+            UnityContainer.RegisterType<IJwksActions, JwksActions>();
+            UnityContainer.RegisterType<IGetSetOfPublicKeysUsedToValidateJwsAction, GetSetOfPublicKeysUsedToValidateJwsAction>();
+            UnityContainer.RegisterType<IJsonWebKeyEnricher, JsonWebKeyEnricher>();
+            UnityContainer.RegisterType<IGetSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction, GetSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction>();
+
 
             UnityContainer.RegisterType<IProtector, FakeProtector>();
             UnityContainer.RegisterType<IEncoder, Encoder>();

@@ -217,8 +217,6 @@
     <Compile Include="Controllers\AuthenticateController.cs" />
     <Compile Include="Controllers\ConsentController.cs" />
     <Compile Include="DTOs\Request\AuthorizationRequest.cs" />
-    <Compile Include="DTOs\Response\JsonWebKey.cs" />
-    <Compile Include="DTOs\Response\JsonWebKeySet.cs" />
     <Compile Include="Extensions\ApiControllerExtensions.cs" />
     <Compile Include="Extensions\ControllerExtensions.cs" />
     <Compile Include="Extensions\HttpRequestMessageExtensions.cs" />

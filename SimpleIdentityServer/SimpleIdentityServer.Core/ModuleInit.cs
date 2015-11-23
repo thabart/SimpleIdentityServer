@@ -6,6 +6,8 @@ using SimpleIdentityServer.Core.Api.Authorization.Actions;
 using SimpleIdentityServer.Core.Api.Authorization.Common;
 using SimpleIdentityServer.Core.Api.Discovery;
 using SimpleIdentityServer.Core.Api.Discovery.Actions;
+using SimpleIdentityServer.Core.Api.Jwks;
+using SimpleIdentityServer.Core.Api.Jwks.Actions;
 using SimpleIdentityServer.Core.Api.Token;
 using SimpleIdentityServer.Core.Api.Token.Actions;
 using SimpleIdentityServer.Core.Common;
@@ -65,6 +67,11 @@ namespace SimpleIdentityServer.Core
             register.RegisterType<IConsentActions, ConsentActions>();
             register.RegisterType<IConfirmConsentAction, ConfirmConsentAction>();
             register.RegisterType<IDisplayConsentAction, DisplayConsentAction>();
+
+            register.RegisterType<IJwksActions, JwksActions>();
+            register.RegisterType<IGetSetOfPublicKeysUsedToValidateJwsAction, GetSetOfPublicKeysUsedToValidateJwsAction>();
+            register.RegisterType<IJsonWebKeyEnricher, JsonWebKeyEnricher>();
+            register.RegisterType<IGetSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction, GetSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction>();
 
             register.RegisterType<IAuthenticateActions, AuthenticateActions>();
             register.RegisterType<IAuthenticateResourceOwnerAction, AuthenticateResourceOwnerAction>();

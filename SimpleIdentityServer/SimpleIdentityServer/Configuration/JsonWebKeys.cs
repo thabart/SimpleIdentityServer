@@ -21,24 +21,26 @@ namespace SimpleIdentityServer.Api.Configuration
                     Alg = AllAlg.RS256,
                     KeyOps = new []
                     {
-                        KeyOperations.Sign
+                        KeyOperations.Sign,
+                        KeyOperations.Verify
                     },
                     Kid = "1",
                     Kty = KeyType.RSA,
+                    Use = Use.Sig,
                     SerializedKey = serializedRsa,
-                    Use = Use.Sig
                 },
                 new JsonWebKey
                 {
                     Alg = AllAlg.RSA1_5,
                     KeyOps = new []
                     {
-                        KeyOperations.Encrypt
+                        KeyOperations.Encrypt,
+                        KeyOperations.Decrypt
                     },
-                    Kid = "2",
+                    Kid = "3",
                     Kty = KeyType.RSA,
+                    Use = Use.Enc,
                     SerializedKey = serializedRsa,
-                    Use = Use.Enc
                 }
             };
         }

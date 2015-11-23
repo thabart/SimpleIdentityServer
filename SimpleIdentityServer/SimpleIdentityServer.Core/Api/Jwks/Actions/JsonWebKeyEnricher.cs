@@ -42,20 +42,18 @@ namespace SimpleIdentityServer.Core.Api.Jwks.Actions
             return new Dictionary<string, object>
             {
                 {
-                    Jwt.Constants.JsonWebKeyParameterNames.KeyIdentifierName, jsonWebKey.Kid
+                    Jwt.Constants.JsonWebKeyParameterNames.KeyTypeName, Jwt.Constants.MappingKeyTypeEnumToName[jsonWebKey.Kty]
                 },
                 {
                     Jwt.Constants.JsonWebKeyParameterNames.UseName, Jwt.Constants.MappingUseEnumerationToName[jsonWebKey.Use]
                 },
                 {
-                    Jwt.Constants.JsonWebKeyParameterNames.KeyOperationsName, jsonWebKey.KeyOps.Select(j => Jwt.Constants.MappingKeyOperationToName[j]).ToArray()
+                    Jwt.Constants.JsonWebKeyParameterNames.AlgorithmName, Jwt.Constants.JwsAlgNames.RS256
                 },
                 {
-                    Jwt.Constants.JsonWebKeyParameterNames.Algorithm, Jwt.Constants.JwsAlgNames.RS256
-                },
-                {
-                    Jwt.Constants.JsonWebKeyParameterNames.KeyTypeName, Jwt.Constants.MappingKeyTypeEnumToName[jsonWebKey.Kty]
+                    Jwt.Constants.JsonWebKeyParameterNames.KeyIdentifierName, jsonWebKey.Kid
                 }
+                // TODO : we still need to support the other parameters x5u & x5c & x5t & x5t#S256
             };
         }
 

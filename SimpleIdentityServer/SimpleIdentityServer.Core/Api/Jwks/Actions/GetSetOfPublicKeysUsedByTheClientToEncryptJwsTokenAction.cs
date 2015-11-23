@@ -7,18 +7,18 @@ using SimpleIdentityServer.Core.Repositories;
 
 namespace SimpleIdentityServer.Core.Api.Jwks.Actions
 {
-    public interface IGetSetOfPublicKeysUsedToValidateJwsAction
+    public interface IGetSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction
     {
         List<Dictionary<string, object>> Execute();
     }
 
-    public class GetSetOfPublicKeysUsedToValidateJwsAction : IGetSetOfPublicKeysUsedToValidateJwsAction
+    public class GetSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction : IGetSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction
     {
-        private readonly IJsonWebKeyRepository _jsonWebKeyRepository;
-
         private readonly IJsonWebKeyEnricher _jsonWebKeyEnricher;
 
-        public GetSetOfPublicKeysUsedToValidateJwsAction(
+        private readonly IJsonWebKeyRepository _jsonWebKeyRepository;
+
+        public GetSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction(
             IJsonWebKeyRepository jsonWebKeyRepository,
             IJsonWebKeyEnricher jsonWebKeyEnricher)
         {
@@ -30,13 +30,14 @@ namespace SimpleIdentityServer.Core.Api.Jwks.Actions
         {
             var result = new List<Dictionary<string, object>>();
             var jsonWebKeys = _jsonWebKeyRepository.GetAll();
-            // Retrieve all the JWK used by the client to check the signature.
-            var jsonWebKeysUsedForSignature = jsonWebKeys.Where(jwk => jwk.Use == Use.Sig && jwk.KeyOps.Contains(KeyOperations.Verify));
-            foreach (var jsonWebKey in jsonWebKeysUsedForSignature)
+            // Retrieve all the JWK used by the client to encrypt the JWS
+            var jsonWebKeysUsedForEncryption =
+                jsonWebKeys.Where(jwk => jwk.Use == Use.Enc && jwk.KeyOps.Contains(KeyOperations.Encrypt));
+            foreach (var jsonWebKey in jsonWebKeysUsedForEncryption)
             {
                 var publicKeyInformation = _jsonWebKeyEnricher.GetPublicKeyInformation(jsonWebKey);
                 var jsonWebKeyInformation = _jsonWebKeyEnricher.GetJsonWebKeyInformation(jsonWebKey);
-                jsonWebKeyInformation.Add(Jwt.Constants.JsonWebKeyParameterNames.KeyOperationsName, new List<string> { Jwt.Constants.MappingKeyOperationToName[KeyOperations.Verify] });
+                jsonWebKeyInformation.Add(Jwt.Constants.JsonWebKeyParameterNames.KeyOperationsName, new List<string> { Jwt.Constants.MappingKeyOperationToName[KeyOperations.Encrypt] } );
                 publicKeyInformation.AddRange(jsonWebKeyInformation);
                 result.Add(publicKeyInformation);
             }

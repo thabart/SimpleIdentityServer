@@ -1,19 +1,23 @@
 ﻿using System.Web.Http;
 
-using SimpleIdentityServer.Api.DTOs.Response;
+using SimpleIdentityServer.Core.Api.Jwks;
+using SimpleIdentityServer.Core.Jwt.Signature;
 
 namespace SimpleIdentityServer.Api.Controllers.Api
 {
     public class JwksController : ApiController
     {
-        public JwksController()
+        private readonly IJwksActions _jwksActions;
+
+        public JwksController(IJwksActions jwksActions)
         {
-            
+            _jwksActions = jwksActions;
         }
 
         public JsonWebKeySet Get()
         {
-            return null;
+            var jsonWebKeySet = _jwksActions.GetJwks();
+            return jsonWebKeySet;
         }
     }
 }
