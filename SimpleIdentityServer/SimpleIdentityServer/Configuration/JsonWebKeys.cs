@@ -24,7 +24,7 @@ namespace SimpleIdentityServer.Api.Configuration
                         KeyOperations.Sign,
                         KeyOperations.Verify
                     },
-                    Kid = "1",
+                    Kid = "a3rMUgMFv9tPclLa6yF3zAkfquE",
                     Kty = KeyType.RSA,
                     Use = Use.Sig,
                     SerializedKey = serializedRsa,

@@ -36,7 +36,7 @@ namespace SimpleIdentityServer.Core.Api.Jwks.Actions
             {
                 var publicKeyInformation = _jsonWebKeyEnricher.GetPublicKeyInformation(jsonWebKey);
                 var jsonWebKeyInformation = _jsonWebKeyEnricher.GetJsonWebKeyInformation(jsonWebKey);
-                jsonWebKeyInformation.Add(Jwt.Constants.JsonWebKeyParameterNames.KeyOperationsName, new List<string> { Jwt.Constants.MappingKeyOperationToName[KeyOperations.Verify] });
+                // jsonWebKeyInformation.Add(Jwt.Constants.JsonWebKeyParameterNames.KeyOperationsName, new List<string> { Jwt.Constants.MappingKeyOperationToName[KeyOperations.Verify] });
                 publicKeyInformation.AddRange(jsonWebKeyInformation);
                 result.Add(publicKeyInformation);
             }

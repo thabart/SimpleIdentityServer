@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SimpleIdentityServer.Core.Common.Extensions;
+
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
@@ -50,7 +51,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
                 var bytesToBeSigned = ASCIIEncoding.ASCII.GetBytes(combinedJwsNotSigned);
                 rsa.FromXmlString(serializedKeys);
                 var byteToBeConverted = rsa.SignData(bytesToBeSigned, hashMethod);
-                return Convert.ToBase64String(byteToBeConverted);
+                return byteToBeConverted.Base64EncodeBytes();
             }
         }
 

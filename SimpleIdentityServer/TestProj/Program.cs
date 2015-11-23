@@ -367,8 +367,10 @@ namespace TestProj
         static void Main(string[] args)
         {
             var m =
-                "eyJhbGciOiJSU0ExXzUiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2Iiwia2lkIjoiMyJ9.a68hIxb4j7OPMdqcaFkIL6LBvCawKfA008BSr_tXQAbZ9Ix2UYmbOg7Xs7-fIzw_YexI7K56dIVziAIcMB8yzHoWpcEpHR9-nxSMHrCT1zmPwKdPyycfvIRm1S0nds5uG5TPopjKrLZm9w7jNTA-360e40bIHjVui_B5Agi_RLQ.tAVOrNJ4PxISfN5C25EbHA.23P7YV6SY9ht90mu3w3uMXKQLksZE8Bd7eTnM9EhhQ20KRr8iShmd_Tg-PS5tAsHsUAuMppRBeJaqQr_wxtYxNGWbVKccWJJ3-7r2FwbE58dI12qGgY_j1l9ZvrRXV46e_5SZ4yDi-4YcFAFLC9wxYeKI1bXShEqb3XKI-9cj-Ed5co6M_dBL7xW7ImSdmcw05ZWxEyEiwBfLHh9wq1eKsEe4_xpsB_bHlx3A6_DRgKNiUYNIuinyO7mbG-BeBqv7sumO3x6eY_F5F6mVKhkLHzJoBB_R5M4GYrd_4rEjqQaWPu7vA8deQxrMea0zQXLdPhhgP8tOpbx1uq0I-7RZO30tf-F3rgnmJ4C-ILHlH0y4t_CVHwO8ZADvvg6dEtnCFRuEs3ry1mEGOLPeqHV-cchhP1erd6hnxkmZC6hNefoasnd_bVf_Oz0C3oheH8GQCgsdSYiSkuhGU05bfN6QXjedZ5JmgsLJiTGRT_Bj802LMpLfQfYHk3Vd8YMHExmGu6CG-vI3ojoBVbeFgjl0DBdsIeVJd2YmuE2-81T31NTF9-GIE4DTLPMJ_cqOrtvZ7YgcHrQ8273iR-sX3VI4DJdaqKyFStypckLAu2Q524NmvxOmEkYsA-F1W7Fql3jEpRcX6iziEXeGuBuAcKPWA.NRRBggJ98Li3Vp_a7b75tA";
+                "eyJhbGciOiJSUzI1NiIsImtpZCI6IjEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0L2lkZW50aXR5IiwiYXVkIjpbIk15QmxvZyJdLCJleHAiOjE0NTEzMTAxOTEsImlhdCI6MTQ0ODMxMDE5MSwic3ViIjoiYWRtaW5pc3RyYXRvckBob3RtYWlsLmJlIiwiYWNyIjoib3BlbmlkLnBhcGUuYXV0aF9sZXZlbC5ucy5wYXNzd29yZD0xIiwiYW1yIjoicGFzc3dvcmQiLCJhenAiOiJNeUJsb2cifQ.Ai+zreXQmsRIIosGOeuM2k8iBdBtnKa+b9m7isX6cg/1p5i4N2OK7Ul2679mdp2fcjj1f7panW0yOsJMTU1Ydo0khKiiH11bP/cShS5cDfW0haCqJuMNXN5j/X4wP4Vd7fDenqYG9wNcvQWpNn/Yqlm92lnHiGFdXF8pfKMagt8=";
             var r = m.Split('.');
+            var s = Convert.FromBase64String("Ai+zreXQmsRIIosGOeuM2k8iBdBtnKa+b9m7isX6cg/1p5i4N2OK7Ul2679mdp2fcjj1f7panW0yOsJMTU1Ydo0khKiiH11bP/cShS5cDfW0haCqJuMNXN5j/X4wP4Vd7fDenqYG9wNcvQWpNn/Yqlm92lnHiGFdXF8pfKMagt8=");
+            // "Ai+zreXQmsRIIosGOeuM2k8iBdBtnKa+b9m7isX6cg/1p5i4N2OK7Ul2679mdp2fcjj1f7panW0yOsJMTU1Ydo0khKiiH11bP/cShS5cDfW0haCqJuMNXN5j/X4wP4Vd7fDenqYG9wNcvQWpNn/Yqlm92lnHiGFdXF8pfKMagt8="
             var serializedProtectedHeader = r[0].Base64Decode();
             var encryptedContentEncryptionKeyBytes = r[1].Base64DecodeBytes();
             var ivBytes = r[2].Base64DecodeBytes();
