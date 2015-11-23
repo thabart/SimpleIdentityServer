@@ -30,6 +30,12 @@ namespace SimpleIdentityServer.Api
             public static string Jwks = "jwks";
 
             public static string Registration = "registration";
+
+            public static string EndSession = "end_session";
+
+            public static string CheckSession = "check_session";
+
+            public static string Revocation = "revocation";
         }
     }
 }

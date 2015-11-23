@@ -188,7 +188,7 @@ namespace SimpleIdentityServer.Core
                 {
                     ResponseType.code,
                     ResponseType.token
-                }, 
+                },
                 AuthorizationFlow.HybridFlow
             },
             {
@@ -198,7 +198,7 @@ namespace SimpleIdentityServer.Core
                     ResponseType.id_token,
                     ResponseType.token
                 }, 
-                AuthorizationFlow.ImplicitFlow
+                AuthorizationFlow.HybridFlow
             }
         };
 
@@ -207,13 +207,17 @@ namespace SimpleIdentityServer.Core
             public static List<AuthorizationFlow> SupportedAuthorizationFlows = new List<AuthorizationFlow>
             {
                 AuthorizationFlow.AuthorizationCodeFlow,
-                AuthorizationFlow.ImplicitFlow
+                AuthorizationFlow.ImplicitFlow,
+                AuthorizationFlow.HybridFlow
             };
 
             public static List<GrantType> SupportedGrantTypes = new List<GrantType>
             {
-                GrantType.@implicit,
-                GrantType.authorization_code
+                GrantType.authorization_code,
+                GrantType.client_credentials,
+                GrantType.password,
+                GrantType.refresh_token,
+                GrantType.@implicit
             }; 
 
             public static List<string> SupportedResponseModes = new List<string>
@@ -236,8 +240,31 @@ namespace SimpleIdentityServer.Core
                 <TokenEndPointAuthenticationMethods>
             {
                 TokenEndPointAuthenticationMethods.client_secret_basic,
-                TokenEndPointAuthenticationMethods.client_secret_post,
-                TokenEndPointAuthenticationMethods.client_secret_jwt
+                TokenEndPointAuthenticationMethods.client_secret_post
+            };
+
+            public static List<string> SupportedClaims = new List<string>
+            {
+                Jwt.Constants.StandardResourceOwnerClaimNames.Subject,
+                Jwt.Constants.StandardResourceOwnerClaimNames.Name,
+                Jwt.Constants.StandardResourceOwnerClaimNames.FamilyName,
+                Jwt.Constants.StandardResourceOwnerClaimNames.GivenName,
+                Jwt.Constants.StandardResourceOwnerClaimNames.MiddleName,
+                Jwt.Constants.StandardResourceOwnerClaimNames.NickName,
+                Jwt.Constants.StandardResourceOwnerClaimNames.PreferredUserName,
+                Jwt.Constants.StandardResourceOwnerClaimNames.Profile,
+                Jwt.Constants.StandardResourceOwnerClaimNames.Picture,
+                Jwt.Constants.StandardResourceOwnerClaimNames.WebSite,
+                Jwt.Constants.StandardResourceOwnerClaimNames.Gender,
+                Jwt.Constants.StandardResourceOwnerClaimNames.BirthDate,
+                Jwt.Constants.StandardResourceOwnerClaimNames.ZoneInfo,
+                Jwt.Constants.StandardResourceOwnerClaimNames.Locale,
+                Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt,
+                Jwt.Constants.StandardResourceOwnerClaimNames.Email,
+                Jwt.Constants.StandardResourceOwnerClaimNames.EmailVerified,
+                Jwt.Constants.StandardResourceOwnerClaimNames.Address,
+                Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber,
+                Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumberVerified
             };
         }
 

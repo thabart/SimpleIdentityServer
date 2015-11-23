@@ -6,58 +6,34 @@ namespace SimpleIdentityServer.Core.Results
     public class DiscoveryInformation
     {
         /// <summary>
-        /// Gets or sets the issuer. 
-        /// </summary>
-        [DataMember(Name = "issuer")]
-        public string Issuer { get; set; }
-
-        /// <summary>
         /// Gets or sets the authorization end point.
         /// </summary>
         [DataMember(Name = "authorization_endpoint")]
         public string AuthorizationEndPoint { get; set; }
 
-        /// <summary>
-        /// Gets or sets the token endpoint.
-        /// </summary>
-        [DataMember(Name = "token_endpoint")]
-        public string TokenEndPoint { get; set; }
+        [DataMember(Name = "check_session_iframe")]
+        public string CheckSessionEndPoint { get; set; }
 
         /// <summary>
-        /// Gets or sets the user-info endpoint.
+        /// Gets or sets the list of the Claim Types supported.
         /// </summary>
-        [DataMember(Name = "userinfo_endpoint")]
-        public string UserInfoEndPoint { get; set; }
+        [DataMember(Name = "claim_types_supported")]
+        public string[] ClaimTypesSupported { get; set; }
 
         /// <summary>
-        /// Gets or sets the JSON Web Key Set document.
+        /// Gets or sets boolean specifying whether the OP supports use of the claims parameter.
         /// </summary>
-        [DataMember(Name = "jwks_uri")]
-        public string JwksUri { get; set; }
+        [DataMember(Name = "claims_parameter_supported")]
+        public bool ClaimsParameterSupported { get; set; }
 
         /// <summary>
-        /// Gets or sets the Registration End Point.
+        /// Gets or sets a list of the Claim Names of the Claims.
         /// </summary>
-        [DataMember(Name = "registration_endpoint")]
-        public string RegistrationEndPoint { get; set; }
-
-        /// <summary>
-        /// Gets or sets the list of scupported scopes.
-        /// </summary>
-        [DataMember(Name = "scopes_supported")]
-        public string[] ScopesSupported { get; set; }
-
-        /// <summary>
-        /// Gets or sets the response types supported : code, id_token & token id_token
-        /// </summary>
-        [DataMember(Name = "response_types_supported")]
-        public string[] ResponseTypesSupported { get; set; }
-
-        /// <summary>
-        /// Gets or sets the response modes supported : query, fragment
-        /// </summary>
-        [DataMember(Name = "response_modes_supported")]
-        public string[] ResponseModesSupported { get; set; }
+        // [DataMember(Name = "claims_supported")]
+        public string[] ClaimsSupported { get; set; }
+        
+        [DataMember(Name = "end_session_endpoint")]
+        public string EndSessionEndPoint { get; set; }
 
         /// <summary>
         /// Gets or sets the grant-types supported : authorization_code, implicit
@@ -66,9 +42,61 @@ namespace SimpleIdentityServer.Core.Results
         public string[] GrantTypesSupported { get; set; }
 
         /// <summary>
-        /// Gets or sets the acr values supported.
+        /// Gets or sets the list of the JWS signing algorithms (alg values) supported.
         /// </summary>
-        public string[] AcrValuesSupported { get; set; }
+        [DataMember(Name = "id_token_signing_alg_values_supported")]
+        public string[] IdTokenSigningAlgValuesSupported { get; set; }
+
+        /// <summary>
+        /// Gets or sets the issuer. 
+        /// </summary>
+        [DataMember(Name = "issuer")]
+        public string Issuer { get; set; }
+
+        /// <summary>
+        /// Gets or sets the JSON Web Key Set document.
+        /// </summary>
+        [DataMember(Name = "jwks_uri")]
+        public string JwksUri { get; set; }
+
+        /// <summary>
+        /// Gets or sets boolean specifying whether the OP supports use of the request parameter.
+        /// </summary>
+        [DataMember(Name = "request_parameter_supported")]
+        public bool RequestParameterSupported { get; set; }
+
+        /// <summary>
+        /// Gets or sets boolean specifying whether the OP supports use of the request request_uri
+        /// </summary>
+        [DataMember(Name = "request_uri_parameter_supported")]
+        public bool RequestUriParameterSupported { get; set; }
+
+        /// <summary>
+        /// Gets or sets boolean specifying whether the OP requires any request_uri values.
+        /// </summary>
+        [DataMember(Name = "require_request_uri_registration")]
+        public bool RequireRequestUriRegistration { get; set; }
+
+        /// <summary>
+        /// Gets or sets the response modes supported : query, fragment
+        /// </summary>
+        [DataMember(Name = "response_modes_supported")]
+        public string[] ResponseModesSupported { get; set; }
+
+        /// <summary>
+        /// Gets or sets the response types supported : code, id_token & token id_token
+        /// </summary>
+        [DataMember(Name = "response_types_supported")]
+        public string[] ResponseTypesSupported { get; set; }
+
+        [DataMember(Name = "revocation_endpoint")]
+        public string RevocationEndPoint { get; set; }
+
+        /// <summary>
+        /// Gets or sets the list of scupported scopes.
+        /// </summary>
+        [DataMember(Name = "scopes_supported")]
+        public string[] ScopesSupported { get; set; }
 
         /// <summary>
         /// Gets or sets the subject types supported : pairwise & public.
@@ -77,10 +105,39 @@ namespace SimpleIdentityServer.Core.Results
         public string[] SubjectTypesSupported { get; set; }
 
         /// <summary>
-        /// Gets or sets the list of the JWS signing algorithms (alg values) supported.
+        /// Gets or sets the token endpoint.
         /// </summary>
-        [DataMember(Name = "id_token_signing_alg_values_supported")]
-        public string[] IdTokenSigningAlgValuesSupported { get; set; }
+        [DataMember(Name = "token_endpoint")]
+        public string TokenEndPoint { get; set; }
+
+        /// <summary>
+        /// Gets or sets the list of Client Authentication methods supported by the TokenEndpoint : client_secret_post, client_secret_basic etc ...
+        /// </summary>
+        [DataMember(Name = "token_endpoint_auth_methods_supported")]
+        public string[] TokenEndpointAuthMethodSupported { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user-info endpoint.
+        /// </summary>
+        [DataMember(Name = "userinfo_endpoint")]
+        public string UserInfoEndPoint { get; set; }
+
+        /// <summary>
+        /// Gets or sets the version of the discovery document
+        /// </summary>
+        [DataMember(Name = "version")]
+        public string Version { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Registration End Point.
+        /// </summary>
+        // [DataMember(Name = "registration_endpoint")]
+        public string RegistrationEndPoint { get; set; }
+
+        /// <summary>
+        /// Gets or sets the acr values supported.
+        /// </summary>
+        public string[] AcrValuesSupported { get; set; }
 
         /// <summary>
         /// Gets or sets the list of the JWE encryption algorithms (alg values)
@@ -123,11 +180,6 @@ namespace SimpleIdentityServer.Core.Results
         public string[] RequestObjectEncryptionEncValuesSupported { get; set; }
 
         /// <summary>
-        /// Gets or sets the list of Client Authentication methods supported by the TokenEndpoint : client_secret_post, client_secret_basic etc ...
-        /// </summary>
-        public string[] TokenEndpointAuthMethodSupported { get; set; }
-
-        /// <summary>
         /// Gets or sets the list of the JWS algorithms (alg values) suppported by the Token Endpoint for the signature on the JWT.
         /// </summary>
         public string[] TokenEndpointAuthSigningAlgValuesSupported { get; set; }
@@ -136,16 +188,6 @@ namespace SimpleIdentityServer.Core.Results
         /// Gets or sets a list of display parameter values.
         /// </summary>
         public string[] DisplayValuesSupported { get; set; }
-
-        /// <summary>
-        /// Gets or sets the list of the Claim Types supported.
-        /// </summary>
-        public string[] ClaimTypesSupported { get; set; }
-
-        /// <summary>
-        /// Gets or sets a list of the Claim Names of the Claims.
-        /// </summary>
-        public string[] ClaimsSupported { get; set; }
 
         /// <summary>
         /// Gets or sets the service documentation.
@@ -161,26 +203,6 @@ namespace SimpleIdentityServer.Core.Results
         /// Gets or sets the languages & scripts supported for the UI.
         /// </summary>
         public string[] UiLocalesSupported { get; set; }
-
-        /// <summary>
-        /// Gets or sets boolean specifying whether the OP supports use of the claims parameter.
-        /// </summary>
-        public bool ClaimsParameterSupported { get; set; }
-
-        /// <summary>
-        /// Gets or sets boolean specifying whether the OP supports use of the request parameter.
-        /// </summary>
-        public bool RequestParameterSupported { get; set; }
-
-        /// <summary>
-        /// Gets or sets boolean specifying whether the OP supports use of the request request_uri
-        /// </summary>
-        public bool RequestUriParameterSupported { get; set; }
-
-        /// <summary>
-        /// Gets or sets boolean specifying whether the OP requires any request_uri values.
-        /// </summary>
-        public bool RequireRequestUriRegistration { get; set; }
 
         /// <summary>
         /// Gets or sets the OP policy.

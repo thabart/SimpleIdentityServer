@@ -72,8 +72,8 @@ namespace SimpleIdentityServer.Api.Configuration
                         ResponseType.id_token
                     },
                     IdTokenSignedTResponseAlg = "RS256",
-                    IdTokenEncryptedResponseAlg = "RSA1_5",
-                    IdTokenEncryptedResponseEnc = "A128CBC-HS256",
+                    // IdTokenEncryptedResponseAlg = "RSA1_5",
+                    // IdTokenEncryptedResponseEnc = "A128CBC-HS256",
                     RedirectionUrls = new List<RedirectionUrl>
                     {
                         new RedirectionUrl

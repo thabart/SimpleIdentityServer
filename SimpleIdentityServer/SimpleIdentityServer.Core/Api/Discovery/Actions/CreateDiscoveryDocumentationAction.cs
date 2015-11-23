@@ -35,6 +35,11 @@ namespace SimpleIdentityServer.Core.Api.Discovery.Actions
             var grantTypesSupported = GetSupportedGrantTypes();
             var tokenAuthMethodSupported = GetSupportedTokenEndPointAuthMethods();
 
+            result.ClaimsParameterSupported = false;
+            result.RequestParameterSupported = false;
+            result.RequestUriParameterSupported = true;
+            result.RequireRequestUriRegistration = true;
+            result.ClaimTypesSupported = Constants.Supported.SupportedClaims.ToArray();
             result.ScopesSupported = scopeSupportedNames;
             result.ResponseTypesSupported = responseTypesSupported;
             result.ResponseModesSupported = Constants.Supported.SupportedResponseModes.ToArray();

@@ -26,8 +26,11 @@ namespace SimpleIdentityServer.Api.Configuration
                 new Scope
                 {
                     Name = "openid",
+                    IsExposed = true,
                     IsInternal = true,
-                    IsDisplayedInConsent = false
+                    IsDisplayedInConsent = false,
+                    Description = "openid",
+                    Type = ScopeType.ProtectedApi
                 },
                 new Scope
                 {
@@ -54,6 +57,47 @@ namespace SimpleIdentityServer.Api.Configuration
                     },
                     Type = ScopeType.ResourceOwner,
                     IsDisplayedInConsent = true
+                },
+                new Scope
+                {
+                    Name = "email",
+                    IsExposed = true,
+                    IsInternal = true,
+                    IsDisplayedInConsent = true,
+                    Description = "Access to the email",
+                    Claims = new List<string>
+                    {
+                        Core.Jwt.Constants.StandardResourceOwnerClaimNames.Email,
+                        Core.Jwt.Constants.StandardResourceOwnerClaimNames.EmailVerified
+                    },
+                    Type = ScopeType.ResourceOwner
+                },
+                new Scope
+                {
+                    Name = "address",
+                    IsExposed = true,
+                    IsInternal = true,
+                    IsDisplayedInConsent = true,
+                    Description = "Access to the address",
+                    Claims = new List<string>
+                    {
+                        Core.Jwt.Constants.StandardResourceOwnerClaimNames.Address
+                    },
+                    Type = ScopeType.ResourceOwner
+                },
+                new Scope
+                {
+                    Name = "phone",
+                    IsExposed = true,
+                    IsInternal = true,
+                    IsDisplayedInConsent = true,
+                    Description = "Access to the phone",
+                    Claims = new List<string>
+                    {
+                        Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber,
+                        Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumberVerified
+                    },
+                    Type = ScopeType.ResourceOwner
                 }
             };
         } 
