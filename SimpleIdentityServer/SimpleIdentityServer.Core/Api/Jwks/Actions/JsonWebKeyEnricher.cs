@@ -48,7 +48,7 @@ namespace SimpleIdentityServer.Core.Api.Jwks.Actions
                     Jwt.Constants.JsonWebKeyParameterNames.UseName, Jwt.Constants.MappingUseEnumerationToName[jsonWebKey.Use]
                 },
                 {
-                    Jwt.Constants.JsonWebKeyParameterNames.AlgorithmName, Jwt.Constants.JwsAlgNames.RS256
+                    Jwt.Constants.JsonWebKeyParameterNames.AlgorithmName, Jwt.Constants.MappingNameToAllAlgEnum.SingleOrDefault(kp => kp.Value == jsonWebKey.Alg).Key
                 },
                 {
                     Jwt.Constants.JsonWebKeyParameterNames.KeyIdentifierName, jsonWebKey.Kid

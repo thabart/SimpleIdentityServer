@@ -113,7 +113,140 @@ namespace SimpleIdentityServer.Core.Jwt
                 ClaimTypes.Role, StandardResourceOwnerClaimNames.Role
             }
         };
-                
+
+        public static readonly Dictionary<string, JwsAlg> MappingNameToJwsAlg = new Dictionary<string, JwsAlg>
+        {
+            {
+                JwsAlgNames.HS256, JwsAlg.HS256
+            },
+            {
+                JwsAlgNames.HS384, JwsAlg.HS384
+            },
+            {
+                JwsAlgNames.HS512, JwsAlg.HS512
+            },
+            {
+                JwsAlgNames.RS256, JwsAlg.RS256
+            },
+            {
+                JwsAlgNames.RS384, JwsAlg.RS384
+            },
+            {
+                JwsAlgNames.RS512, JwsAlg.RS512
+            },
+            {
+                JwsAlgNames.ES256, JwsAlg.ES256
+            },
+            {
+                JwsAlgNames.ES384, JwsAlg.ES384
+            },
+            {
+                JwsAlgNames.ES512, JwsAlg.ES512
+            },
+            {
+                JwsAlgNames.PS256, JwsAlg.PS256
+            },
+            {
+                JwsAlgNames.PS384, JwsAlg.PS384
+            },
+            {
+                JwsAlgNames.PS512, JwsAlg.PS512
+            },
+            {
+                JwsAlgNames.NONE, JwsAlg.none
+            }
+        };
+
+        public static Dictionary<string, AllAlg> MappingNameToAllAlgEnum = new Dictionary<string, AllAlg>
+        {
+            {
+                JwsAlgNames.HS256, AllAlg.HS256
+            },
+            {
+                JwsAlgNames.HS384, AllAlg.HS384
+            },
+            {
+                JwsAlgNames.HS512, AllAlg.HS512
+            },
+            {
+                JwsAlgNames.RS256, AllAlg.RS256
+            },
+            {
+                JwsAlgNames.RS384, AllAlg.RS384
+            },
+            {
+                JwsAlgNames.RS512, AllAlg.RS512
+            },
+            {
+                JwsAlgNames.ES256, AllAlg.ES256
+            },
+            {
+                JwsAlgNames.ES384, AllAlg.ES384
+            },
+            {
+                JwsAlgNames.ES512, AllAlg.ES512
+            },
+            {
+                JwsAlgNames.PS256, AllAlg.PS256
+            },
+            {
+                JwsAlgNames.PS384, AllAlg.PS384
+            },
+            {
+                JwsAlgNames.PS512, AllAlg.PS512
+            },
+            {
+                JwsAlgNames.NONE, AllAlg.none
+            },            
+            {
+                JweAlgNames.RSA1_5, AllAlg.RSA1_5
+            },
+            {
+                JweAlgNames.RSA_OAEP, AllAlg.RSA_OAEP
+            },
+            {
+                JweAlgNames.RSA_OAEP_256, AllAlg.RSA_OAEP_256
+            },
+            {
+                JweAlgNames.A128KW, AllAlg.A128KW
+            },
+            {
+                JweAlgNames.A128GCMKW, AllAlg.A128GCMKW
+            },
+            {
+                JweAlgNames.A192GCMKW, AllAlg.A192GCMKW
+            },
+            {
+                JweAlgNames.A192KW, AllAlg.A192KW
+            },
+            {
+                JweAlgNames.A256GCMKW, AllAlg.A256GCMKW
+            },
+            {
+                JweAlgNames.A256KW, AllAlg.A256KW
+            },
+            {
+                JweAlgNames.DIR, AllAlg.DIR
+            },
+            {
+                JweAlgNames.ECDH_ESA_128KW, AllAlg.ECDH_ESA_128KW
+            },
+            {
+                JweAlgNames.ECDH_ESA_192KW, AllAlg.ECDH_ESA_192KW
+            },
+            {
+                JweAlgNames.ECDH_ESA_256_KW, AllAlg.ECDH_ESA_256_KW
+            },
+            {
+                JweAlgNames.PBES2_HS256_A128KW, AllAlg.PBES2_HS256_A128KW
+            },
+            {
+                JweAlgNames.PBES2_HS384_A192KW, AllAlg.PBES2_HS384_A192KW
+            },
+            {
+                JweAlgNames.PBES2_HS512_A256KW, AllAlg.PBES2_HS512_A256KW
+            }
+        };
         public static readonly Dictionary<string, JweAlg> MappingNameToJweAlgEnum = new Dictionary<string, JweAlg>
         {
             {
@@ -124,6 +257,45 @@ namespace SimpleIdentityServer.Core.Jwt
             },
             {
                 JweAlgNames.RSA_OAEP_256, JweAlg.RSA_OAEP_256
+            },
+            {
+                JweAlgNames.A128KW, JweAlg.A128KW
+            },
+            {
+                JweAlgNames.A128GCMKW, JweAlg.A128GCMKW
+            },
+            {
+                JweAlgNames.A192GCMKW, JweAlg.A192GCMKW
+            },
+            {
+                JweAlgNames.A192KW, JweAlg.A192KW
+            },
+            {
+                JweAlgNames.A256GCMKW, JweAlg.A256GCMKW
+            },
+            {
+                JweAlgNames.A256KW, JweAlg.A256KW
+            },
+            {
+                JweAlgNames.DIR, JweAlg.DIR
+            },
+            {
+                JweAlgNames.ECDH_ESA_128KW, JweAlg.ECDH_ESA_128KW
+            },
+            {
+                JweAlgNames.ECDH_ESA_192KW, JweAlg.ECDH_ESA_192KW
+            },
+            {
+                JweAlgNames.ECDH_ESA_256_KW, JweAlg.ECDH_ESA_256_KW
+            },
+            {
+                JweAlgNames.PBES2_HS256_A128KW, JweAlg.PBES2_HS256_A128KW
+            },
+            {
+                JweAlgNames.PBES2_HS384_A192KW, JweAlg.PBES2_HS384_A192KW
+            },
+            {
+                JweAlgNames.PBES2_HS512_A256KW, JweAlg.PBES2_HS512_A256KW
             }
         };
 
@@ -156,11 +328,63 @@ namespace SimpleIdentityServer.Core.Jwt
             public static string RSA_OAEP = "RSA-OAEP";
 
             public static string RSA_OAEP_256 = "RSA-OAEP-256";
+
+            public static string A128KW = "A128KW";
+
+            public static string A192KW = "A192KW";
+
+            public static string A256KW = "A256KW";
+
+            public static string DIR = "dir";
+
+            public static string ECDH_ES = "ECDH-ES";
+
+            public static string ECDH_ESA_128KW = "ECDH-ES+A128KW";
+
+            public static string ECDH_ESA_192KW = "ECDH-ES+A192KW";
+
+            public static string ECDH_ESA_256_KW = "ECDH-ES+A256KW";
+
+            public static string A128GCMKW = "A128GCMKW";
+
+            public static string A192GCMKW = "A192GCMKW";
+
+            public static string A256GCMKW = "A256GCMKW";
+
+            public static string PBES2_HS256_A128KW = "PBES2-HS256+A128KW";
+
+            public static string PBES2_HS384_A192KW = "PBES2-HS384+A192KW";
+
+            public static string PBES2_HS512_A256KW = "PBES2-HS512+A256KW";
         }
 
         public static class JwsAlgNames
         {
+            public static string HS256 = "HS256";
+
+            public static string HS384 = "HS384";
+
+            public static string HS512 = "HS512";
+
             public static string RS256 = "RS256";
+
+            public static string RS384 = "RS384";
+
+            public static string RS512 = "RS512";
+
+            public static string ES256 = "ES256";
+
+            public static string ES384 = "ES384";
+
+            public static string ES512 = "ES512";
+
+            public static string PS256 = "PS256";
+
+            public static string PS384 = "PS384";
+
+            public static string PS512 = "PS512";
+
+            public static string NONE = "none";
         }
 
         public static class JsonWebKeyParameterNames
