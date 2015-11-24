@@ -24,28 +24,28 @@ namespace SimpleIdentityServer.Api.Controllers.Api
         private DiscoveryInformation GetMetadata()
         {
             var issuer = Request.GetAbsoluteUriWithVirtualPath();
-            var authorizationEndPoint = new Uri(issuer, Constants.EndPoints.Authorization);
-            var tokenEndPoint = new Uri(issuer, Constants.EndPoints.Token);
-            var userInfoEndPoint = new Uri(issuer, Constants.EndPoints.UserInfo);
-            var jwksUri = new Uri(issuer, Constants.EndPoints.Jwks);
-            var registrationEndPoint = new Uri(issuer, Constants.EndPoints.Registration);
-            var revocationEndPoint = new Uri(issuer, Constants.EndPoints.Revocation);
+            var authorizationEndPoint = issuer + "/" + Constants.EndPoints.Authorization;
+            var tokenEndPoint = issuer + "/" + Constants.EndPoints.Token;
+            var userInfoEndPoint = issuer + "/" + Constants.EndPoints.UserInfo;
+            var jwksUri = issuer + "/" + Constants.EndPoints.Jwks;
+            var registrationEndPoint = issuer + "/" + Constants.EndPoints.Registration;
+            var revocationEndPoint = issuer + "/" + Constants.EndPoints.Revocation;
             // TODO : implement the session management : http://openid.net/specs/openid-connect-session-1_0.html
-            var checkSessionIframe = new Uri(issuer, Constants.EndPoints.CheckSession);
-            var endSessionEndPoint = new Uri(issuer, Constants.EndPoints.EndSession);
+            var checkSessionIframe = issuer + "/" + Constants.EndPoints.CheckSession;
+            var endSessionEndPoint = issuer + "/" + Constants.EndPoints.EndSession;
 
             var result = _discoveryActions.CreateDiscoveryInformation();
             result.Issuer = issuer.AbsoluteUri;
-            result.AuthorizationEndPoint = authorizationEndPoint.AbsoluteUri;
-            result.TokenEndPoint = tokenEndPoint.AbsoluteUri;
-            result.UserInfoEndPoint = userInfoEndPoint.AbsoluteUri;
-            result.JwksUri = jwksUri.AbsoluteUri;
-            result.RegistrationEndPoint = registrationEndPoint.AbsoluteUri;
-            result.RevocationEndPoint = revocationEndPoint.AbsoluteUri;
+            result.AuthorizationEndPoint = authorizationEndPoint;
+            result.TokenEndPoint = tokenEndPoint;
+            result.UserInfoEndPoint = userInfoEndPoint;
+            result.JwksUri = jwksUri;
+            result.RegistrationEndPoint = registrationEndPoint;
+            result.RevocationEndPoint = revocationEndPoint;
             result.Version = "1.0";
 
-            result.CheckSessionEndPoint = checkSessionIframe.AbsoluteUri;
-            result.EndSessionEndPoint = endSessionEndPoint.AbsoluteUri;
+            result.CheckSessionEndPoint = checkSessionIframe;
+            result.EndSessionEndPoint = endSessionEndPoint;
 
             return result;
         }

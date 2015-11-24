@@ -3,6 +3,7 @@ using Microsoft.Practices.Unity;
 
 using SimpleIdentityServer.Api.Configuration;
 using SimpleIdentityServer.Api.Parsers;
+using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Services;
 
@@ -19,6 +20,7 @@ namespace SimpleIdentityServer.Api
             container.RegisterType<IResourceOwnerService, InMemoryUserService>();
             container.RegisterType<IRedirectInstructionParser, RedirectInstructionParser>();
             container.RegisterType<IActionResultParser, ActionResultParser>();
+            container.RegisterType<ISimpleIdentityServerConfigurator, ConcreteSimpleIdentityServerConfigurator>();
 
             ModuleLoader.LoadContainer(container);
 

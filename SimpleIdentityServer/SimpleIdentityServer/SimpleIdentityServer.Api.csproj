@@ -17,7 +17,7 @@
     <AssemblyName>SimpleIdentityServer.Api</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
-    <UseIISExpress>true</UseIISExpress>
+    <UseIISExpress>false</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
@@ -208,6 +208,7 @@
     <Compile Include="Configuration\JsonWebKeys.cs" />
     <Compile Include="Configuration\ResourceOwners.cs" />
     <Compile Include="Configuration\Scopes.cs" />
+    <Compile Include="Configuration\ConcreteSimpleIdentityServerConfigurator.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Controllers\Api\AuthorizationController.cs" />
     <Compile Include="Controllers\Api\DiscoveryController.cs" />
@@ -328,7 +329,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>50470</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:50470/</IISUrl>
+          <IISUrl>http://localhost/SimpleIdentityServer.Api</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

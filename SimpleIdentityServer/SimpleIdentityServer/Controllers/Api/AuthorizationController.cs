@@ -76,7 +76,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             HttpRequestMessage request,
             IdentityServerEndPoints identityServerEndPoints)
         {
-            var uri = request.RequestUri.GetLeftPart(UriPartial.Authority);
+            var uri = request.GetAbsoluteUriWithVirtualPath().AbsoluteUri;
             var partialUri = Constants.MappingIdentityServerEndPointToPartialUrl[identityServerEndPoints];
             return uri + partialUri;
         }

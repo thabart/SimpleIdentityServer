@@ -84,7 +84,7 @@ namespace SimpleIdentityServer.Core
 
             register.RegisterType<IJwtGenerator, JwtGenerator>();
             register.RegisterType<IJwtParser, JwtParser>();
-            register.RegisterType<ISimpleIdentityServerConfigurator, SimpleIdentityServerConfigurator>();
+            // register.RegisterType<ISimpleIdentityServerConfigurator, SimpleIdentityServerConfigurator>();
             register.RegisterType<IGenerateAuthorizationResponse, GenerateAuthorizationResponse>();
         }
     }
