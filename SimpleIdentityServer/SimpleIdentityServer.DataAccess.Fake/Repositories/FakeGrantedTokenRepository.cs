@@ -16,7 +16,7 @@ namespace SimpleIdentityServer.DataAccess.Fake.Repositories
         public GrantedToken GetToken(string accessToken)
         {
             var result = FakeDataSource.Instance().GrantedTokens.FirstOrDefault(g => g.AccessToken == accessToken);
-            return result.ToBusiness();
+            return result == null ? null : result.ToBusiness();
         }
     }
 }

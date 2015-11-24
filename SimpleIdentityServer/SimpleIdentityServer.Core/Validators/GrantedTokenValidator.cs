@@ -29,7 +29,6 @@ namespace SimpleIdentityServer.Core.Validators
             messageErrorCode = string.Empty;
             messageErrorDescription = string.Empty;
             var grantedToken = _grantedTokenRepository.GetToken(accessToken);
-            var expirationDateTime = grantedToken.CreateDateTime.AddSeconds(grantedToken.ExpiresIn);
             if (grantedToken == null)
             {
                 messageErrorCode = ErrorCodes.InvalidToken;
@@ -37,6 +36,7 @@ namespace SimpleIdentityServer.Core.Validators
                 return false;
             }
 
+            var expirationDateTime = grantedToken.CreateDateTime.AddSeconds(grantedToken.ExpiresIn);
             var tokenIsExpired = DateTime.UtcNow > expirationDateTime;
             if (tokenIsExpired)
             {
