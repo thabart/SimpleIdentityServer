@@ -58,7 +58,38 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
             {
                 Id = resourceOwner.Id,
                 Name = resourceOwner.Name,
+                BirthDate = resourceOwner.BirthDate,
+                Email = resourceOwner.Email,
+                EmailVerified = resourceOwner.EmailVerified,
+                FamilyName = resourceOwner.FamilyName,
+                Gender = resourceOwner.Gender,
+                GivenName = resourceOwner.GivenName,
+                Locale = resourceOwner.Locale,
+                MiddleName = resourceOwner.MiddleName,
+                NickName = resourceOwner.NickName,
+                PhoneNumber = resourceOwner.PhoneNumber,
+                PhoneNumberVerified = resourceOwner.PhoneNumberVerified,
+                Picture = resourceOwner.Picture,
+                PreferredUserName = resourceOwner.PreferredUserName,
+                Profile = resourceOwner.Profile,
+                UpdatedAt = resourceOwner.UpdatedAt,
+                WebSite = resourceOwner.WebSite,
+                ZoneInfo = resourceOwner.ZoneInfo,
                 Password = resourceOwner.Password,
+                Address = resourceOwner.Address == null ? null : resourceOwner.Address.ToFake()
+            };
+        }
+
+        public static FAKEMODELS.Address ToFake(this MODELS.Address address)
+        {
+            return new FAKEMODELS.Address
+            {
+                Country = address.Country,
+                Formatted = address.Formatted,
+                Locality = address.Locality,
+                PostalCode = address.PostalCode,
+                Region = address.Region,
+                StreetAddress = address.StreetAddress
             };
         }
 
@@ -174,7 +205,25 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
             {
                 Id = resourceOwner.Id,
                 Name = resourceOwner.Name,
-                Password = resourceOwner.Password
+                BirthDate = resourceOwner.BirthDate,
+                Email = resourceOwner.Email,
+                EmailVerified = resourceOwner.EmailVerified,
+                FamilyName = resourceOwner.FamilyName,
+                Gender = resourceOwner.Gender,
+                GivenName = resourceOwner.GivenName,
+                Locale = resourceOwner.Locale,
+                MiddleName = resourceOwner.MiddleName,
+                NickName = resourceOwner.NickName,
+                PhoneNumber = resourceOwner.PhoneNumber,
+                PhoneNumberVerified = resourceOwner.PhoneNumberVerified,
+                Picture = resourceOwner.Picture,
+                PreferredUserName = resourceOwner.PreferredUserName,
+                Profile = resourceOwner.Profile,
+                UpdatedAt = resourceOwner.UpdatedAt,
+                WebSite = resourceOwner.WebSite,
+                ZoneInfo = resourceOwner.ZoneInfo,
+                Password = resourceOwner.Password,
+                Address = resourceOwner.Address == null ? null : resourceOwner.Address.ToBusiness()
             };
         }
 
@@ -227,6 +276,19 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
                 Scope = grantedToken.Scope,
                 TokenType = grantedToken.TokenType,
                 CreateDateTime = grantedToken.CreateDateTime
+            };
+        }
+
+        public static MODELS.Address ToBusiness(this FAKEMODELS.Address address)
+        {
+            return new MODELS.Address
+            {
+                Country = address.Country,
+                Formatted = address.Formatted,
+                Locality = address.Locality,
+                PostalCode = address.PostalCode,
+                Region = address.Region,
+                StreetAddress = address.StreetAddress
             };
         }
 

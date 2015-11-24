@@ -98,7 +98,7 @@ namespace SimpleIdentityServer.Core.Models
         /// Gets or sets the End-User's preferred postal address. The value is a JSON structure containing some or all the members defined in 
         /// http://openid.net/specs/openid-connect-core-1_0.html#AddressClaim
         /// </summary>
-        public string Address { get; set; }
+        public Address Address { get; set; }
 
         /// <summary>
         /// Gets or sets the time the end-user's information was last updated.

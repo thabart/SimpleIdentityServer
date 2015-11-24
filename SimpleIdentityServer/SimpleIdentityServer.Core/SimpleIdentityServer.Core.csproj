@@ -124,6 +124,7 @@
     <Compile Include="JwtToken\JwtGenerator.cs" />
     <Compile Include="JwtToken\JwtParser.cs" />
     <Compile Include="JwtToken\Validator\JwtClientParameterValidator.cs" />
+    <Compile Include="Models\Address.cs" />
     <Compile Include="Parameters\AuthorizationCodeGrantTypeParameter.cs" />
     <Compile Include="Parameters\ClientCredentialsParameter.cs" />
     <Compile Include="Repositories\IJsonWebKeyRepository.cs" />

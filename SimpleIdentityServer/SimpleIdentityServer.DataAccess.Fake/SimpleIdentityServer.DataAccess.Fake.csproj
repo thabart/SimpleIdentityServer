@@ -53,6 +53,7 @@
   <ItemGroup>
     <Compile Include="Extensions\MappingExtensions.cs" />
     <Compile Include="FakeDataSource.cs" />
+    <Compile Include="Models\Address.cs" />
     <Compile Include="Models\AuthorizationCode.cs" />
     <Compile Include="Models\Client.cs" />
     <Compile Include="Models\Consent.cs" />
