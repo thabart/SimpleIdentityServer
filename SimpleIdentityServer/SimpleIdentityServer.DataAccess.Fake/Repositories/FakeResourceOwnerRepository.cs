@@ -25,7 +25,7 @@ namespace SimpleIdentityServer.DataAccess.Fake.Repositories
 
         public ResourceOwner GetResourceOwnerByCredentials(string userName, string hashedPassword)
         {
-            var record = FakeDataSource.Instance().ResourceOwners.SingleOrDefault(r => r.UserName == userName && r.Password == hashedPassword);
+            var record = FakeDataSource.Instance().ResourceOwners.SingleOrDefault(r => r.Name == userName && r.Password == hashedPassword);
             if (record == null)
             {
                 return null;

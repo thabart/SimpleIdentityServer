@@ -57,8 +57,8 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
             return new FAKEMODELS.ResourceOwner
             {
                 Id = resourceOwner.Id,
+                Name = resourceOwner.Name,
                 Password = resourceOwner.Password,
-                UserName = resourceOwner.UserName
             };
         }
 
@@ -173,8 +173,8 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
             return new MODELS.ResourceOwner
             {
                 Id = resourceOwner.Id,
-                Password = resourceOwner.Password,
-                UserName = resourceOwner.UserName
+                Name = resourceOwner.Name,
+                Password = resourceOwner.Password
             };
         }
 

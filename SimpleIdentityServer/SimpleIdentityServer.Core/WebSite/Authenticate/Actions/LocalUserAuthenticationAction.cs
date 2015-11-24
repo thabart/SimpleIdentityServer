@@ -108,7 +108,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 
             var resourceOwner = _resourceOwnerRepository.GetBySubject(subject);
             claims.Add(new Claim(ClaimTypes.NameIdentifier, resourceOwner.Id));
-            claims.Add(new Claim(ClaimTypes.Name, resourceOwner.UserName));
+            claims.Add(new Claim(ClaimTypes.Name, resourceOwner.Name));
             claims.Add(new Claim(ClaimTypes.AuthenticationInstant, DateTime.Now.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture)));
             var requestedScopes = _parameterParserHelper.ParseScopeParameters(parameter.Scope);
             var consents = _consentRepository.GetConsentsForGivenUser(subject);

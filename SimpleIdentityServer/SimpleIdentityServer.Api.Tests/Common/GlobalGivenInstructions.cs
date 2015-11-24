@@ -46,7 +46,7 @@ namespace SimpleIdentityServer.Api.Tests.Common
         {
             var resourceOwner = new ResourceOwner
             {
-                UserName = userName,
+                Name = userName,
                 Password = _securityHelper.ComputeHash(password)
             };
 
