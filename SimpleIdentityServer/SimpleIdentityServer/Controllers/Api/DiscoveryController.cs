@@ -35,7 +35,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             var endSessionEndPoint = issuer + "/" + Constants.EndPoints.EndSession;
 
             var result = _discoveryActions.CreateDiscoveryInformation();
-            result.Issuer = issuer.AbsoluteUri;
+            result.Issuer = issuer;
             result.AuthorizationEndPoint = authorizationEndPoint;
             result.TokenEndPoint = tokenEndPoint;
             result.UserInfoEndPoint = userInfoEndPoint;
