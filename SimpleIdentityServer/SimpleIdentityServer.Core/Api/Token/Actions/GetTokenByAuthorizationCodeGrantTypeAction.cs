@@ -37,13 +37,16 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
         private readonly IJwtClientParameterValidator _jwtClientParameterValidator;
 
+        private readonly IGrantedTokenRepository _grantedTokenRepository;
+
         public GetTokenByAuthorizationCodeGrantTypeAction(
             IClientValidator clientValidator,
             IAuthorizationCodeRepository authorizationCodeRepository,
             ISimpleIdentityServerConfigurator simpleIdentityServerConfigurator,
             ITokenHelper tokenHelper,
             IClientRepository clientRepository,
-            IJwtClientParameterValidator jwtClientParameterValidator)
+            IJwtClientParameterValidator jwtClientParameterValidator,
+            IGrantedTokenRepository grantedTokenRepository)
         {
             _clientValidator = clientValidator;
             _authorizationCodeRepository = authorizationCodeRepository;
@@ -51,6 +54,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             _tokenHelper = tokenHelper;
             _clientRepository = clientRepository;
             _jwtClientParameterValidator = jwtClientParameterValidator;
+            _grantedTokenRepository = grantedTokenRepository;
         }
 
         public GrantedToken Execute(
@@ -65,6 +69,8 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             _authorizationCodeRepository.RemoveAuthorizationCode(authorizationCode.Code);
             var grantedToken = _tokenHelper.GenerateToken(authorizationCode.Scopes, string.Empty);
             grantedToken.IdToken = authorizationCode.IdToken;
+            // Insert the granted token into the repository
+            _grantedTokenRepository.Insert(grantedToken);
             return grantedToken;
         }
 
