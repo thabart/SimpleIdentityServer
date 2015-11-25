@@ -29,9 +29,10 @@ Scenario: A resource owner is authenticated and we want to display only the cons
 	| PlanningApi | true       |
 	| openid      | true       |
 	And the scopes openid,PlanningApi are assigned to the client MyHolidays
-	And a resource owner is authenticated
-	| UserId               | UserName |
-	| habarthierry@loki.be | thabart  |
+	And create a resource owner
+	| Id                   | Name    |
+	| habarthierry@loki.be | thabart |
+	And authenticate the resource owner
 
 	When requesting an authorization code
 	| scope              | response_type | client_id  | redirect_uri     | prompt  |
@@ -66,9 +67,10 @@ Scenario: A resource owner is authenticated and he already has given his consent
 	| PlanningApi | true       |
 	| openid      | true       |
 	And the scopes openid,PlanningApi are assigned to the client MyHolidays
-	And a resource owner is authenticated
-	| UserId               | UserName |
-	| habarthierry@loki.be | thabart  |
+	And create a resource owner
+	| Id                   | Name    |
+	| habarthierry@loki.be | thabart |
+	And authenticate the resource owner
 	And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and scopes openid,PlanningApi
 
 	When requesting an authorization code
@@ -107,9 +109,10 @@ Scenario: a resource owner is authenticated. We want to retrieve an authorizatio
 	| PlanningApi | true       |
 	| openid      | true       |
 	And the scopes openid,PlanningApi are assigned to the client MyHolidays
-	And a resource owner is authenticated
-	| UserId               | UserName |
-	| habarthierry@loki.be | thabart  |
+	And create a resource owner
+	| Id                   | Name    |
+	| habarthierry@loki.be | thabart |
+	And authenticate the resource owner
 
 	When requesting an authorization code
 	| scope              | response_type | client_id  | redirect_uri     | state  |
@@ -146,9 +149,10 @@ Scenario: a resource owner is authenticated and we want to retrieve the authoriz
 	| PlanningApi | true       |
 	| openid      | true       |
 	And the scopes openid,PlanningApi are assigned to the client MyHolidays
-	And a resource owner is authenticated
-	| UserId               | UserName |
-	| habarthierry@loki.be | thabart  |
+	And create a resource owner
+	| Id                   | Name    |
+	| habarthierry@loki.be | thabart |
+	And authenticate the resource owner
 
 	When requesting an authorization code
 	| scope              | response_type | client_id  | redirect_uri     | prompt | state  |

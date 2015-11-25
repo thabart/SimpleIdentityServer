@@ -28,10 +28,15 @@ namespace SimpleIdentityServer.DataAccess.Fake.Repositories
 
         public JsonWebKey GetByKid(string kid)
         {
-            return FakeDataSource.Instance()
+            var result = FakeDataSource.Instance()
                 .JsonWebKeys
-                .FirstOrDefault(j => j.Kid == kid)
-                .ToBusiness();
+                .FirstOrDefault(j => j.Kid == kid);
+            if (result == null)
+            {
+                return null;
+            }
+
+            return result.ToBusiness();
         }
     }
 }

@@ -1,8 +1,4 @@
-﻿using SimpleIdentityServer.DataAccess.Fake.Models;
-using System.Collections.Generic;
-using System;
-
-namespace SimpleIdentityServer.Api.Tests.Common.Fakes.Models
+﻿namespace SimpleIdentityServer.Api.Tests.Common.Fakes.Models
 {
     public enum FakeScopeType
     {

@@ -98,14 +98,16 @@ this.ScenarioSetup(scenarioInfo);
  testRunner.And("the response-types id_token are supported by the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             TechTalk.SpecFlow.Table table2 = new TechTalk.SpecFlow.Table(new string[] {
-                        "UserId",
-                        "UserName"});
+                        "Id",
+                        "Name"});
             table2.AddRow(new string[] {
                         "habarthierry@loki.be",
                         "thabart"});
 #line 18
- testRunner.And("a resource owner is authenticated", ((string)(null)), table2, "And ");
+ testRunner.And("create a resource owner", ((string)(null)), table2, "And ");
 #line 21
+ testRunner.And("authenticate the resource owner", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 22
  testRunner.And("the consent has been given by the resource owner habarthierry@loki.be for the cli" +
                     "ent MyHolidays and scopes openid,PlanningApi", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
@@ -125,24 +127,24 @@ this.ScenarioSetup(scenarioInfo);
                         "none",
                         "state1",
                         "parameterNonce"});
-#line 23
+#line 24
  testRunner.When("requesting an authorization", ((string)(null)), table3, "When ");
-#line 27
- testRunner.Then("the http status code is 301", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 28
+ testRunner.Then("the http status code is 301", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 29
  testRunner.And("decrypt the id_token parameter from the query string", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             TechTalk.SpecFlow.Table table4 = new TechTalk.SpecFlow.Table(new string[] {
                         "Alg"});
             table4.AddRow(new string[] {
                         "none"});
-#line 29
+#line 30
  testRunner.And("the protected JWS header is returned", ((string)(null)), table4, "And ");
-#line 32
- testRunner.And("the audience parameter with value MyHolidays is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 33
- testRunner.And("the parameter nonce with value parameterNonce is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("the audience parameter with value MyHolidays is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 34
+ testRunner.And("the parameter nonce with value parameterNonce is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 35
  testRunner.And("the claim sub with value habarthierry@loki.be is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
@@ -153,11 +155,11 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void GetTheIdTokenAndAccessTokenViaImplicitWorkflow()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get the id token and access token via implicit workflow", ((string[])(null)));
-#line 36
-this.ScenarioSetup(scenarioInfo);
 #line 37
- testRunner.Given("a mobile application MyHolidays is defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+this.ScenarioSetup(scenarioInfo);
 #line 38
+ testRunner.Given("a mobile application MyHolidays is defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 39
  testRunner.And("the redirection uri http://localhost is assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             TechTalk.SpecFlow.Table table5 = new TechTalk.SpecFlow.Table(new string[] {
@@ -169,26 +171,28 @@ this.ScenarioSetup(scenarioInfo);
             table5.AddRow(new string[] {
                         "PlanningApi",
                         "false"});
-#line 39
+#line 40
  testRunner.And("the scopes are defined", ((string)(null)), table5, "And ");
-#line 43
- testRunner.And("the id_token signature algorithm is set to none for the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 44
- testRunner.And("the scopes openid,PlanningApi are assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("the id_token signature algorithm is set to none for the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 45
- testRunner.And("the grant-type implicit is supported by the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("the scopes openid,PlanningApi are assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 46
+ testRunner.And("the grant-type implicit is supported by the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 47
  testRunner.And("the response-types id_token,token are supported by the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             TechTalk.SpecFlow.Table table6 = new TechTalk.SpecFlow.Table(new string[] {
-                        "UserId",
-                        "UserName"});
+                        "Id",
+                        "Name"});
             table6.AddRow(new string[] {
                         "habarthierry@loki.be",
                         "thabart"});
-#line 47
- testRunner.And("a resource owner is authenticated", ((string)(null)), table6, "And ");
-#line 50
+#line 48
+ testRunner.And("create a resource owner", ((string)(null)), table6, "And ");
+#line 51
+ testRunner.And("authenticate the resource owner", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 52
  testRunner.And("the consent has been given by the resource owner habarthierry@loki.be for the cli" +
                     "ent MyHolidays and scopes openid,PlanningApi", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
@@ -208,26 +212,26 @@ this.ScenarioSetup(scenarioInfo);
                         "none",
                         "state1",
                         "parameterNonce"});
-#line 52
+#line 54
  testRunner.When("requesting an authorization", ((string)(null)), table7, "When ");
-#line 57
+#line 59
  testRunner.Then("the http status code is 301", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line 58
+#line 60
  testRunner.And("decrypt the id_token parameter from the query string", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             TechTalk.SpecFlow.Table table8 = new TechTalk.SpecFlow.Table(new string[] {
                         "Alg"});
             table8.AddRow(new string[] {
                         "none"});
-#line 59
+#line 61
  testRunner.And("the protected JWS header is returned", ((string)(null)), table8, "And ");
-#line 62
- testRunner.And("the audience parameter with value MyHolidays is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 63
- testRunner.And("the parameter nonce with value parameterNonce is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 64
- testRunner.And("the claim sub with value habarthierry@loki.be is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("the audience parameter with value MyHolidays is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 65
+ testRunner.And("the parameter nonce with value parameterNonce is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 66
+ testRunner.And("the claim sub with value habarthierry@loki.be is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 68
  testRunner.And("the callback contains the following query name access_token", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
@@ -238,11 +242,11 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void GetAnIdTokenAndCheckIfTheClaimsReturnedInTheTokenAreCorrect()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get an id token and check if the claims returned in the token are correct", ((string[])(null)));
-#line 68
-this.ScenarioSetup(scenarioInfo);
-#line 69
- testRunner.Given("a mobile application MyHolidays is defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 70
+this.ScenarioSetup(scenarioInfo);
+#line 71
+ testRunner.Given("a mobile application MyHolidays is defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 72
  testRunner.And("the redirection uri http://localhost is assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             TechTalk.SpecFlow.Table table9 = new TechTalk.SpecFlow.Table(new string[] {
@@ -257,26 +261,28 @@ this.ScenarioSetup(scenarioInfo);
                         "profile",
                         "true",
                         "name"});
-#line 71
+#line 73
  testRunner.And("the scopes are defined", ((string)(null)), table9, "And ");
-#line 76
- testRunner.And("the id_token signature algorithm is set to none for the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 77
- testRunner.And("the scopes openid,profile are assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 78
- testRunner.And("the grant-type implicit is supported by the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("the id_token signature algorithm is set to none for the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 79
+ testRunner.And("the scopes openid,profile are assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 80
+ testRunner.And("the grant-type implicit is supported by the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 81
  testRunner.And("the response-types id_token are supported by the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             TechTalk.SpecFlow.Table table10 = new TechTalk.SpecFlow.Table(new string[] {
-                        "UserId",
-                        "UserName"});
+                        "Id",
+                        "Name"});
             table10.AddRow(new string[] {
                         "habarthierry@loki.be",
                         "thabart"});
-#line 80
- testRunner.And("a resource owner is authenticated", ((string)(null)), table10, "And ");
-#line 83
+#line 82
+ testRunner.And("create a resource owner", ((string)(null)), table10, "And ");
+#line 85
+ testRunner.And("authenticate the resource owner", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 86
  testRunner.And("the consent has been given by the resource owner habarthierry@loki.be for the cli" +
                     "ent MyHolidays and scopes openid,profile", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
@@ -296,26 +302,26 @@ this.ScenarioSetup(scenarioInfo);
                         "none",
                         "state1",
                         "parameterNonce"});
-#line 85
+#line 88
  testRunner.When("requesting an authorization", ((string)(null)), table11, "When ");
-#line 89
+#line 92
  testRunner.Then("the http status code is 301", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line 90
+#line 93
  testRunner.And("decrypt the id_token parameter from the query string", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             TechTalk.SpecFlow.Table table12 = new TechTalk.SpecFlow.Table(new string[] {
                         "Alg"});
             table12.AddRow(new string[] {
                         "none"});
-#line 91
- testRunner.And("the protected JWS header is returned", ((string)(null)), table12, "And ");
 #line 94
- testRunner.And("the audience parameter with value MyHolidays is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 95
- testRunner.And("the parameter nonce with value parameterNonce is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 96
- testRunner.And("the claim sub with value habarthierry@loki.be is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("the protected JWS header is returned", ((string)(null)), table12, "And ");
 #line 97
+ testRunner.And("the audience parameter with value MyHolidays is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 98
+ testRunner.And("the parameter nonce with value parameterNonce is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 99
+ testRunner.And("the claim sub with value habarthierry@loki.be is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 100
  testRunner.And("the claim name with value thabart is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
@@ -326,11 +332,11 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void GetASignedId_Token()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get a signed id_token", ((string[])(null)));
-#line 100
+#line 103
 this.ScenarioSetup(scenarioInfo);
-#line 101
+#line 104
  testRunner.Given("a mobile application MyHolidays is defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 102
+#line 105
  testRunner.And("the redirection uri http://localhost is assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             TechTalk.SpecFlow.Table table13 = new TechTalk.SpecFlow.Table(new string[] {
@@ -345,7 +351,7 @@ this.ScenarioSetup(scenarioInfo);
                         "Sign",
                         "RSA",
                         "Sig"});
-#line 103
+#line 106
  testRunner.And("add json web keys", ((string)(null)), table13, "And ");
 #line hidden
             TechTalk.SpecFlow.Table table14 = new TechTalk.SpecFlow.Table(new string[] {
@@ -357,26 +363,28 @@ this.ScenarioSetup(scenarioInfo);
             table14.AddRow(new string[] {
                         "PlanningApi",
                         "false"});
-#line 107
+#line 110
  testRunner.And("the scopes are defined", ((string)(null)), table14, "And ");
-#line 112
- testRunner.And("the id_token signature algorithm is set to RS256 for the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 113
- testRunner.And("the scopes openid,PlanningApi are assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 114
- testRunner.And("the grant-type implicit is supported by the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 115
+ testRunner.And("the id_token signature algorithm is set to RS256 for the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 116
+ testRunner.And("the scopes openid,PlanningApi are assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 117
+ testRunner.And("the grant-type implicit is supported by the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 118
  testRunner.And("the response-types id_token are supported by the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             TechTalk.SpecFlow.Table table15 = new TechTalk.SpecFlow.Table(new string[] {
-                        "UserId",
-                        "UserName"});
+                        "Id",
+                        "Name"});
             table15.AddRow(new string[] {
                         "habarthierry@loki.be",
                         "thabart"});
-#line 116
- testRunner.And("a resource owner is authenticated", ((string)(null)), table15, "And ");
 #line 119
+ testRunner.And("create a resource owner", ((string)(null)), table15, "And ");
+#line 122
+ testRunner.And("authenticate the resource owner", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 123
  testRunner.And("the consent has been given by the resource owner habarthierry@loki.be for the cli" +
                     "ent MyHolidays and scopes openid,PlanningApi", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
@@ -396,28 +404,28 @@ this.ScenarioSetup(scenarioInfo);
                         "none",
                         "state1",
                         "parameterNonce"});
-#line 121
- testRunner.When("requesting an authorization", ((string)(null)), table16, "When ");
 #line 125
+ testRunner.When("requesting an authorization", ((string)(null)), table16, "When ");
+#line 129
  testRunner.Then("the http status code is 301", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line 126
+#line 130
  testRunner.And("decrypt the id_token parameter from the query string", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 127
+#line 131
  testRunner.And("check the signature is correct with the kid 1", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             TechTalk.SpecFlow.Table table17 = new TechTalk.SpecFlow.Table(new string[] {
                         "Alg"});
             table17.AddRow(new string[] {
                         "RS256"});
-#line 128
- testRunner.And("the protected JWS header is returned", ((string)(null)), table17, "And ");
-#line 131
- testRunner.And("the audience parameter with value MyHolidays is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 132
+ testRunner.And("the protected JWS header is returned", ((string)(null)), table17, "And ");
+#line 135
+ testRunner.And("the audience parameter with value MyHolidays is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 136
  testRunner.And("the parameter nonce with value parameterNonce is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 133
+#line 137
  testRunner.And("the claim sub with value habarthierry@loki.be is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 134
+#line 138
  testRunner.And("the signature of the JWS payload is valid", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
@@ -430,11 +438,11 @@ this.ScenarioSetup(scenarioInfo);
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get an encrypted id token and check if the claims returned in the token are corre" +
                     "ct", ((string[])(null)));
-#line 136
+#line 140
 this.ScenarioSetup(scenarioInfo);
-#line 137
+#line 141
  testRunner.Given("a mobile application MyHolidays is defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 138
+#line 142
  testRunner.And("the redirection uri http://localhost is assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             TechTalk.SpecFlow.Table table18 = new TechTalk.SpecFlow.Table(new string[] {
@@ -449,7 +457,7 @@ this.ScenarioSetup(scenarioInfo);
                         "Encrypt",
                         "RSA",
                         "Enc"});
-#line 139
+#line 143
  testRunner.And("add json web keys", ((string)(null)), table18, "And ");
 #line hidden
             TechTalk.SpecFlow.Table table19 = new TechTalk.SpecFlow.Table(new string[] {
@@ -464,31 +472,33 @@ this.ScenarioSetup(scenarioInfo);
                         "profile",
                         "true",
                         "name"});
-#line 143
+#line 147
  testRunner.And("the scopes are defined", ((string)(null)), table19, "And ");
-#line 148
+#line 152
  testRunner.And("the id_token signature algorithm is set to none for the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 149
+#line 153
  testRunner.And("the id_token encrypted response alg is set to RSA1_5 for the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 150
+#line 154
  testRunner.And("the id_token encrypted response enc is set to A128CBC-HS256 for the client MyHoli" +
                     "days", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 151
+#line 155
  testRunner.And("the scopes openid,profile are assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 152
+#line 156
  testRunner.And("the grant-type implicit is supported by the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 153
+#line 157
  testRunner.And("the response-types id_token are supported by the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             TechTalk.SpecFlow.Table table20 = new TechTalk.SpecFlow.Table(new string[] {
-                        "UserId",
-                        "UserName"});
+                        "Id",
+                        "Name"});
             table20.AddRow(new string[] {
                         "habarthierry@loki.be",
                         "thabart"});
-#line 154
- testRunner.And("a resource owner is authenticated", ((string)(null)), table20, "And ");
-#line 157
+#line 158
+ testRunner.And("create a resource owner", ((string)(null)), table20, "And ");
+#line 161
+ testRunner.And("authenticate the resource owner", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 162
  testRunner.And("the consent has been given by the resource owner habarthierry@loki.be for the cli" +
                     "ent MyHolidays and scopes openid,profile", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
@@ -508,26 +518,26 @@ this.ScenarioSetup(scenarioInfo);
                         "none",
                         "state1",
                         "parameterNonce"});
-#line 159
- testRunner.When("requesting an authorization", ((string)(null)), table21, "When ");
-#line 163
- testRunner.Then("the http status code is 301", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 164
+ testRunner.When("requesting an authorization", ((string)(null)), table21, "When ");
+#line 168
+ testRunner.Then("the http status code is 301", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 169
  testRunner.And("decrypt the jwe parameter from the query string with the following kid 1", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             TechTalk.SpecFlow.Table table22 = new TechTalk.SpecFlow.Table(new string[] {
                         "Alg"});
             table22.AddRow(new string[] {
                         "none"});
-#line 165
- testRunner.And("the protected JWS header is returned", ((string)(null)), table22, "And ");
-#line 168
- testRunner.And("the audience parameter with value MyHolidays is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 169
- testRunner.And("the parameter nonce with value parameterNonce is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 170
+ testRunner.And("the protected JWS header is returned", ((string)(null)), table22, "And ");
+#line 173
+ testRunner.And("the audience parameter with value MyHolidays is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 174
+ testRunner.And("the parameter nonce with value parameterNonce is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 175
  testRunner.And("the claim sub with value habarthierry@loki.be is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 171
+#line 176
  testRunner.And("the claim name with value thabart is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
@@ -540,11 +550,11 @@ this.ScenarioSetup(scenarioInfo);
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get a signed and encrypted id token and check if the claims returned in the token" +
                     " are correct", ((string[])(null)));
-#line 173
+#line 178
 this.ScenarioSetup(scenarioInfo);
-#line 174
+#line 179
  testRunner.Given("a mobile application MyHolidays is defined", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 175
+#line 180
  testRunner.And("the redirection uri http://localhost is assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             TechTalk.SpecFlow.Table table23 = new TechTalk.SpecFlow.Table(new string[] {
@@ -565,7 +575,7 @@ this.ScenarioSetup(scenarioInfo);
                         "Sign",
                         "RSA",
                         "Sig"});
-#line 176
+#line 181
  testRunner.And("add json web keys", ((string)(null)), table23, "And ");
 #line hidden
             TechTalk.SpecFlow.Table table24 = new TechTalk.SpecFlow.Table(new string[] {
@@ -580,31 +590,33 @@ this.ScenarioSetup(scenarioInfo);
                         "profile",
                         "true",
                         "name"});
-#line 181
- testRunner.And("the scopes are defined", ((string)(null)), table24, "And ");
 #line 186
+ testRunner.And("the scopes are defined", ((string)(null)), table24, "And ");
+#line 191
  testRunner.And("the id_token signature algorithm is set to RS256 for the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 187
+#line 192
  testRunner.And("the id_token encrypted response alg is set to RSA1_5 for the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 188
+#line 193
  testRunner.And("the id_token encrypted response enc is set to A128CBC-HS256 for the client MyHoli" +
                     "days", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 189
+#line 194
  testRunner.And("the scopes openid,profile are assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 190
+#line 195
  testRunner.And("the grant-type implicit is supported by the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 191
+#line 196
  testRunner.And("the response-types id_token are supported by the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             TechTalk.SpecFlow.Table table25 = new TechTalk.SpecFlow.Table(new string[] {
-                        "UserId",
-                        "UserName"});
+                        "Id",
+                        "Name"});
             table25.AddRow(new string[] {
                         "habarthierry@loki.be",
                         "thabart"});
-#line 192
- testRunner.And("a resource owner is authenticated", ((string)(null)), table25, "And ");
-#line 195
+#line 197
+ testRunner.And("create a resource owner", ((string)(null)), table25, "And ");
+#line 200
+ testRunner.And("authenticate the resource owner", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 201
  testRunner.And("the consent has been given by the resource owner habarthierry@loki.be for the cli" +
                     "ent MyHolidays and scopes openid,profile", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
@@ -624,28 +636,28 @@ this.ScenarioSetup(scenarioInfo);
                         "none",
                         "state1",
                         "parameterNonce"});
-#line 197
- testRunner.When("requesting an authorization", ((string)(null)), table26, "When ");
-#line 201
- testRunner.Then("the http status code is 301", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line 202
- testRunner.And("decrypt the jwe parameter from the query string with the following kid 1", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 203
+ testRunner.When("requesting an authorization", ((string)(null)), table26, "When ");
+#line 207
+ testRunner.Then("the http status code is 301", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 208
+ testRunner.And("decrypt the jwe parameter from the query string with the following kid 1", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 209
  testRunner.And("check the signature is correct with the kid 2", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             TechTalk.SpecFlow.Table table27 = new TechTalk.SpecFlow.Table(new string[] {
                         "Alg"});
             table27.AddRow(new string[] {
                         "RS256"});
-#line 204
- testRunner.And("the protected JWS header is returned", ((string)(null)), table27, "And ");
-#line 207
- testRunner.And("the audience parameter with value MyHolidays is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 208
- testRunner.And("the parameter nonce with value parameterNonce is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 209
- testRunner.And("the claim sub with value habarthierry@loki.be is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 210
+ testRunner.And("the protected JWS header is returned", ((string)(null)), table27, "And ");
+#line 213
+ testRunner.And("the audience parameter with value MyHolidays is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 214
+ testRunner.And("the parameter nonce with value parameterNonce is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 215
+ testRunner.And("the claim sub with value habarthierry@loki.be is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 216
  testRunner.And("the claim name with value thabart is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();

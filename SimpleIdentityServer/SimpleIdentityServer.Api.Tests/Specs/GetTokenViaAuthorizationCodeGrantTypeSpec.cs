@@ -37,8 +37,8 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         private readonly GlobalContext _context;
 
         private static TestServer _testServer;
-
-        private FakeUserInformation _fakeUserInfo;
+        
+        private MODELS.ResourceOwner _resourceOwner;
 
         private JwsProtectedHeader _jwsProtectedHeader;
 
@@ -60,16 +60,23 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             _context = context;
         }
 
-        [Given("a resource owner is authenticated")]
-        public void GivenAResourceOwnerIsAuthenticated(Table table)
+        [Given("create a resource owner")]
+        public void GivenCreateAResourceOwner(Table table)
         {
-            _fakeUserInfo = table.CreateInstance<FakeUserInformation>();
-            var resourceOwner = new MODELS.ResourceOwner
-            {
-                Id = _fakeUserInfo.UserId
-            };
+            _resourceOwner = table.CreateInstance<MODELS.ResourceOwner>();
+        }
 
-            FakeDataSource.Instance().ResourceOwners.Add(resourceOwner);
+        [Given("the following address is assigned to the resource owner")]
+        public void GivenTheAddressIsAssignedToTheAuthenticatedResourceOwner(Table table)
+        {
+            var address = table.CreateInstance<MODELS.Address>();
+            _resourceOwner.Address = address;
+        }
+
+        [Given("authenticate the resource owner")]
+        public void GivenAuthenticateTheResourceOwner()
+        {
+            FakeDataSource.Instance().ResourceOwners.Add(_resourceOwner);
         }
         
         [Given("requesting an authorization code")]
@@ -79,8 +86,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             var httpConfiguration = new HttpConfiguration();
             httpConfiguration.Filters.Add(new FakeAuthenticationFilter
             {
-                ResourceOwnerId = _fakeUserInfo.UserId,
-                ResourceOwnerUserName = _fakeUserInfo.UserName
+                ResourceOwner = _resourceOwner
             });
             _testServer = _context.CreateServer(httpConfiguration);
             var httpClient = _testServer.HttpClient;

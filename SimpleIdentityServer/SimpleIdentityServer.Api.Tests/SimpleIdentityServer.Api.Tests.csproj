@@ -125,7 +125,6 @@
     <Compile Include="Common\GlobalGivenInstructions.cs" />
     <Compile Include="Common\GlobalWhenInstructions.cs" />
     <Compile Include="Common\Transformations.cs" />
-    <Compile Include="Common\Fakes\Models\FakeUserInformation.cs" />
     <Compile Include="Extensions\MappingExtensions.cs" />
     <Compile Include="Features\GetAccessTokenMultipleTime.feature.cs">
       <AutoGen>True</AutoGen>
@@ -152,12 +151,18 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>GetTokenViaAuthorizationCodeGrantType.feature</DependentUpon>
     </Compile>
+    <Compile Include="Features\GetUserInformation.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GetUserInformation.feature</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Specs\GetAccessTokenMultipleTimeSpec.cs" />
     <Compile Include="Specs\GetAccessTokenWithResourceOwnerGrantTypeSpec.cs" />
     <Compile Include="Specs\GetAuthorizationCodeSpec.cs" />
     <Compile Include="Specs\GetIdTokenViaImplicitWorkflowSpec.cs" />
     <Compile Include="Specs\GetTokenViaAuthorizationCodeGrantTypeSpec.cs" />
+    <Compile Include="Specs\GetUserInformationSpec.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -180,6 +185,10 @@
     <None Include="Features\GetTokenViaAuthorizationCodeGrantType.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>GetTokenViaAuthorizationCodeGrantType.feature.cs</LastGenOutput>
+    </None>
+    <None Include="Features\GetUserInformation.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>GetUserInformation.feature.cs</LastGenOutput>
     </None>
     <None Include="packages.config" />
   </ItemGroup>

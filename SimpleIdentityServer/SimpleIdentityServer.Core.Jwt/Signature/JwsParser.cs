@@ -62,7 +62,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
             if (jsonWebKey == null)
             {
                 // TODO : throw an exception
-                return null;
+                return serializedPayload.DeserializeWithJavascript<JwsPayload>();
             }
             
             var signatureIsCorrect = false;

@@ -15,9 +15,10 @@ Scenario: Get the id token
 	And the scopes openid,PlanningApi are assigned to the client MyHolidays
 	And the grant-type implicit is supported by the client MyHolidays
 	And the response-types id_token are supported by the client MyHolidays
-	And a resource owner is authenticated
-	| UserId               | UserName |
-	| habarthierry@loki.be | thabart  |
+	And create a resource owner
+	| Id                   | Name    |
+	| habarthierry@loki.be | thabart |
+	And authenticate the resource owner
 	And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and scopes openid,PlanningApi
 	
 	When requesting an authorization
@@ -44,9 +45,10 @@ Scenario: Get the id token and access token via implicit workflow
 	And the scopes openid,PlanningApi are assigned to the client MyHolidays
 	And the grant-type implicit is supported by the client MyHolidays
 	And the response-types id_token,token are supported by the client MyHolidays
-	And a resource owner is authenticated
-	| UserId               | UserName |
-	| habarthierry@loki.be | thabart  |
+	And create a resource owner
+	| Id                   | Name    |
+	| habarthierry@loki.be | thabart |
+	And authenticate the resource owner
 	And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and scopes openid,PlanningApi
 	
 	When requesting an authorization
@@ -77,9 +79,10 @@ Scenario: Get an id token and check if the claims returned in the token are corr
 	And the scopes openid,profile are assigned to the client MyHolidays
 	And the grant-type implicit is supported by the client MyHolidays
 	And the response-types id_token are supported by the client MyHolidays
-	And a resource owner is authenticated
-	| UserId               | UserName |
-	| habarthierry@loki.be | thabart  |
+	And create a resource owner
+	| Id                   | Name    |
+	| habarthierry@loki.be | thabart |
+	And authenticate the resource owner
 	And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and scopes openid,profile
 	
 	When requesting an authorization
@@ -113,9 +116,10 @@ Scenario: Get a signed id_token
 	And the scopes openid,PlanningApi are assigned to the client MyHolidays
 	And the grant-type implicit is supported by the client MyHolidays
 	And the response-types id_token are supported by the client MyHolidays
-	And a resource owner is authenticated
-	| UserId               | UserName |
-	| habarthierry@loki.be | thabart  |
+	And create a resource owner
+	| Id                   | Name    |
+	| habarthierry@loki.be | thabart |
+	And authenticate the resource owner
 	And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and scopes openid,PlanningApi
 	
 	When requesting an authorization
@@ -151,9 +155,10 @@ Scenario: Get an encrypted id token and check if the claims returned in the toke
 	And the scopes openid,profile are assigned to the client MyHolidays
 	And the grant-type implicit is supported by the client MyHolidays
 	And the response-types id_token are supported by the client MyHolidays
-	And a resource owner is authenticated
-	| UserId               | UserName |
-	| habarthierry@loki.be | thabart  |
+	And create a resource owner
+	| Id                   | Name    |
+	| habarthierry@loki.be | thabart |
+	And authenticate the resource owner
 	And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and scopes openid,profile
 	
 	When requesting an authorization
@@ -189,9 +194,10 @@ Scenario: Get a signed and encrypted id token and check if the claims returned i
 	And the scopes openid,profile are assigned to the client MyHolidays
 	And the grant-type implicit is supported by the client MyHolidays
 	And the response-types id_token are supported by the client MyHolidays
-	And a resource owner is authenticated
-	| UserId               | UserName |
-	| habarthierry@loki.be | thabart  |
+	And create a resource owner
+	| Id                   | Name    |
+	| habarthierry@loki.be | thabart |
+	And authenticate the resource owner
 	And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and scopes openid,profile
 	
 	When requesting an authorization

@@ -26,7 +26,6 @@ using MODELS = SimpleIdentityServer.DataAccess.Fake.Models;
 using System.Web;
 using System.Web.Script.Serialization;
 using SimpleIdentityServer.Core.Jwt;
-using SimpleIdentityServer.Api.Tests.Common.Fakes.Models;
 using SimpleIdentityServer.Api.Tests.Common.Fakes;
 
 namespace SimpleIdentityServer.Api.Tests.Specs
@@ -38,7 +37,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
 
         private HttpResponseMessage _httpResponseMessage;
 
-        private FakeUserInformation _fakeUserInformation;
+        private MODELS.ResourceOwner _resourceOwner;
 
         private JwsProtectedHeader _jwsProtectedHeader;
 
@@ -61,15 +60,23 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             _context.UnityContainer.RegisterInstance<IGetRateLimitationElementOperation>(fakeGetRateLimitationElementOperation);
         }
 
-        [Given("a resource owner is authenticated")]
-        public void GivenAResourceOwnerIsAuthenticated(Table table)
+        [Given("create a resource owner")]
+        public void GivenCreateAResourceOwner(Table table)
         {
-            _fakeUserInformation = table.CreateInstance<FakeUserInformation>();
-            var resourceOwner = new MODELS.ResourceOwner
-            {
-                Id = _fakeUserInformation.UserId
-            };
-            FakeDataSource.Instance().ResourceOwners.Add(resourceOwner);
+            _resourceOwner = table.CreateInstance<MODELS.ResourceOwner>();
+        }
+
+        [Given("the following address is assigned to the resource owner")]
+        public void GivenTheAddressIsAssignedToTheAuthenticatedResourceOwner(Table table)
+        {
+            var address = table.CreateInstance<MODELS.Address>();
+            _resourceOwner.Address = address;
+        }
+
+        [Given("authenticate the resource owner")]
+        public void GivenAuthenticateTheResourceOwner()
+        {
+            FakeDataSource.Instance().ResourceOwners.Add(_resourceOwner);
         }
 
         [When("requesting an authorization")]
@@ -78,12 +85,11 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             var authorizationRequest = table.CreateInstance<AuthorizationRequest>();
             // Fake the authentication filter.
             var httpConfiguration = new HttpConfiguration();
-            if (_fakeUserInformation != null)
+            if (_resourceOwner != null)
             {
                 httpConfiguration.Filters.Add(new FakeAuthenticationFilter
                 {
-                    ResourceOwnerId = _fakeUserInformation.UserId,
-                    ResourceOwnerUserName = _fakeUserInformation.UserName
+                    ResourceOwner = _resourceOwner
                 });
             }
 
