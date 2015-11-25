@@ -3,6 +3,10 @@ using System.Text;
 
 namespace SimpleIdentityServer.Core.Common.Extensions
 {
+    /// <summary>
+    /// Implementation of base64 encoding & decoding according to the RFC
+    /// https://tools.ietf.org/html/draft-ietf-jose-json-web-signature-41#appendix-C
+    /// </summary>
     public static class StringExtensions
     {
         public static string Base64Encode(this string plainText)
@@ -14,9 +18,9 @@ namespace SimpleIdentityServer.Core.Common.Extensions
         public static string Base64EncodeBytes(this byte[] bytes)
         {
             return Convert.ToBase64String(bytes)
-                .Split('=')[0]
-                .Replace('+', '-')
-                .Replace('/', '_');
+                .Split('=')[0] // Remove any trailing '='s
+                .Replace('+', '-') // 62nd char of encoding
+                .Replace('/', '_'); // 63nd char of encoding
         }
 
         public static string Base64Decode(this string base64EncodedData)
@@ -29,16 +33,16 @@ namespace SimpleIdentityServer.Core.Common.Extensions
             var s = base64EncodedData
                 .Trim()
                 .Replace(" ", "+")
-                .Replace('-', '+')
-                .Replace('_', '/');
+                .Replace('-', '+') // 62nd char of encoding
+                .Replace('_', '/'); // 63nd char of encoding
             switch (s.Length%4)
             {
-                case 0:
+                case 0: // No pad chars in this case
                     return Convert.FromBase64String(s);
-                case 2:
+                case 2: // Two pad chars
                     s += "==";
                     goto case 0;
-                case 3:
+                case 3: // One pad char
                     s += "=";
                     goto case 0;
                 default:

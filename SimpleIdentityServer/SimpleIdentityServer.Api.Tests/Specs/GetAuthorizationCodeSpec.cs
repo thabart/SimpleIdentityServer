@@ -21,6 +21,7 @@ using DOMAINS = SimpleIdentityServer.Core.Models;
 using MODELS = SimpleIdentityServer.DataAccess.Fake.Models;
 using System.Web;
 using SimpleIdentityServer.Api.Tests.Common.Fakes;
+using SimpleIdentityServer.Core.Configuration;
 
 namespace SimpleIdentityServer.Api.Tests.Specs
 {
@@ -42,6 +43,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
 
             _context = context;
             _context.UnityContainer.RegisterInstance<IGetRateLimitationElementOperation>(fakeGetRateLimitationElementOperation);
+            _context.UnityContainer.RegisterType<ISimpleIdentityServerConfigurator, SimpleIdentityServerConfigurator>();
         }
 
         [Given("create a resource owner")]

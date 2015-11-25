@@ -169,7 +169,6 @@ namespace SimpleIdentityServer.Api.Tests.Common
             UnityContainer.RegisterType<IJwtGenerator, JwtGenerator>();
             UnityContainer.RegisterType<IAesEncryptionHelper, AesEncryptionHelper>();
             UnityContainer.RegisterType<IJwsParser, JwsParser>();
-            UnityContainer.RegisterType<ISimpleIdentityServerConfigurator, SimpleIdentityServerConfigurator>();
             UnityContainer.RegisterType<ICreateJwsSignature, CreateJwsSignature>();
             UnityContainer.RegisterType<IGenerateAuthorizationResponse, GenerateAuthorizationResponse>();
 

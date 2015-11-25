@@ -7,6 +7,7 @@ using SimpleIdentityServer.Api.DTOs.Request;
 using SimpleIdentityServer.Api.Tests.Common;
 using SimpleIdentityServer.Api.Tests.Common.Fakes;
 using SimpleIdentityServer.Api.Tests.Common.Fakes.Models;
+using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.RateLimitation.Configuration;
 using SimpleIdentityServer.RateLimitation.Constants;
 using System.Collections.Generic;
@@ -51,6 +52,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             };
 
             _context.UnityContainer.RegisterInstance<IGetRateLimitationElementOperation>(fakeGetRateLimitationElementOperation);
+            _context.UnityContainer.RegisterType<ISimpleIdentityServerConfigurator, SimpleIdentityServerConfigurator>();
 
             _tokens = new List<DOMAINS.GrantedToken>();
             _errors = new List<FakeTooManyRequestResponse>();

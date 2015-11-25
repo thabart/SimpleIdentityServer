@@ -16,6 +16,8 @@ using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
 
 using MODELS = SimpleIdentityServer.DataAccess.Fake.Models;
+using SimpleIdentityServer.Core.Configuration;
+using SimpleIdentityServer.Core.Common.Extensions;
 
 namespace SimpleIdentityServer.Api.Tests.Specs
 {
@@ -25,6 +27,8 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         private HttpResponseMessage _authorizationResponseMessage;
 
         private HttpResponseMessage _userInformationResponseMessage;
+
+        private readonly FakeSimpleIdentityServerConfigurator _fakeSimpleIdentityServerConfigurator;
 
         private JwsPayload _jwsPayload;
 
@@ -40,9 +44,11 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             {
                 Enabled = false
             };
+            _fakeSimpleIdentityServerConfigurator = new FakeSimpleIdentityServerConfigurator(); ;
 
             _context = context;
             _context.UnityContainer.RegisterInstance<IGetRateLimitationElementOperation>(fakeGetRateLimitationElementOperation);
+            _context.UnityContainer.RegisterInstance<ISimpleIdentityServerConfigurator>(_fakeSimpleIdentityServerConfigurator);
         }
 
         [Given("create a resource owner")]
@@ -62,6 +68,12 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         public void GivenAuthenticateTheResourceOwner()
         {
             FakeDataSource.Instance().ResourceOwners.Add(_resourceOwner);
+        }
+
+        [Given("set the name of the issuer (.*)")]
+        public void GivenIssuerName(string issuerName)
+        {
+            _fakeSimpleIdentityServerConfigurator.Issuer = issuerName;
         }
 
         [Given("requesting an access token")]
@@ -118,6 +130,22 @@ namespace SimpleIdentityServer.Api.Tests.Specs
 
             Assert.IsNotNull(claimValue);
             Assert.That(claimValue, Is.EqualTo(val));
+        }
+
+        [Then("the returned address is")]
+        public void ThenTheReturnedAddressIs(Table table)
+        {
+            var address = table.CreateInstance<MODELS.Address>();
+            var claimValue = _jwsPayload.GetClaimValue("address");
+            Assert.IsNotNull(claimValue);
+            var receivedAddress = claimValue.DeserializeWithDataContract<MODELS.Address>();
+            Assert.IsNotNull(receivedAddress);
+
+            Assert.That(receivedAddress.Country, Is.EqualTo(address.Country));
+            Assert.That(receivedAddress.Formatted, Is.EqualTo(address.Formatted));
+            Assert.That(receivedAddress.Locality, Is.EqualTo(address.Locality));
+            Assert.That(receivedAddress.Region, Is.EqualTo(address.Region));
+            Assert.That(receivedAddress.StreetAddress, Is.EqualTo(address.StreetAddress));
         }
     }
 }

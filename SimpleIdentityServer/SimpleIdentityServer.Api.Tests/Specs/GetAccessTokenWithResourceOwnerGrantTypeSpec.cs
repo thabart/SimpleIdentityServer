@@ -17,6 +17,7 @@ using TechTalk.SpecFlow.Assist;
 
 using DOMAINS = SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Api.Tests.Common.Fakes;
+using SimpleIdentityServer.Core.Configuration;
 
 namespace SimpleIdentityServer.Api.Tests.Specs
 {
@@ -40,6 +41,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
 
             _context = context;
             _context.UnityContainer.RegisterInstance<IGetRateLimitationElementOperation>(fakeGetRateLimitationElementOperation);
+            _context.UnityContainer.RegisterType<ISimpleIdentityServerConfigurator, SimpleIdentityServerConfigurator>();
         }
 
         [When("requesting an access token via resource owner grant-type")]

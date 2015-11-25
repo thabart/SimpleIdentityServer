@@ -1,26 +1,32 @@
-﻿using System;
+﻿using Microsoft.Owin.Testing;
+using Microsoft.Practices.EnterpriseLibrary.Caching;
+using Microsoft.Practices.Unity;
+
+using NUnit.Framework;
+
+using SimpleIdentityServer.Api.DTOs.Request;
+using SimpleIdentityServer.Api.Tests.Common;
+using SimpleIdentityServer.Api.Tests.Common.Fakes;
+using SimpleIdentityServer.Api.Tests.Common.Fakes.Models;
+using SimpleIdentityServer.Core.Common.Extensions;
+using SimpleIdentityServer.Core.Configuration;
+using SimpleIdentityServer.Core.Extensions;
+using SimpleIdentityServer.Core.Jwt;
+using SimpleIdentityServer.DataAccess.Fake;
+using SimpleIdentityServer.RateLimitation.Configuration;
+using SimpleIdentityServer.RateLimitation.Constants;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Web;
 using System.Web.Http;
 using System.Web.Script.Serialization;
-using Microsoft.Owin.Testing;
-using NUnit.Framework;
-using SimpleIdentityServer.Api.DTOs.Request;
-using SimpleIdentityServer.Api.Tests.Common;
-using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.Core.Jwt;
-using SimpleIdentityServer.DataAccess.Fake;
-
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
-
-using SimpleIdentityServer.Api.Tests.Common.Fakes;
-using SimpleIdentityServer.Api.Tests.Common.Fakes.Models;
-using SimpleIdentityServer.Core.Common.Extensions;
 
 using DOMAINS = SimpleIdentityServer.Core.Models;
 using MODELS = SimpleIdentityServer.DataAccess.Fake.Models;
@@ -58,6 +64,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             });
 
             _context = context;
+            _context.UnityContainer.RegisterType<ISimpleIdentityServerConfigurator, SimpleIdentityServerConfigurator>();
         }
 
         [Given("create a resource owner")]
