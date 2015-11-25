@@ -58,6 +58,47 @@ namespace SimpleIdentityServer.Api.Configuration
                                 Core.Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt
                             },
                             Type = ScopeType.ResourceOwner
+                        },
+                        new Scope
+                        {
+                            Name = "email",
+                            IsExposed = true,
+                            IsInternal = true,
+                            IsDisplayedInConsent = true,
+                            Description = "Access to the email",
+                            Claims = new List<string>
+                            {
+                                Core.Jwt.Constants.StandardResourceOwnerClaimNames.Email,
+                                Core.Jwt.Constants.StandardResourceOwnerClaimNames.EmailVerified
+                            },
+                            Type = ScopeType.ResourceOwner
+                        },
+                        new Scope
+                        {
+                            Name = "address",
+                            IsExposed = true,
+                            IsInternal = true,
+                            IsDisplayedInConsent = true,
+                            Description = "Access to the address",
+                            Claims = new List<string>
+                            {
+                                Core.Jwt.Constants.StandardResourceOwnerClaimNames.Address
+                            },
+                            Type = ScopeType.ResourceOwner
+                        },
+                        new Scope
+                        {
+                            Name = "phone",
+                            IsExposed = true,
+                            IsInternal = true,
+                            IsDisplayedInConsent = true,
+                            Description = "Access to the phone",
+                            Claims = new List<string>
+                            {
+                                Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber,
+                                Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumberVerified
+                            },
+                            Type = ScopeType.ResourceOwner
                         }
                     },
                     GrantTypes = new List<GrantType>

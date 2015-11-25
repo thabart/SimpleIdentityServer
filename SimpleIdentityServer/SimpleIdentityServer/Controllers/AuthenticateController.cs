@@ -86,7 +86,7 @@ namespace SimpleIdentityServer.Api.Controllers
                 authenticationManager.SignIn(
                     new AuthenticationProperties
                     {
-                        IsPersistent = true,
+                        IsPersistent = false,
                         ExpiresUtc = DateTime.UtcNow.AddDays(7)
                     },
                     claimIdentity

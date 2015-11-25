@@ -104,7 +104,7 @@ namespace SimpleIdentityServer.Core.Models
         /// Gets or sets the time the end-user's information was last updated.
         /// Its value is a JSON number representing the number of seconds.
         /// </summary>
-        public int UpdatedAt { get; set; }
+        public double UpdatedAt { get; set; }
 
         public string Password { get; set; }
     }

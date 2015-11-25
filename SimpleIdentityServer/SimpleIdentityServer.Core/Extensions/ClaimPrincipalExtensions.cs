@@ -21,7 +21,17 @@ namespace SimpleIdentityServer.Core.Extensions
         /// <returns>User's subject</returns>
         public static string GetSubject(this ClaimsPrincipal principal)
         {
-            return principal.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var claim = principal.FindFirst(Jwt.Constants.StandardResourceOwnerClaimNames.Subject);
+            if (claim == null)
+            {
+                claim = principal.FindFirst(ClaimTypes.NameIdentifier);
+                if (claim == null)
+                {
+                    return null;
+                }
+            }
+
+            return claim.Value;
         }
     }
 }

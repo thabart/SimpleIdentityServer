@@ -19,6 +19,10 @@ namespace SimpleIdentityServer.Core.Jwt.Mapping
                 {
                     result.Add(Constants.MapWifClaimsToOpenIdClaims[claim.Type], claim.Value);
                 }
+                else
+                {
+                    result.Add(claim.Type, claim.Value);
+                }
             }
 
             return result;

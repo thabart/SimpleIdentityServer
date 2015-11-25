@@ -1,9 +1,10 @@
 ﻿namespace SimpleIdentityServer.DataAccess.Fake.Models
 {
     public class ResourceOwner
-    {        /// <summary>
-             /// Get or sets the subject-identifier for the End-User at the issuer.
-             /// </summary>
+    {        
+        /// <summary>
+        /// Get or sets the subject-identifier for the End-User at the issuer.
+        /// </summary>
         public string Id { get; set; }
 
         /// <summary>
@@ -101,7 +102,7 @@
         /// Gets or sets the time the end-user's information was last updated.
         /// Its value is a JSON number representing the number of seconds.
         /// </summary>
-        public int UpdatedAt { get; set; }
+        public double UpdatedAt { get; set; }
 
         public string Password { get; set; }
     }
