@@ -103,11 +103,11 @@ namespace SimpleIdentityServer.Core.Authenticate
             var expirationDateTime = jwsPayload.ExpirationTime.ConvertFromUnixTimestamp();
 
             // 1. Check the issuer is correct.
-            if (!string.Equals(expectedIssuer, jwsIssuer))
-            {
-                messageError = ErrorDescriptions.TheIssuerFromJwtIsNotCorrect;
-                return null;
-            }
+            //if (!string.Equals(expectedIssuer, jwsIssuer))
+            //{
+            //    messageError = ErrorDescriptions.TheIssuerFromJwtIsNotCorrect;
+            //    return null;
+            //}
 
             Client client = null;
             if (!string.IsNullOrWhiteSpace(jwsSubject))

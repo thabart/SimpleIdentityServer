@@ -8,11 +8,14 @@ using SimpleIdentityServer.Api.DTOs.Request;
 using SimpleIdentityServer.Api.Tests.Common;
 using SimpleIdentityServer.Api.Tests.Common.Fakes;
 using SimpleIdentityServer.Api.Tests.Common.Fakes.Models;
+using SimpleIdentityServer.Api.Tests.Extensions;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Jwt;
+using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.DataAccess.Fake;
+using SimpleIdentityServer.DataAccess.Fake.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,6 +42,8 @@ namespace SimpleIdentityServer.Api.Tests.Specs
 
         private readonly GlobalContext _context;
 
+        private JwsPayload _jwsPayload;
+
         private static TestServer _testServer;
         
         private MODELS.ResourceOwner _resourceOwner;
@@ -51,7 +56,9 @@ namespace SimpleIdentityServer.Api.Tests.Specs
 
         private string _combinedHeaderAndPayload;
 
-        private Dictionary<string, string> _clientSecretJwtParameters;
+        private Dictionary<string, string> _tokenParameters;
+
+        private string _clientAssertion;
 
         public GetTokenViaAuthorizationCodeGrantTypeSpec(GlobalContext context)
         {
@@ -63,6 +70,8 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             _context = context;
             _context.UnityContainer.RegisterType<ISimpleIdentityServerConfigurator, SimpleIdentityServerConfigurator>();
         }
+
+        #region Given requests
 
         [Given("create a resource owner")]
         public void GivenCreateAResourceOwner(Table table)
@@ -104,6 +113,84 @@ namespace SimpleIdentityServer.Api.Tests.Specs
                 authorizationRequest.state,
                 authorizationRequest.nonce);
             _authorizationResponseMessage = httpClient.GetAsync(url).Result;
+        }
+
+        [Given("create a request to retrieve a token")]
+        public void GivenCreateRequestToRetrieveAToken(
+            Table table)
+        {
+            var request = table.CreateInstance<TokenRequest>();
+            var query = HttpUtility.ParseQueryString(_authorizationResponseMessage.Headers.Location.Query);
+            var authorizationCode = query["code"];
+            request.code = authorizationCode;
+
+            _tokenParameters = new Dictionary<string, string>
+            {
+                {
+                    "grant_type",
+                    Enum.GetName(typeof (GrantTypeRequest), request.grant_type)
+                },
+                {
+                    "code",
+                    authorizationCode
+                },
+                {
+                    "redirect_uri",
+                    request.redirect_uri
+                },
+                {
+                    "client_assertion_type",
+                    request.client_assertion_type
+                }
+            };
+        }
+
+        [Given("create the JWS payload")]
+        public void GivenTheJsonWebTokenIs(Table table)
+        {
+            var record = table.CreateInstance<FakeJwsPayload>();
+            _jwsPayload = record.ToBusiness();
+        }
+
+        [Given("assign audiences (.*) to the JWS payload")]
+        public void GivenAssignAudiencesToJwsPayload(List<string> audiences)
+        {
+            _jwsPayload.Add(Core.Jwt.Constants.StandardClaimNames.Audiences, audiences.ToArray());
+        }
+
+        [Given("expiration time (.*) in seconds to the JWS payload")]
+        public void GivenExpirationTimeInSecondsToJwsPayload(int expirationTimeInSeconds)
+        {
+            var expiration = DateTime.UtcNow.AddSeconds(expirationTimeInSeconds).ConvertToUnixTimestamp();
+            _jwsPayload.Add(Core.Jwt.Constants.StandardClaimNames.ExpirationTime, expiration);
+        }
+
+        [Given("sign the jws payload with (.*) kid")]
+        public void GivenSignTheJwsPayloadWithKid(string kid)
+        {
+            var jsonWebKey = FakeDataSource.Instance().JsonWebKeys.FirstOrDefault(j => j.Kid == kid);
+            Assert.IsNotNull(jsonWebKey);
+            var generator = _context.UnityContainer.Resolve<JwsGenerator>();
+            var enumName = Enum.GetName(typeof(AllAlg), jsonWebKey.Alg);
+            var alg = (JwsAlg)Enum.Parse(typeof(JwsAlg), enumName);
+            _clientAssertion = generator.Generate(_jwsPayload,
+                alg,
+                jsonWebKey.ToBusiness());
+
+            _tokenParameters.Add("client_assertion", _clientAssertion);
+        }
+
+        #endregion
+
+        #region When requests
+
+        [When("retrieve token via client assertion authentication")]
+        public void WhenRetrieveTokenViaClientAssertionAuthentication()
+        {
+            var httpClient = _testServer.HttpClient;
+            httpClient.DefaultRequestHeaders.Clear();
+            var response = httpClient.PostAsync("/token", new FormUrlEncodedContent(_tokenParameters)).Result;
+            _grantedToken = response.Content.ReadAsAsync<DOMAINS.GrantedToken>().Result;
         }
 
         [When("requesting a token with basic client authentication for the client id (.*) and client secret (.*)")]
@@ -184,53 +271,9 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             _grantedToken = response.Content.ReadAsAsync<DOMAINS.GrantedToken>().Result;
         }
 
-        [When("requesting a token by using a client_secret_jwt authentication mechanism")]
-        public void WhenRequestingATokenByUsingClientSecretJwtAuthMech(
-            Table table)
-        {
-            var request = table.CreateInstance<TokenRequest>();
-            var query = HttpUtility.ParseQueryString(_authorizationResponseMessage.Headers.Location.Query);
-            var authorizationCode = query["code"];
-            request.code = authorizationCode;
+        #endregion
 
-            _clientSecretJwtParameters = new Dictionary<string, string>
-            {
-                {
-                    "grant_type",
-                    Enum.GetName(typeof (GrantTypeRequest), request.grant_type)
-                },
-                {
-                    "code",
-                    authorizationCode
-                },
-                {
-                    "redirect_uri",
-                    request.redirect_uri
-                },
-                {
-                    "client_assertion_type",
-                    request.client_assertion_type
-                }
-            };
-        }
-
-        [When("passes the following JSON Web Token which will expired in (.*) days and is valid for the following audiences (.*)")]
-        public void WhenTheJsonWebTokenIs(double days, List<string> audiences, Table table)
-        {
-            var record = table.CreateInstance<FakeJwt>();
-            record.aud = audiences.ToArray();
-            record.exp = DateTime.UtcNow.AddDays(days).ConvertToUnixTimestamp();
-
-            var serialized = record.SerializeWithJavascript();
-            var base64Encoded = serialized.Base64Encode();
-
-            _clientSecretJwtParameters.Add("client_assertion", base64Encoded);
-
-            var httpClient = _testServer.HttpClient;
-            httpClient.DefaultRequestHeaders.Clear();
-            var response = httpClient.PostAsync("/token", new FormUrlEncodedContent(_clientSecretJwtParameters)).Result;
-            _grantedToken = response.Content.ReadAsAsync<DOMAINS.GrantedToken>().Result;
-        }
+        #region Then requests
 
         [Then("the following token is returned")]
         public void ThenTheCallbackContainsTheQueryName(Table table)
@@ -294,7 +337,9 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             Assert.IsNotNull(claimValue);
             Assert.That(claimValue, Is.EqualTo(val));
         }
-        
+
+        #endregion
+
         [AfterScenario]
         public static void After()
         {

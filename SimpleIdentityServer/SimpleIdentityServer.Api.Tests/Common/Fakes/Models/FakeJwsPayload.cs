@@ -1,12 +1,10 @@
 ﻿namespace SimpleIdentityServer.Api.Tests.Common.Fakes.Models
 {
-    public class FakeJwt
+    public class FakeJwsPayload
     {
         public string iss { get; set; }
 
         public string sub { get; set; }
-
-        public string[] aud { get; set; }
 
         public string jti { get; set; }
 
