@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Http.Headers;
+using Microsoft.Practices.EnterpriseLibrary.Common.Configuration.Design;
+using SimpleIdentityServer.Core.Authenticate;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Errors;
@@ -39,6 +41,8 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
         private readonly IGrantedTokenRepository _grantedTokenRepository;
 
+        private readonly IAuthenticateClient _authenticateClient;
+
         public GetTokenByAuthorizationCodeGrantTypeAction(
             IClientValidator clientValidator,
             IAuthorizationCodeRepository authorizationCodeRepository,
@@ -46,7 +50,8 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             ITokenHelper tokenHelper,
             IClientRepository clientRepository,
             IJwtClientParameterValidator jwtClientParameterValidator,
-            IGrantedTokenRepository grantedTokenRepository)
+            IGrantedTokenRepository grantedTokenRepository,
+            IAuthenticateClient authenticateClient)
         {
             _clientValidator = clientValidator;
             _authorizationCodeRepository = authorizationCodeRepository;
@@ -55,6 +60,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             _clientRepository = clientRepository;
             _jwtClientParameterValidator = jwtClientParameterValidator;
             _grantedTokenRepository = grantedTokenRepository;
+            _authenticateClient = authenticateClient;
         }
 
         public GrantedToken Execute(
@@ -84,23 +90,15 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter,
             AuthenticationHeaderValue authenticationHeaderValue)
         {
-            // Try to get the client id & client secret from the HTTP BODY or the header.
-            var clientId = TryGettingClientId(authorizationCodeGrantTypeParameter,
-                authenticationHeaderValue);
-
-            var clientSecretPost = authorizationCodeGrantTypeParameter.ClientSecret;
-            var clientSecretBasic = GetClientSecretBasic(authenticationHeaderValue);
-
             // Authenticate the client
-            var isAuthenticated = _clientValidator.ValidateClientIsAuthenticated(
-                clientId,
-                clientSecretPost,
-                clientSecretBasic);
-
-            if (!isAuthenticated)
+            var errorMessage = string.Empty;
+            var instruction = CreateAuthenticateInstruction(authorizationCodeGrantTypeParameter,
+                authenticationHeaderValue);
+            var client = _authenticateClient.Authenticate(instruction, out errorMessage);
+            if (client == null)
             {
                 throw new IdentityServerException(ErrorCodes.InvalidClient,
-                    ErrorDescriptions.TheClientCannotBeAuthenticated);
+                    errorMessage);
             }
 
             var authorizationCode = _authorizationCodeRepository.GetAuthorizationCode(authorizationCodeGrantTypeParameter.Code);
@@ -113,7 +111,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
             // Ensure the authorization code was issued to the authenticated client.
             var authorizationClientId = authorizationCode.ClientId;
-            if (authorizationClientId != clientId)
+            if (authorizationClientId != client.ClientId)
             {
                 throw new IdentityServerException(ErrorCodes.InvalidGrant,
                     string.Format(ErrorDescriptions.TheAuthorizationCodeHasNotBeenIssuedForTheGivenClientId,
@@ -137,7 +135,6 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             }
 
             // Ensure that the redirect_uri parameter value is identical to the redirect_uri parameter value.
-            var client = _clientRepository.GetClientById(clientId);
             var redirectionUrl = _clientValidator.ValidateRedirectionUrl(authorizationCodeGrantTypeParameter.RedirectUri, client);
             if (redirectionUrl == null)
             {
@@ -149,54 +146,26 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             return authorizationCode;
         }
 
-        /// <summary>
-        /// Try to get the client id from the HTTP body or HTTP header.
-        /// </summary>
-        /// <param name="authorizationCodeGrantTypeParameter"></param>
-        /// <param name="authenticationHeaderValue"></param>
-        /// <returns></returns>
-        private string TryGettingClientId(
+        private AuthenticateInstruction CreateAuthenticateInstruction(
             AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter,
             AuthenticationHeaderValue authenticationHeaderValue)
         {
-            // Retrieve the client_id from the Jwt bearer.
-            if (authorizationCodeGrantTypeParameter.ClientAssertionType 
-                == Constants.StandardClientAssertionTypes.JwtBearer)
+            var result = new AuthenticateInstruction
             {
-                if (string.IsNullOrWhiteSpace(authorizationCodeGrantTypeParameter.ClientAssertion))
-                {
-                    throw new IdentityServerException(ErrorCodes.InvalidClient,
-                        ErrorDescriptions.TheClientCannotBeAuthenticated);
-                }
+                ClientAssertion = authorizationCodeGrantTypeParameter.ClientAssertion,
+                ClientAssertionType = authorizationCodeGrantTypeParameter.ClientAssertionType,
+                ClientIdFromHttpRequestBody = authorizationCodeGrantTypeParameter.ClientId,
+                ClientSecretFromHttpRequestBody = authorizationCodeGrantTypeParameter.ClientSecret
+            };
 
-                string errorCode;
-                string errorDescription;
-                var isValid = _jwtClientParameterValidator.Validate(
-                    authorizationCodeGrantTypeParameter.ClientAssertion,
-                    out errorCode,
-                    out errorDescription);
-                if (!isValid)
-                {
-                    throw new IdentityServerException(errorCode, errorDescription);
-                }
-
-                var decodedJwt = authorizationCodeGrantTypeParameter.ClientAssertion.Base64Decode();
-                var jwsPayload = decodedJwt.DeserializeWithJavascript<JwsPayload>();
-                return jwsPayload.GetClaimValue(Jwt.Constants.StandardResourceOwnerClaimNames.Subject);
-            }
-
-            var result = authorizationCodeGrantTypeParameter.ClientId;
-            if (string.IsNullOrWhiteSpace(result))
+            if (authenticationHeaderValue != null && !string.IsNullOrWhiteSpace(authenticationHeaderValue.Parameter))
             {
-                var authenticationHeaderParameter = authenticationHeaderValue.Parameter;
-                var parameters = GetParameters(authenticationHeaderParameter);
-                if (!parameters.Any())
+                var parameters = GetParameters(authenticationHeaderValue.Parameter);
+                if (parameters != null)
                 {
-                    throw new IdentityServerException(ErrorCodes.InvalidClient,
-                        ErrorDescriptions.TheClientCannotBeAuthenticated);
+                    result.ClientIdFromAuthorizationHeader = parameters[0];
+                    result.ClientSecretFromAuthorizationHeader = parameters[1];
                 }
-
-                result = parameters[0];
             }
 
             return result;
@@ -211,22 +180,6 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
             var decodedParameter = authorizationHeaderValue.Base64Decode();
             return decodedParameter.Split(':');
-        }
-
-        private static string GetClientSecretBasic(AuthenticationHeaderValue authorizationHeader)
-        {
-            if (authorizationHeader == null)
-            {
-                return string.Empty;
-            }
-
-            var parameters = GetParameters(authorizationHeader.Parameter);
-            if (!parameters.Any())
-            {
-                return null;
-            }
-
-            return parameters[1];
         }
     }
 }

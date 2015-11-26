@@ -17,6 +17,7 @@ using SimpleIdentityServer.Core.Api.Jwks;
 using SimpleIdentityServer.Core.Api.Jwks.Actions;
 using SimpleIdentityServer.Core.Api.Token;
 using SimpleIdentityServer.Core.Api.Token.Actions;
+using SimpleIdentityServer.Core.Authenticate;
 using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Factories;
@@ -173,6 +174,11 @@ namespace SimpleIdentityServer.Api.Tests.Common
             UnityContainer.RegisterType<IGenerateAuthorizationResponse, GenerateAuthorizationResponse>();
 
             UnityContainer.RegisterType<IClaimsMapping, ClaimsMapping>();
+
+            UnityContainer.RegisterType<IAuthenticateClient, AuthenticateClient>();
+            UnityContainer.RegisterType<IClientSecretBasicAuthentication, ClientSecretBasicAuthentication>();
+            UnityContainer.RegisterType<IClientSecretPostAuthentication, ClientSecretPostAuthentication>();
+            UnityContainer.RegisterType<IClientAssertionAuthentication, ClientAssertionAuthentication>();
         }
     }
 }

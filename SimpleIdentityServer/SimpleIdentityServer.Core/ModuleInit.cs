@@ -10,6 +10,7 @@ using SimpleIdentityServer.Core.Api.Jwks;
 using SimpleIdentityServer.Core.Api.Jwks.Actions;
 using SimpleIdentityServer.Core.Api.Token;
 using SimpleIdentityServer.Core.Api.Token.Actions;
+using SimpleIdentityServer.Core.Authenticate;
 using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Factories;
@@ -86,6 +87,11 @@ namespace SimpleIdentityServer.Core
             register.RegisterType<IJwtParser, JwtParser>();
             // register.RegisterType<ISimpleIdentityServerConfigurator, SimpleIdentityServerConfigurator>();
             register.RegisterType<IGenerateAuthorizationResponse, GenerateAuthorizationResponse>();
+
+            register.RegisterType<IAuthenticateClient, AuthenticateClient>();
+            register.RegisterType<IClientSecretBasicAuthentication, ClientSecretBasicAuthentication>();
+            register.RegisterType<IClientSecretPostAuthentication, ClientSecretPostAuthentication>();
+            register.RegisterType<IClientAssertionAuthentication, ClientAssertionAuthentication>();
         }
     }
 }

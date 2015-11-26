@@ -237,67 +237,6 @@ this.FeatureBackground();
 #line hidden
             this.ScenarioCleanup();
         }
-        
-        [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("request an id token and access token via the authorization grant type flow. The c" +
-            "lient credentials are passed via client_secret_jwt method")]
-        public virtual void RequestAnIdTokenAndAccessTokenViaTheAuthorizationGrantTypeFlow_TheClientCredentialsArePassedViaClient_Secret_JwtMethod()
-        {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("request an id token and access token via the authorization grant type flow. The c" +
-                    "lient credentials are passed via client_secret_jwt method", ((string[])(null)));
-#line 63
-this.ScenarioSetup(scenarioInfo);
-#line 5
-this.FeatureBackground();
-#line 64
- testRunner.Given("the token endpoint authentication method client_secret_jwt is assigned to the cli" +
-                    "ent MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line hidden
-            TechTalk.SpecFlow.Table table10 = new TechTalk.SpecFlow.Table(new string[] {
-                        "grant_type",
-                        "redirect_uri",
-                        "client_assertion_type"});
-            table10.AddRow(new string[] {
-                        "authorization_code",
-                        "http://localhost",
-                        "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"});
-#line 65
- testRunner.When("requesting a token by using a client_secret_jwt authentication mechanism", ((string)(null)), table10, "When ");
-#line hidden
-            TechTalk.SpecFlow.Table table11 = new TechTalk.SpecFlow.Table(new string[] {
-                        "iss",
-                        "sub",
-                        "jti"});
-            table11.AddRow(new string[] {
-                        "MyHolidays",
-                        "MyHolidays",
-                        "1"});
-#line 68
- testRunner.And("passes the following JSON Web Token which will expired in 2 days and is valid for" +
-                    " the following audiences http://localhost/identity", ((string)(null)), table11, "And ");
-#line hidden
-            TechTalk.SpecFlow.Table table12 = new TechTalk.SpecFlow.Table(new string[] {
-                        "TokenType"});
-            table12.AddRow(new string[] {
-                        "Bearer"});
-#line 72
- testRunner.Then("the following token is returned", ((string)(null)), table12, "Then ");
-#line 75
- testRunner.And("decrypt the id_token parameter from the response", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line hidden
-            TechTalk.SpecFlow.Table table13 = new TechTalk.SpecFlow.Table(new string[] {
-                        "Alg"});
-            table13.AddRow(new string[] {
-                        "none"});
-#line 76
- testRunner.And("the protected JWS header is returned", ((string)(null)), table13, "And ");
-#line 79
- testRunner.And("the parameter nonce with value parameterNonce is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 80
- testRunner.And("the claim sub with value habarthierry@loki.be is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line hidden
-            this.ScenarioCleanup();
-        }
     }
 }
 #pragma warning restore

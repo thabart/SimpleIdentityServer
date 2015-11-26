@@ -147,7 +147,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>GetIdTokenViaImplicitFlow.feature</DependentUpon>
     </Compile>
-    <Compile Include="Features\GetTokenViaAuthorizationCodeGrantType.feature.cs">
+    <Compile Include="Features\GetTokenViaAuthorizationCodeGrantType1.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>GetTokenViaAuthorizationCodeGrantType.feature</DependentUpon>
@@ -185,7 +185,7 @@
     </None>
     <None Include="Features\GetTokenViaAuthorizationCodeGrantType.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>GetTokenViaAuthorizationCodeGrantType.feature.cs</LastGenOutput>
+      <LastGenOutput>GetTokenViaAuthorizationCodeGrantType1.feature.cs</LastGenOutput>
     </None>
     <None Include="Features\GetUserInformation.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>

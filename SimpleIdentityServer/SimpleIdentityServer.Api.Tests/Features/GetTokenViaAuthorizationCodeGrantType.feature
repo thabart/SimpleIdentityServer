@@ -60,21 +60,21 @@ Scenario: request an id token and access token via the authorization grant type 
 	And the claim sub with value habarthierry@loki.be is returned by the JWS payload
 
 # Check the authentication mechanism : client_secret_jwt
-Scenario: request an id token and access token via the authorization grant type flow. The client credentials are passed via client_secret_jwt method
-	Given the token endpoint authentication method client_secret_jwt is assigned to the client MyHolidays
-	When requesting a token by using a client_secret_jwt authentication mechanism
-	| grant_type         | redirect_uri     | client_assertion_type                                  |
-	| authorization_code | http://localhost | urn:ietf:params:oauth:client-assertion-type:jwt-bearer |
-	And passes the following JSON Web Token which will expired in 2 days and is valid for the following audiences http://localhost/identity
-	| iss        | sub        | jti |
-	| MyHolidays | MyHolidays | 1   |
-
-	Then the following token is returned
-	| TokenType |
-	| Bearer    |
-	And decrypt the id_token parameter from the response
-	And the protected JWS header is returned
-	| Alg  |
-	| none |
-	And the parameter nonce with value parameterNonce is returned by the JWS payload
-	And the claim sub with value habarthierry@loki.be is returned by the JWS payload
+#Scenario: request an id token and access token via the authorization grant type flow. The client credentials are passed via client_secret_jwt method
+#	Given the token endpoint authentication method client_secret_jwt is assigned to the client MyHolidays
+#	When requesting a token by using a client_secret_jwt authentication mechanism
+#	| grant_type         | redirect_uri     | client_assertion_type                                  |
+#	| authorization_code | http://localhost | urn:ietf:params:oauth:client-assertion-type:jwt-bearer |
+#	And passes the following JSON Web Token which will expired in 2 days and is valid for the following audiences http://localhost/identity
+#	| iss        | sub        | jti |
+#	| MyHolidays | MyHolidays | 1   |
+#
+#	Then the following token is returned
+#	| TokenType |
+#	| Bearer    |
+#	And decrypt the id_token parameter from the response
+#	And the protected JWS header is returned
+#	| Alg  |
+#	| none |
+#	And the parameter nonce with value parameterNonce is returned by the JWS payload
+#	And the claim sub with value habarthierry@loki.be is returned by the JWS payload

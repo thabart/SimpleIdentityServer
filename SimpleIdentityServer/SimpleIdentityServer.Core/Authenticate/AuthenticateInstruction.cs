@@ -8,6 +8,8 @@
 
         public string ClientIdFromAuthorizationHeader { get; set; }
 
+        public string ClientSecretFromAuthorizationHeader { get; set; }
+
         public string ClientAssertionType { get; set; }
 
         public string ClientAssertion { get; set; }

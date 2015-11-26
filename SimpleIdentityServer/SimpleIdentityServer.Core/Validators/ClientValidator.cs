@@ -20,10 +20,6 @@ namespace SimpleIdentityServer.Core.Validators
         bool ValidateResponseType(ResponseType responseType, Client client);
 
         bool ValidateResponseTypes(IList<ResponseType> responseType, Client client);
-
-        bool ValidateClientIsAuthenticated(string clientId,
-            string clientSecretPost,
-            string clientSecretBasic);
     }
 
     public class ClientValidator : IClientValidator
@@ -115,36 +111,6 @@ namespace SimpleIdentityServer.Core.Validators
                     ResponseType.code
                 };
             }
-        }
-
-        public bool ValidateClientIsAuthenticated(string clientId,
-            string clientSecretPost,
-            string clientSecretBasic)
-        {
-            var client = ValidateClientExist(clientId);
-            if (client == null)
-            {
-                return false;
-            }
-
-            switch (client.TokenEndPointAuthMethod)
-            {
-                case TokenEndPointAuthenticationMethods.client_secret_basic:
-                    return
-                        string.Compare(client.ClientSecret,
-                            clientSecretBasic, 
-                            StringComparison.InvariantCultureIgnoreCase) ==
-                        0;
-                case TokenEndPointAuthenticationMethods.client_secret_post:
-                    return string.Compare(client.ClientSecret,
-                        clientSecretPost,
-                        StringComparison.InvariantCultureIgnoreCase) == 0;
-                case TokenEndPointAuthenticationMethods.client_secret_jwt:
-                case TokenEndPointAuthenticationMethods.none:
-                    return true;
-            }
-
-            return false;
         }
     }
 }

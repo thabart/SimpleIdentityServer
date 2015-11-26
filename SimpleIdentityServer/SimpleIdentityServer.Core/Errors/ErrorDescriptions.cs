@@ -65,5 +65,20 @@
         public static string TheAccessTokenIsExpired = "the access token is expired";
 
         public static string TheAccessTokenIsNotValid = "the access token is not valid";
+
+        public static string TheIssuerFromJwtIsNotCorrect = "the issuer from JWT is not correct";
+
+        public static string TheClientIdPassedInJwtIsNotCorrect = "the client id passed in JWT is not correct";
+
+        public static string TheAudiencePassedInJwtIsNotCorrect = "the audience passed in JWT is not correct";
+
+        public static string TheReceivedJwtHasExpired = "the received JWT has expired";
+
+        public static string TheSignatureIsNotCorrect = "the signature is not correct";
+
+        public static string TheClientAssertionIsNotAJwtToken = "the client assertion is not a JWT token";
+
+        public static string TheJwsPayLoadCannotBeExtractedFromTheClientAssertion =
+            "the jws payload cannot be extracted from the client assertion";
     }
 }
