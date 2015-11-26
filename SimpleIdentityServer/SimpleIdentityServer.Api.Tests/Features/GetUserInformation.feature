@@ -77,3 +77,90 @@ Scenario: Fetch the user information for the scope address
 	And the returned address is
 	| Formatted | StreetAddress | Locality | Region | PostalCode | Country |
 	| formatted | streetaddress | locality | region | postalcode | country |
+	
+Scenario: Fetch the user information for the scope email
+	Given a mobile application MyHolidays is defined
+	And set the name of the issuer http://localhost/identity
+	And the redirection uri http://localhost is assigned to the client MyHolidays
+	And the scopes are defined
+	| Name   | IsInternal | Claims               |
+	| openid | true       |                      |
+	| email  | true       | email email_verified |
+	And the scopes openid,email are assigned to the client MyHolidays
+	And the grant-type implicit is supported by the client MyHolidays
+	And the response-types token,id_token are supported by the client MyHolidays
+	And create a resource owner
+	| Id                   | Name    | Email                   | EmailVerified |
+	| habarthierry@loki.be | thabart | habarthierry@hotmail.fr | true          |
+	And authenticate the resource owner
+	And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and scopes openid,email
+	And requesting an access token	
+	| scope        | response_type  | client_id  | redirect_uri     | prompt | state  | nonce          |
+	| openid email | token id_token | MyHolidays | http://localhost | none   | state1 | parameterNonce |
+	
+	When requesting user information
+
+	Then HTTP status code is 200
+	And the claim sub with value habarthierry@loki.be is returned by the JWS payload
+	And the claim iss with value http://localhost/identity is returned by the JWS payload
+	And the claim email with value habarthierry@hotmail.fr is returned by the JWS payload
+	And the claim email_verified with value True is returned by the JWS payload
+
+Scenario: Fetch the user information for the scope phone
+	Given a mobile application MyHolidays is defined
+	And set the name of the issuer http://localhost/identity
+	And the redirection uri http://localhost is assigned to the client MyHolidays
+	And the scopes are defined
+	| Name   | IsInternal | Claims                             |
+	| openid | true       |                                    |
+	| phone  | true       | phone_number phone_number_verified |
+	And the scopes openid,phone are assigned to the client MyHolidays
+	And the grant-type implicit is supported by the client MyHolidays
+	And the response-types token,id_token are supported by the client MyHolidays
+	And create a resource owner
+	| Id                   | Name    | PhoneNumber | PhoneNumberVerified |
+	| habarthierry@loki.be | thabart | 007         | false               |
+	And authenticate the resource owner
+	And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and scopes openid,phone
+	And requesting an access token	
+	| scope        | response_type  | client_id  | redirect_uri     | prompt | state  | nonce          |
+	| openid phone | token id_token | MyHolidays | http://localhost | none   | state1 | parameterNonce |
+	
+	When requesting user information
+
+	Then HTTP status code is 200
+	And the claim sub with value habarthierry@loki.be is returned by the JWS payload
+	And the claim iss with value http://localhost/identity is returned by the JWS payload
+	And the claim phone_number with value 007 is returned by the JWS payload
+	And the claim phone_number_verified with value False is returned by the JWS payload
+		
+Scenario: Fetch the user information for the scope phone and email
+	Given a mobile application MyHolidays is defined
+	And set the name of the issuer http://localhost/identity
+	And the redirection uri http://localhost is assigned to the client MyHolidays
+	And the scopes are defined
+	| Name   | IsInternal | Claims                             |
+	| openid | true       |                                    |
+	| phone  | true       | phone_number phone_number_verified |
+	| email  | true       | email email_verified               |
+	And the scopes openid,phone,email are assigned to the client MyHolidays
+	And the grant-type implicit is supported by the client MyHolidays
+	And the response-types token,id_token are supported by the client MyHolidays
+	And create a resource owner
+	| Id                   | Name    | PhoneNumber | PhoneNumberVerified | Email                   | EmailVerified |
+	| habarthierry@loki.be | thabart | 007         | false               | habarthierry@hotmail.fr | true          |
+	And authenticate the resource owner
+	And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and scopes openid,phone,email
+	And requesting an access token	
+	| scope              | response_type  | client_id  | redirect_uri     | prompt | state  | nonce          |
+	| openid phone email | token id_token | MyHolidays | http://localhost | none   | state1 | parameterNonce |
+	
+	When requesting user information
+
+	Then HTTP status code is 200
+	And the claim sub with value habarthierry@loki.be is returned by the JWS payload
+	And the claim iss with value http://localhost/identity is returned by the JWS payload
+	And the claim phone_number with value 007 is returned by the JWS payload
+	And the claim phone_number_verified with value False is returned by the JWS payload
+	And the claim email with value habarthierry@hotmail.fr is returned by the JWS payload
+	And the claim email_verified with value True is returned by the JWS payload
