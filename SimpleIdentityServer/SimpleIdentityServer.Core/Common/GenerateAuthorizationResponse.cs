@@ -60,7 +60,7 @@ namespace SimpleIdentityServer.Core.Common
 
             if (responses.Contains(ResponseType.id_token))
             {
-                actionResult.RedirectInstruction.AddParameter("id_token", idToken);
+                actionResult.RedirectInstruction.AddParameter(Constants.StandardAuthorizationResponseNames.IdTokenName, idToken);
             }
 
             if (responses.Contains(ResponseType.token))
@@ -75,7 +75,7 @@ namespace SimpleIdentityServer.Core.Common
                     allowedTokenScopes, 
                     idToken);
                 _grantedTokenRepository.Insert(generatedToken);
-                actionResult.RedirectInstruction.AddParameter("access_token", generatedToken.AccessToken);
+                actionResult.RedirectInstruction.AddParameter(Constants.StandardAuthorizationResponseNames.AccessTokenName, generatedToken.AccessToken);
             }
 
             if (responses.Contains(ResponseType.code))
@@ -96,13 +96,20 @@ namespace SimpleIdentityServer.Core.Common
                     };
 
                     _authorizationCodeRepository.AddAuthorizationCode(authorizationCode);
-                    actionResult.RedirectInstruction.AddParameter("code", authorizationCode.Code);
+                    actionResult.RedirectInstruction.AddParameter(Constants.StandardAuthorizationResponseNames.AuthorizationCodeName, authorizationCode.Code);
                 }
             }
 
             if (!string.IsNullOrWhiteSpace(authorizationParameter.State))
             {
-                actionResult.RedirectInstruction.AddParameter("state", authorizationParameter.State);
+                actionResult.RedirectInstruction.AddParameter(Constants.StandardAuthorizationResponseNames.StateName, authorizationParameter.State);
+            }
+
+            if (authorizationParameter.ResponseMode == ResponseMode.form_post)
+            {
+                actionResult.Type = TypeActionResult.RedirectToAction;
+                actionResult.RedirectInstruction.Action = IdentityServerEndPoints.FormIndex;
+                actionResult.RedirectInstruction.AddParameter("redirect_uri", authorizationParameter.RedirectUrl);
             }
         }
         

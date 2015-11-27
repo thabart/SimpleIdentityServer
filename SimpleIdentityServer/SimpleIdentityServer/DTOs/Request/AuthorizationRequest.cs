@@ -4,7 +4,8 @@
     {
         None,
         query,
-        fragment
+        fragment,
+        form_post
     }
 
     public enum ResponseType

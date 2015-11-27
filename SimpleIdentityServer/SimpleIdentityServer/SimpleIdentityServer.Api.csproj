@@ -217,6 +217,7 @@
     <Compile Include="Controllers\Api\UserInfoController.cs" />
     <Compile Include="Controllers\AuthenticateController.cs" />
     <Compile Include="Controllers\ConsentController.cs" />
+    <Compile Include="Controllers\FormController.cs" />
     <Compile Include="DTOs\Request\AuthorizationRequest.cs" />
     <Compile Include="Extensions\ApiControllerExtensions.cs" />
     <Compile Include="Extensions\ControllerExtensions.cs" />
@@ -239,6 +240,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="UnityDependencyResolver.cs" />
+    <Compile Include="ViewModels\FormViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-theme.css" />
@@ -270,6 +272,7 @@
     <Content Include="Scripts\jquery-1.9.0.min.map" />
     <EmbeddedResource Include="SimpleIdentityServer.pfx" />
     <Content Include="Views\Consent\Index.cshtml" />
+    <Content Include="Views\Form\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config">

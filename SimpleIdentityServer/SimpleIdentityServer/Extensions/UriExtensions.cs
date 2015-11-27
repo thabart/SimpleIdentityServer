@@ -16,6 +16,12 @@ namespace SimpleIdentityServer.Api.Extensions
             return new Uri(uriBuilder.ToString());
         }
 
+        /// <summary>
+        /// Add the given parameter in the query string.
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <param name="dic"></param>
+        /// <returns></returns>
         public static Uri AddParametersInQuery(this Uri uri, RouteValueDictionary dic)
         {
             var uriBuilder = new UriBuilder(uri); 
@@ -29,6 +35,12 @@ namespace SimpleIdentityServer.Api.Extensions
             return new Uri(uriBuilder.ToString());
         }
 
+        /// <summary>
+        /// Add the given parameters in the fragment.
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <param name="dic"></param>
+        /// <returns></returns>
         public static Uri AddParametersInFragment(this Uri uri, RouteValueDictionary dic)
         {
             var uriBuilder = new UriBuilder(uri); 

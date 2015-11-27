@@ -23,6 +23,10 @@ namespace SimpleIdentityServer.Api.Parsers
             {
                 IdentityServerEndPoints.AuthenticateIndex,
                 new ActionInformation("Authenticate", "Index")
+            },
+            {
+                IdentityServerEndPoints.FormIndex,
+                new ActionInformation("Form", "Index")
             }
         };
 

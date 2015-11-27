@@ -14,6 +14,10 @@ namespace SimpleIdentityServer.Api
             {
                 IdentityServerEndPoints.ConsentIndex,
                 "/Consent"
+            },
+            {
+                IdentityServerEndPoints.FormIndex,
+                "/Form"
             }
         };
 

@@ -5,6 +5,8 @@
         // Consent screen
         ConsentIndex,
         // Authenticate screen
-        AuthenticateIndex
+        AuthenticateIndex,
+        // Form screen
+        FormIndex
     }
 }

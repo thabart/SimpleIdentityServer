@@ -1,7 +1,10 @@
-﻿using System.Security.Claims;
+﻿using System;
+using System.Security.Claims;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Routing;
 using Microsoft.Owin.Security;
+using SimpleIdentityServer.Core.Parameters;
 
 namespace SimpleIdentityServer.Api.Extensions
 {
@@ -26,6 +29,33 @@ namespace SimpleIdentityServer.Api.Extensions
         public static IAuthenticationManager GetAuthenticationManager(this Controller controller)
         {
             return controller.Request.GetOwinContext().Authentication;
+        }
+
+        /// <summary>
+        /// Create a redirection HTTP response message based on the response mode.
+        /// </summary>
+        /// <param name="controller"></param>
+        /// <param name="uri"></param>
+        /// <param name="parameters"></param>
+        /// <param name="responseMode"></param>
+        /// <returns></returns>
+        public static string CreateRedirectHttp(
+            this Controller controller,
+            Uri uri,
+            RouteValueDictionary parameters,
+            ResponseMode responseMode)
+        {
+            switch (responseMode)
+            {
+                case ResponseMode.fragment:
+                    uri = uri.AddParametersInFragment(parameters);
+                    break;
+                default:
+                    uri = uri.AddParametersInQuery(parameters);
+                    break;
+            }
+
+            return uri.ToString();
         }
     }
 }

@@ -58,15 +58,26 @@ namespace SimpleIdentityServer.Api.Controllers
         public ActionResult Confirm(string code)
         {
             var request = _protector.Decrypt<AuthorizationRequest>(code);
+            var parameter = request.ToParameter();
             var authenticatedUser = this.GetAuthenticatedUser();
-            var actionResult =_consentActions.ConfirmConsent(request.ToParameter(),
+            var actionResult =_consentActions.ConfirmConsent(parameter,
                 authenticatedUser);
             if (actionResult.Type == TypeActionResult.RedirectToCallBackUrl)
             {
                 var parameters = _actionResultParser.GetRedirectionParameters(actionResult);
-                var redirectUrl = new Uri(request.redirect_uri);
-                var redirectUrlWithAuthCode = redirectUrl.AddParametersInQuery(parameters);
-                return Redirect(redirectUrlWithAuthCode.ToString());
+                var uri = new Uri(request.redirect_uri);
+                var redirectUrl = this.CreateRedirectHttp(uri, parameters, parameter.ResponseMode);
+                return Redirect(redirectUrl);
+            }
+
+            var actionInformation =
+                _actionResultParser.GetControllerAndActionFromRedirectionActionResult(actionResult);
+            if (actionInformation != null)
+            {
+                return RedirectToAction(
+                    actionInformation.ActionName,
+                    actionInformation.ControllerName,
+                    actionInformation.RouteValueDictionary);
             }
 
             return null;

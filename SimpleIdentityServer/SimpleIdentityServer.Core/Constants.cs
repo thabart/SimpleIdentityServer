@@ -23,6 +23,17 @@ namespace SimpleIdentityServer.Core
             public static string OpenIdPreferredCustomAuthLevel = "openid.pape.preferred_auth_levels";
         }
 
+        public static class StandardAuthorizationResponseNames
+        {
+            public static string IdTokenName = "id_token";
+
+            public static string AccessTokenName = "access_token";
+
+            public static string AuthorizationCodeName = "code";
+
+            public static string StateName = "state";
+        }
+
         public static class StandardClientAssertionTypes
         {
             public static string JwtBearer = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer";

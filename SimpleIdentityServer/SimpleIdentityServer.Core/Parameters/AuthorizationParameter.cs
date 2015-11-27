@@ -6,7 +6,8 @@ namespace SimpleIdentityServer.Core.Parameters
     {
         None,
         query,
-        fragment
+        fragment,
+        form_post
     }
 
     public enum Display

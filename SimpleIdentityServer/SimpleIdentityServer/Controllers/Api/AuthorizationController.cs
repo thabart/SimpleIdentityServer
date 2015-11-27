@@ -49,16 +49,16 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             var encryptedRequest = _protector.Encrypt(authorizationRequest);
             var encodedRequest = _encoder.Encode(encryptedRequest);
             var authenticatedUser = this.GetAuthenticatedUser();
+            var parameter = authorizationRequest.ToParameter();
             var actionResult = _authorizationActions.GetAuthorization(
-                authorizationRequest.ToParameter(),
+                parameter,
                 authenticatedUser,
                 encodedRequest);
             var parameters = _actionResultParser.GetRedirectionParameters(actionResult);
             if (actionResult.Type == TypeActionResult.RedirectToCallBackUrl)
             {
                 var redirectUrl = new Uri(authorizationRequest.redirect_uri);
-                var redirectUrlWithAuthCode = redirectUrl.AddParametersInQuery(parameters);
-                return CreateMoveHttpResponse(redirectUrlWithAuthCode.ToString());
+                return this.CreateRedirectHttpTokenResponse(redirectUrl, parameters, parameter.ResponseMode);
             }
 
             if (actionResult.Type == TypeActionResult.RedirectToAction)
@@ -71,7 +71,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
 
             return null;
         }
-
+        
         private static string GetRedirectionUrl(
             HttpRequestMessage request,
             IdentityServerEndPoints identityServerEndPoints)
