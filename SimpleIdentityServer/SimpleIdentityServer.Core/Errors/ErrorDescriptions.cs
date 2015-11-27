@@ -80,5 +80,8 @@
 
         public static string TheJwsPayLoadCannotBeExtractedFromTheClientAssertion =
             "the jws payload cannot be extracted from the client assertion";
+
+        public static string TheClientAssertionCannotBeDecrypted =
+            "the client assertion cannot be decrypted";
     }
 }

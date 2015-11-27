@@ -2,6 +2,7 @@
 using System.Linq;
 
 using SimpleIdentityServer.Core.Common.Extensions;
+using SimpleIdentityServer.Core.Jwt.Encrypt.Encryption;
 using SimpleIdentityServer.Core.Jwt.Extensions;
 
 namespace SimpleIdentityServer.Core.Jwt.Encrypt
@@ -13,6 +14,13 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt
             JweAlg alg,
             JweEnc enc,
             JsonWebKey jsonWebKey);
+
+        string GenerateJweByUsingSymmetricPassword(
+            string entry,
+            JweAlg alg,
+            JweEnc enc,
+            JsonWebKey jsonWebKey,
+            string password);
     }
 
     public class JweGenerator : IJweGenerator
@@ -30,12 +38,41 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt
             JweEnc enc,
             JsonWebKey jsonWebKey)
         {
+            return PerformeJweGeneration(entry, alg, enc, jsonWebKey, (encryption, jweProtectedHeader) => encryption.Encrypt(entry,
+                alg,
+                jweProtectedHeader,
+                jsonWebKey)
+            );
+        }
+
+        public string GenerateJweByUsingSymmetricPassword(
+            string entry,
+            JweAlg alg,
+            JweEnc enc,
+            JsonWebKey jsonWebKey,
+            string password)
+        {
+            return PerformeJweGeneration(entry, alg, enc, jsonWebKey, (encryption, jweProtectedHeader) => encryption.EncryptWithSymmetricPassword(entry,
+                alg,
+                jweProtectedHeader,
+                jsonWebKey,
+                password)
+            );
+        }
+
+        private string PerformeJweGeneration(
+            string entry,
+            JweAlg alg,
+            JweEnc enc,
+            JsonWebKey jsonWebKey,
+            Func<IEncryption, JweProtectedHeader, AesEncryptionResult> callback)
+        {
             var algo = Constants.MappingNameToJweAlgEnum
                 .SingleOrDefault(k => k.Value == alg);
             var encryption = Constants.MappingNameToJweEncEnum
                 .SingleOrDefault(k => k.Value == enc);
             if (jsonWebKey == null ||
-                algo.IsDefault() || 
+                algo.IsDefault() ||
                 encryption.IsDefault())
             {
                 return entry;
@@ -50,10 +87,9 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt
             };
 
             var algorithm = _jweHelper.GetEncryptor(enc);
-            var encryptionResult = algorithm.Encrypt(entry, 
-                alg, 
-                jweProtectedHeader, 
-                jsonWebKey);
+            var encryptionResult = callback(
+                algorithm,
+                jweProtectedHeader);
 
             var base64EncodedjweProtectedHeaderSerialized = jweProtectedHeader.SerializeWithDataContract().Base64Encode();
             var base64EncodedJweEncryptedKey = encryptionResult.EncryptedContentEncryptionKey.Base64EncodeBytes();

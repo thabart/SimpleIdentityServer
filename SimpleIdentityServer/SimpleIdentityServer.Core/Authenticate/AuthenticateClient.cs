@@ -38,12 +38,8 @@ namespace SimpleIdentityServer.Core.Authenticate
             out string errorMessage)
         {
             errorMessage = string.Empty;
-            if (instruction.ClientAssertionType == Constants.StandardClientAssertionTypes.JwtBearer)
-            {
-                return _clientAssertionAuthentication.AuthenticateClient(instruction, out errorMessage);
-            }
-
             Client client = null;
+            // First we try to get the client_id
             var clientId = TryGettingClientId(instruction);
             if (!string.IsNullOrWhiteSpace(clientId))
             {
@@ -56,31 +52,26 @@ namespace SimpleIdentityServer.Core.Authenticate
                 return null;
             }
 
-            client = ValidateClientCredentials(client, instruction);
-            if (client == null)
+            var tokenEndPointAuthMethod = client.TokenEndPointAuthMethod;
+            switch (tokenEndPointAuthMethod)
             {
-                errorMessage = ErrorDescriptions.TheClientCannotBeAuthenticated;
+                case TokenEndPointAuthenticationMethods.client_secret_basic:
+                    client = _clientSecretBasicAuthentication.AuthenticateClient(instruction, client);
+                    break;
+                case TokenEndPointAuthenticationMethods.client_secret_post:
+                    client = _clientSecretPostAuthentication.AuthenticateClient(instruction, client);
+                    break;
+                case TokenEndPointAuthenticationMethods.client_secret_jwt:
+                    client = _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwt(instruction,
+                        client.ClientSecret, out errorMessage);
+                    break;
+                case TokenEndPointAuthenticationMethods.private_key_jwt:
+                    client = _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwt(instruction,
+                        out errorMessage);
+                    break;
             }
 
             return client;
-        }
-
-        private Client ValidateClientCredentials(
-            Client client,
-            AuthenticateInstruction authenticateInstruction)
-        {
-            Client result = null;
-            switch (client.TokenEndPointAuthMethod)
-            {
-                case TokenEndPointAuthenticationMethods.client_secret_post:
-                    result = _clientSecretPostAuthentication.AuthenticateClient(authenticateInstruction, client);
-                    break;
-                case TokenEndPointAuthenticationMethods.client_secret_basic:
-                    result = _clientSecretBasicAuthentication.AuthenticateClient(authenticateInstruction, client);
-                    break;
-            }
-
-            return result;
         }
 
         /// <summary>
@@ -90,7 +81,13 @@ namespace SimpleIdentityServer.Core.Authenticate
         /// <returns>Client id</returns>
         private string TryGettingClientId(AuthenticateInstruction instruction)
         {
-            var clientId= _clientSecretBasicAuthentication.GetClientId(instruction);
+            var clientId = _clientAssertionAuthentication.GetClientId(instruction);
+            if (!string.IsNullOrWhiteSpace(clientId))
+            {
+                return clientId;
+            }
+
+            clientId= _clientSecretBasicAuthentication.GetClientId(instruction);
             if (!string.IsNullOrWhiteSpace(clientId))
             {
                 return clientId;

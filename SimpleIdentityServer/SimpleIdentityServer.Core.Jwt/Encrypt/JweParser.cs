@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 
 using SimpleIdentityServer.Core.Common.Extensions;
+using SimpleIdentityServer.Core.Jwt.Encrypt.Encryption;
 
 namespace SimpleIdentityServer.Core.Jwt.Encrypt
 {
@@ -9,6 +10,11 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt
         string Parse(
             string jwe,
             JsonWebKey jsonWebKey);
+
+        string ParseByUsingSymmetricPassword(
+            string jwe,
+            JsonWebKey jsonWebKey,
+            string password);
 
         JweProtectedHeader GetHeader(string jwe);
     }
@@ -45,6 +51,32 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt
 
             var algorithm = _jweHelper.GetEncryptor(encryptionEnum);
             return algorithm.Decrypt(jwe, algorithmEnum, jsonWebKey);
+        }
+
+        public string ParseByUsingSymmetricPassword(
+            string jwe,
+            JsonWebKey jsonWebKey,
+            string password)
+        {
+            var header = GetHeader(jwe);
+            if (header == null)
+            {
+                return jwe;
+            }
+
+            var algorithmName = header.Alg;
+            var encryptionName = header.Enc;
+            if (!Constants.MappingNameToJweAlgEnum.Keys.Contains(algorithmName)
+                || !Constants.MappingNameToJweEncEnum.Keys.Contains(encryptionName))
+            {
+                return null;
+            }
+
+            var algorithmEnum = Constants.MappingNameToJweAlgEnum[algorithmName];
+            var encryptionEnum = Constants.MappingNameToJweEncEnum[encryptionName];
+
+            var algorithm = _jweHelper.GetEncryptor(encryptionEnum);
+            return algorithm.DecryptWithSymmetricPassword(jwe, algorithmEnum, jsonWebKey, password);
         }
 
         public JweProtectedHeader GetHeader(string jwe)

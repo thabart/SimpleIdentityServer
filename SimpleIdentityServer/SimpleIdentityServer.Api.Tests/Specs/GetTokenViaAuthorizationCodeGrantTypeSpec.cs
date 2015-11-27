@@ -13,6 +13,7 @@ using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Jwt;
+using SimpleIdentityServer.Core.Jwt.Encrypt;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.DataAccess.Fake;
 using SimpleIdentityServer.DataAccess.Fake.Extensions;
@@ -176,8 +177,34 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             _clientAssertion = generator.Generate(_jwsPayload,
                 alg,
                 jsonWebKey.ToBusiness());
+        }
 
+        [Given("encrypt the jws token with (.*) kid, encryption algorithm (.*) and password (.*)")]
+        public void GivenEncryptTheJwsPayloadWithKid(string kid, JweEnc enc, string password)
+        {
+            var jsonWebKey = FakeDataSource.Instance().JsonWebKeys.FirstOrDefault(j => j.Kid == kid);
+            Assert.IsNotNull(jsonWebKey);
+            var generator = _context.UnityContainer.Resolve<JweGenerator>();
+            var algEnumName = Enum.GetName(typeof(AllAlg), jsonWebKey.Alg);
+            var alg = (JweAlg)Enum.Parse(typeof(JweAlg), algEnumName);
+            _clientAssertion = generator.GenerateJweByUsingSymmetricPassword(
+                _clientAssertion,
+                alg,
+                enc,
+                jsonWebKey.ToBusiness(),
+                password);
+        }
+
+        [Given("set the client assertion value")]
+        public void GivenSetClientAssertion()
+        {
             _tokenParameters.Add("client_assertion", _clientAssertion);
+        }
+
+        [Given("set the client id (.*) into the request")]
+        public void GivenSetTheClientIdIntoTheRequest(string clientId)
+        {
+            _tokenParameters.Add("client_id", clientId);
         }
 
         #endregion

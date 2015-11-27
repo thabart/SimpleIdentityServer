@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Extensions;
@@ -14,8 +15,28 @@ namespace SimpleIdentityServer.Core.Authenticate
 {
     public interface IClientAssertionAuthentication
     {
-        Client AuthenticateClient(
+        string GetClientId(AuthenticateInstruction instruction);
+        
+        /// <summary>
+        /// Perform private_key_jwt client authentication.
+        /// </summary>
+        /// <param name="instruction"></param>
+        /// <param name="messageError"></param>
+        /// <returns></returns>
+        Client AuthenticateClientWithPrivateKeyJwt(
             AuthenticateInstruction instruction,
+            out string messageError);
+
+        /// <summary>
+        /// Perform client_secret_jwt client authentication.
+        /// </summary>
+        /// <param name="instruction"></param>
+        /// <param name="clientSecret"></param>
+        /// <param name="messageError"></param>
+        /// <returns></returns>
+        Client AuthenticateClientWithClientSecretJwt(
+            AuthenticateInstruction instruction,
+            string clientSecret,
             out string messageError);
     }
 
@@ -45,40 +66,25 @@ namespace SimpleIdentityServer.Core.Authenticate
             _clientValidator = clientValidator;
         }
 
-        public Client AuthenticateClient(
+        /// <summary>
+        /// Perform private_key_jwt client authentication.
+        /// </summary>
+        /// <param name="instruction"></param>
+        /// <param name="messageError"></param>
+        /// <returns></returns>
+        public Client AuthenticateClientWithPrivateKeyJwt(
             AuthenticateInstruction instruction,
             out string messageError)
         {
             var clientAssertion = instruction.ClientAssertion;
             var clientAssertionSplitted = clientAssertion.Split('.');
-            if (clientAssertionSplitted.Count() != 5 
-                && clientAssertionSplitted.Count() != 3)
+            if (clientAssertionSplitted.Count() != 3)
             {
                 messageError = ErrorDescriptions.TheClientAssertionIsNotAJwtToken;
                 return null;
             }
 
-            var jws = string.Empty;
-            // It's a JWE token.
-            if (clientAssertionSplitted.Count() == 5)
-            {
-                var jweHeader = _jweParser.GetHeader(clientAssertion);
-                var jweJsonWebKey = _jsonWebKeyRepository.GetByKid(jweHeader.Kid);
-                jws = _jweParser.Parse(clientAssertion, jweJsonWebKey);
-            }
-
-            // It's a JWS token
-            if (clientAssertionSplitted.Count() == 3)
-            {
-                jws = clientAssertion;
-            }
-
-            if (string.IsNullOrWhiteSpace(jws))
-            {
-                messageError = ErrorDescriptions.TheJwsPayLoadCannotBeExtractedFromTheClientAssertion;
-                return null;
-            }
-
+            var jws = clientAssertion;
             var jwsHeader = _jwsParser.GetHeader(jws);
             var jwsJsonWebKey = _jsonWebKeyRepository.GetByKid(jwsHeader.Kid);
             var payLoad = _jwsParser.ValidateSignature(jws, jwsJsonWebKey);
@@ -89,6 +95,93 @@ namespace SimpleIdentityServer.Core.Authenticate
             }
 
             return ValidateJwsPayLoad(payLoad, out messageError);
+        }
+
+        /// <summary>
+        /// Perform client_secret_jwt client authentication.
+        /// </summary>
+        /// <param name="instruction"></param>
+        /// <param name="clientSecret"></param>
+        /// <param name="messageError"></param>
+        /// <returns></returns>
+        public Client AuthenticateClientWithClientSecretJwt(
+            AuthenticateInstruction instruction,
+            string clientSecret,
+            out string messageError)
+        {
+            var clientAssertion = instruction.ClientAssertion;
+            var clientAssertionSplitted = clientAssertion.Split('.');
+            if (clientAssertionSplitted.Count() != 5)
+            {
+                messageError = ErrorDescriptions.TheClientAssertionIsNotAJwtToken;
+                return null;
+            }
+
+            var jwe = clientAssertion;
+            var jweHeader = _jwsParser.GetHeader(jwe);
+            var jweJsonWebKey = _jsonWebKeyRepository.GetByKid(jweHeader.Kid);
+            var decryptedResult = _jweParser.ParseByUsingSymmetricPassword(jwe, jweJsonWebKey, clientSecret);
+            if (string.IsNullOrWhiteSpace(decryptedResult))
+            {
+                messageError = ErrorDescriptions.TheClientAssertionCannotBeDecrypted;
+                return null;
+            }
+
+            var decryptedResultSplitted = decryptedResult.Split('.');
+            if (decryptedResultSplitted.Count() != 3)
+            {
+                messageError = ErrorDescriptions.TheClientAssertionCannotBeDecrypted;
+                return null;
+            }
+            
+            var jwsHeader = _jwsParser.GetHeader(decryptedResult);
+            var jwsJsonWebKey = _jsonWebKeyRepository.GetByKid(jwsHeader.Kid);
+            var payLoad = _jwsParser.ValidateSignature(decryptedResult, jwsJsonWebKey);
+            if (payLoad == null)
+            {
+                messageError = ErrorDescriptions.TheSignatureIsNotCorrect;
+                return null;
+            }
+
+            return ValidateJwsPayLoad(payLoad, out messageError);
+        }
+
+        /// <summary>
+        /// Try to get the client id.
+        /// </summary>
+        /// <param name="instruction"></param>
+        /// <returns></returns>
+        public string GetClientId(AuthenticateInstruction instruction)
+        {
+            if (instruction.ClientAssertionType != Constants.StandardClientAssertionTypes.JwtBearer || string.IsNullOrWhiteSpace(instruction.ClientAssertion))
+            {
+                return string.Empty;
+            }
+
+            var clientAssertion = instruction.ClientAssertion;
+            var clientAssertionSplitted = clientAssertion.Split('.');
+            if (clientAssertionSplitted.Count() != 5
+                && clientAssertionSplitted.Count() != 3)
+            {
+                return string.Empty;
+            }
+            
+            // It's a JWE token then return the client_id from the HTTP body
+            if (clientAssertionSplitted.Count() == 5)
+            {
+                return instruction.ClientIdFromHttpRequestBody;
+            }
+
+            // It's a JWS token then return the client_id from the token.
+            var jwsHeader = _jwsParser.GetHeader(clientAssertion);
+            var jwsJsonWebKey = _jsonWebKeyRepository.GetByKid(jwsHeader.Kid);
+            var payLoad = _jwsParser.ValidateSignature(clientAssertion, jwsJsonWebKey);
+            if (payLoad == null)
+            {
+                return string.Empty;
+            }
+
+            return payLoad.Issuer;
         }
 
         private Client ValidateJwsPayLoad(
@@ -102,21 +195,15 @@ namespace SimpleIdentityServer.Core.Authenticate
             var jwsAudiences = jwsPayload.Audiences;
             var expirationDateTime = jwsPayload.ExpirationTime.ConvertFromUnixTimestamp();
 
-            // 1. Check the issuer is correct.
-            //if (!string.Equals(expectedIssuer, jwsIssuer))
-            //{
-            //    messageError = ErrorDescriptions.TheIssuerFromJwtIsNotCorrect;
-            //    return null;
-            //}
-
             Client client = null;
-            if (!string.IsNullOrWhiteSpace(jwsSubject))
+            // 1. Check the issuer is correct.
+            if (!string.IsNullOrWhiteSpace(jwsIssuer))
             {
                 client = _clientValidator.ValidateClientExist(jwsSubject);
             }
 
             // 2. Check the client is correct.
-            if (client == null)
+            if (client == null || jwsSubject != jwsIssuer)
             {
                 messageError = ErrorDescriptions.TheClientIdPassedInJwtIsNotCorrect;
                 return null;

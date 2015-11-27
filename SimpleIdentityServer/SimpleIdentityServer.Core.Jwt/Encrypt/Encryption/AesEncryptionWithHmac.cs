@@ -25,28 +25,77 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt.Encryption
             JweProtectedHeader protectedHeader,
             JsonWebKey jsonWebKey)
         {
+            return PerformEncryption(toEncrypt, alg, protectedHeader, jsonWebKey, bytes => bytes[0]);
+        }
+
+        public AesEncryptionResult EncryptWithSymmetricPassword(
+            string toEncrypt, 
+            JweAlg alg, 
+            JweProtectedHeader protectedHeader, 
+            JsonWebKey jsonWebKey,
+            string password)
+        {
+            var callback = new Func<byte[][], byte[]>(bytes =>
+            {
+                var result = Encoding.UTF8.GetBytes(password);
+                return result;
+            });
+
+            return PerformEncryption(toEncrypt, alg, protectedHeader, jsonWebKey, callback);
+        }
+
+        public string Decrypt(
+            string toDecrypt,
+            JweAlg alg,
+            JsonWebKey jsonWebKey)
+        {
+            return PerformDecryption(toDecrypt, alg, jsonWebKey, bytes => bytes[0]);
+        }
+
+        public string DecryptWithSymmetricPassword(
+            string toDecrypt, 
+            JweAlg alg, 
+            JsonWebKey jsonWebKey,
+            string password)
+        {
+            var callback = new Func<byte[][], byte[]>(bytes =>
+            {
+                var result = Encoding.UTF8.GetBytes(password);
+                return result;
+            });
+
+            return PerformDecryption(toDecrypt, alg, jsonWebKey, callback);
+        }
+
+        private AesEncryptionResult PerformEncryption(
+            string toEncrypt,
+            JweAlg alg,
+            JweProtectedHeader protectedHeader,
+            JsonWebKey jsonWebKey,
+            Func<byte[][], byte[]> callback)
+        {
             // Get the content encryption key
             var contentEncryptionKey = _aesEncryptionHelper.GenerateContentEncryptionKey(_keySize);
 
             // Encrypt the content encryption key
             var encryptedContentEncryptionKey = _aesEncryptionHelper.EncryptContentEncryptionKey(
-                contentEncryptionKey, 
-                alg, 
+                contentEncryptionKey,
+                alg,
                 jsonWebKey);
 
             var contentEncryptionKeySplitted = GetKeysFromContentEncryptionKey(contentEncryptionKey);
 
-            var hmacKey = contentEncryptionKeySplitted[0];
+            var hmacKey = callback(contentEncryptionKeySplitted);
             var aesCbcKey = contentEncryptionKeySplitted[1];
 
-            var iv = ByteManipulator.GenerateRandomBytes(_keySize/2);
+            var iv = ByteManipulator.GenerateRandomBytes(_keySize / 2);
 
             // Encrypt the plain text & create cipher text.
             var cipherText = _aesEncryptionHelper.EncryptWithAesAlgorithm(
                 toEncrypt,
                 aesCbcKey,
                 iv);
-            
+
             // Calculate the additional authenticated data.
             var serializedProtectedHeader = protectedHeader.SerializeWithDataContract();
             var aad = Encoding.UTF8.GetBytes(serializedProtectedHeader);
@@ -66,10 +115,11 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt.Encryption
             };
         }
 
-        public string Decrypt(
-            string toDecrypt,
-            JweAlg alg,
-            JsonWebKey jsonWebKey)
+        private string PerformDecryption(
+            string toDecrypt, 
+            JweAlg alg, 
+            JsonWebKey jsonWebKey,
+            Func<byte[][], byte[]> callback)
         {
             try
             {
@@ -86,7 +136,7 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt.Encryption
                     jsonWebKey);
                 var contentEncryptionKeySplitted = GetKeysFromContentEncryptionKey(contentEncryptionKey);
 
-                var hmacKey = contentEncryptionKeySplitted[0];
+                var hmacKey = callback(contentEncryptionKeySplitted);
                 var aesCbcKey = contentEncryptionKeySplitted[1];
 
                 // Encrypt the plain text & create cipher text.
@@ -99,7 +149,7 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt.Encryption
                 var aad = Encoding.UTF8.GetBytes(serializedProtectedHeader);
 
                 // Calculate the authentication tag.
-                var al = ByteManipulator.LongToBytes(aad.Length*8);
+                var al = ByteManipulator.LongToBytes(aad.Length * 8);
                 var hmacInput = ByteManipulator.Concat(aad, ivBytes, cipherText, al);
                 var hmacValue = ComputeHmac(_keySize, hmacKey, hmacInput);
                 var newAuthenticationTag = ByteManipulator.SplitByteArrayInHalf(hmacValue)[0];
