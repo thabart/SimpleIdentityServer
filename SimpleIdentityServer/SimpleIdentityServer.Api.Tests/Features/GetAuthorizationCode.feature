@@ -80,7 +80,55 @@ Scenario: A resource owner is authenticated and he already has given his consent
 
 	Then HTTP status code is 301
 	And redirect to callback http://localhost
-	And the state state1 is returned in the callback
+	And the query string state with value state1 is returned
+	And the query string code exists
+
+# TEST THE DIFFERENT RESPONSE_MODE PARAMETER VALUES
+Scenario: A resource owner is authenticated and he already has given his consent. We want to retrieve an authorization code in the fragment
+	Given a mobile application MyHolidays is defined
+	And the redirection uri http://localhost is assigned to the client MyHolidays
+	And the scopes are defined
+	| Name        | IsInternal |
+	| PlanningApi | true       |
+	| openid      | true       |
+	And the scopes openid,PlanningApi are assigned to the client MyHolidays
+	And create a resource owner
+	| Id                   | Name    |
+	| habarthierry@loki.be | thabart |
+	And authenticate the resource owner
+	And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and scopes openid,PlanningApi
+
+	When requesting an authorization code
+	| scope              | response_type | client_id  | redirect_uri     | prompt | state  | response_mode |
+	| openid PlanningApi | code          | MyHolidays | http://localhost | none   | state1 | fragment      |
+
+
+	Then HTTP status code is 301
+	And redirect to callback http://localhost
+	And the fragment contains the query state with the value state1
+	And the fragment contains the query string code
+
+Scenario: A resource owner is authenticated and he already has given his consent. We want to retrieve an authorization code in the post
+	Given a mobile application MyHolidays is defined
+	And the redirection uri http://localhost is assigned to the client MyHolidays
+	And the scopes are defined
+	| Name        | IsInternal |
+	| PlanningApi | true       |
+	| openid      | true       |
+	And the scopes openid,PlanningApi are assigned to the client MyHolidays
+	And create a resource owner
+	| Id                   | Name    |
+	| habarthierry@loki.be | thabart |
+	And authenticate the resource owner
+	And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and scopes openid,PlanningApi
+
+	When requesting an authorization code
+	| scope              | response_type | client_id  | redirect_uri     | prompt | state  | response_mode |
+	| openid PlanningApi | code          | MyHolidays | http://localhost | none   | state1 | form_post     |
+
+
+	Then HTTP status code is 301
+	And redirect to callback http://localhost/Form
 		
 # THE PROMPT PARAMETER IS NOT SPECIFIED
 Scenario: a resource owner is not authenticated. We want to retrieve an authorization code and the prompt parameter value is not specified

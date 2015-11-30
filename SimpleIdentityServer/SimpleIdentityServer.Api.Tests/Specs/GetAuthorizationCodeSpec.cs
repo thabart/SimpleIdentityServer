@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
@@ -79,17 +78,20 @@ namespace SimpleIdentityServer.Api.Tests.Specs
                 });
             }
 
+            var responseModeName = Enum.GetName(typeof (ResponseMode), authorizationRequest.response_mode);
+
             using (var server = _context.CreateServer(httpConfiguration))
             {
                 var httpClient = server.HttpClient;
                 var url = string.Format(
-                    "/authorization?scope={0}&response_type={1}&client_id={2}&redirect_uri={3}&prompt={4}&state={5}",
+                    "/authorization?scope={0}&response_type={1}&client_id={2}&redirect_uri={3}&prompt={4}&state={5}&response_mode={6}",
                     authorizationRequest.scope,
                     authorizationRequest.response_type,
                     authorizationRequest.client_id,
                     authorizationRequest.redirect_uri,
                     authorizationRequest.prompt,
-                    authorizationRequest.state);
+                    authorizationRequest.state,
+                    responseModeName);
                 _responseMessage = httpClient.GetAsync(url).Result;
             }
         }
@@ -124,14 +126,47 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             Assert.That(errorResponseWithState.state, Is.EqualTo(result.state));
         }
 
-        [Then("the state (.*) is returned in the callback")]
-        public void ThenTheStateIsReturnedInTheCallback(string state)
+        [Then("the query string (.*) with value (.*) is returned")]
+        public void ThenTheQueryStringIsContained(string queryName, string queryValue)
         {
             var location = _responseMessage.Headers.Location;
-            var query = HttpUtility.ParseQueryString(location.Query);
+            var queries = HttpUtility.ParseQueryString(location.Query);
 
-            var returnedState = query["state"];
-            Assert.That(returnedState, Is.EqualTo(state));
+            var value = queries[queryName];
+            Assert.IsNotNull(value);
+            Assert.AreEqual(value, queryValue);
+        }
+
+        [Then("the query string (.*) exists")]
+        public void ThenTheQueryStringExists(string queryName)
+        {
+            var location = _responseMessage.Headers.Location;
+            var queries = HttpUtility.ParseQueryString(location.Query);
+            var value = queries[queryName];
+            Assert.IsNotNull(value);
+        }
+
+        [Then("the fragment contains the query (.*) with the value (.*)")]
+        public void ThenFragmentContainsTheQueryWithValue(string queryName, string queryValue)
+        {
+            var fragment = _responseMessage.Headers.Location.Fragment;
+            Assert.IsNotNullOrEmpty(fragment);
+            fragment = fragment.TrimStart('#');
+            var queries = HttpUtility.ParseQueryString(fragment);
+            var value = queries[queryName];
+            Assert.IsNotNull(value);
+            Assert.AreEqual(value, queryValue);
+        }
+
+        [Then("the fragment contains the query string (.*)")]
+        public void ThenFragmentsContainsTheQueryString(string queryName)
+        {
+            var fragment = _responseMessage.Headers.Location.Fragment;
+            Assert.IsNotNullOrEmpty(fragment);
+            fragment = fragment.TrimStart('#');
+            var queries = HttpUtility.ParseQueryString(fragment);
+            var value = queries[queryName];
+            Assert.IsNotNull(value);
         }
     }
 }
