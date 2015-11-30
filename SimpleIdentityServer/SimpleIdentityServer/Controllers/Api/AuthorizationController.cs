@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Net;
 using System.Web.Http;
-
+using System.Web.Script.Serialization;
+using Newtonsoft.Json;
 using SimpleIdentityServer.Api.DTOs.Request;
 using SimpleIdentityServer.Api.Extensions;
 using SimpleIdentityServer.Api.Parsers;

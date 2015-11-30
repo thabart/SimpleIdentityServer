@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SimpleIdentityServer.Core.Parameters
 {
@@ -25,6 +27,88 @@ namespace SimpleIdentityServer.Core.Parameters
         login,
         consent,
         select_account
+    }
+
+    public class ClaimParameter
+    {
+        public string Name { get; set; }
+
+        public Dictionary<string, object> Parameters { get; set; }
+
+        public bool Essential
+        {
+            get { return GetBoolean(Constants.StandardClaimParameterValueNames.EssentialName); }
+        }
+
+        public string Value
+        {
+            get { return GetString(Constants.StandardClaimParameterValueNames.ValueName); }
+        }
+
+        public string[] @Values
+        {
+            get { return GetArray(Constants.StandardClaimParameterValueNames.ValuesName); }
+        }
+
+        private bool GetBoolean(string name)
+        {
+            var value = GetString(name);
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return false;
+            }
+
+            bool result;
+            if (!bool.TryParse(value, out result))
+            {
+                return false;
+            }
+
+            return result;
+        }
+
+        private string GetString(string name)
+        {
+            var keyPair = Parameters.FirstOrDefault(p => p.Key == name);
+            if (keyPair.Equals(default(KeyValuePair<string, object>))
+                || string.IsNullOrWhiteSpace(keyPair.ToString()))
+            {
+                return string.Empty;
+            }
+
+            return keyPair.Value.ToString();
+        }
+
+        private string[] GetArray(string name)
+        {
+            var keyPair = Parameters.FirstOrDefault(p => p.Key == name);
+            if (keyPair.Equals(default(KeyValuePair<string, object>))
+                || string.IsNullOrWhiteSpace(keyPair.ToString()))
+            {
+                return null;
+            }
+
+            var value = keyPair.Value;
+            if (!value.GetType().IsArray)
+            {
+                return null;
+            }
+
+            var result = (object[])value;
+            return result.Select(r => r.ToString()).ToArray();
+        }
+
+        public void SetValue()
+        {
+            
+        }
+    }
+
+    public class ClaimsParameter
+    {
+        public List<ClaimParameter> UserInfo { get; set; }
+
+        public List<ClaimParameter> IdToken { get; set; } 
     }
 
     public sealed class AuthorizationParameter
@@ -56,5 +140,7 @@ namespace SimpleIdentityServer.Core.Parameters
         public string LoginHint { get; set; }
 
         public string AcrValues { get; set; }
+
+        public ClaimsParameter Claims { get; set; }
     }
 }

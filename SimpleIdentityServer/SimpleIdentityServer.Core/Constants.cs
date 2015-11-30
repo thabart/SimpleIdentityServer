@@ -152,6 +152,29 @@ namespace SimpleIdentityServer.Core
             public static string Bearer = "Bearer";
         }
 
+        public static class StandardClaimParameterValueNames
+        {
+            public const string ValueName = "value";
+
+            public const string ValuesName = "values";
+
+            public const string EssentialName = "essential";
+        }
+
+        public static class StandardClaimParameterNames
+        {
+            public static string UserInfoName = "userinfo";
+
+            public static string IdTokenName = "id_token";
+        }
+
+        public static List<string> AllStandardClaimParameterValueNames = new List<string>
+        {
+            StandardClaimParameterValueNames.ValueName,
+            StandardClaimParameterValueNames.ValuesName,
+            StandardClaimParameterValueNames.EssentialName
+        };
+
         #endregion
 
         #region Internal definitions

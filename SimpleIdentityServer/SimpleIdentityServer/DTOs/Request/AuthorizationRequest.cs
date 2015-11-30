@@ -69,6 +69,11 @@
         public string login_hint { get; set; }
 
         /// <summary>
+        /// Request that specific Claims be returned from the UserInfo endpoint and/or in the id token.
+        /// </summary>
+        public string claims { get; set; }
+
+        /// <summary>
         /// Requested Authentication Context Class References values.
         /// </summary>
         public string acr_values { get; set; }

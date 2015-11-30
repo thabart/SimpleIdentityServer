@@ -1,4 +1,9 @@
-﻿using SimpleIdentityServer.Api.DTOs.Request;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Web.Script.Serialization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using SimpleIdentityServer.Api.DTOs.Request;
 using SimpleIdentityServer.Api.ViewModels;
 using SimpleIdentityServer.Core.Parameters;
 
@@ -8,7 +13,7 @@ namespace SimpleIdentityServer.Api.Extensions
     {
         public static AuthorizationParameter ToParameter(this AuthorizationRequest request)
         {
-            return new AuthorizationParameter
+            var result = new AuthorizationParameter
             {
                 AcrValues = request.acr_values,
                 ClientId = request.client_id,
@@ -25,6 +30,49 @@ namespace SimpleIdentityServer.Api.Extensions
                 State = request.state,
                 UiLocales = request.ui_locales
             };
+
+            if (!string.IsNullOrWhiteSpace(request.claims))
+            {
+                var claimsParameter = new ClaimsParameter();
+                result.Claims = claimsParameter;
+
+                var obj = JObject.Parse(request.claims);
+                var idToken = obj.GetValue(Core.Constants.StandardClaimParameterNames.IdTokenName);
+                var userInfo = obj.GetValue(Core.Constants.StandardClaimParameterNames.UserInfoName);
+                if (idToken != null)
+                {
+                    claimsParameter.IdToken = new List<ClaimParameter>();
+                }
+
+                if (userInfo != null)
+                {
+                    claimsParameter.UserInfo = new List<ClaimParameter>();
+                    foreach (var child in userInfo.Children())
+                    {
+                        var record = new ClaimParameter
+                        {
+                            Name = ((JProperty) child).Name,
+                            Parameters = new Dictionary<string, object>()
+                        };
+
+                        foreach (var subChild in child.Children())
+                        {
+                            // TODO : either  null or JSON
+                            var subChildProperty = (JProperty) subChild;
+                            switch (subChildProperty.Name)
+                            {
+                                case Core.Constants.StandardClaimParameterValueNames.ValueName:
+                                    var v = "";
+                                    break;
+                            }
+                        }
+
+                        claimsParameter.UserInfo.Add(record);
+                    }
+                }
+            }
+
+            return result;
         }
 
         public static LocalAuthorizationParameter ToParameter(this AuthorizeViewModel viewModel)

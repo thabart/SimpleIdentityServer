@@ -150,7 +150,7 @@ namespace SimpleIdentityServer.Core.JwtToken
             // For the moment we support a level 1 because only password via HTTPS is supported.
             /*if (!string.IsNullOrWhiteSpace(authorizationParameter.AcrValues))
             {*/
-            result.Add(Jwt.Constants.StandardClaimNames.Acr, Core.Constants.StandardArcParameterNames.OpenIdCustomAuthLevel + ".password=1");
+            result.Add(Jwt.Constants.StandardClaimNames.Acr, Constants.StandardArcParameterNames.OpenIdCustomAuthLevel + ".password=1");
             result.Add(Jwt.Constants.StandardClaimNames.Amr, "password");
             //}
 
