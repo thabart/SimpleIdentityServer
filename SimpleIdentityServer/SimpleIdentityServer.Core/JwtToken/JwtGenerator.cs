@@ -222,13 +222,19 @@ namespace SimpleIdentityServer.Core.JwtToken
             ClaimsPrincipal claimsPrincipal,
             List<ClaimParameter> claimParameters)
         {
+            var audiences = new List<string>();
             var result = new JwsPayload();
             var issuerClaimParameter = claimParameters.FirstOrDefault(c => c.Name == Jwt.Constants.StandardClaimNames.Issuer);
             var audiencesClaimParameter = claimParameters.FirstOrDefault(c => c.Name == Jwt.Constants.StandardClaimNames.Audiences);
             var expirationTimeClaimParameter = claimParameters.FirstOrDefault(c => c.Name == Jwt.Constants.StandardClaimNames.ExpirationTime);
             var issuedAtTimeClaimParameter = claimParameters.FirstOrDefault(c => c.Name == Jwt.Constants.StandardClaimNames.Iat);
             var resourceOwnerClaimParameters = claimParameters.Where(c => Jwt.Constants.AllStandardResourceOwnerClaimNames.Contains(c.Name));
-            
+            var authenticationTimeParameter = claimParameters.FirstOrDefault(c => c.Name == Jwt.Constants.StandardClaimNames.AuthenticationTime);
+            var nonceParameter = claimParameters.FirstOrDefault(c => c.Name == Jwt.Constants.StandardClaimNames.Nonce);
+            var acrParameter = claimParameters.FirstOrDefault(c => c.Name == Jwt.Constants.StandardClaimNames.Acr);
+            var amrParameter = claimParameters.FirstOrDefault(c => c.Name == Jwt.Constants.StandardClaimNames.Amr);
+            var azpParameter = claimParameters.FirstOrDefault(c => c.Name == Jwt.Constants.StandardClaimNames.Azp);
+
             // Fill-in the issuer
             if (issuerClaimParameter != null)
             {
@@ -246,7 +252,6 @@ namespace SimpleIdentityServer.Core.JwtToken
             // Fill-in the audiences
             if (audiencesClaimParameter != null)
             {
-                var audiences = new List<string>();
                 var clients = _clientRepository.GetAll();
                 clients.ForEach(client =>
                 {
@@ -312,12 +317,84 @@ namespace SimpleIdentityServer.Core.JwtToken
                     {
                         // TODO : throw an exception
                     }
+                }   
+            }
+
+            // Fill-in the authentication time
+            if (authenticationTimeParameter != null)
+            {
+                var isAuthenticationTimeValid = ValidateClaimValue(authenticationTimeParameter.Value, authenticationTimeParameter);
+                if (!isAuthenticationTimeValid)
+                {
+                    // TODO : throw an exception
+                }
+
+                if (authorizationParameter.MaxAge != 0.0D)
+                {
+                    var authenticationInstant = claimsPrincipal.Claims.SingleOrDefault(c => c.Type == ClaimTypes.AuthenticationInstant);
+                    if (authenticationInstant != null)
+                    {
+                        result.Add(Jwt.Constants.StandardClaimNames.AuthenticationTime, double.Parse(authenticationInstant.Value));
+                    }
                 }
             }
 
-            // resourceOwnerClaimParameters
+            // Fill-in the nonce
+            if (nonceParameter != null)
+            {
+                var isNonceParameterValid = ValidateClaimValue(authenticationTimeParameter.Value, nonceParameter);
+                if (!isNonceParameterValid)
+                {
+                    // TODO : throw an exception
+                }
 
-            return null;
+                if (!string.IsNullOrWhiteSpace(authorizationParameter.Nonce))
+                {
+                    result.Add(Jwt.Constants.StandardClaimNames.Nonce, authorizationParameter.Nonce);
+                }
+            }
+
+            // Fill-in the ACR parameter
+            if (acrParameter != null)
+            {
+                var isAcrParameterValid = ValidateClaimValue(acrParameter.Value, acrParameter);
+                if (!isAcrParameterValid)
+                {
+                    // TODO : throw an exception
+                }
+
+                result.Add(Jwt.Constants.StandardClaimNames.Acr, Constants.StandardArcParameterNames.OpenIdCustomAuthLevel + ".password=1");
+            }
+
+            // Fill-in the AMR parameter
+            if (amrParameter != null)
+            {
+                var isAmrParameterValid = ValidateClaimValue(amrParameter.Value, amrParameter);
+                if (!isAmrParameterValid)
+                {
+                    // TODO : throw an exception
+                }
+
+                result.Add(Jwt.Constants.StandardClaimNames.Amr, "password");
+            }
+            
+            // Fill-in the AZP parameter
+            if (azpParameter != null)
+            {
+                var isAzpParameterValid = ValidateClaimValue(azpParameter.Value, azpParameter);
+                if (!isAzpParameterValid)
+                {
+                    // TODO : throw an exception
+                }
+                if (audiences != null &&
+                    audiences.Count() == 1 &&
+                    audiences.First() == authorizationParameter.ClientId)
+                {
+                    result.Add(Jwt.Constants.StandardClaimNames.Azp, authorizationParameter.ClientId);
+                }
+            }
+
+            return result;
         }
 
         private bool ValidateClaimValue(
