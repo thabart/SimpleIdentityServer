@@ -50,6 +50,30 @@ namespace SimpleIdentityServer.Core.Parameters
             get { return GetArray(Constants.StandardClaimParameterValueNames.ValuesName); }
         }
 
+        public bool EssentialParameterExist
+        {
+            get
+            {
+                return Parameters.Any(p => p.Key == Constants.StandardClaimParameterValueNames.EssentialName);
+            }
+        }
+
+        public bool ValueParameterExist
+        {
+            get
+            {
+                return Parameters.Any(p => p.Key == Constants.StandardClaimParameterValueNames.ValueName);
+            }
+        }
+
+        public bool ValuesParameterExist
+        {
+            get
+            {
+                return Parameters.Any(p => p.Key == Constants.StandardClaimParameterValueNames.ValuesName);
+            }
+        }
+
         private bool GetBoolean(string name)
         {
             var value = GetString(name);

@@ -77,6 +77,31 @@ namespace SimpleIdentityServer.Core.Jwt
             public static string Role = "role";
         }
 
+        public static List<string> AllStandardResourceOwnerClaimNames = new List<string>
+        {
+            StandardResourceOwnerClaimNames.Address,
+            StandardResourceOwnerClaimNames.BirthDate,
+            StandardResourceOwnerClaimNames.Email,
+            StandardResourceOwnerClaimNames.EmailVerified,
+            StandardResourceOwnerClaimNames.FamilyName,
+            StandardResourceOwnerClaimNames.Gender,
+            StandardResourceOwnerClaimNames.GivenName,
+            StandardResourceOwnerClaimNames.Locale,
+            StandardResourceOwnerClaimNames.MiddleName,
+            StandardResourceOwnerClaimNames.Name,
+            StandardResourceOwnerClaimNames.NickName,
+            StandardResourceOwnerClaimNames.PhoneNumber,
+            StandardResourceOwnerClaimNames.PhoneNumberVerified,
+            StandardResourceOwnerClaimNames.Picture,
+            StandardResourceOwnerClaimNames.PreferredUserName,
+            StandardResourceOwnerClaimNames.Profile,
+            StandardResourceOwnerClaimNames.Role,
+            StandardResourceOwnerClaimNames.Subject,
+            StandardResourceOwnerClaimNames.UpdatedAt,
+            StandardResourceOwnerClaimNames.WebSite,
+            StandardResourceOwnerClaimNames.ZoneInfo
+        };
+
         public static readonly Dictionary<string, string> MapWifClaimsToOpenIdClaims = new Dictionary<string, string>
         {
             {

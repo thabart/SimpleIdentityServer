@@ -16,6 +16,7 @@ using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Encrypt;
+using SimpleIdentityServer.Core.Exceptions;
 
 namespace SimpleIdentityServer.Core.JwtToken
 {
@@ -80,6 +81,55 @@ namespace SimpleIdentityServer.Core.JwtToken
             ClaimsPrincipal claimPrincipal,
             AuthorizationParameter authorizationParameter)
         {
+            var claimsParameter = authorizationParameter.Claims;
+            if (claimsParameter == null ||
+                claimsParameter.IdToken == null ||
+                !claimsParameter.IdToken.Any())
+            {
+                return GenerateDefaultPayLoad(authorizationParameter, claimPrincipal);
+            }
+
+            return null;
+        }
+
+        public string Sign(
+            JwsPayload jwsPayload,
+            AuthorizationParameter authorizationParameter)
+        {
+            var client = _clientRepository.GetClientById(authorizationParameter.ClientId);
+            var jsonWebKey = GetSignJsonWebKey(client);
+            var signedAlgorithm = GetJwsAlg(client);
+            return _jwsGenerator.Generate(
+                jwsPayload, 
+                signedAlgorithm, 
+                jsonWebKey);
+        }
+
+        public string Encrypt(
+            string jwe,
+            AuthorizationParameter authorizationParameter)
+        {
+            var client = _clientRepository.GetClientById(authorizationParameter.ClientId);
+            var jsonWebKey = GetEncJsonWebKey(client);
+            if (jsonWebKey == null)
+            {
+                return jwe;
+            }
+
+            var algEnum = GetJweAlg(client);
+            var encEnum = GetJweEnc(client);
+
+            return _jweGenerator.GenerateJwe(
+                jwe, 
+                algEnum, 
+                encEnum, 
+                jsonWebKey);
+        }
+
+        private JwsPayload GenerateDefaultPayLoad(
+            AuthorizationParameter authorizationParameter,
+            ClaimsPrincipal claimPrincipal)
+        {
             // Get the issuer from the configuration.
             var issuerName = _simpleIdentityServerConfigurator.GetIssuerName();
             // Audience can be used to disambiguate the intended recipients.
@@ -97,11 +147,10 @@ namespace SimpleIdentityServer.Core.JwtToken
             });
 
             // Calculate the expiration datetime
-            var currentDateTime = DateTime.Now;
-            var expiredDateTime = currentDateTime.AddSeconds(_simpleIdentityServerConfigurator.GetTokenValidityPeriodInSeconds());
-            var expirationInSeconds = expiredDateTime.ConvertToUnixTimestamp();
+            var timeKeyValuePair = GetExpirationAndIssuedTime();
+            var expirationInSeconds = timeKeyValuePair.Key;
             // Calculate the time in seconds which the JWT was issued.
-            var iatInSeconds = currentDateTime.ConvertToUnixTimestamp();
+            var iatInSeconds = timeKeyValuePair.Value;
             // Populate the claims
             var scopes = _parameterParserHelper.ParseScopeParameters(authorizationParameter.Scope);
             var claims = GetClaimsFromRequestedScopes(scopes, claimPrincipal);
@@ -156,8 +205,8 @@ namespace SimpleIdentityServer.Core.JwtToken
 
             // Set the client_id
             // This claim is only needed when the ID token has a single audience value & that audience is different than the authorized party.
-            if (audiences != null && 
-                audiences.Count() == 1 && 
+            if (audiences != null &&
+                audiences.Count() == 1 &&
                 audiences.First() == authorizationParameter.ClientId)
             {
                 result.Add(Jwt.Constants.StandardClaimNames.Azp, authorizationParameter.ClientId);
@@ -168,38 +217,161 @@ namespace SimpleIdentityServer.Core.JwtToken
             return result;
         }
 
-        public string Sign(
-            JwsPayload jwsPayload,
-            AuthorizationParameter authorizationParameter)
+        private JwsPayload GenerateFilteredPayLoad(
+            AuthorizationParameter authorizationParameter,
+            ClaimsPrincipal claimsPrincipal,
+            List<ClaimParameter> claimParameters)
         {
-            var client = _clientRepository.GetClientById(authorizationParameter.ClientId);
-            var jsonWebKey = GetSignJsonWebKey(client);
-            var signedAlgorithm = GetJwsAlg(client);
-            return _jwsGenerator.Generate(
-                jwsPayload, 
-                signedAlgorithm, 
-                jsonWebKey);
-        }
-
-        public string Encrypt(
-            string jwe,
-            AuthorizationParameter authorizationParameter)
-        {
-            var client = _clientRepository.GetClientById(authorizationParameter.ClientId);
-            var jsonWebKey = GetEncJsonWebKey(client);
-            if (jsonWebKey == null)
+            var result = new JwsPayload();
+            var issuerClaimParameter = claimParameters.FirstOrDefault(c => c.Name == Jwt.Constants.StandardClaimNames.Issuer);
+            var audiencesClaimParameter = claimParameters.FirstOrDefault(c => c.Name == Jwt.Constants.StandardClaimNames.Audiences);
+            var expirationTimeClaimParameter = claimParameters.FirstOrDefault(c => c.Name == Jwt.Constants.StandardClaimNames.ExpirationTime);
+            var issuedAtTimeClaimParameter = claimParameters.FirstOrDefault(c => c.Name == Jwt.Constants.StandardClaimNames.Iat);
+            var resourceOwnerClaimParameters = claimParameters.Where(c => Jwt.Constants.AllStandardResourceOwnerClaimNames.Contains(c.Name));
+            
+            // Fill-in the issuer
+            if (issuerClaimParameter != null)
             {
-                return jwe;
+                // Get the issuer from the configuration.
+                var issuerName = _simpleIdentityServerConfigurator.GetIssuerName();
+                var issuerIsValid = ValidateClaimValue(issuerName, issuerClaimParameter);
+                if (!issuerIsValid)
+                {
+                    // TODO : throw an exception
+                }
+
+                result.Add(Jwt.Constants.StandardClaimNames.Issuer, issuerName);
             }
 
-            var algEnum = GetJweAlg(client);
-            var encEnum = GetJweEnc(client);
+            // Fill-in the audiences
+            if (audiencesClaimParameter != null)
+            {
+                var audiences = new List<string>();
+                var clients = _clientRepository.GetAll();
+                clients.ForEach(client =>
+                {
+                    var isClientSupportIdTokenResponseType =
+                        _clientValidator.ValidateResponseType(ResponseType.id_token, client);
+                    if (isClientSupportIdTokenResponseType)
+                    {
+                        audiences.Add(client.ClientId);
+                    }
+                });
 
-            return _jweGenerator.GenerateJwe(
-                jwe, 
-                algEnum, 
-                encEnum, 
-                jsonWebKey);
+                var audiencesIsValid = ValidateClaimValues(audiences.ToArray(), audiencesClaimParameter);
+                if (!audiencesIsValid)
+                {
+                    // TODO : throw an exception
+                }
+
+                result.Add(Jwt.Constants.StandardClaimNames.Audiences, audiences);
+            }
+            
+            var timeKeyValuePair = GetExpirationAndIssuedTime();
+            // Fill-in the expiration time
+            if (expirationTimeClaimParameter != null)
+            {
+                // Calculate the expiration datetime
+                var expirationInSeconds = timeKeyValuePair.Key;
+                var expirationInSecondsIsValid = ValidateClaimValue(expirationInSeconds.ToString(), expirationTimeClaimParameter);
+                if (!expirationInSecondsIsValid)
+                {
+                    // TODO : throw an exception
+                }
+
+                result.Add(Jwt.Constants.StandardClaimNames.ExpirationTime, expirationInSeconds);
+            }
+
+            // Fill-in the issued at time
+            if (issuedAtTimeClaimParameter != null)
+            {
+                var issuedAtTime = timeKeyValuePair.Value;
+                var issuedAtTimeIsValid = ValidateClaimValue(issuedAtTime.ToString(), issuedAtTimeClaimParameter);
+                if (!issuedAtTimeIsValid)
+                {
+                    // TODO : throw an exception
+                }
+
+                result.Add(Jwt.Constants.StandardClaimNames.Iat, issuedAtTime);
+            }
+
+            if (resourceOwnerClaimParameters != null)
+            {
+                var requestedClaimNames = resourceOwnerClaimParameters.Select(r => r.Name);
+                var resourceOwnerClaims = GetClaims(requestedClaimNames, claimsPrincipal);
+                foreach(var resourceOwnerClaimParameter in resourceOwnerClaimParameters)
+                {
+                    var resourceOwnerClaim = resourceOwnerClaims.FirstOrDefault(c => c.Key == resourceOwnerClaimParameter.Name);
+                    if (resourceOwnerClaim.Equals(typeof(KeyValuePair<string, string>)))
+                    {
+                        // TODO : throw an exception
+                    }
+
+                    var isClaimValid = ValidateClaimValue(resourceOwnerClaim.Value, resourceOwnerClaimParameter);
+                    if (!isClaimValid)
+                    {
+                        // TODO : throw an exception
+                    }
+                }
+            }
+
+            // resourceOwnerClaimParameters
+
+            return null;
+        }
+
+        private bool ValidateClaimValue(
+            string claimValue,
+            ClaimParameter claimParameter)
+        {
+            if (claimParameter.EssentialParameterExist &&
+                string.IsNullOrWhiteSpace(claimValue) &&
+                claimParameter.Essential)
+            {
+                return false;                  
+            }
+
+            if (claimParameter.ValuesParameterExist && 
+                claimValue != claimParameter.Value)
+            {
+                return false;
+            }
+
+            if (claimParameter.ValuesParameterExist &&
+                claimParameter.Values != null &&
+                claimParameter.Values.Contains(claimValue))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool ValidateClaimValues(
+            string[] claimValues,
+            ClaimParameter claimParameter)
+        {
+            if (claimParameter.EssentialParameterExist && 
+                (claimValues == null || claimValues.Any()) 
+                && claimParameter.Essential)
+            {
+                return false;
+            }
+
+            if (claimParameter.ValueParameterExist && 
+                claimValues.Contains(claimParameter.Value))
+            {
+                return false;
+            }
+
+            if (claimParameter.ValuesParameterExist &&
+                claimParameter.Values != null &&
+                claimParameter.Values.All(c => claimValues.Contains(c)))
+            {
+                return false;
+            }
+
+            return true;
         }
 
         private Dictionary<string, string> GetClaimsFromRequestedScopes(
@@ -212,6 +384,7 @@ namespace SimpleIdentityServer.Core.JwtToken
                     Jwt.Constants.StandardResourceOwnerClaimNames.Subject, claimsPrincipal.GetSubject()
                 }
             };
+
             foreach (var scope in scopes)
             {
                 var scopeClaims = _scopeRepository.GetScopeByName(scope).Claims;
@@ -220,12 +393,21 @@ namespace SimpleIdentityServer.Core.JwtToken
                     continue;
                 }
 
-                var openIdClaims = _claimsMapping.MapToOpenIdClaims(claimsPrincipal.Claims);
-                openIdClaims.Where(oc => scopeClaims.Contains(oc.Key))
-                    .Select(oc => new { key = oc.Key, val = oc.Value })
-                    .ForEach(r => result.Add(r.key, r.val));
+                result.AddRange(GetClaims(scopeClaims, claimsPrincipal));
             }
 
+            return result;
+        }
+
+        private Dictionary<string, string> GetClaims(
+            IEnumerable<string> claims,
+            ClaimsPrincipal claimsPrincipal)
+        {
+            var result = new Dictionary<string, string>();
+            var openIdClaims = _claimsMapping.MapToOpenIdClaims(claimsPrincipal.Claims);
+            openIdClaims.Where(oc => claims.Contains(oc.Key))
+                .Select(oc => new { key = oc.Key, val = oc.Value })
+                .ForEach(r => result.Add(r.key, r.val));
             return result;
         }
 
@@ -312,6 +494,15 @@ namespace SimpleIdentityServer.Core.JwtToken
             }
 
             return result;
+        }
+
+        private KeyValuePair<double, double> GetExpirationAndIssuedTime()
+        {
+            var currentDateTime = DateTime.UtcNow;
+            var expiredDateTime = currentDateTime.AddSeconds(_simpleIdentityServerConfigurator.GetTokenValidityPeriodInSeconds());
+            var expirationInSeconds = expiredDateTime.ConvertToUnixTimestamp();
+            var iatInSeconds = currentDateTime.ConvertToUnixTimestamp();
+            return new KeyValuePair<double, double>(expirationInSeconds, iatInSeconds);
         }
     }
 }

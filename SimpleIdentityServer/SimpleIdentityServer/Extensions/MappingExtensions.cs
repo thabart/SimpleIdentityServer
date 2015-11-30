@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Web.Script.Serialization;
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+
 using SimpleIdentityServer.Api.DTOs.Request;
 using SimpleIdentityServer.Api.ViewModels;
 using SimpleIdentityServer.Core.Parameters;
@@ -42,31 +43,16 @@ namespace SimpleIdentityServer.Api.Extensions
                 if (idToken != null)
                 {
                     claimsParameter.IdToken = new List<ClaimParameter>();
+                    FillInClaimsParameter(idToken, claimsParameter.IdToken);
                 }
 
                 if (userInfo != null)
                 {
                     claimsParameter.UserInfo = new List<ClaimParameter>();
-                    foreach (var child in userInfo.Children())
-                    {
-
-                        var record = new ClaimParameter
-                        {
-                            Name = ((JProperty) child).Name,
-                            Parameters = new Dictionary<string, object>()
-                        };
-                        claimsParameter.UserInfo.Add(record);
-
-                        var subChild = child.Children().FirstOrDefault();
-                        if (subChild == null)
-                        {
-                            continue;
-                        }
-
-                        var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(subChild.ToString());
-                        record.Parameters = parameters;
-                    }
+                    FillInClaimsParameter(userInfo, claimsParameter.UserInfo);
                 }
+
+                result.Claims = claimsParameter;
             }
 
             return result;
@@ -103,6 +89,30 @@ namespace SimpleIdentityServer.Api.Extensions
                 ClientAssertion = request.client_assertion,
                 ClientAssertionType = request.client_assertion_type
             };
+        }
+
+        private static void FillInClaimsParameter(
+            JToken token,
+            List<ClaimParameter> claimParameters)
+        {
+            foreach (var child in token.Children())
+            {
+                var record = new ClaimParameter
+                {
+                    Name = ((JProperty)child).Name,
+                    Parameters = new Dictionary<string, object>()
+                };
+                claimParameters.Add(record);
+
+                var subChild = child.Children().FirstOrDefault();
+                if (subChild == null)
+                {
+                    continue;
+                }
+
+                var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(subChild.ToString());
+                record.Parameters = parameters;
+            }
         }
     }
 }
