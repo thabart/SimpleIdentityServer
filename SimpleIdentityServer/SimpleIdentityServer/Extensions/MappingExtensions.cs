@@ -49,25 +49,22 @@ namespace SimpleIdentityServer.Api.Extensions
                     claimsParameter.UserInfo = new List<ClaimParameter>();
                     foreach (var child in userInfo.Children())
                     {
+
                         var record = new ClaimParameter
                         {
                             Name = ((JProperty) child).Name,
                             Parameters = new Dictionary<string, object>()
                         };
+                        claimsParameter.UserInfo.Add(record);
 
-                        foreach (var subChild in child.Children())
+                        var subChild = child.Children().FirstOrDefault();
+                        if (subChild == null)
                         {
-                            // TODO : either  null or JSON
-                            var subChildProperty = (JProperty) subChild;
-                            switch (subChildProperty.Name)
-                            {
-                                case Core.Constants.StandardClaimParameterValueNames.ValueName:
-                                    var v = "";
-                                    break;
-                            }
+                            continue;
                         }
 
-                        claimsParameter.UserInfo.Add(record);
+                        var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(subChild.ToString());
+                        record.Parameters = parameters;
                     }
                 }
             }

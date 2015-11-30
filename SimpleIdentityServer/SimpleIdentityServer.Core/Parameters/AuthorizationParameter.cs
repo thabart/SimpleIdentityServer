@@ -97,11 +97,6 @@ namespace SimpleIdentityServer.Core.Parameters
             var result = (object[])value;
             return result.Select(r => r.ToString()).ToArray();
         }
-
-        public void SetValue()
-        {
-            
-        }
     }
 
     public class ClaimsParameter
