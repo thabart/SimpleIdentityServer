@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SimpleIdentityServer.Core.Jwt;
+using System;
 
 namespace SimpleIdentityServer.DataAccess.Fake.Models
 {
@@ -15,7 +16,12 @@ namespace SimpleIdentityServer.DataAccess.Fake.Models
         public int ExpiresIn { get; set; }
 
         public string Scope { get; set; }
-
+        
         public DateTime CreateDateTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user information payload.
+        /// </summary>
+        public JwsPayload UserInfoPayLoad { get; set; }
     }
 }

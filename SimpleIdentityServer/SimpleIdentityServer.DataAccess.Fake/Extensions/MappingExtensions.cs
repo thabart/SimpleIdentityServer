@@ -48,7 +48,8 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
                 RefreshToken = grantedToken.RefreshToken,
                 Scope = grantedToken.Scope,
                 TokenType = grantedToken.TokenType,
-                CreateDateTime = grantedToken.CreateDateTime
+                CreateDateTime = grantedToken.CreateDateTime,
+                UserInfoPayLoad = grantedToken.UserInfoPayLoad
             };
         }
 
@@ -102,7 +103,8 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
                 CreateDateTime = authorizationCode.CreateDateTime,
                 ClientId = authorizationCode.ClientId,
                 IdToken = authorizationCode.IdToken,
-                Scopes = authorizationCode.Scopes
+                Scopes = authorizationCode.Scopes,
+                UserInfoPayload = authorizationCode.UserInfoPayLoad
             };
         }
 
@@ -236,7 +238,8 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
                 CreateDateTime = authorizationCode.CreateDateTime,
                 ClientId = authorizationCode.ClientId,
                 IdToken = authorizationCode.IdToken,
-                Scopes = authorizationCode.Scopes
+                Scopes = authorizationCode.Scopes,
+                UserInfoPayLoad = authorizationCode.UserInfoPayload
             };
         }
 
@@ -275,7 +278,8 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
                 RefreshToken = grantedToken.RefreshToken,
                 Scope = grantedToken.Scope,
                 TokenType = grantedToken.TokenType,
-                CreateDateTime = grantedToken.CreateDateTime
+                CreateDateTime = grantedToken.CreateDateTime,
+                UserInfoPayLoad = grantedToken.UserInfoPayLoad
             };
         }
 

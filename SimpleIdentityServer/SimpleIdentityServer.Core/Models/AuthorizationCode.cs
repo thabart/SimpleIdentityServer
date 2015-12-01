@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SimpleIdentityServer.Core.Jwt;
+using System;
 using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Core.Models
@@ -29,6 +30,11 @@ namespace SimpleIdentityServer.Core.Models
         /// Gets or sets the id token.
         /// </summary>
         public string IdToken { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user information payload.
+        /// </summary>
+        public JwsPayload UserInfoPayLoad { get; set; }
 
         /// <summary>
         /// Gets or sets the concatenated list of scopes.

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SimpleIdentityServer.Core.Jwt;
+using System;
 
 namespace SimpleIdentityServer.DataAccess.Fake.Models
 {
@@ -33,5 +34,7 @@ namespace SimpleIdentityServer.DataAccess.Fake.Models
         /// Gets or sets the concatenated list of scopes.
         /// </summary>
         public string Scopes { get; set; }
+
+        public JwsPayload UserInfoPayload { get; set; }
     }
 }

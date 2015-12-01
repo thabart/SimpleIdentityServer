@@ -93,6 +93,7 @@ namespace SimpleIdentityServer.Api.Tests.Common
             UnityContainer = new UnityContainer();
             UnityContainer.RegisterType<ICacheManager, CacheManager>();
             UnityContainer.RegisterType<ISecurityHelper, SecurityHelper>();
+            UnityContainer.RegisterType<IConsentHelper, ConsentHelper>();
             UnityContainer.RegisterType<ITokenHelper, TokenHelper>();
             
             UnityContainer.RegisterType<IUserInfoActions, UserInfoActions>();

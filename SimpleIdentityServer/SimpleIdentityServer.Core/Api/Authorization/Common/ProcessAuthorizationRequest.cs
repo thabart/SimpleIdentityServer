@@ -33,20 +33,20 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
 
         private readonly IActionResultFactory _actionResultFactory;
 
-        private readonly IConsentRepository _consentRepository;
+        private readonly IConsentHelper _consentHelper;
 
         public ProcessAuthorizationRequest(
             IParameterParserHelper parameterParserHelper,
             IClientValidator clientValidator,
             IScopeValidator scopeValidator,
             IActionResultFactory actionResultFactory,
-            IConsentRepository consentRepository)
+            IConsentHelper consentHelper)
         {
             _parameterParserHelper = parameterParserHelper;
             _clientValidator = clientValidator;
             _scopeValidator = scopeValidator;
             _actionResultFactory = actionResultFactory;
-            _consentRepository = consentRepository;
+            _consentHelper = consentHelper;
         }
 
         public ActionResult Process(
@@ -199,37 +199,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
         {
             var principal = claimsPrincipal as ClaimsPrincipal;
             var subject = principal.GetSubject();
-            var consents = _consentRepository.GetConsentsForGivenUser(subject);
-            Consent confirmedConsent = null;
-            if (consents != null && consents.Any())
-            {
-                var claimsParameter = authorizationParameter.Claims;
-                if (claimsParameter == null ||
-                    (claimsParameter.IdToken == null ||
-                     !claimsParameter.IdToken.Any()) &&
-                    (claimsParameter.UserInfo == null ||
-                     !claimsParameter.UserInfo.Any()))
-                {
-                    var expectedClaims = GetClaims(claimsParameter);
-                    confirmedConsent = consents.FirstOrDefault(
-                        c =>
-                            c.Client.ClientId == authorizationParameter.ClientId &&
-                            c.GrantedScopes != null && c.GrantedScopes.Any() &&
-                            c.Claims.All(cl => expectedClaims.Contains(cl)));
-                }
-                else
-                {
-                    var scopeNames =
-                        _parameterParserHelper.ParseScopeParameters(authorizationParameter.Scope);
-                    confirmedConsent = consents.FirstOrDefault(
-                        c =>
-                            c.Client.ClientId == authorizationParameter.ClientId &&
-                            c.GrantedScopes != null && c.GrantedScopes.Any() &&
-                            c.GrantedScopes.All(s => scopeNames.Contains(s.Name)));
-                }
-            }
-
-            return confirmedConsent;
+            return _consentHelper.GetConsentConfirmedByResourceOwner(subject, authorizationParameter);
         }
 
         private static bool IsAuthenticated(IPrincipal principal)
@@ -238,28 +208,5 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
                 false :
                 principal.Identity.IsAuthenticated;
         }
-
-        /// <summary>
-        /// Returns a list of claims.
-        /// </summary>
-        /// <param name="claimsParameter"></param>
-        /// <returns></returns>
-        private List<string> GetClaims(ClaimsParameter claimsParameter)
-        {
-            var result = new List<string>();
-            if (claimsParameter.IdToken != null &&
-                !claimsParameter.IdToken.Any())
-            {
-                result.AddRange(claimsParameter.IdToken.Select(s => s.Name));
-            }
-
-            if (claimsParameter.UserInfo != null &&
-                !claimsParameter.UserInfo.Any())
-            {
-                result.AddRange(claimsParameter.UserInfo.Select(s => s.Name));
-            }
-
-            return result;
-        } 
     }
 }

@@ -102,6 +102,20 @@ namespace SimpleIdentityServer.Core.Jwt
             StandardResourceOwnerClaimNames.ZoneInfo
         };
 
+        public static List<string> AllStandardClaimNames = new List<string>
+        {
+            StandardClaimNames.Acr,
+            StandardClaimNames.Amr,
+            StandardClaimNames.Audiences,
+            StandardClaimNames.AuthenticationTime,
+            StandardClaimNames.Azp,
+            StandardClaimNames.ExpirationTime,
+            StandardClaimNames.Iat,
+            StandardClaimNames.Issuer,
+            StandardClaimNames.Jti,
+            StandardClaimNames.Nonce
+        };
+
         public static readonly Dictionary<string, string> MapWifClaimsToOpenIdClaims = new Dictionary<string, string>
         {
             {

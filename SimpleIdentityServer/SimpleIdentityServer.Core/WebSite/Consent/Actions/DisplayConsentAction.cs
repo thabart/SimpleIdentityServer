@@ -5,6 +5,7 @@ using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Results;
+using SimpleIdentityServer.Core.Extensions;
 
 namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
 {
@@ -62,19 +63,16 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
             allowedClaims = new List<string>();
             allowedScopes = new List<Scope>();
             var claimsParameter = authorizationParameter.Claims;
-            if (claimsParameter == null ||
-                (claimsParameter.IdToken == null ||
-                 !claimsParameter.IdToken.Any()) &&
-                (claimsParameter.UserInfo == null ||
-                 !claimsParameter.UserInfo.Any()))
+            if (claimsParameter.IsAnyIdentityTokenClaimParameter() ||
+                claimsParameter.IsAnyUserInfoClaimParameter())
+            {
+                allowedClaims = claimsParameter.GetClaimNames();
+            }
+            else
             {
                 allowedScopes = GetScopes(authorizationParameter.Scope)
                     .Where(s => s.IsDisplayedInConsent)
                     .ToList();
-            }
-            else
-            {
-                allowedClaims = GetClaims(claimsParameter);
             }
 
             client = _clientRepository.GetClientById(authorizationParameter.ClientId);
@@ -94,24 +92,6 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
             {
                 var scope = _scopeRepository.GetScopeByName(scopeName);
                 result.Add(scope);
-            }
-
-            return result;
-        }
-
-        private List<string> GetClaims(ClaimsParameter claimsParameter)
-        {
-            var result = new List<string>();
-            if (claimsParameter.IdToken != null &&
-                !claimsParameter.IdToken.Any())
-            {
-                result.AddRange(claimsParameter.IdToken.Select(s => s.Name));
-            }
-
-            if (claimsParameter.UserInfo != null &&
-                !claimsParameter.UserInfo.Any())
-            {
-                result.AddRange(claimsParameter.UserInfo.Select(s => s.Name));
             }
 
             return result;

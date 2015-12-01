@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 
@@ -36,13 +35,16 @@ namespace SimpleIdentityServer.Core.Common
 
         private readonly IConsentRepository _consentRepository;
 
+        private readonly IConsentHelper _consentHelper;
+
         public GenerateAuthorizationResponse(
             IAuthorizationCodeRepository authorizationCodeRepository,
             IParameterParserHelper parameterParserHelper,
             IJwtGenerator jwtGenerator,
             ITokenHelper tokenHelper,
             IGrantedTokenRepository grantedTokenRepository,
-            IConsentRepository consentRepository)
+            IConsentRepository consentRepository,
+            IConsentHelper consentHelper)
         {
             _authorizationCodeRepository = authorizationCodeRepository;
             _parameterParserHelper = parameterParserHelper;
@@ -50,7 +52,10 @@ namespace SimpleIdentityServer.Core.Common
             _tokenHelper = tokenHelper;
             _grantedTokenRepository = grantedTokenRepository;
             _consentRepository = consentRepository;
+            _consentHelper = consentHelper;
         }
+
+        #region Public methods
 
         public void Execute(
             ActionResult actionResult, 
@@ -84,7 +89,7 @@ namespace SimpleIdentityServer.Core.Common
 
             if (responses.Contains(ResponseType.code))
             {
-                var assignedConsent = GetResourceOwnerConsent(claimsPrincipal, authorizationParameter);
+                var assignedConsent = _consentHelper.GetConsentConfirmedByResourceOwner(claimsPrincipal.GetSubject(), authorizationParameter);
                 if (assignedConsent != null)
                 {
                     // Insert a temporary authorization code 
@@ -97,6 +102,7 @@ namespace SimpleIdentityServer.Core.Common
                         ClientId = authorizationParameter.ClientId,
                         Scopes = authorizationParameter.Scope,
                         IdToken = idToken,
+                        UserInfoPayLoad = userInformationPayload
                     };
 
                     _authorizationCodeRepository.AddAuthorizationCode(authorizationCode);
@@ -116,53 +122,25 @@ namespace SimpleIdentityServer.Core.Common
                 actionResult.RedirectInstruction.AddParameter("redirect_uri", authorizationParameter.RedirectUrl);
             }
         }
-        
-        private Consent GetResourceOwnerConsent(
-            ClaimsPrincipal claimsPrincipal,
-            AuthorizationParameter authorizationParameter)
-        {
-            var subject = claimsPrincipal.GetSubject();
-            var consents = _consentRepository.GetConsentsForGivenUser(subject);
-            Consent confirmedConsent = null;
-            if (consents != null && consents.Any())
-            {
-                var claimsParameter = authorizationParameter.Claims;
-                if (claimsParameter == null ||
-                    (claimsParameter.IdToken == null ||
-                     !claimsParameter.IdToken.Any()) &&
-                    (claimsParameter.UserInfo == null ||
-                     !claimsParameter.UserInfo.Any()))
-                {
-                    var expectedClaims = GetClaims(claimsParameter);
-                    confirmedConsent = consents.FirstOrDefault(
-                        c =>
-                            c.Client.ClientId == authorizationParameter.ClientId &&
-                            c.GrantedScopes != null && c.GrantedScopes.Any() &&
-                            c.Claims.All(cl => expectedClaims.Contains(cl)));
-                }
-                else
-                {
-                    var scopeNames =
-                        _parameterParserHelper.ParseScopeParameters(authorizationParameter.Scope);
-                    confirmedConsent = consents.FirstOrDefault(
-                        c =>
-                            c.Client.ClientId == authorizationParameter.ClientId &&
-                            c.GrantedScopes != null && c.GrantedScopes.Any() &&
-                            c.GrantedScopes.All(s => scopeNames.Contains(s.Name)));
-                }
-            }
 
-            return confirmedConsent;
-        }
+        #endregion
 
+        #region Private methods
+
+        /// <summary>
+        /// Generate the JWS payload for identity token.
+        /// If at least one claim is defined then returns the filtered result
+        /// Otherwise returns the default payload based on the scopes.
+        /// </summary>
+        /// <param name="claimsPrincipal"></param>
+        /// <param name="authorizationParameter"></param>
+        /// <returns></returns>
         private string GenerateIdToken(
             ClaimsPrincipal claimsPrincipal,
             AuthorizationParameter authorizationParameter)
         {
             JwsPayload jwsPayload;
-            if (authorizationParameter.Claims != null &&
-                authorizationParameter.Claims.IdToken != null &&
-                authorizationParameter.Claims.IdToken.Any())
+            if (authorizationParameter.Claims.IsAnyIdentityTokenClaimParameter())
             {
                 jwsPayload = _jwtGenerator.GenerateFilteredJwsPayload(
                     claimsPrincipal,
@@ -178,14 +156,20 @@ namespace SimpleIdentityServer.Core.Common
             return _jwtGenerator.Encrypt(idToken, authorizationParameter);
         }
 
+        /// <summary>
+        /// Generate the JWS payload for user information endpoint.
+        /// If at least one claim is defined then returns the filtered result
+        /// Otherwise returns the default payload based on the scopes.
+        /// </summary>
+        /// <param name="claimsPrincipal"></param>
+        /// <param name="authorizationParameter"></param>
+        /// <returns></returns>
         private JwsPayload GenerateUserInformationPayload(
             ClaimsPrincipal claimsPrincipal,
             AuthorizationParameter authorizationParameter)
         {
             JwsPayload jwsPayload;
-            if (authorizationParameter.Claims != null &&
-                authorizationParameter.Claims.UserInfo != null &&
-                authorizationParameter.Claims.UserInfo.Any())
+            if (authorizationParameter.Claims.IsAnyUserInfoClaimParameter())
             {
                 jwsPayload = _jwtGenerator.GenerateFilteredJwsPayload(
                     claimsPrincipal,
@@ -199,28 +183,7 @@ namespace SimpleIdentityServer.Core.Common
 
             return jwsPayload;
         }
-        
-        /// <summary>
-        /// Returns a list of claims.
-        /// </summary>
-        /// <param name="claimsParameter"></param>
-        /// <returns></returns>
-        private List<string> GetClaims(ClaimsParameter claimsParameter)
-        {
-            var result = new List<string>();
-            if (claimsParameter.IdToken != null &&
-                !claimsParameter.IdToken.Any())
-            {
-                result.AddRange(claimsParameter.IdToken.Select(s => s.Name));
-            }
 
-            if (claimsParameter.UserInfo != null &&
-                !claimsParameter.UserInfo.Any())
-            {
-                result.AddRange(claimsParameter.UserInfo.Select(s => s.Name));
-            }
-
-            return result;
-        } 
+        #endregion
     }
 }
