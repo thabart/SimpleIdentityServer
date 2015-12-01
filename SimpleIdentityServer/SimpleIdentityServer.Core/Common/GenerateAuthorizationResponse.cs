@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Helpers;
+using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
@@ -57,6 +59,7 @@ namespace SimpleIdentityServer.Core.Common
         {
             var responses = _parameterParserHelper.ParseResponseType(authorizationParameter.ResponseType);
             var idToken = GenerateIdToken(claimsPrincipal, authorizationParameter);
+            var userInformationPayload = GenerateUserInformationPayload(claimsPrincipal, authorizationParameter);
 
             if (responses.Contains(ResponseType.id_token))
             {
@@ -74,6 +77,7 @@ namespace SimpleIdentityServer.Core.Common
                 var generatedToken = _tokenHelper.GenerateToken(
                     allowedTokenScopes, 
                     idToken);
+                generatedToken.UserInfoPayLoad = userInformationPayload;
                 _grantedTokenRepository.Insert(generatedToken);
                 actionResult.RedirectInstruction.AddParameter(Constants.StandardAuthorizationResponseNames.AccessTokenName, generatedToken.AccessToken);
             }
@@ -122,13 +126,30 @@ namespace SimpleIdentityServer.Core.Common
             Consent confirmedConsent = null;
             if (consents != null && consents.Any())
             {
-                var scopeNames =
-                    _parameterParserHelper.ParseScopeParameters(authorizationParameter.Scope);
-                confirmedConsent = consents.FirstOrDefault(
-                    c =>
-                        c.Client.ClientId == authorizationParameter.ClientId &&
-                        c.GrantedScopes != null && c.GrantedScopes.Any() &&
-                        c.GrantedScopes.All(s => scopeNames.Contains(s.Name)));
+                var claimsParameter = authorizationParameter.Claims;
+                if (claimsParameter == null ||
+                    (claimsParameter.IdToken == null ||
+                     !claimsParameter.IdToken.Any()) &&
+                    (claimsParameter.UserInfo == null ||
+                     !claimsParameter.UserInfo.Any()))
+                {
+                    var expectedClaims = GetClaims(claimsParameter);
+                    confirmedConsent = consents.FirstOrDefault(
+                        c =>
+                            c.Client.ClientId == authorizationParameter.ClientId &&
+                            c.GrantedScopes != null && c.GrantedScopes.Any() &&
+                            c.Claims.All(cl => expectedClaims.Contains(cl)));
+                }
+                else
+                {
+                    var scopeNames =
+                        _parameterParserHelper.ParseScopeParameters(authorizationParameter.Scope);
+                    confirmedConsent = consents.FirstOrDefault(
+                        c =>
+                            c.Client.ClientId == authorizationParameter.ClientId &&
+                            c.GrantedScopes != null && c.GrantedScopes.Any() &&
+                            c.GrantedScopes.All(s => scopeNames.Contains(s.Name)));
+                }
             }
 
             return confirmedConsent;
@@ -138,9 +159,68 @@ namespace SimpleIdentityServer.Core.Common
             ClaimsPrincipal claimsPrincipal,
             AuthorizationParameter authorizationParameter)
         {
-            var jwsPayLoad = _jwtGenerator.GenerateJwsPayload(claimsPrincipal, authorizationParameter);
-            var idToken = _jwtGenerator.Sign(jwsPayLoad, authorizationParameter);
+            JwsPayload jwsPayload;
+            if (authorizationParameter.Claims != null &&
+                authorizationParameter.Claims.IdToken != null &&
+                authorizationParameter.Claims.IdToken.Any())
+            {
+                jwsPayload = _jwtGenerator.GenerateFilteredJwsPayload(
+                    claimsPrincipal,
+                    authorizationParameter,
+                    authorizationParameter.Claims.IdToken);
+            }
+            else
+            {
+                jwsPayload = _jwtGenerator.GenerateJwsPayloadForScopes(claimsPrincipal, authorizationParameter);
+            }
+
+            var idToken = _jwtGenerator.Sign(jwsPayload, authorizationParameter);
             return _jwtGenerator.Encrypt(idToken, authorizationParameter);
         }
+
+        private JwsPayload GenerateUserInformationPayload(
+            ClaimsPrincipal claimsPrincipal,
+            AuthorizationParameter authorizationParameter)
+        {
+            JwsPayload jwsPayload;
+            if (authorizationParameter.Claims != null &&
+                authorizationParameter.Claims.UserInfo != null &&
+                authorizationParameter.Claims.UserInfo.Any())
+            {
+                jwsPayload = _jwtGenerator.GenerateFilteredJwsPayload(
+                    claimsPrincipal,
+                    authorizationParameter,
+                    authorizationParameter.Claims.UserInfo);
+            }
+            else
+            {
+                jwsPayload = _jwtGenerator.GenerateJwsPayloadForScopes(claimsPrincipal, authorizationParameter);
+            }
+
+            return jwsPayload;
+        }
+        
+        /// <summary>
+        /// Returns a list of claims.
+        /// </summary>
+        /// <param name="claimsParameter"></param>
+        /// <returns></returns>
+        private List<string> GetClaims(ClaimsParameter claimsParameter)
+        {
+            var result = new List<string>();
+            if (claimsParameter.IdToken != null &&
+                !claimsParameter.IdToken.Any())
+            {
+                result.AddRange(claimsParameter.IdToken.Select(s => s.Name));
+            }
+
+            if (claimsParameter.UserInfo != null &&
+                !claimsParameter.UserInfo.Any())
+            {
+                result.AddRange(claimsParameter.UserInfo.Select(s => s.Name));
+            }
+
+            return result;
+        } 
     }
 }

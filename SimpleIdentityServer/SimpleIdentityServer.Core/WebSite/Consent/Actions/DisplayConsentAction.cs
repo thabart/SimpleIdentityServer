@@ -17,11 +17,13 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
         /// <param name="authorizationParameter">Authorization code grant type parameter.</param>
         /// <param name="client">Information about the client</param>
         /// <param name="allowedScopes">Allowed scopes</param>
+        /// <param name="allowedClaims">Allowed claims</param>
         /// <returns>Action result.</returns>
         ActionResult Execute(
             AuthorizationParameter authorizationParameter,
             out Client client,
-            out List<Scope> allowedScopes);
+            out List<Scope> allowedScopes,
+            out List<string> allowedClaims);
     }
 
     public class DisplayConsentAction : IDisplayConsentAction
@@ -49,15 +51,32 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
         /// <param name="authorizationParameter">Authorization code grant type parameter.</param>
         /// <param name="client">Information about the client</param>
         /// <param name="allowedScopes">Allowed scopes</param>
+        /// <param name="allowedClaims">Allowed claims</param>
         /// <returns>Action result.</returns>
         public ActionResult Execute(
             AuthorizationParameter authorizationParameter,
             out Client client,
-            out List<Scope> allowedScopes)
+            out List<Scope> allowedScopes,
+            out List<string> allowedClaims)
         {
-            allowedScopes = GetScopes(authorizationParameter.Scope)
-                .Where(s => s.IsDisplayedInConsent)
-                .ToList();
+            allowedClaims = new List<string>();
+            allowedScopes = new List<Scope>();
+            var claimsParameter = authorizationParameter.Claims;
+            if (claimsParameter == null ||
+                (claimsParameter.IdToken == null ||
+                 !claimsParameter.IdToken.Any()) &&
+                (claimsParameter.UserInfo == null ||
+                 !claimsParameter.UserInfo.Any()))
+            {
+                allowedScopes = GetScopes(authorizationParameter.Scope)
+                    .Where(s => s.IsDisplayedInConsent)
+                    .ToList();
+            }
+            else
+            {
+                allowedClaims = GetClaims(claimsParameter);
+            }
+
             client = _clientRepository.GetClientById(authorizationParameter.ClientId);
             return _actionResultFactory.CreateAnEmptyActionResultWithOutput();
         }
@@ -78,6 +97,24 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
             }
 
             return result;
-        } 
+        }
+
+        private List<string> GetClaims(ClaimsParameter claimsParameter)
+        {
+            var result = new List<string>();
+            if (claimsParameter.IdToken != null &&
+                !claimsParameter.IdToken.Any())
+            {
+                result.AddRange(claimsParameter.IdToken.Select(s => s.Name));
+            }
+
+            if (claimsParameter.UserInfo != null &&
+                !claimsParameter.UserInfo.Any())
+            {
+                result.AddRange(claimsParameter.UserInfo.Select(s => s.Name));
+            }
+
+            return result;
+        }
     }
 }

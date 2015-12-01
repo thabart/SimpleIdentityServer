@@ -43,10 +43,7 @@ namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
             }
 
             var grantedToken = _grantedTokenRepository.GetToken(accessToken);
-            var jws = _jwtParser.Decrypt(grantedToken.IdToken);
-            var payload = _jwtParser.UnSign(jws);
-
-            return payload;
+            return grantedToken.UserInfoPayLoad;
         }
     }
 }

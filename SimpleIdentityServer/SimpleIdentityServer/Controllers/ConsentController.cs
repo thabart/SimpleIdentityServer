@@ -44,11 +44,13 @@ namespace SimpleIdentityServer.Api.Controllers
             var request = _protector.Decrypt<AuthorizationRequest>(code);
             var client = new Client();
             var scopes = new List<Scope>();
-            _consentActions.DisplayConsent(request.ToParameter(), out client, out scopes);
+            var claims = new List<string>();
+            _consentActions.DisplayConsent(request.ToParameter(), out client, out scopes, out claims);
             var viewModel = new ConsentViewModel
             {
                 ClientDisplayName = client.DisplayName,
-                AllowedScopeDescriptions = scopes.Select(s => s.Description).ToList(),
+                AllowedScopeDescriptions = !scopes.Any() ? new List<string>() : scopes.Select(s => s.Description).ToList(),
+                AllowedIndividualClaims = claims,
                 Code = code
             };
 

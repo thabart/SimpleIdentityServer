@@ -6,7 +6,9 @@ namespace SimpleIdentityServer.Api.ViewModels
     {
         public string ClientDisplayName { get; set; }
 
-        public List<string> AllowedScopeDescriptions { get; set; } 
+        public List<string> AllowedScopeDescriptions { get; set; }
+
+        public List<string> AllowedIndividualClaims { get; set; } 
 
         public string Code { get; set; }
     }

@@ -1,21 +1,15 @@
 ﻿using System;
-using System.Linq;
 using System.Net.Http.Headers;
-using Microsoft.Practices.EnterpriseLibrary.Common.Configuration.Design;
 using SimpleIdentityServer.Core.Authenticate;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Validators;
-
-using SimpleIdentityServer.Core.Jwt;
-using SimpleIdentityServer.Core.JwtToken.Validator;
 
 namespace SimpleIdentityServer.Core.Api.Token.Actions
 {
@@ -35,10 +29,6 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
         private readonly ITokenHelper _tokenHelper;
 
-        private readonly IClientRepository _clientRepository;
-
-        private readonly IJwtClientParameterValidator _jwtClientParameterValidator;
-
         private readonly IGrantedTokenRepository _grantedTokenRepository;
 
         private readonly IAuthenticateClient _authenticateClient;
@@ -48,8 +38,6 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             IAuthorizationCodeRepository authorizationCodeRepository,
             ISimpleIdentityServerConfigurator simpleIdentityServerConfigurator,
             ITokenHelper tokenHelper,
-            IClientRepository clientRepository,
-            IJwtClientParameterValidator jwtClientParameterValidator,
             IGrantedTokenRepository grantedTokenRepository,
             IAuthenticateClient authenticateClient)
         {
@@ -57,8 +45,6 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             _authorizationCodeRepository = authorizationCodeRepository;
             _simpleIdentityServerConfigurator = simpleIdentityServerConfigurator;
             _tokenHelper = tokenHelper;
-            _clientRepository = clientRepository;
-            _jwtClientParameterValidator = jwtClientParameterValidator;
             _grantedTokenRepository = grantedTokenRepository;
             _authenticateClient = authenticateClient;
         }

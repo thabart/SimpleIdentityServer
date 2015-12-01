@@ -12,7 +12,8 @@ namespace SimpleIdentityServer.Core.WebSite.Consent
         ActionResult DisplayConsent(
             AuthorizationParameter authorizationParameter,
             out Client client,
-            out List<Scope> allowedScopes);
+            out List<Scope> allowedScopes,
+            out List<string> allowedClaims);
 
         ActionResult ConfirmConsent(
             AuthorizationParameter authorizationParameter,
@@ -36,11 +37,13 @@ namespace SimpleIdentityServer.Core.WebSite.Consent
         public ActionResult DisplayConsent(
             AuthorizationParameter authorizationParameter,
             out Client client,
-            out List<Scope> allowedScopes)
+            out List<Scope> allowedScopes,
+            out List<string> allowedClaims)
         {
             return _displayConsentAction.Execute(authorizationParameter,
                 out client,
-                out allowedScopes);
+                out allowedScopes,
+                out allowedClaims);
         }
 
         public ActionResult ConfirmConsent(

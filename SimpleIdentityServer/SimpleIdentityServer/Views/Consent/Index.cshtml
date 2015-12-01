@@ -21,16 +21,40 @@
             <h3>This application would like to:</h3>
         </div>
     </div>
-    <div class="row">
-        <ul class="list-group">
-            @foreach (var scope in Model.AllowedScopeDescriptions)
-            {
-                <li class="list-group-item">
-                    @scope
-                </li>
-            }
-        </ul>
-    </div>
+    @if (!Model.AllowedScopeDescriptions.Any())
+    {
+        <div class="row">
+            <h4>Scopes</h4>
+        </div>
+        <div class="row">
+            <ul class="list-group">
+                @foreach (var scope in Model.AllowedScopeDescriptions)
+                {
+                    <li class="list-group-item">
+                        @scope
+                    </li>
+                }
+            </ul>
+        </div>
+    }
+    
+    @if (!Model.AllowedIndividualClaims.Any())
+    {
+        <div class="row">
+            <h4>Individual claims</h4>
+        </div>
+        <div class="row">
+            <ul class="list-group">
+                @foreach (var claim in Model.AllowedIndividualClaims)
+                {
+                    <li class="list-group-item">
+                        @claim
+                    </li>
+                }
+            </ul>
+        </div>
+    }
+    
     <div class="row">
         <a href="@Url.Action("Cancel", new { code = Model.Code })" class="btn btn-default">Cancel</a>
         <a href="@Url.Action("Confirm", new { code = Model.Code })" class="btn btn-default">Confirm</a>

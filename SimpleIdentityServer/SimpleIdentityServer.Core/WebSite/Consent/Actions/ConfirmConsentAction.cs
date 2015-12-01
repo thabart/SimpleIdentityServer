@@ -63,30 +63,71 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
         /// <param name="authorizationParameter">Authorization code grant-type</param>
         /// <param name="claimsPrincipal">Resource owner's claims</param>
         /// <returns>Redirects the authorization code to the callback.</returns>
-        public ActionResult Execute(AuthorizationParameter authorizationParameter,
+        public ActionResult Execute(
+            AuthorizationParameter authorizationParameter,
             ClaimsPrincipal claimsPrincipal)
         {
             var subject = claimsPrincipal.GetSubject();
             var consents = _consentRepository.GetConsentsForGivenUser(subject);
-            var scopeNames = _parameterParserHelper.ParseScopeParameters(authorizationParameter.Scope);
             Models.Consent assignedConsent = null;
             if (consents != null && consents.Any())
             {
-                assignedConsent = consents.FirstOrDefault(
+                var claimsParameter = authorizationParameter.Claims;
+                if (claimsParameter == null ||
+                    (claimsParameter.IdToken == null ||
+                     !claimsParameter.IdToken.Any()) &&
+                    (claimsParameter.UserInfo == null ||
+                     !claimsParameter.UserInfo.Any()))
+                {
+                    var expectedClaims = GetClaims(claimsParameter);
+                    assignedConsent = consents.FirstOrDefault(
+                        c =>
+                            c.Client.ClientId == authorizationParameter.ClientId &&
+                            c.GrantedScopes != null && c.GrantedScopes.Any() &&
+                            c.Claims.All(cl => expectedClaims.Contains(cl)));
+                }
+                else
+                {
+                    var scopeNames =
+                        _parameterParserHelper.ParseScopeParameters(authorizationParameter.Scope);
+                    assignedConsent = consents.FirstOrDefault(
                         c =>
                             c.Client.ClientId == authorizationParameter.ClientId &&
                             c.GrantedScopes != null && c.GrantedScopes.Any() &&
                             c.GrantedScopes.All(s => scopeNames.Contains(s.Name)));
+                }
             }
 
             if (assignedConsent == null)
             {
-                assignedConsent = new Models.Consent
+                var claimsParameter = authorizationParameter.Claims;
+                if (claimsParameter == null ||
+                    (claimsParameter.IdToken == null ||
+                     !claimsParameter.IdToken.Any()) &&
+                    (claimsParameter.UserInfo == null ||
+                     !claimsParameter.UserInfo.Any()))
                 {
-                    Client = _clientRepository.GetClientById(authorizationParameter.ClientId),
-                    GrantedScopes = GetScopes(authorizationParameter.Scope),
-                    ResourceOwner = _resourceOwnerRepository.GetBySubject(subject)
-                };
+                    // A consent can be given to a set of scopes
+                    assignedConsent = new Models.Consent
+                    {
+                        Client = _clientRepository.GetClientById(authorizationParameter.ClientId),
+                        GrantedScopes = GetScopes(authorizationParameter.Scope),
+                        ResourceOwner = _resourceOwnerRepository.GetBySubject(subject)
+                    };
+                }
+                else
+                {
+                    // A consent can be given to a set of claims
+                    assignedConsent = new Models.Consent
+                    {
+                        Client = _clientRepository.GetClientById(authorizationParameter.ClientId),
+                        ResourceOwner = _resourceOwnerRepository.GetBySubject(subject),
+                        Claims = GetClaims(claimsParameter)
+                    };
+                }
+
+                // A consent can be given to a set of claims
+
                 _consentRepository.InsertConsent(assignedConsent);
             }
 
@@ -108,6 +149,29 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
             {
                 var scope = _scopeRepository.GetScopeByName(scopeName);
                 result.Add(scope);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Returns a list of claims.
+        /// </summary>
+        /// <param name="claimsParameter"></param>
+        /// <returns></returns>
+        private List<string> GetClaims(ClaimsParameter claimsParameter)
+        {
+            var result = new List<string>();
+            if (claimsParameter.IdToken != null &&
+                !claimsParameter.IdToken.Any())
+            {
+                result.AddRange(claimsParameter.IdToken.Select(s => s.Name));
+            }
+
+            if (claimsParameter.UserInfo != null &&
+                !claimsParameter.UserInfo.Any())
+            {
+                result.AddRange(claimsParameter.UserInfo.Select(s => s.Name));
             }
 
             return result;

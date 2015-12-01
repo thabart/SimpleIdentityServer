@@ -203,13 +203,30 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
             Consent confirmedConsent = null;
             if (consents != null && consents.Any())
             {
-                var scopeNames =
-                    _parameterParserHelper.ParseScopeParameters(authorizationParameter.Scope);
-                confirmedConsent = consents.FirstOrDefault(
-                    c =>
-                        c.Client.ClientId == authorizationParameter.ClientId &&
-                        c.GrantedScopes != null && c.GrantedScopes.Any() &&
-                        c.GrantedScopes.All(s => scopeNames.Contains(s.Name)));
+                var claimsParameter = authorizationParameter.Claims;
+                if (claimsParameter == null ||
+                    (claimsParameter.IdToken == null ||
+                     !claimsParameter.IdToken.Any()) &&
+                    (claimsParameter.UserInfo == null ||
+                     !claimsParameter.UserInfo.Any()))
+                {
+                    var expectedClaims = GetClaims(claimsParameter);
+                    confirmedConsent = consents.FirstOrDefault(
+                        c =>
+                            c.Client.ClientId == authorizationParameter.ClientId &&
+                            c.GrantedScopes != null && c.GrantedScopes.Any() &&
+                            c.Claims.All(cl => expectedClaims.Contains(cl)));
+                }
+                else
+                {
+                    var scopeNames =
+                        _parameterParserHelper.ParseScopeParameters(authorizationParameter.Scope);
+                    confirmedConsent = consents.FirstOrDefault(
+                        c =>
+                            c.Client.ClientId == authorizationParameter.ClientId &&
+                            c.GrantedScopes != null && c.GrantedScopes.Any() &&
+                            c.GrantedScopes.All(s => scopeNames.Contains(s.Name)));
+                }
             }
 
             return confirmedConsent;
@@ -221,5 +238,28 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
                 false :
                 principal.Identity.IsAuthenticated;
         }
+
+        /// <summary>
+        /// Returns a list of claims.
+        /// </summary>
+        /// <param name="claimsParameter"></param>
+        /// <returns></returns>
+        private List<string> GetClaims(ClaimsParameter claimsParameter)
+        {
+            var result = new List<string>();
+            if (claimsParameter.IdToken != null &&
+                !claimsParameter.IdToken.Any())
+            {
+                result.AddRange(claimsParameter.IdToken.Select(s => s.Name));
+            }
+
+            if (claimsParameter.UserInfo != null &&
+                !claimsParameter.UserInfo.Any())
+            {
+                result.AddRange(claimsParameter.UserInfo.Select(s => s.Name));
+            }
+
+            return result;
+        } 
     }
 }

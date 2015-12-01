@@ -22,9 +22,14 @@ namespace SimpleIdentityServer.Core.JwtToken
 {
     public interface IJwtGenerator
     {
-        JwsPayload GenerateJwsPayload(
-            ClaimsPrincipal claimPrincipal,
-            AuthorizationParameter authorizationParameter);
+        JwsPayload GenerateJwsPayloadForScopes(
+             ClaimsPrincipal claimPrincipal,
+             AuthorizationParameter authorizationParameter);
+
+        JwsPayload GenerateFilteredJwsPayload(
+            ClaimsPrincipal claimsPrincipal,
+            AuthorizationParameter authorizationParameter,
+            List<ClaimParameter> claimParameters);
 
         string Sign(
             JwsPayload jwsPayload,
@@ -77,58 +82,9 @@ namespace SimpleIdentityServer.Core.JwtToken
             _jweGenerator = jweGenerator;
         }
 
-        public JwsPayload GenerateJwsPayload(
+        public JwsPayload GenerateJwsPayloadForScopes(
             ClaimsPrincipal claimPrincipal,
             AuthorizationParameter authorizationParameter)
-        {
-            var claimsParameter = authorizationParameter.Claims;
-            if (claimsParameter == null ||
-                claimsParameter.IdToken == null ||
-                !claimsParameter.IdToken.Any())
-            {
-                return GenerateDefaultPayLoad(authorizationParameter, claimPrincipal);
-            }
-
-            return null;
-        }
-
-        public string Sign(
-            JwsPayload jwsPayload,
-            AuthorizationParameter authorizationParameter)
-        {
-            var client = _clientRepository.GetClientById(authorizationParameter.ClientId);
-            var jsonWebKey = GetSignJsonWebKey(client);
-            var signedAlgorithm = GetJwsAlg(client);
-            return _jwsGenerator.Generate(
-                jwsPayload, 
-                signedAlgorithm, 
-                jsonWebKey);
-        }
-
-        public string Encrypt(
-            string jwe,
-            AuthorizationParameter authorizationParameter)
-        {
-            var client = _clientRepository.GetClientById(authorizationParameter.ClientId);
-            var jsonWebKey = GetEncJsonWebKey(client);
-            if (jsonWebKey == null)
-            {
-                return jwe;
-            }
-
-            var algEnum = GetJweAlg(client);
-            var encEnum = GetJweEnc(client);
-
-            return _jweGenerator.GenerateJwe(
-                jwe, 
-                algEnum, 
-                encEnum, 
-                jsonWebKey);
-        }
-
-        private JwsPayload GenerateDefaultPayLoad(
-            AuthorizationParameter authorizationParameter,
-            ClaimsPrincipal claimPrincipal)
         {
             // Get the issuer from the configuration.
             var issuerName = _simpleIdentityServerConfigurator.GetIssuerName();
@@ -217,9 +173,9 @@ namespace SimpleIdentityServer.Core.JwtToken
             return result;
         }
 
-        private JwsPayload GenerateFilteredPayLoad(
-            AuthorizationParameter authorizationParameter,
+        public JwsPayload GenerateFilteredJwsPayload(
             ClaimsPrincipal claimsPrincipal,
+            AuthorizationParameter authorizationParameter,
             List<ClaimParameter> claimParameters)
         {
             var audiences = new List<string>();
@@ -271,7 +227,7 @@ namespace SimpleIdentityServer.Core.JwtToken
 
                 result.Add(Jwt.Constants.StandardClaimNames.Audiences, audiences);
             }
-            
+
             var timeKeyValuePair = GetExpirationAndIssuedTime();
             // Fill-in the expiration time
             if (expirationTimeClaimParameter != null)
@@ -304,7 +260,7 @@ namespace SimpleIdentityServer.Core.JwtToken
             {
                 var requestedClaimNames = resourceOwnerClaimParameters.Select(r => r.Name);
                 var resourceOwnerClaims = GetClaims(requestedClaimNames, claimsPrincipal);
-                foreach(var resourceOwnerClaimParameter in resourceOwnerClaimParameters)
+                foreach (var resourceOwnerClaimParameter in resourceOwnerClaimParameters)
                 {
                     var resourceOwnerClaim = resourceOwnerClaims.FirstOrDefault(c => c.Key == resourceOwnerClaimParameter.Name);
                     if (resourceOwnerClaim.Equals(typeof(KeyValuePair<string, string>)))
@@ -317,7 +273,7 @@ namespace SimpleIdentityServer.Core.JwtToken
                     {
                         // TODO : throw an exception
                     }
-                }   
+                }
             }
 
             // Fill-in the authentication time
@@ -377,7 +333,7 @@ namespace SimpleIdentityServer.Core.JwtToken
 
                 result.Add(Jwt.Constants.StandardClaimNames.Amr, "password");
             }
-            
+
             // Fill-in the AZP parameter
             if (azpParameter != null)
             {
@@ -395,6 +351,41 @@ namespace SimpleIdentityServer.Core.JwtToken
             }
 
             return result;
+            
+        }
+
+        public string Sign(
+            JwsPayload jwsPayload,
+            AuthorizationParameter authorizationParameter)
+        {
+            var client = _clientRepository.GetClientById(authorizationParameter.ClientId);
+            var jsonWebKey = GetSignJsonWebKey(client);
+            var signedAlgorithm = GetJwsAlg(client);
+            return _jwsGenerator.Generate(
+                jwsPayload, 
+                signedAlgorithm, 
+                jsonWebKey);
+        }
+
+        public string Encrypt(
+            string jwe,
+            AuthorizationParameter authorizationParameter)
+        {
+            var client = _clientRepository.GetClientById(authorizationParameter.ClientId);
+            var jsonWebKey = GetEncJsonWebKey(client);
+            if (jsonWebKey == null)
+            {
+                return jwe;
+            }
+
+            var algEnum = GetJweAlg(client);
+            var encEnum = GetJweEnc(client);
+
+            return _jweGenerator.GenerateJwe(
+                jwe, 
+                algEnum, 
+                encEnum, 
+                jsonWebKey);
         }
 
         private bool ValidateClaimValue(
@@ -497,7 +488,6 @@ namespace SimpleIdentityServer.Core.JwtToken
                 return null;
             }
 
-            var encEnum = GetJweEnc(client);
             var algEnum = GetJweAlg(client);
 
             return GetJsonWebKey(

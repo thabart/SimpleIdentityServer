@@ -11,5 +11,7 @@ namespace SimpleIdentityServer.Core.Models
         public ResourceOwner ResourceOwner { get; set; }
 
         public List<Scope> GrantedScopes { get; set; }
+
+        public List<string> Claims { get; set; }
     }
 }
