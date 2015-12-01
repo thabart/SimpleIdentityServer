@@ -47,7 +47,7 @@ namespace SimpleIdentityServer.Core.Helpers
                     confirmedConsent = consents.FirstOrDefault(
                         c =>
                             c.Client.ClientId == authorizationParameter.ClientId &&
-                            c.GrantedScopes != null && c.GrantedScopes.Any() &&
+                            c.Claims != null && c.Claims.Any() &&
                             c.Claims.All(cl => expectedClaims.Contains(cl)));
                 }
                 else

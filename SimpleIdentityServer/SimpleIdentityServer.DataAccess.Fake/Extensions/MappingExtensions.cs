@@ -115,7 +115,8 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
                 Id = consent.Id,
                 Client = consent.Client.ToFake(),
                 ResourceOwner = consent.ResourceOwner.ToFake(),
-                GrantedScopes = consent.GrantedScopes == null ? null : consent.GrantedScopes.Select(s => s.ToFake()).ToList()                
+                GrantedScopes = consent.GrantedScopes == null ? null : consent.GrantedScopes.Select(s => s.ToFake()).ToList(),
+                Claims = consent.Claims              
             };
         }
 
@@ -250,7 +251,8 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
                 Id = consent.Id,
                 Client = consent.Client.ToBusiness(),
                 ResourceOwner = consent.ResourceOwner.ToBusiness(),
-                GrantedScopes = consent.GrantedScopes == null ? null : consent.GrantedScopes.Select(s => s.ToBusiness()).ToList()
+                GrantedScopes = consent.GrantedScopes == null ? null : consent.GrantedScopes.Select(s => s.ToBusiness()).ToList(),
+                Claims = consent.Claims
             };
         }
 

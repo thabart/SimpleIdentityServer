@@ -273,6 +273,8 @@ namespace SimpleIdentityServer.Core.JwtToken
                     {
                         // TODO : throw an exception
                     }
+
+                    result.Add(resourceOwnerClaim.Key, resourceOwnerClaim.Value);
                 }
             }
 
