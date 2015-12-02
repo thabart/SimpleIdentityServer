@@ -164,3 +164,29 @@ Scenario: Fetch the user information for the scope phone and email
 	And the claim phone_number_verified with value False is returned by the JWS payload
 	And the claim email with value habarthierry@hotmail.fr is returned by the JWS payload
 	And the claim email_verified with value True is returned by the JWS payload
+
+# FETCH USER INFORMATION FOR CERTAIN CLAIMS ONLY
+Scenario: Fetch the user information for the claim email : {userinfo : { name: { essential : 'true' }}}
+	Given a mobile application MyHolidays is defined
+	And set the name of the issuer http://localhost/identity
+	And the redirection uri http://localhost is assigned to the client MyHolidays
+	And the scopes are defined
+	| Name   | IsInternal | Claims                             |
+	| openid | true       |                                    |
+	And the scopes openid are assigned to the client MyHolidays
+	And the grant-type implicit is supported by the client MyHolidays
+	And the response-types token,id_token are supported by the client MyHolidays
+	And create a resource owner
+	| Id                   | Name    | PhoneNumber | PhoneNumberVerified | Email                   | EmailVerified |
+	| habarthierry@loki.be | thabart | 007         | false               | habarthierry@hotmail.fr | true          |
+	And authenticate the resource owner
+	And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and claims name
+	And requesting an access token	
+	| scope  | response_type  | client_id  | redirect_uri     | prompt | state  | nonce          | claims                                                                    |
+	| openid | token id_token | MyHolidays | http://localhost | none   | state1 | parameterNonce | %7B%22userinfo%22%3A+%7B%22name%22%3A+%7B%22essential%22%3A+true%7D%7D%7D |
+	
+	When requesting user information
+
+	Then HTTP status code is 200
+	And the JWS payload contains 1 claims
+	And the claim name with value thabart is returned by the JWS payload

@@ -88,14 +88,15 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             _testServer = _context.CreateServer(httpConfiguration);
             var httpClient = _testServer.HttpClient;
             var url = string.Format(
-                "/authorization?scope={0}&response_type={1}&client_id={2}&redirect_uri={3}&prompt={4}&state={5}&nonce={6}",
+                "/authorization?scope={0}&response_type={1}&client_id={2}&redirect_uri={3}&prompt={4}&state={5}&nonce={6}&claims={7}",
                 authorizationRequest.scope,
                 authorizationRequest.response_type,
                 authorizationRequest.client_id,
                 authorizationRequest.redirect_uri,
                 authorizationRequest.prompt,
                 authorizationRequest.state,
-                authorizationRequest.nonce);
+                authorizationRequest.nonce,
+                authorizationRequest.claims);
             _authorizationResponseMessage = httpClient.GetAsync(url).Result;
         }
 
@@ -130,6 +131,12 @@ namespace SimpleIdentityServer.Api.Tests.Specs
 
             Assert.IsNotNull(claimValue);
             Assert.That(claimValue, Is.EqualTo(val));
+        }
+
+        [Then("the JWS payload contains (.*) claims")]
+        public void ThenTheJwsPayloadContainsNumberOfClaims(int numberOfClaims)
+        {
+            Assert.That(_jwsPayload.Count, Is.EqualTo(numberOfClaims));
         }
 
         [Then("the returned address is")]
