@@ -48,7 +48,7 @@ namespace SimpleIdentityServer.Core.Helpers
                         c =>
                             c.Client.ClientId == authorizationParameter.ClientId &&
                             c.Claims != null && c.Claims.Any() &&
-                            c.Claims.All(cl => expectedClaims.Contains(cl)));
+                            expectedClaims.All(cl => c.Claims.Contains(cl)));
                 }
                 else
                 {

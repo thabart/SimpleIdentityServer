@@ -83,5 +83,7 @@
 
         public static string TheClientAssertionCannotBeDecrypted =
             "the client assertion cannot be decrypted";
+
+        public static string TheClaimIsNotValid = "the claim {0} is not valid";
     }
 }

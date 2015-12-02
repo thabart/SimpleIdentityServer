@@ -1,5 +1,4 @@
 ﻿using Microsoft.Owin.Testing;
-using Microsoft.Practices.EnterpriseLibrary.Caching;
 using Microsoft.Practices.Unity;
 
 using NUnit.Framework;

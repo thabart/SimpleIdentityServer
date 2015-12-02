@@ -10,6 +10,7 @@ using Microsoft.Practices.Unity;
 using NUnit.Framework;
 
 using SimpleIdentityServer.Api.DTOs.Request;
+using SimpleIdentityServer.Api.DTOs.Response;
 using SimpleIdentityServer.Api.Tests.Common;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Jwt.Encrypt;
@@ -99,14 +100,15 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             {
                 var httpClient = server.HttpClient;
                 var url = string.Format(
-                    "/authorization?scope={0}&response_type={1}&client_id={2}&redirect_uri={3}&prompt={4}&state={5}&nonce={6}",
+                    "/authorization?scope={0}&response_type={1}&client_id={2}&redirect_uri={3}&prompt={4}&state={5}&nonce={6}&claims={7}",
                     authorizationRequest.scope,
                     authorizationRequest.response_type,
                     authorizationRequest.client_id,
                     authorizationRequest.redirect_uri,
                     authorizationRequest.prompt,
                     authorizationRequest.state,
-                    authorizationRequest.nonce);
+                    authorizationRequest.nonce,
+                    authorizationRequest.claims);
                 _httpResponseMessage = httpClient.GetAsync(url).Result;
             }
         }
@@ -115,6 +117,14 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         public void ThenHttpStatusCodeIsCorrect(HttpStatusCode code)
         {
             Assert.That(code, Is.EqualTo(_httpResponseMessage.StatusCode));
+        }
+
+        [Then("the error code is (.*)")]
+        public void ThenTheErrorCodeIs(string errorCode)
+        {
+            var errorResponse = _httpResponseMessage.Content.ReadAsAsync<ErrorResponse>().Result;
+            Assert.IsNotNull(errorResponse);
+            Assert.That(errorResponse.error, Is.EqualTo(errorCode));
         }
 
         [Then("redirect to (.*) controller")]
@@ -228,6 +238,12 @@ namespace SimpleIdentityServer.Api.Tests.Specs
 
             Assert.IsNotNull(claimValue);
             Assert.That(claimValue, Is.EqualTo(val));
+        }
+
+        [Then("the JWS payload contains (.*) claims")]
+        public void ThenTheJwsPayloadContainsNumberOfClaims(int numberOfClaims)
+        {
+            Assert.That(_jwsPayLoad.Count, Is.EqualTo(numberOfClaims));
         }
 
         [Then("the callback contains the following query name (.*)")]

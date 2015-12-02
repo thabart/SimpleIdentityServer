@@ -6,6 +6,7 @@ using System.Security.Claims;
 using Microsoft.Practices.ObjectBuilder2;
 
 using SimpleIdentityServer.Core.Configuration;
+using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Jwt.Mapping;
@@ -199,7 +200,9 @@ namespace SimpleIdentityServer.Core.JwtToken
                 var issuerIsValid = ValidateClaimValue(issuerName, issuerClaimParameter);
                 if (!issuerIsValid)
                 {
-                    // TODO : throw an exception
+                    throw new IdentityServerExceptionWithState(ErrorCodes.InvalidGrant,
+                        string.Format(ErrorDescriptions.TheClaimIsNotValid, Jwt.Constants.StandardClaimNames.Issuer),
+                        authorizationParameter.State);
                 }
 
                 result.Add(Jwt.Constants.StandardClaimNames.Issuer, issuerName);
@@ -222,7 +225,9 @@ namespace SimpleIdentityServer.Core.JwtToken
                 var audiencesIsValid = ValidateClaimValues(audiences.ToArray(), audiencesClaimParameter);
                 if (!audiencesIsValid)
                 {
-                    // TODO : throw an exception
+                    throw new IdentityServerExceptionWithState(ErrorCodes.InvalidGrant,
+                        string.Format(ErrorDescriptions.TheClaimIsNotValid, Jwt.Constants.StandardClaimNames.Audiences),
+                        authorizationParameter.State);
                 }
 
                 result.Add(Jwt.Constants.StandardClaimNames.Audiences, audiences);
@@ -237,7 +242,9 @@ namespace SimpleIdentityServer.Core.JwtToken
                 var expirationInSecondsIsValid = ValidateClaimValue(expirationInSeconds.ToString(), expirationTimeClaimParameter);
                 if (!expirationInSecondsIsValid)
                 {
-                    // TODO : throw an exception
+                    throw new IdentityServerExceptionWithState(ErrorCodes.InvalidGrant,
+                        string.Format(ErrorDescriptions.TheClaimIsNotValid, Jwt.Constants.StandardClaimNames.ExpirationTime),
+                        authorizationParameter.State);
                 }
 
                 result.Add(Jwt.Constants.StandardClaimNames.ExpirationTime, expirationInSeconds);
@@ -250,7 +257,9 @@ namespace SimpleIdentityServer.Core.JwtToken
                 var issuedAtTimeIsValid = ValidateClaimValue(issuedAtTime.ToString(), issuedAtTimeClaimParameter);
                 if (!issuedAtTimeIsValid)
                 {
-                    // TODO : throw an exception
+                    throw new IdentityServerExceptionWithState(ErrorCodes.InvalidGrant,
+                        string.Format(ErrorDescriptions.TheClaimIsNotValid, Jwt.Constants.StandardClaimNames.Iat),
+                        authorizationParameter.State);
                 }
 
                 result.Add(Jwt.Constants.StandardClaimNames.Iat, issuedAtTime);
@@ -265,13 +274,17 @@ namespace SimpleIdentityServer.Core.JwtToken
                     var resourceOwnerClaim = resourceOwnerClaims.FirstOrDefault(c => c.Key == resourceOwnerClaimParameter.Name);
                     if (resourceOwnerClaim.Equals(typeof(KeyValuePair<string, string>)))
                     {
-                        // TODO : throw an exception
+                        throw new IdentityServerExceptionWithState(ErrorCodes.InvalidGrant,
+                            string.Format(ErrorDescriptions.TheClaimIsNotValid, resourceOwnerClaim.Key),
+                            authorizationParameter.State);
                     }
 
                     var isClaimValid = ValidateClaimValue(resourceOwnerClaim.Value, resourceOwnerClaimParameter);
                     if (!isClaimValid)
                     {
-                        // TODO : throw an exception
+                        throw new IdentityServerExceptionWithState(ErrorCodes.InvalidGrant,
+                            string.Format(ErrorDescriptions.TheClaimIsNotValid, resourceOwnerClaim.Key),
+                            authorizationParameter.State);
                     }
 
                     result.Add(resourceOwnerClaim.Key, resourceOwnerClaim.Value);
@@ -284,7 +297,9 @@ namespace SimpleIdentityServer.Core.JwtToken
                 var isAuthenticationTimeValid = ValidateClaimValue(authenticationTimeParameter.Value, authenticationTimeParameter);
                 if (!isAuthenticationTimeValid)
                 {
-                    // TODO : throw an exception
+                    throw new IdentityServerExceptionWithState(ErrorCodes.InvalidGrant,
+                        string.Format(ErrorDescriptions.TheClaimIsNotValid, Jwt.Constants.StandardClaimNames.AuthenticationTime),
+                        authorizationParameter.State);
                 }
 
                 if (authorizationParameter.MaxAge != 0.0D)
@@ -303,7 +318,9 @@ namespace SimpleIdentityServer.Core.JwtToken
                 var isNonceParameterValid = ValidateClaimValue(authenticationTimeParameter.Value, nonceParameter);
                 if (!isNonceParameterValid)
                 {
-                    // TODO : throw an exception
+                    throw new IdentityServerExceptionWithState(ErrorCodes.InvalidGrant,
+                        string.Format(ErrorDescriptions.TheClaimIsNotValid, Jwt.Constants.StandardClaimNames.Nonce),
+                        authorizationParameter.State);
                 }
 
                 if (!string.IsNullOrWhiteSpace(authorizationParameter.Nonce))
@@ -318,7 +335,9 @@ namespace SimpleIdentityServer.Core.JwtToken
                 var isAcrParameterValid = ValidateClaimValue(acrParameter.Value, acrParameter);
                 if (!isAcrParameterValid)
                 {
-                    // TODO : throw an exception
+                    throw new IdentityServerExceptionWithState(ErrorCodes.InvalidGrant,
+                        string.Format(ErrorDescriptions.TheClaimIsNotValid, Jwt.Constants.StandardClaimNames.Acr),
+                        authorizationParameter.State);
                 }
 
                 result.Add(Jwt.Constants.StandardClaimNames.Acr, Constants.StandardArcParameterNames.OpenIdCustomAuthLevel + ".password=1");
@@ -330,7 +349,9 @@ namespace SimpleIdentityServer.Core.JwtToken
                 var isAmrParameterValid = ValidateClaimValue(amrParameter.Value, amrParameter);
                 if (!isAmrParameterValid)
                 {
-                    // TODO : throw an exception
+                    throw new IdentityServerExceptionWithState(ErrorCodes.InvalidGrant,
+                        string.Format(ErrorDescriptions.TheClaimIsNotValid, Jwt.Constants.StandardClaimNames.Amr),
+                        authorizationParameter.State);
                 }
 
                 result.Add(Jwt.Constants.StandardClaimNames.Amr, "password");
@@ -342,8 +363,11 @@ namespace SimpleIdentityServer.Core.JwtToken
                 var isAzpParameterValid = ValidateClaimValue(azpParameter.Value, azpParameter);
                 if (!isAzpParameterValid)
                 {
-                    // TODO : throw an exception
+                    throw new IdentityServerExceptionWithState(ErrorCodes.InvalidGrant,
+                        string.Format(ErrorDescriptions.TheClaimIsNotValid, Jwt.Constants.StandardClaimNames.Azp),
+                        authorizationParameter.State);
                 }
+
                 if (audiences != null &&
                     audiences.Count() == 1 &&
                     audiences.First() == authorizationParameter.ClientId)
@@ -401,7 +425,7 @@ namespace SimpleIdentityServer.Core.JwtToken
                 return false;                  
             }
 
-            if (claimParameter.ValuesParameterExist && 
+            if (claimParameter.ValueParameterExist && 
                 claimValue != claimParameter.Value)
             {
                 return false;

@@ -218,7 +218,7 @@ namespace SimpleIdentityServer.Api.Tests.Common
         }
 
         [Given("the consent has been given by the resource owner (.*) for the client (.*) and scopes (.*)")]
-        public void GivenConsent(string resourceOwnerId, string clientId, List<string> scopeNames)
+        public void GivenConsentScopes(string resourceOwnerId, string clientId, List<string> scopeNames)
         {
             var client = FakeDataSource.Instance().Clients.SingleOrDefault(c => c.ClientId == clientId);
             var resourceOwner = FakeDataSource.Instance().ResourceOwners.SingleOrDefault(r => r.Id == resourceOwnerId);
@@ -232,6 +232,21 @@ namespace SimpleIdentityServer.Api.Tests.Common
             {
                 Client = client,
                 GrantedScopes = scopes,
+                ResourceOwner = resourceOwner
+            };
+
+            FakeDataSource.Instance().Consents.Add(consent);
+        }
+
+        [Given("the consent has been given by the resource owner (.*) for the client (.*) and claims (.*)")]
+        public void GivenConsentClaims(string resourceOwnerId, string clientId, List<string> claimNames)
+        {
+            var client = FakeDataSource.Instance().Clients.SingleOrDefault(c => c.ClientId == clientId);
+            var resourceOwner = FakeDataSource.Instance().ResourceOwners.SingleOrDefault(r => r.Id == resourceOwnerId);
+            var consent = new Consent
+            {
+                Client = client,
+                Claims = claimNames,
                 ResourceOwner = resourceOwner
             };
 

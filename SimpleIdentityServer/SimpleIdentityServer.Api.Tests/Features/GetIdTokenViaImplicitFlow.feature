@@ -2,7 +2,7 @@
 	As a known client
 	I want to use the implicit workflow to retrieve the id token or access token
 
-# HAPPY PATHS
+# GENERATE THE IDENTITY TOKEN VIA SCOPES
 Scenario: Get the id token
 	Given a mobile application MyHolidays is defined
 	And the redirection uri http://localhost is assigned to the client MyHolidays
@@ -99,6 +99,133 @@ Scenario: Get an id token and check if the claims returned in the token are corr
 	And the claim sub with value habarthierry@loki.be is returned by the JWS payload
 	And the claim name with value thabart is returned by the JWS payload
 		
+# USE THE CLAIMS PARAMETER TO GENERATE THE IDENTITY TOKEN
+Scenario: Get an identity token by using the claims parameter: {id_token : { name: { essential : 'true' }}}
+	Given a mobile application MyHolidays is defined
+	And the redirection uri http://localhost is assigned to the client MyHolidays
+	And the scopes are defined
+	| Name   | IsInternal |
+	| openid | true       |
+
+	And the id_token signature algorithm is set to none for the client MyHolidays
+	And the scopes openid are assigned to the client MyHolidays
+	And the response-types id_token are supported by the client MyHolidays
+	And create a resource owner
+	| Id                   | Name    |
+	| habarthierry@loki.be | thabart |
+	And authenticate the resource owner	
+	And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and claims name
+		
+	When requesting an authorization
+	| scope  | response_type | client_id  | redirect_uri     | prompt | state  | nonce          | claims                                                                    |
+	| openid | id_token      | MyHolidays | http://localhost | none   | state1 | parameterNonce | %7B%22id_token%22%3A+%7B%22name%22%3A+%7B%22essential%22%3A+true%7D%7D%7D |
+		
+	Then the http status code is 301
+	And decrypt the id_token parameter from the query string
+	And the protected JWS header is returned
+	| Alg  |
+	| none |
+	And the JWS payload contains 1 claims
+	And the claim name with value thabart is returned by the JWS payload	
+
+Scenario: Get an identity token by using the claims parameter : {id_token : { "name" : { essential : 'true' }, "email" : { essential : 'true' }}}
+	Given a mobile application MyHolidays is defined
+	And the redirection uri http://localhost is assigned to the client MyHolidays
+	And the scopes are defined
+	| Name   | IsInternal |
+	| openid | true       |
+
+	And the id_token signature algorithm is set to none for the client MyHolidays
+	And the scopes openid are assigned to the client MyHolidays
+	And the response-types id_token are supported by the client MyHolidays
+	And create a resource owner
+	| Id                   | Name    | Email                   |
+	| habarthierry@loki.be | thabart | habarthierry@hotmail.fr |
+	And authenticate the resource owner	
+	And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and claims name,email
+		
+	When requesting an authorization
+	| scope  | response_type | client_id  | redirect_uri     | prompt | state  | nonce          | claims                                                                                                                     |
+	| openid | id_token      | MyHolidays | http://localhost | none   | state1 | parameterNonce | %7B%22id_token%22%3A+%7B%22name%22%3A+%7B%22essential%22%3A+true%7D+%2C+%22email%22%3A+%7B%22essential%22%3A+true%7D%7D%7D |
+		
+	Then the http status code is 301
+	And decrypt the id_token parameter from the query string
+	And the protected JWS header is returned
+	| Alg  |
+	| none |
+	And the JWS payload contains 2 claims
+	And the claim name with value thabart is returned by the JWS payload		
+	And the claim email with value habarthierry@hotmail.fr is returned by the JWS payload
+
+Scenario: Get an identity token by using the claims parameter : {id_token : { name : { value : 'fake' }}}
+	Given a mobile application MyHolidays is defined
+	And the redirection uri http://localhost is assigned to the client MyHolidays
+	And the scopes are defined
+	| Name   | IsInternal |
+	| openid | true       |
+
+	And the id_token signature algorithm is set to none for the client MyHolidays
+	And the scopes openid are assigned to the client MyHolidays
+	And the response-types id_token are supported by the client MyHolidays
+	And create a resource owner
+	| Id                   | Name    |
+	| habarthierry@loki.be | thabart |
+	And authenticate the resource owner	
+	And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and claims name
+		
+	When requesting an authorization
+	| scope  | response_type | client_id  | redirect_uri     | prompt | state  | nonce          | claims                                                                |
+	| openid | id_token      | MyHolidays | http://localhost | none   | state1 | parameterNonce | %7B%22id_token%22%3A+%7B%22name%22%3A+%7B%22value%22%3A+%22fake%22%7D%7D%7D |
+		
+	Then the http status code is 400
+	And the error code is invalid_grant
+
+Scenario: Get an identity token by using the claims parameter : {id_token : { name : { value : 'thabart' }, email : 'fake'}}
+	Given a mobile application MyHolidays is defined
+	And the redirection uri http://localhost is assigned to the client MyHolidays
+	And the scopes are defined
+	| Name   | IsInternal |
+	| openid | true       |
+
+	And the id_token signature algorithm is set to none for the client MyHolidays
+	And the scopes openid are assigned to the client MyHolidays
+	And the response-types id_token are supported by the client MyHolidays
+	And create a resource owner
+	| Id                   | Name    |
+	| habarthierry@loki.be | thabart |
+	And authenticate the resource owner	
+	And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and claims name,email
+		
+	When requesting an authorization
+	| scope  | response_type | client_id  | redirect_uri     | prompt | state  | nonce          | claims                                                                                                                     |
+	| openid | id_token      | MyHolidays | http://localhost | none   | state1 | parameterNonce | %7B%22id_token%22%3A+%7B%22name%22%3A+%7B%22value%22%3A+%22thabart%22%7D+%2C+%22email%22%3A+%7B%22value%22%3A+%22fake%22%7D%7D%7D |
+		
+	Then the http status code is 400
+	And the error code is invalid_grant
+
+Scenario: Get an identity token by using the claims parameter : {id_token : { name : { value : 'thabart' }, email : 'fake'}}. The resource owner gives his consent only for the claim email
+	Given a mobile application MyHolidays is defined
+	And the redirection uri http://localhost is assigned to the client MyHolidays
+	And the scopes are defined
+	| Name   | IsInternal |
+	| openid | true       |
+
+	And the id_token signature algorithm is set to none for the client MyHolidays
+	And the scopes openid are assigned to the client MyHolidays
+	And the response-types id_token are supported by the client MyHolidays
+	And create a resource owner
+	| Id                   | Name    |
+	| habarthierry@loki.be | thabart |
+	And authenticate the resource owner	
+	And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and claims name
+		
+	When requesting an authorization
+	| scope  | response_type | client_id  | redirect_uri     | prompt | state  | nonce          | claims                                                                                                                     |
+	| openid | id_token      | MyHolidays | http://localhost | none   | state1 | parameterNonce | %7B%22id_token%22%3A+%7B%22name%22%3A+%7B%22value%22%3A+%22thabart%22%7D+%2C+%22email%22%3A+%7B%22value%22%3A+%22fake%22%7D%7D%7D |
+		
+	Then the http status code is 400
+	And the error code is interaction_required
+
 # DIFFERENT SCENARIOS TO CHECK THE SIGNATURE & ENCRYPTION
 Scenario: Get a signed id_token
 	Given a mobile application MyHolidays is defined
