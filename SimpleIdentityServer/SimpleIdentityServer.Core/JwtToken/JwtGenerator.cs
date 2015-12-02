@@ -192,6 +192,9 @@ namespace SimpleIdentityServer.Core.JwtToken
             var amrParameter = claimParameters.FirstOrDefault(c => c.Name == Jwt.Constants.StandardClaimNames.Amr);
             var azpParameter = claimParameters.FirstOrDefault(c => c.Name == Jwt.Constants.StandardClaimNames.Azp);
 
+            // Fill-in the mandatory subject claim
+            result.Add(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, claimsPrincipal.GetSubject());
+
             // Fill-in the issuer
             if (issuerClaimParameter != null)
             {
@@ -377,7 +380,6 @@ namespace SimpleIdentityServer.Core.JwtToken
             }
 
             return result;
-            
         }
 
         public string Sign(

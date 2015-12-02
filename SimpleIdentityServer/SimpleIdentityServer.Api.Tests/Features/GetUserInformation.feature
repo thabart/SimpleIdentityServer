@@ -188,5 +188,6 @@ Scenario: Fetch the user information for the claim email : {userinfo : { name: {
 	When requesting user information
 
 	Then HTTP status code is 200
-	And the JWS payload contains 1 claims
+	And the JWS payload contains 2 claims
+	And the claim sub with value habarthierry@loki.be is returned by the JWS payload
 	And the claim name with value thabart is returned by the JWS payload

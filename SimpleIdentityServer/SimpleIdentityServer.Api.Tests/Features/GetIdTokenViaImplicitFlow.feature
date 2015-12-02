@@ -125,7 +125,8 @@ Scenario: Get an identity token by using the claims parameter: {id_token : { nam
 	And the protected JWS header is returned
 	| Alg  |
 	| none |
-	And the JWS payload contains 1 claims
+	And the JWS payload contains 2 claims
+	And the claim sub with value habarthierry@loki.be is returned by the JWS payload	
 	And the claim name with value thabart is returned by the JWS payload	
 
 Scenario: Get an identity token by using the claims parameter : {id_token : { "name" : { essential : 'true' }, "email" : { essential : 'true' }}}
@@ -153,7 +154,8 @@ Scenario: Get an identity token by using the claims parameter : {id_token : { "n
 	And the protected JWS header is returned
 	| Alg  |
 	| none |
-	And the JWS payload contains 2 claims
+	And the JWS payload contains 3 claims
+	And the claim sub with value habarthierry@loki.be is returned by the JWS payload	
 	And the claim name with value thabart is returned by the JWS payload		
 	And the claim email with value habarthierry@hotmail.fr is returned by the JWS payload
 
