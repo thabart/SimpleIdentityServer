@@ -175,6 +175,27 @@ namespace SimpleIdentityServer.Core
             StandardClaimParameterValueNames.EssentialName
         };
 
+        public static class StandardAuthorizationRequestParameterNames
+        {
+            public static string ScopeName = "scope";
+            public static string ResponseTypeName = "response_type";
+            public static string ClientIdName = "client_id";
+            public static string RedirectUriName = "redirect_uri";
+            public static string StateName = "state";
+            public static string ResponseModeName = "response_mode";
+            public static string NonceName = "nonce";
+            public static string DisplayName = "display";
+            public static string PromptName = "prompt";
+            public static string MaxAgeName = "max_age";
+            public static string UiLocalesName = "ui_locales";
+            public static string IdTokenHintName = "id_token_hint";
+            public static string LoginHintName = "login_hint";
+            public static string ClaimsName = "claims";
+            public static string AcrValuesName = "acr_values";
+            public static string RequestName = "request";
+            public static string RequestUriName = "request_uri";
+        }
+
         #endregion
 
         #region Internal definitions

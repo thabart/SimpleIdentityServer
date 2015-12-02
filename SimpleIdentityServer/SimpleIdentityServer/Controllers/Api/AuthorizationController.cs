@@ -9,6 +9,8 @@ using SimpleIdentityServer.Api.Parsers;
 using SimpleIdentityServer.Core.Api.Authorization;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Errors;
+using SimpleIdentityServer.Core.Jwt;
+using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Results;
 
@@ -26,16 +28,20 @@ namespace SimpleIdentityServer.Api.Controllers.Api
 
         private readonly IActionResultParser _actionResultParser;
 
+        private readonly IJwtParser _jwtParser;
+
         public AuthorizationController(
             IAuthorizationActions authorizationActions,
             IProtector protector,
             IEncoder encoder,
-            IActionResultParser actionResultParser)
+            IActionResultParser actionResultParser,
+            IJwtParser jwtParser)
         {
             _authorizationActions = authorizationActions;
             _protector = protector;
             _encoder = encoder;
             _actionResultParser = actionResultParser;
+            _jwtParser = jwtParser;
         }
 
         public HttpResponseMessage Get([FromUri]AuthorizationRequest authorizationRequest)
@@ -47,6 +53,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
                     ErrorDescriptions.RequestIsNotValid);
             }
 
+            authorizationRequest = ResolveAuthorizationRequest(authorizationRequest);
             var encryptedRequest = _protector.Encrypt(authorizationRequest);
             var encodedRequest = _encoder.Encode(encryptedRequest);
             var authenticatedUser = this.GetAuthenticatedUser();
@@ -87,6 +94,41 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             var response = Request.CreateResponse(HttpStatusCode.Moved);
             response.Headers.Location = new Uri(url);
             return response;
+        }
+
+        /// <summary>
+        /// Get the correct authorization request.
+        /// 1. The request parameter can contains a self-contained JWT token which contains the claims of the authorization request.
+        /// 2. The request_uri can be used to download the JWT token and constructs the authorization request from it.
+        /// </summary>
+        /// <param name="authorizationRequest"></param>
+        /// <returns></returns>
+        private AuthorizationRequest ResolveAuthorizationRequest(AuthorizationRequest authorizationRequest)
+        {
+            if (string.IsNullOrWhiteSpace(authorizationRequest.request) &&
+                string.IsNullOrWhiteSpace(authorizationRequest.request_uri))
+            {
+                return authorizationRequest;
+            }
+
+            JwsPayload jwsPayload;
+            if (!string.IsNullOrWhiteSpace(authorizationRequest.request))
+            {
+                var decrypted = _jwtParser.Decrypt(authorizationRequest.request);
+                jwsPayload = _jwtParser.UnSign(decrypted);
+                if (jwsPayload != null)
+                {
+                    return jwsPayload.ToAuthorizationRequest();
+                }
+            }
+
+            // TODO : process the request_uri parameter.
+            if (!string.IsNullOrWhiteSpace(authorizationRequest.redirect_uri))
+            {
+                
+            }
+
+            return null;
         }
     }
 }

@@ -115,7 +115,7 @@ namespace SimpleIdentityServer.Core.Jwt
             return this[claimName].ToString();
         }
 
-        private double GetDoubleClaim(string claimName)
+        public double GetDoubleClaim(string claimName)
         {
             if (!ContainsKey(claimName))
             {

@@ -77,5 +77,15 @@
         /// Requested Authentication Context Class References values.
         /// </summary>
         public string acr_values { get; set; }
+
+        /// <summary>
+        /// Self-contained parameter and can be optionally be signed and / or encrypted
+        /// </summary>
+        public string request { get; set; }
+
+        /// <summary>
+        /// Enables OpenID connect requests to be passed by reference rather than by value.
+        /// </summary>
+        public string request_uri { get; set; }
     }
 }

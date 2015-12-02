@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using Newtonsoft.Json;
@@ -6,7 +7,10 @@ using Newtonsoft.Json.Linq;
 
 using SimpleIdentityServer.Api.DTOs.Request;
 using SimpleIdentityServer.Api.ViewModels;
+using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Parameters;
+using Display = SimpleIdentityServer.Api.DTOs.Request.Display;
+using ResponseMode = SimpleIdentityServer.Api.DTOs.Request.ResponseMode;
 
 namespace SimpleIdentityServer.Api.Extensions
 {
@@ -89,6 +93,48 @@ namespace SimpleIdentityServer.Api.Extensions
                 ClientAssertion = request.client_assertion,
                 ClientAssertionType = request.client_assertion_type
             };
+        }
+
+        public static AuthorizationRequest ToAuthorizationRequest(this JwsPayload jwsPayload)
+        {
+            Display displayEnum;
+            ResponseMode responseModeEnum;
+            var displayVal =
+                jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.DisplayName);
+            var responseMode =
+                jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.ResponseModeName);
+            if (string.IsNullOrWhiteSpace(displayVal) || !Enum.TryParse(displayVal, out displayEnum))
+            {
+                displayEnum = Display.page;
+            }
+
+            if (string.IsNullOrWhiteSpace(responseMode) || !Enum.TryParse(responseMode, out responseModeEnum))
+            {
+                responseModeEnum = ResponseMode.query;
+            }
+
+            var result = new AuthorizationRequest
+            {
+                acr_values = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.AcrValuesName),
+                claims = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.ClaimsName),
+                client_id = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.ClientIdName),
+                display = displayEnum,
+                prompt = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.PromptName),
+                id_token_hint = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.IdTokenHintName),
+                max_age = jwsPayload.GetDoubleClaim(Core.Constants.StandardAuthorizationRequestParameterNames.MaxAgeName),
+                nonce = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.NonceName),
+                response_type = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.ResponseTypeName),
+                state = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.StateName),
+                login_hint = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.LoginHintName),
+                redirect_uri = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.RedirectUriName),
+                request = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.RequestName),
+                request_uri = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.RequestUriName),
+                scope = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.ScopeName),
+                response_mode = responseModeEnum,
+                ui_locales = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.UiLocalesName),
+            };
+
+            return result;
         }
 
         private static void FillInClaimsParameter(

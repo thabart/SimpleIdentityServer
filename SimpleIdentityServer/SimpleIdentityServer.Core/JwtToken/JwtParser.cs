@@ -1,5 +1,4 @@
-﻿using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.Core.Jwt;
+﻿using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Encrypt;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Core.Repositories;

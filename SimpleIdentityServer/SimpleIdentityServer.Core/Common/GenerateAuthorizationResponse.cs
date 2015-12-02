@@ -151,6 +151,7 @@ namespace SimpleIdentityServer.Core.Common
                 jwsPayload = _jwtGenerator.GenerateJwsPayloadForScopes(claimsPrincipal, authorizationParameter);
             }
 
+
             var idToken = _jwtGenerator.Sign(jwsPayload, authorizationParameter);
             return _jwtGenerator.Encrypt(idToken, authorizationParameter);
         }
