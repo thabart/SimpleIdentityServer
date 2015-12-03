@@ -1,0 +1,176 @@
+Test info
+
+Profile: {'openid-configuration': 'config', 'response_type': 'code', 'crypto': '', 'registration': 'static'}
+Timestamp: 2015-12-03T17:07:55Z
+Test description: Trying to use authorization code twice should result in an error [Basic, Hybrid]
+Test ID: OP-OAuth-2nd
+Issuer: https://simpleidentityserver.azurewebsites.net
+Test output
+
+
+__AuthorizationRequest:pre__
+[check-response-type]
+	status: OK
+	description: Checks that the asked for response type are among the supported
+[check-endpoint]
+	status: OK
+	description: Checks that the necessary endpoint exists at a server
+__After completing the test flow:__
+[verify-response]
+	status: OK
+	description: Checks that the last response was one of a possible set of OpenID Connect Responses
+__X:==== END ====__
+Trace output
+
+
+0.000427 ------------ DiscoveryRequest ------------
+0.000442 Provider info discover from 'https://simpleidentityserver.azurewebsites.net'
+0.000449 --> URL: https://simpleidentityserver.azurewebsites.net/.well-known/openid-configuration
+0.449769 ProviderConfigurationResponse: {
+  "authorization_endpoint": "https://simpleidentityserver.azurewebsites.net/authorization",
+  "check_session_iframe": "https://simpleidentityserver.azurewebsites.net/check_session",
+  "claims_parameter_supported": true,
+  "claims_supported": [
+    "sub",
+    "name",
+    "family_name",
+    "given_name",
+    "middle_name",
+    "nickname",
+    "preferred_username",
+    "profile",
+    "picture",
+    "website",
+    "gender",
+    "birthdate",
+    "zoneinfo",
+    "locale",
+    "updated_at",
+    "email",
+    "email_verified",
+    "address",
+    "phone_number",
+    "phone_number_verified"
+  ],
+  "end_session_endpoint": "https://simpleidentityserver.azurewebsites.net/end_session",
+  "grant_types_supported": [
+    "authorization_code",
+    "client_credentials",
+    "password",
+    "refresh_token",
+    "implicit"
+  ],
+  "id_token_signing_alg_values_supported": [
+    "RS256"
+  ],
+  "issuer": "https://simpleidentityserver.azurewebsites.net",
+  "jwks_uri": "https://simpleidentityserver.azurewebsites.net/jwks",
+  "request_parameter_supported": false,
+  "request_uri_parameter_supported": true,
+  "require_request_uri_registration": true,
+  "response_modes_supported": [
+    "query"
+  ],
+  "response_types_supported": [
+    "code",
+    "id_token",
+    "id_token token",
+    "code id_token",
+    "code token",
+    "code id_token token"
+  ],
+  "revocation_endpoint": "https://simpleidentityserver.azurewebsites.net/revocation",
+  "scopes_supported": [
+    "openid",
+    "profile",
+    "email",
+    "address",
+    "phone"
+  ],
+  "subject_types_supported": [
+    "public"
+  ],
+  "token_endpoint": "https://simpleidentityserver.azurewebsites.net/token",
+  "token_endpoint_auth_methods_supported": [
+    "client_secret_basic",
+    "client_secret_post"
+  ],
+  "userinfo_endpoint": "https://simpleidentityserver.azurewebsites.net/userinfo",
+  "version": "1.0"
+}
+0.916623 JWKS: {
+  "keys": [
+    {
+      "alg": "RS256",
+      "e": "AQAB",
+      "kid": "a3rMUgMFv9tPclLa6yF3zAkfquE",
+      "kty": "RSA",
+      "n": "pL5veMFciYlnmAMmcsd1r-zMvXgbn9R5AB_ahKEU7fBVxarblFO4wL7jKrEyAo5cZIpQ0pB_vpEs-o7HV8L05TBfPD8Z2czl7kEGAFZjnPpsN8J5SUrr3Q8Ugrs3y6Qa2gVSlnAz2VN1nMifNIfhHxpv4oPMkwzVEi2dmW3NTwc",
+      "use": "sig"
+    },
+    {
+      "alg": "RSA1_5",
+      "e": "AQAB",
+      "kid": "3",
+      "kty": "RSA",
+      "n": "pL5veMFciYlnmAMmcsd1r-zMvXgbn9R5AB_ahKEU7fBVxarblFO4wL7jKrEyAo5cZIpQ0pB_vpEs-o7HV8L05TBfPD8Z2czl7kEGAFZjnPpsN8J5SUrr3Q8Ugrs3y6Qa2gVSlnAz2VN1nMifNIfhHxpv4oPMkwzVEi2dmW3NTwc",
+      "use": "enc"
+    }
+  ]
+}
+0.928869 ------------ AuthorizationRequest ------------
+0.929279 --> URL: https://simpleidentityserver.azurewebsites.net/authorization?scope=openid&state=wsPwOGj936U4P3Gp&redirect_uri=https%3A%2F%2Fop.certification.openid.net%3A60186%2Fauthz_cb&response_type=code&client_id=MyBlog
+0.929288 --> BODY: None
+1.438084 <-- code=89056695-55c3-426e-8b3c-066b89adc657&state=wsPwOGj936U4P3Gp
+1.438507 AuthorizationResponse: {
+  "code": "89056695-55c3-426e-8b3c-066b89adc657",
+  "state": "wsPwOGj936U4P3Gp"
+}
+1.438865 ------------ AccessTokenRequest ------------
+1.439241 --> URL: https://simpleidentityserver.azurewebsites.net/token
+1.439248 --> BODY: code=89056695-55c3-426e-8b3c-066b89adc657&grant_type=authorization_code&redirect_uri=https%3A%2F%2Fop.certification.openid.net%3A60186%2Fauthz_cb
+1.439259 --> HEADERS: {'Content-Type': 'application/x-www-form-urlencoded', 'Authorization': u'Basic TXlCbG9nOk15QmxvZw=='}
+2.130646 <-- STATUS: 200
+2.130701 <-- BODY: {"access_token":"MzdkZjhjMDctOTNhMS00ZmJlLWJkNGMtOGRiMWI4Y2M5MmI3","id_token":"eyJhbGciOiJSUzI1NiIsImtpZCI6ImEzck1VZ01Gdjl0UGNsTGE2eUYzekFrZnF1RSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL3NpbXBsZWlkZW50aXR5c2VydmVyLmF6dXJld2Vic2l0ZXMubmV0LyIsImF1ZCI6WyJNeUJsb2ciXSwiZXhwIjoxNDUyMTYyNDc0LCJpYXQiOjE0NDkxNjI0NzQsInN1YiI6ImFkbWluaXN0cmF0b3JAaG90bWFpbC5iZSIsImFjciI6Im9wZW5pZC5wYXBlLmF1dGhfbGV2ZWwubnMucGFzc3dvcmQ9MSIsImFtciI6InBhc3N3b3JkIiwiYXpwIjoiTXlCbG9nIn0.QsexPjxJrrNqsV5NOUtSx9LBeIPgCGuEwY7JLor9Fu4AID_JLgLTcSsxiTLHKpBAFJzib4d--1W_nb59UEAQCZXJPR5rtGRhrPiTDamp__1y3xjvaM4KW7yxxEVoFcK7yNrmHfpWfgp9I774y9fkCJjy1zWL0Ch746WjhRe94EQ","token_type":"Bearer","refresh_token":"NzI4MDBmZDAtOWVkNC00NzFhLTk1ZTctYWE3ODJkM2YyYzBi","expires_in":3600,"scope":"openid"}
+2.602187 AccessTokenResponse: {
+  "access_token": "MzdkZjhjMDctOTNhMS00ZmJlLWJkNGMtOGRiMWI4Y2M5MmI3",
+  "expires_in": 3600,
+  "id_token": {
+    "claims": {
+      "acr": "openid.pape.auth_level.ns.password=1",
+      "amr": [
+        "password"
+      ],
+      "aud": [
+        "MyBlog"
+      ],
+      "azp": "MyBlog",
+      "exp": 1452162474,
+      "iat": 1449162474,
+      "iss": "https://simpleidentityserver.azurewebsites.net/",
+      "sub": "administrator@hotmail.be"
+    },
+    "jws header parameters": {
+      "alg": "RS256",
+      "kid": "a3rMUgMFv9tPclLa6yF3zAkfquE",
+      "typ": "JWT"
+    }
+  },
+  "refresh_token": "NzI4MDBmZDAtOWVkNC00NzFhLTk1ZTctYWE3ODJkM2YyYzBi",
+  "scope": "openid",
+  "token_type": "Bearer"
+}
+2.615396 ------------ AccessTokenRequest ------------
+2.615778 --> URL: https://simpleidentityserver.azurewebsites.net/token
+2.615785 --> BODY: code=89056695-55c3-426e-8b3c-066b89adc657&grant_type=authorization_code&redirect_uri=https%3A%2F%2Fop.certification.openid.net%3A60186%2Fauthz_cb
+2.615796 --> HEADERS: {'Content-Type': 'application/x-www-form-urlencoded', 'Authorization': u'Basic TXlCbG9nOk15QmxvZw=='}
+3.084018 <-- STATUS: 400
+3.084147 ErrorResponse: {
+  "error": "invalid_grant",
+  "error_description": "the authorization code is not correct",
+  "error_uri": null
+}
+3.095531 ==== END ====
+Result
+
+PASSED
