@@ -85,5 +85,12 @@
             "the client assertion cannot be decrypted";
 
         public static string TheClaimIsNotValid = "the claim {0} is not valid";
+
+        public static string TheRequestUriParameterIsNotWellFormed = "the request_uri parameter is not well formed";
+
+        public static string TheRequestDownloadedFromRequestUriIsNotValid =
+            "the request downloaded from request URI is not valid";
+
+        public static string TheRequestParameterIsNotCorrect = "the request parameter is not correct";
     }
 }

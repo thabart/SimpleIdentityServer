@@ -137,6 +137,64 @@ namespace SimpleIdentityServer.Api.Extensions
             return result;
         }
 
+        public static JwsPayload ToJwsPayload(this AuthorizationRequest request)
+        {
+            return new JwsPayload
+            {
+                {
+                    Core.Constants.StandardAuthorizationRequestParameterNames.AcrValuesName, request.acr_values
+                },
+                {
+                    Core.Constants.StandardAuthorizationRequestParameterNames.ClaimsName, request.claims
+                },
+                {
+                    Core.Constants.StandardAuthorizationRequestParameterNames.ClientIdName, request.client_id
+                },
+                {
+                    Core.Constants.StandardAuthorizationRequestParameterNames.DisplayName, Enum.GetName(typeof(Display), request.display)
+                },
+                {
+                    Core.Constants.StandardAuthorizationRequestParameterNames.PromptName, request.prompt
+                },
+                {
+                    Core.Constants.StandardAuthorizationRequestParameterNames.IdTokenHintName, request.id_token_hint
+                },
+                {
+                    Core.Constants.StandardAuthorizationRequestParameterNames.MaxAgeName, request.max_age
+                },
+                {
+                    Core.Constants.StandardAuthorizationRequestParameterNames.NonceName, request.nonce
+                },
+                {
+                    Core.Constants.StandardAuthorizationRequestParameterNames.ResponseTypeName, request.response_type
+                },
+                {
+                    Core.Constants.StandardAuthorizationRequestParameterNames.StateName, request.state
+                },
+                {
+                    Core.Constants.StandardAuthorizationRequestParameterNames.LoginHintName, request.login_hint
+                },
+                {
+                    Core.Constants.StandardAuthorizationRequestParameterNames.RedirectUriName, request.redirect_uri
+                },
+                {
+                    Core.Constants.StandardAuthorizationRequestParameterNames.RequestName, request.request
+                },
+                {
+                    Core.Constants.StandardAuthorizationRequestParameterNames.RequestUriName, request.request_uri
+                },
+                {
+                    Core.Constants.StandardAuthorizationRequestParameterNames.ScopeName, request.scope
+                },
+                {
+                    Core.Constants.StandardAuthorizationRequestParameterNames.ResponseModeName, Enum.GetName(typeof(ResponseMode), request.response_mode)
+                },
+                {
+                    Core.Constants.StandardAuthorizationRequestParameterNames.UiLocalesName, request.ui_locales
+                }
+            };
+        }
+
         private static void FillInClaimsParameter(
             JToken token,
             List<ClaimParameter> claimParameters)

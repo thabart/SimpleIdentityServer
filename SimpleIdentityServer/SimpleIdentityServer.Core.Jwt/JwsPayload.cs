@@ -97,7 +97,7 @@ namespace SimpleIdentityServer.Core.Jwt
 
         public string GetClaimValue(string claimName)
         {
-            if (!ContainsKey(claimName))
+            if (!ContainsKey(claimName) || this[claimName] == null)
             {
                 return null;
             }

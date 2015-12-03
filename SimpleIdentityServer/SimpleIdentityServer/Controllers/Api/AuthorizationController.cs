@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web.Http;
-using System.Web.Script.Serialization;
-using Newtonsoft.Json;
+
 using SimpleIdentityServer.Api.DTOs.Request;
 using SimpleIdentityServer.Api.Extensions;
 using SimpleIdentityServer.Api.Parsers;
 using SimpleIdentityServer.Core.Api.Authorization;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Results;
@@ -44,7 +43,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             _jwtParser = jwtParser;
         }
 
-        public HttpResponseMessage Get([FromUri]AuthorizationRequest authorizationRequest)
+        public async Task<HttpResponseMessage> Get([FromUri]AuthorizationRequest authorizationRequest)
         {
             if (authorizationRequest == null)
             {
@@ -53,7 +52,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
                     ErrorDescriptions.RequestIsNotValid);
             }
 
-            authorizationRequest = ResolveAuthorizationRequest(authorizationRequest);
+            authorizationRequest = await ResolveAuthorizationRequest(authorizationRequest);
             var encryptedRequest = _protector.Encrypt(authorizationRequest);
             var encodedRequest = _encoder.Encode(encryptedRequest);
             var authenticatedUser = this.GetAuthenticatedUser();
@@ -103,32 +102,71 @@ namespace SimpleIdentityServer.Api.Controllers.Api
         /// </summary>
         /// <param name="authorizationRequest"></param>
         /// <returns></returns>
-        private AuthorizationRequest ResolveAuthorizationRequest(AuthorizationRequest authorizationRequest)
+        private async Task<AuthorizationRequest> ResolveAuthorizationRequest(AuthorizationRequest authorizationRequest)
         {
-            if (string.IsNullOrWhiteSpace(authorizationRequest.request) &&
-                string.IsNullOrWhiteSpace(authorizationRequest.request_uri))
-            {
-                return authorizationRequest;
-            }
-
-            JwsPayload jwsPayload;
             if (!string.IsNullOrWhiteSpace(authorizationRequest.request))
             {
-                var decrypted = _jwtParser.Decrypt(authorizationRequest.request);
-                jwsPayload = _jwtParser.UnSign(decrypted);
-                if (jwsPayload != null)
+                var result = GetAuthorizationRequestFromJwt(authorizationRequest.request);
+                if (result == null)
                 {
-                    return jwsPayload.ToAuthorizationRequest();
+                    throw new IdentityServerExceptionWithState(
+                        ErrorCodes.InvalidRequestCode,
+                        ErrorDescriptions.TheRequestParameterIsNotCorrect,
+                        authorizationRequest.state);
                 }
+
+                return result;
             }
 
-            // TODO : process the request_uri parameter.
-            if (!string.IsNullOrWhiteSpace(authorizationRequest.redirect_uri))
+            if (!string.IsNullOrWhiteSpace(authorizationRequest.request_uri))
             {
-                
+                Uri uri;
+                if (Uri.TryCreate(authorizationRequest.request_uri, UriKind.Absolute, out uri))
+                {
+                    try
+                    {
+                        var httpClient = new HttpClient
+                        {
+                            BaseAddress = uri
+                        };
+
+                        var httpResult = await httpClient.GetAsync(uri.AbsoluteUri);
+                        httpResult.EnsureSuccessStatusCode();
+                        var request = await httpResult.Content.ReadAsStringAsync();
+                        var result = GetAuthorizationRequestFromJwt(request);
+                        if (result == null)
+                        {
+                            throw new IdentityServerExceptionWithState(
+                                ErrorCodes.InvalidRequestCode,
+                                ErrorDescriptions.TheRequestDownloadedFromRequestUriIsNotValid,
+                                authorizationRequest.state);
+                        }
+
+                        return result;
+                    }
+                    catch (Exception)
+                    {
+                        throw new IdentityServerExceptionWithState(
+                            ErrorCodes.InvalidRequestCode,
+                            ErrorDescriptions.TheRequestDownloadedFromRequestUriIsNotValid,
+                            authorizationRequest.state);
+                    }
+                }
+
+                throw new IdentityServerExceptionWithState(
+                    ErrorCodes.InvalidRequestUriCode,
+                    ErrorDescriptions.TheRequestUriParameterIsNotWellFormed,
+                    authorizationRequest.state);
             }
 
-            return null;
+            return authorizationRequest;
+        }
+
+        private AuthorizationRequest GetAuthorizationRequestFromJwt(string jwt)
+        {
+            var decrypted = _jwtParser.Decrypt(jwt);
+            var jwsPayload = _jwtParser.UnSign(decrypted);
+            return jwsPayload == null ? null : jwsPayload.ToAuthorizationRequest();
         }
     }
 }

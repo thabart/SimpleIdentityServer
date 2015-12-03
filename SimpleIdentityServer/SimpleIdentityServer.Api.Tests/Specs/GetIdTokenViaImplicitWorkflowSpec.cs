@@ -11,6 +11,7 @@ using NUnit.Framework;
 
 using SimpleIdentityServer.Api.DTOs.Request;
 using SimpleIdentityServer.Api.DTOs.Response;
+using SimpleIdentityServer.Api.Extensions;
 using SimpleIdentityServer.Api.Tests.Common;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Jwt.Encrypt;
@@ -51,6 +52,8 @@ namespace SimpleIdentityServer.Api.Tests.Specs
 
         private string _combinedHeaderAndPayload;
 
+        private AuthorizationRequest _authorizationRequest;
+
         public GetIdTokenViaImplicitWorkflowSpec(GlobalContext context)
         {
             var fakeGetRateLimitationElementOperation = new FakeGetRateLimitationElementOperation
@@ -82,10 +85,34 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             FakeDataSource.Instance().ResourceOwners.Add(_resourceOwner);
         }
 
-        [When("requesting an authorization")]
-        public void WhenRequestingAnAuthorizationCode(Table table)
+        [Given("create an authorization request")]
+        public void GivenCreateAnAuthorizationRequest(Table table)
         {
-            var authorizationRequest = table.CreateInstance<AuthorizationRequest>();
+            _authorizationRequest = table.CreateInstance<AuthorizationRequest>();
+        }
+
+        [Given("sign the authorization request with (.*) kid and algorithm (.*)")]
+        public void GivenSignTheAuthorizationRequestWithKid(string kid, JwsAlg jwsAlg)
+        {
+            var jsonWebKey = FakeDataSource.Instance().JsonWebKeys.FirstOrDefault(j => j.Kid == kid);
+            var jwsPayload = _authorizationRequest.ToJwsPayload();
+            Assert.IsNotNull(jsonWebKey);
+            var jwsGenerator = _context.UnityContainer.Resolve<IJwsGenerator>();
+            _authorizationRequest.request = jwsGenerator.Generate(jwsPayload, jwsAlg, jsonWebKey.ToBusiness());
+        }
+
+        [Given("encrypt the authorization request with (.*) kid, JweAlg: (.*) and JweEnc: (.*)")]
+        public void GivenSignTheAuthorizationRequestWithKid(string kid, JweAlg jweAlg, JweEnc jweEnc)
+        {
+            var jsonWebKey = FakeDataSource.Instance().JsonWebKeys.FirstOrDefault(j => j.Kid == kid);
+            Assert.IsNotNull(jsonWebKey);
+            var jweGenerator = _context.UnityContainer.Resolve<IJweGenerator>();
+            _authorizationRequest.request = jweGenerator.GenerateJwe(_authorizationRequest.request, jweAlg, jweEnc, jsonWebKey.ToBusiness());
+        }
+
+        [When("requesting an authorization")]
+        public void WhenRequestingAnAuthorizationCode()
+        {
             // Fake the authentication filter.
             var httpConfiguration = new HttpConfiguration();
             if (_resourceOwner != null)
@@ -100,15 +127,16 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             {
                 var httpClient = server.HttpClient;
                 var url = string.Format(
-                    "/authorization?scope={0}&response_type={1}&client_id={2}&redirect_uri={3}&prompt={4}&state={5}&nonce={6}&claims={7}",
-                    authorizationRequest.scope,
-                    authorizationRequest.response_type,
-                    authorizationRequest.client_id,
-                    authorizationRequest.redirect_uri,
-                    authorizationRequest.prompt,
-                    authorizationRequest.state,
-                    authorizationRequest.nonce,
-                    authorizationRequest.claims);
+                    "/authorization?scope={0}&response_type={1}&client_id={2}&redirect_uri={3}&prompt={4}&state={5}&nonce={6}&claims={7}&request={8}",
+                    _authorizationRequest.scope,
+                    _authorizationRequest.response_type,
+                    _authorizationRequest.client_id,
+                    _authorizationRequest.redirect_uri,
+                    _authorizationRequest.prompt,
+                    _authorizationRequest.state,
+                    _authorizationRequest.nonce,
+                    _authorizationRequest.claims,
+                    _authorizationRequest.request);
                 _httpResponseMessage = httpClient.GetAsync(url).Result;
             }
         }
