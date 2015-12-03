@@ -18,13 +18,13 @@
     </div>
     <div class="row">
         <div class="page-header">
-            <h3>This application would like to:</h3>
+            <h3>@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.ApplicationWouldLikeToCode]</h3>
         </div>
     </div>
     @if (Model.AllowedScopeDescriptions.Any())
     {
         <div class="row">
-            <h4>Scopes</h4>
+            <h4>@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.ScopesCode]</h4>
         </div>
         <div class="row">
             <ul class="list-group">
@@ -41,7 +41,7 @@
     @if (Model.AllowedIndividualClaims.Any())
     {
         <div class="row">
-            <h4>Individual claims</h4>
+            <h4>@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.IndividualClaimsCode]</h4>
         </div>
         <div class="row">
             <ul class="list-group">
@@ -56,7 +56,7 @@
     }
     
     <div class="row">
-        <a href="@Url.Action("Cancel", new { code = Model.Code })" class="btn btn-default">Cancel</a>
-        <a href="@Url.Action("Confirm", new { code = Model.Code })" class="btn btn-default">Confirm</a>
+        <a href="@Url.Action("Cancel", new { code = Model.Code })" class="btn btn-default">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.CancelCode]</a>
+        <a href="@Url.Action("Confirm", new { code = Model.Code })" class="btn btn-default">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.ConfirmCode]</a>
     </div>
 </div>

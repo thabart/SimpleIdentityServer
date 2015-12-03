@@ -50,6 +50,7 @@ namespace SimpleIdentityServer.Api
             FakeDataSource.Instance().Scopes = Scopes.Get();
             FakeDataSource.Instance().ResourceOwners = ResourceOwners.Get();
             FakeDataSource.Instance().JsonWebKeys = JsonWebKeys.Get();
+            FakeDataSource.Instance().Translations = Translations.Get();
         }
 
         private static void ConfigureUnity(HttpConfiguration httpConfiguration)

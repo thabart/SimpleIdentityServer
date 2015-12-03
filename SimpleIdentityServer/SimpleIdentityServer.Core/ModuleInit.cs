@@ -25,6 +25,7 @@ using SimpleIdentityServer.Core.JwtToken.Validator;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Api.UserInfo;
 using SimpleIdentityServer.Core.Api.UserInfo.Actions;
+using SimpleIdentityServer.Core.Translation;
 
 namespace SimpleIdentityServer.Core
 {
@@ -93,6 +94,8 @@ namespace SimpleIdentityServer.Core
             register.RegisterType<IClientSecretBasicAuthentication, ClientSecretBasicAuthentication>();
             register.RegisterType<IClientSecretPostAuthentication, ClientSecretPostAuthentication>();
             register.RegisterType<IClientAssertionAuthentication, ClientAssertionAuthentication>();
+
+            register.RegisterType<ITranslationManager, TranslationManager>();
 
             register.RegisterType<IHttpClientFactory, HttpClientFactory>();
         }

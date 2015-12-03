@@ -41,6 +41,7 @@ using System;
 using SimpleIdentityServer.Core.Jwt.Encrypt.Encryption;
 using SimpleIdentityServer.Core.Api.UserInfo;
 using SimpleIdentityServer.Core.Api.UserInfo.Actions;
+using SimpleIdentityServer.Core.Translation;
 
 namespace SimpleIdentityServer.Api.Tests.Common
 {
@@ -129,6 +130,7 @@ namespace SimpleIdentityServer.Api.Tests.Common
             UnityContainer.RegisterType<IAuthorizationCodeRepository, FakeAuthorizationCodeRepository>();
             UnityContainer.RegisterType<IJsonWebKeyRepository, FakeJsonWebKeyRepository>();
             UnityContainer.RegisterType<IJwtBearerClientRepository, FakeJwtBearerClientRepository>();
+            UnityContainer.RegisterType<ITranslationRepository, FakeTranslationRepository>();
 
             UnityContainer.RegisterType<IParameterParserHelper, ParameterParserHelper>();
             UnityContainer.RegisterType<IActionResultFactory, ActionResultFactory>();
@@ -189,6 +191,8 @@ namespace SimpleIdentityServer.Api.Tests.Common
             UnityContainer.RegisterType<IClientSecretBasicAuthentication, ClientSecretBasicAuthentication>();
             UnityContainer.RegisterType<IClientSecretPostAuthentication, ClientSecretPostAuthentication>();
             UnityContainer.RegisterType<IClientAssertionAuthentication, ClientAssertionAuthentication>();
+
+            UnityContainer.RegisterType<ITranslationManager, TranslationManager>();
         }
     }
 }

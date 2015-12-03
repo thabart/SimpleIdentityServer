@@ -25,5 +25,10 @@ namespace SimpleIdentityServer.Api.Tests.Common.Fakes
         {
             return TokenValidityPeriod;
         }
+
+        public string DefaultLanguage()
+        {
+            return "en";
+        }
     }
 }

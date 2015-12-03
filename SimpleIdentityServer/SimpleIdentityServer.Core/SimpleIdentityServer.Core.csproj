@@ -128,11 +128,14 @@
     <Compile Include="JwtToken\JwtParser.cs" />
     <Compile Include="JwtToken\Validator\JwtClientParameterValidator.cs" />
     <Compile Include="Models\Address.cs" />
+    <Compile Include="Models\Translation.cs" />
     <Compile Include="Parameters\AuthorizationCodeGrantTypeParameter.cs" />
     <Compile Include="Parameters\ClientCredentialsParameter.cs" />
     <Compile Include="Repositories\IJsonWebKeyRepository.cs" />
     <Compile Include="Repositories\IJwtBearerClientRepository.cs" />
+    <Compile Include="Repositories\ITranslationRepository.cs" />
     <Compile Include="Results\DiscoveryInformation.cs" />
+    <Compile Include="Translation\TranslationManager.cs" />
     <Compile Include="Validators\AuthorizationCodeGrantTypeParameterAuthEdpValidator.cs" />
     <Compile Include="Validators\AuthorizationCodeGrantTypeParameterTokenEdpValidator.cs" />
     <Compile Include="Validators\GrantedTokenValidator.cs" />

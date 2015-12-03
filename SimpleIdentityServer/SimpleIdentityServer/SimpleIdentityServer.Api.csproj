@@ -209,6 +209,7 @@
     <Compile Include="Configuration\ResourceOwners.cs" />
     <Compile Include="Configuration\Scopes.cs" />
     <Compile Include="Configuration\ConcreteSimpleIdentityServerConfigurator.cs" />
+    <Compile Include="Configuration\Translations.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Controllers\Api\AuthorizationController.cs" />
     <Compile Include="Controllers\Api\DiscoveryController.cs" />

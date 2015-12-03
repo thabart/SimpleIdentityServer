@@ -12,6 +12,7 @@ using System.Linq;
 using System.Web.Mvc;
 
 using ActionResult = System.Web.Mvc.ActionResult;
+using SimpleIdentityServer.Core.Translation;
 
 namespace SimpleIdentityServer.Api.Controllers
 {
@@ -26,26 +27,42 @@ namespace SimpleIdentityServer.Api.Controllers
 
         private readonly IEncoder _encoder;
 
+        private readonly ITranslationManager _translationManager;
+
         public ConsentController(
             IConsentActions consentActions,
             IProtector protector,
             IActionResultParser actionResultParser,
-            IEncoder encoder)
+            IEncoder encoder,
+            ITranslationManager translationManager)
         {
             _consentActions = consentActions;
             _protector = protector;
             _actionResultParser = actionResultParser;
             _encoder = encoder;
+            _translationManager = translationManager;
         }
         
         public ActionResult Index(string code)
         {
             code = _encoder.Decode(code);
             var request = _protector.Decrypt<AuthorizationRequest>(code);
+            var uiLocales = request.ui_locales;
             var client = new Client();
             var scopes = new List<Scope>();
             var claims = new List<string>();
             _consentActions.DisplayConsent(request.ToParameter(), out client, out scopes, out claims);
+
+            // Retrieve the translation and store them in a ViewBag
+            var translations = _translationManager.GetTranslations(request.ui_locales, new List<string>
+            {
+                Core.Constants.StandardTranslationCodes.ApplicationWouldLikeToCode,
+                Core.Constants.StandardTranslationCodes.IndividualClaimsCode,
+                Core.Constants.StandardTranslationCodes.ScopesCode,
+                Core.Constants.StandardTranslationCodes.CancelCode,
+                Core.Constants.StandardTranslationCodes.ConfirmCode
+            });
+
             var viewModel = new ConsentViewModel
             {
                 ClientDisplayName = client.DisplayName,
@@ -54,6 +71,7 @@ namespace SimpleIdentityServer.Api.Controllers
                 Code = code
             };
 
+            ViewBag.Translations = translations;
             return View(viewModel);
         }
         

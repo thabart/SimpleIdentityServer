@@ -30,6 +30,16 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
             };
         }
 
+        public static FAKEMODELS.Translation ToFake(this MODELS.Translation translation)
+        {
+            return new FAKEMODELS.Translation
+            {
+                Code = translation.Code,
+                LanguageTag = translation.LanguageTag,
+                Value = translation.Value
+            };
+        }
+
         public static FAKEMODELS.RedirectionUrl ToFake(this MODELS.RedirectionUrl redirectionUrl)
         {
             return new FAKEMODELS.RedirectionUrl
@@ -267,6 +277,21 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
                 Claims = scope.Claims,
                 Type = scope.Type.ToBusiness(),
                 IsDisplayedInConsent = scope.IsDisplayedInConsent
+            };
+        }
+        
+        public static MODELS.Translation ToBusiness(this FAKEMODELS.Translation translation)
+        {
+            if (translation == null)
+            {
+                return null;
+            }
+
+            return new MODELS.Translation
+            {
+                Code = translation.Code,
+                LanguageTag = translation.LanguageTag,
+                Value = translation.Value
             };
         }
 

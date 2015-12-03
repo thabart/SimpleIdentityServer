@@ -1,4 +1,6 @@
-﻿namespace SimpleIdentityServer.Core.Configuration
+﻿using System;
+
+namespace SimpleIdentityServer.Core.Configuration
 {
     public interface ISimpleIdentityServerConfigurator
     {
@@ -7,6 +9,8 @@
         double GetTokenValidityPeriodInSeconds();
 
         double GetAuthorizationCodeValidityPeriodInSeconds();
+
+        string DefaultLanguage();
     }
 
     public class SimpleIdentityServerConfigurator : ISimpleIdentityServerConfigurator
@@ -37,6 +41,11 @@
         public double GetAuthorizationCodeValidityPeriodInSeconds()
         {
             return 3000000;
+        }
+
+        public string DefaultLanguage()
+        {
+            return "en";
         }
     }
 }

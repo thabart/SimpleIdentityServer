@@ -21,7 +21,9 @@ namespace SimpleIdentityServer.DataAccess.Fake
 
         private List<JsonWebKey> _jsonWebKeys;
 
-        private List<GrantedToken> _grantedTokens; 
+        private List<GrantedToken> _grantedTokens;
+
+        private List<Translation> _translations;
 
         private FakeDataSource()
         {
@@ -98,6 +100,17 @@ namespace SimpleIdentityServer.DataAccess.Fake
             }
         }
 
+        public List<Translation> Translations
+        {
+            get
+            {
+                return _translations;
+            } set
+            {
+                _translations = value;
+            }
+        }
+
         public List<JsonWebKey> JsonWebKeys
         {
             get { return _jsonWebKeys; }
@@ -120,6 +133,7 @@ namespace SimpleIdentityServer.DataAccess.Fake
             _authorizationCodes = new List<AuthorizationCode>();
             _jsonWebKeys = new List<JsonWebKey>();
             _grantedTokens = new List<GrantedToken>();
+            _translations = new List<Translation>();
         }
     }
 }

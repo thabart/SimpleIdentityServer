@@ -6,6 +6,7 @@ using SimpleIdentityServer.Api.Parsers;
 using SimpleIdentityServer.Api.ViewModels;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Protector;
+using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.Authenticate;
 using System;
 using System.Collections.Generic;
@@ -26,16 +27,20 @@ namespace SimpleIdentityServer.Api.Controllers
 
         private readonly IEncoder _encoder;
 
+        private readonly ITranslationManager _translationManager;
+
         public AuthenticateController(
             IAuthenticateActions authenticateActions,
             IActionResultParser actionResultParser,
             IProtector protector,
-            IEncoder encoder)
+            IEncoder encoder,
+            ITranslationManager translationManager)
         {
             _authenticateActions = authenticateActions;
             _actionResultParser = actionResultParser;
             _protector = protector;
             _encoder = encoder;
+            _translationManager = translationManager;
         }
 
         [HttpGet]
@@ -59,10 +64,20 @@ namespace SimpleIdentityServer.Api.Controllers
                     actionInformation.RouteValueDictionary);
             }
 
+            var translations = _translationManager.GetTranslations(request.ui_locales, new List<string>
+            {
+                Core.Constants.StandardTranslationCodes.LoginCode,
+                Core.Constants.StandardTranslationCodes.UserNameCode,
+                Core.Constants.StandardTranslationCodes.PasswordCode,
+                Core.Constants.StandardTranslationCodes.RememberMyLoginCode
+            });
+
             var viewModel = new AuthorizeViewModel
             {
                 Code = code
             };
+
+            ViewBag.Translations = translations;
             return View(viewModel);
         }
 

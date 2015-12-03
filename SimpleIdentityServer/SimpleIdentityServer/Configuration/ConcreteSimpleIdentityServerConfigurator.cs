@@ -1,4 +1,5 @@
-﻿using System.Web;
+﻿using System;
+using System.Web;
 using System.Web.Hosting;
 using SimpleIdentityServer.Core.Configuration;
 
@@ -31,6 +32,11 @@ namespace SimpleIdentityServer.Api.Configuration
         public double GetAuthorizationCodeValidityPeriodInSeconds()
         {
             return 3000000;
+        }
+
+        public string DefaultLanguage()
+        {
+            return "en";
         }
     }
 }

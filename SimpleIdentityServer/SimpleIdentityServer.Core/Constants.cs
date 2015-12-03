@@ -206,6 +206,27 @@ namespace SimpleIdentityServer.Core
             public static string CustomPasswordAuth = "http://schemas.simpleidentityserver.net/pape/policies/2015/05/password";
         }
 
+        public static class StandardTranslationCodes
+        {
+            public static string ApplicationWouldLikeToCode = "Application would like to";
+
+            public static string ScopesCode = "Scopes";
+
+            public static string IndividualClaimsCode = "individual claims";
+
+            public static string LoginCode = "Login";
+
+            public static string UserNameCode = "Username";
+
+            public static string PasswordCode = "Password";
+
+            public static string RememberMyLoginCode = "remember my login";
+
+            public static string CancelCode = "cancel";
+
+            public static string ConfirmCode = "confirm";
+        }
+
         public static readonly Dictionary<List<ResponseType>, AuthorizationFlow> MappingResponseTypesToAuthorizationFlows = new Dictionary<List<ResponseType>, AuthorizationFlow>
         {
             {

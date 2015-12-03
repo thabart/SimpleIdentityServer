@@ -9,7 +9,7 @@
 {
     <div class="page-header">
         <h1>
-            Login
+            @ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.LoginCode]
         </h1>
     </div>
 }
@@ -25,21 +25,21 @@
                 <fieldset>
                     <input type="hidden" value="@Model.Code" name="Code" />
                     <div class="form-group">
-                        <label>Username</label>
+                        <label>@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.UserNameCode]</label>
                         <input maxlength="100" class="form-control" value="@Model.UserName" name="UserName"/>
                     </div>
                     <div class="form-group">
-                        <label>Password</label>
+                        <label>@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.PasswordCode]</label>
                         <input maxlength="100" class="form-control" value="@Model.Password" name="Password" />
                     </div>
                     <div class="form-group">
                         <label>
                             <input type="checkbox" value="@Model.IsChecked" name="IsChecked" />
-                            <strong>Remember My login</strong>
+                            <strong>@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.RememberMyLoginCode]</strong>
                         </label>
                     </div>
                     <div class="form-group">
-                        <button type="submit" class="btn btn-primary">Login</button>
+                        <button type="submit" class="btn btn-primary">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.LoginCode]</button>
                     </div>
                 </fieldset>
             </form>
