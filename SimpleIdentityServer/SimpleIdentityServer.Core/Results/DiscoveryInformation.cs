@@ -17,7 +17,7 @@ namespace SimpleIdentityServer.Core.Results
         /// <summary>
         /// Gets or sets the list of the Claim Types supported.
         /// </summary>
-        [DataMember(Name = "claim_types_supported")]
+        //  [DataMember(Name = "claim_types_supported")]
         public string[] ClaimTypesSupported { get; set; }
 
         /// <summary>
