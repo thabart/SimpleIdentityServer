@@ -9,6 +9,7 @@ using SimpleIdentityServer.Api.Parsers;
 using SimpleIdentityServer.Core.Api.Authorization;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Errors;
+using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Results;
@@ -29,18 +30,22 @@ namespace SimpleIdentityServer.Api.Controllers.Api
 
         private readonly IJwtParser _jwtParser;
 
+        private readonly IHttpClientFactory _httpClientFactory;
+
         public AuthorizationController(
             IAuthorizationActions authorizationActions,
             IProtector protector,
             IEncoder encoder,
             IActionResultParser actionResultParser,
-            IJwtParser jwtParser)
+            IJwtParser jwtParser,
+            IHttpClientFactory httpClientFactory)
         {
             _authorizationActions = authorizationActions;
             _protector = protector;
             _encoder = encoder;
             _actionResultParser = actionResultParser;
             _jwtParser = jwtParser;
+            _httpClientFactory = httpClientFactory;
         }
 
         public async Task<HttpResponseMessage> Get([FromUri]AuthorizationRequest authorizationRequest)
@@ -125,10 +130,8 @@ namespace SimpleIdentityServer.Api.Controllers.Api
                 {
                     try
                     {
-                        var httpClient = new HttpClient
-                        {
-                            BaseAddress = uri
-                        };
+                        var httpClient = new HttpClient();
+                        httpClient.BaseAddress = uri;
 
                         var httpResult = await httpClient.GetAsync(uri.AbsoluteUri);
                         httpResult.EnsureSuccessStatusCode();

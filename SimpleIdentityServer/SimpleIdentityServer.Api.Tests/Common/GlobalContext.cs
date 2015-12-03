@@ -4,7 +4,7 @@ using System.Web.Http.Filters;
 using Microsoft.Owin.Testing;
 using Microsoft.Practices.EnterpriseLibrary.Caching;
 using Microsoft.Practices.Unity;
-
+using Owin;
 using SimpleIdentityServer.Api.Configuration;
 using SimpleIdentityServer.Api.Parsers;
 using SimpleIdentityServer.Api.Tests.Common.Fakes;
@@ -37,7 +37,6 @@ using SimpleIdentityServer.DataAccess.Fake.Repositories;
 using SimpleIdentityServer.RateLimitation.Configuration;
 using SimpleIdentityServer.Core.JwtToken.Validator;
 using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Api.Controllers.Api;
 using System;
 using SimpleIdentityServer.Core.Jwt.Encrypt.Encryption;
 using SimpleIdentityServer.Core.Api.UserInfo;
@@ -69,13 +68,22 @@ namespace SimpleIdentityServer.Api.Tests.Common
             return GetServer(configuration);
         }
 
-        private TestServer GetServer(HttpConfiguration configuration)
+        public TestServer CreateServer(HttpConfiguration configuration, Action<IAppBuilder> callback)
+        {
+            return GetServer(configuration, callback);
+        }
+
+        private TestServer GetServer(HttpConfiguration configuration, Action<IAppBuilder> callback = null)
         {
             return TestServer.Create(app =>
             {
                 RegisterFilterInjector(configuration, UnityContainer);
                 configuration.DependencyResolver = new UnityResolver(UnityContainer);
                 WebApiConfig.Register(configuration, app);
+                if (callback != null)
+                {
+                    callback(app);
+                }
             });
         }
 
@@ -124,6 +132,7 @@ namespace SimpleIdentityServer.Api.Tests.Common
 
             UnityContainer.RegisterType<IParameterParserHelper, ParameterParserHelper>();
             UnityContainer.RegisterType<IActionResultFactory, ActionResultFactory>();
+            UnityContainer.RegisterType<IHttpClientFactory, HttpClientFactory>();
 
             UnityContainer
                 .RegisterType<IAuthorizationActions, AuthorizationActions>

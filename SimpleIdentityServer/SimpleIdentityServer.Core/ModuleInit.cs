@@ -93,6 +93,8 @@ namespace SimpleIdentityServer.Core
             register.RegisterType<IClientSecretBasicAuthentication, ClientSecretBasicAuthentication>();
             register.RegisterType<IClientSecretPostAuthentication, ClientSecretPostAuthentication>();
             register.RegisterType<IClientAssertionAuthentication, ClientAssertionAuthentication>();
+
+            register.RegisterType<IHttpClientFactory, HttpClientFactory>();
         }
     }
 }

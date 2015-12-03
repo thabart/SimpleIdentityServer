@@ -8,6 +8,7 @@ using SimpleIdentityServer.Api.Tests.Common;
 using SimpleIdentityServer.Api.Tests.Common.Fakes;
 using SimpleIdentityServer.Api.Tests.Common.Fakes.Models;
 using SimpleIdentityServer.Core.Configuration;
+using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.RateLimitation.Configuration;
 using SimpleIdentityServer.RateLimitation.Constants;
 using System.Collections.Generic;
@@ -20,6 +21,7 @@ using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
 
 using DOMAINS = SimpleIdentityServer.Core.Models;
+using HttpClientFactory = System.Net.Http.HttpClientFactory;
 using MODELS = SimpleIdentityServer.DataAccess.Fake.Models;
 
 namespace SimpleIdentityServer.Api.Tests.Specs

@@ -11,6 +11,7 @@ using NUnit.Framework;
 using SimpleIdentityServer.Api.Tests.Common;
 using SimpleIdentityServer.Api.DTOs.Request;
 using SimpleIdentityServer.Api.DTOs.Response;
+using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.RateLimitation.Configuration;
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;

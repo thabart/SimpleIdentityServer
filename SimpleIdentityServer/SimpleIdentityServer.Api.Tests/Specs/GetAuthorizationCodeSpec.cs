@@ -10,6 +10,7 @@ using NUnit.Framework;
 using SimpleIdentityServer.Api.DTOs.Request;
 using SimpleIdentityServer.Api.DTOs.Response;
 using SimpleIdentityServer.Api.Tests.Common;
+using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.DataAccess.Fake;
 using SimpleIdentityServer.RateLimitation.Configuration;
 

@@ -380,6 +380,7 @@ Scenario: Get an identity token by setting the request parameter with signed aut
 	| scope              | response_type | client_id  | redirect_uri     | prompt | state  | nonce          |
 	| openid PlanningApi | id_token      | MyHolidays | http://localhost | none   | state1 | parameterNonce |
 	And sign the authorization request with 1 kid and algorithm RS256
+	And set the request parameter with signed AND/OR encrypted authorization request
 	
 	When requesting an authorization
 
@@ -419,6 +420,7 @@ Scenario: Get an identity token by setting the request parameter with signed and
 	| openid PlanningApi | id_token      | MyHolidays | http://localhost | none   | state1 | parameterNonce |
 	And sign the authorization request with 1 kid and algorithm RS256
 	And encrypt the authorization request with 2 kid, JweAlg: RSA1_5 and JweEnc: A128CBC_HS256
+	And set the request parameter with signed AND/OR encrypted authorization request
 	
 	When requesting an authorization
 
@@ -430,5 +432,3 @@ Scenario: Get an identity token by setting the request parameter with signed and
 	And the audience parameter with value MyHolidays is returned by the JWS payload
 	And the parameter nonce with value parameterNonce is returned by the JWS payload
 	And the claim sub with value habarthierry@loki.be is returned by the JWS payload
-
-# USE THE REQUEST_URI

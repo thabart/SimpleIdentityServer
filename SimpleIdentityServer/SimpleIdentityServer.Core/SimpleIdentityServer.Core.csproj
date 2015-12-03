@@ -122,6 +122,7 @@
     <Compile Include="Extensions\ClaimsParameterExtensions.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Factories\HttpClientFactory.cs" />
     <Compile Include="Helpers\ConsentHelper.cs" />
     <Compile Include="JwtToken\JwtGenerator.cs" />
     <Compile Include="JwtToken\JwtParser.cs" />
