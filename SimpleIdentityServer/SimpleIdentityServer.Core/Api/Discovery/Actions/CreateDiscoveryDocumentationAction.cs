@@ -39,7 +39,7 @@ namespace SimpleIdentityServer.Core.Api.Discovery.Actions
             result.RequestParameterSupported = false;
             result.RequestUriParameterSupported = true;
             result.RequireRequestUriRegistration = true;
-            result.ClaimTypesSupported = Constants.Supported.SupportedClaims.ToArray();
+            result.ClaimsSupported = Constants.Supported.SupportedClaims.ToArray();
             result.ScopesSupported = scopeSupportedNames;
             result.ResponseTypesSupported = responseTypesSupported;
             result.ResponseModesSupported = Constants.Supported.SupportedResponseModes.ToArray();

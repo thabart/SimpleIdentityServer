@@ -29,7 +29,7 @@ namespace SimpleIdentityServer.Core.Results
         /// <summary>
         /// Gets or sets a list of the Claim Names of the Claims.
         /// </summary>
-        // [DataMember(Name = "claims_supported")]
+        [DataMember(Name = "claims_supported")]
         public string[] ClaimsSupported { get; set; }
         
         [DataMember(Name = "end_session_endpoint")]
