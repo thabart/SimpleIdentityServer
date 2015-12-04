@@ -4,7 +4,7 @@ using System;
 namespace SimpleIdentityServer.DataAccess.Fake.Models
 {
     public class AuthorizationCode
-    {        
+    {
         /// <summary>
         /// Gets or sets the authorization code.
         /// </summary>
@@ -26,15 +26,18 @@ namespace SimpleIdentityServer.DataAccess.Fake.Models
         public string ClientId { get; set; }
 
         /// <summary>
-        /// Gets or sets the id token.
+        /// Gets or sets the id token payload.
         /// </summary>
-        public string IdToken { get; set; }
+        public JwsPayload IdTokenPayload { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user information payload.
+        /// </summary>
+        public JwsPayload UserInfoPayLoad { get; set; }
 
         /// <summary>
         /// Gets or sets the concatenated list of scopes.
         /// </summary>
         public string Scopes { get; set; }
-
-        public JwsPayload UserInfoPayload { get; set; }
     }
 }

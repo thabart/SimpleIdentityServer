@@ -1,6 +1,5 @@
 ﻿using SimpleIdentityServer.Core.Jwt;
 using System;
-using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Core.Models
 {
@@ -27,9 +26,9 @@ namespace SimpleIdentityServer.Core.Models
         public string ClientId { get; set; }
 
         /// <summary>
-        /// Gets or sets the id token.
+        /// Gets or sets the id token payload.
         /// </summary>
-        public string IdToken { get; set; }
+        public JwsPayload IdTokenPayload { get; set; }
 
         /// <summary>
         /// Gets or sets the user information payload.

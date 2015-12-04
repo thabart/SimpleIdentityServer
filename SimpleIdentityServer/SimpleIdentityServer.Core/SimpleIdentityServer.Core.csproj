@@ -169,7 +169,7 @@
     <Compile Include="Exceptions\IdentityServerException.cs" />
     <Compile Include="Exceptions\IdentityServerExceptionWithState.cs" />
     <Compile Include="Helpers\SecurityHelper.cs" />
-    <Compile Include="Helpers\TokenHelper.cs" />
+    <Compile Include="Helpers\GrantedTokenGeneratorHelper.cs" />
     <Compile Include="Model.cs" />
     <Compile Include="ModuleInit.cs" />
     <Compile Include="Api\Authorization\Actions\GetAuthorizationCodeOperation.cs" />

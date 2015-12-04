@@ -28,7 +28,7 @@ namespace SimpleIdentityServer.Core.Common
 
         private readonly IJwtGenerator _jwtGenerator;
 
-        private readonly ITokenHelper _tokenHelper;
+        private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
 
         private readonly IGrantedTokenRepository _grantedTokenRepository;
 
@@ -40,7 +40,7 @@ namespace SimpleIdentityServer.Core.Common
             IAuthorizationCodeRepository authorizationCodeRepository,
             IParameterParserHelper parameterParserHelper,
             IJwtGenerator jwtGenerator,
-            ITokenHelper tokenHelper,
+            IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
             IGrantedTokenRepository grantedTokenRepository,
             IConsentRepository consentRepository,
             IConsentHelper consentHelper)
@@ -48,7 +48,7 @@ namespace SimpleIdentityServer.Core.Common
             _authorizationCodeRepository = authorizationCodeRepository;
             _parameterParserHelper = parameterParserHelper;
             _jwtGenerator = jwtGenerator;
-            _tokenHelper = tokenHelper;
+            _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
             _grantedTokenRepository = grantedTokenRepository;
             _consentRepository = consentRepository;
             _consentHelper = consentHelper;
@@ -62,11 +62,12 @@ namespace SimpleIdentityServer.Core.Common
             ClaimsPrincipal claimsPrincipal)
         {
             var responses = _parameterParserHelper.ParseResponseType(authorizationParameter.ResponseType);
-            var idToken = GenerateIdToken(claimsPrincipal, authorizationParameter);
+            var idTokenPayload = GenerateIdTokenPayload(claimsPrincipal, authorizationParameter);
             var userInformationPayload = GenerateUserInformationPayload(claimsPrincipal, authorizationParameter);
 
             if (responses.Contains(ResponseType.id_token))
             {
+                var idToken = GenerateIdToken(idTokenPayload, authorizationParameter);
                 actionResult.RedirectInstruction.AddParameter(Constants.StandardAuthorizationResponseNames.IdTokenName, idToken);
             }
 
@@ -78,12 +79,24 @@ namespace SimpleIdentityServer.Core.Common
                     allowedTokenScopes = string.Join(" ", _parameterParserHelper.ParseScopeParameters(authorizationParameter.Scope));
                 }
 
-                var generatedToken = _tokenHelper.GenerateToken(
-                    allowedTokenScopes, 
-                    idToken);
-                generatedToken.UserInfoPayLoad = userInformationPayload;
-                _grantedTokenRepository.Insert(generatedToken);
-                actionResult.RedirectInstruction.AddParameter(Constants.StandardAuthorizationResponseNames.AccessTokenName, generatedToken.AccessToken);
+                // Check if an access token has already been generated and can be reused for that :
+                // We assumed that an access token is unique for a specific client id, user information & id token payload & for certain scopes
+                var grantedToken = _grantedTokenRepository.GetToken(
+                    allowedTokenScopes,
+                    authorizationParameter.ClientId,
+                    idTokenPayload,
+                    userInformationPayload);
+                if (grantedToken == null)
+                {
+                    grantedToken = _grantedTokenGeneratorHelper.GenerateToken(
+                        authorizationParameter.ClientId,
+                        allowedTokenScopes,
+                        userInformationPayload,
+                        idTokenPayload);
+                    _grantedTokenRepository.Insert(grantedToken);
+                }
+
+                actionResult.RedirectInstruction.AddParameter(Constants.StandardAuthorizationResponseNames.AccessTokenName, grantedToken.AccessToken);
             }
 
             if (responses.Contains(ResponseType.code))
@@ -100,7 +113,7 @@ namespace SimpleIdentityServer.Core.Common
                         CreateDateTime = DateTime.UtcNow,
                         ClientId = authorizationParameter.ClientId,
                         Scopes = authorizationParameter.Scope,
-                        IdToken = idToken,
+                        IdTokenPayload = idTokenPayload,
                         UserInfoPayLoad = userInformationPayload
                     };
 
@@ -131,10 +144,18 @@ namespace SimpleIdentityServer.Core.Common
         /// If at least one claim is defined then returns the filtered result
         /// Otherwise returns the default payload based on the scopes.
         /// </summary>
-        /// <param name="claimsPrincipal"></param>
+        /// <param name="jwsPayload"></param>
         /// <param name="authorizationParameter"></param>
         /// <returns></returns>
         private string GenerateIdToken(
+            JwsPayload jwsPayload,
+            AuthorizationParameter authorizationParameter)
+        {
+            var idToken = _jwtGenerator.Sign(jwsPayload, authorizationParameter.ClientId);
+            return _jwtGenerator.Encrypt(idToken, authorizationParameter.ClientId);
+        }
+
+        private JwsPayload GenerateIdTokenPayload(
             ClaimsPrincipal claimsPrincipal,
             AuthorizationParameter authorizationParameter)
         {
@@ -151,9 +172,7 @@ namespace SimpleIdentityServer.Core.Common
                 jwsPayload = _jwtGenerator.GenerateJwsPayloadForScopes(claimsPrincipal, authorizationParameter);
             }
 
-
-            var idToken = _jwtGenerator.Sign(jwsPayload, authorizationParameter);
-            return _jwtGenerator.Encrypt(idToken, authorizationParameter);
+            return jwsPayload;
         }
 
         /// <summary>

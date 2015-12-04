@@ -6,6 +6,8 @@ using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
+using SimpleIdentityServer.Core.Jwt;
+using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
@@ -27,26 +29,30 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
         private readonly ISimpleIdentityServerConfigurator _simpleIdentityServerConfigurator;
 
-        private readonly ITokenHelper _tokenHelper;
+        private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
 
         private readonly IGrantedTokenRepository _grantedTokenRepository;
 
         private readonly IAuthenticateClient _authenticateClient;
 
+        private readonly IJwtGenerator _jwtGenerator;
+
         public GetTokenByAuthorizationCodeGrantTypeAction(
             IClientValidator clientValidator,
             IAuthorizationCodeRepository authorizationCodeRepository,
             ISimpleIdentityServerConfigurator simpleIdentityServerConfigurator,
-            ITokenHelper tokenHelper,
+            IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
             IGrantedTokenRepository grantedTokenRepository,
-            IAuthenticateClient authenticateClient)
+            IAuthenticateClient authenticateClient,
+            IJwtGenerator jwtGenerator)
         {
             _clientValidator = clientValidator;
             _authorizationCodeRepository = authorizationCodeRepository;
             _simpleIdentityServerConfigurator = simpleIdentityServerConfigurator;
-            _tokenHelper = tokenHelper;
+            _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
             _grantedTokenRepository = grantedTokenRepository;
             _authenticateClient = authenticateClient;
+            _jwtGenerator = jwtGenerator;
         }
 
         public GrantedToken Execute(
@@ -57,14 +63,30 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                 authorizationCodeGrantTypeParameter, 
                 authenticationHeaderValue);
 
-            // Remove the authorization code. Don't reuse it !
+            // Invalide the authorization code by removing it !
             _authorizationCodeRepository.RemoveAuthorizationCode(authorizationCode.Code);
-            var grantedToken = _tokenHelper.GenerateToken(
+            var grantedToken = _grantedTokenRepository.GetToken(
                 authorizationCode.Scopes,
-                authorizationCode.IdToken);
-            grantedToken.UserInfoPayLoad = authorizationCode.UserInfoPayLoad;
-            // Insert the granted token into the repository
-            _grantedTokenRepository.Insert(grantedToken);
+                authorizationCode.ClientId,
+                authorizationCode.IdTokenPayload,
+                authorizationCode.UserInfoPayLoad);
+            if (grantedToken == null)
+            {
+                grantedToken = _grantedTokenGeneratorHelper.GenerateToken(
+                    authorizationCode.ClientId,
+                    authorizationCode.Scopes,
+                    authorizationCode.UserInfoPayLoad,
+                    authorizationCode.IdTokenPayload);
+                _grantedTokenRepository.Insert(grantedToken);
+            }
+
+            if (grantedToken.UserInfoPayLoad != null)
+            {
+                grantedToken.IdToken = GenerateIdToken(
+                    grantedToken.UserInfoPayLoad,
+                    grantedToken.ClientId);
+            }
+
             return grantedToken;
         }
 
@@ -157,6 +179,22 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             }
 
             return result;
+        }
+        
+        /// <summary>
+        /// Generate the JWS payload for identity token.
+        /// If at least one claim is defined then returns the filtered result
+        /// Otherwise returns the default payload based on the scopes.
+        /// </summary>
+        /// <param name="jwsPayload"></param>
+        /// <param name="clientId"></param>
+        /// <returns></returns>
+        private string GenerateIdToken(
+            JwsPayload jwsPayload,
+            string clientId)
+        {
+            var idToken = _jwtGenerator.Sign(jwsPayload, clientId);
+            return _jwtGenerator.Encrypt(idToken, clientId);
         }
         
         private static string[] GetParameters(string authorizationHeaderValue)

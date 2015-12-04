@@ -59,7 +59,9 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
                 Scope = grantedToken.Scope,
                 TokenType = grantedToken.TokenType,
                 CreateDateTime = grantedToken.CreateDateTime,
-                UserInfoPayLoad = grantedToken.UserInfoPayLoad
+                UserInfoPayLoad = grantedToken.UserInfoPayLoad,
+                IdTokenPayLoad = grantedToken.IdTokenPayLoad,
+                ClientId = grantedToken.ClientId
             };
         }
 
@@ -112,9 +114,9 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
                 RedirectUri = authorizationCode.RedirectUri,
                 CreateDateTime = authorizationCode.CreateDateTime,
                 ClientId = authorizationCode.ClientId,
-                IdToken = authorizationCode.IdToken,
                 Scopes = authorizationCode.Scopes,
-                UserInfoPayload = authorizationCode.UserInfoPayLoad
+               UserInfoPayLoad = authorizationCode.UserInfoPayLoad,
+               IdTokenPayload = authorizationCode.IdTokenPayload
             };
         }
 
@@ -248,9 +250,9 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
                 RedirectUri = authorizationCode.RedirectUri,
                 CreateDateTime = authorizationCode.CreateDateTime,
                 ClientId = authorizationCode.ClientId,
-                IdToken = authorizationCode.IdToken,
                 Scopes = authorizationCode.Scopes,
-                UserInfoPayLoad = authorizationCode.UserInfoPayload
+                UserInfoPayLoad = authorizationCode.UserInfoPayLoad,
+                IdTokenPayload = authorizationCode.IdTokenPayload
             };
         }
 
@@ -306,7 +308,9 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
                 Scope = grantedToken.Scope,
                 TokenType = grantedToken.TokenType,
                 CreateDateTime = grantedToken.CreateDateTime,
-                UserInfoPayLoad = grantedToken.UserInfoPayLoad
+                UserInfoPayLoad = grantedToken.UserInfoPayLoad,
+                ClientId = grantedToken.ClientId,
+                IdTokenPayLoad = grantedToken.IdTokenPayLoad
             };
         }
 

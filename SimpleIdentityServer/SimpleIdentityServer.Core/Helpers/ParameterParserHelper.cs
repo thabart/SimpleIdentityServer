@@ -4,6 +4,7 @@ using System.Linq;
 
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Repositories;
 
 namespace SimpleIdentityServer.Core.Helpers
 {
@@ -24,10 +25,19 @@ namespace SimpleIdentityServer.Core.Helpers
         List<ResponseType> ParseResponseType(string parameter);
 
         List<string> ParseScopeParameters(string scope);
+
+        List<string> ParseScopeParametersAndGetAllScopes(string concatenateListOfScopes);
     }
 
     public class ParameterParserHelper : IParameterParserHelper
     {
+        private readonly IScopeRepository _scopeRepository;
+
+        public ParameterParserHelper(IScopeRepository scopeRepository)
+        {
+            _scopeRepository = scopeRepository;
+        }
+
         /// <summary>
         /// Parse the parameter and returns a list of prompt parameter.
         /// </summary>
@@ -72,6 +82,27 @@ namespace SimpleIdentityServer.Core.Helpers
         public List<string> ParseScopeParameters(string scope)
         {
             return scope.Split(' ').Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+        }
+
+        public List<string> ParseScopeParametersAndGetAllScopes(string concatenateListOfScopes)
+        {
+            var result = new List<string>();
+            var scopes = ParseScopeParameters(concatenateListOfScopes);
+            if (scopes == null || !scopes.Any())
+            {
+                return result;
+            }
+
+            foreach (var scope in scopes)
+            {
+                var scopeRecord = _scopeRepository.GetScopeByName(scope);
+                if (scopeRecord != null)
+                {
+                    result.Add(scope);
+                }
+            }
+
+            return result;
         }
     }
 }

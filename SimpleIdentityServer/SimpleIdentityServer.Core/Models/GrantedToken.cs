@@ -31,8 +31,18 @@ namespace SimpleIdentityServer.Core.Models
         public DateTime CreateDateTime { get; set; }
 
         /// <summary>
-        /// Gets or sets the user information payload.
+        /// Gets or sets the client id.
         /// </summary>
-        public JwsPayload UserInfoPayLoad { get; set; } 
+        public string ClientId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user information payload
+        /// </summary>
+        public JwsPayload UserInfoPayLoad { get; set; }
+
+        /// <summary>
+        /// Gets or sets the identity token payload
+        /// </summary>
+        public JwsPayload IdTokenPayLoad { get; set; }
     }
 }

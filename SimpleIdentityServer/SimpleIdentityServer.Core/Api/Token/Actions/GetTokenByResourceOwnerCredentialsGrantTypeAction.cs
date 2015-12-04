@@ -17,7 +17,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
     {
         private readonly IGrantedTokenRepository _grantedTokenRepository;
 
-        private readonly ITokenHelper _tokenHelper;
+        private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
         
         private readonly IClientValidator _clientValidator;
 
@@ -27,13 +27,13 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
         public GetTokenByResourceOwnerCredentialsGrantTypeAction(
             IGrantedTokenRepository grantedTokenRepository,
-            ITokenHelper tokenHelper,
+            IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
             IClientValidator clientValidator,
             IScopeValidator scopeValidator,
             IResourceOwnerValidator resourceOwnerValidator)
         {
             _grantedTokenRepository = grantedTokenRepository;
-            _tokenHelper = tokenHelper;
+            _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
             _clientValidator = clientValidator;
             _scopeValidator = scopeValidator;
             _resourceOwnerValidator = resourceOwnerValidator;
@@ -59,9 +59,9 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             }
 
             // TODO : authenticate the user & create the JWT token
-            var generatedToken = _tokenHelper.GenerateToken(
-                allowedTokenScopes,
-                string.Empty);
+            var generatedToken = _grantedTokenGeneratorHelper.GenerateToken(
+                parameter.ClientId,
+                allowedTokenScopes);
             _grantedTokenRepository.Insert(generatedToken);
 
             return generatedToken;

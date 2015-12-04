@@ -34,11 +34,11 @@ namespace SimpleIdentityServer.Core.JwtToken
 
         string Sign(
             JwsPayload jwsPayload,
-            AuthorizationParameter authorizationParameter);
+            string clientId);
 
         string Encrypt(
             string toEncrypt,
-            AuthorizationParameter authorizationParameter);
+            string clientId);
     }
 
     public class JwtGenerator : IJwtGenerator
@@ -136,7 +136,7 @@ namespace SimpleIdentityServer.Core.JwtToken
             // If the max_age request is made or when auth_time is requesed as an Essential claim then we calculate the auth_time
             // The auth_time corresponds to the time when the End-User authentication occured. 
             // Its value is a JSON number representing the number of seconds from 1970-01-01
-            if (authorizationParameter.MaxAge != 0.0D)
+            if (!authorizationParameter.MaxAge.Equals(default(double)))
             {
                 var authenticationInstant = claimPrincipal.Claims.SingleOrDefault(c => c.Type == ClaimTypes.AuthenticationInstant);
                 if (authenticationInstant != null)
@@ -297,7 +297,11 @@ namespace SimpleIdentityServer.Core.JwtToken
             // Fill-in the authentication time
             if (authenticationTimeParameter != null)
             {
-                var isAuthenticationTimeValid = ValidateClaimValue(authenticationTimeParameter.Value, authenticationTimeParameter);
+                var authenticationInstant = claimsPrincipal.Claims.SingleOrDefault(c => c.Type == ClaimTypes.AuthenticationInstant);
+                var authenticationInstantValue = authenticationInstant == null
+                    ? string.Empty
+                    : authenticationInstant.Value;
+                var isAuthenticationTimeValid = ValidateClaimValue(authenticationInstantValue, authenticationTimeParameter);
                 if (!isAuthenticationTimeValid)
                 {
                     throw new IdentityServerExceptionWithState(ErrorCodes.InvalidGrant,
@@ -305,20 +309,17 @@ namespace SimpleIdentityServer.Core.JwtToken
                         authorizationParameter.State);
                 }
 
-                if (authorizationParameter.MaxAge != 0.0D)
+                if (!string.IsNullOrWhiteSpace(authenticationInstantValue))
                 {
-                    var authenticationInstant = claimsPrincipal.Claims.SingleOrDefault(c => c.Type == ClaimTypes.AuthenticationInstant);
-                    if (authenticationInstant != null)
-                    {
-                        result.Add(Jwt.Constants.StandardClaimNames.AuthenticationTime, double.Parse(authenticationInstant.Value));
-                    }
+                    result.Add(Jwt.Constants.StandardClaimNames.AuthenticationTime, double.Parse(authenticationInstantValue));
                 }
             }
 
             // Fill-in the nonce
             if (nonceParameter != null)
             {
-                var isNonceParameterValid = ValidateClaimValue(authenticationTimeParameter.Value, nonceParameter);
+                var nonce = authorizationParameter.Nonce;
+                var isNonceParameterValid = ValidateClaimValue(nonce, nonceParameter);
                 if (!isNonceParameterValid)
                 {
                     throw new IdentityServerExceptionWithState(ErrorCodes.InvalidGrant,
@@ -326,16 +327,17 @@ namespace SimpleIdentityServer.Core.JwtToken
                         authorizationParameter.State);
                 }
 
-                if (!string.IsNullOrWhiteSpace(authorizationParameter.Nonce))
+                if (!string.IsNullOrWhiteSpace(nonce))
                 {
-                    result.Add(Jwt.Constants.StandardClaimNames.Nonce, authorizationParameter.Nonce);
+                    result.Add(Jwt.Constants.StandardClaimNames.Nonce, nonce);
                 }
             }
 
             // Fill-in the ACR parameter
             if (acrParameter != null)
             {
-                var isAcrParameterValid = ValidateClaimValue(acrParameter.Value, acrParameter);
+                var acrValues = Constants.StandardArcParameterNames.OpenIdCustomAuthLevel + ".password=1";
+                var isAcrParameterValid = ValidateClaimValue(acrValues, acrParameter);
                 if (!isAcrParameterValid)
                 {
                     throw new IdentityServerExceptionWithState(ErrorCodes.InvalidGrant,
@@ -343,13 +345,14 @@ namespace SimpleIdentityServer.Core.JwtToken
                         authorizationParameter.State);
                 }
 
-                result.Add(Jwt.Constants.StandardClaimNames.Acr, Constants.StandardArcParameterNames.OpenIdCustomAuthLevel + ".password=1");
+                result.Add(Jwt.Constants.StandardClaimNames.Acr, acrValues);
             }
 
             // Fill-in the AMR parameter
             if (amrParameter != null)
             {
-                var isAmrParameterValid = ValidateClaimValue(amrParameter.Value, amrParameter);
+                var amr = "password";
+                var isAmrParameterValid = ValidateClaimValue(amr, amrParameter);
                 if (!isAmrParameterValid)
                 {
                     throw new IdentityServerExceptionWithState(ErrorCodes.InvalidGrant,
@@ -357,13 +360,21 @@ namespace SimpleIdentityServer.Core.JwtToken
                         authorizationParameter.State);
                 }
 
-                result.Add(Jwt.Constants.StandardClaimNames.Amr, "password");
+                result.Add(Jwt.Constants.StandardClaimNames.Amr, amr);
             }
 
             // Fill-in the AZP parameter
             if (azpParameter != null)
             {
-                var isAzpParameterValid = ValidateClaimValue(azpParameter.Value, azpParameter);
+                var azp = string.Empty;
+                if (audiences != null &&
+                    audiences.Count() == 1 &&
+                    audiences.First() == authorizationParameter.ClientId)
+                {
+                    azp = authorizationParameter.ClientId;
+                }
+
+                var isAzpParameterValid = ValidateClaimValue(azp, azpParameter);
                 if (!isAzpParameterValid)
                 {
                     throw new IdentityServerExceptionWithState(ErrorCodes.InvalidGrant,
@@ -371,11 +382,9 @@ namespace SimpleIdentityServer.Core.JwtToken
                         authorizationParameter.State);
                 }
 
-                if (audiences != null &&
-                    audiences.Count() == 1 &&
-                    audiences.First() == authorizationParameter.ClientId)
+                if (!string.IsNullOrWhiteSpace(azp))
                 {
-                    result.Add(Jwt.Constants.StandardClaimNames.Azp, authorizationParameter.ClientId);
+                    result.Add(Jwt.Constants.StandardClaimNames.Azp, azp);
                 }
             }
 
@@ -384,9 +393,9 @@ namespace SimpleIdentityServer.Core.JwtToken
 
         public string Sign(
             JwsPayload jwsPayload,
-            AuthorizationParameter authorizationParameter)
+            string clientId)
         {
-            var client = _clientRepository.GetClientById(authorizationParameter.ClientId);
+            var client = _clientRepository.GetClientById(clientId);
             var jsonWebKey = GetSignJsonWebKey(client);
             var signedAlgorithm = GetJwsAlg(client);
             return _jwsGenerator.Generate(
@@ -397,9 +406,9 @@ namespace SimpleIdentityServer.Core.JwtToken
 
         public string Encrypt(
             string jwe,
-            AuthorizationParameter authorizationParameter)
+            string clientId)
         {
-            var client = _clientRepository.GetClientById(authorizationParameter.ClientId);
+            var client = _clientRepository.GetClientById(clientId);
             var jsonWebKey = GetEncJsonWebKey(client);
             if (jsonWebKey == null)
             {

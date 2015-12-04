@@ -35,7 +35,7 @@ namespace SimpleIdentityServer.Core
         public void Initialize(IModuleRegister register)
         {
             register.RegisterType<ISecurityHelper, SecurityHelper>();
-            register.RegisterType<ITokenHelper, TokenHelper>();
+            register.RegisterType<IGrantedTokenGeneratorHelper, GrantedTokenGeneratorHelper>();
             register.RegisterType<IConsentHelper, ConsentHelper>();
             register.RegisterType<IClientValidator, ClientValidator>();
             register.RegisterType<IResourceOwnerValidator, ResourceOwnerValidator>();

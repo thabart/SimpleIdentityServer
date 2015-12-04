@@ -56,6 +56,28 @@ namespace SimpleIdentityServer.Core.Extensions
                 parameter.IdToken.Any();
         }
 
+        public static List<string> GetAllClaimsNames(this ClaimsParameter parameter)
+        {
+            var result = new List<string>();
+            if (!parameter.IsAnyUserInfoClaimParameter() &&
+                !parameter.IsAnyUserInfoClaimParameter())
+            {
+                return result;
+            }
+
+            if (!parameter.IsAnyUserInfoClaimParameter())
+            {
+                result.AddRange(parameter.UserInfo.Select(s => s.Name));
+            }
+
+            if (!parameter.IsAnyIdentityTokenClaimParameter())
+            {
+                result.AddRange(parameter.IdToken.Select(s => s.Name));
+            }
+
+            return result;
+        } 
+
         private static bool IsStandardClaim(string claimName)
         {
             return Jwt.Constants.AllStandardResourceOwnerClaimNames.Contains(claimName) ||

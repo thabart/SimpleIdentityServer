@@ -14,6 +14,7 @@ namespace SimpleIdentityServer.Api.Configuration
                     ClientId = "MyBlog",
                     DisplayName = "My blog",
                     ClientSecret = "MyBlog",
+                    TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_basic,
                     AllowedScopes = new List<Scope>
                     {
                         // PROTECTED API SCOPES
@@ -129,7 +130,7 @@ namespace SimpleIdentityServer.Api.Configuration
                         {
                             Url = "https://op.certification.openid.net:60186/authz_cb"
                         }
-                    }
+                    },
                 }
             };
         }
