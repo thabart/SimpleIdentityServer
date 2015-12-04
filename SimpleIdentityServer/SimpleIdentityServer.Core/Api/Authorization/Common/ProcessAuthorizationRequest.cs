@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
@@ -121,6 +122,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
                 claimsPrincipal,
                 authorizationParameter,
                 code);
+
             return result;
         }
 
@@ -128,17 +130,27 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
         /// Process the prompt authorizationParameter.
         /// </summary>
         /// <param name="prompts">Prompt authorizationParameter values</param>
-        /// <param name="claimsPrincipal">User's claims</param>
+        /// <param name="principal">User's claims</param>
         /// <param name="authorizationParameter">Authorization code grant-type authorizationParameter</param>
         /// <param name="code">Encrypted and signed authorization code grant-type authorizationParameter</param>
         /// <returns>The action result interpreted by the controller</returns>
         private ActionResult ProcessPromptParameters(
             IList<PromptParameter> prompts,
-            IPrincipal claimsPrincipal,
+            IPrincipal principal,
             AuthorizationParameter authorizationParameter,
             string code)
         {
-            var endUserIsAuthenticated = IsAuthenticated(claimsPrincipal);
+            var claimsPrincipal = principal as ClaimsPrincipal;
+            if (claimsPrincipal == null)
+            {
+                throw new IdentityServerExceptionWithState(
+                    ErrorCodes.LoginRequiredCode,
+                    ErrorDescriptions.TheClaimCannotBeFetch,
+                    authorizationParameter.State);
+            }
+
+            var endUserIsAuthenticated = IsAuthenticated(principal);
+
             // Raise "login_required" exception : if the prompt authorizationParameter is "none" AND the user is not authenticated
             // Raise "interaction_required" exception : if there's no consent from the user.
             if (prompts.Contains(PromptParameter.none))
@@ -151,7 +163,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
                         authorizationParameter.State);
                 }
 
-                var confirmedConsent = GetResourceOwnerConsent(claimsPrincipal, authorizationParameter);
+                var confirmedConsent = GetResourceOwnerConsent(principal, authorizationParameter);
                 if (confirmedConsent == null)
                 {
                     throw new IdentityServerExceptionWithState(
@@ -162,6 +174,27 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
 
                 var result = _actionResultFactory.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
                 return result;
+            }
+
+            // Check if the user is still valid.
+            if (endUserIsAuthenticated && 
+                !authorizationParameter.MaxAge.Equals(default(double)))
+            {
+                var authenticationDateTimeClaim =
+                    claimsPrincipal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.AuthenticationInstant);
+                if (authenticationDateTimeClaim != null)
+                {
+                    var maxAge = authorizationParameter.MaxAge;
+                    var currentDateTimeUtc = DateTimeOffset.UtcNow.ConvertToUnixTimestamp();
+                    var authenticationDateTime = long.Parse(authenticationDateTimeClaim.Value);
+                    if (maxAge < currentDateTimeUtc - authenticationDateTime)
+                    {
+                        var result = _actionResultFactory.CreateAnEmptyActionResultWithRedirection();
+                        result.RedirectInstruction.AddParameter("code", code);
+                        result.RedirectInstruction.Action = IdentityServerEndPoints.AuthenticateIndex;
+                        return result;
+                    }
+                }
             }
 
             // Redirects to the authentication screen 

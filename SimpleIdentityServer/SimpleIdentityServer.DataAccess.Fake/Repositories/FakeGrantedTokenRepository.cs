@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.DataAccess.Fake.Extensions;
@@ -35,8 +36,8 @@ namespace SimpleIdentityServer.DataAccess.Fake.Repositories
 
             foreach (var grantedToken in grantedTokens)
             {
-                if (CompareDictionaries(idTokenJwsPayload, grantedToken.IdTokenPayLoad) &&
-                    CompareDictionaries(userInfoJwsPayload, grantedToken.UserInfoPayLoad))
+                if (CompareJwsPayload(idTokenJwsPayload, grantedToken.IdTokenPayLoad) &&
+                    CompareJwsPayload(userInfoJwsPayload, grantedToken.UserInfoPayLoad))
                 {
                     return grantedToken.ToBusiness();
                 }
@@ -45,39 +46,17 @@ namespace SimpleIdentityServer.DataAccess.Fake.Repositories
             return null;
         }
 
-        public bool CompareDictionaries<TKey, TValue>(Dictionary<TKey, TValue> dict1, Dictionary<TKey, TValue> dict2)
+        public bool CompareJwsPayload(JwsPayload firstJwsPayload, JwsPayload secondJwsPayload)
         {
-            if (dict1 == dict2)
-            {
-                return true;
-            }
-
-            if ((dict1 == null) || (dict2 == null))
+            if (firstJwsPayload.Count() != secondJwsPayload.Count())
             {
                 return false;
             }
 
-            if (dict1.Count != dict2.Count)
-            {
-                return false;
-            }
-
-            var valueComparer = EqualityComparer<TValue>.Default;
-
-            foreach (var kvp in dict1)
-            {
-                TValue value2;
-                if (!dict2.TryGetValue(kvp.Key, out value2))
-                {
-                    return false;
-                }
-                if (!valueComparer.Equals(kvp.Value, value2))
-                {
-                    return false;
-                }
-            }
-            
-            return true;
+            var firstSubject = firstJwsPayload.GetClaimValue(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject);
+            var secondSubject =
+                secondJwsPayload.GetClaimValue(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject);
+            return firstSubject == secondSubject;
         }
     }
 }

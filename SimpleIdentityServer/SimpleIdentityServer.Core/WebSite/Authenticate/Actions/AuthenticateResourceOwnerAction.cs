@@ -58,7 +58,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
             var promptParameters = _parameterParserHelper.ParsePromptParameters(parameter.Prompt);
 
             // 1).
-            if (resourceOwnerIsAuthenticated && !promptParameters.Contains(PromptParameter.login))
+            if (resourceOwnerIsAuthenticated && promptParameters != null && !promptParameters.Contains(PromptParameter.login))
             {
                 var result = _actionResultFactory.CreateAnEmptyActionResultWithRedirection();
                 result.RedirectInstruction.Action = IdentityServerEndPoints.ConsentIndex;

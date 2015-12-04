@@ -196,7 +196,9 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
             claims.Add(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.EmailVerified, resourceOwner.EmailVerified.ToString(CultureInfo.InvariantCulture)));
             claims.Add(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumberVerified, resourceOwner.PhoneNumberVerified.ToString(CultureInfo.InvariantCulture)));
             claims.Add(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt, resourceOwner.UpdatedAt.ToString(CultureInfo.InvariantCulture)));
-            claims.Add(new Claim(ClaimTypes.AuthenticationInstant, DateTime.Now.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture)));
+            claims.Add(new Claim(ClaimTypes.AuthenticationInstant, 
+                DateTimeOffset.UtcNow.ConvertToUnixTimestamp().ToString(),
+                ClaimValueTypes.Integer));
             
             var requestedScopes = _parameterParserHelper.ParseScopeParameters(parameter.Scope);
             var consents = _consentRepository.GetConsentsForGivenUser(subject);

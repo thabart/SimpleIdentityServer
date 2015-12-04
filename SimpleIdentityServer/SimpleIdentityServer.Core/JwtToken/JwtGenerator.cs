@@ -141,7 +141,7 @@ namespace SimpleIdentityServer.Core.JwtToken
                 var authenticationInstant = claimPrincipal.Claims.SingleOrDefault(c => c.Type == ClaimTypes.AuthenticationInstant);
                 if (authenticationInstant != null)
                 {
-                    result.Add(Jwt.Constants.StandardClaimNames.AuthenticationTime, double.Parse(authenticationInstant.Value));
+                    result.Add(Jwt.Constants.StandardClaimNames.AuthenticationTime, long.Parse(authenticationInstant.Value));
                 }
             }
 
@@ -602,7 +602,7 @@ namespace SimpleIdentityServer.Core.JwtToken
 
         private KeyValuePair<double, double> GetExpirationAndIssuedTime()
         {
-            var currentDateTime = DateTime.UtcNow;
+            var currentDateTime = DateTimeOffset.UtcNow;
             var expiredDateTime = currentDateTime.AddSeconds(_simpleIdentityServerConfigurator.GetTokenValidityPeriodInSeconds());
             var expirationInSeconds = expiredDateTime.ConvertToUnixTimestamp();
             var iatInSeconds = currentDateTime.ConvertToUnixTimestamp();

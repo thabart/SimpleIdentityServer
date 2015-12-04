@@ -22,6 +22,8 @@
 
         public static string TheUserNeedsToBeAuthenticated = "the user needs to be authenticated";
 
+        public static string TheClaimCannotBeFetch = "the claims cannot be fetch";
+
         public static string TheUserNeedsToGiveIsConsent = "the user needs to give his consent";
 
         public static string TheUserCannotBeReauthenticated = "The user cannot be reauthenticated";
