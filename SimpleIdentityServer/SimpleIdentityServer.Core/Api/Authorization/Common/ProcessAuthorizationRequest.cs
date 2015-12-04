@@ -140,15 +140,6 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
             AuthorizationParameter authorizationParameter,
             string code)
         {
-            var claimsPrincipal = principal as ClaimsPrincipal;
-            if (claimsPrincipal == null)
-            {
-                throw new IdentityServerExceptionWithState(
-                    ErrorCodes.LoginRequiredCode,
-                    ErrorDescriptions.TheClaimCannotBeFetch,
-                    authorizationParameter.State);
-            }
-
             var endUserIsAuthenticated = IsAuthenticated(principal);
 
             // Raise "login_required" exception : if the prompt authorizationParameter is "none" AND the user is not authenticated
@@ -180,6 +171,15 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
             if (endUserIsAuthenticated && 
                 !authorizationParameter.MaxAge.Equals(default(double)))
             {
+                var claimsPrincipal = principal as ClaimsPrincipal;
+                if (claimsPrincipal == null)
+                {
+                    throw new IdentityServerExceptionWithState(
+                        ErrorCodes.LoginRequiredCode,
+                        ErrorDescriptions.TheClaimCannotBeFetch,
+                        authorizationParameter.State);
+                }
+
                 var authenticationDateTimeClaim =
                     claimsPrincipal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.AuthenticationInstant);
                 if (authenticationDateTimeClaim != null)
