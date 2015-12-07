@@ -11,6 +11,10 @@ using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.DataAccess.Fake;
 using SimpleIdentityServer.DataAccess.Fake.Models;
+using System.Security.Claims;
+using System.Collections.Generic;
+using SimpleIdentityServer.Core.Extensions;
+using SimpleIdentityServer.Core.Results;
 
 namespace SimpleIdentityServer.Api.UnitTests.Api.Authorization
 {
@@ -19,8 +23,10 @@ namespace SimpleIdentityServer.Api.UnitTests.Api.Authorization
     {
         private ProcessAuthorizationRequest _processAuthorizationRequest;
 
+        #region TEST FAILURES
+
         [Test]
-        public void When_Passing_NullAuthorization_To_Function_Then_ArgumentNullException_IsRaised()
+        public void When_Passing_NullAuthorization_To_Function_Then_ArgumentNullException_Is_Thrown()
         {
             // ARRANGE
             InitializeMockingObjects();
@@ -30,7 +36,7 @@ namespace SimpleIdentityServer.Api.UnitTests.Api.Authorization
         }
 
         [Test]
-        public void When_Passing_NoEncryptedRequest_To_Function_Then_ArgumentNullException_IsRaised()
+        public void When_Passing_NoEncryptedRequest_To_Function_Then_ArgumentNullException_Is_Thrown()
         {
             // ARRANGE
             InitializeMockingObjects();
@@ -41,7 +47,7 @@ namespace SimpleIdentityServer.Api.UnitTests.Api.Authorization
         }
 
         [Test]
-        public void When_Passing_NoneExisting_ClientId_To_AuthorizationParameter_Then_Exception_Is_Raised()
+        public void When_Passing_NoneExisting_ClientId_To_AuthorizationParameter_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeMockingObjects();
@@ -65,7 +71,7 @@ namespace SimpleIdentityServer.Api.UnitTests.Api.Authorization
         }
 
         [Test]
-        public void When_Passing_NotValidRedirectUrl_To_AuthorizationParameter_Then_Exception_Is_Raised()
+        public void When_Passing_NotValidRedirectUrl_To_AuthorizationParameter_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeMockingObjects();
@@ -91,7 +97,7 @@ namespace SimpleIdentityServer.Api.UnitTests.Api.Authorization
         }
 
         [Test]
-        public void When_Passing_AuthorizationParameterWithoutOpenIdScope_Then_Exception_Is_Raised()
+        public void When_Passing_AuthorizationParameterWithoutOpenIdScope_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeMockingObjects();
@@ -118,7 +124,7 @@ namespace SimpleIdentityServer.Api.UnitTests.Api.Authorization
         }
 
         [Test]
-        public void When_Passing_AuthorizationRequestWithMissingResponseType_Then_Exception_Is_Raised()
+        public void When_Passing_AuthorizationRequestWithMissingResponseType_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeMockingObjects();
@@ -146,7 +152,7 @@ namespace SimpleIdentityServer.Api.UnitTests.Api.Authorization
         }
 
         [Test]
-        public void When_Passing_AuthorizationRequestWithNotSupportedResponseType_Then_Exception_Is_Raised()
+        public void When_Passing_AuthorizationRequestWithNotSupportedResponseType_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeMockingObjects();
@@ -180,7 +186,7 @@ namespace SimpleIdentityServer.Api.UnitTests.Api.Authorization
         }
 
         [Test]
-        public void When_Passing_TryingToByPassLoginAndConsentScreen_But_UserIsNotAuthenticated_Then_Exception_Is_Raised()
+        public void When_TryingToByPassLoginAndConsentScreen_But_UserIsNotAuthenticated_Then_Exception_Is_Thrown()
         {            
             // ARRANGE
             InitializeMockingObjects();
@@ -206,6 +212,225 @@ namespace SimpleIdentityServer.Api.UnitTests.Api.Authorization
             Assert.That(exception.Message, Is.EqualTo(ErrorDescriptions.TheUserNeedsToBeAuthenticated));
             Assert.That(exception.State, Is.EqualTo(state));
         }
+
+        [Test]
+        public void When_TryingToByPassLoginAndConsentScreen_But_TheUserDidntGiveHisConsent_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeMockingObjects();
+            const string state = "state";
+            const string code = "code";
+            const string clientId = "MyBlog";
+            const string redirectUrl = "http://localhost";
+            var authorizationParameter = new AuthorizationParameter
+            {
+                ClientId = clientId,
+                Prompt = "none",
+                State = state,
+                RedirectUrl = redirectUrl,
+                Scope = "openid",
+                ResponseType = "code"
+            };
+
+            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity("fake"));
+
+            // ACT & ASSERTS
+            var exception =
+                Assert.Throws<IdentityServerExceptionWithState>(
+                    () => _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal, code));
+            Assert.That(exception.Code, Is.EqualTo(ErrorCodes.InteractionRequiredCode));
+            Assert.That(exception.Message, Is.EqualTo(ErrorDescriptions.TheUserNeedsToGiveHisConsent));
+            Assert.That(exception.State, Is.EqualTo(state));
+        }
+
+        #endregion
+
+        #region TEST VALID SCENARIOS
+
+        [Test]
+        public void When_TryingToRequestAuthorization_But_TheUserConnectionValidityPeriodIsNotValid_Then_Redirect_To_The_Authentication_Screen()
+        {
+            // ARRANGE
+            InitializeMockingObjects();
+            const string state = "state";
+            const string code = "code";
+            const string clientId = "MyBlog";
+            const string redirectUrl = "http://localhost";
+            const long maxAge = 300;
+            var currentDateTimeOffset = DateTimeOffset.UtcNow.ConvertToUnixTimestamp();
+            currentDateTimeOffset -= maxAge + 100;
+            var authorizationParameter = new AuthorizationParameter
+            {
+                ClientId = clientId,
+                State = state,
+                Prompt = "none",
+                RedirectUrl = redirectUrl,
+                Scope = "openid",
+                ResponseType = "code",
+                MaxAge = 300
+            };
+
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.AuthenticationInstant, currentDateTimeOffset.ToString())
+            };
+            var claimIdentity = new ClaimsIdentity(claims, "fake");
+            var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
+
+            // ACT
+            var result = _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal, code);
+
+            // ASSERTS
+            Assert.IsNotNull(result);
+            Assert.That(result.RedirectInstruction.Action, Is.EqualTo(Core.Results.IdentityServerEndPoints.AuthenticateIndex));
+            Assert.That(result.RedirectInstruction.Parameters.Count(), Is.EqualTo(1));
+            Assert.That(result.RedirectInstruction.Parameters.First().Name, Is.EqualTo(Core.Constants.StandardAuthorizationResponseNames.AuthorizationCodeName));
+            Assert.That(result.RedirectInstruction.Parameters.First().Value, Is.EqualTo(code));
+        }
+
+        [Test]
+        public void When_TryingToRequestAuthorization_But_TheUserIsNotAuthenticated_Then_Redirect_To_The_Authentication_Screen()
+        {
+            // ARRANGE
+            InitializeMockingObjects();
+            const string state = "state";
+            const string code = "code";
+            const string clientId = "MyBlog";
+            const string redirectUrl = "http://localhost";
+            var authorizationParameter = new AuthorizationParameter
+            {
+                ClientId = clientId,
+                State = state,
+                RedirectUrl = redirectUrl,
+                Scope = "openid",
+                ResponseType = "code",
+            };
+
+            // ACT
+            var result = _processAuthorizationRequest.Process(authorizationParameter, null, code);
+
+            // ASSERTS
+            Assert.IsNotNull(result);
+            Assert.That(result.RedirectInstruction.Action, Is.EqualTo(Core.Results.IdentityServerEndPoints.AuthenticateIndex));
+            Assert.That(result.RedirectInstruction.Parameters.Count(), Is.EqualTo(1));
+            Assert.That(result.RedirectInstruction.Parameters.First().Name, Is.EqualTo(Core.Constants.StandardAuthorizationResponseNames.AuthorizationCodeName));
+            Assert.That(result.RedirectInstruction.Parameters.First().Value, Is.EqualTo(code));
+        }
+
+        [Test]
+        public void When_TryingToRequestAuthorization_And_TheUserIsAuthenticated_But_He_Didnt_Give_His_Consent_Then_Redirect_To_Consent_Screen()
+        {
+            // ARRANGE
+            InitializeMockingObjects();
+            const string state = "state";
+            const string code = "code";
+            const string clientId = "MyBlog";
+            const string redirectUrl = "http://localhost";
+            var authorizationParameter = new AuthorizationParameter
+            {
+                ClientId = clientId,
+                State = state,
+                RedirectUrl = redirectUrl,
+                Scope = "openid",
+                ResponseType = "code",
+            };
+            
+            var claimIdentity = new ClaimsIdentity("fake");
+            var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
+
+            // ACT
+            var result = _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal, code);
+
+            // ASSERTS
+            Assert.IsNotNull(result);
+            Assert.That(result.RedirectInstruction.Action, Is.EqualTo(Core.Results.IdentityServerEndPoints.ConsentIndex));
+            Assert.That(result.RedirectInstruction.Parameters.Count(), Is.EqualTo(1));
+            Assert.That(result.RedirectInstruction.Parameters.First().Name, Is.EqualTo(Core.Constants.StandardAuthorizationResponseNames.AuthorizationCodeName));
+            Assert.That(result.RedirectInstruction.Parameters.First().Value, Is.EqualTo(code));
+        }
+
+        [Test]
+        public void When_TryingToRequestAuthorization_And_ExplicitySpecify_PromptConsent_But_The_User_IsNotAuthenticated_Then_Redirect_To_Consent_Screen()
+        {
+            // ARRANGE
+            InitializeMockingObjects();
+            const string state = "state";
+            const string code = "code";
+            const string clientId = "MyBlog";
+            const string redirectUrl = "http://localhost";
+            var authorizationParameter = new AuthorizationParameter
+            {
+                ClientId = clientId,
+                State = state,
+                RedirectUrl = redirectUrl,
+                Scope = "openid",
+                ResponseType = "code",
+                Prompt = "consent"
+            };
+
+            // ACT
+            var result = _processAuthorizationRequest.Process(authorizationParameter, null, code);
+
+            // ASSERTS
+            Assert.IsNotNull(result);
+            Assert.That(result.RedirectInstruction.Action, Is.EqualTo(Core.Results.IdentityServerEndPoints.AuthenticateIndex));
+            Assert.That(result.RedirectInstruction.Parameters.Count(), Is.EqualTo(1));
+            Assert.That(result.RedirectInstruction.Parameters.First().Name, Is.EqualTo(Core.Constants.StandardAuthorizationResponseNames.AuthorizationCodeName));
+            Assert.That(result.RedirectInstruction.Parameters.First().Value, Is.EqualTo(code));
+        }
+
+        [Test]
+        public void When_TryingToRequestAuthorization_And_TheUserIsAuthenticated_And_He_Already_Gave_HisConsent_Then_The_AuthorizationCode_Is_Passed_To_The_Callback()
+        {
+            // ARRANGE
+            InitializeMockingObjects();
+            const string state = "state";
+            const string code = "code";
+            const string clientId = "MyBlog";
+            const string subject = "habarthierry@hotmail.fr";
+            const string redirectUrl = "http://localhost";
+            FakeDataSource.Instance().Consents.Add(new Consent
+            {
+                ResourceOwner = new ResourceOwner
+                {
+                    Id = subject
+                },
+                GrantedScopes = new List<Scope>
+                {
+                    new Scope
+                    {
+                        Name = "openid"
+                    }
+                },
+                Client = FakeDataSource.Instance().Clients.First()
+            });
+            var authorizationParameter = new AuthorizationParameter
+            {
+                ClientId = clientId,
+                State = state,
+                RedirectUrl = redirectUrl,
+                Scope = "openid",
+                ResponseType = "code",
+                Prompt = "none"
+            };
+
+            var claims = new List<Claim>
+            {
+                new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject)
+            };
+            var claimIdentity = new ClaimsIdentity(claims, "fake");
+            var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
+
+            // ACT
+            var result = _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal, code);
+            
+            // ASSERTS
+            Assert.IsNotNull(result);
+            Assert.That(result.Type, Is.EqualTo(TypeActionResult.RedirectToCallBackUrl));
+            Assert.That(result.RedirectInstruction.Parameters.Count(), Is.EqualTo(0));
+        }
+
+        #endregion
 
         private void InitializeMockingObjects()
         {

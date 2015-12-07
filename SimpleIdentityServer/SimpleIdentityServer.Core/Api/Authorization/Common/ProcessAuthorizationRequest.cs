@@ -20,7 +20,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
     {
         ActionResult Process(
             AuthorizationParameter authorizationParameter,
-            IPrincipal claimsPrincipal,
+            ClaimsPrincipal claimsPrincipal,
             string code);
     }
 
@@ -52,7 +52,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
 
         public ActionResult Process(
             AuthorizationParameter authorizationParameter, 
-            IPrincipal claimsPrincipal, 
+            ClaimsPrincipal claimsPrincipal, 
             string code)
         {
             if (authorizationParameter == null)
@@ -65,11 +65,12 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
                 throw new ArgumentNullException("code parameter may not be null");
             }
 
+            ActionResult result = null;
+            var endUserIsAuthenticated = IsAuthenticated(claimsPrincipal);
             var prompts = _parameterParserHelper.ParsePromptParameters(authorizationParameter.Prompt);
             if (prompts == null || !prompts.Any())
             {
                 prompts = new List<PromptParameter>();
-                var endUserIsAuthenticated = IsAuthenticated(claimsPrincipal);
                 if (!endUserIsAuthenticated)
                 {
                     prompts.Add(PromptParameter.login);
@@ -145,7 +146,28 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
                     authorizationParameter.State);
             }
 
-            var result = ProcessPromptParameters(
+            // Check if the user connection is still valid.
+            if (endUserIsAuthenticated &&
+                !authorizationParameter.MaxAge.Equals(default(double)))
+            {
+                var authenticationDateTimeClaim =
+                    claimsPrincipal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.AuthenticationInstant);
+                if (authenticationDateTimeClaim != null)
+                {
+                    var maxAge = authorizationParameter.MaxAge;
+                    var currentDateTimeUtc = DateTimeOffset.UtcNow.ConvertToUnixTimestamp();
+                    var authenticationDateTime = long.Parse(authenticationDateTimeClaim.Value);
+                    if (maxAge < currentDateTimeUtc - authenticationDateTime)
+                    {
+                        result = _actionResultFactory.CreateAnEmptyActionResultWithRedirection();
+                        result.RedirectInstruction.AddParameter(Constants.StandardAuthorizationResponseNames.AuthorizationCodeName, code);
+                        result.RedirectInstruction.Action = IdentityServerEndPoints.AuthenticateIndex;
+                        return result;
+                    }
+                }
+            }
+
+            result = ProcessPromptParameters(
                 prompts,
                 claimsPrincipal,
                 authorizationParameter,
@@ -164,7 +186,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
         /// <returns>The action result interpreted by the controller</returns>
         private ActionResult ProcessPromptParameters(
             IList<PromptParameter> prompts,
-            IPrincipal principal,
+            ClaimsPrincipal principal,
             AuthorizationParameter authorizationParameter,
             string code)
         {
@@ -187,42 +209,12 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
                 {
                     throw new IdentityServerExceptionWithState(
                             ErrorCodes.InteractionRequiredCode,
-                            ErrorDescriptions.TheUserNeedsToGiveIsConsent,
+                            ErrorDescriptions.TheUserNeedsToGiveHisConsent,
                             authorizationParameter.State);
                 }
 
                 var result = _actionResultFactory.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
                 return result;
-            }
-
-            // Check if the user is still valid.
-            if (endUserIsAuthenticated && 
-                !authorizationParameter.MaxAge.Equals(default(double)))
-            {
-                var claimsPrincipal = principal as ClaimsPrincipal;
-                if (claimsPrincipal == null)
-                {
-                    throw new IdentityServerExceptionWithState(
-                        ErrorCodes.LoginRequiredCode,
-                        ErrorDescriptions.TheClaimCannotBeFetch,
-                        authorizationParameter.State);
-                }
-
-                var authenticationDateTimeClaim =
-                    claimsPrincipal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.AuthenticationInstant);
-                if (authenticationDateTimeClaim != null)
-                {
-                    var maxAge = authorizationParameter.MaxAge;
-                    var currentDateTimeUtc = DateTimeOffset.UtcNow.ConvertToUnixTimestamp();
-                    var authenticationDateTime = long.Parse(authenticationDateTimeClaim.Value);
-                    if (maxAge < currentDateTimeUtc - authenticationDateTime)
-                    {
-                        var result = _actionResultFactory.CreateAnEmptyActionResultWithRedirection();
-                        result.RedirectInstruction.AddParameter("code", code);
-                        result.RedirectInstruction.Action = IdentityServerEndPoints.AuthenticateIndex;
-                        return result;
-                    }
-                }
             }
 
             // Redirects to the authentication screen 
@@ -231,7 +223,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
             if (prompts.Contains(PromptParameter.login))
             {
                 var result = _actionResultFactory.CreateAnEmptyActionResultWithRedirection();
-                result.RedirectInstruction.AddParameter("code", code);
+                result.RedirectInstruction.AddParameter(Constants.StandardAuthorizationResponseNames.AuthorizationCodeName, code);
                 result.RedirectInstruction.Action = IdentityServerEndPoints.AuthenticateIndex;
                 return result;
             }
@@ -239,7 +231,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
             if (prompts.Contains(PromptParameter.consent))
             {
                 var result = _actionResultFactory.CreateAnEmptyActionResultWithRedirection();
-                result.RedirectInstruction.AddParameter("code", code);
+                result.RedirectInstruction.AddParameter(Constants.StandardAuthorizationResponseNames.AuthorizationCodeName, code);
                 if (!endUserIsAuthenticated)
                 {
                     result.RedirectInstruction.Action = IdentityServerEndPoints.AuthenticateIndex;
@@ -254,15 +246,14 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
         }
 
         private Consent GetResourceOwnerConsent(
-            IPrincipal claimsPrincipal,
+            ClaimsPrincipal claimsPrincipal,
             AuthorizationParameter authorizationParameter)
         {
-            var principal = claimsPrincipal as ClaimsPrincipal;
-            var subject = principal.GetSubject();
+            var subject = claimsPrincipal.GetSubject();
             return _consentHelper.GetConsentConfirmedByResourceOwner(subject, authorizationParameter);
         }
 
-        private static bool IsAuthenticated(IPrincipal principal)
+        private static bool IsAuthenticated(ClaimsPrincipal principal)
         {
             return principal == null || principal.Identity == null ?
                 false :

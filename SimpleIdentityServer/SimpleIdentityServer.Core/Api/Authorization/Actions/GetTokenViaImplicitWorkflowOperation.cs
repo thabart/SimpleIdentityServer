@@ -48,7 +48,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
 
             var result = _processAuthorizationRequest.Process(
                 authorizationParameter,
-                principal,
+                principal as ClaimsPrincipal,
                 code);
 
             if (result.Type == TypeActionResult.RedirectToCallBackUrl)

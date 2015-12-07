@@ -44,7 +44,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
             string code)
         {
             var result = _processAuthorizationRequest.Process(authorizationParameter,
-                claimsPrincipal,
+                claimsPrincipal as ClaimsPrincipal,
                 code);
             var client = _clientValidator.ValidateClientExist(authorizationParameter.ClientId);
             if (!_clientValidator.ValidateGrantType(GrantType.authorization_code, client))
