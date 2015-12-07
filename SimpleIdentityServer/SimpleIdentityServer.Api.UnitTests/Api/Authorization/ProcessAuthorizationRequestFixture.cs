@@ -179,6 +179,34 @@ namespace SimpleIdentityServer.Api.UnitTests.Api.Authorization
             Assert.That(exception.State, Is.EqualTo(state));
         }
 
+        [Test]
+        public void When_Passing_TryingToByPassLoginAndConsentScreen_But_UserIsNotAuthenticated_Then_Exception_Is_Raised()
+        {            
+            // ARRANGE
+            InitializeMockingObjects();
+            const string state = "state";
+            const string code = "code";
+            const string clientId = "MyBlog";
+            const string redirectUrl = "http://localhost";
+            var authorizationParameter = new AuthorizationParameter
+            {
+                ClientId = clientId,
+                Prompt = "none",
+                State = state,
+                RedirectUrl = redirectUrl,
+                Scope = "openid",
+                ResponseType = "code"
+            };
+
+            // ACT & ASSERTS
+            var exception =
+                Assert.Throws<IdentityServerExceptionWithState>(
+                    () => _processAuthorizationRequest.Process(authorizationParameter, null, code));
+            Assert.That(exception.Code, Is.EqualTo(ErrorCodes.LoginRequiredCode));
+            Assert.That(exception.Message, Is.EqualTo(ErrorDescriptions.TheUserNeedsToBeAuthenticated));
+            Assert.That(exception.State, Is.EqualTo(state));
+        }
+
         private void InitializeMockingObjects()
         {
             var scopeRepository = FakeFactories.GetScopeRepository();
