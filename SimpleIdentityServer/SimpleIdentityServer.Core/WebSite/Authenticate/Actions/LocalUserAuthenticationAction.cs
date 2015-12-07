@@ -90,16 +90,6 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
             out List<Claim> claims)
         {
             claims = new List<Claim>();
-            var promptParameters = _parameterParserHelper.ParsePromptParameters(parameter.Prompt);
-            var resourceOwnerIsAuthenticated = resourceOwnerPrincipal.IsAuthenticated();
-            if (resourceOwnerIsAuthenticated && !promptParameters.Contains(PromptParameter.login))
-            {
-                throw new IdentityServerExceptionWithState(
-                    ErrorCodes.InvalidRequestCode,
-                    ErrorDescriptions.TheUserCannotBeReauthenticated,
-                    parameter.State);
-            }
-
             var subject = _resourceOwnerService.Authenticate(localAuthorizationParameter.UserName,
                 localAuthorizationParameter.Password);
             if (string.IsNullOrEmpty(subject))
