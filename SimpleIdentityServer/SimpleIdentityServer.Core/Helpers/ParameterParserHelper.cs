@@ -81,7 +81,8 @@ namespace SimpleIdentityServer.Core.Helpers
 
         public List<string> ParseScopeParameters(string scope)
         {
-            return scope.Split(' ').Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+            return string.IsNullOrWhiteSpace(scope) ? new List<string>() :
+                scope.Split(' ').Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
         }
 
         public List<string> ParseScopeParametersAndGetAllScopes(string concatenateListOfScopes)

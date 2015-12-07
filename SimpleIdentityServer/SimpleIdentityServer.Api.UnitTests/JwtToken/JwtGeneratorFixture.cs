@@ -22,6 +22,8 @@ namespace SimpleIdentityServer.Api.UnitTests.JwtToken
     {
         private IJwtGenerator _jwtGenerator;
 
+        private Mock<ISimpleIdentityServerConfigurator> _simpleIdentityServerConfigurator;
+        
         [Test]
         public void When_Requesting_JwsPayload_And_Pass_AuthTime_As_ClaimEssential_Then_TheJwsPayload_Contains_AuthenticationTime()
         {
@@ -66,9 +68,41 @@ namespace SimpleIdentityServer.Api.UnitTests.JwtToken
             Assert.That(long.Parse(result[Core.Jwt.Constants.StandardClaimNames.AuthenticationTime].ToString()), Is.EqualTo(currentDateTimeOffset));
         }
 
+        [Test]
+        public void When_Requesting_JwsPayload_And_IndicateTheMaxAge_Then_TheJwsPayload_Contains_AuthenticationTime()
+        {
+            // ARRANGE
+            InitializeMockObjects();
+            const string subject = "habarthierry@hotmail.fr";
+            var currentDateTimeOffset = DateTimeOffset.UtcNow.ConvertToUnixTimestamp();
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.AuthenticationInstant, currentDateTimeOffset.ToString()),
+                new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject)
+            };
+            var claimIdentity = new ClaimsIdentity(claims, "fake");
+            var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
+            var authorizationParameter = new AuthorizationParameter
+            {
+                MaxAge = 2
+            };
+
+            // ACT
+            var result = _jwtGenerator.GenerateJwsPayloadForScopes(
+                claimsPrincipal,
+                authorizationParameter);
+
+            // ASSERT
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.ContainsKey(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject));
+            Assert.IsTrue(result.ContainsKey(Core.Jwt.Constants.StandardClaimNames.AuthenticationTime));
+            Assert.That(result[Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject].ToString(), Is.EqualTo(subject));
+            Assert.IsNotEmpty(result[Core.Jwt.Constants.StandardClaimNames.AuthenticationTime].ToString());
+        }
+
         private void InitializeMockObjects()
         {
-            var simpleIdentityServerConfigurator = new Mock<ISimpleIdentityServerConfigurator>();
+            _simpleIdentityServerConfigurator = new Mock<ISimpleIdentityServerConfigurator>();
             var clientRepository = FakeFactories.GetClientRepository();
             var clientValidator = new ClientValidator(clientRepository);
             var jsonWebKeyRepository = FakeFactories.GetJsonWebKeyRepository();
@@ -81,7 +115,7 @@ namespace SimpleIdentityServer.Api.UnitTests.JwtToken
             var jwsGenerator = new JwsGenerator(createJwsSignature);
             var jweGenerator = new JweGenerator(jweHelper);
             _jwtGenerator = new JwtGenerator(
-                simpleIdentityServerConfigurator.Object,
+                _simpleIdentityServerConfigurator.Object,
                 clientRepository,
                 clientValidator,
                 jsonWebKeyRepository,
