@@ -55,8 +55,15 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
             IPrincipal claimsPrincipal, 
             string code)
         {
-            Contract.Requires<ArgumentNullException>(authorizationParameter != null, "authorization parameter may not be null");
-            Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(code), "code parameter may not be null");
+            if (authorizationParameter == null)
+            {
+                throw new ArgumentNullException("authorization parameter may not be null");
+            }
+
+            if (string.IsNullOrWhiteSpace(code))
+            {
+                throw new ArgumentNullException("code parameter may not be null");
+            }
 
             var prompts = _parameterParserHelper.ParsePromptParameters(authorizationParameter.Prompt);
             if (prompts == null || !prompts.Any())
@@ -120,10 +127,18 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
             }
 
             var responseTypes = _parameterParserHelper.ParseResponseType(authorizationParameter.ResponseType);
+            if (!responseTypes.Any())
+            {
+                throw new IdentityServerExceptionWithState(
+                    ErrorCodes.InvalidRequestCode,
+                    string.Format(ErrorDescriptions.MissingParameter, Constants.StandardAuthorizationRequestParameterNames.ResponseTypeName),
+                    authorizationParameter.State);
+            }
+
             if (!_clientValidator.ValidateResponseTypes(responseTypes, client))
             {
                 throw new IdentityServerExceptionWithState(
-                    ErrorCodes.InvalidGrant,
+                    ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType,
                         authorizationParameter.ClientId,
                         string.Join(",", responseTypes)),

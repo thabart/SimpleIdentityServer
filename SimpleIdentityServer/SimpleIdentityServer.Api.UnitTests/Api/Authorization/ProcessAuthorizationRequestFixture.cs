@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using NUnit.Framework;
 using SimpleIdentityServer.Api.UnitTests.Fake;
 using SimpleIdentityServer.Core.Api.Authorization.Common;
@@ -9,6 +10,7 @@ using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.DataAccess.Fake;
+using SimpleIdentityServer.DataAccess.Fake.Models;
 
 namespace SimpleIdentityServer.Api.UnitTests.Api.Authorization
 {
@@ -112,6 +114,68 @@ namespace SimpleIdentityServer.Api.UnitTests.Api.Authorization
                     () => _processAuthorizationRequest.Process(authorizationParameter, null, code));
             Assert.That(exception.Code, Is.EqualTo(ErrorCodes.InvalidScope));
             Assert.That(exception.Message, Is.EqualTo(string.Format(ErrorDescriptions.TheScopesNeedToBeSpecified, Core.Constants.StandardScopes.OpenId.Name)));
+            Assert.That(exception.State, Is.EqualTo(state));
+        }
+
+        [Test]
+        public void When_Passing_AuthorizationRequestWithMissingResponseType_Then_Exception_Is_Raised()
+        {
+            // ARRANGE
+            InitializeMockingObjects();
+            const string state = "state";
+            const string code = "code";
+            const string clientId = "MyBlog";
+            const string redirectUrl = "http://localhost";
+            var authorizationParameter = new AuthorizationParameter
+            {
+                ClientId = clientId,
+                Prompt = "login",
+                State = state,
+                RedirectUrl = redirectUrl,
+                Scope = "openid"
+            };
+
+            // ACT & ASSERTS
+            var exception =
+                Assert.Throws<IdentityServerExceptionWithState>(
+                    () => _processAuthorizationRequest.Process(authorizationParameter, null, code));
+            Assert.That(exception.Code, Is.EqualTo(ErrorCodes.InvalidRequestCode));
+            Assert.That(exception.Message, Is.EqualTo(string.Format(ErrorDescriptions.MissingParameter
+                , Core.Constants.StandardAuthorizationRequestParameterNames.ResponseTypeName)));
+            Assert.That(exception.State, Is.EqualTo(state));
+        }
+
+        [Test]
+        public void When_Passing_AuthorizationRequestWithNotSupportedResponseType_Then_Exception_Is_Raised()
+        {
+            // ARRANGE
+            InitializeMockingObjects();
+            const string state = "state";
+            const string code = "code";
+            const string clientId = "MyBlog";
+            const string redirectUrl = "http://localhost";
+            var authorizationParameter = new AuthorizationParameter
+            {
+                ClientId = clientId,
+                Prompt = "login",
+                State = state,
+                RedirectUrl = redirectUrl,
+                Scope = "openid",
+                ResponseType = "code"
+            };
+
+            // ACT
+            var client = FakeDataSource.Instance().Clients.FirstOrDefault(c => c.ClientId == clientId);
+            Assert.IsNotNull(client);
+            client.ResponseTypes.Remove(ResponseType.code);
+
+            // ACT & ASSERTS
+            var exception =
+                Assert.Throws<IdentityServerExceptionWithState>(
+                    () => _processAuthorizationRequest.Process(authorizationParameter, null, code));
+            Assert.That(exception.Code, Is.EqualTo(ErrorCodes.InvalidRequestCode));
+            Assert.That(exception.Message, Is.EqualTo(string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType
+                , clientId, "code")));
             Assert.That(exception.State, Is.EqualTo(state));
         }
 

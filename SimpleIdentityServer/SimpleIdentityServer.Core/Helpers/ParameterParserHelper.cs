@@ -69,7 +69,7 @@ namespace SimpleIdentityServer.Core.Helpers
             var responseTypeNames = Enum.GetNames(typeof (ResponseType));
             if (string.IsNullOrWhiteSpace(parameter))
             {
-                return null;
+                return new List<ResponseType>();
             }
 
             var responses = parameter.Split(' ')
