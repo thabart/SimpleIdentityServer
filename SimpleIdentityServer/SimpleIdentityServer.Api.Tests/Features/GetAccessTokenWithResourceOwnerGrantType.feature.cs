@@ -364,7 +364,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 116
  testRunner.Then("http result is 400", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 117
- testRunner.And("the error is invalid_request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("the error is invalid_scope", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
         }

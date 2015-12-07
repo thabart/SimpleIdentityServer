@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
@@ -54,6 +55,9 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
             IPrincipal claimsPrincipal, 
             string code)
         {
+            Contract.Requires<ArgumentNullException>(authorizationParameter != null, "authorization parameter may not be null");
+            Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(code), "code parameter may not be null");
+
             var prompts = _parameterParserHelper.ParsePromptParameters(authorizationParameter.Prompt);
             if (prompts == null || !prompts.Any())
             {
@@ -84,25 +88,34 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
             {
                 throw new IdentityServerExceptionWithState(
                     ErrorCodes.InvalidClient,
-                    string.Format(ErrorDescriptions.ClientIsNotValid, "client_id"),
+                    string.Format(ErrorDescriptions.ClientIsNotValid, authorizationParameter.ClientId),
                     authorizationParameter.State);
             }
 
             var redirectionUrl = _clientValidator.ValidateRedirectionUrl(authorizationParameter.RedirectUrl, client);
-            if (redirectionUrl == null)
+            if (string.IsNullOrWhiteSpace(redirectionUrl))
             {
                 throw new IdentityServerExceptionWithState(
-                    ErrorCodes.InvalidRequestUriCode,
-                    string.Format(ErrorDescriptions.RedirectUrlIsNotValid, redirectionUrl),
+                    ErrorCodes.InvalidRequestCode,
+                    string.Format(ErrorDescriptions.RedirectUrlIsNotValid, authorizationParameter.RedirectUrl),
                     authorizationParameter.State);
             }
 
-            var allowedScopes = _scopeValidator.ValidateAllowedScopes(authorizationParameter.Scope, client);
-            if (!allowedScopes.Contains("openid"))
+            string messageError;
+            var allowedScopes = _scopeValidator.IsScopesValid(authorizationParameter.Scope, client, out messageError);
+            if (!allowedScopes.Any())
             {
                 throw new IdentityServerExceptionWithState(
-                    ErrorCodes.InvalidRequestUriCode,
-                    string.Format(ErrorDescriptions.TheScopesNeedToBeSpecified, "openid"),
+                    ErrorCodes.InvalidScope,
+                    messageError,
+                    authorizationParameter.State);
+            }
+
+            if (!allowedScopes.Contains(Constants.StandardScopes.OpenId.Name))
+            {
+                throw new IdentityServerExceptionWithState(
+                    ErrorCodes.InvalidScope,
+                    string.Format(ErrorDescriptions.TheScopesNeedToBeSpecified, Constants.StandardScopes.OpenId.Name),
                     authorizationParameter.State);
             }
 
@@ -110,7 +123,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
             if (!_clientValidator.ValidateResponseTypes(responseTypes, client))
             {
                 throw new IdentityServerExceptionWithState(
-                    ErrorCodes.InvalidRequestUriCode,
+                    ErrorCodes.InvalidGrant,
                     string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType,
                         authorizationParameter.ClientId,
                         string.Join(",", responseTypes)),

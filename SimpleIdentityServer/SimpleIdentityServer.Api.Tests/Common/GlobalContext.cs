@@ -1,8 +1,12 @@
 ﻿using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Filters;
+using Microsoft.Owin.Infrastructure;
 using Microsoft.Owin.Testing;
 using Microsoft.Practices.EnterpriseLibrary.Caching;
+using Microsoft.Practices.EnterpriseLibrary.Caching.BackingStoreImplementations;
+using Microsoft.Practices.EnterpriseLibrary.Caching.Instrumentation;
+using Microsoft.Practices.EnterpriseLibrary.Common.Instrumentation;
 using Microsoft.Practices.Unity;
 using Owin;
 using SimpleIdentityServer.Api.Configuration;
@@ -59,6 +63,8 @@ namespace SimpleIdentityServer.Api.Tests.Common
 
         public UnityContainer UnityContainer { get; private set; }
 
+        public ICacheManagerProvider CacheManagerProvider { get; private set; }
+
         public TestServer CreateServer()
         {
             return GetServer(new HttpConfiguration());
@@ -78,6 +84,7 @@ namespace SimpleIdentityServer.Api.Tests.Common
         {
             return TestServer.Create(app =>
             {
+                SignatureConversions.AddConversions(app);
                 RegisterFilterInjector(configuration, UnityContainer);
                 configuration.DependencyResolver = new UnityResolver(UnityContainer);
                 WebApiConfig.Register(configuration, app);
@@ -193,6 +200,23 @@ namespace SimpleIdentityServer.Api.Tests.Common
             UnityContainer.RegisterType<IClientAssertionAuthentication, ClientAssertionAuthentication>();
 
             UnityContainer.RegisterType<ITranslationManager, TranslationManager>();
+
+            var cache = new Cache(new NullBackingStore(),
+                new CachingInstrumentationProvider("apiCache", false, false, "simpleIdServer"));
+            var instrumentationProvider = new CachingInstrumentationProvider("apiCache", false, false,
+                new NoPrefixNameFormatter());
+            var cacheManager = new CacheManager(cache, new BackgroundScheduler(new ExpirationTask(cache, instrumentationProvider), new ScavengerTask(
+                10, 
+                1000, 
+                cache, 
+                instrumentationProvider), 
+                instrumentationProvider), new ExpirationPollTimer(1));
+
+            CacheManagerProvider = new FakeCacheManagerProvider
+            {
+                CacheManager = cacheManager
+            };
+            UnityContainer.RegisterInstance(CacheManagerProvider);
         }
     }
 }

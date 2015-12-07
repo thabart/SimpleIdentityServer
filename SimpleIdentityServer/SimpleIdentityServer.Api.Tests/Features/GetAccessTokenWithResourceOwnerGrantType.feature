@@ -114,7 +114,7 @@ Scenario: Retrieve an access token with duplicate scopes
 	| MyHolidays | thierry  | loki     | roles roles |
 
 	Then http result is 400
-	And the error is invalid_request
+	And the error is invalid_scope
 
 Scenario: Retrieve an access token for a none existing client_id
 	Given a resource owner with username thierry and password loki is defined

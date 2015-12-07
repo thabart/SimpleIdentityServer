@@ -6,9 +6,9 @@
 
         public static string RequestIsNotValid =  "the request is not valid";
 
-        public static string ClientIsNotValid = "the client_id {0} is not valid";
+        public static string ClientIsNotValid = "the client id parameter {0} doesn't exist or is not valid";
 
-        public static string RedirectUrlIsNotValid = "the redirect url {0} is not valid";
+        public static string RedirectUrlIsNotValid = "the redirect url {0} doesn't exist or is not valid";
 
         public static string ResourceOwnerCredentialsAreNotValid = "resource owner credentials are not valid";
 
@@ -16,9 +16,9 @@
 
         public static string ScopesAreNotAllowedOrInvalid = "the scopes {0} are not allowed or invalid";
 
-        public static string DuplicateScopeValues = "the scopes {0} are duplicated";
+        public static string DuplicateScopeValues = "duplicate scopes {0} have been passed in parameter";
 
-        public static string TheScopesNeedToBeSpecified = "the scopes {0} need to be specified";
+        public static string TheScopesNeedToBeSpecified = "the scope(s) {0} need(s) to be specified";
 
         public static string TheUserNeedsToBeAuthenticated = "the user needs to be authenticated";
 

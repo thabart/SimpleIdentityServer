@@ -1,5 +1,4 @@
 ﻿using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Models;
 
@@ -11,7 +10,10 @@ namespace SimpleIdentityServer.Core.Validators
 {
     public interface IScopeValidator
     {
-        List<string> ValidateAllowedScopes(string scope, Client client);
+        List<string> IsScopesValid(
+            string scope,
+            Client client,
+            out string messageDescription);
     }
 
     public class ScopeValidator : IScopeValidator
@@ -23,14 +25,18 @@ namespace SimpleIdentityServer.Core.Validators
             _parameterParserHelper = parameterParserHelper;
         }
 
-        public List<string> ValidateAllowedScopes(string scope, Client client)
+        public List<string> IsScopesValid(
+            string scope, 
+            Client client,
+            out string messageDescription)
         {
+            var emptyList = new List<string>();
             var result = new List<string>();
+            messageDescription = string.Empty;
             if (!ValidateScope(scope))
             {
-                throw new IdentityServerException(
-                    ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.ParameterIsNotCorrect, "scope"));
+                messageDescription = string.Format(ErrorDescriptions.ParameterIsNotCorrect, "scope");
+                return emptyList;
             }
 
             var scopes = _parameterParserHelper.ParseScopeParameters(scope);
@@ -38,21 +44,24 @@ namespace SimpleIdentityServer.Core.Validators
             {
                 var duplicates = scopes.GroupBy(p => p)
                     .Where(g => g.Count() > 1)
-                    .Select(g => g.Key);
+                    .Select(g => g.Key)
+                    .ToList();
                 if (duplicates.Any())
                 {
-                    throw new IdentityServerException(
-                        ErrorCodes.InvalidRequestCode,
-                        string.Format(ErrorDescriptions.DuplicateScopeValues, string.Join(",", duplicates)));
+                    messageDescription = string.Format(ErrorDescriptions.DuplicateScopeValues,
+                        string.Join(",", duplicates));
+                    return emptyList;
                 }
 
                 var scopeAllowed = client.AllowedScopes.Select(a => a.Name).ToList();
-                var scopesNotAllowedOrInvalid = scopes.Where(s => !scopeAllowed.Contains(s));
+                var scopesNotAllowedOrInvalid = scopes
+                    .Where(s => !scopeAllowed.Contains(s))
+                    .ToList();
                 if (scopesNotAllowedOrInvalid.Any())
                 {
-                    throw new IdentityServerException(
-                        ErrorCodes.InvalidScope,
-                        string.Format(ErrorDescriptions.ScopesAreNotAllowedOrInvalid, string.Join(",", scopesNotAllowedOrInvalid)));
+                    messageDescription = string.Format(ErrorDescriptions.ScopesAreNotAllowedOrInvalid,
+                        string.Join(",", scopesNotAllowedOrInvalid));
+                    return emptyList;
                 }
 
                 result = scopes;

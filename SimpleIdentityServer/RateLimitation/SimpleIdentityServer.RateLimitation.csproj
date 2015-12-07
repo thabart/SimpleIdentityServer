@@ -96,6 +96,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes\RateLimitationFilter.cs" />
+    <Compile Include="Configuration\CacheManagerProvider.cs" />
     <Compile Include="Configuration\GetRateLimitationElementOperation.cs" />
     <Compile Include="Configuration\RateLimitationCollection.cs" />
     <Compile Include="Configuration\RateLimitationElement.cs" />

@@ -10,6 +10,7 @@ namespace SimpleIdentityServer.RateLimitation
         public void Initialize(IModuleRegister register)
         {
             register.RegisterType<IGetRateLimitationElementOperation, GetRateLimitationElementOperation>();
+            register.RegisterType<ICacheManagerProvider, CacheManagerProvider>();
         }
     }
 }

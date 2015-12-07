@@ -113,6 +113,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\Fakes\FakeCacheManagerProvider.cs" />
     <Compile Include="Common\Fakes\FakeHttpClientFactory.cs" />
     <Compile Include="Common\Fakes\FakeSimpleIdentityServerConfigurator.cs" />
     <Compile Include="Common\Fakes\FakeAuthenticationFilter.cs" />

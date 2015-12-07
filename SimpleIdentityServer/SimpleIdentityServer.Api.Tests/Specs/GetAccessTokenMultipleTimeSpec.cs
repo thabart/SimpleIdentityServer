@@ -77,7 +77,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         public void WhenRequestingAccessTokens(Table table)
         {
             var tokenRequests = table.CreateSet<TokenRequest>();
-            var responseCacheManager = CacheFactory.GetCacheManager();
+            var responseCacheManager = _context.CacheManagerProvider.GetCacheManager();
             responseCacheManager.Flush();
 
             var server = _context.CreateServer();

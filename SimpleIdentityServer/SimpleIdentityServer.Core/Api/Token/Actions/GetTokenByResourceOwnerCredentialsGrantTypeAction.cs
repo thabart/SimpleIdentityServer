@@ -1,4 +1,5 @@
-﻿using SimpleIdentityServer.Core.Errors;
+﻿using System.Linq;
+using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Models;
@@ -55,7 +56,14 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             var allowedTokenScopes = string.Empty;
             if (!string.IsNullOrWhiteSpace(parameter.Scope))
             {
-                allowedTokenScopes = string.Join(" ", _scopeValidator.ValidateAllowedScopes(parameter.Scope, client));
+                string messageErrorDescription;
+                allowedTokenScopes = string.Join(" ", _scopeValidator.IsScopesValid(parameter.Scope, client, out messageErrorDescription));
+                if (!allowedTokenScopes.Any())
+                {
+                    throw new IdentityServerException(
+                        ErrorCodes.InvalidScope,
+                        messageErrorDescription);
+                }
             }
 
             // TODO : authenticate the user & create the JWT token

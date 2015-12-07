@@ -4,7 +4,6 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http.Filters;
 
-using Microsoft.Practices.EnterpriseLibrary.Caching;
 using Microsoft.Practices.Unity;
 
 using System.Web.Http.Controllers;
@@ -18,6 +17,8 @@ namespace SimpleIdentityServer.RateLimitation.Attributes
     {
         private IGetRateLimitationElementOperation _getRateLimitationElementOperation;
 
+        private ICacheManagerProvider _cacheManagerProvider;
+
         private bool _isEnabled;
 
         [Dependency]
@@ -27,6 +28,12 @@ namespace SimpleIdentityServer.RateLimitation.Attributes
             {
                 _getRateLimitationElementOperation = value;
             }
+        }
+
+        [Dependency]
+        public ICacheManagerProvider CacheManagerProvider
+        {
+            set { _cacheManagerProvider = value; }
         }
         
         /// <summary>
@@ -68,7 +75,7 @@ namespace SimpleIdentityServer.RateLimitation.Attributes
             }
 
             var today = DateTime.UtcNow;
-            var responseCacheManager = CacheFactory.GetCacheManager();
+            var responseCacheManager = _cacheManagerProvider.GetCacheManager();
             var owinContext = httpActionContext.Request.GetOwinContext();
             var ipAdress = owinContext.Request.RemoteIpAddress;
             var actionName = httpActionContext.ActionDescriptor.ActionName;
@@ -121,7 +128,7 @@ namespace SimpleIdentityServer.RateLimitation.Attributes
             }
 
             var today = DateTime.UtcNow;
-            var responseCacheManager = CacheFactory.GetCacheManager();
+            var responseCacheManager = _cacheManagerProvider.GetCacheManager();
             var owinContext = httpActionExecutedContext.Request.GetOwinContext();
             var ipAdress = owinContext.Request.RemoteIpAddress;
             var actionContext = httpActionExecutedContext.ActionContext;
