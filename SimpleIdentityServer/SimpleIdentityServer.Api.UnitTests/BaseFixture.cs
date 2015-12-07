@@ -14,6 +14,7 @@ namespace SimpleIdentityServer.Api.UnitTests
             FakeDataSource.Instance().Scopes = FakeOpenIdAssets.GetScopes();
             FakeDataSource.Instance().ResourceOwners = FakeOpenIdAssets.GetResourceOwners();
             FakeDataSource.Instance().Consents = FakeOpenIdAssets.GetConsents();
+            FakeDataSource.Instance().JsonWebKeys = FakeOpenIdAssets.GetJsonWebKeys();
         }
     }
 }

@@ -86,6 +86,7 @@
     <Compile Include="BaseFixture.cs" />
     <Compile Include="Fake\FakeFactories.cs" />
     <Compile Include="Fake\FakeOpenIdAssets.cs" />
+    <Compile Include="JwtToken\JwtGeneratorFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

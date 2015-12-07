@@ -24,5 +24,10 @@ namespace SimpleIdentityServer.Api.UnitTests.Fake
         {
             return new FakeConsentRepository();
         }
+
+        public static IJsonWebKeyRepository GetJsonWebKeyRepository()
+        {
+            return new FakeJsonWebKeyRepository();
+        }
     }
 }
