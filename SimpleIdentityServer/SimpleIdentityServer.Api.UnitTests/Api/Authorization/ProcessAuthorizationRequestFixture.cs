@@ -364,6 +364,69 @@ namespace SimpleIdentityServer.Api.UnitTests.Api.Authorization
             Assert.That(exception.Message, Is.EqualTo(ErrorDescriptions.TheIdentityTokenDoesntContainSimpleIdentityServerAsAudience));
         }
 
+
+        [Test]
+        public void When_Passing_An_IdentityToken_Different_From_The_Current_Authenticated_User__Then_An_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeMockingObjects();
+            const string state = "state";
+            const string code = "code";
+            const string clientId = "MyBlog";
+            const string subject = "habarthierry@hotmail.fr";
+            const string issuerName = "audience";
+            const string redirectUrl = "http://localhost";
+            FakeDataSource.Instance().Consents.Add(new Consent
+            {
+                ResourceOwner = new ResourceOwner
+                {
+                    Id = subject
+                },
+                GrantedScopes = new List<Scope>
+                {
+                    new Scope
+                    {
+                        Name = "openid"
+                    }
+                },
+                Client = FakeDataSource.Instance().Clients.First()
+            });
+            var authorizationParameter = new AuthorizationParameter
+            {
+                ClientId = clientId,
+                State = state,
+                RedirectUrl = redirectUrl,
+                Scope = "openid",
+                ResponseType = "code",
+                Prompt = "none",
+            };
+
+            var subjectClaim = new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject);
+            var claims = new List<Claim>
+            {
+                subjectClaim
+            };
+            var claimIdentity = new ClaimsIdentity(claims, "fake");
+            var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
+            var jwtPayload = new JwsPayload
+            {
+                {
+                    subjectClaim.Type, "wrong subjet"
+                },
+                {
+                    Constants.StandardClaimNames.Audiences, new string[] {  issuerName }
+                }
+            };
+            _simpleIdentityServerConfigurator.Setup(s => s.GetIssuerName()).Returns(issuerName);
+
+            authorizationParameter.IdTokenHint = _jwtGenerator.Sign(jwtPayload, clientId);
+
+            // ACT
+            var exception = Assert.Throws<IdentityServerExceptionWithState>(() => _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal, code));
+            Assert.That(exception.Code, Is.EqualTo(ErrorCodes.InvalidRequestCode));
+            Assert.That(exception.Message, Is.EqualTo(ErrorDescriptions.TheCurrentAuthenticatedUserDoesntMatchWithTheIdentityToken));
+        }
+
         #endregion
 
         #region TEST VALID SCENARIOS

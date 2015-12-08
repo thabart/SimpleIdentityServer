@@ -185,7 +185,8 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
 
             ProcessIdTokenHint(result,
                 authorizationParameter,
-                prompts);
+                prompts,
+                claimsPrincipal);
 
             return result;
         }
@@ -193,7 +194,8 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
         private void ProcessIdTokenHint(
             ActionResult actionResult,
             AuthorizationParameter authorizationParameter,
-            List<PromptParameter> prompts)
+            List<PromptParameter> prompts,
+            ClaimsPrincipal claimsPrincipal)
         {
             if (!string.IsNullOrWhiteSpace(authorizationParameter.IdTokenHint) &&
                 prompts.Contains(PromptParameter.none) &&
@@ -220,11 +222,26 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
                 var issuerName = _simpleIdentityServerConfigurator.GetIssuerName();
                 if (jwsPayload.Audiences == null ||
                     !jwsPayload.Audiences.Any() ||
-                    jwsPayload.Audiences.Contains(issuerName))
+                    !jwsPayload.Audiences.Contains(issuerName))
                 {
                     throw new IdentityServerExceptionWithState(
                         ErrorCodes.InvalidRequestCode,
                         ErrorDescriptions.TheIdentityTokenDoesntContainSimpleIdentityServerAsAudience,
+                        authorizationParameter.State);
+                }
+
+                var currentSubject = string.Empty;
+                var expectedSubject = jwsPayload.GetClaimValue(Jwt.Constants.StandardResourceOwnerClaimNames.Subject);
+                if (claimsPrincipal != null && claimsPrincipal.IsAuthenticated())
+                {
+                    currentSubject = claimsPrincipal.GetSubject();
+                }
+
+                if (currentSubject != expectedSubject)
+                {
+                    throw new IdentityServerExceptionWithState(
+                        ErrorCodes.InvalidRequestCode,
+                        ErrorDescriptions.TheCurrentAuthenticatedUserDoesntMatchWithTheIdentityToken,
                         authorizationParameter.State);
                 }
             }
