@@ -54,14 +54,13 @@ namespace SimpleIdentityServer.Api.UnitTests.JwtToken
             };
 
             // ACT
-            var result = _jwtGenerator.GenerateFilteredJwsPayload(
+            var result = _jwtGenerator.GenerateFilteredIdTokenPayload(
                 claimsPrincipal,
                 null,
                 claimsParameter);
 
             // ASSERT
             Assert.IsNotNull(result);
-            Assert.That(result.Count, Is.EqualTo(2));
             Assert.IsTrue(result.ContainsKey(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject));
             Assert.IsTrue(result.ContainsKey(Core.Jwt.Constants.StandardClaimNames.AuthenticationTime));
             Assert.That(result[Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject].ToString(), Is.EqualTo(subject));
@@ -88,7 +87,7 @@ namespace SimpleIdentityServer.Api.UnitTests.JwtToken
             };
 
             // ACT
-            var result = _jwtGenerator.GenerateJwsPayloadForScopes(
+            var result = _jwtGenerator.GenerateIdTokenPayloadForScopes(
                 claimsPrincipal,
                 authorizationParameter);
 

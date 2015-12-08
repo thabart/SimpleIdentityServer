@@ -31,7 +31,6 @@ Scenario: Fetch the user information for the scope profile
 
 	Then HTTP status code is 200
 	And the claim sub with value habarthierry@loki.be is returned by the JWS payload
-	And the claim iss with value http://localhost/identity is returned by the JWS payload
 	And the claim name with value thabart is returned by the JWS payload
 	And the claim family_name with value familyname is returned by the JWS payload
 	And the claim given_name with value givename is returned by the JWS payload
@@ -73,7 +72,6 @@ Scenario: Fetch the user information for the scope address
 
 	Then HTTP status code is 200
 	And the claim sub with value habarthierry@loki.be is returned by the JWS payload
-	And the claim iss with value http://localhost/identity is returned by the JWS payload
 	And the returned address is
 	| Formatted | StreetAddress | Locality | Region | PostalCode | Country |
 	| formatted | streetaddress | locality | region | postalcode | country |
@@ -102,7 +100,6 @@ Scenario: Fetch the user information for the scope email
 
 	Then HTTP status code is 200
 	And the claim sub with value habarthierry@loki.be is returned by the JWS payload
-	And the claim iss with value http://localhost/identity is returned by the JWS payload
 	And the claim email with value habarthierry@hotmail.fr is returned by the JWS payload
 	And the claim email_verified with value True is returned by the JWS payload
 
@@ -130,7 +127,6 @@ Scenario: Fetch the user information for the scope phone
 
 	Then HTTP status code is 200
 	And the claim sub with value habarthierry@loki.be is returned by the JWS payload
-	And the claim iss with value http://localhost/identity is returned by the JWS payload
 	And the claim phone_number with value 007 is returned by the JWS payload
 	And the claim phone_number_verified with value False is returned by the JWS payload
 		
@@ -159,7 +155,6 @@ Scenario: Fetch the user information for the scope phone and email
 
 	Then HTTP status code is 200
 	And the claim sub with value habarthierry@loki.be is returned by the JWS payload
-	And the claim iss with value http://localhost/identity is returned by the JWS payload
 	And the claim phone_number with value 007 is returned by the JWS payload
 	And the claim phone_number_verified with value False is returned by the JWS payload
 	And the claim email with value habarthierry@hotmail.fr is returned by the JWS payload
@@ -188,6 +183,5 @@ Scenario: Fetch the user information for the claim email : {userinfo : { name: {
 	When requesting user information
 
 	Then HTTP status code is 200
-	And the JWS payload contains 2 claims
 	And the claim sub with value habarthierry@loki.be is returned by the JWS payload
 	And the claim name with value thabart is returned by the JWS payload

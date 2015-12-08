@@ -11,7 +11,6 @@ using SimpleIdentityServer.Api.Tests.Extensions;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Encrypt;
 using SimpleIdentityServer.Core.Jwt.Signature;

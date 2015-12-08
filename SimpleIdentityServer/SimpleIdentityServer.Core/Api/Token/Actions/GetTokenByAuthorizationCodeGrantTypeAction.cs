@@ -81,10 +81,10 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                 _grantedTokenRepository.Insert(grantedToken);
             }
 
-            if (grantedToken.UserInfoPayLoad != null)
+            if (grantedToken.IdTokenPayLoad != null)
             {
                 grantedToken.IdToken = GenerateIdToken(
-                    grantedToken.UserInfoPayLoad,
+                    grantedToken.IdTokenPayLoad,
                     grantedToken.ClientId);
             }
 

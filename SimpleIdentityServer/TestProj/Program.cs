@@ -367,11 +367,15 @@ namespace TestProj
         static void Main(string[] args)
         {
             var request =
-                "eyJhbGciOiJub25lIn0.eyJzY29wZSI6ICJvcGVuaWQiLCAic3RhdGUiOiAidlRGOHR1QXBBbU1JMnpyYSIsICJyZWRpcmVjdF91cmkiOiAiaHR0cHM6Ly9vcC5jZXJ0aWZpY2F0aW9uLm9wZW5pZC5uZXQ6NjAxODYvYXV0aHpfY2IiLCAicmVzcG9uc2VfdHlwZSI6ICJjb2RlIiwgImNsaWVudF9pZCI6ICJNeUJsb2cifQ.";
+                "eyJhbGciOiJSUzI1NiIsImtpZCI6ImEzck1VZ01Gdjl0UGNsTGE2eUYzekFrZnF1RSIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbmlzdHJhdG9yQGhvdG1haWwuYmUiLCJuYW1lIjoiYWRtaW5pc3RyYXRvciJ9.srRtvtsB9AYNUYNxkXifzD4t-1Ih3RZwIeeBZ0MCePavyQdKUZOYGsmveqwKrrSfsNbLwRe_WJz3hsvIaagA6IJ4cCnQ1Ye6rkZho0KUGf8qCRLYDc3HYwZo-OaAwI7c7dCuoJ6PCHXyb6p9MbdaXKSXKKhtKKV-mjgBLBYjAJk";
             var result = request.Split('.');
 
+            var h = result[0];
+            var decodedHeader = h.Base64Decode();
+            Console.WriteLine(decodedHeader);
             var r = result[1];
             var d = r.Base64Decode();
+            Console.WriteLine(d);
 
             Console.WriteLine(request);
             /*

@@ -162,14 +162,14 @@ namespace SimpleIdentityServer.Core.Common
             JwsPayload jwsPayload;
             if (authorizationParameter.Claims.IsAnyIdentityTokenClaimParameter())
             {
-                jwsPayload = _jwtGenerator.GenerateFilteredJwsPayload(
+                jwsPayload = _jwtGenerator.GenerateFilteredIdTokenPayload(
                     claimsPrincipal,
                     authorizationParameter,
                     authorizationParameter.Claims.IdToken);
             }
             else
             {
-                jwsPayload = _jwtGenerator.GenerateJwsPayloadForScopes(claimsPrincipal, authorizationParameter);
+                jwsPayload = _jwtGenerator.GenerateIdTokenPayloadForScopes(claimsPrincipal, authorizationParameter);
             }
 
             return jwsPayload;
@@ -190,14 +190,14 @@ namespace SimpleIdentityServer.Core.Common
             JwsPayload jwsPayload;
             if (authorizationParameter.Claims.IsAnyUserInfoClaimParameter())
             {
-                jwsPayload = _jwtGenerator.GenerateFilteredJwsPayload(
+                jwsPayload = _jwtGenerator.GenerateFilteredUserInfoPayload(
+                    authorizationParameter.Claims.UserInfo,
                     claimsPrincipal,
-                    authorizationParameter,
-                    authorizationParameter.Claims.UserInfo);
+                    authorizationParameter);
             }
             else
             {
-                jwsPayload = _jwtGenerator.GenerateJwsPayloadForScopes(claimsPrincipal, authorizationParameter);
+                jwsPayload = _jwtGenerator.GenerateUserInfoPayloadForScope(claimsPrincipal, authorizationParameter);
             }
 
             return jwsPayload;
