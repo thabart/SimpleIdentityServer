@@ -313,10 +313,9 @@ namespace SimpleIdentityServer.Core.JwtToken
             }
 
             if (audiences != null &&
-                audiences.Count() == 1 &&
-                audiences.First() == clientId)
+                audiences.Count() > 1)
             {
-                azp = clientId;
+                azp = authorizationParameter.ClientId;
             }
 
             if (audiencesClaimParameter != null)
