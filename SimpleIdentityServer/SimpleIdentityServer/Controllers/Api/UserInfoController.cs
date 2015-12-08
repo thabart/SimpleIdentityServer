@@ -1,4 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Linq;
+using System.Net.Http.Headers;
+using System.Threading.Tasks;
+using System.Web;
 using SimpleIdentityServer.Core.Api.UserInfo;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
@@ -31,15 +36,16 @@ namespace SimpleIdentityServer.Api.Controllers.Api
         {
             try
             {
-                // Different way to pass the access_token ?
-                var authorization = Request.Headers.Authorization;
-                if (authorization == null)
+                if (!Request.Headers.Contains("Authorization"))
                 {
                     throw new AuthorizationException(ErrorCodes.InvalidToken, string.Empty);
                 }
 
+                var authenticationHeader = Request.Headers.GetValues("Authorization").First();
+                var authorization = AuthenticationHeaderValue.Parse(authenticationHeader);
+
                 var scheme = authorization.Scheme;
-                if (scheme != "Bearer")
+                if (string.Compare(scheme, "Bearer", StringComparison.InvariantCultureIgnoreCase) != 0)
                 {
                     throw new AuthorizationException(ErrorCodes.InvalidToken, string.Empty);
                 }
@@ -53,7 +59,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
                 var result = _userInfoActions.GetUserInformation(accessToken);
                 return Request.CreateResponse(HttpStatusCode.OK, result);
             }
-            catch (AuthorizationException authorizationException)
+            catch (AuthorizationException)
             {
                 var response = Request.CreateResponse(HttpStatusCode.Unauthorized);
                 // TODO : add the code & description into the WWW-Authenticate response header.

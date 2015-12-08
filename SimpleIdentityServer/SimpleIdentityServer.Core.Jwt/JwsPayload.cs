@@ -8,6 +8,7 @@ namespace SimpleIdentityServer.Core.Jwt
     /// Represents a JSON Web Token
     /// </summary>
     [KnownType(typeof(object[]))]
+    [KnownType(typeof(string[]))]
     public class JwsPayload : Dictionary<string, object>
     {
         /// <summary>

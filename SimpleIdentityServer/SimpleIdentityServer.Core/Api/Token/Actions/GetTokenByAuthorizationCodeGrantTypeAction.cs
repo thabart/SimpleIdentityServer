@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net.Http.Headers;
 using SimpleIdentityServer.Core.Authenticate;
 using SimpleIdentityServer.Core.Common.Extensions;
@@ -168,10 +169,11 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                 ClientSecretFromHttpRequestBody = authorizationCodeGrantTypeParameter.ClientSecret
             };
 
-            if (authenticationHeaderValue != null && !string.IsNullOrWhiteSpace(authenticationHeaderValue.Parameter))
+            if (authenticationHeaderValue != null 
+                && !string.IsNullOrWhiteSpace(authenticationHeaderValue.Parameter))
             {
                 var parameters = GetParameters(authenticationHeaderValue.Parameter);
-                if (parameters != null)
+                if (parameters != null && parameters.Count() == 2)
                 {
                     result.ClientIdFromAuthorizationHeader = parameters[0];
                     result.ClientSecretFromAuthorizationHeader = parameters[1];
