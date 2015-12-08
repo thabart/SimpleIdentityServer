@@ -204,6 +204,12 @@ namespace SimpleIdentityServer.Core.JwtToken
             AuthorizationParameter authorizationParameter,
             ClaimsPrincipal claimsPrincipal)
         {
+            var scope = authorizationParameter.Scope;
+            if (string.IsNullOrWhiteSpace(scope))
+            {
+                return;
+            }
+
             var scopes = _parameterParserHelper.ParseScopeParameters(authorizationParameter.Scope);
             var claims = GetClaimsFromRequestedScopes(scopes, claimsPrincipal);
             foreach (var claim in claims)
