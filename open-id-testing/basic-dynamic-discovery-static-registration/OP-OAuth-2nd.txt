@@ -1,7 +1,7 @@
 Test info
 
-Profile: {'openid-configuration': 'config', 'response_type': 'code', 'crypto': '', 'registration': 'static'}
-Timestamp: 2015-12-03T17:07:55Z
+Profile: {'openid-configuration': 'config', 'response_type': 'code', 'crypto': 'sign', 'registration': 'static'}
+Timestamp: 2015-12-08T18:37:25Z
 Test description: Trying to use authorization code twice should result in an error [Basic, Hybrid]
 Test ID: OP-OAuth-2nd
 Issuer: https://simpleidentityserver.azurewebsites.net
@@ -23,10 +23,10 @@ __X:==== END ====__
 Trace output
 
 
-0.000427 ------------ DiscoveryRequest ------------
-0.000442 Provider info discover from 'https://simpleidentityserver.azurewebsites.net'
-0.000449 --> URL: https://simpleidentityserver.azurewebsites.net/.well-known/openid-configuration
-0.449769 ProviderConfigurationResponse: {
+0.000321 ------------ DiscoveryRequest ------------
+0.000335 Provider info discover from 'https://simpleidentityserver.azurewebsites.net'
+0.000341 --> URL: https://simpleidentityserver.azurewebsites.net/.well-known/openid-configuration
+1.221152 ProviderConfigurationResponse: {
   "authorization_endpoint": "https://simpleidentityserver.azurewebsites.net/authorization",
   "check_session_iframe": "https://simpleidentityserver.azurewebsites.net/check_session",
   "claims_parameter_supported": true,
@@ -98,14 +98,14 @@ Trace output
   "userinfo_endpoint": "https://simpleidentityserver.azurewebsites.net/userinfo",
   "version": "1.0"
 }
-0.916623 JWKS: {
+1.871489 JWKS: {
   "keys": [
     {
       "alg": "RS256",
       "e": "AQAB",
       "kid": "a3rMUgMFv9tPclLa6yF3zAkfquE",
       "kty": "RSA",
-      "n": "pL5veMFciYlnmAMmcsd1r-zMvXgbn9R5AB_ahKEU7fBVxarblFO4wL7jKrEyAo5cZIpQ0pB_vpEs-o7HV8L05TBfPD8Z2czl7kEGAFZjnPpsN8J5SUrr3Q8Ugrs3y6Qa2gVSlnAz2VN1nMifNIfhHxpv4oPMkwzVEi2dmW3NTwc",
+      "n": "4N5Ho2vT3zKRmqoZK3XxUAL65SMCkljpp4-gLRm4zcNeCrpG9xwC3fLD4slWeUtFuHYwkMl4_tYSY1xhRpcF0yo-HDAqWe26egyOmy3yEMwuSneA1MIxM-rKe4LMPjk8tH7-_eI82ODixCpyOyRHE_Dbwvxv1fhsPRcCMjPb6BE",
       "use": "sig"
     },
     {
@@ -113,27 +113,27 @@ Trace output
       "e": "AQAB",
       "kid": "3",
       "kty": "RSA",
-      "n": "pL5veMFciYlnmAMmcsd1r-zMvXgbn9R5AB_ahKEU7fBVxarblFO4wL7jKrEyAo5cZIpQ0pB_vpEs-o7HV8L05TBfPD8Z2czl7kEGAFZjnPpsN8J5SUrr3Q8Ugrs3y6Qa2gVSlnAz2VN1nMifNIfhHxpv4oPMkwzVEi2dmW3NTwc",
+      "n": "4N5Ho2vT3zKRmqoZK3XxUAL65SMCkljpp4-gLRm4zcNeCrpG9xwC3fLD4slWeUtFuHYwkMl4_tYSY1xhRpcF0yo-HDAqWe26egyOmy3yEMwuSneA1MIxM-rKe4LMPjk8tH7-_eI82ODixCpyOyRHE_Dbwvxv1fhsPRcCMjPb6BE",
       "use": "enc"
     }
   ]
 }
-0.928869 ------------ AuthorizationRequest ------------
-0.929279 --> URL: https://simpleidentityserver.azurewebsites.net/authorization?scope=openid&state=wsPwOGj936U4P3Gp&redirect_uri=https%3A%2F%2Fop.certification.openid.net%3A60186%2Fauthz_cb&response_type=code&client_id=MyBlog
-0.929288 --> BODY: None
-1.438084 <-- code=89056695-55c3-426e-8b3c-066b89adc657&state=wsPwOGj936U4P3Gp
-1.438507 AuthorizationResponse: {
-  "code": "89056695-55c3-426e-8b3c-066b89adc657",
-  "state": "wsPwOGj936U4P3Gp"
+1.879754 ------------ AuthorizationRequest ------------
+1.880164 --> URL: https://simpleidentityserver.azurewebsites.net/authorization?scope=openid&state=SskHUiJi1jZBsRhu&redirect_uri=https%3A%2F%2Fop.certification.openid.net%3A60186%2Fauthz_cb&response_type=code&client_id=MyBlog
+1.880171 --> BODY: None
+11.126563 <-- code=b5829cc1-b2bd-42be-957f-5d55fbaee9a2&state=SskHUiJi1jZBsRhu
+11.126997 AuthorizationResponse: {
+  "code": "b5829cc1-b2bd-42be-957f-5d55fbaee9a2",
+  "state": "SskHUiJi1jZBsRhu"
 }
-1.438865 ------------ AccessTokenRequest ------------
-1.439241 --> URL: https://simpleidentityserver.azurewebsites.net/token
-1.439248 --> BODY: code=89056695-55c3-426e-8b3c-066b89adc657&grant_type=authorization_code&redirect_uri=https%3A%2F%2Fop.certification.openid.net%3A60186%2Fauthz_cb
-1.439259 --> HEADERS: {'Content-Type': 'application/x-www-form-urlencoded', 'Authorization': u'Basic TXlCbG9nOk15QmxvZw=='}
-2.130646 <-- STATUS: 200
-2.130701 <-- BODY: {"access_token":"MzdkZjhjMDctOTNhMS00ZmJlLWJkNGMtOGRiMWI4Y2M5MmI3","id_token":"eyJhbGciOiJSUzI1NiIsImtpZCI6ImEzck1VZ01Gdjl0UGNsTGE2eUYzekFrZnF1RSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL3NpbXBsZWlkZW50aXR5c2VydmVyLmF6dXJld2Vic2l0ZXMubmV0LyIsImF1ZCI6WyJNeUJsb2ciXSwiZXhwIjoxNDUyMTYyNDc0LCJpYXQiOjE0NDkxNjI0NzQsInN1YiI6ImFkbWluaXN0cmF0b3JAaG90bWFpbC5iZSIsImFjciI6Im9wZW5pZC5wYXBlLmF1dGhfbGV2ZWwubnMucGFzc3dvcmQ9MSIsImFtciI6InBhc3N3b3JkIiwiYXpwIjoiTXlCbG9nIn0.QsexPjxJrrNqsV5NOUtSx9LBeIPgCGuEwY7JLor9Fu4AID_JLgLTcSsxiTLHKpBAFJzib4d--1W_nb59UEAQCZXJPR5rtGRhrPiTDamp__1y3xjvaM4KW7yxxEVoFcK7yNrmHfpWfgp9I774y9fkCJjy1zWL0Ch746WjhRe94EQ","token_type":"Bearer","refresh_token":"NzI4MDBmZDAtOWVkNC00NzFhLTk1ZTctYWE3ODJkM2YyYzBi","expires_in":3600,"scope":"openid"}
-2.602187 AccessTokenResponse: {
-  "access_token": "MzdkZjhjMDctOTNhMS00ZmJlLWJkNGMtOGRiMWI4Y2M5MmI3",
+11.127392 ------------ AccessTokenRequest ------------
+11.127789 --> URL: https://simpleidentityserver.azurewebsites.net/token
+11.127796 --> BODY: code=b5829cc1-b2bd-42be-957f-5d55fbaee9a2&grant_type=authorization_code&redirect_uri=https%3A%2F%2Fop.certification.openid.net%3A60186%2Fauthz_cb
+11.127807 --> HEADERS: {'Content-Type': 'application/x-www-form-urlencoded', 'Authorization': u'Basic TXlCbG9nOk15QmxvZw=='}
+12.223395 <-- STATUS: 200
+12.223460 <-- BODY: {"access_token":"OWIwZDZhZjQtZDM2Ny00NmZkLWE0ZDItMDFhNGNkN2Y4MmQ4","id_token":"eyJhbGciOiJSUzI1NiIsImtpZCI6ImEzck1VZ01Gdjl0UGNsTGE2eUYzekFrZnF1RSIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbmlzdHJhdG9yQGhvdG1haWwuYmUiLCJpc3MiOiJodHRwczovL3NpbXBsZWlkZW50aXR5c2VydmVyLmF6dXJld2Vic2l0ZXMubmV0LyIsImF1ZCI6WyJNeUJsb2ciXSwiZXhwIjoxNDUyNTk5ODQyLCJpYXQiOjE0NDk1OTk4NDIsImFjciI6Im9wZW5pZC5wYXBlLmF1dGhfbGV2ZWwubnMucGFzc3dvcmQ9MSIsImFtciI6InBhc3N3b3JkIiwiYXpwIjoiTXlCbG9nIn0.UPZFsFhspxSeZKLpuhDYKZorolS4IuCZU-dji2klckUr2BMMLxe0F91eeGiwItgv-IWypSYIIMFPGcN75LNnFDcPwa-yPBRsI0gD9w0G117U3rbFAQ1dy2OF1bWAuyZIdbPzuHC2KHjmeAJG_6hGev6QDaOg0bLRV1zxjKg1rX8","token_type":"Bearer","refresh_token":"MzE5ZGM1NjAtZDgyZS00ODE4LTllZjEtOTJlZTMzZTZhNjc5","expires_in":3600,"scope":"openid"}
+12.702012 AccessTokenResponse: {
+  "access_token": "OWIwZDZhZjQtZDM2Ny00NmZkLWE0ZDItMDFhNGNkN2Y4MmQ4",
   "expires_in": 3600,
   "id_token": {
     "claims": {
@@ -145,8 +145,8 @@ Trace output
         "MyBlog"
       ],
       "azp": "MyBlog",
-      "exp": 1452162474,
-      "iat": 1449162474,
+      "exp": 1452599842,
+      "iat": 1449599842,
       "iss": "https://simpleidentityserver.azurewebsites.net/",
       "sub": "administrator@hotmail.be"
     },
@@ -156,21 +156,21 @@ Trace output
       "typ": "JWT"
     }
   },
-  "refresh_token": "NzI4MDBmZDAtOWVkNC00NzFhLTk1ZTctYWE3ODJkM2YyYzBi",
+  "refresh_token": "MzE5ZGM1NjAtZDgyZS00ODE4LTllZjEtOTJlZTMzZTZhNjc5",
   "scope": "openid",
   "token_type": "Bearer"
 }
-2.615396 ------------ AccessTokenRequest ------------
-2.615778 --> URL: https://simpleidentityserver.azurewebsites.net/token
-2.615785 --> BODY: code=89056695-55c3-426e-8b3c-066b89adc657&grant_type=authorization_code&redirect_uri=https%3A%2F%2Fop.certification.openid.net%3A60186%2Fauthz_cb
-2.615796 --> HEADERS: {'Content-Type': 'application/x-www-form-urlencoded', 'Authorization': u'Basic TXlCbG9nOk15QmxvZw=='}
-3.084018 <-- STATUS: 400
-3.084147 ErrorResponse: {
+12.711028 ------------ AccessTokenRequest ------------
+12.711493 --> URL: https://simpleidentityserver.azurewebsites.net/token
+12.711500 --> BODY: code=b5829cc1-b2bd-42be-957f-5d55fbaee9a2&grant_type=authorization_code&redirect_uri=https%3A%2F%2Fop.certification.openid.net%3A60186%2Fauthz_cb
+12.711516 --> HEADERS: {'Content-Type': 'application/x-www-form-urlencoded', 'Authorization': u'Basic TXlCbG9nOk15QmxvZw=='}
+13.201892 <-- STATUS: 400
+13.202041 ErrorResponse: {
   "error": "invalid_grant",
   "error_description": "the authorization code is not correct",
   "error_uri": null
 }
-3.095531 ==== END ====
+13.210756 ==== END ====
 Result
 
 PASSED

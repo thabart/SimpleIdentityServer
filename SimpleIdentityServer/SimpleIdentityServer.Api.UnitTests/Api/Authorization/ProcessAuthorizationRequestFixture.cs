@@ -15,6 +15,15 @@ using System.Security.Claims;
 using System.Collections.Generic;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Results;
+using SimpleIdentityServer.Core.JwtToken;
+using SimpleIdentityServer.Core.Jwt.Encrypt;
+using SimpleIdentityServer.Core.Jwt.Encrypt.Encryption;
+using SimpleIdentityServer.Core.Jwt.Signature;
+using Moq;
+using SimpleIdentityServer.Core.Configuration;
+using SimpleIdentityServer.Core.Jwt;
+using SimpleIdentityServer.Core.Jwt.Mapping;
+using SimpleIdentityServer.Core.Repositories;
 
 namespace SimpleIdentityServer.Api.UnitTests.Api.Authorization
 {
@@ -22,6 +31,12 @@ namespace SimpleIdentityServer.Api.UnitTests.Api.Authorization
     public sealed class ProcessAuthorizationRequestFixture : BaseFixture
     {
         private ProcessAuthorizationRequest _processAuthorizationRequest;
+
+        private Mock<ISimpleIdentityServerConfigurator> _simpleIdentityServerConfigurator;
+
+        private JwtGenerator _jwtGenerator;
+
+        private IJsonWebKeyRepository _jsonWebKeyRepository;
 
         #region TEST FAILURES
 
@@ -243,6 +258,112 @@ namespace SimpleIdentityServer.Api.UnitTests.Api.Authorization
             Assert.That(exception.State, Is.EqualTo(state));
         }
 
+        [Test]
+        public void When_Passing_A_NotValid_IdentityTokenHint_Parameter_Then_An_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeMockingObjects();
+            const string state = "state";
+            const string code = "code";
+            const string clientId = "MyBlog";
+            const string subject = "habarthierry@hotmail.fr";
+            const string redirectUrl = "http://localhost";
+            FakeDataSource.Instance().Consents.Add(new Consent
+            {
+                ResourceOwner = new ResourceOwner
+                {
+                    Id = subject
+                },
+                GrantedScopes = new List<Scope>
+                {
+                    new Scope
+                    {
+                        Name = "openid"
+                    }
+                },
+                Client = FakeDataSource.Instance().Clients.First()
+            });
+            var authorizationParameter = new AuthorizationParameter
+            {
+                ClientId = clientId,
+                State = state,
+                RedirectUrl = redirectUrl,
+                Scope = "openid",
+                ResponseType = "code",
+                Prompt = "none",
+                IdTokenHint = "invalid identity token hint"
+            };
+
+            var claims = new List<Claim>
+            {
+                new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject)
+            };
+            var claimIdentity = new ClaimsIdentity(claims, "fake");
+            var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
+
+            // ACT
+            var exception = Assert.Throws<IdentityServerExceptionWithState>(() => _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal, code));
+            Assert.That(exception.Code, Is.EqualTo(ErrorCodes.InvalidRequestCode));
+            Assert.That(exception.Message, Is.EqualTo(ErrorDescriptions.TheSignatureOfIdTokenHintParameterCannotBeChecked));
+        }
+
+        [Test]
+        public void When_Passing_An_IdentityToken_Valid_ForWrongAudience_Then_An_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeMockingObjects();
+            const string state = "state";
+            const string code = "code";
+            const string clientId = "MyBlog";
+            const string subject = "habarthierry@hotmail.fr";
+            const string redirectUrl = "http://localhost";
+            FakeDataSource.Instance().Consents.Add(new Consent
+            {
+                ResourceOwner = new ResourceOwner
+                {
+                    Id = subject
+                },
+                GrantedScopes = new List<Scope>
+                {
+                    new Scope
+                    {
+                        Name = "openid"
+                    }
+                },
+                Client = FakeDataSource.Instance().Clients.First()
+            });
+            var authorizationParameter = new AuthorizationParameter
+            {
+                ClientId = clientId,
+                State = state,
+                RedirectUrl = redirectUrl,
+                Scope = "openid",
+                ResponseType = "code",
+                Prompt = "none",
+            };
+
+            var subjectClaim = new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject);
+            var claims = new List<Claim>
+            {
+                subjectClaim
+            };
+            var claimIdentity = new ClaimsIdentity(claims, "fake");
+            var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
+            var jwtPayload = new JwsPayload
+            {
+                {
+                    subjectClaim.Type, subjectClaim.Value
+                }
+            };
+
+            authorizationParameter.IdTokenHint = _jwtGenerator.Sign(jwtPayload, clientId);
+
+            // ACT
+            var exception = Assert.Throws<IdentityServerExceptionWithState>(() => _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal, code));
+            Assert.That(exception.Code, Is.EqualTo(ErrorCodes.InvalidRequestCode));
+            Assert.That(exception.Message, Is.EqualTo(ErrorDescriptions.TheIdentityTokenDoesntContainSimpleIdentityServerAsAudience));
+        }
+
         #endregion
 
         #region TEST VALID SCENARIOS
@@ -429,25 +550,49 @@ namespace SimpleIdentityServer.Api.UnitTests.Api.Authorization
             Assert.That(result.Type, Is.EqualTo(TypeActionResult.RedirectToCallBackUrl));
             Assert.That(result.RedirectInstruction.Parameters.Count(), Is.EqualTo(0));
         }
-
+        
         #endregion
 
         private void InitializeMockingObjects()
         {
+            _simpleIdentityServerConfigurator = new Mock<ISimpleIdentityServerConfigurator>();
             var scopeRepository = FakeFactories.GetScopeRepository();
             var clientRepository = FakeFactories.GetClientRepository();
             var consentRepository = FakeFactories.GetConsentRepository();
+            var jsonWebKeyRepository = FakeFactories.GetJsonWebKeyRepository();
             var parameterParserHelper = new ParameterParserHelper(scopeRepository);
             var clientValidator = new ClientValidator(clientRepository);
             var scopeValidator = new ScopeValidator(parameterParserHelper);
             var actionResultFactory = new ActionResultFactory();
             var consentHelper = new ConsentHelper(consentRepository, parameterParserHelper);
+            var aesEncryptionHelper = new AesEncryptionHelper();
+            var jweHelper = new JweHelper(aesEncryptionHelper);
+            var jweParser = new JweParser(jweHelper);
+            var createJwsSignature = new CreateJwsSignature();
+            var jwsParser = new JwsParser(createJwsSignature);
+            var jwtParser = new JwtParser(jweParser, jwsParser, jsonWebKeyRepository);
+            var claimsMapping = new ClaimsMapping();
+            var jwsGenerator = new JwsGenerator(createJwsSignature);
+            var jweGenerator = new JweGenerator(jweHelper);
+
+            _jsonWebKeyRepository = jsonWebKeyRepository;
             _processAuthorizationRequest = new ProcessAuthorizationRequest(
                 parameterParserHelper,
                 clientValidator,
                 scopeValidator,
                 actionResultFactory,
-                consentHelper);
+                consentHelper,
+                jwtParser,
+                _simpleIdentityServerConfigurator.Object);
+            _jwtGenerator = new JwtGenerator(_simpleIdentityServerConfigurator.Object,
+                clientRepository,
+                clientValidator,
+                jsonWebKeyRepository,
+                scopeRepository,
+                claimsMapping,
+                parameterParserHelper,
+                jwsGenerator,
+                jweGenerator);
         }
 
         [OneTimeTearDown]

@@ -21,7 +21,7 @@ namespace SimpleIdentityServer.DataAccess.Fake.Repositories
             }
 
             var result = FakeDataSource.Instance().AuthorizationCodes.FirstOrDefault(a => a.Code == code);
-            return result.ToBusiness();
+            return result == null ? null : result.ToBusiness();
         }
         
         public bool RemoveAuthorizationCode(string code)

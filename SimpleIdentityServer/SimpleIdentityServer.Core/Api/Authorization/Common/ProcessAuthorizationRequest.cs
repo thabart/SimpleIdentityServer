@@ -13,6 +13,8 @@ using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Validators;
+using SimpleIdentityServer.Core.JwtToken;
+using SimpleIdentityServer.Core.Configuration;
 
 namespace SimpleIdentityServer.Core.Api.Authorization.Common
 {
@@ -36,18 +38,26 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
 
         private readonly IConsentHelper _consentHelper;
 
+        private readonly IJwtParser _jwtParser;
+
+        private readonly ISimpleIdentityServerConfigurator _simpleIdentityServerConfigurator;
+
         public ProcessAuthorizationRequest(
             IParameterParserHelper parameterParserHelper,
             IClientValidator clientValidator,
             IScopeValidator scopeValidator,
             IActionResultFactory actionResultFactory,
-            IConsentHelper consentHelper)
+            IConsentHelper consentHelper,
+            IJwtParser jwtParser,
+            ISimpleIdentityServerConfigurator simpleIdentityServerConfigurator)
         {
             _parameterParserHelper = parameterParserHelper;
             _clientValidator = clientValidator;
             _scopeValidator = scopeValidator;
             _actionResultFactory = actionResultFactory;
             _consentHelper = consentHelper;
+            _jwtParser = jwtParser;
+            _simpleIdentityServerConfigurator = simpleIdentityServerConfigurator;
         }
 
         public ActionResult Process(
@@ -173,8 +183,53 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
                 authorizationParameter,
                 code);
 
+            ProcessIdTokenHint(result,
+                authorizationParameter,
+                prompts);
+
             return result;
         }
+
+        private void ProcessIdTokenHint(
+            ActionResult actionResult,
+            AuthorizationParameter authorizationParameter,
+            List<PromptParameter> prompts)
+        {
+            if (!string.IsNullOrWhiteSpace(authorizationParameter.IdTokenHint) &&
+                prompts.Contains(PromptParameter.none) &&
+                actionResult.Type == TypeActionResult.RedirectToCallBackUrl)
+            {
+                var jwsToken = _jwtParser.Decrypt(authorizationParameter.IdTokenHint);
+                if (jwsToken == null)
+                {
+                    throw new IdentityServerExceptionWithState(
+                        ErrorCodes.InvalidRequestCode,
+                        ErrorDescriptions.TheIdTokenHintParameterCannotBeDecrypted,
+                        authorizationParameter.State);
+                }
+
+                var jwsPayload = _jwtParser.UnSign(jwsToken);
+                if (jwsPayload == null)
+                {
+                    throw new IdentityServerExceptionWithState(
+                        ErrorCodes.InvalidRequestCode,
+                        ErrorDescriptions.TheSignatureOfIdTokenHintParameterCannotBeChecked,
+                        authorizationParameter.State);
+                }
+
+                var issuerName = _simpleIdentityServerConfigurator.GetIssuerName();
+                if (jwsPayload.Audiences == null ||
+                    !jwsPayload.Audiences.Any() ||
+                    jwsPayload.Audiences.Contains(issuerName))
+                {
+                    throw new IdentityServerExceptionWithState(
+                        ErrorCodes.InvalidRequestCode,
+                        ErrorDescriptions.TheIdentityTokenDoesntContainSimpleIdentityServerAsAudience,
+                        authorizationParameter.State);
+                }
+            }
+        }
+
 
         /// <summary>
         /// Process the prompt authorizationParameter.

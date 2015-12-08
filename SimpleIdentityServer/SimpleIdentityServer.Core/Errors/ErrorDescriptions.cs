@@ -94,5 +94,11 @@
             "the request downloaded from request URI is not valid";
 
         public static string TheRequestParameterIsNotCorrect = "the request parameter is not correct";
+
+        public static string TheIdTokenHintParameterCannotBeDecrypted = "the id token hint parameter cannot be decrypted";
+
+        public static string TheSignatureOfIdTokenHintParameterCannotBeChecked = "the signature of id token hint parameter cannot be checked";
+
+        public static string TheIdentityTokenDoesntContainSimpleIdentityServerAsAudience = "the identity token doesnt contain simple identity server in the audience";
     }
 }

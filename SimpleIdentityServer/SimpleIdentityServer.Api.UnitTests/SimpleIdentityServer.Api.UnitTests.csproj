@@ -88,6 +88,7 @@
     <Compile Include="Fake\FakeOpenIdAssets.cs" />
     <Compile Include="JwtToken\JwtGeneratorFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Validators\ClientValidatorFixture.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

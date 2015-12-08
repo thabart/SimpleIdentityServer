@@ -293,6 +293,9 @@ namespace SimpleIdentityServer.Core.JwtToken
                 }
             });
 
+            // The identity token can be reused by the simple identity server.
+            audiences.Add(_simpleIdentityServerConfigurator.GetIssuerName());
+
             var authenticationInstant = claimsPrincipal.Claims.SingleOrDefault(c => c.Type == ClaimTypes.AuthenticationInstant);
             var authenticationInstantValue = authenticationInstant == null
                 ? string.Empty
