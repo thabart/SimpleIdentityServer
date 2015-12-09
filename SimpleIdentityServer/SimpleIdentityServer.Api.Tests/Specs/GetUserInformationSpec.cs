@@ -19,6 +19,7 @@ using TechTalk.SpecFlow.Assist;
 using MODELS = SimpleIdentityServer.DataAccess.Fake.Models;
 using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Common.Extensions;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Api.Tests.Specs
 {
@@ -102,7 +103,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         }
 
         [When("requesting user information and the access token is passed to the authorization header")]
-        public void WhenRequestingUserInformation()
+        public void WhenRequestingUserInformationAndPassedTheAccessTokenToAuthorizationHeader()
         {
             var query = HttpUtility.ParseQueryString(_authorizationResponseMessage.Headers.Location.Query);
             var accessToken = query["access_token"];
@@ -115,6 +116,31 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             var httpClient = _testServer.HttpClient;
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             _userInformationResponseMessage = httpClient.GetAsync("/userinfo").Result;
+            var r = _userInformationResponseMessage.Content.ReadAsStringAsync().Result;
+            _jwsPayload = _userInformationResponseMessage.Content.ReadAsAsync<JwsPayload>().Result;
+        }
+
+        [When("requesting user information and the access token is passed to the HTTP body")]
+        public void WhenRequestingUserInformationAndPassedTheAccessTokenToHttpBody()
+        {
+            var query = HttpUtility.ParseQueryString(_authorizationResponseMessage.Headers.Location.Query);
+            var accessToken = query["access_token"];
+            var httpConfiguration = new HttpConfiguration();
+            httpConfiguration.Filters.Add(new FakeAuthenticationFilter
+            {
+                ResourceOwner = _resourceOwner
+            });
+            _testServer = _context.CreateServer(httpConfiguration);
+            var httpClient = _testServer.HttpClient;
+            var parameter = new Dictionary<string, string>
+            {
+                {
+                    "access_token",
+                    accessToken
+                }
+            };
+            var encodedParameter = new FormUrlEncodedContent(parameter);
+            _userInformationResponseMessage = httpClient.PostAsync("/userinfo", encodedParameter).Result;
             var r = _userInformationResponseMessage.Content.ReadAsStringAsync().Result;
             _jwsPayload = _userInformationResponseMessage.Content.ReadAsAsync<JwsPayload>().Result;
         }

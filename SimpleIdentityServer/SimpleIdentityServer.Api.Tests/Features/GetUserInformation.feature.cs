@@ -812,8 +812,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 210
  testRunner.And("requesting an access token", ((string)(null)), table25, "And ");
 #line 214
- testRunner.When("requesting user information and the access token is passed to the authorization h" +
-                    "eader", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("requesting user information and the access token is passed to the HTTP body", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 216
  testRunner.Then("HTTP status code is 200", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 217

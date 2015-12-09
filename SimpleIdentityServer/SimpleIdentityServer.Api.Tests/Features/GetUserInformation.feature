@@ -211,7 +211,7 @@ Scenario: Fetch the user information for the scope profile and  the access token
 	| scope          | response_type  | client_id  | redirect_uri     | prompt | state  | nonce          |
 	| openid profile | token id_token | MyHolidays | http://localhost | none   | state1 | parameterNonce |
 	
-	When requesting user information and the access token is passed to the authorization header
+	When requesting user information and the access token is passed to the HTTP body
 
 	Then HTTP status code is 200
 	And the claim sub with value habarthierry@loki.be is returned by the JWS payload
