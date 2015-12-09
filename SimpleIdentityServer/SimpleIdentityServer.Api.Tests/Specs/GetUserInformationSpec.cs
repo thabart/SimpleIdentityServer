@@ -145,6 +145,25 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             _jwsPayload = _userInformationResponseMessage.Content.ReadAsAsync<JwsPayload>().Result;
         }
 
+        [When("requesting user information and the access token is passed in the query string")]
+        public void WhenRequestingUserInformationAndPassedTheAccessTokenInTheQueryString()
+        {
+            var query = HttpUtility.ParseQueryString(_authorizationResponseMessage.Headers.Location.Query);
+            var accessToken = query["access_token"];
+            var httpConfiguration = new HttpConfiguration();
+            httpConfiguration.Filters.Add(new FakeAuthenticationFilter
+            {
+                ResourceOwner = _resourceOwner
+            });
+            _testServer = _context.CreateServer(httpConfiguration);
+            var httpClient = _testServer.HttpClient;
+            _userInformationResponseMessage = httpClient
+                .GetAsync(string.Format("/userinfo?access_token={0}", accessToken))
+                .Result;
+            var r = _userInformationResponseMessage.Content.ReadAsStringAsync().Result;
+            _jwsPayload = _userInformationResponseMessage.Content.ReadAsAsync<JwsPayload>().Result;
+        }
+
         [Then("HTTP status code is (.*)")]
         public void ThenHttpStatusCodeIs(HttpStatusCode httpStatusCode)
         {
