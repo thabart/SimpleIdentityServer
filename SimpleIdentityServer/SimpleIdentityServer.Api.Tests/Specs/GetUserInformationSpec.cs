@@ -101,7 +101,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             _authorizationResponseMessage = httpClient.GetAsync(url).Result;
         }
 
-        [When("requesting user information")]
+        [When("requesting user information and the access token is passed to the authorization header")]
         public void WhenRequestingUserInformation()
         {
             var query = HttpUtility.ParseQueryString(_authorizationResponseMessage.Headers.Location.Query);
