@@ -415,9 +415,6 @@ namespace SimpleIdentityServer.Core.JwtToken
             jwsPayload.Add(Jwt.Constants.StandardClaimNames.ExpirationTime, expirationInSeconds);
             jwsPayload.Add(Jwt.Constants.StandardClaimNames.Iat, issuedAtTime);
 
-            Trace.TraceInformation("the authentication instant value is " + authenticationInstantValue);
-            Trace.TraceInformation("the max age is " + maxAge);
-
             // Set the auth_time if it's requested as an essential claim OR the max_age request is specified
             if (((authenticationTimeParameter != null && authenticationTimeParameter.Essential) ||
                 !maxAge.Equals(default(double))) && !string.IsNullOrWhiteSpace(authenticationInstantValue))
