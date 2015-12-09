@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using System.Linq;
+using Moq;
 using NUnit.Framework;
 using SimpleIdentityServer.Api.UnitTests.Fake;
 using SimpleIdentityServer.Core.Configuration;
@@ -16,6 +17,7 @@ using SimpleIdentityServer.Core.Validators;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
+using SimpleIdentityServer.DataAccess.Fake;
 
 namespace SimpleIdentityServer.Api.UnitTests.JwtToken
 {
@@ -142,6 +144,101 @@ namespace SimpleIdentityServer.Api.UnitTests.JwtToken
 
             Assert.That(result.Code, Is.EqualTo(ErrorCodes.InvalidGrant));
             Assert.That(result.Message, Is.EqualTo(string.Format(ErrorDescriptions.TheClaimIsNotValid, Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject)));
+        }
+
+        [Test]
+        public void When_Requesting_IdentityToken_JwsPayload_And_NumberOfAudiencesIsMoreThanOne_Then_Azp_Should_Be_Returned()
+        {
+            // ARRANGE
+            InitializeMockObjects();
+            const string issuerName = "IssuerName";
+            var clientId = FakeDataSource.Instance().Clients.First().ClientId;
+            const string subject = "habarthierry@hotmail.fr";
+            var claims = new List<Claim>
+            {
+                new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject)
+            };
+            var claimIdentity = new ClaimsIdentity(claims, "fake");
+            var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
+            var authorizationParameter = new AuthorizationParameter
+            {
+                ClientId = clientId
+            };
+            _simpleIdentityServerConfigurator.Setup(s => s.GetIssuerName()).Returns(issuerName);
+
+            // ACT
+            var result = _jwtGenerator.GenerateIdTokenPayloadForScopes(
+                claimsPrincipal,
+                authorizationParameter);
+
+            // ASSERT
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.ContainsKey(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject));
+            Assert.IsTrue(result.Audiences.Count() > 1);
+            Assert.IsTrue(result.Azp == clientId);
+        }
+
+        [Test]
+        public void When_Requesting_IdentityToken_JwsPayload_And_ThereNoClient_Then_Azp_Should_Be_Returned()
+        {
+            // ARRANGE
+            InitializeMockObjects();
+            const string issuerName = "IssuerName";
+            const string clientId = "clientId";
+            FakeDataSource.Instance().Clients.Clear();
+            const string subject = "habarthierry@hotmail.fr";
+            var claims = new List<Claim>
+            {
+                new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject)
+            };
+            var claimIdentity = new ClaimsIdentity(claims, "fake");
+            var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
+            var authorizationParameter = new AuthorizationParameter
+            {
+                ClientId = clientId
+            };
+            _simpleIdentityServerConfigurator.Setup(s => s.GetIssuerName()).Returns(issuerName);
+
+            // ACT
+            var result = _jwtGenerator.GenerateIdTokenPayloadForScopes(
+                claimsPrincipal,
+                authorizationParameter);
+
+            // ASSERT
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.ContainsKey(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject));
+            Assert.IsTrue(result.Audiences.Count() == 1);
+            Assert.IsTrue(result.Azp == clientId);
+        }
+
+        [Test]
+        public void When_Requesting_IdentityToken_JwsPayload_With_No_Authorization_Request_Then_MandatoriesClaims_Are_Returned()
+        {
+            // ARRANGE
+            InitializeMockObjects();
+            const string issuerName = "IssuerName";
+            const string subject = "habarthierry@hotmail.fr";
+            var claims = new List<Claim>
+            {
+                new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject)
+            };
+            var claimIdentity = new ClaimsIdentity(claims, "fake");
+            var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
+            _simpleIdentityServerConfigurator.Setup(s => s.GetIssuerName()).Returns(issuerName);
+
+            // ACT
+            var result = _jwtGenerator.GenerateIdTokenPayloadForScopes(
+                claimsPrincipal,
+                null);
+
+            // ASSERT
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.ContainsKey(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject));
+            Assert.IsTrue(result.ContainsKey(Core.Jwt.Constants.StandardClaimNames.Audiences));
+            Assert.IsTrue(result.ContainsKey(Core.Jwt.Constants.StandardClaimNames.ExpirationTime));
+            Assert.IsTrue(result.ContainsKey(Core.Jwt.Constants.StandardClaimNames.Iat));
+            Assert.IsTrue(result.GetClaimValue(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject) == subject);
+            Assert.IsTrue(result.Audiences.Contains(issuerName));
         }
 
         [Test]

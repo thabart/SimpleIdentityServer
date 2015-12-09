@@ -204,8 +204,8 @@ namespace SimpleIdentityServer.Core.JwtToken
             AuthorizationParameter authorizationParameter,
             ClaimsPrincipal claimsPrincipal)
         {
-            var scope = authorizationParameter.Scope;
-            if (string.IsNullOrWhiteSpace(scope))
+            if (authorizationParameter == null ||
+                string.IsNullOrWhiteSpace(authorizationParameter.Scope))
             {
                 return;
             }
@@ -224,6 +224,7 @@ namespace SimpleIdentityServer.Core.JwtToken
             ClaimsPrincipal claimsPrincipal,
             AuthorizationParameter authorizationParameter)
         {
+            var state = authorizationParameter == null ? string.Empty : authorizationParameter.State;
             var resourceOwnerClaimParameters = claimParameters.Where(c => Jwt.Constants.AllStandardResourceOwnerClaimNames.Contains(c.Name));
             if (resourceOwnerClaimParameters != null)
             {
@@ -236,7 +237,7 @@ namespace SimpleIdentityServer.Core.JwtToken
                     {
                         throw new IdentityServerExceptionWithState(ErrorCodes.InvalidGrant,
                             string.Format(ErrorDescriptions.TheClaimIsNotValid, resourceOwnerClaim.Key),
-                            authorizationParameter.State);
+                            state);
                     }
 
                     var isClaimValid = ValidateClaimValue(resourceOwnerClaim.Value, resourceOwnerClaimParameter);
@@ -244,7 +245,7 @@ namespace SimpleIdentityServer.Core.JwtToken
                     {
                         throw new IdentityServerExceptionWithState(ErrorCodes.InvalidGrant,
                             string.Format(ErrorDescriptions.TheClaimIsNotValid, resourceOwnerClaim.Key),
-                            authorizationParameter.State);
+                            state);
                     }
 
                     result.Add(resourceOwnerClaim.Key, resourceOwnerClaim.Value);
@@ -312,8 +313,9 @@ namespace SimpleIdentityServer.Core.JwtToken
                 }
             }
 
-            if (audiences != null &&
-                audiences.Count() > 1)
+            if (audiences.Count() > 1 ||
+                audiences.Count() == 1 &&
+                audiences.First() !=  clientId)
             {
                 azp = clientId;
             }
@@ -408,7 +410,7 @@ namespace SimpleIdentityServer.Core.JwtToken
             }
 
             jwsPayload.Add(Jwt.Constants.StandardClaimNames.Issuer, issuerName);
-            jwsPayload.Add(Jwt.Constants.StandardClaimNames.Audiences, audiences);
+            jwsPayload.Add(Jwt.Constants.StandardClaimNames.Audiences, audiences.ToArray());
             jwsPayload.Add(Jwt.Constants.StandardClaimNames.ExpirationTime, expirationInSeconds);
             jwsPayload.Add(Jwt.Constants.StandardClaimNames.Iat, issuedAtTime);
             // Set the auth_time if it's requested as an essential claim OR the max_age request is specified
