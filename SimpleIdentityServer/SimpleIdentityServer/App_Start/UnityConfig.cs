@@ -6,12 +6,13 @@ using SimpleIdentityServer.Api.Parsers;
 using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Services;
+using SimpleIdentityServer.Logging;
 
 namespace SimpleIdentityServer.Api
 {
     public static class UnityConfig
     {
-        public static UnityContainer Create()
+        public static UnityContainer Create(ISimpleIdentityServerEventSource simpleIdentityServerEventSource)
         {
             var container = new UnityContainer();
 
@@ -21,6 +22,8 @@ namespace SimpleIdentityServer.Api
             container.RegisterType<IRedirectInstructionParser, RedirectInstructionParser>();
             container.RegisterType<IActionResultParser, ActionResultParser>();
             container.RegisterType<ISimpleIdentityServerConfigurator, ConcreteSimpleIdentityServerConfigurator>();
+
+            container.RegisterInstance(simpleIdentityServerEventSource);
 
             ModuleLoader.LoadContainer(container);
 

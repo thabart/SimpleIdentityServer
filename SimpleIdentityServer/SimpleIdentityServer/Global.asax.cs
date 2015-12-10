@@ -3,6 +3,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using SimpleIdentityServer.Logging;
 
 namespace SimpleIdentityServer.Api
 {
@@ -18,7 +19,8 @@ namespace SimpleIdentityServer.Api
 
         private static void ConfigureUnity()
         {
-            var container = UnityConfig.Create();
+            var logging = SimpleIdentityServerEventSource.Log;
+            var container = UnityConfig.Create(logging);
             DependencyResolver.SetResolver(new UnityDependencyResolver(container));
         }
     }

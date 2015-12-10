@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Principal;
 using SimpleIdentityServer.Core.Api.Authorization.Actions;
@@ -9,6 +10,7 @@ using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Logging;
 
 namespace SimpleIdentityServer.Core.Api.Authorization
 {
@@ -28,17 +30,21 @@ namespace SimpleIdentityServer.Core.Api.Authorization
         private readonly IAuthorizationCodeGrantTypeParameterAuthEdpValidator _authorizationCodeGrantTypeParameterValidator;
 
         private readonly IParameterParserHelper _parameterParserHelper;
+
+        private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
         
         public AuthorizationActions(
             IGetAuthorizationCodeOperation getAuthorizationCodeOperation,
             IGetTokenViaImplicitWorkflowOperation getTokenViaImplicitWorkflowOperation,
             IAuthorizationCodeGrantTypeParameterAuthEdpValidator authorizationCodeGrantTypeParameterValidator,
-            IParameterParserHelper parameterParserHelper)
+            IParameterParserHelper parameterParserHelper,
+            ISimpleIdentityServerEventSource simpleIdentityServerEventSource)
         {
             _getAuthorizationCodeOperation = getAuthorizationCodeOperation;
             _getTokenViaImplicitWorkflowOperation = getTokenViaImplicitWorkflowOperation;
             _authorizationCodeGrantTypeParameterValidator = authorizationCodeGrantTypeParameterValidator;
             _parameterParserHelper = parameterParserHelper;
+            _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
         }
 
         public ActionResult GetAuthorization(AuthorizationParameter parameter,
@@ -46,18 +52,24 @@ namespace SimpleIdentityServer.Core.Api.Authorization
             string code)
         {
             _authorizationCodeGrantTypeParameterValidator.Validate(parameter);
+
+            ActionResult actionResult = null;
+            _simpleIdentityServerEventSource.StartAuthorization(parameter.ClientId,
+                parameter.ResponseType,
+                parameter.Scope,
+                parameter.Claims == null ? string.Empty : parameter.Claims.ToString());
             var responseTypes = _parameterParserHelper.ParseResponseType(parameter.ResponseType);
             var authorizationFlow = GetAuthorizationFlow(responseTypes, parameter.State);
             switch (authorizationFlow)
             {
                 case AuthorizationFlow.AuthorizationCodeFlow:
-                    return _getAuthorizationCodeOperation.Execute(
+                    actionResult = _getAuthorizationCodeOperation.Execute(
                         parameter,
                         claimsPrincipal,
                         code);
                     break;
                 case AuthorizationFlow.ImplicitFlow:
-                    return _getTokenViaImplicitWorkflowOperation.Execute(
+                    actionResult =  _getTokenViaImplicitWorkflowOperation.Execute(
                         parameter,
                         claimsPrincipal,
                         code);
@@ -67,7 +79,20 @@ namespace SimpleIdentityServer.Core.Api.Authorization
                     break;
             }
 
-            return null;
+            if (actionResult != null)
+            {
+                var actionTypeName = Enum.GetName(typeof(TypeActionResult), actionResult.Type);
+                var actionName = string.Empty;
+                if (actionResult.Type == TypeActionResult.RedirectToAction)
+                {
+                    var actionEnum = actionResult.RedirectInstruction.Action;
+                    actionName = Enum.GetName(typeof (IdentityServerEndPoints), actionEnum);
+                }
+
+                _simpleIdentityServerEventSource.EndAuthorization(actionTypeName, actionName);
+            }
+
+            return actionResult;
         }
 
         private static AuthorizationFlow GetAuthorizationFlow(ICollection<ResponseType> responseTypes, string state)

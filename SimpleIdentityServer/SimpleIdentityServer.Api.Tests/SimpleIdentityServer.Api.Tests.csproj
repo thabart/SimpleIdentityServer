@@ -120,6 +120,7 @@
     <Compile Include="Common\Fakes\FakeGetRateLimitationElementOperation.cs" />
     <Compile Include="Common\Fakes\FakeJsonWebKey.cs" />
     <Compile Include="Common\Fakes\FakeProtector.cs" />
+    <Compile Include="Common\Fakes\FakeSimpleIdentityServerEventSource.cs" />
     <Compile Include="Common\Fakes\Models\FakeJwsPayload.cs" />
     <Compile Include="Common\Fakes\Models\FakeScope.cs" />
     <Compile Include="Common\Fakes\Models\FakeHttpResponse.cs" />
@@ -219,6 +220,10 @@
     <ProjectReference Include="..\SimpleIdentityServer.DataAccess.Fake\SimpleIdentityServer.DataAccess.Fake.csproj">
       <Project>{7b5c6ff2-994b-4a4c-80f3-09f682e34979}</Project>
       <Name>SimpleIdentityServer.DataAccess.Fake</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SimpleIdentityServer.Logging\SimpleIdentityServer.Logging.csproj">
+      <Project>{67042bc4-7c0d-4519-8f25-e79175d9781d}</Project>
+      <Name>SimpleIdentityServer.Logging</Name>
     </ProjectReference>
     <ProjectReference Include="..\SimpleIdentityServer\SimpleIdentityServer.Api.csproj">
       <Project>{f7815b84-f5c1-474b-bb65-90c4f5bbb397}</Project>

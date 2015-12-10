@@ -3,12 +3,16 @@
 using Owin;
 
 using SimpleIdentityServer.Api.Attributes;
+using SimpleIdentityServer.Logging;
 
 namespace SimpleIdentityServer.Api
 {
     public static class WebApiConfig
     {
-        public static void Register(HttpConfiguration config, IAppBuilder appBuilder)
+        public static void Register(
+            HttpConfiguration config, 
+            IAppBuilder appBuilder,
+            ISimpleIdentityServerEventSource simpleIdentityServerEventSource)
         {
             // Web API routes
             config.MapHttpAttributeRoutes();
@@ -51,7 +55,7 @@ namespace SimpleIdentityServer.Api
                     controller = "Jwks"
                 });
 
-            config.Filters.Add(new IdentityServerExceptionFilter());
+            config.Filters.Add(new IdentityServerExceptionFilter(simpleIdentityServerEventSource));
 
             appBuilder.UseWebApi(config);
         }

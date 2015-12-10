@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace SimpleIdentityServer.Core.Parameters
 {
@@ -127,7 +128,12 @@ namespace SimpleIdentityServer.Core.Parameters
     {
         public List<ClaimParameter> UserInfo { get; set; }
 
-        public List<ClaimParameter> IdToken { get; set; } 
+        public List<ClaimParameter> IdToken { get; set; }
+
+        public override string ToString()
+        {
+            return JsonConvert.SerializeObject(this);
+        }
     }
 
     public sealed class AuthorizationParameter

@@ -301,6 +301,10 @@
       <Project>{7b5c6ff2-994b-4a4c-80f3-09f682e34979}</Project>
       <Name>SimpleIdentityServer.DataAccess.Fake</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SimpleIdentityServer.Logging\SimpleIdentityServer.Logging.csproj">
+      <Project>{67042bc4-7c0d-4519-8f25-e79175d9781d}</Project>
+      <Name>SimpleIdentityServer.Logging</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Web.config" />

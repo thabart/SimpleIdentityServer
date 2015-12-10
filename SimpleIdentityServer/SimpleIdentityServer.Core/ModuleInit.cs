@@ -26,6 +26,7 @@ using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Api.UserInfo;
 using SimpleIdentityServer.Core.Api.UserInfo.Actions;
 using SimpleIdentityServer.Core.Translation;
+using SimpleIdentityServer.Logging;
 
 namespace SimpleIdentityServer.Core
 {

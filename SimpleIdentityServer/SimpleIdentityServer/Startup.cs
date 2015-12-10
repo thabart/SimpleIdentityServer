@@ -12,6 +12,7 @@ using SimpleIdentityServer.DataAccess.Fake;
 
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.AspNet.Identity;
+using SimpleIdentityServer.Logging;
 
 [assembly: OwinStartup(typeof(SimpleIdentityServer.Api.Startup))]
 
@@ -25,11 +26,13 @@ namespace SimpleIdentityServer.Api
         {
             // TODO : check this blog 
             // http://weblog.west-wind.com/posts/2015/Apr/29/Adding-minimal-OWIN-Identity-Authentication-to-an-Existing-ASPNET-MVC-Application
+            
+            var logging = SimpleIdentityServerEventSource.Log;
 
             var httpConfiguration = new HttpConfiguration();
             if (_isInitialized == false)
             {
-                ConfigureUnity(httpConfiguration);
+                ConfigureUnity(httpConfiguration, logging);
                 PopupulateFakeDataSource();
                 _isInitialized = true;
             }
@@ -41,7 +44,7 @@ namespace SimpleIdentityServer.Api
 
             SwaggerConfig.Configure(httpConfiguration);
 
-            WebApiConfig.Register(httpConfiguration, app);
+            WebApiConfig.Register(httpConfiguration, app, logging);
         }
 
         private static void PopupulateFakeDataSource()
@@ -53,9 +56,9 @@ namespace SimpleIdentityServer.Api
             FakeDataSource.Instance().Translations = Translations.Get();
         }
 
-        private static void ConfigureUnity(HttpConfiguration httpConfiguration)
+        private static void ConfigureUnity(HttpConfiguration httpConfiguration, ISimpleIdentityServerEventSource simpleIdentityServerEventSource)
         {
-            var container = UnityConfig.Create();
+            var container = UnityConfig.Create(simpleIdentityServerEventSource);
             RegisterFilterInjector(httpConfiguration, container);
             httpConfiguration.DependencyResolver = new UnityResolver(container);
         }

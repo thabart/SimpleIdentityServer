@@ -298,6 +298,10 @@
       <Project>{0b0286dd-acfd-4822-8a9d-2da39b8aec29}</Project>
       <Name>SimpleIdentityServer.Core.Jwt</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SimpleIdentityServer.Logging\SimpleIdentityServer.Logging.csproj">
+      <Project>{67042bc4-7c0d-4519-8f25-e79175d9781d}</Project>
+      <Name>SimpleIdentityServer.Logging</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

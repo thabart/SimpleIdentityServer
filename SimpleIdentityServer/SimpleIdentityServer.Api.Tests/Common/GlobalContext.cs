@@ -38,6 +38,7 @@ using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;
 using SimpleIdentityServer.Core.WebSite.Consent;
 using SimpleIdentityServer.Core.WebSite.Consent.Actions;
 using SimpleIdentityServer.DataAccess.Fake.Repositories;
+using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.RateLimitation.Configuration;
 using SimpleIdentityServer.Core.JwtToken.Validator;
 using SimpleIdentityServer.Core.JwtToken;
@@ -51,8 +52,11 @@ namespace SimpleIdentityServer.Api.Tests.Common
 {
     public class GlobalContext
     {
+        private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
+
         public GlobalContext()
         {
+            _simpleIdentityServerEventSource = new FakeSimpleIdentityServerEventSource();
             ConfigureContainer();
         }
 
@@ -87,7 +91,7 @@ namespace SimpleIdentityServer.Api.Tests.Common
                 SignatureConversions.AddConversions(app);
                 RegisterFilterInjector(configuration, UnityContainer);
                 configuration.DependencyResolver = new UnityResolver(UnityContainer);
-                WebApiConfig.Register(configuration, app);
+                WebApiConfig.Register(configuration, app, _simpleIdentityServerEventSource);
                 if (callback != null)
                 {
                     callback(app);
@@ -198,6 +202,8 @@ namespace SimpleIdentityServer.Api.Tests.Common
             UnityContainer.RegisterType<IClientSecretBasicAuthentication, ClientSecretBasicAuthentication>();
             UnityContainer.RegisterType<IClientSecretPostAuthentication, ClientSecretPostAuthentication>();
             UnityContainer.RegisterType<IClientAssertionAuthentication, ClientAssertionAuthentication>();
+
+            UnityContainer.RegisterInstance(_simpleIdentityServerEventSource);
 
             UnityContainer.RegisterType<ITranslationManager, TranslationManager>();
 
