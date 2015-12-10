@@ -15,35 +15,6 @@
               </remarks>
             </example>
         </member>
-        <member name="M:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Utility.EventSourceAnalyzer.InspectAll(System.Diagnostics.Tracing.EventSource)">
-            <summary>
-            Inspects the specified <see cref="T:System.Diagnostics.Tracing.EventSource"/> for potential runtime errors.
-            </summary>
-            <param name="eventSource">The event source instance to inspect.</param>
-            <example>
-              <code>EventSourceAnalyzer.InspectAll(MyEventSource.Instance);</code>
-              <remarks>Where 'Instance' property returns a singleton instance of 'MyEventSource' class like:
-                <code>public static MyEventSource Instance = new MyEventSource();</code>
-              </remarks>
-            </example>
-            <exception cref="T:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Utility.EventSourceAnalyzerException">Exception thrown if a failure was found in the specified <see cref="T:System.Diagnostics.Tracing.EventSource"/>.</exception>
-            <exception cref="T:System.ArgumentException">Exception thrown if a failure was found in the specified <see cref="T:System.Diagnostics.Tracing.EventSource"/>.</exception>
-        </member>
-        <member name="M:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Utility.EventSourceAnalyzer.Inspect(System.Diagnostics.Tracing.EventSource)">
-            <summary>
-            Inspects the specified <see cref="T:System.Diagnostics.Tracing.EventSource"/> for potential runtime errors 
-            filtering out validations according to the specified instance properties.
-            </summary>
-            <param name="eventSource">The event source instance to inspect.</param>
-            <example>
-              <code>EventSourceAnalyzer.InspectAll(MyEventSource.Instance);</code>
-              <remarks>Where 'Instance' property returns a singleton instance of 'MyEventSource' class like:
-              <code>public static MyEventSource Instance = new MyEventSource();</code>
-              </remarks>
-            </example>
-            <exception cref="T:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Utility.EventSourceAnalyzerException">Exception thrown if a failure was found in the specified <see cref="T:System.Diagnostics.Tracing.EventSource"/>.</exception>
-            <exception cref="T:System.ArgumentException">Exception thrown if a failure was found in the specified <see cref="T:System.Diagnostics.Tracing.EventSource"/>.</exception>
-        </member>
         <member name="P:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Utility.EventSourceAnalyzer.ExcludeEventListenerEmulation">
             <summary>
             Gets or sets a value indicating whether to exclude the internal <see cref="T:System.Diagnostics.Tracing.EventListener"/> instance to emulate sending events.
@@ -74,6 +45,35 @@
             <c>true</c> for excluding this analysis, <c>false</c> otherwise.
             </value>
         </member>
+        <member name="M:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Utility.EventSourceAnalyzer.InspectAll(System.Diagnostics.Tracing.EventSource)">
+            <summary>
+            Inspects the specified <see cref="T:System.Diagnostics.Tracing.EventSource" /> for potential runtime errors.
+            </summary>
+            <param name="eventSource">The event source instance to inspect.</param>
+            <example>
+              <code>EventSourceAnalyzer.InspectAll(MyEventSource.Instance);</code>
+              <remarks>Where 'Instance' property returns a singleton instance of 'MyEventSource' class like:
+                <code>public static MyEventSource Instance = new MyEventSource();</code>
+              </remarks>
+            </example>
+            <exception cref="T:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Utility.EventSourceAnalyzerException">Exception thrown if a failure was found in the specified <see cref="T:System.Diagnostics.Tracing.EventSource" />.</exception>
+            <exception cref="T:System.ArgumentException">Exception thrown if a failure was found in the specified <see cref="T:System.Diagnostics.Tracing.EventSource" />.</exception>
+        </member>
+        <member name="M:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Utility.EventSourceAnalyzer.Inspect(System.Diagnostics.Tracing.EventSource)">
+            <summary>
+            Inspects the specified <see cref="T:System.Diagnostics.Tracing.EventSource" /> for potential runtime errors 
+            filtering out validations according to the specified instance properties.
+            </summary>
+            <param name="eventSource">The event source instance to inspect.</param>
+            <example>
+              <code>EventSourceAnalyzer.InspectAll(MyEventSource.Instance);</code>
+              <remarks>Where 'Instance' property returns a singleton instance of 'MyEventSource' class like:
+              <code>public static MyEventSource Instance = new MyEventSource();</code>
+              </remarks>
+            </example>
+            <exception cref="T:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Utility.EventSourceAnalyzerException">Exception thrown if a failure was found in the specified <see cref="T:System.Diagnostics.Tracing.EventSource" />.</exception>
+            <exception cref="T:System.ArgumentException">Exception thrown if a failure was found in the specified <see cref="T:System.Diagnostics.Tracing.EventSource" />.</exception>
+        </member>
         <member name="T:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Utility.EventSourceAnalyzerException">
             <summary>
             Represents errors that occur during <see cref="T:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Utility.EventSourceAnalyzer"/> execution.
@@ -96,8 +96,8 @@
             <summary>
             Initializes a new instance of the <see cref="T:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Utility.EventSourceAnalyzerException"/> class.
             </summary>
-            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> that holds the serialized object data about the exception being thrown.</param>
-            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext"/> that contains contextual information about the source or destination.</param>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
         </member>
     </members>
 </doc>

@@ -98,28 +98,28 @@
         </member>
         <member name="M:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.ElasticsearchLog.LogToElasticsearch(System.IObservable{Microsoft.Practices.EnterpriseLibrary.SemanticLogging.EventEntry},System.String,System.String,System.String,System.String,System.Boolean,System.Nullable{System.TimeSpan},System.Nullable{System.TimeSpan},System.Int32,System.Int32)">
             <summary>
-            Subscribes to an <see cref="T:System.IObservable`1"/> using a <see cref="T:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks.ElasticsearchSink"/>.
+            Subscribes to an <see cref="T:System.IObservable`1" /> using a <see cref="T:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks.ElasticsearchSink" />.
             </summary>
-            <param name="eventStream">The event stream. Typically this is an instance of <see cref="T:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.ObservableEventListener"/>.</param>
+            <param name="eventStream">The event stream. Typically this is an instance of <see cref="T:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.ObservableEventListener" />.</param>
             <param name="instanceName">The name of the instance originating the entries.</param>
             <param name="connectionString">The endpoint address for the Elasticsearch Service.</param>
             <param name="index">Index name prefix formatted as index-{0:yyyy.MM.DD}</param>
             <param name="type">The Elasticsearch entry type</param>
             <param name="flattenPayload">Flatten the payload collection when serializing event entries</param>
-            <param name="bufferingInterval">The buffering interval between each batch publishing. Default value is <see cref="F:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Utility.Buffering.DefaultBufferingInterval"/>.</param>
-            <param name="onCompletedTimeout">Defines a timeout interval for when flushing the entries after an <see cref="M:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks.ElasticsearchSink.OnCompleted"/> call is received and before disposing the sink.</param>
-            <param name="bufferingCount">Buffering count to send entries sot Elasticsearch. Default value is <see cref="F:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Utility.Buffering.DefaultBufferingCount"/></param>
+            <param name="bufferingInterval">The buffering interval between each batch publishing. Default value is <see cref="F:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Utility.Buffering.DefaultBufferingInterval" />.</param>
+            <param name="onCompletedTimeout">Defines a timeout interval for when flushing the entries after an <see cref="M:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks.ElasticsearchSink.OnCompleted" /> call is received and before disposing the sink.</param>
+            <param name="bufferingCount">Buffering count to send entries sot Elasticsearch. Default value is <see cref="F:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Utility.Buffering.DefaultBufferingCount" /></param>
             <param name="maxBufferSize">The maximum number of entries that can be buffered while it's sending to Elasticsearch before the sink starts dropping entries.
-            This means that if the timeout period elapses, some event entries will be dropped and not sent to the store. Normally, calling <see cref="M:System.IDisposable.Dispose"/> on
-            the <see cref="T:System.Diagnostics.Tracing.EventListener"/> will block until all the entries are flushed or the interval elapses.
-            If <see langword="null"/> is specified, then the call will block indefinitely until the flush operation finishes.</param>
+            This means that if the timeout period elapses, some event entries will be dropped and not sent to the store. Normally, calling <see cref="M:System.IDisposable.Dispose" /> on
+            the <see cref="T:System.Diagnostics.Tracing.EventListener" /> will block until all the entries are flushed or the interval elapses.
+            If <see langword="null" /> is specified, then the call will block indefinitely until the flush operation finishes.</param>
             <returns>
             A subscription to the sink that can be disposed to unsubscribe the sink and dispose it, or to get access to the sink instance.
             </returns>
         </member>
         <member name="M:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.ElasticsearchLog.CreateListener(System.String,System.String,System.String,System.String,System.Boolean,System.Nullable{System.TimeSpan},System.Nullable{System.TimeSpan},System.Int32)">
             <summary>
-            Creates an event listener that logs using a <see cref="T:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks.ElasticsearchSink"/>.
+            Creates an event listener that logs using a <see cref="T:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks.ElasticsearchSink" />.
             </summary>
             <param name="instanceName">The name of the instance originating the entries.</param>
             <param name="connectionString">The endpoint address for the Elasticsearch Service.</param>
@@ -129,11 +129,11 @@
             <param name="bufferingInterval">The buffering interval between each batch publishing.</param>
             <param name="listenerDisposeTimeout">Defines a timeout interval for the flush operation when the listener is disposed.</param>
             <param name="maxBufferSize">The maximum number of entries that can be buffered while it's sending to Elasticsearch before the sink starts dropping entries.
-            This means that if the timeout period elapses, some event entries will be dropped and not sent to the store. Calling <see cref="M:System.IDisposable.Dispose"/> on
-            the <see cref="T:System.Diagnostics.Tracing.EventListener"/> will block until all the entries are flushed or the interval elapses.
-            If <see langword="null"/> is specified, then the call will block indefinitely until the flush operation finishes.</param>
+            This means that if the timeout period elapses, some event entries will be dropped and not sent to the store. Calling <see cref="M:System.IDisposable.Dispose" /> on
+            the <see cref="T:System.Diagnostics.Tracing.EventListener" /> will block until all the entries are flushed or the interval elapses.
+            If <see langword="null" /> is specified, then the call will block indefinitely until the flush operation finishes.</param>
             <returns>
-            An event listener that uses <see cref="T:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks.ElasticsearchSink"/> to log events.
+            An event listener that uses <see cref="T:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks.ElasticsearchSink" /> to log events.
             </returns>
         </member>
     </members>

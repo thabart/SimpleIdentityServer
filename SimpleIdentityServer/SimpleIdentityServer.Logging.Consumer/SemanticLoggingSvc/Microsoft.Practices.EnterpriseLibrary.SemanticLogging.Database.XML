@@ -11,7 +11,7 @@
         </member>
         <member name="M:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks.SqlDatabaseSink.#ctor(System.String,System.String,System.String,System.TimeSpan,System.Int32,System.Int32,System.TimeSpan)">
             <summary>
-            Initializes a new instance of the <see cref="T:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks.SqlDatabaseSink"/> class with the specified instance name, connection string and table name.
+            Initializes a new instance of the <see cref="T:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks.SqlDatabaseSink" /> class with the specified instance name, connection string and table name.
             </summary>
             <param name="instanceName">The name of the instance originating the entries.</param>
             <param name="connectionString">The connection string.</param>
@@ -63,6 +63,11 @@
             </summary>
             <param name="disposing">A value indicating whether or not the class is disposing.</param>
         </member>
+        <member name="T:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Database.Utility.EventEntryExtensions">
+            <summary>
+            Extensions for <see cref="T:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.EventEntry"/>.
+            </summary>
+        </member>
         <member name="T:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.SqlDatabaseLog">
             <summary>
             Factories and helpers for using the <see cref="T:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks.SqlDatabaseSink"/>.
@@ -77,7 +82,7 @@
             <summary>
             Subscribes to an <see cref="T:System.IObservable`1"/> using a <see cref="T:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks.SqlDatabaseSink"/>.
             </summary>
-            <param name="eventStream">The event stream. Typically this is an instance of <see cref="T:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.ObservableEventListener"/>.</param>
+            <param name="eventStream">The event stream. Typically this is an instance of <see cref="T:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.ObservableEventListener" />.</param>
             <param name="instanceName">The name of the instance originating the entries.</param>
             <param name="connectionString">The connection string.</param>
             <param name="tableName">The name of the table.</param>
@@ -88,14 +93,14 @@
             the <see cref="T:System.Diagnostics.Tracing.EventListener"/> will block until all the entries are flushed or the interval elapses.
             If <see langword="null"/> is specified, then the call will block indefinitely until the flush operation finishes.</param>
             <param name="maxBufferSize">The maximum number of entries that can be buffered while it's sending to SQL Database before the sink starts dropping entries.
-            This means that if the timeout period elapses, some event entries will be dropped and not sent to the store. Normally, calling <see cref="M:System.IDisposable.Dispose"/> on
-            the <see cref="T:System.Diagnostics.Tracing.EventListener"/> will block until all the entries are flushed or the interval elapses.
-            If <see langword="null"/> is specified, then the call will block indefinitely until the flush operation finishes.</param>
+            This means that if the timeout period elapses, some event entries will be dropped and not sent to the store. Normally, calling <see cref="M:System.IDisposable.Dispose" /> on
+            the <see cref="T:System.Diagnostics.Tracing.EventListener" /> will block until all the entries are flushed or the interval elapses.
+            If <see langword="null" /> is specified, then the call will block indefinitely until the flush operation finishes.</param>
             <returns>A subscription to the sink that can be disposed to unsubscribe the sink and dispose it, or to get access to the sink instance.</returns>
         </member>
         <member name="M:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.SqlDatabaseLog.CreateListener(System.String,System.String,System.String,System.Nullable{System.TimeSpan},System.Int32,System.Nullable{System.TimeSpan},System.Int32)">
             <summary>
-            Subscribes to the listener using a <see cref="T:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks.SqlDatabaseSink"/>.
+            Subscribes to the listener using a <see cref="T:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks.SqlDatabaseSink" />.
             </summary>
             <param name="instanceName">The name of the instance originating the entries.</param>
             <param name="connectionString">The connection string.</param>
@@ -107,15 +112,10 @@
             the <see cref="T:System.Diagnostics.Tracing.EventListener"/> will block until all the entries are flushed or the interval elapses.
             If <see langword="null"/> is specified, then the call will block indefinitely until the flush operation finishes.</param>
             <param name="maxBufferSize">The maximum number of entries that can be buffered while it's sending to SQL Database before the sink starts dropping entries.
-            This means that if the timeout period elapses, some event entries will be dropped and not sent to the store. Normally, calling <see cref="M:System.IDisposable.Dispose"/> on
-            the <see cref="T:System.Diagnostics.Tracing.EventListener"/> will block until all the entries are flushed or the interval elapses.
-            If <see langword="null"/> is specified, then the call will block indefinitely until the flush operation finishes.</param>
+            This means that if the timeout period elapses, some event entries will be dropped and not sent to the store. Normally, calling <see cref="M:System.IDisposable.Dispose" /> on
+            the <see cref="T:System.Diagnostics.Tracing.EventListener" /> will block until all the entries are flushed or the interval elapses.
+            If <see langword="null" /> is specified, then the call will block indefinitely until the flush operation finishes.</param>
             <returns>An event listener that uses <see cref="T:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks.SqlDatabaseSink"/> to log events.</returns>
-        </member>
-        <member name="T:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Database.Utility.EventEntryExtensions">
-            <summary>
-            Extensions for <see cref="T:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.EventEntry"/>.
-            </summary>
         </member>
     </members>
 </doc>

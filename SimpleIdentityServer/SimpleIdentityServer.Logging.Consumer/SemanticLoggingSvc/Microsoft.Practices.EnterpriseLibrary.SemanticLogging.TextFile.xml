@@ -20,7 +20,7 @@
         </member>
         <member name="M:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Configuration.FlatFileSinkElement.CreateSink(System.Xml.Linq.XElement)">
             <summary>
-            Creates the <see cref="T:System.IObserver`1"/> instance for this sink.
+            Creates the <see cref="T:System.IObserver`1" /> instance for this sink.
             </summary>
             <param name="element">The configuration element.</param>
             <returns>
@@ -43,7 +43,7 @@
         </member>
         <member name="M:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Configuration.RollingFlatFileSinkElement.CreateSink(System.Xml.Linq.XElement)">
             <summary>
-            Creates the <see cref="T:System.IObserver`1"/> instance for this sink.
+            Creates the <see cref="T:System.IObserver`1" /> instance for this sink.
             </summary>
             <param name="element">The configuration element.</param>
             <returns>
@@ -116,7 +116,7 @@
         </member>
         <member name="M:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks.FlatFileSink.#ctor(System.String,Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Formatters.IEventTextFormatter,System.Boolean)">
             <summary>
-            Initializes a new instance of the <see cref="T:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks.FlatFileSink"/> class.
+            Initializes a new instance of the <see cref="T:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks.FlatFileSink" /> class.
             </summary>
             <param name="fileName">Name of the file.</param>
             <param name="formatter">The formatter for entries</param>
@@ -228,6 +228,22 @@
             Finalizes an instance of the <see cref="T:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks.RollingFlatFileSink"/> class.
             </summary>
         </member>
+        <member name="P:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks.RollingFlatFileSink.RollingHelper">
+            <summary>
+            Gets the <see cref="T:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks.RollingFlatFileSink.StreamWriterRollingHelper"/> for the flat file.
+            </summary>
+            <value>
+            The <see cref="T:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks.RollingFlatFileSink.StreamWriterRollingHelper"/> for the flat file.
+            </value>
+        </member>
+        <member name="P:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks.RollingFlatFileSink.Tally">
+            <summary>
+            Gets the tally of the length of the string.
+            </summary>
+            <value>
+            The tally of the length of the string.
+            </value>
+        </member>
         <member name="M:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks.RollingFlatFileSink.FlushAsync">
             <summary>
             Flushes the buffer content to the file.
@@ -261,22 +277,6 @@
             <summary>
             Releases all resources used by the current instance of the <see cref="T:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks.RollingFlatFileSink"/> class.
             </summary>
-        </member>
-        <member name="P:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks.RollingFlatFileSink.RollingHelper">
-            <summary>
-            Gets the <see cref="T:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks.RollingFlatFileSink.StreamWriterRollingHelper"/> for the flat file.
-            </summary>
-            <value>
-            The <see cref="T:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks.RollingFlatFileSink.StreamWriterRollingHelper"/> for the flat file.
-            </value>
-        </member>
-        <member name="P:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks.RollingFlatFileSink.Tally">
-            <summary>
-            Gets the tally of the length of the string.
-            </summary>
-            <value>
-            The tally of the length of the string.
-            </value>
         </member>
         <member name="T:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks.RollingFlatFileSink.DateTimeProvider">
             <summary>
@@ -321,6 +321,22 @@
             Initializes a new instance of the <see cref="T:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks.RollingFlatFileSink.StreamWriterRollingHelper"/>.
             </summary>
             <param name="owner">The <see cref="T:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks.RollingFlatFileSink"/> to use.</param>
+        </member>
+        <member name="P:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks.RollingFlatFileSink.StreamWriterRollingHelper.DateTimeProvider">
+            <summary>
+            Gets or sets current date time provider.
+            </summary>
+            <value>
+            The provider for the current date. Necessary for unit testing.
+            </value>
+        </member>
+        <member name="P:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks.RollingFlatFileSink.StreamWriterRollingHelper.NextRollDateTime">
+            <summary>
+            Gets the next date when date based rolling should occur if configured.
+            </summary>
+            <value>
+            The next date when date based rolling should occur if configured.
+            </value>
         </member>
         <member name="M:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks.RollingFlatFileSink.StreamWriterRollingHelper.CalculateNextRollDate(System.DateTime)">
             <summary>
@@ -377,22 +393,6 @@
             <summary>
             Releases all resources used by the current instance of the <see cref="T:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks.RollingFlatFileSink.StreamWriterRollingHelper"/> class.
             </summary>
-        </member>
-        <member name="P:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks.RollingFlatFileSink.StreamWriterRollingHelper.DateTimeProvider">
-            <summary>
-            Gets or sets current date time provider.
-            </summary>
-            <value>
-            The provider for the current date. Necessary for unit testing.
-            </value>
-        </member>
-        <member name="P:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks.RollingFlatFileSink.StreamWriterRollingHelper.NextRollDateTime">
-            <summary>
-            Gets the next date when date based rolling should occur if configured.
-            </summary>
-            <value>
-            The next date when date based rolling should occur if configured.
-            </value>
         </member>
         <member name="T:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks.RollInterval">
             <summary>
@@ -457,6 +457,14 @@
             <param name="stream">The <see cref="T:System.IO.FileStream"/> to write to.</param>
             <param name="encoding">The <see cref="T:System.Text.Encoding"/> to use.</param>
         </member>
+        <member name="P:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks.TallyKeepingFileStreamWriter.Tally">
+            <summary>
+            Gets the tally of the length of the string.
+            </summary>
+            <value>
+            The tally of the length of the string.
+            </value>
+        </member>
         <member name="M:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks.TallyKeepingFileStreamWriter.Write(System.Char)">
             <summary>
             Writes a character to the stream.
@@ -497,14 +505,6 @@
             <exception cref="T:System.ObjectDisposedException"><see cref="P:System.IO.StreamWriter.AutoFlush"></see> is true or the <see cref="T:System.IO.StreamWriter"></see> buffer is full, and current writer is closed. </exception>
             <exception cref="T:System.NotSupportedException"><see cref="P:System.IO.StreamWriter.AutoFlush"></see> is true or the <see cref="T:System.IO.StreamWriter"></see> buffer is full, and the contents of the buffer cannot be written to the underlying fixed size stream because the <see cref="T:System.IO.StreamWriter"></see> is at the end the stream. </exception>
             <exception cref="T:System.IO.IOException">An I/O error occurs. </exception><filterpriority>1</filterpriority>
-        </member>
-        <member name="P:Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Sinks.TallyKeepingFileStreamWriter.Tally">
-            <summary>
-            Gets the tally of the length of the string.
-            </summary>
-            <value>
-            The tally of the length of the string.
-            </value>
         </member>
     </members>
 </doc>
