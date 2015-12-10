@@ -9,7 +9,15 @@ namespace SimpleIdentityServer.Logging.Consumer
 
         static void Main(string[] args)
         {
-            // IT'S IN PROCESS
+            // USE OUT-PROCESS
+            using (var service = new TraceEventServiceHost())
+            {
+                service.Start();
+                Console.WriteLine();
+                Console.ReadLine();
+            }
+
+            // USE IN-PROCESS
             /*
             var eventListener = new ObservableEventListener();
 

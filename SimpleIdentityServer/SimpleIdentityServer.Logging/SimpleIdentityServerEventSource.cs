@@ -79,9 +79,7 @@ namespace SimpleIdentityServer.Logging
 
         [Event(Constants.EventIds.OpenIdFailure,
             Level = EventLevel.Error,
-            Message = "something goes wrong in the open-id process",
-            Opcode = EventOpcode.Info,
-            Task = Constants.Tasks.Failure)]
+            Message = "something goes wrong in the open-id process")]
         public void OpenIdFailure(string code, 
             string description, 
             string state)
