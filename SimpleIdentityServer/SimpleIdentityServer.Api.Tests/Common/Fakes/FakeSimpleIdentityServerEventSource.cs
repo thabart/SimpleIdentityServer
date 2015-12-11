@@ -49,5 +49,10 @@ namespace SimpleIdentityServer.Api.Tests.Common.Fakes
         public void EndGeneratingAuthorizationResponseToClient(string clientId, string parameters)
         {
         }
+
+
+        public void EndAuthorizationCodeFlow(string clientId, string actionType, string actionName)
+        {
+        }
     }
 }

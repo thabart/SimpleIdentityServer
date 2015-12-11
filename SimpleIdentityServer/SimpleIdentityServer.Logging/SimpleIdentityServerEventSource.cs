@@ -44,6 +44,11 @@ namespace SimpleIdentityServer.Logging
             string clientId,
             string parameters);
 
+        void EndAuthorizationCodeFlow(
+            string clientId,
+            string actionType,
+            string actionName);
+
         void EndAuthorization(
             string actionType,
             string controllerAction,
@@ -122,7 +127,7 @@ namespace SimpleIdentityServer.Logging
                 return;
             }
 
-            WriteEvent(Constants.EventIds.AuthorizationCodeFlowStarted, jsonAuthorizationRequest);
+            WriteEvent(Constants.EventIds.StartProcessingAuthorizationRequest, jsonAuthorizationRequest);
         }
 
         [Event(Constants.EventIds.EndProcessingAuthorizationRequest,
@@ -175,8 +180,8 @@ namespace SimpleIdentityServer.Logging
             {
                 return;
             }
-            
-            WriteEvent(Constants.EventIds.StartGeneratingAuthorizationResponseToClient,
+
+            WriteEvent(Constants.EventIds.GrantAccessToClient,
                 clientId,
                 accessToken,
                 scopes);
@@ -187,7 +192,8 @@ namespace SimpleIdentityServer.Logging
             Message = "grant authorization code to the client {0}",
             Opcode = EventOpcode.Info,
             Task = Constants.Tasks.Authorization)]
-        public void GrantAuthorizationCodeToClient(string clientId,
+        public void GrantAuthorizationCodeToClient(
+            string clientId,
             string authorizationCode,
             string scopes)
         {
@@ -196,7 +202,7 @@ namespace SimpleIdentityServer.Logging
                 return;
             }
 
-            WriteEvent(Constants.EventIds.StartGeneratingAuthorizationResponseToClient,
+            WriteEvent(Constants.EventIds.GrantAuthorizationCodeToClient,
                 clientId,
                 authorizationCode,
                 scopes);
@@ -219,6 +225,25 @@ namespace SimpleIdentityServer.Logging
             WriteEvent(Constants.EventIds.EndGeneratingAuthorizationResponseToClient,
                 clientId, 
                 parameters);
+        }
+
+
+        [Event(Constants.EventIds.AuthorizationCodeFlowEnded,
+            Level = EventLevel.Informational,
+            Message = "end of the authorization code flow",
+            Opcode = EventOpcode.Stop,
+            Task = Constants.Tasks.Authorization)]
+        public void EndAuthorizationCodeFlow(string clientId, string actionType, string actionName)
+        {
+            if (!IsEnabled())
+            {
+                return;
+            }
+
+            WriteEvent(Constants.EventIds.AuthorizationCodeFlowEnded,
+                clientId,
+                actionType,
+                actionName);
         }
 
         [Event(Constants.EventIds.AuthorizationEnded,

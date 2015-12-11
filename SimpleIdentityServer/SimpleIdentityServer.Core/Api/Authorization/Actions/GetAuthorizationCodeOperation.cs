@@ -101,8 +101,8 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
             }
 
             var actionTypeName = Enum.GetName(typeof(TypeActionResult), result.Type);
-            _simpleIdentityServerEventSource.EndProcessingAuthorizationRequest(
-                authorizationParameter.SerializeWithJavascript(),
+            _simpleIdentityServerEventSource.EndAuthorizationCodeFlow(
+                authorizationParameter.ClientId,
                 actionTypeName,
                 result.RedirectInstruction == null ? string.Empty : Enum.GetName(typeof(IdentityServerEndPoints), result.RedirectInstruction.Action));
 

@@ -77,7 +77,7 @@ namespace SimpleIdentityServer.Api.UnitTests.Api.Authorization
 
             // ASSERTS
             _simpleIdentityServerEventSourceFake.Verify(s => s.StartAuthorizationCodeFlow(clientId, scope, string.Empty));
-            _simpleIdentityServerEventSourceFake.Verify(s => s.EndProcessingAuthorizationRequest(jsonAuthorizationParameter, "RedirectToAction", "FormIndex"));
+            _simpleIdentityServerEventSourceFake.Verify(s => s.EndAuthorizationCodeFlow(clientId, "RedirectToAction", "FormIndex"));
         }
 
         [Test]
