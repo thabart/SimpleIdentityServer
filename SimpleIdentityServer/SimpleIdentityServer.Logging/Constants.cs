@@ -10,9 +10,13 @@ namespace SimpleIdentityServer.Logging
             public const int AuthorizationCodeFlowStarted = 2;
             public const int StartProcessingAuthorizationRequest = 3;
             public const int EndProcessingAuthorizationRequest = 4;
-            public const int AuthorizationCodeFlowEnded = 5;
-            public const int AuthorizationEnded = 6;
-            public const int OpenIdFailure = 7;
+            public const int StartGeneratingAuthorizationResponseToClient = 5;
+            public const int GrantAccessToClient = 6;
+            public const int GrantAuthorizationCodeToClient = 7;
+            public const int EndGeneratingAuthorizationResponseToClient = 8;
+            public const int AuthorizationCodeFlowEnded = 9;
+            public const int AuthorizationEnded = 10;
+            public const int OpenIdFailure = 11;
         }
 
         public static class Tasks

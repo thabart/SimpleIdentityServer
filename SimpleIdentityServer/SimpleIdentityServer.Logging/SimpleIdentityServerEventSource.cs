@@ -26,6 +26,24 @@ namespace SimpleIdentityServer.Logging
             string actionType,
             string actionName);
 
+        void StartGeneratingAuthorizationResponseToClient(
+            string clientId,
+            string responseTypes);
+
+        void GrantAccessToClient(
+            string clientId,
+            string accessToken,
+            string scopes);
+
+        void GrantAuthorizationCodeToClient(
+            string clientId,
+            string authorizationCode,
+            string scopes);
+
+        void EndGeneratingAuthorizationResponseToClient(
+            string clientId,
+            string parameters);
+
         void EndAuthorization(
             string actionType,
             string controllerAction,
@@ -123,6 +141,84 @@ namespace SimpleIdentityServer.Logging
             }
 
             WriteEvent(Constants.EventIds.EndProcessingAuthorizationRequest, jsonAuthorizationRequest, actionType, actionName);
+        }
+        
+        [Event(Constants.EventIds.StartGeneratingAuthorizationResponseToClient,
+            Level = EventLevel.Informational,
+            Message = "start to generate an authorization response for the client {0}",
+            Opcode = EventOpcode.Start,
+            Task = Constants.Tasks.Authorization)]
+        public void StartGeneratingAuthorizationResponseToClient(
+            string clientId,
+            string responseTypes)
+        {
+            if (!IsEnabled())
+            {
+                return;
+            }
+
+            WriteEvent(Constants.EventIds.StartGeneratingAuthorizationResponseToClient,
+                clientId,
+                responseTypes);
+        }
+
+        [Event(Constants.EventIds.GrantAccessToClient,
+            Level = EventLevel.Informational,
+            Message = "grant access to the client {0}",
+            Opcode = EventOpcode.Info,
+            Task = Constants.Tasks.Authorization)]
+        public void GrantAccessToClient(string clientId,
+            string accessToken,
+            string scopes)
+        {
+            if (!IsEnabled())
+            {
+                return;
+            }
+            
+            WriteEvent(Constants.EventIds.StartGeneratingAuthorizationResponseToClient,
+                clientId,
+                accessToken,
+                scopes);
+        }
+
+        [Event(Constants.EventIds.GrantAuthorizationCodeToClient,
+            Level = EventLevel.Informational,
+            Message = "grant authorization code to the client {0}",
+            Opcode = EventOpcode.Info,
+            Task = Constants.Tasks.Authorization)]
+        public void GrantAuthorizationCodeToClient(string clientId,
+            string authorizationCode,
+            string scopes)
+        {
+            if (!IsEnabled())
+            {
+                return;
+            }
+
+            WriteEvent(Constants.EventIds.StartGeneratingAuthorizationResponseToClient,
+                clientId,
+                authorizationCode,
+                scopes);
+        }
+
+        [Event(Constants.EventIds.EndGeneratingAuthorizationResponseToClient,
+            Level = EventLevel.Informational,
+            Message = "finished to generate the authorization response for the client {0}",
+            Opcode = EventOpcode.Stop,
+            Task = Constants.Tasks.Authorization)]
+        public void EndGeneratingAuthorizationResponseToClient(
+            string clientId,
+            string parameters)
+        {
+            if (!IsEnabled())
+            {
+                return;
+            }
+
+            WriteEvent(Constants.EventIds.EndGeneratingAuthorizationResponseToClient,
+                clientId, 
+                parameters);
         }
 
         [Event(Constants.EventIds.AuthorizationEnded,

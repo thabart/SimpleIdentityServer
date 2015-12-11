@@ -14,8 +14,9 @@
 // limitations under the License.
 #endregion
 using System;
+using System.Collections.Generic;
 using System.Security.Claims;
-
+using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Jwt;
@@ -24,6 +25,7 @@ using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.JwtToken;
+using SimpleIdentityServer.Logging;
 
 namespace SimpleIdentityServer.Core.Common
 {
@@ -49,13 +51,16 @@ namespace SimpleIdentityServer.Core.Common
 
         private readonly IConsentHelper _consentHelper;
 
+        private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
+
         public GenerateAuthorizationResponse(
             IAuthorizationCodeRepository authorizationCodeRepository,
             IParameterParserHelper parameterParserHelper,
             IJwtGenerator jwtGenerator,
             IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
             IGrantedTokenRepository grantedTokenRepository,
-            IConsentHelper consentHelper)
+            IConsentHelper consentHelper,
+            ISimpleIdentityServerEventSource simpleIdentityServerEventSource)
         {
             _authorizationCodeRepository = authorizationCodeRepository;
             _parameterParserHelper = parameterParserHelper;
@@ -63,6 +68,7 @@ namespace SimpleIdentityServer.Core.Common
             _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
             _grantedTokenRepository = grantedTokenRepository;
             _consentHelper = consentHelper;
+            _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
         }
 
         #region Public methods
@@ -72,6 +78,19 @@ namespace SimpleIdentityServer.Core.Common
             AuthorizationParameter authorizationParameter,
             ClaimsPrincipal claimsPrincipal)
         {
+            if (authorizationParameter == null)
+            {
+                throw new ArgumentNullException("cannot generate the authorization response because the authorization parameter is null");    
+            }
+
+            if (actionResult == null || actionResult.RedirectInstruction == null)
+            {
+                throw new ArgumentNullException("cannot generate the authorization response because the action result is null");
+            }
+
+            _simpleIdentityServerEventSource.StartGeneratingAuthorizationResponseToClient(authorizationParameter.ClientId,
+                authorizationParameter.ResponseType);
+
             var responses = _parameterParserHelper.ParseResponseType(authorizationParameter.ResponseType);
             var idTokenPayload = GenerateIdTokenPayload(claimsPrincipal, authorizationParameter);
             var userInformationPayload = GenerateUserInformationPayload(claimsPrincipal, authorizationParameter);
@@ -104,7 +123,11 @@ namespace SimpleIdentityServer.Core.Common
                         allowedTokenScopes,
                         userInformationPayload,
                         idTokenPayload);
+
                     _grantedTokenRepository.Insert(grantedToken);
+                    _simpleIdentityServerEventSource.GrantAccessToClient(authorizationParameter.ClientId,
+                        grantedToken.AccessToken,
+                        allowedTokenScopes);
                 }
 
                 actionResult.RedirectInstruction.AddParameter(Constants.StandardAuthorizationResponseNames.AccessTokenName, grantedToken.AccessToken);
@@ -129,6 +152,9 @@ namespace SimpleIdentityServer.Core.Common
                     };
 
                     _authorizationCodeRepository.AddAuthorizationCode(authorizationCode);
+                    _simpleIdentityServerEventSource.GrantAuthorizationCodeToClient(authorizationParameter.ClientId,
+                        authorizationCode.Code,
+                        authorizationParameter.Scope);
                     actionResult.RedirectInstruction.AddParameter(Constants.StandardAuthorizationResponseNames.AuthorizationCodeName, authorizationCode.Code);
                 }
             }
@@ -144,6 +170,9 @@ namespace SimpleIdentityServer.Core.Common
                 actionResult.RedirectInstruction.Action = IdentityServerEndPoints.FormIndex;
                 actionResult.RedirectInstruction.AddParameter("redirect_uri", authorizationParameter.RedirectUrl);
             }
+
+            _simpleIdentityServerEventSource.EndGeneratingAuthorizationResponseToClient(authorizationParameter.ClientId,
+               actionResult.RedirectInstruction.Parameters.SerializeWithJavascript());
         }
 
         #endregion
@@ -171,7 +200,8 @@ namespace SimpleIdentityServer.Core.Common
             AuthorizationParameter authorizationParameter)
         {
             JwsPayload jwsPayload;
-            if (authorizationParameter.Claims.IsAnyIdentityTokenClaimParameter())
+            if (authorizationParameter.Claims != null &&
+                authorizationParameter.Claims.IsAnyIdentityTokenClaimParameter())
             {
                 jwsPayload = _jwtGenerator.GenerateFilteredIdTokenPayload(
                     claimsPrincipal,
@@ -199,7 +229,8 @@ namespace SimpleIdentityServer.Core.Common
             AuthorizationParameter authorizationParameter)
         {
             JwsPayload jwsPayload;
-            if (authorizationParameter.Claims.IsAnyUserInfoClaimParameter())
+            if (authorizationParameter.Claims != null &&
+                authorizationParameter.Claims.IsAnyUserInfoClaimParameter())
             {
                 jwsPayload = _jwtGenerator.GenerateFilteredUserInfoPayload(
                     authorizationParameter.Claims.UserInfo,

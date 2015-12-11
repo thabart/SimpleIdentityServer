@@ -32,5 +32,22 @@ namespace SimpleIdentityServer.Api.Tests.Common.Fakes
         public void EndAuthorization(string actionType, string controllerAction, string parameters)
         {
         }
+
+
+        public void StartGeneratingAuthorizationResponseToClient(string clientId, string responseTypes)
+        {
+        }
+
+        public void GrantAccessToClient(string clientId, string accessToken, string scopes)
+        {
+        }
+
+        public void GrantAuthorizationCodeToClient(string clientId, string authorizationCode, string scopes)
+        {
+        }
+
+        public void EndGeneratingAuthorizationResponseToClient(string clientId, string parameters)
+        {
+        }
     }
 }
