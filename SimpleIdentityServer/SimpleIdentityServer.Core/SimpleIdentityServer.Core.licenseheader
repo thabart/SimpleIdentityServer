@@ -1,4 +1,6 @@
-﻿#region copyright
+﻿extensions: designer.cs generated.cs
+extensions: .cs
+#region copyright
 // Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,17 +15,3 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-using SimpleIdentityServer.Core.Models;
-using System.Collections.Generic;
-
-namespace SimpleIdentityServer.Core.Repositories
-{
-    public interface ITranslationRepository
-    {
-        Models.Translation GetTranslationByCode(string languageTag, string code);
-
-        List<Models.Translation> GetTranslations(string languageTag);
-
-        List<string> GetSupportedLanguageTag();
-    }
-}

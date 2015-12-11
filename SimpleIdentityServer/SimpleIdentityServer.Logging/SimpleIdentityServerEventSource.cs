@@ -5,15 +5,33 @@ namespace SimpleIdentityServer.Logging
 {
     public interface ISimpleIdentityServerEventSource
     {
+        #region Events linked to the authorization process
+
         void StartAuthorization(
             string clientId,
             string responseType,
             string scope,
             string individualClaims);
 
+        void StartAuthorizationCodeFlow(
+            string clientId,
+            string scope,
+            string individualClaims);
+
+        void StartProcessingAuthorizationRequest(
+            string jsonAuthorizationRequest);
+
+        void EndProcessingAuthorizationRequest(
+            string jsonAuthorizationRequest,
+            string actionType,
+            string actionName);
+
         void EndAuthorization(
             string actionType,
-            string controllerAction);
+            string controllerAction,
+            string parameters);
+
+        #endregion
 
         void OpenIdFailure(string code, 
             string description, 
@@ -34,7 +52,7 @@ namespace SimpleIdentityServer.Logging
             get { return Instance.Value; }
         }
 
-        #region Events related to the authorization process
+        #region Events linked to the authorization process
 
         [Event(Constants.EventIds.AuthorizationStarted, 
             Level = EventLevel.Informational, 
@@ -55,12 +73,47 @@ namespace SimpleIdentityServer.Logging
             WriteEvent(Constants.EventIds.AuthorizationStarted, clientId, responseType, scope, individualClaims);
         }
 
-        [Event(Constants.EventIds.AuthorizationEnded,
+
+        [Event(Constants.EventIds.AuthorizationCodeFlowStarted,
             Level = EventLevel.Informational,
-            Message = "end the authorization process",
+            Message = "start the authorization code flow",
+            Opcode = EventOpcode.Start,
+            Task = Constants.Tasks.Authorization)]
+        public void StartAuthorizationCodeFlow(
+            string clientId,
+            string scope,
+            string individualClaims)
+        {
+            if (!IsEnabled())
+            {
+                return;
+            }
+
+            WriteEvent(Constants.EventIds.AuthorizationCodeFlowStarted, clientId, scope, individualClaims);
+        }
+
+        [Event(Constants.EventIds.StartProcessingAuthorizationRequest,
+            Level = EventLevel.Informational,
+            Message = "start processing the authorization request",
+            Opcode = EventOpcode.Start,
+            Task = Constants.Tasks.Authorization)]
+        public void StartProcessingAuthorizationRequest(string jsonAuthorizationRequest)
+        {
+            if (!IsEnabled())
+            {
+                return;
+            }
+
+            WriteEvent(Constants.EventIds.AuthorizationCodeFlowStarted, jsonAuthorizationRequest);
+        }
+
+        [Event(Constants.EventIds.EndProcessingAuthorizationRequest,
+            Level = EventLevel.Informational,
+            Message = "end processing the authorization request",
             Opcode = EventOpcode.Stop,
             Task = Constants.Tasks.Authorization)]
-        public void EndAuthorization(
+        public void EndProcessingAuthorizationRequest(
+            string jsonAuthorizationRequest,
             string actionType,
             string actionName)
         {
@@ -69,7 +122,25 @@ namespace SimpleIdentityServer.Logging
                 return;
             }
 
-            WriteEvent(Constants.EventIds.AuthorizationEnded, actionType, actionName);
+            WriteEvent(Constants.EventIds.EndProcessingAuthorizationRequest, jsonAuthorizationRequest, actionType, actionName);
+        }
+
+        [Event(Constants.EventIds.AuthorizationEnded,
+            Level = EventLevel.Informational,
+            Message = "end the authorization process",
+            Opcode = EventOpcode.Stop,
+            Task = Constants.Tasks.Authorization)]
+        public void EndAuthorization(
+            string actionType,
+            string actionName,
+            string parameters)
+        {
+            if (!IsEnabled())
+            {
+                return;
+            }
+
+            WriteEvent(Constants.EventIds.AuthorizationEnded, actionType, actionName, parameters);
         }
 
         #endregion

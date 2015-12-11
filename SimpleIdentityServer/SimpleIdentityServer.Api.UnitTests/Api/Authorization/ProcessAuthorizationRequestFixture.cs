@@ -3,6 +3,7 @@ using System.Linq;
 using NUnit.Framework;
 using SimpleIdentityServer.Api.UnitTests.Fake;
 using SimpleIdentityServer.Core.Api.Authorization.Common;
+using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Factories;
@@ -23,7 +24,8 @@ using Moq;
 using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Mapping;
-using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Logging;
+using Constants = SimpleIdentityServer.Core.Jwt.Constants;
 
 namespace SimpleIdentityServer.Api.UnitTests.Api.Authorization
 {
@@ -32,11 +34,11 @@ namespace SimpleIdentityServer.Api.UnitTests.Api.Authorization
     {
         private ProcessAuthorizationRequest _processAuthorizationRequest;
 
-        private Mock<ISimpleIdentityServerConfigurator> _simpleIdentityServerConfigurator;
+        private Mock<ISimpleIdentityServerConfigurator> _simpleIdentityServerConfiguratorStub;
+
+        private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSource;
 
         private JwtGenerator _jwtGenerator;
-
-        private IJsonWebKeyRepository _jsonWebKeyRepository;
 
         #region TEST FAILURES
 
@@ -363,8 +365,7 @@ namespace SimpleIdentityServer.Api.UnitTests.Api.Authorization
             Assert.That(exception.Code, Is.EqualTo(ErrorCodes.InvalidRequestCode));
             Assert.That(exception.Message, Is.EqualTo(ErrorDescriptions.TheIdentityTokenDoesntContainSimpleIdentityServerAsAudience));
         }
-
-
+        
         [Test]
         public void When_Passing_An_IdentityToken_Different_From_The_Current_Authenticated_User__Then_An_Exception_Is_Thrown()
         {
@@ -417,7 +418,7 @@ namespace SimpleIdentityServer.Api.UnitTests.Api.Authorization
                     Constants.StandardClaimNames.Audiences, new string[] {  issuerName }
                 }
             };
-            _simpleIdentityServerConfigurator.Setup(s => s.GetIssuerName()).Returns(issuerName);
+            _simpleIdentityServerConfiguratorStub.Setup(s => s.GetIssuerName()).Returns(issuerName);
 
             authorizationParameter.IdTokenHint = _jwtGenerator.Sign(jwtPayload, clientId);
 
@@ -425,6 +426,36 @@ namespace SimpleIdentityServer.Api.UnitTests.Api.Authorization
             var exception = Assert.Throws<IdentityServerExceptionWithState>(() => _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal, code));
             Assert.That(exception.Code, Is.EqualTo(ErrorCodes.InvalidRequestCode));
             Assert.That(exception.Message, Is.EqualTo(ErrorDescriptions.TheCurrentAuthenticatedUserDoesntMatchWithTheIdentityToken));
+        }
+
+        [Test]
+        public void When_Passing_Not_Supported_Prompts_Parameter_Then_An_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeMockingObjects();
+            const string state = "state";
+            const string code = "code";
+            const string clientId = "MyBlog";
+            const string redirectUrl = "http://localhost";
+            var authorizationParameter = new AuthorizationParameter
+            {
+                ClientId = clientId,
+                Prompt = "select_account",
+                State = state,
+                RedirectUrl = redirectUrl,
+                Scope = "openid",
+                ResponseType = "code"
+            };
+
+            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity("fake"));
+
+            // ACT & ASSERTS
+            var exception =
+                Assert.Throws<IdentityServerExceptionWithState>(
+                    () => _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal, code));
+            Assert.That(exception.Code, Is.EqualTo(ErrorCodes.InvalidRequestCode));
+            Assert.That(exception.Message, Is.EqualTo(string.Format(ErrorDescriptions.ThePromptParameterIsNotSupported, "select_account")));
+            Assert.That(exception.State, Is.EqualTo(state));
         }
 
         #endregion
@@ -616,9 +647,59 @@ namespace SimpleIdentityServer.Api.UnitTests.Api.Authorization
         
         #endregion
 
+        #region TEST THE LOGIN
+
+        [Test]
+        public void When_Executing_Correct_Authorization_Request_Then_Events_Are_Logged()
+        {
+            // ARRANGE
+            InitializeMockingObjects();
+            const string state = "state";
+            const string code = "code";
+            const string clientId = "MyBlog";
+            const string redirectUrl = "http://localhost";
+            const long maxAge = 300;
+            var currentDateTimeOffset = DateTimeOffset.UtcNow.ConvertToUnixTimestamp();
+            currentDateTimeOffset -= maxAge + 100;
+            var authorizationParameter = new AuthorizationParameter
+            {
+                ClientId = clientId,
+                State = state,
+                Prompt = "none",
+                RedirectUrl = redirectUrl,
+                Scope = "openid",
+                ResponseType = "code",
+                MaxAge = 300
+            };
+
+            var jsonAuthorizationParameter = authorizationParameter.SerializeWithJavascript();
+
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.AuthenticationInstant, currentDateTimeOffset.ToString())
+            };
+            var claimIdentity = new ClaimsIdentity(claims, "fake");
+            var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
+
+            // ACT
+            var result = _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal, code);
+
+            // ASSERTS
+            Assert.IsNotNull(result);
+            Assert.That(result.RedirectInstruction.Action, Is.EqualTo(Core.Results.IdentityServerEndPoints.AuthenticateIndex));
+            Assert.That(result.RedirectInstruction.Parameters.Count(), Is.EqualTo(1));
+            Assert.That(result.RedirectInstruction.Parameters.First().Name, Is.EqualTo(Core.Constants.StandardAuthorizationResponseNames.AuthorizationCodeName));
+            Assert.That(result.RedirectInstruction.Parameters.First().Value, Is.EqualTo(code));
+            _simpleIdentityServerEventSource.Verify(s => s.StartProcessingAuthorizationRequest(jsonAuthorizationParameter));
+            _simpleIdentityServerEventSource.Verify(s => s.EndProcessingAuthorizationRequest(jsonAuthorizationParameter, "RedirectToAction", "AuthenticateIndex"));
+        }
+
+        #endregion
+
         private void InitializeMockingObjects()
         {
-            _simpleIdentityServerConfigurator = new Mock<ISimpleIdentityServerConfigurator>();
+            _simpleIdentityServerConfiguratorStub = new Mock<ISimpleIdentityServerConfigurator>();
+            _simpleIdentityServerEventSource = new Mock<ISimpleIdentityServerEventSource>();
             var scopeRepository = FakeFactories.GetScopeRepository();
             var clientRepository = FakeFactories.GetClientRepository();
             var consentRepository = FakeFactories.GetConsentRepository();
@@ -638,7 +719,6 @@ namespace SimpleIdentityServer.Api.UnitTests.Api.Authorization
             var jwsGenerator = new JwsGenerator(createJwsSignature);
             var jweGenerator = new JweGenerator(jweHelper);
 
-            _jsonWebKeyRepository = jsonWebKeyRepository;
             _processAuthorizationRequest = new ProcessAuthorizationRequest(
                 parameterParserHelper,
                 clientValidator,
@@ -646,8 +726,9 @@ namespace SimpleIdentityServer.Api.UnitTests.Api.Authorization
                 actionResultFactory,
                 consentHelper,
                 jwtParser,
-                _simpleIdentityServerConfigurator.Object);
-            _jwtGenerator = new JwtGenerator(_simpleIdentityServerConfigurator.Object,
+                _simpleIdentityServerConfiguratorStub.Object,
+                _simpleIdentityServerEventSource.Object);
+            _jwtGenerator = new JwtGenerator(_simpleIdentityServerConfiguratorStub.Object,
                 clientRepository,
                 clientValidator,
                 jsonWebKeyRepository,

@@ -1,14 +1,32 @@
-﻿using System.Security.Claims;
+﻿#region copyright
+// Copyright 2015 Habart Thierry
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+using System;
+using System.Security.Claims;
 using System.Security.Principal;
-
+using Newtonsoft.Json;
 using SimpleIdentityServer.Core.Api.Authorization.Common;
 using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Errors;
+using SimpleIdentityServer.Logging;
 
 namespace SimpleIdentityServer.Core.Api.Authorization.Actions
 {
@@ -28,14 +46,18 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
 
         private readonly IGenerateAuthorizationResponse _generateAuthorizationResponse;
 
+        private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
+
         public GetAuthorizationCodeOperation(
             IProcessAuthorizationRequest processAuthorizationRequest,
             IClientValidator clientValidator,
-            IGenerateAuthorizationResponse generateAuthorizationResponse)
+            IGenerateAuthorizationResponse generateAuthorizationResponse,
+            ISimpleIdentityServerEventSource simpleIdentityServerEventSource)
         {
             _processAuthorizationRequest = processAuthorizationRequest;
             _clientValidator = clientValidator;
             _generateAuthorizationResponse = generateAuthorizationResponse;
+            _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
         }
 
         public ActionResult Execute(
@@ -43,6 +65,15 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
             IPrincipal claimsPrincipal,
             string code)
         {
+            if (authorizationParameter == null)
+            {
+                throw new ArgumentNullException("authorization parameter may not be null");
+            }
+
+            _simpleIdentityServerEventSource.StartAuthorizationCodeFlow(
+                authorizationParameter.ClientId,
+                authorizationParameter.Scope,
+                authorizationParameter.Claims == null ? string.Empty : authorizationParameter.Claims.ToString());
             var result = _processAuthorizationRequest.Process(authorizationParameter,
                 claimsPrincipal as ClaimsPrincipal,
                 code);
@@ -50,7 +81,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
             if (!_clientValidator.ValidateGrantType(GrantType.authorization_code, client))
             {
                 throw new IdentityServerExceptionWithState(
-                    ErrorCodes.InvalidRequestUriCode,
+                    ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType,
                         authorizationParameter.ClientId,
                         "authorization_code"),
@@ -68,6 +99,12 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
                 _generateAuthorizationResponse.Execute(result, authorizationParameter,
                     principal);
             }
+
+            var actionTypeName = Enum.GetName(typeof(TypeActionResult), result.Type);
+            _simpleIdentityServerEventSource.EndProcessingAuthorizationRequest(
+                authorizationParameter.SerializeWithJavascript(),
+                actionTypeName,
+                result.RedirectInstruction == null ? string.Empty : Enum.GetName(typeof(IdentityServerEndPoints), result.RedirectInstruction.Action));
 
             return result;
         }

@@ -44,6 +44,10 @@
       <HintPath>..\packages\Moq.4.2.1510.2205\lib\net40\Moq.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.core, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <HintPath>..\packages\NUnitTestAdapter.2.0.0\lib\nunit.core.dll</HintPath>
       <Private>False</Private>
@@ -82,8 +86,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Api\Authorization\AuthorizationActionsFixture.cs" />
+    <Compile Include="Api\Authorization\GetAuthorizationCodeOperationFixture.cs" />
     <Compile Include="Api\Authorization\ProcessAuthorizationRequestFixture.cs" />
     <Compile Include="BaseFixture.cs" />
+    <Compile Include="Common\GenerateAuthorizationResponseFixture.cs" />
     <Compile Include="Fake\FakeFactories.cs" />
     <Compile Include="Fake\FakeOpenIdAssets.cs" />
     <Compile Include="JwtToken\JwtGeneratorFixture.cs" />
@@ -118,6 +125,10 @@
     <ProjectReference Include="..\SimpleIdentityServer.DataAccess.Fake\SimpleIdentityServer.DataAccess.Fake.csproj">
       <Project>{7b5c6ff2-994b-4a4c-80f3-09f682e34979}</Project>
       <Name>SimpleIdentityServer.DataAccess.Fake</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SimpleIdentityServer.Logging\SimpleIdentityServer.Logging.csproj">
+      <Project>{67042bc4-7c0d-4519-8f25-e79175d9781d}</Project>
+      <Name>SimpleIdentityServer.Logging</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
