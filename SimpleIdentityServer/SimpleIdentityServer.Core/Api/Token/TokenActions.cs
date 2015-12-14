@@ -19,6 +19,7 @@ using SimpleIdentityServer.Core.Api.Token.Actions;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Validators;
+using SimpleIdentityServer.Logging;
 
 namespace SimpleIdentityServer.Core.Api.Token
 {
@@ -42,21 +43,28 @@ namespace SimpleIdentityServer.Core.Api.Token
 
         private readonly IAuthorizationCodeGrantTypeParameterTokenEdpValidator _authorizationCodeGrantTypeParameterTokenEdpValidator;
 
+        private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
+
         public TokenActions(
             IGetTokenByResourceOwnerCredentialsGrantTypeAction getTokenByResourceOwnerCredentialsGrantType,
             IGetTokenByAuthorizationCodeGrantTypeAction getTokenByAuthorizationCodeGrantTypeAction,
             IResourceOwnerGrantTypeParameterValidator resourceOwnerGrantTypeParameterValidator,
-            IAuthorizationCodeGrantTypeParameterTokenEdpValidator authorizationCodeGrantTypeParameterTokenEdpValidator)
+            IAuthorizationCodeGrantTypeParameterTokenEdpValidator authorizationCodeGrantTypeParameterTokenEdpValidator,
+            ISimpleIdentityServerEventSource simpleIdentityServerEventSource)
         {
             _getTokenByResourceOwnerCredentialsGrantType = getTokenByResourceOwnerCredentialsGrantType;
             _getTokenByAuthorizationCodeGrantTypeAction = getTokenByAuthorizationCodeGrantTypeAction;
             _resourceOwnerGrantTypeParameterValidator = resourceOwnerGrantTypeParameterValidator;
             _authorizationCodeGrantTypeParameterTokenEdpValidator = authorizationCodeGrantTypeParameterTokenEdpValidator;
+            _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
         }
 
         public GrantedToken GetTokenByResourceOwnerCredentialsGrantType(
             ResourceOwnerGrantTypeParameter parameter)
         {
+            _simpleIdentityServerEventSource.StartGetTokenByResourceOwnerCredentials(parameter.ClientId,
+                parameter.UserName,
+                parameter.Password);
             _resourceOwnerGrantTypeParameterValidator.Validate(parameter);
             return _getTokenByResourceOwnerCredentialsGrantType.Execute(parameter);
         }

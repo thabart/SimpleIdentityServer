@@ -68,7 +68,14 @@ namespace SimpleIdentityServer.Logging
 
         #region Events linked to the token process
 
+        void StartGetTokenByResourceOwnerCredentials(
+            string clientId, 
+            string userName,
+            string password);
 
+        void EndGetTokenByResourceOwnerCredentials(
+            string accessToken,
+            string identityToken);
 
         #endregion
 
@@ -314,6 +321,40 @@ namespace SimpleIdentityServer.Logging
             }
 
             WriteEvent(Constants.EventIds.ImplicitFlowEnd, clientId, actionType, actionName);
+        }
+
+        #endregion
+
+        #region Events linked to the token endpoint
+        
+        [Event(Constants.EventIds.StartResourceOwnerCredentialsGrantType,
+            Level = EventLevel.Informational,
+            Message = "start resource owner credentials grant-type",
+            Opcode = EventOpcode.Start,
+            Task = Constants.Tasks.Token)]
+        public void StartGetTokenByResourceOwnerCredentials(string clientId, string userName, string password)
+        {
+            if (!IsEnabled())
+            {
+                return;
+            }
+
+            WriteEvent(Constants.EventIds.StartResourceOwnerCredentialsGrantType, clientId, userName, password);
+        }
+        
+        [Event(Constants.EventIds.EndResourceOwnerCredentialsGrantType,
+            Level = EventLevel.Informational,
+            Message = "end of the resource owner credentials grant-type",
+            Opcode = EventOpcode.Stop,
+            Task = Constants.Tasks.Token)]
+        public void EndGetTokenByResourceOwnerCredentials(string accessToken, string identityToken)
+        {
+            if (!IsEnabled())
+            {
+                return;
+            }
+
+            WriteEvent(Constants.EventIds.EndResourceOwnerCredentialsGrantType, accessToken, identityToken);
         }
 
         #endregion

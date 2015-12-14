@@ -18,13 +18,16 @@ namespace SimpleIdentityServer.Logging
             public const int ImplicitFlowStart = 10;
             public const int ImplicitFlowEnd = 11;
             public const int AuthorizationEnded = 12;
-            public const int OpenIdFailure = 13;
+            public const int StartResourceOwnerCredentialsGrantType = 13;
+            public const int EndResourceOwnerCredentialsGrantType = 14;
+            public const int OpenIdFailure = 15;
         }
 
         public static class Tasks
         {
             public const EventTask Authorization = (EventTask) 1;
-            public const EventTask Failure = (EventTask) 2;
+            public const EventTask Token = (EventTask)2;
+            public const EventTask Failure = (EventTask) 3;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using SimpleIdentityServer.Logging;
+﻿using System;
+using SimpleIdentityServer.Logging;
 
 namespace SimpleIdentityServer.Api.Tests.Common.Fakes
 {
@@ -61,6 +62,14 @@ namespace SimpleIdentityServer.Api.Tests.Common.Fakes
         }
 
         public void EndImplicitFlow(string clientId, string actionType, string actionName)
+        {
+        }
+
+        public void StartGetTokenByResourceOwnerCredentials(string clientId, string userName, string password)
+        {
+        }
+
+        public void EndGetTokenByResourceOwnerCredentials(string accessToken, string identityToken)
         {
         }
     }

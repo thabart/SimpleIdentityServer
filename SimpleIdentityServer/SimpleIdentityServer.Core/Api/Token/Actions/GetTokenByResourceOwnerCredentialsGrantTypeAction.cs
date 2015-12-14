@@ -21,6 +21,7 @@ using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Validators;
+using SimpleIdentityServer.Logging;
 
 namespace SimpleIdentityServer.Core.Api.Token.Actions
 {
@@ -41,18 +42,22 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
         private readonly IResourceOwnerValidator _resourceOwnerValidator;
 
+        private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
+
         public GetTokenByResourceOwnerCredentialsGrantTypeAction(
             IGrantedTokenRepository grantedTokenRepository,
             IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
             IClientValidator clientValidator,
             IScopeValidator scopeValidator,
-            IResourceOwnerValidator resourceOwnerValidator)
+            IResourceOwnerValidator resourceOwnerValidator,
+            ISimpleIdentityServerEventSource simpleIdentityServerEventSource)
         {
             _grantedTokenRepository = grantedTokenRepository;
             _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
             _clientValidator = clientValidator;
             _scopeValidator = scopeValidator;
             _resourceOwnerValidator = resourceOwnerValidator;
+            _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
         }
 
         public GrantedToken Execute(
@@ -63,7 +68,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             {
                 throw new IdentityServerException(
                     ErrorCodes.InvalidClient,
-                    string.Format(ErrorDescriptions.ClientIsNotValid, "client_id"));
+                    string.Format(ErrorDescriptions.ClientIsNotValid, Constants.StandardTokenRequestParameterNames.ClientIdName));
             }
 
             _resourceOwnerValidator.ValidateResourceOwnerCredentials(parameter.UserName, parameter.Password);
