@@ -190,6 +190,9 @@ namespace SimpleIdentityServer.Core
             StandardClaimParameterValueNames.EssentialName
         };
 
+        /// <summary>
+        /// Parameter names of an authorization request
+        /// </summary>
         public static class StandardAuthorizationRequestParameterNames
         {
             public static string ScopeName = "scope";
@@ -209,6 +212,17 @@ namespace SimpleIdentityServer.Core
             public static string AcrValuesName = "acr_values";
             public static string RequestName = "request";
             public static string RequestUriName = "request_uri";
+        }
+
+        /// <summary>
+        /// Parameter names of a token request
+        /// </summary>
+        public static class StandardTokenRequestParameterNames
+        {
+            public static string ClientIdName = "client_id";
+            public static string UserName = "username";
+            public static string PasswordName = "password";
+            public static string AuthorizationCodeName = "code";
         }
 
         #endregion

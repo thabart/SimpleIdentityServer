@@ -66,6 +66,12 @@ namespace SimpleIdentityServer.Logging
 
         #endregion
 
+        #region Events linked to the token process
+
+
+
+        #endregion
+
         void OpenIdFailure(string code, 
             string description, 
             string state);

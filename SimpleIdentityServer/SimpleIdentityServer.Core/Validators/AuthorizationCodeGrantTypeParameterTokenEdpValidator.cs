@@ -13,6 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using System;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
@@ -29,20 +30,11 @@ namespace SimpleIdentityServer.Core.Validators
     {
         public void Validate(AuthorizationCodeGrantTypeParameter parameter)
         {
-            /*
-            if (string.IsNullOrWhiteSpace(parameter.ClientId))
-            {
-                throw new IdentityServerException(
-                    ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.MissingParameter, "client_id"));
-            }
-            */
-
             if (string.IsNullOrWhiteSpace(parameter.Code))
             {
                 throw new IdentityServerException(
                     ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.MissingParameter, "code"));
+                    string.Format(ErrorDescriptions.MissingParameter, Constants.StandardTokenRequestParameterNames.AuthorizationCodeName));
             }
 
             // With this instruction
@@ -51,7 +43,7 @@ namespace SimpleIdentityServer.Core.Validators
             if (!redirectUrlIsCorrect)
             {
                 throw new IdentityServerException(
-                    ErrorCodes.InvalidRequestUriCode,
+                    ErrorCodes.InvalidRequestCode,
                     ErrorDescriptions.TheRedirectionUriIsNotWellFormed);
             }
         }
