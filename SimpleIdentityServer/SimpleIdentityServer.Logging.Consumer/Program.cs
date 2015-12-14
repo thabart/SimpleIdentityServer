@@ -9,6 +9,7 @@ namespace SimpleIdentityServer.Logging.Consumer
 
         static void Main(string[] args)
         {
+            // THE URL TO ACCESS TO THE EVENT INFORMATION IS SOMETHING LIKE : http://localhost:9200/slab-2015.12.14/SimpleIdentityServer/AVGhMgwSc8OeJI7Ykror
             // USE OUT-PROCESS
             using (var service = new TraceEventServiceHost())
             {
