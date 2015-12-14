@@ -58,10 +58,22 @@ namespace SimpleIdentityServer.Api.UnitTests.Common
         }
 
         [Test]
+        public void When_There_Is_No_Logged_User_Then_Exception_Is_Throw()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+
+            // ACT & ASSERT
+            Assert.Throws<ArgumentNullException>(
+                () => _generateAuthorizationResponse.Execute(new ActionResult(), new AuthorizationParameter(), null));
+        }
+
+        [Test]
         public void When_Generating_AuthorizationResponse_With_IdToken_Then_IdToken_Is_Added_To_The_Parameters()
         {
             // ARRANGE
             InitializeFakeObjects();
+            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity("fake"));
             const string idToken = "idToken";
             var authorizationParameter = new AuthorizationParameter();
             var actionResult = new ActionResult
@@ -84,11 +96,168 @@ namespace SimpleIdentityServer.Api.UnitTests.Common
                 .Returns(idToken);
 
             // ACT
-            _generateAuthorizationResponse.Execute(actionResult, authorizationParameter, null);
+            _generateAuthorizationResponse.Execute(actionResult, authorizationParameter, claimsPrincipal);
 
             // ASSERT
             Assert.IsTrue(actionResult.RedirectInstruction.Parameters.Any(p => p.Name == Core.Constants.StandardAuthorizationResponseNames.IdTokenName));
             Assert.IsTrue(actionResult.RedirectInstruction.Parameters.Any(p => p.Value == idToken));
+        }
+
+        [Test]
+        public void When_Generating_AuthorizationResponse_With_AccessToken_And_ThereIs_No_Granted_Token_Then_Token_Is_Generated_And_Added_To_The_Parameters()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            const string idToken = "idToken";
+            const string clientId = "clientId";
+            const string scope = "openid";
+            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity("fake"));
+            var authorizationParameter = new AuthorizationParameter
+            {
+                ClientId = clientId,
+                Scope = scope
+            };
+            var grantedToken = new GrantedToken
+            {
+                AccessToken = Guid.NewGuid().ToString()
+            };
+            var actionResult = new ActionResult
+            {
+                RedirectInstruction = new RedirectInstruction()
+            };
+            var jwsPayload = new JwsPayload();
+            _parameterParserHelperFake.Setup(p => p.ParseResponseType(It.IsAny<string>()))
+                .Returns(new List<ResponseType>
+                {
+                    ResponseType.token  
+                });
+            _jwtGeneratorFake.Setup(
+                j => j.GenerateIdTokenPayloadForScopes(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
+                .Returns(jwsPayload);
+            _jwtGeneratorFake.Setup(
+                j => j.GenerateUserInfoPayloadForScope(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
+                .Returns(jwsPayload);
+            _jwtGeneratorFake.Setup(j => j.Encrypt(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(idToken);
+            _parameterParserHelperFake.Setup(p => p.ParseScopeParameters(It.IsAny<string>()))
+                .Returns(() => new List<string> { scope });
+            _grantedTokenRepositoryFake.Setup(r => r.GetToken(It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<JwsPayload>(),
+                It.IsAny<JwsPayload>()))
+                .Returns(() => null);
+            _grantedTokenGeneratorHelperFake.Setup(r => r.GenerateToken(It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<JwsPayload>(),
+                It.IsAny<JwsPayload>()))
+                .Returns(grantedToken);
+
+            // ACT
+            _generateAuthorizationResponse.Execute(actionResult, authorizationParameter, claimsPrincipal);
+
+            // ASSERTS
+            Assert.IsTrue(actionResult.RedirectInstruction.Parameters.Any(p => p.Name == Core.Constants.StandardAuthorizationResponseNames.AccessTokenName));
+            Assert.IsTrue(actionResult.RedirectInstruction.Parameters.Any(p => p.Value == grantedToken.AccessToken));
+            _grantedTokenRepositoryFake.Verify(g => g.Insert(grantedToken));
+            _simpleIdentityServerEventSource.Verify(e => e.GrantAccessToClient(clientId, grantedToken.AccessToken, scope));
+        }
+
+        [Test]
+        public void When_Generating_AuthorizationResponse_With_AccessToken_And_ThereIs_A_GrantedToken_Then_Token_Is_Added_To_The_Parameters()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            const string idToken = "idToken";
+            const string clientId = "clientId";
+            const string scope = "openid";
+            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity("fake"));
+            var authorizationParameter = new AuthorizationParameter
+            {
+                ClientId = clientId,
+                Scope = scope
+            };
+            var grantedToken = new GrantedToken
+            {
+                AccessToken = Guid.NewGuid().ToString()
+            };
+            var actionResult = new ActionResult
+            {
+                RedirectInstruction = new RedirectInstruction()
+            };
+            var jwsPayload = new JwsPayload();
+            _parameterParserHelperFake.Setup(p => p.ParseResponseType(It.IsAny<string>()))
+                .Returns(new List<ResponseType>
+                {
+                    ResponseType.token  
+                });
+            _jwtGeneratorFake.Setup(
+                j => j.GenerateIdTokenPayloadForScopes(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
+                .Returns(jwsPayload);
+            _jwtGeneratorFake.Setup(
+                j => j.GenerateUserInfoPayloadForScope(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
+                .Returns(jwsPayload);
+            _jwtGeneratorFake.Setup(j => j.Encrypt(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(idToken);
+            _parameterParserHelperFake.Setup(p => p.ParseScopeParameters(It.IsAny<string>()))
+                .Returns(() => new List<string> { scope });
+            _grantedTokenRepositoryFake.Setup(r => r.GetToken(It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<JwsPayload>(),
+                It.IsAny<JwsPayload>()))
+                .Returns(() => grantedToken);
+
+            // ACT
+            _generateAuthorizationResponse.Execute(actionResult, authorizationParameter, claimsPrincipal);
+
+            // ASSERTS
+            Assert.IsTrue(actionResult.RedirectInstruction.Parameters.Any(p => p.Name == Core.Constants.StandardAuthorizationResponseNames.AccessTokenName));
+            Assert.IsTrue(actionResult.RedirectInstruction.Parameters.Any(p => p.Value == grantedToken.AccessToken));
+        }
+
+        [Test]
+        public void When_Generating_AuthorizationResponse_With_AuthorizationCode_Then_Code_Is_Added_To_The_Parameters()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            const string idToken = "idToken";
+            const string clientId = "clientId";
+            const string scope = "openid";
+            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity("fake"));
+            var authorizationParameter = new AuthorizationParameter
+            {
+                ClientId = clientId,
+                Scope = scope
+            };
+            var consent = new Consent();
+            var actionResult = new ActionResult
+            {
+                RedirectInstruction = new RedirectInstruction()
+            };
+            var jwsPayload = new JwsPayload();
+            _parameterParserHelperFake.Setup(p => p.ParseResponseType(It.IsAny<string>()))
+                .Returns(new List<ResponseType>
+                {
+                    ResponseType.code  
+                });
+            _jwtGeneratorFake.Setup(
+                j => j.GenerateIdTokenPayloadForScopes(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
+                .Returns(jwsPayload);
+            _jwtGeneratorFake.Setup(
+                j => j.GenerateUserInfoPayloadForScope(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
+                .Returns(jwsPayload);
+            _jwtGeneratorFake.Setup(j => j.Encrypt(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(idToken);
+            _consentHelperFake.Setup(c => c.GetConsentConfirmedByResourceOwner(It.IsAny<string>(),
+                It.IsAny<AuthorizationParameter>()))
+                .Returns(consent);
+
+            // ACT
+            _generateAuthorizationResponse.Execute(actionResult, authorizationParameter, claimsPrincipal);
+
+            // ASSERTS
+            Assert.IsTrue(actionResult.RedirectInstruction.Parameters.Any(p => p.Name == Core.Constants.StandardAuthorizationResponseNames.AuthorizationCodeName));
+            _authorizationCodeRepositoryFake.Verify(a => a.AddAuthorizationCode(It.IsAny<AuthorizationCode>()));
+            _simpleIdentityServerEventSource.Verify(s => s.GrantAuthorizationCodeToClient(clientId, It.IsAny<string>(), scope));
         }
 
         [Test]
@@ -100,6 +269,7 @@ namespace SimpleIdentityServer.Api.UnitTests.Common
             const string clientId = "clientId";
             const string scope = "scope";
             const string responseType = "id_token";
+            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity("fake"));
             var authorizationParameter = new AuthorizationParameter
             {
                 ClientId = clientId,
@@ -126,7 +296,7 @@ namespace SimpleIdentityServer.Api.UnitTests.Common
                 .Returns(idToken);
 
             // ACT
-            _generateAuthorizationResponse.Execute(actionResult, authorizationParameter, null);
+            _generateAuthorizationResponse.Execute(actionResult, authorizationParameter, claimsPrincipal);
 
             // ASSERT
             _simpleIdentityServerEventSource.Verify(s => s.StartGeneratingAuthorizationResponseToClient(clientId, responseType));

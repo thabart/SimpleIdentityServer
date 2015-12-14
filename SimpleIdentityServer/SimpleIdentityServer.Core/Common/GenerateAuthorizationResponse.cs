@@ -14,7 +14,6 @@
 // limitations under the License.
 #endregion
 using System;
-using System.Collections.Generic;
 using System.Security.Claims;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Extensions;
@@ -88,6 +87,11 @@ namespace SimpleIdentityServer.Core.Common
                 throw new ArgumentNullException("cannot generate the authorization response because the action result is null");
             }
 
+            if (claimsPrincipal == null)
+            {
+                throw new ArgumentNullException("the authorization response cannot be generated because there's no user logged-in");
+            }
+
             _simpleIdentityServerEventSource.StartGeneratingAuthorizationResponseToClient(authorizationParameter.ClientId,
                 authorizationParameter.ResponseType);
 
@@ -135,7 +139,8 @@ namespace SimpleIdentityServer.Core.Common
 
             if (responses.Contains(ResponseType.code))
             {
-                var assignedConsent = _consentHelper.GetConsentConfirmedByResourceOwner(claimsPrincipal.GetSubject(), authorizationParameter);
+                var subject = claimsPrincipal == null ? string.Empty : claimsPrincipal.GetSubject();
+                var assignedConsent = _consentHelper.GetConsentConfirmedByResourceOwner(subject, authorizationParameter);
                 if (assignedConsent != null)
                 {
                     // Insert a temporary authorization code 

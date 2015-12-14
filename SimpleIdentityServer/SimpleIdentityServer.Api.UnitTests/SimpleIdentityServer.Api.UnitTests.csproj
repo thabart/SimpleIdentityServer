@@ -88,6 +88,7 @@
   <ItemGroup>
     <Compile Include="Api\Authorization\AuthorizationActionsFixture.cs" />
     <Compile Include="Api\Authorization\GetAuthorizationCodeOperationFixture.cs" />
+    <Compile Include="Api\Authorization\GetTokenViaImplicitWorkflowOperationFixture.cs" />
     <Compile Include="Api\Authorization\ProcessAuthorizationRequestFixture.cs" />
     <Compile Include="BaseFixture.cs" />
     <Compile Include="Common\GenerateAuthorizationResponseFixture.cs" />

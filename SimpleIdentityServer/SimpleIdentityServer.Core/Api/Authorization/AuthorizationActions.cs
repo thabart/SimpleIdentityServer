@@ -17,7 +17,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Principal;
-using Newtonsoft.Json;
 using SimpleIdentityServer.Core.Api.Authorization.Actions;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Errors;

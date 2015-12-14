@@ -13,6 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
+using System;
 using System.Security.Claims;
 using System.Security.Principal;
 using SimpleIdentityServer.Core.Api.Authorization.Common;
@@ -22,6 +24,7 @@ using SimpleIdentityServer.Core.Exceptions;
 
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
+using SimpleIdentityServer.Logging;
 
 namespace SimpleIdentityServer.Core.Api.Authorization.Actions
 {
@@ -37,15 +40,18 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
     {
         private readonly IProcessAuthorizationRequest _processAuthorizationRequest;
 
-        private IGenerateAuthorizationResponse _generateAuthorizationResponse;
+        private readonly IGenerateAuthorizationResponse _generateAuthorizationResponse;
 
+        private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
 
         public GetTokenViaImplicitWorkflowOperation(
             IProcessAuthorizationRequest processAuthorizationRequest,
-            IGenerateAuthorizationResponse generateAuthorizationResponse)
+            IGenerateAuthorizationResponse generateAuthorizationResponse,
+            ISimpleIdentityServerEventSource simpleIdentityServerEventSource)
         {
             _processAuthorizationRequest = processAuthorizationRequest;
             _generateAuthorizationResponse = generateAuthorizationResponse;
+            _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
         }
 
         public ActionResult Execute(
@@ -53,13 +59,22 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
             IPrincipal principal,
             string code)
         {
+            if (authorizationParameter == null)
+            {
+                throw new ArgumentNullException("cannot process the implicit workflow if the authorizationParameter is null");
+            }
             if (string.IsNullOrWhiteSpace(authorizationParameter.Nonce))
             {
                 throw new IdentityServerExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.MissingParameter, "nonce"),
+                    string.Format(ErrorDescriptions.MissingParameter, Constants.StandardAuthorizationRequestParameterNames.NonceName),
                     authorizationParameter.State);
             }
+
+            _simpleIdentityServerEventSource.StartImplicitFlow(
+                authorizationParameter.ClientId, 
+                authorizationParameter.Scope,
+                authorizationParameter.Claims == null ? string.Empty : authorizationParameter.Claims.ToString());
 
             var result = _processAuthorizationRequest.Process(
                 authorizationParameter,
@@ -69,13 +84,14 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
             if (result.Type == TypeActionResult.RedirectToCallBackUrl)
             {
                 var claimsPrincipal = principal as ClaimsPrincipal;
-                if (claimsPrincipal == null)
-                {
-                    return result;
-                }
-
                 _generateAuthorizationResponse.Execute(result, authorizationParameter, claimsPrincipal);
             }
+            
+            var actionTypeName = Enum.GetName(typeof(TypeActionResult), result.Type);
+            _simpleIdentityServerEventSource.EndImplicitFlow(
+                authorizationParameter.ClientId,
+                actionTypeName,
+                result.RedirectInstruction == null ? string.Empty : Enum.GetName(typeof(IdentityServerEndPoints), result.RedirectInstruction.Action));
 
             return result;
         }

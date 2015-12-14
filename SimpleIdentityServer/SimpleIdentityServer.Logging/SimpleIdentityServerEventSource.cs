@@ -49,6 +49,16 @@ namespace SimpleIdentityServer.Logging
             string actionType,
             string actionName);
 
+        void StartImplicitFlow(
+            string clientId,
+            string scope,
+            string individualClaims);
+
+        void EndImplicitFlow(
+            string clientId,
+            string actionType,
+            string actionName);
+
         void EndAuthorization(
             string actionType,
             string controllerAction,
@@ -262,6 +272,42 @@ namespace SimpleIdentityServer.Logging
             }
 
             WriteEvent(Constants.EventIds.AuthorizationEnded, actionType, actionName, parameters);
+        }
+
+        [Event(Constants.EventIds.ImplicitFlowStart,
+            Level = EventLevel.Informational,
+            Message = "start the implicit flow",
+            Opcode = EventOpcode.Start,
+            Task = Constants.Tasks.Authorization)]
+        public void StartImplicitFlow(
+            string clientId, 
+            string scope, 
+            string individualClaims)
+        {
+            if (!IsEnabled())
+            {
+                return;
+            }
+
+            WriteEvent(Constants.EventIds.ImplicitFlowStart, clientId, scope, individualClaims);
+        }
+
+        [Event(Constants.EventIds.ImplicitFlowEnd,
+            Level = EventLevel.Informational,
+            Message = "end the implicit flow",
+            Opcode = EventOpcode.Stop,
+            Task = Constants.Tasks.Authorization)]
+        public void EndImplicitFlow(
+            string clientId, 
+            string actionType, 
+            string actionName)
+        {
+            if (!IsEnabled())
+            {
+                return;
+            }
+
+            WriteEvent(Constants.EventIds.ImplicitFlowEnd, clientId, actionType, actionName);
         }
 
         #endregion

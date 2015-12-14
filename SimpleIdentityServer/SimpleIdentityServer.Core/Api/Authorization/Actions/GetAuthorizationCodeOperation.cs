@@ -16,10 +16,8 @@
 using System;
 using System.Security.Claims;
 using System.Security.Principal;
-using Newtonsoft.Json;
 using SimpleIdentityServer.Core.Api.Authorization.Common;
 using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;

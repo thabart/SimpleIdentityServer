@@ -54,5 +54,14 @@ namespace SimpleIdentityServer.Api.Tests.Common.Fakes
         public void EndAuthorizationCodeFlow(string clientId, string actionType, string actionName)
         {
         }
+
+
+        public void StartImplicitFlow(string clientId, string scope, string individualClaims)
+        {
+        }
+
+        public void EndImplicitFlow(string clientId, string actionType, string actionName)
+        {
+        }
     }
 }
