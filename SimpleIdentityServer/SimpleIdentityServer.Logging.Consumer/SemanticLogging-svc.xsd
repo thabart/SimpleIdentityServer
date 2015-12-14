@@ -19,6 +19,7 @@
             <xs:element name="windowsAzureTableSink" type="WindowsAzureTableSinkElement" />
             <xs:element name="sqlDatabaseSink" type="SqlDatabaseSinkElement" />
             <xs:element name="consoleSink" type="ConsoleSinkElement" />
+            <xs:element name="elasticsearchSink" type="ElasticsearchSinkElement" />
             <xs:element name="customSink" type="CustomSinkElement" />
             <xs:any namespace="##other" processContents="lax"/>
           </xs:choice>
@@ -131,6 +132,18 @@
     <xs:complexContent mixed="false">
       <xs:extension base="SinkBaseWithFormatters">
         <xs:attribute name="colorMapperType" type="NoEmptyString" use="optional" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ElasticsearchSinkElement">
+    <xs:complexContent mixed="false">
+      <xs:extension base="SinkBaseWithFormatters">
+        <xs:attribute name="instanceName" type="NoEmptyString" use="required" />
+        <xs:attribute name="connectionString" type="NoEmptyString" use="required" />
+        <xs:attribute name="index" type="NoEmptyString" use="required" />
+        <xs:attribute name="type" type="NoEmptyString" use="required" />
+        <xs:attribute name="flattenPayload" type="xs:boolean" use="optional" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>

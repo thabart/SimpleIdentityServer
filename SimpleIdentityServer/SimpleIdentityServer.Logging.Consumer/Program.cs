@@ -17,6 +17,8 @@ namespace SimpleIdentityServer.Logging.Consumer
                 Console.ReadLine();
             }
 
+            // 
+
             // USE IN-PROCESS
             /*
             var eventListener = new ObservableEventListener();

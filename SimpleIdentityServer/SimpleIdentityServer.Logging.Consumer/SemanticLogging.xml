@@ -8,23 +8,25 @@
 
   <!-- Sinks reference definitons used by this host to listen ETW events -->
   <sinks>
+    <!--
     <consoleSink name="ConsoleEventSink">
       <sources>
         <eventSource name="SimpleIdentityServer" level="LogAlways"/>
       </sources>
       <eventTextFormatter header="+=========================================+"/>
     </consoleSink>
-    <!-- The service identity should have security permissions to access the resource according to each event sink -->
     <flatFileSink name="svcRuntime" fileName="SimpleIdentityServer.log" >
       <sources>
-        <!-- The below settings shows a simple configuration sample for the buit-in non-transient fault tracing -->
-        <!-- Remove this eventSource if you'd like, and add your own configuration according to the documentation -->
-        <!-- The name attribute is from the EventSource.Name Property -->
         <eventSource name="SimpleIdentityServer" level="LogAlways"/>
       </sources>
-      <!--[Add any built-in or custom formatter here if the sink supports text formatters]-->
-      <eventTextFormatter header="----------"/>
+      <eventTextFormatter header="+=========================================+"/>
     </flatFileSink>
+    -->
+    <elasticsearchSink name="ElasticSearch" instanceName="localhost" connectionString="http://localhost:9200" index="slab" type="SimpleIdentityServer">
+      <sources>
+        <eventSource  name="SimpleIdentityServer" level="LogAlways"/>
+      </sources>
+    </elasticsearchSink>
   </sinks>
 
 </configuration>

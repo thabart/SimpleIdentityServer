@@ -39,6 +39,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\References\Microsoft.Practices.EnterpriseLibrary.SemanticLogging.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Elasticsearch">
+      <HintPath>..\References\Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Elasticsearch.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Etw">
       <HintPath>..\References\Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Etw.dll</HintPath>
     </Reference>
