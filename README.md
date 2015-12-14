@@ -13,3 +13,11 @@ __Live demo__: http://simpleidentityserver.azurewebsites.net
 __Swagger contract__ : http://simpleidentityserver.azurewebsites.net/swagger/ui/index
 
 Testing : https://op.certification.openid.net:60360/
+
+## Use the semantic logging
+
+The Semantic Logging Application Block (SLAB) is implemented on the project. The library used to consume the ETW events is "Microsoft.Practices.EntrepriseLibrary.SemanticLogging".
+It very easy to plugin-in an existing or custom library to consume the events and store them to a data-sources such as : Windows Azure table, Elastic Search or a flat file.
+You can refer to the sample project "SimpleIdentityServer.Logging.Consumer", if you wish to implement an out of process events consumer.
+The screenshot below shows the result of an elastic-search request :
+![alt text](https://github.com/thabart/SimpleIdentityServer/blob/master/images/ElasticSearchResult.png "Elastic-Search result")
