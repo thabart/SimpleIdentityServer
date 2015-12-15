@@ -151,7 +151,10 @@ namespace SimpleIdentityServer.Api.UnitTests.Api.Token
                 ClientSecret = "clientSecret",
                 RedirectUri = "notCorrectRedirectUri"
             };
-            var client = new Client();
+            var client = new Client
+            {
+                ClientId = "clientId"
+            };
             var authorizationCode = new AuthorizationCode
             {
                 ClientId = "clientId",
@@ -185,7 +188,10 @@ namespace SimpleIdentityServer.Api.UnitTests.Api.Token
                 RedirectUri = "redirectUri",
                 ClientId = "clientId",
             };
-            var client = new Client();
+            var client = new Client
+            {
+                ClientId = "clientId"
+            };
             var authorizationCode = new AuthorizationCode
             {
                 ClientId = "clientId",
@@ -222,7 +228,10 @@ namespace SimpleIdentityServer.Api.UnitTests.Api.Token
                 RedirectUri = "redirectUri",
                 ClientId = "clientId",
             };
-            var client = new Client();
+            var client = new Client
+            {
+                ClientId = "clientId"
+            };
             var authorizationCode = new AuthorizationCode
             {
                 ClientId = "clientId",
@@ -264,7 +273,10 @@ namespace SimpleIdentityServer.Api.UnitTests.Api.Token
                 RedirectUri = "redirectUri",
                 ClientId = clientId
             };
-            var client = new Client();
+            var client = new Client
+            {
+                ClientId = clientId
+            };
             var authorizationCode = new AuthorizationCode
             {
                 ClientId = clientId,

@@ -152,11 +152,11 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
             // Ensure the authorization code was issued to the authenticated client.
             var authorizationClientId = authorizationCode.ClientId;
-            if (authorizationClientId != authorizationCodeGrantTypeParameter.ClientId)
+            if (authorizationClientId != client.ClientId)
             {
                 throw new IdentityServerException(ErrorCodes.InvalidGrant,
                     string.Format(ErrorDescriptions.TheAuthorizationCodeHasNotBeenIssuedForTheGivenClientId,
-                        authorizationCodeGrantTypeParameter.ClientId));
+                        client.ClientId));
             }
 
             if (authorizationCode.RedirectUri != authorizationCodeGrantTypeParameter.RedirectUri)
