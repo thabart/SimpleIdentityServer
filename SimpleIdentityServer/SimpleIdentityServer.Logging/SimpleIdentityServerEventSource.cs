@@ -77,6 +77,14 @@ namespace SimpleIdentityServer.Logging
             string accessToken,
             string identityToken);
 
+        void StartGetTokenByAuthorizationCode(
+            string clientId,
+            string authorizationCode);
+
+        void EndGetTokenByAuthorizationCode(
+            string accessToken,
+            string identityToken);
+
         #endregion
 
         void OpenIdFailure(string code, 
@@ -188,26 +196,6 @@ namespace SimpleIdentityServer.Logging
             WriteEvent(Constants.EventIds.StartGeneratingAuthorizationResponseToClient,
                 clientId,
                 responseTypes);
-        }
-
-        [Event(Constants.EventIds.GrantAccessToClient,
-            Level = EventLevel.Informational,
-            Message = "grant access to the client {0}",
-            Opcode = EventOpcode.Info,
-            Task = Constants.Tasks.Authorization)]
-        public void GrantAccessToClient(string clientId,
-            string accessToken,
-            string scopes)
-        {
-            if (!IsEnabled())
-            {
-                return;
-            }
-
-            WriteEvent(Constants.EventIds.GrantAccessToClient,
-                clientId,
-                accessToken,
-                scopes);
         }
 
         [Event(Constants.EventIds.GrantAuthorizationCodeToClient,
@@ -356,6 +344,39 @@ namespace SimpleIdentityServer.Logging
 
             WriteEvent(Constants.EventIds.EndResourceOwnerCredentialsGrantType, accessToken, identityToken);
         }
+        
+        [Event(Constants.EventIds.StartAuthorizationCodeGrantType,
+            Level = EventLevel.Informational,
+            Message = "start authorization code grant-type",
+            Opcode = EventOpcode.Start,
+            Task = Constants.Tasks.Token)]
+        public void StartGetTokenByAuthorizationCode(
+            string clientId, 
+            string authorizationCode)
+        {
+            if (!IsEnabled())
+            {
+                return;
+            }
+
+            WriteEvent(Constants.EventIds.StartAuthorizationCodeGrantType, clientId, authorizationCode);
+        }
+
+
+        [Event(Constants.EventIds.EndAuthorizationCodeGrantType,
+            Level = EventLevel.Informational,
+            Message = "end of the authorization code grant-type",
+            Opcode = EventOpcode.Stop,
+            Task = Constants.Tasks.Token)]
+        public void EndGetTokenByAuthorizationCode(string accessToken, string identityToken)
+        {
+            if (!IsEnabled())
+            {
+                return;
+            }
+
+            WriteEvent(Constants.EventIds.EndAuthorizationCodeGrantType, accessToken, identityToken);
+        }
 
         #endregion
 
@@ -375,6 +396,30 @@ namespace SimpleIdentityServer.Logging
             }
 
             WriteEvent(Constants.EventIds.OpenIdFailure, code, description, state);
+        }
+
+        #endregion
+
+        #region Other events
+        
+        [Event(Constants.EventIds.GrantAccessToClient,
+            Level = EventLevel.Informational,
+            Message = "grant access to the client {0}",
+            Opcode = EventOpcode.Info,
+            Task = Constants.Tasks.Grant)]
+        public void GrantAccessToClient(string clientId,
+            string accessToken,
+            string scopes)
+        {
+            if (!IsEnabled())
+            {
+                return;
+            }
+
+            WriteEvent(Constants.EventIds.GrantAccessToClient,
+                clientId,
+                accessToken,
+                scopes);
         }
 
         #endregion

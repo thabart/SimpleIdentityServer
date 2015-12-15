@@ -134,6 +134,10 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                 userInformationPayload);
             _grantedTokenRepository.Insert(generatedToken);
 
+            _simpleIdentityServerEventSource.GrantAccessToClient(client.ClientId,
+                generatedToken.AccessToken,
+                allowedTokenScopes);
+
             return generatedToken;
         }
         

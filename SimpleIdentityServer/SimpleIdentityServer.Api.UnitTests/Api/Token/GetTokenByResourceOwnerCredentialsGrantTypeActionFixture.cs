@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using Moq;
 using NUnit.Framework;
 using SimpleIdentityServer.Core.Api.Token.Actions;
@@ -7,6 +8,7 @@ using SimpleIdentityServer.Core.Authenticate;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
+using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
@@ -136,7 +138,62 @@ namespace SimpleIdentityServer.Api.UnitTests.Api.Token
             var exception = Assert.Throws<IdentityServerException>(() => _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(resourceOwnerGrantTypeParameter, null));
             Assert.IsTrue(exception.Code == ErrorCodes.InvalidScope);
         }
-        
+
+        [Test]
+        public void When_Requesting_An_AccessToken_For_An_Authenticated_User_Then_AccessToken_Is_Granted()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            const string clientAssertion = "clientAssertion";
+            const string clientAssertionType = "clientAssertionType";
+            const string clientId = "clientId";
+            const string clientSecret = "clientSecret";
+            const string invalidScope = "invalidScope";
+            const string accessToken = "accessToken";
+            var resourceOwnerGrantTypeParameter = new ResourceOwnerGrantTypeParameter
+            {
+                ClientAssertion = clientAssertion,
+                ClientAssertionType = clientAssertionType,
+                ClientId = clientId,
+                ClientSecret = clientSecret,
+                Scope = invalidScope
+            };
+            var client = new Client
+            {
+                ClientId = clientId
+            };
+            var resourceOwner = new ResourceOwner();
+            var userInformationJwsPayload = new JwsPayload();
+            var grantedToken = new GrantedToken
+            {
+                AccessToken = accessToken
+            };
+
+            string message;
+            _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), out message))
+                .Returns(() => client);
+            _resourceOwnerValidatorFake.Setup(
+                r => r.ValidateResourceOwnerCredentials(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(() => resourceOwner);
+            _scopeValidatorFake.Setup(s => s.IsScopesValid(It.IsAny<string>(), It.IsAny<Client>(), out message))
+                .Returns(() => new List<string> { invalidScope });
+            _jwtGeneratorFake.Setup(
+                j => j.GenerateUserInfoPayloadForScope(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
+                .Returns(() => userInformationJwsPayload);
+            _grantedTokenGeneratorHelperFake.Setup(g => g.GenerateToken(It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<JwsPayload>(),
+                It.IsAny<JwsPayload>()))
+                .Returns(() => grantedToken);
+
+            // ACT
+            _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(resourceOwnerGrantTypeParameter, null);
+
+            // ASSERT
+            _grantedTokenRepositoryFake.Verify(g => g.Insert(grantedToken));
+            _simpleIdentityServerEventSourceFake.Verify(s => s.GrantAccessToClient(clientId, accessToken, invalidScope));
+        }
+
         private void InitializeFakeObjects()
         {
             _grantedTokenRepositoryFake = new Mock<IGrantedTokenRepository>();

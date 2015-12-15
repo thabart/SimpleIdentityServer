@@ -86,8 +86,20 @@ namespace SimpleIdentityServer.Core.Api.Token
             AuthorizationCodeGrantTypeParameter parameter,
             AuthenticationHeaderValue authenticationHeaderValue)
         {
+            if (parameter == null)
+            {
+                throw new ArgumentNullException("the authorization code grant type parameter cannot be null");
+            }
+
+            _simpleIdentityServerEventSource.StartGetTokenByAuthorizationCode(
+                parameter.ClientId,
+                parameter.Code);
             _authorizationCodeGrantTypeParameterTokenEdpValidator.Validate(parameter);
-            return _getTokenByAuthorizationCodeGrantTypeAction.Execute(parameter, authenticationHeaderValue);
+            var result = _getTokenByAuthorizationCodeGrantTypeAction.Execute(parameter, authenticationHeaderValue);
+            _simpleIdentityServerEventSource.EndGetTokenByAuthorizationCode(
+                result.AccessToken,
+                result.IdToken);
+            return result;
         }
     }
 }

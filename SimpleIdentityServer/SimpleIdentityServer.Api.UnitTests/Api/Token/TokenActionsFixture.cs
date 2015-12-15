@@ -73,6 +73,47 @@ namespace SimpleIdentityServer.Api.UnitTests.Api.Token
             _simpleIdentityServerEventSourceFake.Verify(s => s.EndGetTokenByResourceOwnerCredentials(accessToken, identityToken));
         }
 
+        [Test]
+        public void When_Passing_No_Request_To_AuthorizationCode_Grant_Type_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+
+            // ACT & ASSERT
+            Assert.Throws<ArgumentNullException>(() => _tokenActions.GetTokenByAuthorizationCodeGrantType(null, null));
+        }
+
+        [Test]
+        public void When_Requesting_Token_Via_AuthorizationCode_Grant_Type_Then_Events_Are_Logged()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            const string clientId = "clientId";
+            const string code = "code";
+            const string accessToken = "accessToken";
+            const string identityToken = "identityToken";
+            var parameter = new AuthorizationCodeGrantTypeParameter
+            {
+                ClientId = clientId,
+                Code = code
+            };
+            var grantedToken = new GrantedToken
+            {
+                AccessToken = accessToken,
+                IdToken = identityToken
+            };
+            _getTokenByAuthorizationCodeGrantTypeActionFake.Setup(
+                g => g.Execute(It.IsAny<AuthorizationCodeGrantTypeParameter>(), It.IsAny<AuthenticationHeaderValue>()))
+                .Returns(grantedToken);
+
+            // ACT
+            _tokenActions.GetTokenByAuthorizationCodeGrantType(parameter, null);
+
+            // ASSERTS
+            _simpleIdentityServerEventSourceFake.Verify(s => s.StartGetTokenByAuthorizationCode(clientId, code));
+            _simpleIdentityServerEventSourceFake.Verify(s => s.EndGetTokenByAuthorizationCode(accessToken, identityToken));
+        }
+
         private void InitializeFakeObjects()
         {
             _getTokenByResourceOwnerCredentialsGrantTypeActionFake = new Mock<IGetTokenByResourceOwnerCredentialsGrantTypeAction>();
