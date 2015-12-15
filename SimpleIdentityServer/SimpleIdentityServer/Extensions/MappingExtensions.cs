@@ -75,10 +75,13 @@ namespace SimpleIdentityServer.Api.Extensions
         {
             return new ResourceOwnerGrantTypeParameter
             {
-                ClientId = request.client_id,
                 UserName = request.username,
                 Password = request.password,
-                Scope = request.scope
+                Scope = request.scope,
+                ClientId = request.client_id,
+                ClientAssertion = request.client_assertion,
+                ClientAssertionType = request.client_assertion_type,
+                ClientSecret = request.client_secret
             };
         }
 

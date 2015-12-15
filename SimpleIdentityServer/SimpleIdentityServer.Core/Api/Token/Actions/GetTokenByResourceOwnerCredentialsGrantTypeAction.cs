@@ -13,10 +13,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
+using System;
 using System.Linq;
+using System.Net.Http.Headers;
+using System.Security.Claims;
+using SimpleIdentityServer.Core.Authenticate;
+using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
+using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Helpers;
+using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
@@ -27,7 +35,9 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 {
     public interface IGetTokenByResourceOwnerCredentialsGrantTypeAction
     {
-        GrantedToken Execute(ResourceOwnerGrantTypeParameter parameter);
+        GrantedToken Execute(
+            ResourceOwnerGrantTypeParameter resourceOwnerGrantTypeParameter,
+            AuthenticationHeaderValue authenticationHeaderValue);
     }
 
     public class GetTokenByResourceOwnerCredentialsGrantTypeAction : IGetTokenByResourceOwnerCredentialsGrantTypeAction
@@ -35,8 +45,6 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
         private readonly IGrantedTokenRepository _grantedTokenRepository;
 
         private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
-        
-        private readonly IClientValidator _clientValidator;
 
         private readonly IScopeValidator _scopeValidator;
 
@@ -44,40 +52,64 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
         private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
 
+        private readonly IAuthenticateClient _authenticateClient;
+
+        private readonly IJwtGenerator _jwtGenerator;
+
         public GetTokenByResourceOwnerCredentialsGrantTypeAction(
             IGrantedTokenRepository grantedTokenRepository,
             IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
-            IClientValidator clientValidator,
             IScopeValidator scopeValidator,
             IResourceOwnerValidator resourceOwnerValidator,
-            ISimpleIdentityServerEventSource simpleIdentityServerEventSource)
+            ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
+            IAuthenticateClient authenticateClient,
+            IJwtGenerator jwtGenerator)
         {
             _grantedTokenRepository = grantedTokenRepository;
             _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
-            _clientValidator = clientValidator;
             _scopeValidator = scopeValidator;
             _resourceOwnerValidator = resourceOwnerValidator;
             _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
+            _authenticateClient = authenticateClient;
+            _jwtGenerator = jwtGenerator;
         }
 
         public GrantedToken Execute(
-            ResourceOwnerGrantTypeParameter parameter)
+            ResourceOwnerGrantTypeParameter resourceOwnerGrantTypeParameter,
+            AuthenticationHeaderValue authenticationHeaderValue)
         {
-            var client = _clientValidator.ValidateClientExist(parameter.ClientId);
+            if (resourceOwnerGrantTypeParameter == null)
+            {
+                throw new ArgumentNullException("the parameter cannot be null");
+            }
+
+            // Try to authenticate the client
+            string errorMessage;
+            var instruction = CreateAuthenticateInstruction(resourceOwnerGrantTypeParameter,
+                authenticationHeaderValue);
+            var client = _authenticateClient.Authenticate(instruction, out errorMessage);
             if (client == null)
             {
                 throw new IdentityServerException(
                     ErrorCodes.InvalidClient,
-                    string.Format(ErrorDescriptions.ClientIsNotValid, Constants.StandardTokenRequestParameterNames.ClientIdName));
+                    errorMessage);
             }
 
-            _resourceOwnerValidator.ValidateResourceOwnerCredentials(parameter.UserName, parameter.Password);
+            // Try to authenticate a resource owner
+            var resourceOwner = _resourceOwnerValidator.ValidateResourceOwnerCredentials(resourceOwnerGrantTypeParameter.UserName, resourceOwnerGrantTypeParameter.Password);
+            if (resourceOwner == null)
+            {
+                throw new IdentityServerException(
+                    ErrorCodes.InvalidGrant,
+                    ErrorDescriptions.ResourceOwnerCredentialsAreNotValid);
+            }
 
+            // Check if the requested scopes are valid
             var allowedTokenScopes = string.Empty;
-            if (!string.IsNullOrWhiteSpace(parameter.Scope))
+            if (!string.IsNullOrWhiteSpace(resourceOwnerGrantTypeParameter.Scope))
             {
                 string messageErrorDescription;
-                allowedTokenScopes = string.Join(" ", _scopeValidator.IsScopesValid(parameter.Scope, client, out messageErrorDescription));
+                allowedTokenScopes = string.Join(" ", _scopeValidator.IsScopesValid(resourceOwnerGrantTypeParameter.Scope, client, out messageErrorDescription));
                 if (!allowedTokenScopes.Any())
                 {
                     throw new IdentityServerException(
@@ -86,13 +118,64 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                 }
             }
 
-            // TODO : authenticate the user & create the JWT token
+            // Generate the user information payload and store it.
+            var claims = resourceOwner.ToClaims();
+            var claimsIdentity = new ClaimsIdentity(claims, "simpleIdentityServer");
+            var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+            var authorizationParameter = new AuthorizationParameter
+            {
+                Scope = resourceOwnerGrantTypeParameter.Scope
+            };
+            var userInformationPayload = _jwtGenerator.GenerateUserInfoPayloadForScope(claimsPrincipal, authorizationParameter);
+
             var generatedToken = _grantedTokenGeneratorHelper.GenerateToken(
-                parameter.ClientId,
-                allowedTokenScopes);
+                resourceOwnerGrantTypeParameter.ClientId,
+                allowedTokenScopes,
+                userInformationPayload);
             _grantedTokenRepository.Insert(generatedToken);
 
             return generatedToken;
         }
+        
+        #region Private methods
+
+        private AuthenticateInstruction CreateAuthenticateInstruction(
+            ResourceOwnerGrantTypeParameter resourceOwnerGrantTypeParameter,
+            AuthenticationHeaderValue authenticationHeaderValue)
+        {
+            var result = new AuthenticateInstruction
+            {
+                ClientAssertion = resourceOwnerGrantTypeParameter.ClientAssertion,
+                ClientAssertionType = resourceOwnerGrantTypeParameter.ClientAssertionType,
+                ClientIdFromHttpRequestBody = resourceOwnerGrantTypeParameter.ClientId,
+                ClientSecretFromHttpRequestBody = resourceOwnerGrantTypeParameter.ClientSecret
+            };
+
+            if (authenticationHeaderValue != null
+                && !string.IsNullOrWhiteSpace(authenticationHeaderValue.Parameter))
+            {
+                var parameters = GetParameters(authenticationHeaderValue.Parameter);
+                if (parameters != null && parameters.Count() == 2)
+                {
+                    result.ClientIdFromAuthorizationHeader = parameters[0];
+                    result.ClientSecretFromAuthorizationHeader = parameters[1];
+                }
+            }
+
+            return result;
+        }
+
+        private static string[] GetParameters(string authorizationHeaderValue)
+        {
+            if (string.IsNullOrWhiteSpace(authorizationHeaderValue))
+            {
+                return new string[0];
+            }
+
+            var decodedParameter = authorizationHeaderValue.Base64Decode();
+            return decodedParameter.Split(':');
+        }
+
+        #endregion
     }
 }

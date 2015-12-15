@@ -13,8 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Exceptions;
+
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
@@ -44,13 +43,6 @@ namespace SimpleIdentityServer.Core.Validators
         {
             var hashPassword = _securityHelper.ComputeHash(password);
             var resourceOwner = _resourceOwnerRepository.GetResourceOwnerByCredentials(userName, hashPassword);
-            if (resourceOwner == null)
-            {
-                throw new IdentityServerException(
-                    ErrorCodes.InvalidGrant,
-                    ErrorDescriptions.ResourceOwnerCredentialsAreNotValid);
-            }
-
             return resourceOwner;
         }
     }

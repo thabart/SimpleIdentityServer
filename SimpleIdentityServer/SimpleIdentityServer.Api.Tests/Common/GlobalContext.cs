@@ -8,6 +8,7 @@ using Microsoft.Practices.EnterpriseLibrary.Caching.BackingStoreImplementations;
 using Microsoft.Practices.EnterpriseLibrary.Caching.Instrumentation;
 using Microsoft.Practices.EnterpriseLibrary.Common.Instrumentation;
 using Microsoft.Practices.Unity;
+using Moq;
 using Owin;
 using SimpleIdentityServer.Api.Configuration;
 using SimpleIdentityServer.Api.Parsers;
@@ -23,10 +24,8 @@ using SimpleIdentityServer.Core.Api.Token;
 using SimpleIdentityServer.Core.Api.Token.Actions;
 using SimpleIdentityServer.Core.Authenticate;
 using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Encrypt;
 using SimpleIdentityServer.Core.Jwt.Mapping;
 using SimpleIdentityServer.Core.Jwt.Signature;
@@ -56,7 +55,7 @@ namespace SimpleIdentityServer.Api.Tests.Common
 
         public GlobalContext()
         {
-            _simpleIdentityServerEventSource = new FakeSimpleIdentityServerEventSource();
+            _simpleIdentityServerEventSource = new Mock<ISimpleIdentityServerEventSource>().Object;
             ConfigureContainer();
         }
 

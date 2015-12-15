@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using System;
 using System.Net.Http.Headers;
 using SimpleIdentityServer.Core.Api.Token.Actions;
 using SimpleIdentityServer.Core.Models;
@@ -26,7 +27,8 @@ namespace SimpleIdentityServer.Core.Api.Token
     public interface ITokenActions
     {
         GrantedToken GetTokenByResourceOwnerCredentialsGrantType(
-            ResourceOwnerGrantTypeParameter parameter);
+            ResourceOwnerGrantTypeParameter parameter,
+            AuthenticationHeaderValue authenticationHeaderValue);
 
         GrantedToken GetTokenByAuthorizationCodeGrantType(
             AuthorizationCodeGrantTypeParameter parameter,
@@ -60,13 +62,24 @@ namespace SimpleIdentityServer.Core.Api.Token
         }
 
         public GrantedToken GetTokenByResourceOwnerCredentialsGrantType(
-            ResourceOwnerGrantTypeParameter parameter)
+            ResourceOwnerGrantTypeParameter parameter,
+            AuthenticationHeaderValue authenticationHeaderValue)
         {
+            if (parameter == null)
+            {
+                throw new ArgumentNullException("the resource owner grant type parameter cannot be null");
+            }
+
             _simpleIdentityServerEventSource.StartGetTokenByResourceOwnerCredentials(parameter.ClientId,
                 parameter.UserName,
                 parameter.Password);
             _resourceOwnerGrantTypeParameterValidator.Validate(parameter);
-            return _getTokenByResourceOwnerCredentialsGrantType.Execute(parameter);
+            var result = _getTokenByResourceOwnerCredentialsGrantType.Execute(parameter,
+                authenticationHeaderValue);
+            var accessToken = result != null ? result.AccessToken : string.Empty;
+            var identityToken = result != null ? result.IdToken : string.Empty;
+            _simpleIdentityServerEventSource.EndGetTokenByResourceOwnerCredentials(accessToken, identityToken);
+            return result;
         }
 
         public GrantedToken GetTokenByAuthorizationCodeGrantType(

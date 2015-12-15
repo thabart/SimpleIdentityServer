@@ -118,7 +118,7 @@ namespace SimpleIdentityServer.Api.Controllers
                 }
 
             }
-            catch (IdentityServerAuthenticationException exception)
+            catch (IdentityServerAuthenticationException)
             {
                 return View(authorize);
             }

@@ -76,6 +76,9 @@
       <HintPath>..\packages\Unity.Interception.2.1.505.0\lib\NET35\Microsoft.Practices.Unity.Interception.Configuration.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Moq">
+      <HintPath>..\packages\Moq.4.2.1510.2205\lib\net40\Moq.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -120,7 +123,6 @@
     <Compile Include="Common\Fakes\FakeGetRateLimitationElementOperation.cs" />
     <Compile Include="Common\Fakes\FakeJsonWebKey.cs" />
     <Compile Include="Common\Fakes\FakeProtector.cs" />
-    <Compile Include="Common\Fakes\FakeSimpleIdentityServerEventSource.cs" />
     <Compile Include="Common\Fakes\Models\FakeJwsPayload.cs" />
     <Compile Include="Common\Fakes\Models\FakeScope.cs" />
     <Compile Include="Common\Fakes\Models\FakeHttpResponse.cs" />

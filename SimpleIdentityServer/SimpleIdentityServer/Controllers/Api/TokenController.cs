@@ -25,15 +25,15 @@ namespace SimpleIdentityServer.Api.Controllers.Api
         public GrantedToken Post(TokenRequest tokenRequest)
         {
             GrantedToken result = null;
+            var authorizationHeader = Request.Headers.Authorization;
             switch (tokenRequest.grant_type)
             {
                 case GrantTypeRequest.password:
                     var resourceOwnerParameter = tokenRequest.ToResourceOwnerGrantTypeParameter();
-                    result = _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(resourceOwnerParameter);
+                    result = _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(resourceOwnerParameter, authorizationHeader);
                     break;
                 case GrantTypeRequest.authorization_code:
                     var authCodeParameter = tokenRequest.ToAuthorizationCodeGrantTypeParameter();
-                    var authorizationHeader = Request.Headers.Authorization;
                     result = _tokenActions.GetTokenByAuthorizationCodeGrantType(
                         authCodeParameter,
                         authorizationHeader);
