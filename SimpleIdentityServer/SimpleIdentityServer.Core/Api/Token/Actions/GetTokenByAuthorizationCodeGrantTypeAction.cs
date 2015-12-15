@@ -29,6 +29,7 @@ using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Validators;
+using SimpleIdentityServer.Logging;
 
 namespace SimpleIdentityServer.Core.Api.Token.Actions
 {
@@ -54,6 +55,8 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
         private readonly IJwtGenerator _jwtGenerator;
 
+        private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
+
         public GetTokenByAuthorizationCodeGrantTypeAction(
             IClientValidator clientValidator,
             IAuthorizationCodeRepository authorizationCodeRepository,
@@ -61,7 +64,8 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
             IGrantedTokenRepository grantedTokenRepository,
             IAuthenticateClient authenticateClient,
-            IJwtGenerator jwtGenerator)
+            IJwtGenerator jwtGenerator,
+            ISimpleIdentityServerEventSource simpleIdentityServerEventSource)
         {
             _clientValidator = clientValidator;
             _authorizationCodeRepository = authorizationCodeRepository;
@@ -70,12 +74,18 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             _grantedTokenRepository = grantedTokenRepository;
             _authenticateClient = authenticateClient;
             _jwtGenerator = jwtGenerator;
+            _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
         }
 
         public GrantedToken Execute(
             AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter, 
             AuthenticationHeaderValue authenticationHeaderValue)
         {
+            if (authorizationCodeGrantTypeParameter == null)
+            {
+                throw new ArgumentNullException("the authorization code grant-type parameter cannot be null");
+            }
+
             var authorizationCode = ValidateParameter(
                 authorizationCodeGrantTypeParameter, 
                 authenticationHeaderValue);
@@ -95,6 +105,10 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                     authorizationCode.UserInfoPayLoad,
                     authorizationCode.IdTokenPayload);
                 _grantedTokenRepository.Insert(grantedToken);
+                _simpleIdentityServerEventSource.GrantAccessToClient(
+                    authorizationCode.ClientId,
+                    grantedToken.AccessToken,
+                    grantedToken.IdToken);
             }
 
             if (grantedToken.IdTokenPayLoad != null)
@@ -138,7 +152,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
             // Ensure the authorization code was issued to the authenticated client.
             var authorizationClientId = authorizationCode.ClientId;
-            if (authorizationClientId != client.ClientId)
+            if (authorizationClientId != authorizationCodeGrantTypeParameter.ClientId)
             {
                 throw new IdentityServerException(ErrorCodes.InvalidGrant,
                     string.Format(ErrorDescriptions.TheAuthorizationCodeHasNotBeenIssuedForTheGivenClientId,
@@ -166,8 +180,8 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             if (redirectionUrl == null)
             {
                 throw new IdentityServerException(
-                    ErrorCodes.InvalidRequestUriCode,
-                    string.Format(ErrorDescriptions.RedirectUrlIsNotValid, redirectionUrl));
+                    ErrorCodes.InvalidGrant,
+                    string.Format(ErrorDescriptions.RedirectUrlIsNotValid, authorizationCodeGrantTypeParameter.RedirectUri));
             }
 
             return authorizationCode;
