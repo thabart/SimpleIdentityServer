@@ -88,12 +88,10 @@ namespace SimpleIdentityServer.Api.Controllers
             var request = _protector.Decrypt<AuthorizationRequest>(code);
             try
             {
-                var authenticatedUser = this.GetAuthenticatedUser();
                 var authenticationManager = this.GetAuthenticationManager();
                 var claims = new List<Claim>();
                 var actionResult = _authenticateActions.LocalUserAuthentication(authorize.ToParameter(),
                     request.ToParameter(),
-                    authenticatedUser,
                     authorize.Code,
                     out claims);
 

@@ -243,7 +243,7 @@
     <Compile Include="Helpers\ParameterParserHelper.cs" />
     <Compile Include="Models\AuthorizationCode.cs" />
     <Compile Include="Models\Consent.cs" />
-    <Compile Include="Parameters\LocalAuthorizationParameter.cs" />
+    <Compile Include="Parameters\LocalAuthenticationParameter.cs" />
     <Compile Include="Protector\Compressor.cs" />
     <Compile Include="Protector\Encoder.cs" />
     <Compile Include="Protector\ICertificateStore.cs" />

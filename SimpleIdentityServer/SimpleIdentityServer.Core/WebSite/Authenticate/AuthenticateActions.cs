@@ -13,12 +13,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using System.Collections.Generic;
 using System.Security.Claims;
 
 using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
+using SimpleIdentityServer.Logging;
+using System;
 
 namespace SimpleIdentityServer.Core.WebSite.Authenticate
 {
@@ -30,9 +33,8 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
             string code);
 
         ActionResult LocalUserAuthentication(
-            LocalAuthorizationParameter localAuthorizationParameter,
-            AuthorizationParameter parameter,
-            ClaimsPrincipal claimsPrincipal,
+            LocalAuthenticationParameter localAuthenticationParameter,
+            AuthorizationParameter authorizationParameter,
             string code,
             out List<Claim> claims);
     }
@@ -56,20 +58,32 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
             ClaimsPrincipal claimsPrincipal,
             string code)
         {
-            return _authenticateResourceOwnerAction.Execute(parameter, claimsPrincipal, code);
+            if (parameter == null || 
+                claimsPrincipal == null)
+            {
+                throw new ArgumentNullException("the authorization parameter and claims principal cannot be null");
+            }
+
+            return _authenticateResourceOwnerAction.Execute(parameter, 
+                claimsPrincipal, 
+                code);
         }
 
         public ActionResult LocalUserAuthentication(
-            LocalAuthorizationParameter localAuthorizationParameter,
-            AuthorizationParameter parameter,
-            ClaimsPrincipal claimsPrincipal,
+            LocalAuthenticationParameter localAuthenticationParameter,
+            AuthorizationParameter authorizationParameter,
             string code,
             out List<Claim> claims)
         {
+            if (localAuthenticationParameter == null ||
+                authorizationParameter == null)
+            {
+                throw new ArgumentNullException("the authorization parameter & local authorization parameter cannot be null");
+            }
+
             return _localUserAuthenticationAction.Execute(
-                localAuthorizationParameter,
-                parameter,
-                claimsPrincipal,
+                localAuthenticationParameter,
+                authorizationParameter,
                 code,
                 out claims);
         }

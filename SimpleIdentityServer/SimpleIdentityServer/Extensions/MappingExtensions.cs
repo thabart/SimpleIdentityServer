@@ -62,9 +62,9 @@ namespace SimpleIdentityServer.Api.Extensions
             return result;
         }
 
-        public static LocalAuthorizationParameter ToParameter(this AuthorizeViewModel viewModel)
+        public static LocalAuthenticationParameter ToParameter(this AuthorizeViewModel viewModel)
         {
-            return new LocalAuthorizationParameter
+            return new LocalAuthenticationParameter
             {
                 UserName = viewModel.UserName,
                 Password = viewModel.Password

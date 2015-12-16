@@ -13,9 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 namespace SimpleIdentityServer.Core.Parameters
 {
-    public class LocalAuthorizationParameter
+    public class LocalAuthenticationParameter
     {
         public string UserName { get; set; }
 

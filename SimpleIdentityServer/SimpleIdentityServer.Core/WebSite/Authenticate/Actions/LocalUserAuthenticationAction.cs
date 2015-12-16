@@ -42,16 +42,14 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
         /// Exceptions :
         /// Throw the exception <see cref="IdentityServerAuthenticationException "/> if the user can't be authenticated
         /// </summary>
-        /// <param name="localAuthorizationParameter">User's credentials</param>
+        /// <param name="localAuthenticationParameter">User's credentials</param>
         /// <param name="parameter">Authorization parameters</param>
-        /// <param name="resourceOwnerPrincipal">Resource owner principal</param>
         /// <param name="code">Encrypted & signed authorization parameters</param>
         /// <param name="claims">Returned the claims of the authenticated user</param>
         /// <returns>Consent screen or redirect to the Index page.</returns>
         ActionResult Execute(
-            LocalAuthorizationParameter localAuthorizationParameter,
+            LocalAuthenticationParameter localAuthenticationParameter,
             AuthorizationParameter parameter,
-            ClaimsPrincipal resourceOwnerPrincipal,
             string code,
             out List<Claim> claims);
     }
@@ -91,21 +89,19 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
         /// Exceptions :
         /// Throw the exception <see cref="IdentityServerAuthenticationException "/> if the user can't be authenticated
         /// </summary>
-        /// <param name="localAuthorizationParameter">User's credentials</param>
+        /// <param name="localAuthenticationParameter">User's credentials</param>
         /// <param name="parameter">Authorization parameters</param>
-        /// <param name="resourceOwnerPrincipal">Resource owner principal</param>
         /// <param name="code">Encrypted & signed authorization parameters</param>
         /// <param name="claims">Returned the claims of the authenticated user</param>
         /// <returns>Consent screen or redirect to the Index page.</returns>
         public ActionResult Execute(
-            LocalAuthorizationParameter localAuthorizationParameter,
+            LocalAuthenticationParameter localAuthenticationParameter,
             AuthorizationParameter parameter,
-            ClaimsPrincipal resourceOwnerPrincipal,
             string code,
             out List<Claim> claims)
         {
-            var subject = _resourceOwnerService.Authenticate(localAuthorizationParameter.UserName,
-                localAuthorizationParameter.Password);
+            var subject = _resourceOwnerService.Authenticate(localAuthenticationParameter.UserName,
+                localAuthenticationParameter.Password);
             if (string.IsNullOrEmpty(subject))
             {
                 claims = new List<Claim>();
