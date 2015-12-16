@@ -1,6 +1,4 @@
-﻿using System.Runtime.Serialization;
-
-namespace SimpleIdentityServer.Api.DTOs.Response
+﻿namespace SimpleIdentityServer.Api.DTOs.Response
 {
     public class ErrorResponse
     {

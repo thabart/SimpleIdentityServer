@@ -99,6 +99,7 @@ namespace SimpleIdentityServer.Logging
             string description, 
             string state);
 
+        void Failure(string message);
     }
 
     [EventSource(Name = "SimpleIdentityServer")]
@@ -425,8 +426,7 @@ namespace SimpleIdentityServer.Logging
         #endregion
 
         #region Failing events
-
-
+        
         [Event(Constants.EventIds.OpenIdFailure,
             Level = EventLevel.Error,
             Message = "something goes wrong in the open-id process")]
@@ -440,6 +440,19 @@ namespace SimpleIdentityServer.Logging
             }
 
             WriteEvent(Constants.EventIds.OpenIdFailure, code, description, state);
+        }
+
+        [Event(Constants.EventIds.Failure,
+            Level = EventLevel.Error,
+            Message = "something goes wrong")]
+        public void Failure(string message)
+        {
+            if (!IsEnabled())
+            {
+                return;
+            }
+
+            WriteEvent(Constants.EventIds.Failure, message);
         }
 
         #endregion

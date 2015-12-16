@@ -25,6 +25,7 @@ namespace SimpleIdentityServer.Logging
             public const int StartToAuthenticateTheClient = 17;
             public const int FinishToAuthenticateTheClient = 18;
             public const int OpenIdFailure = 19;
+            public const int Failure = 20;
         }
 
         public static class Tasks

@@ -17,6 +17,10 @@ namespace SimpleIdentityServer.Core.Errors
 {
     public static class ErrorCodes
     {
+        public static string UnhandledExceptionCode = "unhandled_exception";
+
+        #region Standard error codes
+
         public static string InvalidRequestCode = "invalid_request";
 
         public static string InvalidClient = "invalid_client";
@@ -36,5 +40,7 @@ namespace SimpleIdentityServer.Core.Errors
         public static string LoginRequiredCode = "login_required";
 
         public static string InteractionRequiredCode = "interaction_required";
+
+        #endregion
     }
 }

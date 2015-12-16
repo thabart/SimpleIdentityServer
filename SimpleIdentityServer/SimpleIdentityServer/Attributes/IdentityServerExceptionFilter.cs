@@ -1,4 +1,5 @@
 ﻿using SimpleIdentityServer.Api.DTOs.Response;
+using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 
 using System.Net;
@@ -19,38 +20,43 @@ namespace SimpleIdentityServer.Api.Attributes
 
         public override void OnException(HttpActionExecutedContext actionExecutedContext)
         {
+            var exception = actionExecutedContext.Exception;
             var identityServerException = actionExecutedContext.Exception as IdentityServerException;
             var identityServerExceptionWithState = actionExecutedContext.Exception as IdentityServerExceptionWithState;
-
-            if (identityServerException != null)
+            if (identityServerException == null)
             {
-                var code = identityServerException.Code;
-                var message = identityServerException.Message;
-                var state = identityServerExceptionWithState == null
-                    ? string.Empty
-                    : identityServerExceptionWithState.State;
-                _simpleIdentityServerEventSource.OpenIdFailure(code, message, state);
+                identityServerException = new IdentityServerException(ErrorCodes.UnhandledExceptionCode, exception.Message);
             }
 
+
+            var code = identityServerException.Code;
+            var message = identityServerException.Message;
+            var state = identityServerExceptionWithState == null
+                ? string.Empty
+                : identityServerExceptionWithState.State;
+            _simpleIdentityServerEventSource.OpenIdFailure(code, message, state);
+            HttpResponseMessage responseMessage;
             if (identityServerExceptionWithState != null)
             {
-                var error = new ErrorResponseWithState
+                var errorResponseWithState = new ErrorResponseWithState
                 {
                     state = identityServerExceptionWithState.State
                 };
 
-                PopulateError(error, identityServerExceptionWithState);
-                var response = actionExecutedContext.Request.CreateResponse(HttpStatusCode.BadRequest, error);
-                actionExecutedContext.Response = response;
-                return;
+                PopulateError(errorResponseWithState, identityServerExceptionWithState);
+                responseMessage = actionExecutedContext.Request.CreateResponse(HttpStatusCode.BadRequest,
+                    errorResponseWithState);
             }
-
-            if (identityServerException != null)
+            else
             {
                 var error = new ErrorResponse();
                 PopulateError(error, identityServerException);
-                var response = actionExecutedContext.Request.CreateResponse(HttpStatusCode.BadRequest, error);
-                actionExecutedContext.Response = response;
+                responseMessage = actionExecutedContext.Request.CreateResponse(HttpStatusCode.BadRequest, error);
+            }
+
+            if (responseMessage != null)
+            {
+                actionExecutedContext.Response = responseMessage;
             }
         }
 
