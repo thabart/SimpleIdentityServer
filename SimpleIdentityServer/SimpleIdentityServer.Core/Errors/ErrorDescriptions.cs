@@ -98,7 +98,13 @@ namespace SimpleIdentityServer.Core.Errors
 
         public static string TheSignatureIsNotCorrect = "the signature is not correct";
 
-        public static string TheClientAssertionIsNotAJwtToken = "the client assertion is not a JWT token";
+        public static string TheHeaderCannotBeExtractedFromJwsToken = "the header cannot be extracted from JWS token";
+
+        public static string TheHeaderCannotBeExtractedFromJweToken = "the header cannot be extracted from JWE token";
+
+        public static string TheClientAssertionIsNotAJwsToken = "the client assertion is not a JWS token";
+
+        public static string TheClientAssertionIsNotAJweToken = "the client assertion is not a JWE token";
 
         public static string TheJwsPayLoadCannotBeExtractedFromTheClientAssertion =
             "the jws payload cannot be extracted from the client assertion";
@@ -116,6 +122,8 @@ namespace SimpleIdentityServer.Core.Errors
         public static string TheRequestParameterIsNotCorrect = "the request parameter is not correct";
 
         public static string TheIdTokenHintParameterCannotBeDecrypted = "the id token hint parameter cannot be decrypted";
+
+        public static string TheIdTokenHintParameterIsNotAValidToken = "the id_token parameter is not a valid token";
 
         public static string TheSignatureOfIdTokenHintParameterCannotBeChecked = "the signature of id token hint parameter cannot be checked";
 

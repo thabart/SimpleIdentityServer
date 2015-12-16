@@ -85,11 +85,20 @@ namespace SimpleIdentityServer.Logging
             string accessToken,
             string identityToken);
 
+        void StartToAuthenticateTheClient(
+            string clientId,
+            string authenticationType);
+
+        void FinishToAuthenticateTheClient(
+            string clientId,
+            string authenticateType);
+
         #endregion
 
         void OpenIdFailure(string code, 
             string description, 
             string state);
+
     }
 
     [EventSource(Name = "SimpleIdentityServer")]
@@ -362,7 +371,6 @@ namespace SimpleIdentityServer.Logging
             WriteEvent(Constants.EventIds.StartAuthorizationCodeGrantType, clientId, authorizationCode);
         }
 
-
         [Event(Constants.EventIds.EndAuthorizationCodeGrantType,
             Level = EventLevel.Informational,
             Message = "end of the authorization code grant-type",
@@ -376,6 +384,42 @@ namespace SimpleIdentityServer.Logging
             }
 
             WriteEvent(Constants.EventIds.EndAuthorizationCodeGrantType, accessToken, identityToken);
+        }
+
+        [Event(Constants.EventIds.StartToAuthenticateTheClient,
+            Level = EventLevel.Informational,
+            Message = "start to authenticate the client",
+            Opcode = EventOpcode.Start,
+            Task = Constants.Tasks.Token)]
+        public void StartToAuthenticateTheClient(string clientId, 
+            string authenticationType)
+        {
+            if (!IsEnabled())
+            {
+                return;
+            }
+
+            WriteEvent(Constants.EventIds.StartToAuthenticateTheClient,
+                clientId, 
+                authenticationType);
+        }
+
+        [Event(Constants.EventIds.FinishToAuthenticateTheClient,
+            Level = EventLevel.Informational,
+            Message = "finish to authenticate the client",
+            Opcode = EventOpcode.Stop,
+            Task = Constants.Tasks.Token)]
+        public void FinishToAuthenticateTheClient(string clientId,
+            string authenticationType)
+        {
+            if (!IsEnabled())
+            {
+                return;
+            }
+
+            WriteEvent(Constants.EventIds.FinishToAuthenticateTheClient,
+                clientId,
+                authenticationType);
         }
 
         #endregion

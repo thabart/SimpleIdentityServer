@@ -165,10 +165,15 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             return authorizationRequest;
         }
 
-        private AuthorizationRequest GetAuthorizationRequestFromJwt(string jwt)
+        private AuthorizationRequest GetAuthorizationRequestFromJwt(string token)
         {
-            var decrypted = _jwtParser.Decrypt(jwt);
-            var jwsPayload = _jwtParser.UnSign(decrypted);
+            var jwsToken = token;
+            if (_jwtParser.IsJweToken(token))
+            {
+                jwsToken = _jwtParser.Decrypt(token);
+            }
+
+            var jwsPayload = _jwtParser.UnSign(jwsToken);
             return jwsPayload == null ? null : jwsPayload.ToAuthorizationRequest();
         }
     }

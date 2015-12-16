@@ -34,6 +34,12 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
             string jws,
             JsonWebKey jsonWebKey)
         {
+            // Checks the JSON web key
+            if (jsonWebKey == null || string.IsNullOrWhiteSpace(jws))
+            {
+                throw new ArgumentNullException("the JWS cannot be checked because either the JWS or json web key is null");
+            }
+
             var parts = GetParts(jws);
             if (!parts.Any())
             {
@@ -54,15 +60,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
             JwsAlg jwsAlg;
             if (!Enum.TryParse(protectedHeader.Alg, out jwsAlg))
             {
-                // TODO : maybe throw an exception.
                 return null;
-            }
-            
-            // Checks the JWK exist.
-            if (jsonWebKey == null)
-            {
-                // TODO : throw an exception
-                return serializedPayload.DeserializeWithJavascript<JwsPayload>();
             }
             
             var signatureIsCorrect = false;
@@ -106,6 +104,11 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
         /// <returns></returns>
         private static List<string> GetParts(string jws)
         {
+            if (string.IsNullOrWhiteSpace(jws))
+            {
+                return null;
+            }
+
             var parts = jws.Split('.');
             return parts.Length < 3 ? new List<string>() : parts.ToList();
         }

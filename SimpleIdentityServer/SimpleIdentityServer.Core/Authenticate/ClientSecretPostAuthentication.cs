@@ -13,6 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using System;
 using SimpleIdentityServer.Core.Models;
 
@@ -29,6 +30,11 @@ namespace SimpleIdentityServer.Core.Authenticate
     {
         public Client AuthenticateClient(AuthenticateInstruction instruction, Client client)
         {
+            if (instruction == null || client == null)
+            {
+                throw new ArgumentNullException("the instruction or client parameter cannot be null");
+            }
+
             var sameSecret = string.Compare(client.ClientSecret,
                         instruction.ClientSecretFromHttpRequestBody,
                         StringComparison.InvariantCultureIgnoreCase) == 0;
@@ -37,6 +43,11 @@ namespace SimpleIdentityServer.Core.Authenticate
         
         public string GetClientId(AuthenticateInstruction instruction)
         {
+            if (instruction == null)
+            {
+                throw new ArgumentNullException("the instruction parameter cannot be null");
+            }
+
             return instruction.ClientIdFromHttpRequestBody;
         }
     }

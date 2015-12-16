@@ -93,6 +93,10 @@
     <Compile Include="Api\Token\GetTokenByAuthorizationCodeGrantTypeActionFixture.cs" />
     <Compile Include="Api\Token\GetTokenByResourceOwnerCredentialsGrantTypeActionFixture.cs" />
     <Compile Include="Api\Token\TokenActionsFixture.cs" />
+    <Compile Include="Authenticate\AuthenticateClientFixture.cs" />
+    <Compile Include="Authenticate\ClientAssertionAuthenticationFixture.cs" />
+    <Compile Include="Authenticate\ClientSecretBasicAuthenticationFixture.cs" />
+    <Compile Include="Authenticate\ClientSecretPostAuthenticationFixture.cs" />
     <Compile Include="BaseFixture.cs" />
     <Compile Include="Common\GenerateAuthorizationResponseFixture.cs" />
     <Compile Include="Fake\FakeFactories.cs" />

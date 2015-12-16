@@ -298,7 +298,7 @@ namespace SimpleIdentityServer.Api.UnitTests.Api.Authorization
 
             var claims = new List<Claim>
             {
-                new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject)
+                new Claim(Constants.StandardResourceOwnerClaimNames.Subject, subject)
             };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
@@ -306,7 +306,7 @@ namespace SimpleIdentityServer.Api.UnitTests.Api.Authorization
             // ACT
             var exception = Assert.Throws<IdentityServerExceptionWithState>(() => _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal, code));
             Assert.That(exception.Code, Is.EqualTo(ErrorCodes.InvalidRequestCode));
-            Assert.That(exception.Message, Is.EqualTo(ErrorDescriptions.TheSignatureOfIdTokenHintParameterCannotBeChecked));
+            Assert.That(exception.Message, Is.EqualTo(ErrorDescriptions.TheIdTokenHintParameterIsNotAValidToken));
         }
 
         [Test]

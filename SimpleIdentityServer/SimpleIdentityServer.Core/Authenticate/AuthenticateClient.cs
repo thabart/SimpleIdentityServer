@@ -14,9 +14,11 @@
 // limitations under the License.
 #endregion
 
+using System;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Validators;
+using SimpleIdentityServer.Logging;
 
 namespace SimpleIdentityServer.Core.Authenticate
 {
@@ -37,25 +39,36 @@ namespace SimpleIdentityServer.Core.Authenticate
 
         private readonly IClientValidator _clientValidator;
 
+        private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
+
         public AuthenticateClient(
             IClientSecretBasicAuthentication clientSecretBasicAuthentication,
             IClientSecretPostAuthentication clientSecretPostAuthentication,
             IClientAssertionAuthentication clientAssertionAuthentication,
-            IClientValidator clientValidator)
+            IClientValidator clientValidator,
+            ISimpleIdentityServerEventSource simpleIdentityServerEventSource)
         {
             _clientSecretBasicAuthentication = clientSecretBasicAuthentication;
             _clientSecretPostAuthentication = clientSecretPostAuthentication;
             _clientAssertionAuthentication = clientAssertionAuthentication;
             _clientValidator = clientValidator;
+            _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
         }
 
         public Client Authenticate(
             AuthenticateInstruction instruction,
             out string errorMessage)
         {
+            if (instruction == null)
+            {
+                throw new ArgumentNullException("the authentication instruction cannot be null");    
+            }
+
             errorMessage = string.Empty;
             Client client = null;
-            // First we try to get the client_id
+
+            // First we try to fetch the client_id
+            // The different client authentication mechanisms are described here : http://openid.net/specs/openid-connect-core-1_0.html#ClientAuthentication
             var clientId = TryGettingClientId(instruction);
             if (!string.IsNullOrWhiteSpace(clientId))
             {
@@ -67,8 +80,12 @@ namespace SimpleIdentityServer.Core.Authenticate
                 errorMessage = ErrorDescriptions.TheClientCannotBeAuthenticated;
                 return null;
             }
-
+            
             var tokenEndPointAuthMethod = client.TokenEndPointAuthMethod;
+            var authenticationType = Enum.GetName(typeof (TokenEndPointAuthenticationMethods),
+                tokenEndPointAuthMethod);
+            _simpleIdentityServerEventSource.StartToAuthenticateTheClient(client.ClientId,
+                authenticationType);
             switch (tokenEndPointAuthMethod)
             {
                 case TokenEndPointAuthenticationMethods.client_secret_basic:
@@ -85,6 +102,12 @@ namespace SimpleIdentityServer.Core.Authenticate
                     client = _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwt(instruction,
                         out errorMessage);
                     break;
+            }
+
+            if (client != null)
+            {
+                _simpleIdentityServerEventSource.FinishToAuthenticateTheClient(client.ClientId,
+                    authenticationType);
             }
 
             return client;

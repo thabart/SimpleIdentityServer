@@ -13,6 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Encrypt;
 using SimpleIdentityServer.Core.Jwt.Signature;
@@ -22,6 +23,10 @@ namespace SimpleIdentityServer.Core.JwtToken
 {
     public interface IJwtParser
     {
+        bool IsJweToken(string jwe);
+
+        bool IsJwsToken(string jws);
+
         string Decrypt(
                string jwe);
 
@@ -35,8 +40,6 @@ namespace SimpleIdentityServer.Core.JwtToken
 
         private readonly IJwsParser _jwsParser;
 
-        private readonly IClientRepository _clientRepository;
-
         private readonly IJsonWebKeyRepository _jsonWebKeyRepository;
 
         public JwtParser(
@@ -49,35 +52,51 @@ namespace SimpleIdentityServer.Core.JwtToken
             _jsonWebKeyRepository = jsonWebKeyRepository;
         }
 
+        public bool IsJweToken(string jwe)
+        {
+            return _jweParser.GetHeader(jwe) != null;
+        }
+
+        public bool IsJwsToken(string jws)
+        {
+            return _jwsParser.GetHeader(jws) != null;
+        }
+
         public string Decrypt(
             string jwe)
         {
+            const string emptyResult = null;
             var protectedHeader = _jweParser.GetHeader(jwe);
             if (protectedHeader == null)
             {
-                return jwe;
+                return emptyResult;
             }
 
             var jsonWebKey = _jsonWebKeyRepository.GetByKid(protectedHeader.Kid);
             if (jsonWebKey == null)
             {
-                return jwe;
+                return emptyResult;
             }
 
-            return _jweParser.Parse(jwe,
-                jsonWebKey);
+            return _jweParser.Parse(jwe,jsonWebKey);
         }
 
         public JwsPayload UnSign(
             string jws)
         {
+            const JwsPayload emptyResult = null;
             var protectedHeader = _jwsParser.GetHeader(jws);
             if (protectedHeader == null)
             {
-                return null;
+                return emptyResult;
             }
 
             var jsonWebKey = _jsonWebKeyRepository.GetByKid(protectedHeader.Kid);
+            if (jsonWebKey == null)
+            {
+                return emptyResult;
+            }
+
             return _jwsParser.ValidateSignature(jws, jsonWebKey);
         }
     }

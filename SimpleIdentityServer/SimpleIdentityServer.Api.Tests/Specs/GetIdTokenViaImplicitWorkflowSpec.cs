@@ -1,21 +1,19 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Web.Http;
-using Microsoft.Owin;
+
 using Microsoft.Practices.Unity;
 
 using NUnit.Framework;
-using Owin;
+
 using SimpleIdentityServer.Api.DTOs.Request;
 using SimpleIdentityServer.Api.DTOs.Response;
 using SimpleIdentityServer.Api.Extensions;
 using SimpleIdentityServer.Api.Tests.Common;
 using SimpleIdentityServer.Core.Common.Extensions;
-using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Jwt.Encrypt;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.DataAccess.Fake;

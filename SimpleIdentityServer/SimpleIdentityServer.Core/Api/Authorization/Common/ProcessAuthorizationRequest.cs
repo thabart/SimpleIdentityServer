@@ -235,13 +235,31 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
                 prompts.Contains(PromptParameter.none) &&
                 actionResult.Type == TypeActionResult.RedirectToCallBackUrl)
             {
-                var jwsToken = _jwtParser.Decrypt(authorizationParameter.IdTokenHint);
-                if (jwsToken == null)
+                var token = authorizationParameter.IdTokenHint;
+                if (!_jwtParser.IsJweToken(token) &&
+                    !_jwtParser.IsJwsToken(token))
                 {
                     throw new IdentityServerExceptionWithState(
-                        ErrorCodes.InvalidRequestCode,
-                        ErrorDescriptions.TheIdTokenHintParameterCannotBeDecrypted,
-                        authorizationParameter.State);
+                            ErrorCodes.InvalidRequestCode,
+                            ErrorDescriptions.TheIdTokenHintParameterIsNotAValidToken,
+                            authorizationParameter.State);
+                }
+
+                string jwsToken;
+                if (_jwtParser.IsJweToken(token))
+                {
+                    jwsToken = _jwtParser.Decrypt(token);
+                    if (string.IsNullOrWhiteSpace(jwsToken))
+                    {
+                        throw new IdentityServerExceptionWithState(
+                            ErrorCodes.InvalidRequestCode,
+                            ErrorDescriptions.TheIdTokenHintParameterCannotBeDecrypted,
+                            authorizationParameter.State);
+                    }
+                }
+                else
+                {
+                    jwsToken = token;
                 }
 
                 var jwsPayload = _jwtParser.UnSign(jwsToken);

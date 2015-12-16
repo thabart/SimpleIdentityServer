@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 
 using SimpleIdentityServer.Core.Common.Extensions;
-using SimpleIdentityServer.Core.Jwt.Encrypt.Encryption;
 
 namespace SimpleIdentityServer.Core.Jwt.Encrypt
 {
@@ -28,14 +27,22 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt
             _jweHelper = jweHelper;
         }
 
+        /// <summary>
+        /// Try to parse the Json Web Encrypted token.
+        /// Returns the Json Web Signed token otherwise null.
+        /// </summary>
+        /// <param name="jwe"></param>
+        /// <param name="jsonWebKey"></param>
+        /// <returns></returns>
         public string Parse(
             string jwe,
             JsonWebKey jsonWebKey)
         {
+            const string emptyResult = null;
             var header = GetHeader(jwe);
             if (header == null)
             {
-                return jwe;
+                return emptyResult;
             }
 
             var algorithmName = header.Alg;
@@ -43,7 +50,7 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt
             if (!Constants.MappingNameToJweAlgEnum.Keys.Contains(algorithmName)
                 || !Constants.MappingNameToJweEncEnum.Keys.Contains(encryptionName))
             {
-                return null;
+                return emptyResult;
             }
 
             var algorithmEnum = Constants.MappingNameToJweAlgEnum[algorithmName];
@@ -53,15 +60,30 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt
             return algorithm.Decrypt(jwe, algorithmEnum, jsonWebKey);
         }
 
+        /// <summary>
+        /// Try to parse the Json Web Encrypted token with given password
+        /// Returns the Json Web Signed token otherwise null.
+        /// </summary>
+        /// <param name="jwe"></param>
+        /// <param name="jsonWebKey"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
         public string ParseByUsingSymmetricPassword(
             string jwe,
             JsonWebKey jsonWebKey,
             string password)
         {
+            const string emptyResult = null;
+            if (jsonWebKey == null || 
+                string.IsNullOrWhiteSpace(jwe))
+            {
+                return emptyResult;
+            }
+
             var header = GetHeader(jwe);
             if (header == null)
             {
-                return jwe;
+                return emptyResult;
             }
 
             var algorithmName = header.Alg;
@@ -69,7 +91,7 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt
             if (!Constants.MappingNameToJweAlgEnum.Keys.Contains(algorithmName)
                 || !Constants.MappingNameToJweEncEnum.Keys.Contains(encryptionName))
             {
-                return null;
+                return emptyResult;
             }
 
             var algorithmEnum = Constants.MappingNameToJweAlgEnum[algorithmName];

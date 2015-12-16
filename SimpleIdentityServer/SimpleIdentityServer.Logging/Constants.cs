@@ -22,7 +22,9 @@ namespace SimpleIdentityServer.Logging
             public const int EndResourceOwnerCredentialsGrantType = 14;
             public const int StartAuthorizationCodeGrantType = 15;
             public const int EndAuthorizationCodeGrantType = 16;
-            public const int OpenIdFailure = 17;
+            public const int StartToAuthenticateTheClient = 17;
+            public const int FinishToAuthenticateTheClient = 18;
+            public const int OpenIdFailure = 19;
         }
 
         public static class Tasks

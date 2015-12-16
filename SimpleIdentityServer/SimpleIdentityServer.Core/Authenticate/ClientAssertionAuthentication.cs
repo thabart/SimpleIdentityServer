@@ -13,9 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using System;
 using System.Linq;
-using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Extensions;
@@ -91,16 +91,27 @@ namespace SimpleIdentityServer.Core.Authenticate
             AuthenticateInstruction instruction,
             out string messageError)
         {
-            var clientAssertion = instruction.ClientAssertion;
-            var clientAssertionSplitted = clientAssertion.Split('.');
+            var clientAssertionSplitted = new string[0];
+            if (instruction != null)
+            {
+                var clientAssertion = instruction.ClientAssertion;
+                clientAssertionSplitted = clientAssertion.Split('.');
+            }
+
             if (clientAssertionSplitted.Count() != 3)
             {
-                messageError = ErrorDescriptions.TheClientAssertionIsNotAJwtToken;
+                messageError = ErrorDescriptions.TheClientAssertionIsNotAJwsToken;
                 return null;
             }
 
-            var jws = clientAssertion;
+            var jws = instruction.ClientAssertion;
             var jwsHeader = _jwsParser.GetHeader(jws);
+            if (jwsHeader == null)
+            {
+                messageError = ErrorDescriptions.TheHeaderCannotBeExtractedFromJwsToken;
+                return null;
+            }
+
             var jwsJsonWebKey = _jsonWebKeyRepository.GetByKid(jwsHeader.Kid);
             var payLoad = _jwsParser.ValidateSignature(jws, jwsJsonWebKey);
             if (payLoad == null)
@@ -124,16 +135,27 @@ namespace SimpleIdentityServer.Core.Authenticate
             string clientSecret,
             out string messageError)
         {
-            var clientAssertion = instruction.ClientAssertion;
-            var clientAssertionSplitted = clientAssertion.Split('.');
+            var clientAssertionSplitted = new string[0];
+            if (instruction != null)
+            {
+                var clientAssertion = instruction.ClientAssertion;
+                clientAssertionSplitted = clientAssertion.Split('.');
+            }
+
             if (clientAssertionSplitted.Count() != 5)
             {
-                messageError = ErrorDescriptions.TheClientAssertionIsNotAJwtToken;
+                messageError = ErrorDescriptions.TheClientAssertionIsNotAJweToken;
                 return null;
             }
 
-            var jwe = clientAssertion;
-            var jweHeader = _jwsParser.GetHeader(jwe);
+            var jwe = instruction.ClientAssertion;
+            var jweHeader = _jweParser.GetHeader(jwe);
+            if (jweHeader == null)
+            {
+                messageError = ErrorDescriptions.TheHeaderCannotBeExtractedFromJweToken;
+                return null;
+            }
+
             var jweJsonWebKey = _jsonWebKeyRepository.GetByKid(jweHeader.Kid);
             var decryptedResult = _jweParser.ParseByUsingSymmetricPassword(jwe, jweJsonWebKey, clientSecret);
             if (string.IsNullOrWhiteSpace(decryptedResult))
@@ -145,11 +167,17 @@ namespace SimpleIdentityServer.Core.Authenticate
             var decryptedResultSplitted = decryptedResult.Split('.');
             if (decryptedResultSplitted.Count() != 3)
             {
-                messageError = ErrorDescriptions.TheClientAssertionCannotBeDecrypted;
+                messageError = ErrorDescriptions.TheClientAssertionIsNotAJwsToken;
                 return null;
             }
             
             var jwsHeader = _jwsParser.GetHeader(decryptedResult);
+            if (jwsHeader == null)
+            {
+                messageError = ErrorDescriptions.TheHeaderCannotBeExtractedFromJwsToken;
+                return null;
+            }
+
             var jwsJsonWebKey = _jsonWebKeyRepository.GetByKid(jwsHeader.Kid);
             var payLoad = _jwsParser.ValidateSignature(decryptedResult, jwsJsonWebKey);
             if (payLoad == null)
@@ -203,6 +231,7 @@ namespace SimpleIdentityServer.Core.Authenticate
             JwsPayload jwsPayload,
             out string messageError)
         {
+            // The checks are coming from this url : http://openid.net/specs/openid-connect-core-1_0.html#ClientAuthentication
             messageError = string.Empty;
             var expectedIssuer = _simpleIdentityServerConfigurator.GetIssuerName();
             var jwsIssuer = jwsPayload.Issuer;
@@ -214,7 +243,7 @@ namespace SimpleIdentityServer.Core.Authenticate
             // 1. Check the issuer is correct.
             if (!string.IsNullOrWhiteSpace(jwsIssuer))
             {
-                client = _clientValidator.ValidateClientExist(jwsSubject);
+                client = _clientValidator.ValidateClientExist(jwsIssuer);
             }
 
             // 2. Check the client is correct.
@@ -225,7 +254,9 @@ namespace SimpleIdentityServer.Core.Authenticate
             }
 
             // 3. Check if the audience is correct
-            if (jwsAudiences == null || !jwsAudiences.Any() || !jwsAudiences.Contains(expectedIssuer))
+            if (jwsAudiences == null || 
+                !jwsAudiences.Any() || 
+                !jwsAudiences.Contains(expectedIssuer))
             {
                 messageError = ErrorDescriptions.TheAudiencePassedInJwtIsNotCorrect;
                 return null;
