@@ -13,7 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using System.Collections.Generic;
+using SimpleIdentityServer.Core.Parameters;
 
 namespace SimpleIdentityServer.Core.Results
 {
@@ -34,6 +36,8 @@ namespace SimpleIdentityServer.Core.Results
         public IList<Parameter> Parameters { get; private set; }
 
         public IdentityServerEndPoints Action { get; set; }
+
+        public ResponseMode ResponseMode { get; set; }
 
         public void AddParameter(string name, string value)
         {

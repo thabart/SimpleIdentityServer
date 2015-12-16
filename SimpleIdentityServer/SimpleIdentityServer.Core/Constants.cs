@@ -16,6 +16,7 @@
 using System.Collections.Generic;
 using SimpleIdentityServer.Core.Api.Authorization;
 using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Parameters;
 
 namespace SimpleIdentityServer.Core
 {
@@ -306,6 +307,19 @@ namespace SimpleIdentityServer.Core
                 AuthorizationFlow.HybridFlow
             }
         };
+
+        public static Dictionary<AuthorizationFlow, ResponseMode> MappingAuthorizationFlowAndResponseModes = new Dictionary<AuthorizationFlow, ResponseMode>
+        {
+            {
+                AuthorizationFlow.AuthorizationCodeFlow, ResponseMode.query
+            },
+            {
+                AuthorizationFlow.ImplicitFlow, ResponseMode.fragment
+            },
+            {
+                AuthorizationFlow.HybridFlow, ResponseMode.fragment
+            }
+        }; 
 
         public static class Supported
         {

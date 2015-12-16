@@ -47,7 +47,6 @@ namespace SimpleIdentityServer.Api.Controllers
         {
             code = _encoder.Decode(code);
             var request = _protector.Decrypt<AuthorizationRequest>(code);
-            var uiLocales = request.ui_locales;
             var client = new Client();
             var scopes = new List<Scope>();
             var claims = new List<string>();

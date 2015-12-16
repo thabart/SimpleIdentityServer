@@ -40,7 +40,7 @@ namespace SimpleIdentityServer.Api.Extensions
                 case ResponseMode.fragment:
                     uri = uri.AddParametersInFragment(parameters);
                 break;
-                default:
+                case ResponseMode.query:
                     uri = uri.AddParametersInQuery(parameters);
                     break;
             }

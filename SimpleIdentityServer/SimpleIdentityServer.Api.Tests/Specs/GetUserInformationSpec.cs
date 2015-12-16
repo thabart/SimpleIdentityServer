@@ -105,7 +105,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         [When("requesting user information and the access token is passed to the authorization header")]
         public void WhenRequestingUserInformationAndPassedTheAccessTokenToAuthorizationHeader()
         {
-            var query = HttpUtility.ParseQueryString(_authorizationResponseMessage.Headers.Location.Query);
+            var query = HttpUtility.ParseQueryString(_authorizationResponseMessage.Headers.Location.Fragment.TrimStart('#'));
             var accessToken = query["access_token"];
             var httpConfiguration = new HttpConfiguration();
             httpConfiguration.Filters.Add(new FakeAuthenticationFilter
@@ -123,7 +123,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         [When("requesting user information and the access token is passed to the HTTP body")]
         public void WhenRequestingUserInformationAndPassedTheAccessTokenToHttpBody()
         {
-            var query = HttpUtility.ParseQueryString(_authorizationResponseMessage.Headers.Location.Query);
+            var query = HttpUtility.ParseQueryString(_authorizationResponseMessage.Headers.Location.Fragment.TrimStart('#'));
             var accessToken = query["access_token"];
             var httpConfiguration = new HttpConfiguration();
             httpConfiguration.Filters.Add(new FakeAuthenticationFilter
@@ -148,7 +148,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         [When("requesting user information and the access token is passed in the query string")]
         public void WhenRequestingUserInformationAndPassedTheAccessTokenInTheQueryString()
         {
-            var query = HttpUtility.ParseQueryString(_authorizationResponseMessage.Headers.Location.Query);
+            var query = HttpUtility.ParseQueryString(_authorizationResponseMessage.Headers.Location.Fragment.TrimStart('#'));
             var accessToken = query["access_token"];
             var httpConfiguration = new HttpConfiguration();
             httpConfiguration.Filters.Add(new FakeAuthenticationFilter

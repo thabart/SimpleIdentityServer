@@ -134,7 +134,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 29
  testRunner.Then("the http status code is 301", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 30
- testRunner.And("decrypt the id_token parameter from the query string", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("decrypt the id_token parameter from the fragment", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             TechTalk.SpecFlow.Table table4 = new TechTalk.SpecFlow.Table(new string[] {
                         "Alg"});
@@ -221,7 +221,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 60
  testRunner.Then("the http status code is 301", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 61
- testRunner.And("decrypt the id_token parameter from the query string", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("decrypt the id_token parameter from the fragment", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             TechTalk.SpecFlow.Table table8 = new TechTalk.SpecFlow.Table(new string[] {
                         "Alg"});
@@ -313,7 +313,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 94
  testRunner.Then("the http status code is 301", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 95
- testRunner.And("decrypt the id_token parameter from the query string", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("decrypt the id_token parameter from the fragment", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             TechTalk.SpecFlow.Table table12 = new TechTalk.SpecFlow.Table(new string[] {
                         "Alg"});
@@ -401,7 +401,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 126
  testRunner.Then("the http status code is 301", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 127
- testRunner.And("decrypt the id_token parameter from the query string", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("decrypt the id_token parameter from the fragment", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             TechTalk.SpecFlow.Table table16 = new TechTalk.SpecFlow.Table(new string[] {
                         "Alg"});
@@ -488,7 +488,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 155
  testRunner.Then("the http status code is 301", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 156
- testRunner.And("decrypt the id_token parameter from the query string", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("decrypt the id_token parameter from the fragment", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             TechTalk.SpecFlow.Table table20 = new TechTalk.SpecFlow.Table(new string[] {
                         "Alg"});
@@ -814,7 +814,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 264
  testRunner.Then("the http status code is 301", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 265
- testRunner.And("decrypt the id_token parameter from the query string", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("decrypt the id_token parameter from the fragment", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 266
  testRunner.And("check the signature is correct with the kid 1", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
@@ -930,7 +930,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 304
  testRunner.Then("the http status code is 301", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 305
- testRunner.And("decrypt the jwe parameter from the query string with the following kid 1", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("decrypt the jwe parameter from the fragment with the following kid 1", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             TechTalk.SpecFlow.Table table39 = new TechTalk.SpecFlow.Table(new string[] {
                         "Alg"});
@@ -1050,7 +1050,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 344
  testRunner.Then("the http status code is 301", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 345
- testRunner.And("decrypt the jwe parameter from the query string with the following kid 1", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("decrypt the jwe parameter from the fragment with the following kid 1", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 346
  testRunner.And("check the signature is correct with the kid 2", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
@@ -1162,7 +1162,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 385
  testRunner.Then("the http status code is 301", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 386
- testRunner.And("decrypt the id_token parameter from the query string", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("decrypt the id_token parameter from the fragment", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             TechTalk.SpecFlow.Table table49 = new TechTalk.SpecFlow.Table(new string[] {
                         "Alg"});
@@ -1279,7 +1279,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 425
  testRunner.Then("the http status code is 301", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 426
- testRunner.And("decrypt the id_token parameter from the query string", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("decrypt the id_token parameter from the fragment", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             TechTalk.SpecFlow.Table table54 = new TechTalk.SpecFlow.Table(new string[] {
                         "Alg"});

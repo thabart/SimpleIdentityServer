@@ -43,7 +43,7 @@ namespace SimpleIdentityServer.Api.Extensions
         /// <returns></returns>
         public static Uri AddParametersInFragment(this Uri uri, RouteValueDictionary dic)
         {
-            var uriBuilder = new UriBuilder(uri); 
+            var uriBuilder = new UriBuilder(uri);
             var query = HttpUtility.ParseQueryString(uriBuilder.Query);
             foreach (var keyPair in dic)
             {

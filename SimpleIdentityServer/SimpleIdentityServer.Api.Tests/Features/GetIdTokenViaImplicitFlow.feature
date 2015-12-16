@@ -27,7 +27,7 @@ Scenario: Get the id token
 	When requesting an authorization
 
 	Then the http status code is 301
-	And decrypt the id_token parameter from the query string
+	And decrypt the id_token parameter from the fragment
 	And the protected JWS header is returned
 	| Alg  |
 	| none |
@@ -58,7 +58,7 @@ Scenario: Get the id token and access token via implicit workflow
 	When requesting an authorization
 	
 	Then the http status code is 301
-	And decrypt the id_token parameter from the query string
+	And decrypt the id_token parameter from the fragment
 	And the protected JWS header is returned
 	| Alg  |
 	| none |
@@ -92,7 +92,7 @@ Scenario: Get an id token and check if the claims returned in the token are corr
 	When requesting an authorization
 
 	Then the http status code is 301
-	And decrypt the id_token parameter from the query string
+	And decrypt the id_token parameter from the fragment
 	And the protected JWS header is returned
 	| Alg  |
 	| none |
@@ -124,7 +124,7 @@ Scenario: Get an identity token by using the claims parameter: {id_token : { nam
 	When requesting an authorization
 		
 	Then the http status code is 301
-	And decrypt the id_token parameter from the query string
+	And decrypt the id_token parameter from the fragment
 	And the protected JWS header is returned
 	| Alg  |
 	| none |
@@ -153,7 +153,7 @@ Scenario: Get an identity token by using the claims parameter : {id_token : { "n
 	When requesting an authorization
 		
 	Then the http status code is 301
-	And decrypt the id_token parameter from the query string
+	And decrypt the id_token parameter from the fragment
 	And the protected JWS header is returned
 	| Alg  |
 	| none |
@@ -262,7 +262,7 @@ Scenario: Get a signed id_token
 	When requesting an authorization
 
 	Then the http status code is 301
-	And decrypt the id_token parameter from the query string
+	And decrypt the id_token parameter from the fragment
 	And check the signature is correct with the kid 1
 	And the protected JWS header is returned
 	| Alg   |
@@ -302,7 +302,7 @@ Scenario: Get an encrypted id token and check if the claims returned in the toke
 	When requesting an authorization
 
 	Then the http status code is 301
-	And decrypt the jwe parameter from the query string with the following kid 1
+	And decrypt the jwe parameter from the fragment with the following kid 1
 	And the protected JWS header is returned
 	| Alg  |
 	| none |
@@ -342,7 +342,7 @@ Scenario: Get a signed and encrypted id token and check if the claims returned i
 	When requesting an authorization
 
 	Then the http status code is 301
-	And decrypt the jwe parameter from the query string with the following kid 1
+	And decrypt the jwe parameter from the fragment with the following kid 1
 	And check the signature is correct with the kid 2
 	And the protected JWS header is returned
 	| Alg   |
@@ -383,7 +383,7 @@ Scenario: Get an identity token by setting the request parameter with signed aut
 	When requesting an authorization
 
 	Then the http status code is 301
-	And decrypt the id_token parameter from the query string
+	And decrypt the id_token parameter from the fragment
 	And the protected JWS header is returned
 	| Alg  |
 	| none |
@@ -423,7 +423,7 @@ Scenario: Get an identity token by setting the request parameter with signed and
 	When requesting an authorization
 
 	Then the http status code is 301
-	And decrypt the id_token parameter from the query string
+	And decrypt the id_token parameter from the fragment
 	And the protected JWS header is returned
 	| Alg  |
 	| none |

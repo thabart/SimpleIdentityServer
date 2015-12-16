@@ -176,11 +176,11 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             Assert.That(location.AbsolutePath, Is.EqualTo(controller));
         }
 
-        [Then("decrypt the id_token parameter from the query string")]
+        [Then("decrypt the id_token parameter from the fragment")]
         public void ThenDecryptTheIdTokenFromTheQueryString()
         {
             var location = _httpResponseMessage.Headers.Location;
-            var query = HttpUtility.ParseQueryString(location.Query);
+            var query = HttpUtility.ParseQueryString(location.Fragment.TrimStart('#'));
             var idToken = query["id_token"];
 
             Assert.IsNotNull(idToken);
@@ -199,11 +199,11 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             _signedPayLoad = parts[2];
         }
 
-        [Then("decrypt the jwe parameter from the query string with the following kid (.*)")]
+        [Then("decrypt the jwe parameter from the fragment with the following kid (.*)")]
         public void ThenDecryptTheJweParameterFromTheQueryString(string kid)
         {
             var location = _httpResponseMessage.Headers.Location;
-            var query = HttpUtility.ParseQueryString(location.Query);
+            var query = HttpUtility.ParseQueryString(location.Fragment.TrimStart('#'));
             var idToken = query["id_token"];
 
             Assert.IsNotNull(idToken);
@@ -292,7 +292,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         public void ThenTheCallbackContainsTheQueryName(string queryName)
         {
             var location = _httpResponseMessage.Headers.Location;
-            var query = HttpUtility.ParseQueryString(location.Query);
+            var query = HttpUtility.ParseQueryString(location.Fragment.TrimStart('#'));
             var queryValue = query[queryName];
             Assert.IsNotNullOrEmpty(queryValue);
         }

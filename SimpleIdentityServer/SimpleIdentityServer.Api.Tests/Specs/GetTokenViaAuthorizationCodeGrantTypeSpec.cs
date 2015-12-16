@@ -120,7 +120,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             Table table)
         {
             var request = table.CreateInstance<TokenRequest>();
-            var query = HttpUtility.ParseQueryString(_authorizationResponseMessage.Headers.Location.Query);
+            var query = HttpUtility.ParseQueryString(_authorizationResponseMessage.Headers.Location.Query.TrimStart('#'));
             var authorizationCode = query["code"];
             request.code = authorizationCode;
 

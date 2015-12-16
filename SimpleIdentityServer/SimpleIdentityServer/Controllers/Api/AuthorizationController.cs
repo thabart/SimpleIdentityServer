@@ -9,7 +9,6 @@ using SimpleIdentityServer.Api.Parsers;
 using SimpleIdentityServer.Core.Api.Authorization;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Results;
@@ -30,22 +29,18 @@ namespace SimpleIdentityServer.Api.Controllers.Api
 
         private readonly IJwtParser _jwtParser;
 
-        private readonly IHttpClientFactory _httpClientFactory;
-
         public AuthorizationController(
             IAuthorizationActions authorizationActions,
             IProtector protector,
             IEncoder encoder,
             IActionResultParser actionResultParser,
-            IJwtParser jwtParser,
-            IHttpClientFactory httpClientFactory)
+            IJwtParser jwtParser)
         {
             _authorizationActions = authorizationActions;
             _protector = protector;
             _encoder = encoder;
             _actionResultParser = actionResultParser;
             _jwtParser = jwtParser;
-            _httpClientFactory = httpClientFactory;
         }
 
         public async Task<HttpResponseMessage> Get([FromUri]AuthorizationRequest authorizationRequest)
@@ -70,7 +65,9 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             if (actionResult.Type == TypeActionResult.RedirectToCallBackUrl)
             {
                 var redirectUrl = new Uri(authorizationRequest.redirect_uri);
-                return this.CreateRedirectHttpTokenResponse(redirectUrl, parameters, parameter.ResponseMode);
+                return this.CreateRedirectHttpTokenResponse(redirectUrl, 
+                    parameters, 
+                    actionResult.RedirectInstruction.ResponseMode);
             }
 
             if (actionResult.Type == TypeActionResult.RedirectToAction)

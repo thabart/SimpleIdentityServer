@@ -14,8 +14,12 @@
 // limitations under the License.
 #endregion
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
+using SimpleIdentityServer.Core.Api.Authorization;
 using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Errors;
+using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Helpers;
@@ -119,6 +123,20 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
 
             var result = _actionResultFactory.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
             _generateAuthorizationResponse.Execute(result, authorizationParameter, claimsPrincipal);
+
+            // If redirect to the callback and the responde mode has not been set.
+            if (result.Type == TypeActionResult.RedirectToCallBackUrl)
+            {
+                var responseMode = authorizationParameter.ResponseMode;
+                if (responseMode == ResponseMode.None)
+                {
+                    var responseTypes = _parameterParserHelper.ParseResponseType(authorizationParameter.ResponseType);
+                    var authorizationFlow = GetAuthorizationFlow(responseTypes, authorizationParameter.State);
+                    responseMode = GetResponseMode(authorizationFlow);
+                }
+
+                result.RedirectInstruction.ResponseMode = responseMode;
+            }
             return result;
         }
         
@@ -138,6 +156,34 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
             }
 
             return result;
+        }
+
+        private static AuthorizationFlow GetAuthorizationFlow(ICollection<ResponseType> responseTypes, string state)
+        {
+            if (responseTypes == null)
+            {
+                throw new IdentityServerExceptionWithState(
+                    ErrorCodes.InvalidRequestCode,
+                    ErrorDescriptions.TheAuthorizationFlowIsNotSupported,
+                    state);
+            }
+
+            var record = Constants.MappingResponseTypesToAuthorizationFlows.Keys
+                .SingleOrDefault(k => k.Count == responseTypes.Count && k.All(key => responseTypes.Contains(key)));
+            if (record == null)
+            {
+                throw new IdentityServerExceptionWithState(
+                    ErrorCodes.InvalidRequestCode,
+                    ErrorDescriptions.TheAuthorizationFlowIsNotSupported,
+                    state);
+            }
+
+            return Constants.MappingResponseTypesToAuthorizationFlows[record];
+        }
+
+        private static ResponseMode GetResponseMode(AuthorizationFlow authorizationFlow)
+        {
+            return Constants.MappingAuthorizationFlowAndResponseModes[authorizationFlow];
         }
     }
 }

@@ -105,6 +105,17 @@ namespace SimpleIdentityServer.Core.Api.Authorization
                     actionName = Enum.GetName(typeof (IdentityServerEndPoints), actionEnum);
                 }
 
+                if (actionResult.Type == TypeActionResult.RedirectToCallBackUrl)
+                {
+                    var responseMode = parameter.ResponseMode;
+                    if (responseMode == ResponseMode.None)
+                    {
+                        responseMode = GetResponseMode(authorizationFlow);
+                    }
+
+                    actionResult.RedirectInstruction.ResponseMode = responseMode;
+                }
+
                 var serializedParameters = actionResult.RedirectInstruction == null || actionResult.RedirectInstruction.Parameters == null ? String.Empty :
                     actionResult.RedirectInstruction.Parameters.SerializeWithJavascript();
                 _simpleIdentityServerEventSource.EndAuthorization(actionTypeName, 
@@ -136,6 +147,11 @@ namespace SimpleIdentityServer.Core.Api.Authorization
             }
 
             return Constants.MappingResponseTypesToAuthorizationFlows[record];
+        }
+
+        private static ResponseMode GetResponseMode(AuthorizationFlow authorizationFlow)
+        {
+            return Constants.MappingAuthorizationFlowAndResponseModes[authorizationFlow];
         }
     }
 }
