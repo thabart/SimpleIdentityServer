@@ -172,7 +172,10 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
             foreach (var scopeName in scopeNames)
             {
                 var scope = _scopeRepository.GetScopeByName(scopeName);
-                result.Add(scope);
+                if (scope != null)
+                {
+                    result.Add(scope);
+                }
             }
 
             return result;
