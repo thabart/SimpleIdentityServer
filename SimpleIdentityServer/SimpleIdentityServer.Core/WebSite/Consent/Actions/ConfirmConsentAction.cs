@@ -28,6 +28,8 @@ using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Results;
+using SimpleIdentityServer.Logging;
+using System;
 
 namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
 {
@@ -56,6 +58,8 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
 
         private readonly IConsentHelper _consentHelper;
 
+        private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
+
         public ConfirmConsentAction(
             IConsentRepository consentRepository,
             IClientRepository clientRepository,
@@ -64,7 +68,8 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
             IParameterParserHelper parameterParserHelper,
             IActionResultFactory actionResultFactory,
             IGenerateAuthorizationResponse generateAuthorizationResponse,
-            IConsentHelper consentHelper)
+            IConsentHelper consentHelper,
+            ISimpleIdentityServerEventSource simpleIdentityServerEventSource)
         {
             _consentRepository = consentRepository;
             _clientRepository = clientRepository;
@@ -74,6 +79,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
             _actionResultFactory = actionResultFactory;
             _generateAuthorizationResponse = generateAuthorizationResponse;
             _consentHelper = consentHelper;
+            _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
         }
 
         /// <summary>
@@ -90,6 +96,17 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
             AuthorizationParameter authorizationParameter,
             ClaimsPrincipal claimsPrincipal)
         {
+            if (authorizationParameter == null)
+            {
+                throw new ArgumentNullException("authorizationParameter");
+            }
+
+            if (claimsPrincipal == null ||
+                claimsPrincipal.Identity == null)
+            {
+                throw new ArgumentNullException("claimsPrincipal");
+            }
+
             var subject = claimsPrincipal.GetSubject();
             Models.Consent assignedConsent = _consentHelper.GetConsentConfirmedByResourceOwner(subject, authorizationParameter);
             // Insert a new consent.
@@ -120,6 +137,10 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
 
                 // A consent can be given to a set of claims
                 _consentRepository.InsertConsent(assignedConsent);
+
+                _simpleIdentityServerEventSource.GiveConsent(subject,
+                    authorizationParameter.ClientId,
+                    assignedConsent.Id);
             }
 
             var result = _actionResultFactory.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
@@ -154,7 +175,10 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
             foreach (var scopeName in scopeNames)
             {
                 var scope = _scopeRepository.GetScopeByName(scopeName);
-                result.Add(scope);
+                if (scope != null)
+                {
+                    result.Add(scope);
+                }
             }
 
             return result;

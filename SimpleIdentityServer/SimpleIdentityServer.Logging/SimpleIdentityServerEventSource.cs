@@ -97,6 +97,10 @@ namespace SimpleIdentityServer.Logging
 
         void AuthenticateResourceOwner(string subject);
 
+        void GiveConsent(string subject, 
+            string clientId,
+            string consentId);
+
         void OpenIdFailure(string code, 
             string description, 
             string state);
@@ -495,6 +499,26 @@ namespace SimpleIdentityServer.Logging
 
             WriteEvent(Constants.EventIds.ResourceOwnerIsAuthenticated,
                 subject);
+        }
+
+        [Event(Constants.EventIds.ConsentHasBeenGivenByResourceOwner,
+            Level = EventLevel.Informational,
+            Message = "the consent has been given by the resource owner",
+            Opcode = EventOpcode.Info,
+            Task = Constants.Tasks.Consent)]
+        public void GiveConsent(string subject,
+            string clientId,
+            string consentId)
+        {
+            if (!IsEnabled())
+            {
+                return;
+            }
+
+            WriteEvent(Constants.EventIds.ConsentHasBeenGivenByResourceOwner,
+                subject,
+                clientId,
+                consentId);
         }
 
         #endregion
