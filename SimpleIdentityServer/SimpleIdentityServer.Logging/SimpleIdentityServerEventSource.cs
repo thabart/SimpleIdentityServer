@@ -95,6 +95,8 @@ namespace SimpleIdentityServer.Logging
 
         #endregion
 
+        void AuthenticateResourceOwner(string subject);
+
         void OpenIdFailure(string code, 
             string description, 
             string state);
@@ -477,6 +479,22 @@ namespace SimpleIdentityServer.Logging
                 clientId,
                 accessToken,
                 scopes);
+        }
+
+        [Event(Constants.EventIds.ResourceOwnerIsAuthenticated,
+            Level = EventLevel.Informational,
+            Message = "the resource owner is authenticated",
+            Opcode = EventOpcode.Info,
+            Task = Constants.Tasks.Authenticate)]
+        public void AuthenticateResourceOwner(string subject)
+        {
+            if (!IsEnabled())
+            {
+                return;
+            }
+
+            WriteEvent(Constants.EventIds.ResourceOwnerIsAuthenticated,
+                subject);
         }
 
         #endregion

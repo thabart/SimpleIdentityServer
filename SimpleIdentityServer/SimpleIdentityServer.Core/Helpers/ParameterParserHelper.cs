@@ -62,7 +62,7 @@ namespace SimpleIdentityServer.Core.Helpers
         {
             if (string.IsNullOrWhiteSpace(parameter))
             {
-                return null;
+                return new List<PromptParameter>();
             }
 
             var promptNames = Enum.GetNames(typeof(PromptParameter));

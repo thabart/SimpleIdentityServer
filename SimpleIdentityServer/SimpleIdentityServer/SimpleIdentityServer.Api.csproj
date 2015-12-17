@@ -224,6 +224,7 @@
     <Compile Include="Extensions\ControllerExtensions.cs" />
     <Compile Include="Extensions\HttpRequestMessageExtensions.cs" />
     <Compile Include="Extensions\UriExtensions.cs" />
+    <Compile Include="Parsers\ActionResultFactory.cs" />
     <Compile Include="Parsers\RedirectInstructionParser.cs" />
     <Compile Include="Parsers\ActionInformation.cs" />
     <Compile Include="Parsers\ActionResultParser.cs" />

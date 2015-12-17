@@ -34,6 +34,7 @@ using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Core.WebSite.Authenticate;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;
+using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
 using SimpleIdentityServer.Core.WebSite.Consent;
 using SimpleIdentityServer.Core.WebSite.Consent.Actions;
 using SimpleIdentityServer.DataAccess.Fake.Repositories;
@@ -198,6 +199,7 @@ namespace SimpleIdentityServer.Api.Tests.Common
             UnityContainer.RegisterType<IClaimsMapping, ClaimsMapping>();
 
             UnityContainer.RegisterType<IAuthenticateClient, AuthenticateClient>();
+            UnityContainer.RegisterType<IAuthenticateHelper, AuthenticateHelper>();
             UnityContainer.RegisterType<IClientSecretBasicAuthentication, ClientSecretBasicAuthentication>();
             UnityContainer.RegisterType<IClientSecretPostAuthentication, ClientSecretPostAuthentication>();
             UnityContainer.RegisterType<IClientAssertionAuthentication, ClientAssertionAuthentication>();

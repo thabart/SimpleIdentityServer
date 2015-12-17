@@ -107,6 +107,11 @@
     <Compile Include="Validators\ClientValidatorFixture.cs" />
     <Compile Include="Validators\ResourceOwnerGrantTypeParameterValidatorFixture.cs" />
     <Compile Include="WebSite\Authenticate\AuthenticateActionsFixture.cs" />
+    <Compile Include="WebSite\Authenticate\AuthenticateHelperFixture.cs" />
+    <Compile Include="WebSite\Authenticate\AuthenticateResourceOwnerActionFixture.cs" />
+    <Compile Include="WebSite\Authenticate\LocalUserAuthenticationActionFixture.cs" />
+    <Compile Include="WebSite\Consent\ConsentActionsFixture.cs" />
+    <Compile Include="WebSite\Consent\DisplayConsentActionFixture.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

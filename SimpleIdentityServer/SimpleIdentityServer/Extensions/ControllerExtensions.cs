@@ -4,7 +4,11 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 using Microsoft.Owin.Security;
-using SimpleIdentityServer.Core.Parameters;
+using SimpleIdentityServer.Api.DTOs.Request;
+using SimpleIdentityServer.Api.Parsers;
+using SimpleIdentityServer.Core.Results;
+using ActionResult = System.Web.Mvc.ActionResult;
+using ResponseMode = SimpleIdentityServer.Core.Parameters.ResponseMode;
 
 namespace SimpleIdentityServer.Api.Extensions
 {
@@ -56,6 +60,33 @@ namespace SimpleIdentityServer.Api.Extensions
             }
 
             return uri.ToString();
+        }
+
+        public static ActionResult CreateRedirectionFromActionResult(
+            this Controller controller,
+            Core.Results.ActionResult actionResult,
+            AuthorizationRequest authorizationRequest)
+        {
+            var actionResultParser = ActionResultParserFactory.CreateActionResultParser();
+            if (actionResult.Type == TypeActionResult.RedirectToCallBackUrl)
+            {
+                var parameters = actionResultParser.GetRedirectionParameters(actionResult);
+                var uri = new Uri(authorizationRequest.redirect_uri);
+                var redirectUrl = controller.CreateRedirectHttp(uri, parameters, actionResult.RedirectInstruction.ResponseMode);
+                return new RedirectResult(redirectUrl);
+            }
+
+            var actionInformation =
+                actionResultParser.GetControllerAndActionFromRedirectionActionResult(actionResult);
+            if (actionInformation != null)
+            {
+                var routeValueDic = actionInformation.RouteValueDictionary;
+                routeValueDic.Add("controller", actionInformation.ControllerName);
+                routeValueDic.Add("action", actionInformation.ActionName);
+                return new RedirectToRouteResult(routeValueDic);
+            }
+
+            return null;
         }
     }
 }

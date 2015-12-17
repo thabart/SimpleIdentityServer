@@ -13,6 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
+using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using SimpleIdentityServer.Core.WebSite.Consent.Actions;
@@ -26,6 +28,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent
     {
         ActionResult DisplayConsent(
             AuthorizationParameter authorizationParameter,
+            ClaimsPrincipal claimsPrincipal,
             out Client client,
             out List<Scope> allowedScopes,
             out List<string> allowedClaims);
@@ -51,11 +54,24 @@ namespace SimpleIdentityServer.Core.WebSite.Consent
 
         public ActionResult DisplayConsent(
             AuthorizationParameter authorizationParameter,
+            ClaimsPrincipal claimsPrincipal,
             out Client client,
             out List<Scope> allowedScopes,
             out List<string> allowedClaims)
         {
+            if (authorizationParameter == null)
+            {
+                throw new ArgumentNullException("authorizationParameter");
+            }
+
+            if (claimsPrincipal == null ||
+                claimsPrincipal.Identity == null)
+            {
+                throw new ArgumentNullException("claimsPrincipal");
+            }
+
             return _displayConsentAction.Execute(authorizationParameter,
+                claimsPrincipal,
                 out client,
                 out allowedScopes,
                 out allowedClaims);
@@ -65,6 +81,17 @@ namespace SimpleIdentityServer.Core.WebSite.Consent
             AuthorizationParameter authorizationParameter,
             ClaimsPrincipal claimsPrincipal)
         {
+            if (authorizationParameter == null)
+            {
+                throw new ArgumentNullException("authorizationParameter");
+            }
+
+            if (claimsPrincipal == null ||
+                claimsPrincipal.Identity == null)
+            {
+                throw new ArgumentNullException("claimsPrincipal");
+            }
+
             return _confirmConsentAction.Execute(authorizationParameter,
                 claimsPrincipal);
         }

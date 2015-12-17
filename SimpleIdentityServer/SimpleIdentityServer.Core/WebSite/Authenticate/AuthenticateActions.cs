@@ -20,7 +20,7 @@ using System.Security.Claims;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
-using SimpleIdentityServer.Logging;
+
 using System;
 
 namespace SimpleIdentityServer.Core.WebSite.Authenticate
@@ -58,10 +58,14 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
             ClaimsPrincipal claimsPrincipal,
             string code)
         {
-            if (parameter == null || 
-                claimsPrincipal == null)
+            if (parameter == null)
             {
-                throw new ArgumentNullException("the authorization parameter and claims principal cannot be null");
+                throw new ArgumentNullException("parameter");
+            }
+
+            if (claimsPrincipal == null)
+            {
+                throw new ArgumentNullException("claimsPrincipal");
             }
 
             return _authenticateResourceOwnerAction.Execute(parameter, 
@@ -75,10 +79,14 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
             string code,
             out List<Claim> claims)
         {
-            if (localAuthenticationParameter == null ||
-                authorizationParameter == null)
+            if (localAuthenticationParameter == null)
             {
-                throw new ArgumentNullException("the authorization parameter & local authorization parameter cannot be null");
+                throw new ArgumentNullException("localAuthenticationParameter");
+            }
+
+            if (authorizationParameter == null)
+            {
+                throw new ArgumentNullException("authorizationParameter");
             }
 
             return _localUserAuthenticationAction.Execute(

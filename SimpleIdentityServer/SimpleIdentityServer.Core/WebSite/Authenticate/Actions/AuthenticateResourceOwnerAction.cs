@@ -13,6 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
+using System;
+using System.Linq;
 using System.Security.Claims;
 
 using SimpleIdentityServer.Core.Extensions;
@@ -20,6 +23,7 @@ using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
+using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
 
 namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 {
@@ -30,12 +34,12 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
         /// 1). Redirect to the consent screen if the user is authenticated AND the request doesn't contain a login prompt.
         /// 2). Do nothing
         /// </summary>
-        /// <param name="parameter">The parameter</param>
+        /// <param name="authorizationParameter">The parameter</param>
         /// <param name="resourceOwnerPrincipal">Resource owner principal</param>
         /// <param name="code">Encrypted parameter</param>
         /// <returns>Action result to the controller's action</returns>
         ActionResult Execute(
-            AuthorizationParameter parameter,
+            AuthorizationParameter authorizationParameter,
             ClaimsPrincipal resourceOwnerPrincipal,
             string code);
     }
@@ -46,12 +50,16 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 
         private readonly IActionResultFactory _actionResultFactory;
 
+        private readonly IAuthenticateHelper _authenticateHelper;
+
         public AuthenticateResourceOwnerAction(
             IParameterParserHelper parameterParserHelper,
-            IActionResultFactory actionResultFactory)
+            IActionResultFactory actionResultFactory,
+            IAuthenticateHelper authenticateHelper)
         {
             _parameterParserHelper = parameterParserHelper;
             _actionResultFactory = actionResultFactory;
+            _authenticateHelper = authenticateHelper;
         }
 
 
@@ -60,27 +68,34 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
         /// 1). Redirect to the consent screen if the user is authenticated AND the request doesn't contain a login prompt.
         /// 2). Do nothing
         /// </summary>
-        /// <param name="parameter">The parameter</param>
+        /// <param name="authorizationParameter">The parameter</param>
         /// <param name="resourceOwnerPrincipal">Resource owner principal</param>
         /// <param name="code">Encrypted parameter</param>
         /// <returns>Action result to the controller's action</returns>
         public ActionResult Execute(
-            AuthorizationParameter parameter,
+            AuthorizationParameter authorizationParameter,
             ClaimsPrincipal resourceOwnerPrincipal,
             string code)
         {
+            if (authorizationParameter == null)
+            {
+                throw new ArgumentNullException("authorizationParameter");    
+            }
+
             var resourceOwnerIsAuthenticated = resourceOwnerPrincipal.IsAuthenticated();
-            var promptParameters = _parameterParserHelper.ParsePromptParameters(parameter.Prompt);
+            var promptParameters = _parameterParserHelper.ParsePromptParameters(authorizationParameter.Prompt);
 
             // 1).
             if (resourceOwnerIsAuthenticated && 
                 promptParameters != null && 
                 !promptParameters.Contains(PromptParameter.login))
             {
-                var result = _actionResultFactory.CreateAnEmptyActionResultWithRedirection();
-                result.RedirectInstruction.Action = IdentityServerEndPoints.ConsentIndex;
-                result.RedirectInstruction.AddParameter("code", code);
-                return result;
+                var subject = resourceOwnerPrincipal.GetSubject();
+                var claims = resourceOwnerPrincipal.Claims.ToList();
+                return _authenticateHelper.ProcessRedirection(authorizationParameter,
+                    code,
+                    subject,
+                    claims);
             }
 
             // 2).

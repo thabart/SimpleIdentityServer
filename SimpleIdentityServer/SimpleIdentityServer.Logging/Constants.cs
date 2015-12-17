@@ -24,8 +24,9 @@ namespace SimpleIdentityServer.Logging
             public const int EndAuthorizationCodeGrantType = 16;
             public const int StartToAuthenticateTheClient = 17;
             public const int FinishToAuthenticateTheClient = 18;
-            public const int OpenIdFailure = 19;
-            public const int Failure = 20;
+            public const int ResourceOwnerIsAuthenticated = 19;
+            public const int OpenIdFailure = 20;
+            public const int Failure = 21;
         }
 
         public static class Tasks
@@ -34,6 +35,7 @@ namespace SimpleIdentityServer.Logging
             public const EventTask Token = (EventTask)2;
             public const EventTask Failure = (EventTask) 3;
             public const EventTask Grant = (EventTask) 4;
+            public const EventTask Authenticate = (EventTask) 5;
         }
     }
 }

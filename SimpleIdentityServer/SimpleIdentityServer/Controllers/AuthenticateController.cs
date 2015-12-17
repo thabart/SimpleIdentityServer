@@ -2,7 +2,6 @@
 using Microsoft.Owin.Security;
 using SimpleIdentityServer.Api.DTOs.Request;
 using SimpleIdentityServer.Api.Extensions;
-using SimpleIdentityServer.Api.Parsers;
 using SimpleIdentityServer.Api.ViewModels;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Protector;
@@ -21,8 +20,6 @@ namespace SimpleIdentityServer.Api.Controllers
     {
         private readonly IAuthenticateActions _authenticateActions;
 
-        private readonly IActionResultParser _actionResultParser;
-
         private readonly IProtector _protector;
 
         private readonly IEncoder _encoder;
@@ -31,13 +28,11 @@ namespace SimpleIdentityServer.Api.Controllers
 
         public AuthenticateController(
             IAuthenticateActions authenticateActions,
-            IActionResultParser actionResultParser,
             IProtector protector,
             IEncoder encoder,
             ITranslationManager translationManager)
         {
             _authenticateActions = authenticateActions;
-            _actionResultParser = actionResultParser;
             _protector = protector;
             _encoder = encoder;
             _translationManager = translationManager;
@@ -54,30 +49,19 @@ namespace SimpleIdentityServer.Api.Controllers
                 request.ToParameter(),
                 authenticatedUser,
                 code);
-
-            var actionInformation = _actionResultParser.GetControllerAndActionFromRedirectionActionResult(actionResult);
-            if (actionInformation != null)
+            var result = this.CreateRedirectionFromActionResult(actionResult,
+                request);
+            if (result != null)
             {
-                return RedirectToAction(
-                    actionInformation.ActionName,
-                    actionInformation.ControllerName,
-                    actionInformation.RouteValueDictionary);
+                return result;
             }
 
-            var translations = _translationManager.GetTranslations(request.ui_locales, new List<string>
-            {
-                Core.Constants.StandardTranslationCodes.LoginCode,
-                Core.Constants.StandardTranslationCodes.UserNameCode,
-                Core.Constants.StandardTranslationCodes.PasswordCode,
-                Core.Constants.StandardTranslationCodes.RememberMyLoginCode
-            });
-
+            TranslateView(request.ui_locales);
             var viewModel = new AuthorizeViewModel
             {
                 Code = code
             };
 
-            ViewBag.Translations = translations;
             return View(viewModel);
         }
 
@@ -103,25 +87,36 @@ namespace SimpleIdentityServer.Api.Controllers
                         ExpiresUtc = DateTime.UtcNow.AddDays(7)
                     },
                     claimIdentity
-                    );
+                );
 
-                var actionInformation =
-                    _actionResultParser.GetControllerAndActionFromRedirectionActionResult(actionResult);
-                if (actionInformation != null)
+                var result = this.CreateRedirectionFromActionResult(actionResult,
+                    request);
+                if (result != null)
                 {
-                    return RedirectToAction(
-                        actionInformation.ActionName,
-                        actionInformation.ControllerName,
-                        actionInformation.RouteValueDictionary);
+                    return result;
                 }
 
             }
             catch (IdentityServerAuthenticationException)
             {
-                return View(authorize);
+                // TODO : log the exception
             }
 
+            TranslateView(request.ui_locales);
             return View(authorize);
+        }
+
+        private void TranslateView(string uiLocales)
+        {
+            var translations = _translationManager.GetTranslations(uiLocales, new List<string>
+            {
+                Core.Constants.StandardTranslationCodes.LoginCode,
+                Core.Constants.StandardTranslationCodes.UserNameCode,
+                Core.Constants.StandardTranslationCodes.PasswordCode,
+                Core.Constants.StandardTranslationCodes.RememberMyLoginCode
+            });
+
+            ViewBag.Translations = translations;
         }
     }
 }

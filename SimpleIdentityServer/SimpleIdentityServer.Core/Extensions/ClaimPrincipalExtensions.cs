@@ -13,6 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using System.Security.Claims;
 
 namespace SimpleIdentityServer.Core.Extensions
@@ -26,6 +27,12 @@ namespace SimpleIdentityServer.Core.Extensions
         /// <returns>The user is authenticated</returns>
         public static bool IsAuthenticated(this ClaimsPrincipal principal)
         {
+            if (principal == null ||
+                principal.Identity == null)
+            {
+                return false;
+            }
+
             return principal.Identity.IsAuthenticated;
         }
 

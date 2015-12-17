@@ -232,6 +232,7 @@
     <Compile Include="WebSite\Authenticate\Actions\AuthenticateResourceOwnerAction.cs" />
     <Compile Include="WebSite\Authenticate\Actions\LocalUserAuthenticationAction.cs" />
     <Compile Include="WebSite\Authenticate\AuthenticateActions.cs" />
+    <Compile Include="WebSite\Authenticate\Common\ProcessAuthorizationRequestRedirection.cs" />
     <Compile Include="WebSite\Consent\Actions\ConfirmConsentAction.cs" />
     <Compile Include="WebSite\Consent\Actions\DisplayConsentAction.cs" />
     <Compile Include="WebSite\Consent\ConsentActions.cs" />

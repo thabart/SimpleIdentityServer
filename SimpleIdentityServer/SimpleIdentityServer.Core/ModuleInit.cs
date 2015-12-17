@@ -27,13 +27,13 @@ using SimpleIdentityServer.Core.Api.Token;
 using SimpleIdentityServer.Core.Api.Token.Actions;
 using SimpleIdentityServer.Core.Authenticate;
 using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Core.WebSite.Authenticate;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;
+using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
 using SimpleIdentityServer.Core.WebSite.Consent;
 using SimpleIdentityServer.Core.WebSite.Consent.Actions;
 using SimpleIdentityServer.Core.JwtToken.Validator;
@@ -41,7 +41,6 @@ using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Api.UserInfo;
 using SimpleIdentityServer.Core.Api.UserInfo.Actions;
 using SimpleIdentityServer.Core.Translation;
-using SimpleIdentityServer.Logging;
 
 namespace SimpleIdentityServer.Core
 {
@@ -94,6 +93,7 @@ namespace SimpleIdentityServer.Core
 
             register.RegisterType<IAuthenticateActions, AuthenticateActions>();
             register.RegisterType<IAuthenticateResourceOwnerAction, AuthenticateResourceOwnerAction>();
+            register.RegisterType<IAuthenticateHelper, AuthenticateHelper>();
             register.RegisterType<ILocalUserAuthenticationAction, LocalUserAuthenticationAction>();
 
             register.RegisterType<IDiscoveryActions, DiscoveryActions>();

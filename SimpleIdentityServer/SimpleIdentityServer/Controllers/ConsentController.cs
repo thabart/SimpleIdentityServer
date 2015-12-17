@@ -2,11 +2,10 @@
 using SimpleIdentityServer.Api.Extensions;
 using SimpleIdentityServer.Api.Parsers;
 using SimpleIdentityServer.Api.ViewModels;
-using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.WebSite.Consent;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Protector;
-using System;
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
@@ -23,7 +22,6 @@ namespace SimpleIdentityServer.Api.Controllers
 
         private readonly IProtector _protector;
 
-        private readonly IActionResultParser _actionResultParser;
 
         private readonly IEncoder _encoder;
 
@@ -32,13 +30,11 @@ namespace SimpleIdentityServer.Api.Controllers
         public ConsentController(
             IConsentActions consentActions,
             IProtector protector,
-            IActionResultParser actionResultParser,
             IEncoder encoder,
             ITranslationManager translationManager)
         {
             _consentActions = consentActions;
             _protector = protector;
-            _actionResultParser = actionResultParser;
             _encoder = encoder;
             _translationManager = translationManager;
         }
@@ -50,18 +46,20 @@ namespace SimpleIdentityServer.Api.Controllers
             var client = new Client();
             var scopes = new List<Scope>();
             var claims = new List<string>();
-            _consentActions.DisplayConsent(request.ToParameter(), out client, out scopes, out claims);
+            var authenticatedUser = this.GetAuthenticatedUser();
+            var actionResult = _consentActions.DisplayConsent(request.ToParameter(),
+                authenticatedUser, 
+                out client, 
+                out scopes, 
+                out claims);
 
-            // Retrieve the translation and store them in a ViewBag
-            var translations = _translationManager.GetTranslations(request.ui_locales, new List<string>
+            var result = this.CreateRedirectionFromActionResult(actionResult, request);
+            if (result != null)
             {
-                Core.Constants.StandardTranslationCodes.ApplicationWouldLikeToCode,
-                Core.Constants.StandardTranslationCodes.IndividualClaimsCode,
-                Core.Constants.StandardTranslationCodes.ScopesCode,
-                Core.Constants.StandardTranslationCodes.CancelCode,
-                Core.Constants.StandardTranslationCodes.ConfirmCode
-            });
+                return result;
+            }
 
+            TranslateConsentScreen(request.ui_locales);
             var viewModel = new ConsentViewModel
             {
                 ClientDisplayName = client.DisplayName,
@@ -69,8 +67,6 @@ namespace SimpleIdentityServer.Api.Controllers
                 AllowedIndividualClaims = claims,
                 Code = code
             };
-
-            ViewBag.Translations = translations;
             return View(viewModel);
         }
         
@@ -81,25 +77,9 @@ namespace SimpleIdentityServer.Api.Controllers
             var authenticatedUser = this.GetAuthenticatedUser();
             var actionResult =_consentActions.ConfirmConsent(parameter,
                 authenticatedUser);
-            if (actionResult.Type == TypeActionResult.RedirectToCallBackUrl)
-            {
-                var parameters = _actionResultParser.GetRedirectionParameters(actionResult);
-                var uri = new Uri(request.redirect_uri);
-                var redirectUrl = this.CreateRedirectHttp(uri, parameters, parameter.ResponseMode);
-                return Redirect(redirectUrl);
-            }
 
-            var actionInformation =
-                _actionResultParser.GetControllerAndActionFromRedirectionActionResult(actionResult);
-            if (actionInformation != null)
-            {
-                return RedirectToAction(
-                    actionInformation.ActionName,
-                    actionInformation.ControllerName,
-                    actionInformation.RouteValueDictionary);
-            }
-
-            return null;
+            return this.CreateRedirectionFromActionResult(actionResult,
+                request);
         }
 
         /// <summary>
@@ -112,6 +92,20 @@ namespace SimpleIdentityServer.Api.Controllers
         {
             var request = _protector.Decrypt<AuthorizationRequest>(code);
             return Redirect(request.redirect_uri);
+        }
+
+        private void TranslateConsentScreen(string uiLocales)
+        {
+            // Retrieve the translation and store them in a ViewBag
+            var translations = _translationManager.GetTranslations(uiLocales, new List<string>
+            {
+                Core.Constants.StandardTranslationCodes.ApplicationWouldLikeToCode,
+                Core.Constants.StandardTranslationCodes.IndividualClaimsCode,
+                Core.Constants.StandardTranslationCodes.ScopesCode,
+                Core.Constants.StandardTranslationCodes.CancelCode,
+                Core.Constants.StandardTranslationCodes.ConfirmCode
+            });
+            ViewBag.Translations = translations;
         }
     }
 }
