@@ -13,6 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,7 +44,12 @@ namespace SimpleIdentityServer.Core.Api.Discovery.Actions
 
             // Returns only the exposed scopes
             var scopes = _scopeRepository.GetAllScopes();
-            var scopeSupportedNames = scopes.Where(s => s.IsExposed).Select(s => s.Name).ToArray();
+            var scopeSupportedNames = new string[0];
+            if (scopes != null ||
+                scopes.Any())
+            {
+                scopeSupportedNames = scopes.Where(s => s.IsExposed).Select(s => s.Name).ToArray();
+            }
 
             var responseTypesSupported = GetSupportedResponseTypes(Constants.Supported.SupportedAuthorizationFlows);
 

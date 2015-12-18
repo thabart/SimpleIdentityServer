@@ -36,7 +36,6 @@ using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
 using SimpleIdentityServer.Core.WebSite.Consent;
 using SimpleIdentityServer.Core.WebSite.Consent.Actions;
-using SimpleIdentityServer.Core.JwtToken.Validator;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Api.UserInfo;
 using SimpleIdentityServer.Core.Api.UserInfo.Actions;
@@ -60,7 +59,6 @@ namespace SimpleIdentityServer.Core
             register.RegisterType<IResourceOwnerGrantTypeParameterValidator, ResourceOwnerGrantTypeParameterValidator>();
             register.RegisterType<IAuthorizationCodeGrantTypeParameterTokenEdpValidator,
                 AuthorizationCodeGrantTypeParameterTokenEdpValidator>();
-            register.RegisterType<IJwtClientParameterValidator, JwtClientParameterValidator>();
             register.RegisterType<IProtector, Protector.Protector>();
             register.RegisterType<ICompressor, Compressor>();
             register.RegisterType<IEncoder, Encoder>();

@@ -40,7 +40,6 @@ using SimpleIdentityServer.Core.WebSite.Consent.Actions;
 using SimpleIdentityServer.DataAccess.Fake.Repositories;
 using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.RateLimitation.Configuration;
-using SimpleIdentityServer.Core.JwtToken.Validator;
 using SimpleIdentityServer.Core.JwtToken;
 using System;
 using SimpleIdentityServer.Core.Jwt.Encrypt.Encryption;
@@ -131,7 +130,6 @@ namespace SimpleIdentityServer.Api.Tests.Common
                 ();
             UnityContainer.RegisterType<IAuthorizationCodeGrantTypeParameterTokenEdpValidator,
                 AuthorizationCodeGrantTypeParameterTokenEdpValidator>();
-            UnityContainer.RegisterType<IJwtClientParameterValidator, JwtClientParameterValidator>();
 
             UnityContainer.RegisterType<IClientRepository, FakeClientRepository>();
             UnityContainer.RegisterType<IScopeRepository, FakeScopeRepository>();
