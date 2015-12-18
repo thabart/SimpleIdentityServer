@@ -45,11 +45,12 @@ namespace SimpleIdentityServer.Core.Validators
 
         public void Validate(AuthorizationParameter parameter)
         {
+            // Check the required parameters. Read this RFC : http://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
             if (string.IsNullOrWhiteSpace(parameter.Scope))
             {
                 throw new IdentityServerExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.MissingParameter, "scope"),
+                    string.Format(ErrorDescriptions.MissingParameter, Constants.StandardAuthorizationRequestParameterNames.ScopeName),
                     parameter.State);
             }
 
@@ -57,7 +58,7 @@ namespace SimpleIdentityServer.Core.Validators
             {
                 throw new IdentityServerExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.MissingParameter, "clientId"),
+                    string.Format(ErrorDescriptions.MissingParameter, Constants.StandardAuthorizationRequestParameterNames.ClientIdName),
                     parameter.State);
             }
 
@@ -65,7 +66,7 @@ namespace SimpleIdentityServer.Core.Validators
             {
                 throw new IdentityServerExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.MissingParameter, "redirect_uri"),
+                    string.Format(ErrorDescriptions.MissingParameter, Constants.StandardAuthorizationRequestParameterNames.RedirectUriName),
                     parameter.State);
             }
 
@@ -73,7 +74,7 @@ namespace SimpleIdentityServer.Core.Validators
             {
                 throw new IdentityServerExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.MissingParameter, "response_type"),
+                    string.Format(ErrorDescriptions.MissingParameter, Constants.StandardAuthorizationRequestParameterNames.ResponseTypeName),
                     parameter.State);
             }
 
@@ -86,7 +87,7 @@ namespace SimpleIdentityServer.Core.Validators
             if (!redirectUrlIsCorrect)
             {
                 throw new IdentityServerExceptionWithState(
-                    ErrorCodes.InvalidRequestUriCode,
+                    ErrorCodes.InvalidRequestCode,
                     ErrorDescriptions.TheRedirectionUriIsNotWellFormed,
                     parameter.State);
             }
@@ -170,8 +171,7 @@ namespace SimpleIdentityServer.Core.Validators
                 throw new IdentityServerExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
                     ErrorDescriptions.PromptParameterShouldHaveOnlyNoneValue,
-                    state
-                    );
+                    state);
             }
         }
     }

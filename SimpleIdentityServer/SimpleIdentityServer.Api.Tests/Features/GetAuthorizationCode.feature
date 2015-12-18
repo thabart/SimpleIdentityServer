@@ -226,8 +226,8 @@ Scenario: a resource owner is not authenticated and we want to retrieve an autho
 
 	Then HTTP status code is 400
 	And the error returned is
-	| error               | state  |
-	| invalid_request_uri | state1 |
+	| error           | state  |
+	| invalid_request | state1 |
 
 Scenario: a resource owner is not authenticated and we want to retrieve an authorization code with prompt equal to none and login
 	Given a mobile application MyHolidays is defined

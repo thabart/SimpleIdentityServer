@@ -728,7 +728,7 @@ this.ScenarioSetup(scenarioInfo);
                         "error",
                         "state"});
             table31.AddRow(new string[] {
-                        "invalid_request_uri",
+                        "invalid_request",
                         "state1"});
 #line 228
  testRunner.And("the error returned is", ((string)(null)), table31, "And ");
