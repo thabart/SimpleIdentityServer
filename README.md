@@ -1,6 +1,6 @@
 # Simple identity server
 
-Build : [![Build status](https://ci.appveyor.com/api/projects/status/ctvpsd79ovexlsdb?svg=true)](https://ci.appveyor.com/project/thabart/simpleidentityserver) [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/thabart/SimpleIdentityServer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+Build : [![Build status](https://ci.appveyor.com/api/projects/status/ctvpsd79ovexlsdb?svg=true)](https://ci.appveyor.com/project/thabart/simpleidentityserver) [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/thabart/SimpleIdentityServer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge) [![Coverage Status](https://coveralls.io/repos/thabart/SimpleIdentityServer/badge.svg?branch=master&service=github)](https://coveralls.io/github/thabart/SimpleIdentityServer?branch=master)
 
 ![openid_certified](https://cloud.githubusercontent.com/assets/1454075/7611268/4d19de32-f97b-11e4-895b-31b2455a7ca6.png)
 
