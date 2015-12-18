@@ -99,6 +99,9 @@
     <Compile Include="Authenticate\ClientSecretPostAuthenticationFixture.cs" />
     <Compile Include="BaseFixture.cs" />
     <Compile Include="Common\GenerateAuthorizationResponseFixture.cs" />
+    <Compile Include="Extensions\ClaimPrincipalExtensionsFixture.cs" />
+    <Compile Include="Extensions\ClaimsParameterExtensionsFixture.cs" />
+    <Compile Include="Extensions\ResourceOwnerExtensionsFixture.cs" />
     <Compile Include="Fake\FakeFactories.cs" />
     <Compile Include="Fake\FakeOpenIdAssets.cs" />
     <Compile Include="JwtToken\JwtGeneratorFixture.cs" />

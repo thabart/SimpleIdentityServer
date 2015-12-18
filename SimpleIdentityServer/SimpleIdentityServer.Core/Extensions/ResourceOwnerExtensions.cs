@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Security.Claims;
 
@@ -108,9 +107,6 @@ namespace SimpleIdentityServer.Core.Extensions
             claims.Add(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.EmailVerified, resourceOwner.EmailVerified.ToString(CultureInfo.InvariantCulture)));
             claims.Add(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumberVerified, resourceOwner.PhoneNumberVerified.ToString(CultureInfo.InvariantCulture)));
             claims.Add(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt, resourceOwner.UpdatedAt.ToString(CultureInfo.InvariantCulture)));
-            claims.Add(new Claim(ClaimTypes.AuthenticationInstant,
-                DateTimeOffset.UtcNow.ConvertToUnixTimestamp().ToString(),
-                ClaimValueTypes.Integer));
 
             return claims;
         } 

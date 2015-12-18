@@ -38,11 +38,18 @@ namespace SimpleIdentityServer.Core.Extensions
 
         /// <summary>
         /// Returns the subject from an authenticated user
+        /// Otherwise returns null.
         /// </summary>
         /// <param name="principal">The user principal</param>
         /// <returns>User's subject</returns>
         public static string GetSubject(this ClaimsPrincipal principal)
         {
+            if (principal == null ||
+                principal.Identity == null)
+            {
+                return null;
+            }
+
             var claim = principal.FindFirst(Jwt.Constants.StandardResourceOwnerClaimNames.Subject);
             if (claim == null)
             {

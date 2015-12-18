@@ -239,7 +239,6 @@
     <Compile Include="Exceptions\IdentityServerAuthenticationException.cs" />
     <Compile Include="Exceptions\InternalIdentityServerException.cs" />
     <Compile Include="Extensions\ClaimPrincipalExtensions.cs" />
-    <Compile Include="Extensions\UriExtensions.cs" />
     <Compile Include="Factories\ActionResultFactory.cs" />
     <Compile Include="Helpers\ParameterParserHelper.cs" />
     <Compile Include="Models\AuthorizationCode.cs" />

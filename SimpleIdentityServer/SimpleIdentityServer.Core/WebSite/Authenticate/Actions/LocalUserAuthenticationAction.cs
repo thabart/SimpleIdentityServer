@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Security.Claims;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
@@ -109,6 +110,9 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
             _simpleIdentityServerEventSource.AuthenticateResourceOwner(subject);
             var resourceOwner = _resourceOwnerRepository.GetBySubject(subject);
             claims = resourceOwner.ToClaims();
+            claims.Add(new Claim(ClaimTypes.AuthenticationInstant,
+                DateTimeOffset.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture),
+                ClaimValueTypes.Integer));
 
             return _authenticateHelper.ProcessRedirection(authorizationParameter,
                 code,
