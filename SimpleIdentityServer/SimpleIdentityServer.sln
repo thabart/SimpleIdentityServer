@@ -47,8 +47,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.Core.J
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.Core.Common", "SimpleIdentityServer.Core.Common\SimpleIdentityServer.Core.Common.csproj", "{070F36EB-DC27-4CDE-B5F7-2CC63B78E150}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.Api.UnitTests", "SimpleIdentityServer.Api.UnitTests\SimpleIdentityServer.Api.UnitTests.csproj", "{C63A4A3E-0167-4B83-BC84-65C072EE166F}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.Logging", "SimpleIdentityServer.Logging\SimpleIdentityServer.Logging.csproj", "{67042BC4-7C0D-4519-8F25-E79175D9781D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.Logging.Consumer", "SimpleIdentityServer.Logging.Consumer\SimpleIdentityServer.Logging.Consumer.csproj", "{8B826264-E6B7-4119-B58F-C2E04342FD64}"
@@ -57,6 +55,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{3349C2
 	ProjectSection(SolutionItems) = preProject
 		.nuget\packages.config = .nuget\packages.config
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.Core.UnitTests", "SimpleIdentityServer.Core.UnitTests\SimpleIdentityServer.Core.UnitTests.csproj", "{C63A4A3E-0167-4B83-BC84-65C072EE166F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -116,10 +116,6 @@ Global
 		{070F36EB-DC27-4CDE-B5F7-2CC63B78E150}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{070F36EB-DC27-4CDE-B5F7-2CC63B78E150}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{070F36EB-DC27-4CDE-B5F7-2CC63B78E150}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C63A4A3E-0167-4B83-BC84-65C072EE166F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C63A4A3E-0167-4B83-BC84-65C072EE166F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C63A4A3E-0167-4B83-BC84-65C072EE166F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C63A4A3E-0167-4B83-BC84-65C072EE166F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{67042BC4-7C0D-4519-8F25-E79175D9781D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{67042BC4-7C0D-4519-8F25-E79175D9781D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{67042BC4-7C0D-4519-8F25-E79175D9781D}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -128,6 +124,10 @@ Global
 		{8B826264-E6B7-4119-B58F-C2E04342FD64}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8B826264-E6B7-4119-B58F-C2E04342FD64}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8B826264-E6B7-4119-B58F-C2E04342FD64}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C63A4A3E-0167-4B83-BC84-65C072EE166F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C63A4A3E-0167-4B83-BC84-65C072EE166F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C63A4A3E-0167-4B83-BC84-65C072EE166F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C63A4A3E-0167-4B83-BC84-65C072EE166F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -149,9 +149,9 @@ Global
 		{3A63CFD9-C94D-4D3A-8DDB-A67222829872} = {9A27F1E3-D0E9-4D81-8AF2-1B0278F01871}
 		{0B0286DD-ACFD-4822-8A9D-2DA39B8AEC29} = {0FFC0310-E0D1-4825-8427-8D09F9719AC7}
 		{070F36EB-DC27-4CDE-B5F7-2CC63B78E150} = {0FFC0310-E0D1-4825-8427-8D09F9719AC7}
-		{C63A4A3E-0167-4B83-BC84-65C072EE166F} = {5C423D4F-E2DD-48D7-842C-BC9D3B8576DE}
 		{67042BC4-7C0D-4519-8F25-E79175D9781D} = {0FFC0310-E0D1-4825-8427-8D09F9719AC7}
 		{8B826264-E6B7-4119-B58F-C2E04342FD64} = {9A27F1E3-D0E9-4D81-8AF2-1B0278F01871}
+		{C63A4A3E-0167-4B83-BC84-65C072EE166F} = {5C423D4F-E2DD-48D7-842C-BC9D3B8576DE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.Interception.2.1.505.0\lib\NET35;packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Caching.5.0.505.0\lib\NET35;packages\Unity.2.1.505.0\lib\NET35
