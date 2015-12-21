@@ -2,6 +2,8 @@
 using NUnit.Framework;
 
 using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Errors;
+using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Models;
@@ -52,25 +54,90 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
         }
 
         [Test]
-        public void When_No_Consent_Has_Been_Given_Then_Create_And_Insert_A_New_One()
+        public void When_No_Consent_Has_Been_Given_And_ResponseMode_Is_No_Correct_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
             const string subject = "subject";
+            const string state = "state";
             var authorizationParameter = new AuthorizationParameter
             {
                 Claims = null,
-                Scope = "profile"
+                Scope = "profile",
+                ResponseMode = ResponseMode.None,
+                State = state
             };
             var claims = new List<Claim>
             {
-                new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject)
+                new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject)
             };
             var claimsIdentity = new ClaimsIdentity(claims, "SimpleIdentityServer");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             var client = new Client
             {
                 ClientId = "clientId"
+            };
+            var resourceOwner = new ResourceOwner
+            {
+                Id = subject
+            };
+            var actionResult = new ActionResult
+            {
+                Type = TypeActionResult.RedirectToCallBackUrl,
+                RedirectInstruction = new RedirectInstruction()
+            };
+            _consentHelperFake.Setup(c => c.GetConsentConfirmedByResourceOwner(It.IsAny<string>(),
+                It.IsAny<AuthorizationParameter>()))
+                .Returns(() => null);
+            _clientRepositoryFake.Setup(c => c.GetClientById(It.IsAny<string>()))
+                .Returns(client);
+            _parameterParserHelperFake.Setup(p => p.ParseScopeParameters(It.IsAny<string>()))
+                .Returns(new List<string>());
+            _resourceOwnerRepositoryFake.Setup(r => r.GetBySubject(It.IsAny<string>()))
+                .Returns(resourceOwner);
+            _actionResultFactoryFake.Setup(a => a.CreateAnEmptyActionResultWithRedirectionToCallBackUrl())
+                .Returns(actionResult);
+            _parameterParserHelperFake.Setup(p => p.ParseResponseType(It.IsAny<string>()))
+                .Returns(new List<ResponseType> { ResponseType.id_token, ResponseType.id_token });
+
+            // ACT & ASSERT
+            var exception = Assert.Throws<IdentityServerExceptionWithState>(() => _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal));
+            Assert.IsNotNull(exception);
+            Assert.IsTrue(exception.Code == ErrorCodes.InvalidRequestCode);
+            Assert.IsTrue(exception.Message == ErrorDescriptions.TheAuthorizationFlowIsNotSupported);
+            Assert.IsTrue(exception.State == state);
+        }
+
+        [Test]
+        public void When_No_Consent_Has_Been_Given_For_The_Claims_Then_Create_And_Insert_A_New_One()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            const string subject = "subject";
+            const string clientId = "clientId";
+            var authorizationParameter = new AuthorizationParameter
+            {
+                Claims = new ClaimsParameter
+                {
+                    UserInfo = new List<ClaimParameter>
+                    {
+                        new ClaimParameter
+                        {
+                            Name = Jwt.Constants.StandardResourceOwnerClaimNames.Subject
+                        }
+                    }
+                },
+                Scope = "profile"
+            };
+            var claims = new List<Claim>
+            {
+                new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject)
+            };
+            var claimsIdentity = new ClaimsIdentity(claims, "SimpleIdentityServer");
+            var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+            var client = new Client
+            {
+                ClientId = clientId
             };
             var resourceOwner = new ResourceOwner
             {
@@ -91,13 +158,77 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
                 .Returns(resourceOwner);
             _actionResultFactoryFake.Setup(a => a.CreateAnEmptyActionResultWithRedirectionToCallBackUrl())
                 .Returns(actionResult);
+            Models.Consent insertedConsent = null;
+            _consentRepositoryFake.Setup(co => co.InsertConsent(It.IsAny<Models.Consent>()))
+                .Callback<Models.Consent>(consent => insertedConsent = consent);
+            ;
 
             // ACT
             _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal);
 
             // ASSERT
-            _consentRepositoryFake.Verify(c => c.InsertConsent(It.IsAny<Core.Models.Consent>()));
+            Assert.IsNotNull(insertedConsent);
+            Assert.IsTrue(insertedConsent.Claims.Contains(Jwt.Constants.StandardResourceOwnerClaimNames.Subject));
+            Assert.IsTrue(insertedConsent.ResourceOwner.Id == subject);
+            Assert.IsTrue(insertedConsent.Client.ClientId == clientId);
             _actionResultFactoryFake.Verify(a => a.CreateAnEmptyActionResultWithRedirectionToCallBackUrl());
+        }
+
+        [Test]
+        public void When_No_Consent_Has_Been_Given_Then_Create_And_Insert_A_New_One()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            const string subject = "subject";
+            var authorizationParameter = new AuthorizationParameter
+            {
+                Claims = null,
+                Scope = "profile",
+                ResponseMode = ResponseMode.None
+            };
+            var claims = new List<Claim>
+            {
+                new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject)
+            };
+            var claimsIdentity = new ClaimsIdentity(claims, "SimpleIdentityServer");
+            var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+            var client = new Client
+            {
+                ClientId = "clientId"
+            };
+            var resourceOwner = new ResourceOwner
+            {
+                Id = subject
+            };
+            var actionResult = new ActionResult
+            {
+                Type = TypeActionResult.RedirectToCallBackUrl,
+                RedirectInstruction = new RedirectInstruction
+                {
+                    
+                }
+            };
+            _consentHelperFake.Setup(c => c.GetConsentConfirmedByResourceOwner(It.IsAny<string>(),
+                It.IsAny<AuthorizationParameter>()))
+                .Returns(() => null);
+            _clientRepositoryFake.Setup(c => c.GetClientById(It.IsAny<string>()))
+                .Returns(client);
+            _parameterParserHelperFake.Setup(p => p.ParseScopeParameters(It.IsAny<string>()))
+                .Returns(new List<string>());
+            _resourceOwnerRepositoryFake.Setup(r => r.GetBySubject(It.IsAny<string>()))
+                .Returns(resourceOwner);
+            _actionResultFactoryFake.Setup(a => a.CreateAnEmptyActionResultWithRedirectionToCallBackUrl())
+                .Returns(actionResult);
+            _parameterParserHelperFake.Setup(p => p.ParseResponseType(It.IsAny<string>()))
+                .Returns(new List<ResponseType> {  ResponseType.code });
+
+            // ACT
+            var result = _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal);
+
+            // ASSERT
+            _consentRepositoryFake.Verify(c => c.InsertConsent(It.IsAny<Models.Consent>()));
+            _actionResultFactoryFake.Verify(a => a.CreateAnEmptyActionResultWithRedirectionToCallBackUrl());
+            Assert.IsTrue(result.RedirectInstruction.ResponseMode == ResponseMode.query);
         }
 
         private void InitializeFakeObjects()

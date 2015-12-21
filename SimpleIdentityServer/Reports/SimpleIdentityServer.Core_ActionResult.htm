@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html data-ng-app="coverageApp">
+<head>
+<meta charset="utf-8" />
+<title>SimpleIdentityServer.Core.Results.ActionResult - Coverage Report</title>
+<link rel="stylesheet" type="text/css" href="report.css" />
+</head><body data-ng-controller="DetailViewCtrl"><div class="container">
+<h1>Summary</h1>
+<table class="overview">
+<colgroup>
+<col style="width: 135px;" />
+<col />
+</colgroup>
+<tbody>
+<tr><th>Class:</th><td>SimpleIdentityServer.Core.Results.ActionResult</td></tr>
+<tr><th>Assembly:</th><td>SimpleIdentityServer.Core</td></tr>
+<tr><th>File(s):</th><td><a href="#cProjectOTHERSSimpleIdentityServerSimpleIdentityServerSimpleIdentityServerCoreResultsActionResultcs">c:\Project\OTHERS\SimpleIdentityServer\SimpleIdentityServer\SimpleIdentityServer.Core\Results\ActionResult.cs</a></td></tr>
+<tr><th>Covered lines:</th><td>2</td></tr>
+<tr><th>Uncovered lines:</th><td>0</td></tr>
+<tr><th>Coverable lines:</th><td>2</td></tr>
+<tr><th>Total lines:</th><td>32</td></tr>
+<tr><th>Line coverage:</th><td>100%</td></tr>
+</tbody>
+</table>
+<h1>File(s)</h1>
+<h2 id="cProjectOTHERSSimpleIdentityServerSimpleIdentityServerSimpleIdentityServerCoreResultsActionResultcs">c:\Project\OTHERS\SimpleIdentityServer\SimpleIdentityServer\SimpleIdentityServer.Core\Results\ActionResult.cs</h2>
+<table class="lineAnalysis">
+<thead><tr><th></th><th>#</th><th>Line</th><th></th><th>Line coverage</th></tr></thead>
+<tbody>
+<tr data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><code>1</code></td><td></td><td class="lightgray"><code>#region&nbsp;copyright</code></td></tr>
+<tr data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><code>2</code></td><td></td><td class="lightgray"><code>//&nbsp;Copyright&nbsp;2015&nbsp;Habart&nbsp;Thierry</code></td></tr>
+<tr data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><code>3</code></td><td></td><td class="lightgray"><code>//</code></td></tr>
+<tr data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><code>4</code></td><td></td><td class="lightgray"><code>//&nbsp;Licensed&nbsp;under&nbsp;the&nbsp;Apache&nbsp;License,&nbsp;Version&nbsp;2.0&nbsp;(the&nbsp;&quot;License&quot;);</code></td></tr>
+<tr data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><code>5</code></td><td></td><td class="lightgray"><code>//&nbsp;you&nbsp;may&nbsp;not&nbsp;use&nbsp;this&nbsp;file&nbsp;except&nbsp;in&nbsp;compliance&nbsp;with&nbsp;the&nbsp;License.</code></td></tr>
+<tr data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><code>6</code></td><td></td><td class="lightgray"><code>//&nbsp;You&nbsp;may&nbsp;obtain&nbsp;a&nbsp;copy&nbsp;of&nbsp;the&nbsp;License&nbsp;at</code></td></tr>
+<tr data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><code>7</code></td><td></td><td class="lightgray"><code>//</code></td></tr>
+<tr data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><code>8</code></td><td></td><td class="lightgray"><code>//&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;http://www.apache.org/licenses/LICENSE-2.0</code></td></tr>
+<tr data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><code>9</code></td><td></td><td class="lightgray"><code>//</code></td></tr>
+<tr data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><code>10</code></td><td></td><td class="lightgray"><code>//&nbsp;Unless&nbsp;required&nbsp;by&nbsp;applicable&nbsp;law&nbsp;or&nbsp;agreed&nbsp;to&nbsp;in&nbsp;writing,&nbsp;software</code></td></tr>
+<tr data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><code>11</code></td><td></td><td class="lightgray"><code>//&nbsp;distributed&nbsp;under&nbsp;the&nbsp;License&nbsp;is&nbsp;distributed&nbsp;on&nbsp;an&nbsp;&quot;AS&nbsp;IS&quot;&nbsp;BASIS,</code></td></tr>
+<tr data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><code>12</code></td><td></td><td class="lightgray"><code>//&nbsp;WITHOUT&nbsp;WARRANTIES&nbsp;OR&nbsp;CONDITIONS&nbsp;OF&nbsp;ANY&nbsp;KIND,&nbsp;either&nbsp;express&nbsp;or&nbsp;implied.</code></td></tr>
+<tr data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><code>13</code></td><td></td><td class="lightgray"><code>//&nbsp;See&nbsp;the&nbsp;License&nbsp;for&nbsp;the&nbsp;specific&nbsp;language&nbsp;governing&nbsp;permissions&nbsp;and</code></td></tr>
+<tr data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><code>14</code></td><td></td><td class="lightgray"><code>//&nbsp;limitations&nbsp;under&nbsp;the&nbsp;License.</code></td></tr>
+<tr data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><code>15</code></td><td></td><td class="lightgray"><code>#endregion</code></td></tr>
+<tr data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><code>16</code></td><td></td><td class="lightgray"><code>namespace&nbsp;SimpleIdentityServer.Core.Results</code></td></tr>
+<tr data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><code>17</code></td><td></td><td class="lightgray"><code>{</code></td></tr>
+<tr data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><code>18</code></td><td></td><td class="lightgray"><code>&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;enum&nbsp;TypeActionResult</code></td></tr>
+<tr data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><code>19</code></td><td></td><td class="lightgray"><code>&nbsp;&nbsp;&nbsp;&nbsp;{</code></td></tr>
+<tr data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><code>20</code></td><td></td><td class="lightgray"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;RedirectToAction,</code></td></tr>
+<tr data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><code>21</code></td><td></td><td class="lightgray"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;RedirectToCallBackUrl,</code></td></tr>
+<tr data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><code>22</code></td><td></td><td class="lightgray"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Output,</code></td></tr>
+<tr data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><code>23</code></td><td></td><td class="lightgray"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;None</code></td></tr>
+<tr data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><code>24</code></td><td></td><td class="lightgray"><code>&nbsp;&nbsp;&nbsp;&nbsp;}</code></td></tr>
+<tr data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><code>25</code></td><td></td><td class="lightgray"><code></code></td></tr>
+<tr data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><code>26</code></td><td></td><td class="lightgray"><code>&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;class&nbsp;ActionResult</code></td></tr>
+<tr data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><code>27</code></td><td></td><td class="lightgray"><code>&nbsp;&nbsp;&nbsp;&nbsp;{</code></td></tr>
+<tr data-coverage="{'AllTestMethods': {'VC': '38', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">38</td><td class="rightmargin right"><code>28</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;TypeActionResult&nbsp;Type&nbsp;{&nbsp;get;&nbsp;set;&nbsp;}</code></td></tr>
+<tr data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><code>29</code></td><td></td><td class="lightgray"><code></code></td></tr>
+<tr data-coverage="{'AllTestMethods': {'VC': '123', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">123</td><td class="rightmargin right"><code>30</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;RedirectInstruction&nbsp;RedirectInstruction&nbsp;{&nbsp;get;&nbsp;set;&nbsp;}</code></td></tr>
+<tr data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><code>31</code></td><td></td><td class="lightgray"><code>&nbsp;&nbsp;&nbsp;&nbsp;}</code></td></tr>
+<tr data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><code>32</code></td><td></td><td class="lightgray"><code>}</code></td></tr>
+</tbody>
+</table>
+<div class="footer">Generated by: ReportGenerator 2.3.5.0<br />21/12/2015 - 14:18:05<br /><a href="https://github.com/danielpalme/ReportGenerator">GitHub</a> | <a href="http://www.palmmedia.de">www.palmmedia.de</a></div></div>
+<script type="text/javascript" src="combined.js"></script>
+</body></html>
