@@ -1,4 +1,6 @@
-﻿#region copyright
+﻿extensions: designer.cs generated.cs
+extensions: .cs
+#region copyright
 // Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,16 +15,3 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-namespace SimpleIdentityServer.Core.Jwt.Encrypt.Encryption
-{
-    public class AesEncryptionResult
-    {
-        public byte[] Iv { get; set; }
-
-        public byte[] CipherText { get; set; }
-
-        public byte[] EncryptedContentEncryptionKey { get; set; }
-
-        public byte[] AuthenticationTag { get; set; }
-    }
-}

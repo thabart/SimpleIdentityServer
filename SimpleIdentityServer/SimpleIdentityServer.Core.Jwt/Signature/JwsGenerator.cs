@@ -1,4 +1,20 @@
-﻿using System;
+﻿#region copyright
+// Copyright 2015 Habart Thierry
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
+using System;
 using SimpleIdentityServer.Core.Common.Extensions;
 
 namespace SimpleIdentityServer.Core.Jwt.Signature
@@ -24,21 +40,30 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
         }
         
         public string Generate(
-            JwsPayload payload,
+            JwsPayload jwsPayload,
             JwsAlg jwsAlg,
             JsonWebKey jsonWebKey)
         {
-            var protectedHeader = ConstructProtectedHeader(jwsAlg);
+            if (jwsPayload == null)
+            {
+                throw new ArgumentNullException("jwsPayload");
+            }
 
-            if (jsonWebKey != null &&
+            if (jsonWebKey == null && 
                 jwsAlg != JwsAlg.none)
+            {
+                jwsAlg = JwsAlg.none;
+            }
+
+            var protectedHeader = ConstructProtectedHeader(jwsAlg);
+            if (jwsAlg != JwsAlg.none)
             {
                 protectedHeader.Kid = jsonWebKey.Kid;
             }
 
             var serializedProtectedHeader = protectedHeader.SerializeWithDataContract();
             var base64EncodedSerializedProtectedHeader = serializedProtectedHeader.Base64Encode();
-            var serializedPayload = payload.SerializeWithJavascript();
+            var serializedPayload = jwsPayload.SerializeWithJavascript();
             var base64EncodedSerializedPayload = serializedPayload.Base64Encode();
             var combinedProtectedHeaderAndPayLoad = string.Format(
                 "{0}.{1}", 
@@ -46,7 +71,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
                 base64EncodedSerializedPayload);
 
             var signedJws = string.Empty;
-            if (jsonWebKey != null)
+            if (jwsAlg != JwsAlg.none)
             {
                 switch (jsonWebKey.Kty)
                 {

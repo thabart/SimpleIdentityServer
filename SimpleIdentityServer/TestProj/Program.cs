@@ -366,18 +366,24 @@ namespace TestProj
 
         static void Main(string[] args)
         {
-            var request =
-                "eyJhbGciOiJSUzI1NiIsImtpZCI6ImEzck1VZ01Gdjl0UGNsTGE2eUYzekFrZnF1RSIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbmlzdHJhdG9yQGhvdG1haWwuYmUiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjUwNDcwLyIsImF1ZCI6WyJNeUJsb2ciLCJodHRwOi8vbG9jYWxob3N0OjUwNDcwLyJdLCJleHAiOjE0NTI2NzMyMDgsImlhdCI6MTQ0OTY3MzIwOCwiYXV0aF90aW1lIjoxNDQ5NjczMjA0LCJhY3IiOiJvcGVuaWQucGFwZS5hdXRoX2xldmVsLm5zLnBhc3N3b3JkPTEiLCJhbXIiOiJwYXNzd29yZCIsImF6cCI6Ik15QmxvZyJ9.oL_coEnk8XpnLEeJUPwoxZRpmgZk-xCSINg6uMmcxWFs5QgUSS-W48Izl8VBpu0nmfKFWdm51p2t2qBN9CRHCd00zeq7RMmXibXrY6weOu8TDaF-exJtYhPtupJTYUn7XiVQW0DHv_0C2m3oc7Gk9y-mBFquUddrrFNZCU4l0UM";
-            var result = request.Split('.');
+            var alg = CngAlgorithm.Sha256;
+            byte[] privateKey;
+            byte[] publicKey;
+            using (var ec = new ECDsaCng())
+            {
+                ec.HashAlgorithm = alg;
+                var key = ec.Key;
+                privateKey = key.Export(CngKeyBlobFormat.EccPrivateBlob);
+                publicKey = key.Export(CngKeyBlobFormat.EccPrivateBlob);
+                var extract = ec.ToXmlString(ECKeyXmlFormat.Rfc4050);
+                Console.WriteLine(extract);
+            }
 
-            var h = result[0];
-            var decodedHeader = h.Base64Decode();
-            Console.WriteLine(decodedHeader);
-            var r = result[1];
-            var d = r.Base64Decode();
-            Console.WriteLine(d);
+            using (var ec2 = new ECDsaCng())
+            {
+            }
 
-            Console.WriteLine(request);
+            Console.ReadLine();
             /*
             var m =
                 "eyJhbGciOiJSUzI1NiIsImtpZCI6IjEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0L2lkZW50aXR5IiwiYXVkIjpbIk15QmxvZyJdLCJleHAiOjE0NTEzMTAxOTEsImlhdCI6MTQ0ODMxMDE5MSwic3ViIjoiYWRtaW5pc3RyYXRvckBob3RtYWlsLmJlIiwiYWNyIjoib3BlbmlkLnBhcGUuYXV0aF9sZXZlbC5ucy5wYXNzd29yZD0xIiwiYW1yIjoicGFzc3dvcmQiLCJhenAiOiJNeUJsb2cifQ.Ai+zreXQmsRIIosGOeuM2k8iBdBtnKa+b9m7isX6cg/1p5i4N2OK7Ul2679mdp2fcjj1f7panW0yOsJMTU1Ydo0khKiiH11bP/cShS5cDfW0haCqJuMNXN5j/X4wP4Vd7fDenqYG9wNcvQWpNn/Yqlm92lnHiGFdXF8pfKMagt8=";
