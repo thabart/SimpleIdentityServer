@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Security.Cryptography;
 using System.Text;
 using System.Web.Script.Serialization;
@@ -364,26 +365,111 @@ namespace TestProj
 
         #endregion
 
+        private static void UnpackEccPublicBlob(byte[] blob, out BigInteger x, out BigInteger y)
+        {
+            var count = BitConverter.ToInt32(blob, 4);
+            x = new BigInteger(ReverseBytes(blob, 8, count, true));
+            y = new BigInteger(ReverseBytes(blob, 8 + count, count, true));
+        }
+
+        private static byte[] ReverseBytes(byte[] buffer, int offset, int count, bool padWithZeroByte)
+        {
+            var numArray = !padWithZeroByte ? new byte[count] : new byte[count + 1];
+            var num = offset + count - 1;
+            for (var index = 0; index < count; ++index)
+            {
+                numArray[index] = buffer[num - index];
+            }
+
+            var size = numArray.Length;
+            return numArray;
+        }
+
+        public static byte[][] Slice(byte[] array, int count)
+        {
+            var sliceCount = array.Length / count;
+            var result = new byte[sliceCount][];
+            for (int i = 0; i < sliceCount; i++)
+            {
+                var slice = new byte[count];
+                Buffer.BlockCopy(array, i * count, slice, 0, count);
+                result[i] = slice;
+            }
+
+            return result;
+        }
+
+        public static byte[] RightmostBits(byte[] data, int lengthBits)
+        {
+            var byteCount = lengthBits / 8;
+            var result = new byte[byteCount];
+            Buffer.BlockCopy(data, data.Length - byteCount, result, 0, byteCount);
+            return result;
+
+        }
+
         static void Main(string[] args)
         {
+            const string message = "message";
+            byte[] encryptedBytes;
             var alg = CngAlgorithm.Sha256;
             byte[] privateKey;
             byte[] publicKey;
-            using (var ec = new ECDsaCng())
+
+            var keyCreationParameter = new CngKeyCreationParameters
+            {
+                ExportPolicy = CngExportPolicies.AllowPlaintextExport
+            };
+            
+            var cnk = CngKey.Create(CngAlgorithm.ECDsaP256, null, keyCreationParameter);
+            var privateBlob = cnk.Export(CngKeyBlobFormat.EccPrivateBlob);
+
+            var length = new[] { privateBlob[4], privateBlob[5], privateBlob[6], privateBlob[7] };
+            var partSize = BitConverter.ToInt32(length, 0); 
+            var keyParts = Slice(RightmostBits(privateBlob, partSize * 24), partSize);
+
+            // EXPORT
+            var x = keyParts[0];
+            var y = keyParts[1];
+            var d = keyParts[2];
+
+            // IMPORT
+            var partLength = BitConverter.GetBytes(partSize);
+            var magic = BitConverter.GetBytes(0x32534345);
+            var blob = Concat(magic, partLength, x, y, d);
+            var cngKey = CngKey.Import(blob, CngKeyBlobFormat.EccPrivateBlob);
+
+            string s = "";
+
+            // UnpackEccPublicBlob(publicBlob, out x, out y);
+
+            /*
+
+            // Extract the X & Y & D values
+            var xValue = x.ToString("R", CultureInfo.InvariantCulture);
+            var yValue = y.ToString("R", CultureInfo.InvariantCulture);
+            var dValue = privateBlob.Base64EncodeBytes();
+
+            var privateKeyBytes = dValue.Base64DecodeBytes();
+
+            // Sign the data with private key
+            var cngKey = CngKey.Import(privateKeyBytes, CngKeyBlobFormat.EccPrivateBlob);
+            using (var ec = new ECDsaCng(cngKey))
             {
                 ec.HashAlgorithm = alg;
-                var key = ec.Key;
-                privateKey = key.Export(CngKeyBlobFormat.EccPrivateBlob);
-                publicKey = key.Export(CngKeyBlobFormat.EccPrivateBlob);
-                var extract = ec.ToXmlString(ECKeyXmlFormat.Rfc4050);
-                Console.WriteLine(extract);
+                var messageBytes = Encoding.UTF8.GetBytes(message);
+                encryptedBytes = ec.SignData(messageBytes);
             }
+            */
 
-            using (var ec2 = new ECDsaCng())
+            // Verify the data with public key
+            // var concat = Concat(x, y);
+            // var publicKeyCng = CngKey.Import()
+            using (var check = new ECDsaCng())
             {
+                
             }
 
-            Console.ReadLine();
             /*
             var m =
                 "eyJhbGciOiJSUzI1NiIsImtpZCI6IjEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0L2lkZW50aXR5IiwiYXVkIjpbIk15QmxvZyJdLCJleHAiOjE0NTEzMTAxOTEsImlhdCI6MTQ0ODMxMDE5MSwic3ViIjoiYWRtaW5pc3RyYXRvckBob3RtYWlsLmJlIiwiYWNyIjoib3BlbmlkLnBhcGUuYXV0aF9sZXZlbC5ucy5wYXNzd29yZD0xIiwiYW1yIjoicGFzc3dvcmQiLCJhenAiOiJNeUJsb2cifQ.Ai+zreXQmsRIIosGOeuM2k8iBdBtnKa+b9m7isX6cg/1p5i4N2OK7Ul2679mdp2fcjj1f7panW0yOsJMTU1Ydo0khKiiH11bP/cShS5cDfW0haCqJuMNXN5j/X4wP4Vd7fDenqYG9wNcvQWpNn/Yqlm92lnHiGFdXF8pfKMagt8=";

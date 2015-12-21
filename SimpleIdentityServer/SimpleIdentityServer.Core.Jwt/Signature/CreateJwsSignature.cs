@@ -75,6 +75,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
         {
             using (var ec = new ECDiffieHellmanCng())
             {
+
             }
 
             return string.Empty;
