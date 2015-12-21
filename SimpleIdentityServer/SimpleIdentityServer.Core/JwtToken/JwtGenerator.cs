@@ -367,7 +367,10 @@ namespace SimpleIdentityServer.Core.JwtToken
             });
 
             // The identity token can be reused by the simple identity server.
-            audiences.Add(_simpleIdentityServerConfigurator.GetIssuerName());
+            if (!string.IsNullOrWhiteSpace(issuerName))
+            {
+                audiences.Add(issuerName);
+            }
 
             var authenticationInstant = claimsPrincipal.Claims.SingleOrDefault(c => c.Type == ClaimTypes.AuthenticationInstant);
             var authenticationInstantValue = authenticationInstant == null
@@ -544,15 +547,15 @@ namespace SimpleIdentityServer.Core.JwtToken
                 return false;
             }
 
-            if (claimParameter.ValueParameterExist && 
-                claimValues.Contains(claimParameter.Value))
+            if (claimParameter.ValueParameterExist &&
+                (claimValues == null || !claimValues.Contains(claimParameter.Value)))
             {
                 return false;
             }
 
             if (claimParameter.ValuesParameterExist &&
                 claimParameter.Values != null &&
-                claimParameter.Values.All(c => claimValues.Contains(c)))
+                (claimValues == null || !claimParameter.Values.All(c => claimValues.Contains(c))))
             {
                 return false;
             }

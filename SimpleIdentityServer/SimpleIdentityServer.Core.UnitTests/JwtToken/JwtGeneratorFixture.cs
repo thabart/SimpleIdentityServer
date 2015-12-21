@@ -290,51 +290,57 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
         }
 
         [Test]
-        public void When_Requesting_IdentityToken_JwsPayload_And_Pass_AuthTime_As_ClaimEssential_Then_TheJwsPayload_Contains_AuthenticationTime()
+        public void When_Requesting_Identity_Token_And_ExpirationTime_Is_Not_Correct_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeMockObjects();
             const string subject = "habarthierry@hotmail.fr";
+            const string state = "state";
             var currentDateTimeOffset = DateTimeOffset.UtcNow.ConvertToUnixTimestamp();
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.AuthenticationInstant, currentDateTimeOffset.ToString()),
                 new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject)
             };
-            var authorizationParameter = new AuthorizationParameter();
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
+            var authorizationParameter = new AuthorizationParameter
+            {
+                State = state
+            };
             var claimsParameter = new List<ClaimParameter>
             {
                 new ClaimParameter
                 {
-                    Name = Jwt.Constants.StandardClaimNames.AuthenticationTime,
+                    Name = Jwt.Constants.StandardClaimNames.ExpirationTime,
                     Parameters = new Dictionary<string, object>
                     {
                         {
                             Constants.StandardClaimParameterValueNames.EssentialName,
                             true
+                        },
+                        {
+                            Constants.StandardClaimParameterValueNames.ValueName,
+                            12
                         }
                     }
                 }
             };
 
-            // ACT
-            var result = _jwtGenerator.GenerateFilteredIdTokenPayload(
-                claimsPrincipal,
-                authorizationParameter,
-                claimsParameter);
-
-            // ASSERT
-            Assert.IsNotNull(result);
-            Assert.IsTrue(result.ContainsKey(Jwt.Constants.StandardResourceOwnerClaimNames.Subject));
-            Assert.IsTrue(result.ContainsKey(Jwt.Constants.StandardClaimNames.AuthenticationTime));
-            Assert.That(result[Jwt.Constants.StandardResourceOwnerClaimNames.Subject].ToString(), Is.EqualTo(subject));
-            Assert.That(long.Parse(result[Jwt.Constants.StandardClaimNames.AuthenticationTime].ToString()), Is.EqualTo(currentDateTimeOffset));
+            // ACT & ASSERT
+            var exception =
+                Assert.Throws<IdentityServerExceptionWithState>(() => _jwtGenerator.GenerateFilteredIdTokenPayload(
+                    claimsPrincipal,
+                    authorizationParameter,
+                    claimsParameter));
+            Assert.IsNotNull(exception);
+            Assert.IsTrue(exception.Code == ErrorCodes.InvalidGrant);
+            Assert.IsTrue(exception.Message == string.Format(ErrorDescriptions.TheClaimIsNotValid, Jwt.Constants.StandardClaimNames.ExpirationTime));
+            Assert.IsTrue(exception.State == state);
         }
 
         [Test]
-        public void When_Requesting_IdentityToken_JwsPayload_And_PassingANotValidClaimValue_Then_An_Exception_Is_Raised()
+        public void When_Requesting_IdentityToken_JwsPayload_And_PassingANotValidClaimValue_Then_An_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeMockObjects();
@@ -375,6 +381,77 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 
             Assert.That(result.Code, Is.EqualTo(ErrorCodes.InvalidGrant));
             Assert.That(result.Message, Is.EqualTo(string.Format(ErrorDescriptions.TheClaimIsNotValid, Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject)));
+        }
+
+        [Test]
+        public void When_Requesting_IdentityToken_JwsPayload_And_Pass_AuthTime_As_ClaimEssential_Then_TheJwsPayload_Contains_AuthenticationTime()
+        {
+            // ARRANGE
+            InitializeMockObjects();
+            const string subject = "habarthierry@hotmail.fr";
+            const string nonce = "nonce";
+            var currentDateTimeOffset = DateTimeOffset.UtcNow.ConvertToUnixTimestamp();
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.AuthenticationInstant, currentDateTimeOffset.ToString()),
+                new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject)
+            };
+            var authorizationParameter = new AuthorizationParameter
+            {
+                Nonce = nonce
+            };
+            var claimIdentity = new ClaimsIdentity(claims, "fake");
+            var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
+            var claimsParameter = new List<ClaimParameter>
+            {
+                new ClaimParameter
+                {
+                    Name = Jwt.Constants.StandardClaimNames.AuthenticationTime,
+                    Parameters = new Dictionary<string, object>
+                    {
+                        {
+                            Constants.StandardClaimParameterValueNames.EssentialName,
+                            true
+                        }
+                    }
+                },
+                new ClaimParameter
+                {
+                    Name = Jwt.Constants.StandardClaimNames.Audiences,
+                    Parameters = new Dictionary<string, object>
+                    {
+                        {
+                            Constants.StandardClaimParameterValueNames.ValuesName,
+                            new [] { FakeDataSource.Instance().Clients.First().ClientId }
+                        }
+                    }
+                },
+                new ClaimParameter
+                {
+                    Name = Jwt.Constants.StandardClaimNames.Nonce,
+                    Parameters = new Dictionary<string, object>
+                    {
+                        {
+                            Constants.StandardClaimParameterValueNames.ValueName,
+                            nonce
+                        }
+                    }
+                }
+            };
+
+            // ACT
+            var result = _jwtGenerator.GenerateFilteredIdTokenPayload(
+                claimsPrincipal,
+                authorizationParameter,
+                claimsParameter);
+
+            // ASSERT
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.ContainsKey(Jwt.Constants.StandardResourceOwnerClaimNames.Subject));
+            Assert.IsTrue(result.ContainsKey(Jwt.Constants.StandardClaimNames.AuthenticationTime));
+            Assert.IsTrue(result.ContainsKey(Jwt.Constants.StandardClaimNames.Nonce));
+            Assert.That(result[Jwt.Constants.StandardResourceOwnerClaimNames.Subject].ToString(), Is.EqualTo(subject));
+            Assert.That(long.Parse(result[Jwt.Constants.StandardClaimNames.AuthenticationTime].ToString()), Is.EqualTo(currentDateTimeOffset));
         }
 
         #endregion
