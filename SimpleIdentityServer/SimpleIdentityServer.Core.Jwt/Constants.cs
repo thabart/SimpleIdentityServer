@@ -79,6 +79,7 @@ namespace SimpleIdentityServer.Core.Jwt
 
         public static List<string> AllStandardResourceOwnerClaimNames = new List<string>
         {
+            StandardResourceOwnerClaimNames.Subject,
             StandardResourceOwnerClaimNames.Address,
             StandardResourceOwnerClaimNames.BirthDate,
             StandardResourceOwnerClaimNames.Email,

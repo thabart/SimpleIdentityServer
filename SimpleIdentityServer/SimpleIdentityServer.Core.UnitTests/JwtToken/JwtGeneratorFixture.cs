@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Globalization;
+using System.Linq;
 using Moq;
 using NUnit.Framework;
 using SimpleIdentityServer.Core.Configuration;
@@ -22,13 +23,25 @@ using SimpleIdentityServer.DataAccess.Fake;
 namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 {
     [TestFixture]
-    public class JwtGeneratorFixture : BaseFixture
+    public class JwtGeneratorFixture
     {
         private IJwtGenerator _jwtGenerator;
 
         private Mock<ISimpleIdentityServerConfigurator> _simpleIdentityServerConfigurator;
 
         #region GeneratedIdTokenPayloadForScopes
+
+        [Test]
+        public void When_Passing_Null_Parameters_To_GenerateIdTokenPayloadForScopes_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeMockObjects();
+            var authorizationParameter = new AuthorizationParameter();
+
+            // ACT & ASSERT
+            Assert.Throws<ArgumentNullException>(() => _jwtGenerator.GenerateIdTokenPayloadForScopes(null, null));
+            Assert.Throws<ArgumentNullException>(() => _jwtGenerator.GenerateIdTokenPayloadForScopes(null, authorizationParameter));
+        }
 
         [Test]
         public void When_Requesting_IdentityToken_JwsPayload_And_IndicateTheMaxAge_Then_TheJwsPayload_Contains_AuthenticationTime()
@@ -40,7 +53,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.AuthenticationInstant, currentDateTimeOffset.ToString()),
-                new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject)
+                new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject)
             };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
@@ -56,10 +69,10 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 
             // ASSERT
             Assert.IsNotNull(result);
-            Assert.IsTrue(result.ContainsKey(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject));
-            Assert.IsTrue(result.ContainsKey(Core.Jwt.Constants.StandardClaimNames.AuthenticationTime));
-            Assert.That(result[Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject].ToString(), Is.EqualTo(subject));
-            Assert.IsNotEmpty(result[Core.Jwt.Constants.StandardClaimNames.AuthenticationTime].ToString());
+            Assert.IsTrue(result.ContainsKey(Jwt.Constants.StandardResourceOwnerClaimNames.Subject));
+            Assert.IsTrue(result.ContainsKey(Jwt.Constants.StandardClaimNames.AuthenticationTime));
+            Assert.That(result[Jwt.Constants.StandardResourceOwnerClaimNames.Subject].ToString(), Is.EqualTo(subject));
+            Assert.IsNotEmpty(result[Jwt.Constants.StandardClaimNames.AuthenticationTime].ToString());
         }
 
         [Test]
@@ -72,7 +85,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             const string subject = "habarthierry@hotmail.fr";
             var claims = new List<Claim>
             {
-                new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject)
+                new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject)
             };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
@@ -89,7 +102,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 
             // ASSERT
             Assert.IsNotNull(result);
-            Assert.IsTrue(result.ContainsKey(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject));
+            Assert.IsTrue(result.ContainsKey(Jwt.Constants.StandardResourceOwnerClaimNames.Subject));
             Assert.IsTrue(result.Audiences.Count() > 1);
             Assert.IsTrue(result.Azp == clientId);
         }
@@ -134,9 +147,10 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             InitializeMockObjects();
             const string issuerName = "IssuerName";
             const string subject = "habarthierry@hotmail.fr";
+            var authorizationParameter = new AuthorizationParameter();
             var claims = new List<Claim>
             {
-                new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject)
+                new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject)
             };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
@@ -145,7 +159,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             // ACT
             var result = _jwtGenerator.GenerateIdTokenPayloadForScopes(
                 claimsPrincipal,
-                null);
+                authorizationParameter);
 
             // ASSERT
             Assert.IsNotNull(result);
@@ -162,6 +176,120 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
         #region GenerateFilteredIdTokenPayload
 
         [Test]
+        public void When_Passing_Null_Parameters_To_GenerateFilteredIdTokenPayload_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeMockObjects();
+            var authorizationParameter = new AuthorizationParameter();
+
+            // ACT & ASSERT
+            Assert.Throws<ArgumentNullException>(() => _jwtGenerator.GenerateFilteredIdTokenPayload(null, null, null));
+            Assert.Throws<ArgumentNullException>(() => _jwtGenerator.GenerateFilteredIdTokenPayload(null, authorizationParameter, null));
+        }
+
+        [Test]
+        public void When_Requesting_Identity_Token_And_Audiences_Is_Not_Correct_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeMockObjects();
+            const string subject = "habarthierry@hotmail.fr";
+            const string state = "state";
+            var currentDateTimeOffset = DateTimeOffset.UtcNow.ConvertToUnixTimestamp();
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.AuthenticationInstant, currentDateTimeOffset.ToString()),
+                new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject)
+            };
+            var claimIdentity = new ClaimsIdentity(claims, "fake");
+            var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
+            var authorizationParameter = new AuthorizationParameter
+            {
+                State = state
+            };
+            var claimsParameter = new List<ClaimParameter>
+            {
+                new ClaimParameter
+                {
+                    Name = Jwt.Constants.StandardClaimNames.Audiences,
+                    Parameters = new Dictionary<string, object>
+                    {
+                        {
+                            Constants.StandardClaimParameterValueNames.EssentialName,
+                            true
+                        },
+                        {
+                            Constants.StandardClaimParameterValueNames.ValuesName,
+                            new [] { "audience" }
+                        }
+                    }
+                }
+            };
+
+            // ACT & ASSERT
+            var exception =
+                Assert.Throws<IdentityServerExceptionWithState>(() => _jwtGenerator.GenerateFilteredIdTokenPayload(
+                    claimsPrincipal,
+                    authorizationParameter,
+                    claimsParameter));
+            Assert.IsNotNull(exception);
+            Assert.IsTrue(exception.Code == ErrorCodes.InvalidGrant);
+            Assert.IsTrue(exception.Message == string.Format(ErrorDescriptions.TheClaimIsNotValid, Jwt.Constants.StandardClaimNames.Audiences));
+            Assert.IsTrue(exception.State == state);
+        }
+
+        [Test]
+        public void When_Requesting_Identity_Token_And_Issuer_Claim_Is_Not_Correct_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeMockObjects();
+            const string subject = "habarthierry@hotmail.fr";
+            const string state = "state";
+            var currentDateTimeOffset = DateTimeOffset.UtcNow.ConvertToUnixTimestamp();
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.AuthenticationInstant, currentDateTimeOffset.ToString()),
+                new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject)
+            };
+            var claimIdentity = new ClaimsIdentity(claims, "fake");
+            var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
+            var authorizationParameter = new AuthorizationParameter
+            {
+                State = state
+            };
+            var claimsParameter = new List<ClaimParameter>
+            {
+                new ClaimParameter
+                {
+                    Name = Jwt.Constants.StandardClaimNames.Issuer,
+                    Parameters = new Dictionary<string, object>
+                    {
+                        {
+                            Constants.StandardClaimParameterValueNames.EssentialName,
+                            true
+                        },
+                        {
+                            Constants.StandardClaimParameterValueNames.ValueName,
+                            "issuer"
+                        }
+                    }
+                }
+            };
+            _simpleIdentityServerConfigurator.Setup(s => s.GetIssuerName())
+                .Returns("fake_issuer");
+
+            // ACT & ASSERT
+            var exception =
+                Assert.Throws<IdentityServerExceptionWithState>(() => _jwtGenerator.GenerateFilteredIdTokenPayload(
+                    claimsPrincipal,
+                    authorizationParameter,
+                    claimsParameter));
+            Assert.IsNotNull(exception);
+            Assert.IsTrue(exception.Code == ErrorCodes.InvalidGrant);
+            Assert.IsTrue(exception.Message == string.Format(ErrorDescriptions.TheClaimIsNotValid, Jwt.Constants.StandardClaimNames.Issuer));
+            Assert.IsTrue(exception.State == state);
+        }
+
+        [Test]
         public void When_Requesting_IdentityToken_JwsPayload_And_Pass_AuthTime_As_ClaimEssential_Then_TheJwsPayload_Contains_AuthenticationTime()
         {
             // ARRANGE
@@ -171,19 +299,20 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.AuthenticationInstant, currentDateTimeOffset.ToString()),
-                new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject)
+                new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject)
             };
+            var authorizationParameter = new AuthorizationParameter();
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
             var claimsParameter = new List<ClaimParameter>
             {
                 new ClaimParameter
                 {
-                    Name = Core.Jwt.Constants.StandardClaimNames.AuthenticationTime,
+                    Name = Jwt.Constants.StandardClaimNames.AuthenticationTime,
                     Parameters = new Dictionary<string, object>
                     {
                         {
-                            Core.Constants.StandardClaimParameterValueNames.EssentialName,
+                            Constants.StandardClaimParameterValueNames.EssentialName,
                             true
                         }
                     }
@@ -193,15 +322,15 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             // ACT
             var result = _jwtGenerator.GenerateFilteredIdTokenPayload(
                 claimsPrincipal,
-                null,
+                authorizationParameter,
                 claimsParameter);
 
             // ASSERT
             Assert.IsNotNull(result);
-            Assert.IsTrue(result.ContainsKey(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject));
-            Assert.IsTrue(result.ContainsKey(Core.Jwt.Constants.StandardClaimNames.AuthenticationTime));
-            Assert.That(result[Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject].ToString(), Is.EqualTo(subject));
-            Assert.That(long.Parse(result[Core.Jwt.Constants.StandardClaimNames.AuthenticationTime].ToString()), Is.EqualTo(currentDateTimeOffset));
+            Assert.IsTrue(result.ContainsKey(Jwt.Constants.StandardResourceOwnerClaimNames.Subject));
+            Assert.IsTrue(result.ContainsKey(Jwt.Constants.StandardClaimNames.AuthenticationTime));
+            Assert.That(result[Jwt.Constants.StandardResourceOwnerClaimNames.Subject].ToString(), Is.EqualTo(subject));
+            Assert.That(long.Parse(result[Jwt.Constants.StandardClaimNames.AuthenticationTime].ToString()), Is.EqualTo(currentDateTimeOffset));
         }
 
         [Test]
@@ -213,8 +342,9 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             const string notValidSubject = "habarthierry@hotmail.be";
             var claims = new List<Claim>
             {
-                new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject)
+                new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject)
             };
+            var authorizationParameter = new AuthorizationParameter();
 
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
@@ -226,11 +356,11 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                     Parameters = new Dictionary<string, object>
                     {
                         {
-                            Core.Constants.StandardClaimParameterValueNames.EssentialName,
+                            Constants.StandardClaimParameterValueNames.EssentialName,
                             true
                         },
                         {
-                            Core.Constants.StandardClaimParameterValueNames.ValueName,
+                            Constants.StandardClaimParameterValueNames.ValueName,
                             notValidSubject
                         }
                     }
@@ -240,7 +370,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             // ACT & ASSERTS
             var result = Assert.Throws<IdentityServerExceptionWithState>(() => _jwtGenerator.GenerateFilteredIdTokenPayload(
                 claimsPrincipal,
-                null,
+                authorizationParameter,
                 claimsParameter));
 
             Assert.That(result.Code, Is.EqualTo(ErrorCodes.InvalidGrant));
@@ -252,6 +382,18 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
         #region GenerateUserInfoPayloadForScope
 
         [Test]
+        public void When_Passing_Null_Parameters_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeMockObjects();
+            var authorizationParameter = new AuthorizationParameter();
+
+            // ACT & ASSERT
+            Assert.Throws<ArgumentNullException>(() => _jwtGenerator.GenerateUserInfoPayloadForScope(null, null));
+            Assert.Throws<ArgumentNullException>(() => _jwtGenerator.GenerateUserInfoPayloadForScope(null, authorizationParameter));
+        }
+
+        [Test]
         public void When_Requesting_UserInformation_JwsPayload_For_Scopes_Then_The_JwsPayload_Is_Correct()
         {
             // ARRANGE
@@ -260,8 +402,8 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             const string name = "Habart Thierry";
             var claims = new List<Claim>
             {
-                new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Name, name),
-                new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject)
+                new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Name, name),
+                new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject)
             };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
@@ -278,27 +420,38 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 
             // ASSERT
             Assert.IsNotNull(result);
-            Assert.IsTrue(result.ContainsKey(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject));
-            Assert.IsTrue(result.ContainsKey(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Name));
-            Assert.That(result[Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject].ToString(), Is.EqualTo(subject));
-            Assert.That(result[Core.Jwt.Constants.StandardResourceOwnerClaimNames.Name].ToString(), Is.EqualTo(name));
+            Assert.IsTrue(result.ContainsKey(Jwt.Constants.StandardResourceOwnerClaimNames.Subject));
+            Assert.IsTrue(result.ContainsKey(Jwt.Constants.StandardResourceOwnerClaimNames.Name));
+            Assert.That(result[Jwt.Constants.StandardResourceOwnerClaimNames.Subject].ToString(), Is.EqualTo(subject));
+            Assert.That(result[Jwt.Constants.StandardResourceOwnerClaimNames.Name].ToString(), Is.EqualTo(name));
         }
-
+        
         #endregion
 
         #region GenerateFilteredUserInfoPayload
 
         [Test]
-        public void When_Requesting_UserInformation_JwsPayload_For_CertainClaims_Then_The_JwsPayload_Is_Correct()
+        public void When_Passing_Null_Parameters_To_GenerateFilteredUserInfoPayload_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeMockObjects();
-            const string subject = "habarthierry@hotmail.fr";
-            const string name = "Habart Thierry";
+            var authorizationParameter = new AuthorizationParameter();
+            
+            // ACT & ASSERT
+            Assert.Throws<ArgumentNullException>(() => _jwtGenerator.GenerateFilteredUserInfoPayload(null, null, null));
+            Assert.Throws<ArgumentNullException>(() => _jwtGenerator.GenerateFilteredUserInfoPayload(null, null, authorizationParameter));
+        }
+
+        [Test]
+        public void When_Requesting_UserInformation_But_The_Essential_Claim_Subject_Is_Empty_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeMockObjects();
+            const string subject = "";
+            const string state = "state";
             var claims = new List<Claim>
             {
-                new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Name, name),
-                new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject)
+                new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject)
             };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
@@ -306,12 +459,220 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             {
                 new ClaimParameter
                 {
-                    Name = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Name,
+                    Name = Jwt.Constants.StandardResourceOwnerClaimNames.Subject,
                     Parameters = new Dictionary<string, object>
                     {
                         {
-                            Core.Constants.StandardClaimParameterValueNames.EssentialName,
+                            Constants.StandardClaimParameterValueNames.EssentialName,
                             true
+                        }
+                    }
+                }
+            };
+
+            var authorizationParameter = new AuthorizationParameter
+            {
+                Scope = "profile",
+                State = state
+            };
+
+            // ACT & ASSERT
+            var exception = Assert.Throws<IdentityServerExceptionWithState>(() => _jwtGenerator.GenerateFilteredUserInfoPayload(
+                claimsParameter,
+                claimsPrincipal,
+                authorizationParameter));
+            Assert.IsNotNull(exception);
+            Assert.IsTrue(exception.Code == ErrorCodes.InvalidGrant);
+            Assert.IsTrue(exception.Message == string.Format(ErrorDescriptions.TheClaimIsNotValid, Jwt.Constants.StandardResourceOwnerClaimNames.Subject));
+            Assert.IsTrue(exception.State == state);
+        }
+
+        [Test]
+        public void When_Requesting_UserInformation_But_The_Subject_Claim_Value_Is_Not_Correct_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeMockObjects();
+            const string subject = "invalid@loki.be";
+            const string state = "state";
+            var claims = new List<Claim>
+            {
+                new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject)
+            };
+            var claimIdentity = new ClaimsIdentity(claims, "fake");
+            var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
+            var claimsParameter = new List<ClaimParameter>
+            {
+                new ClaimParameter
+                {
+                    Name = Jwt.Constants.StandardResourceOwnerClaimNames.Subject,
+                    Parameters = new Dictionary<string, object>
+                    {
+                        {
+                            Constants.StandardClaimParameterValueNames.ValueName,
+                            "habarthierry@lokie.be"
+                        }
+                    }
+                }
+            };
+
+            var authorizationParameter = new AuthorizationParameter
+            {
+                Scope = "profile",
+                State = state
+            };
+
+            // ACT & ASSERT
+            var exception = Assert.Throws<IdentityServerExceptionWithState>(() => _jwtGenerator.GenerateFilteredUserInfoPayload(
+                claimsParameter,
+                claimsPrincipal,
+                authorizationParameter));
+            Assert.IsNotNull(exception);
+            Assert.IsTrue(exception.Code == ErrorCodes.InvalidGrant);
+            Assert.IsTrue(exception.Message == string.Format(ErrorDescriptions.TheClaimIsNotValid, Jwt.Constants.StandardResourceOwnerClaimNames.Subject));
+            Assert.IsTrue(exception.State == state);
+        }
+        
+        [Test]
+        public void When_Requesting_UserInformation_But_The_Essential_Claim_Name_Is_Empty_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeMockObjects();
+            const string subject = "habarthierry@hotmail.fr";
+            const string state = "state";
+            var claims = new List<Claim>
+            {
+                new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject)
+            };
+            var claimIdentity = new ClaimsIdentity(claims, "fake");
+            var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
+            var claimsParameter = new List<ClaimParameter>
+            {
+                new ClaimParameter
+                {
+                    Name = Jwt.Constants.StandardResourceOwnerClaimNames.Name,
+                    Parameters = new Dictionary<string, object>
+                    {
+                        {
+                            Constants.StandardClaimParameterValueNames.EssentialName,
+                            true
+                        }
+                    }
+                }
+            };
+
+            var authorizationParameter = new AuthorizationParameter
+            {
+                Scope = "profile",
+                State = state
+            };
+
+            // ACT & ASSERT
+            var exception = Assert.Throws<IdentityServerExceptionWithState>(() => _jwtGenerator.GenerateFilteredUserInfoPayload(
+                claimsParameter,
+                claimsPrincipal,
+                authorizationParameter));
+            Assert.IsNotNull(exception);
+            Assert.IsTrue(exception.Code == ErrorCodes.InvalidGrant);
+            Assert.IsTrue(exception.Message == string.Format(ErrorDescriptions.TheClaimIsNotValid, Jwt.Constants.StandardResourceOwnerClaimNames.Name));
+            Assert.IsTrue(exception.State == state);
+        }
+
+        [Test]
+        public void When_Requesting_UserInformation_But_The_Name_Claim_Value_Is_Not_Correct_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeMockObjects();
+            const string subject = "habarthierry@lokie.be";
+            const string state = "state";
+            var claims = new List<Claim>
+            {
+                new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject),
+                new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Name, "invalid_name")
+            };
+            var claimIdentity = new ClaimsIdentity(claims, "fake");
+            var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
+            var claimsParameter = new List<ClaimParameter>
+            {
+                new ClaimParameter
+                {
+                    Name = Jwt.Constants.StandardResourceOwnerClaimNames.Subject,
+                    Parameters = new Dictionary<string, object>
+                    {
+                        {
+                            Constants.StandardClaimParameterValueNames.ValueName,
+                            subject
+                        }
+                    }
+                },
+                new ClaimParameter
+                {
+                    Name = Jwt.Constants.StandardResourceOwnerClaimNames.Name,
+                    Parameters = new Dictionary<string, object>
+                    {
+                        {
+                            Constants.StandardClaimParameterValueNames.ValueName,
+                            "name"
+                        }
+                    }
+                }
+            };
+
+            var authorizationParameter = new AuthorizationParameter
+            {
+                Scope = "profile",
+                State = state
+            };
+
+            // ACT & ASSERT
+            var exception = Assert.Throws<IdentityServerExceptionWithState>(() => _jwtGenerator.GenerateFilteredUserInfoPayload(
+                claimsParameter,
+                claimsPrincipal,
+                authorizationParameter));
+            Assert.IsNotNull(exception);
+            Assert.IsTrue(exception.Code == ErrorCodes.InvalidGrant);
+            Assert.IsTrue(exception.Message == string.Format(ErrorDescriptions.TheClaimIsNotValid, Jwt.Constants.StandardResourceOwnerClaimNames.Name));
+            Assert.IsTrue(exception.State == state);
+        }
+
+        [Test]
+        public void When_Requesting_UserInformation_For_Some_Valid_Claims_Then_The_JwsPayload_Is_Correct()
+        {
+            // ARRANGE
+            InitializeMockObjects();
+            const string subject = "habarthierry@hotmail.fr";
+            const string name = "Habart Thierry";
+            var claims = new List<Claim>
+            {
+                new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Name, name),
+                new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject)
+            };
+            var claimIdentity = new ClaimsIdentity(claims, "fake");
+            var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
+            var claimsParameter = new List<ClaimParameter>
+            {
+                new ClaimParameter
+                {
+                    Name = Jwt.Constants.StandardResourceOwnerClaimNames.Name,
+                    Parameters = new Dictionary<string, object>
+                    {
+                        {
+                            Constants.StandardClaimParameterValueNames.EssentialName,
+                            true
+                        }
+                    }
+                },
+                new ClaimParameter
+                {
+                    Name = Jwt.Constants.StandardResourceOwnerClaimNames.Subject,
+                    Parameters = new Dictionary<string, object>
+                    {
+                        {
+                            Constants.StandardClaimParameterValueNames.EssentialName,
+                            true
+                        },
+                        {
+                            Constants.StandardClaimParameterValueNames.ValueName,
+                            subject
                         }
                     }
                 }
@@ -352,6 +713,10 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             var jweHelper = new JweHelper(aesEncryptionHelper);
             var jwsGenerator = new JwsGenerator(createJwsSignature);
             var jweGenerator = new JweGenerator(jweHelper);
+
+            FakeDataSource.Instance().Scopes = FakeOpenIdAssets.GetScopes();
+            FakeDataSource.Instance().Clients = FakeOpenIdAssets.GetClients();
+
             _jwtGenerator = new JwtGenerator(
                 _simpleIdentityServerConfigurator.Object,
                 clientRepository,

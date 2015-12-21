@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 using System.Security.Claims;
@@ -40,7 +41,7 @@ namespace SimpleIdentityServer.Core.JwtToken
     public interface IJwtGenerator
     {
         JwsPayload GenerateIdTokenPayloadForScopes(
-            ClaimsPrincipal claimPrincipal,
+            ClaimsPrincipal claimsPrincipal,
             AuthorizationParameter authorizationParameter);
 
         JwsPayload GenerateFilteredIdTokenPayload(
@@ -111,13 +112,24 @@ namespace SimpleIdentityServer.Core.JwtToken
         #region Public methods
 
         public JwsPayload GenerateIdTokenPayloadForScopes(
-            ClaimsPrincipal claimPrincipal,
+            ClaimsPrincipal claimsPrincipal,
             AuthorizationParameter authorizationParameter)
         {
+            if (authorizationParameter == null)
+            {
+                throw new ArgumentNullException("authorizationParameter");
+            }
+
+            if (claimsPrincipal == null ||
+                claimsPrincipal.Identity == null ||
+                !claimsPrincipal.IsAuthenticated())
+            {
+                throw new ArgumentNullException("claimsPrincipal");
+            }
+
             var result = new JwsPayload();
-            PopulateSubject(result, claimPrincipal, new List<ClaimParameter>(), authorizationParameter);
-            PopulateIdentityToken(result, authorizationParameter, new List<ClaimParameter>(), claimPrincipal);
-            PopulateClaimsForScopes(result, authorizationParameter, claimPrincipal);
+            FillInIdentityTokenClaims(result, authorizationParameter, new List<ClaimParameter>(), claimsPrincipal);
+            FillInResourceOwnerClaimsFromScopes(result, authorizationParameter, claimsPrincipal);
             return result;
         }
 
@@ -126,10 +138,24 @@ namespace SimpleIdentityServer.Core.JwtToken
             AuthorizationParameter authorizationParameter,
             List<ClaimParameter> claimParameters)
         {
+            if (authorizationParameter == null)
+            {
+                throw new ArgumentNullException("authorizationParameter");
+            }
+
+            if (claimsPrincipal == null ||
+                claimsPrincipal.Identity == null ||
+                !claimsPrincipal.IsAuthenticated())
+            {
+                throw new ArgumentNullException("claimsPrincipal");
+            }
+
             var result = new JwsPayload();
-            PopulateSubject(result, claimsPrincipal, claimParameters, authorizationParameter);
-            PopulateIdentityToken(result, authorizationParameter, claimParameters, claimsPrincipal);
-            PopulateIndividualClaims(result, claimParameters, claimsPrincipal, authorizationParameter);
+            FillInIdentityTokenClaims(result, authorizationParameter, claimParameters, claimsPrincipal);
+            FillInResourceOwnerClaimsByClaimsParameter(result, 
+                claimParameters, 
+                claimsPrincipal, 
+                authorizationParameter);
             return result;
         }
 
@@ -137,9 +163,20 @@ namespace SimpleIdentityServer.Core.JwtToken
             ClaimsPrincipal claimsPrincipal,
             AuthorizationParameter authorizationParameter)
         {
+            if (authorizationParameter == null)
+            {
+                throw new ArgumentNullException("authorizationParameter");
+            }
+
+            if (claimsPrincipal == null ||
+                claimsPrincipal.Identity == null ||
+                !claimsPrincipal.IsAuthenticated())
+            {
+                throw new ArgumentNullException("claimsPrincipal");
+            }
+            
             var result = new JwsPayload();
-            PopulateSubject(result, claimsPrincipal, new List<ClaimParameter>(), authorizationParameter);
-            PopulateClaimsForScopes(result, authorizationParameter, claimsPrincipal);
+            FillInResourceOwnerClaimsFromScopes(result, authorizationParameter, claimsPrincipal);
             return result;
         }
 
@@ -147,9 +184,20 @@ namespace SimpleIdentityServer.Core.JwtToken
             ClaimsPrincipal claimsPrincipal,
             AuthorizationParameter authorizationParameter)
         {
+            if (authorizationParameter == null)
+            {
+                throw new ArgumentNullException("authorizationParameter");
+            }
+
+            if (claimsPrincipal == null ||
+                claimsPrincipal.Identity == null ||
+                !claimsPrincipal.IsAuthenticated())
+            {
+                throw new ArgumentNullException("claimsPrincipal");
+            }
+
             var result = new JwsPayload();
-            PopulateSubject(result, claimsPrincipal, claimParameters, authorizationParameter);
-            PopulateIndividualClaims(result, claimParameters, claimsPrincipal, authorizationParameter);
+            FillInResourceOwnerClaimsByClaimsParameter(result, claimParameters, claimsPrincipal, authorizationParameter);
             return result;
         }
 
@@ -191,94 +239,102 @@ namespace SimpleIdentityServer.Core.JwtToken
 
         #region Private methods
 
-        private void PopulateSubject(
+        private void FillInResourceOwnerClaimsFromScopes(
             JwsPayload jwsPayload,
-            ClaimsPrincipal claimsPrincipal,
-            IEnumerable<ClaimParameter> claimParameters,
-            AuthorizationParameter authorizationParameter)
-        {
-            var state = authorizationParameter == null ? string.Empty : authorizationParameter.State;
-            var subject = claimsPrincipal.GetSubject();
-            var subjectClaimParameter =
-                claimParameters.FirstOrDefault(c => c.Name == Jwt.Constants.StandardResourceOwnerClaimNames.Subject);
-            if (subjectClaimParameter != null)
-            {
-                var subjectIsValid = ValidateClaimValue(subject, subjectClaimParameter);
-                if (!subjectIsValid)
-                {
-                    throw new IdentityServerExceptionWithState(ErrorCodes.InvalidGrant,
-                        string.Format(ErrorDescriptions.TheClaimIsNotValid, Jwt.Constants.StandardResourceOwnerClaimNames.Subject),
-                        state);
-                }
-            }
-
-            jwsPayload.Add(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject);
-        }
-
-        private void PopulateClaimsForScopes(
-            JwsPayload result,
             AuthorizationParameter authorizationParameter,
             ClaimsPrincipal claimsPrincipal)
         {
+            // 1. Fill-in the subject claim
+            var subject = claimsPrincipal.GetSubject();
+            jwsPayload.Add(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject);
+
             if (authorizationParameter == null ||
                 string.IsNullOrWhiteSpace(authorizationParameter.Scope))
             {
                 return;
             }
 
+            // 2. Fill-in the other claims
             var scopes = _parameterParserHelper.ParseScopeParameters(authorizationParameter.Scope);
             var claims = GetClaimsFromRequestedScopes(scopes, claimsPrincipal);
             foreach (var claim in claims)
             {
-                result.Add(claim.Key, claim.Value);
+                if (claim.Key == Jwt.Constants.StandardResourceOwnerClaimNames.Subject)
+                {
+                    continue;
+                }
+
+                jwsPayload.Add(claim.Key, claim.Value);
             }
         }
 
-        private void PopulateIndividualClaims(
-            JwsPayload result,
+        private void FillInResourceOwnerClaimsByClaimsParameter(
+            JwsPayload jwsPayload,
             List<ClaimParameter> claimParameters,
             ClaimsPrincipal claimsPrincipal,
             AuthorizationParameter authorizationParameter)
         {
             var state = authorizationParameter == null ? string.Empty : authorizationParameter.State;
-            var resourceOwnerClaimParameters = claimParameters.Where(c => Jwt.Constants.AllStandardResourceOwnerClaimNames.Contains(c.Name));
-            if (resourceOwnerClaimParameters != null)
+
+            // 1. Fill-In the subject - set the subject as an essential claim
+            if (claimParameters.All(c => c.Name != Jwt.Constants.StandardResourceOwnerClaimNames.Subject))
+            {
+                var essentialSubjectClaimParameter = new ClaimParameter
+                {
+                    Name = Jwt.Constants.StandardResourceOwnerClaimNames.Subject,
+                    Parameters = new Dictionary<string, object>
+                    {
+                        {
+                            Constants.StandardClaimParameterValueNames.EssentialName,
+                            true
+                        }
+                    }
+                };
+
+                claimParameters.Add(essentialSubjectClaimParameter);
+            }
+
+            // 2. Fill-In all the other resource owner claims
+            if (claimParameters == null ||
+                !claimParameters.Any())
+            {
+                return;
+            }
+
+            var resourceOwnerClaimParameters = claimParameters
+                .Where(c => Jwt.Constants.AllStandardResourceOwnerClaimNames.Contains(c.Name))
+                .ToList();
+            if (resourceOwnerClaimParameters.Any())
             {
                 var requestedClaimNames = resourceOwnerClaimParameters.Select(r => r.Name);
                 var resourceOwnerClaims = GetClaims(requestedClaimNames, claimsPrincipal);
                 foreach (var resourceOwnerClaimParameter in resourceOwnerClaimParameters)
                 {
                     var resourceOwnerClaim = resourceOwnerClaims.FirstOrDefault(c => c.Key == resourceOwnerClaimParameter.Name);
-                    if (resourceOwnerClaim.Equals(typeof(KeyValuePair<string, string>)))
-                    {
-                        throw new IdentityServerExceptionWithState(ErrorCodes.InvalidGrant,
-                            string.Format(ErrorDescriptions.TheClaimIsNotValid, resourceOwnerClaim.Key),
-                            state);
-                    }
-
-                    var isClaimValid = ValidateClaimValue(resourceOwnerClaim.Value, resourceOwnerClaimParameter);
+                    var resourceOwnerClaimValue = resourceOwnerClaim.Equals(default(KeyValuePair<string, string>)) ? string.Empty : resourceOwnerClaim.Value;
+                    var isClaimValid = ValidateClaimValue(resourceOwnerClaimValue, resourceOwnerClaimParameter);
                     if (!isClaimValid)
                     {
                         throw new IdentityServerExceptionWithState(ErrorCodes.InvalidGrant,
-                            string.Format(ErrorDescriptions.TheClaimIsNotValid, resourceOwnerClaim.Key),
+                            string.Format(ErrorDescriptions.TheClaimIsNotValid, resourceOwnerClaimParameter.Name),
                             state);
                     }
 
-                    result.Add(resourceOwnerClaim.Key, resourceOwnerClaim.Value);
+                    jwsPayload.Add(resourceOwnerClaim.Key, resourceOwnerClaim.Value);
                 }
             }
         }
 
-        private void PopulateIdentityToken(
+        private void FillInIdentityTokenClaims(
             JwsPayload jwsPayload,
             AuthorizationParameter authorizationParameter,
             List<ClaimParameter> claimParameters,
             ClaimsPrincipal claimsPrincipal)
         {
-            var nonce = authorizationParameter == null ? string.Empty : authorizationParameter.Nonce;
-            var state = authorizationParameter == null ? string.Empty : authorizationParameter.State;
-            var clientId = authorizationParameter == null ? string.Empty : authorizationParameter.ClientId;
-            var maxAge = authorizationParameter == null ? default(double) : authorizationParameter.MaxAge;
+            var nonce = authorizationParameter.Nonce;
+            var state = authorizationParameter.State;
+            var clientId = authorizationParameter.ClientId;
+            var maxAge = authorizationParameter.MaxAge;
 
             var issuerClaimParameter = claimParameters.FirstOrDefault(c => c.Name == Jwt.Constants.StandardClaimNames.Issuer);
             var audiencesClaimParameter = claimParameters.FirstOrDefault(c => c.Name == Jwt.Constants.StandardClaimNames.Audiences);
@@ -349,7 +405,7 @@ namespace SimpleIdentityServer.Core.JwtToken
 
             if (expirationTimeClaimParameter != null)
             {
-                var expirationInSecondsIsValid = ValidateClaimValue(expirationInSeconds.ToString(), expirationTimeClaimParameter);
+                var expirationInSecondsIsValid = ValidateClaimValue(expirationInSeconds.ToString(CultureInfo.InvariantCulture), expirationTimeClaimParameter);
                 if (!expirationInSecondsIsValid)
                 {
                     throw new IdentityServerExceptionWithState(ErrorCodes.InvalidGrant,
