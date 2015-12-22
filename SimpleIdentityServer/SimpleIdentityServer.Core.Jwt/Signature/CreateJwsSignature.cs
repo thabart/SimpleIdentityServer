@@ -49,7 +49,9 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
             {
                 JwsAlg.RS512, "SHA512"
             }
-        }; 
+        };
+
+        #region Rsa agorithm
 
         public string SignWithRsa(
             JwsAlg algorithm, 
@@ -71,22 +73,17 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
             }
         }
 
-        public string SignWithEllipseCurve(JwsAlg algorithm)
-        {
-            using (var ec = new ECDiffieHellmanCng())
-            {
-
-            }
-
-            return string.Empty;
-        }
-
         public bool VerifyWithRsa(
             JwsAlg algorithm,
             string serializedKeys,
             string input,
             byte[] signature)
         {
+            if (!_mappingJwsAlgorithmToRsaHashingAlgorithms.ContainsKey(algorithm))
+            {
+                return false;
+            }
+
             var plainBytes = ASCIIEncoding.ASCII.GetBytes(input);
             var hashMethod = _mappingJwsAlgorithmToRsaHashingAlgorithms[algorithm];
             using (var rsa = new RSACryptoServiceProvider())
@@ -95,5 +92,28 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
                 return rsa.VerifyData(plainBytes, hashMethod, signature);
             }
         }
+
+        #endregion
+
+        #region Elliptic Curve algorithm
+
+        public string SignWithEllipseCurve(JwsAlg algorithm)
+        {
+            // TODO : Implement the elliptic curve signature
+            using (var ec = new ECDiffieHellmanCng())
+            {
+
+            }
+
+            return string.Empty;
+        }
+
+        public bool VerifyWithEllipticCurve()
+        {
+            // TODO : Implement the verification with elliptic curve algorithm
+            return false;
+        }
+
+        #endregion
     }
 }
