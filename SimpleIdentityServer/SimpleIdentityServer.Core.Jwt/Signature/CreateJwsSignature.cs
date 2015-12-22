@@ -15,7 +15,7 @@
 #endregion
 
 using SimpleIdentityServer.Core.Common.Extensions;
-
+using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
@@ -61,6 +61,11 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
             if (!_mappingJwsAlgorithmToRsaHashingAlgorithms.ContainsKey(algorithm))
             {
                 return null;
+            }
+
+            if (string.IsNullOrWhiteSpace(serializedKeys))
+            {
+                throw new ArgumentNullException("serializedKeys");
             }
 
             var hashMethod = _mappingJwsAlgorithmToRsaHashingAlgorithms[algorithm];

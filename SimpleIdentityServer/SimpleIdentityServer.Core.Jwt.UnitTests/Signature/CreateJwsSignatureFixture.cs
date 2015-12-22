@@ -1,5 +1,9 @@
 ﻿using NUnit.Framework;
+
 using SimpleIdentityServer.Core.Jwt.Signature;
+
+using System;
+using System.Security;
 
 namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
 {
@@ -24,7 +28,17 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
         }
 
         [Test]
-        public void When_Trying_To_Rsa_Sign_With_Not_Valid_Exported_Xml_Then_Exception_Is_Thrown()
+        public void When_Passing_An_Empty_Serialized_Keys_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+
+            // ACT & ASSERT
+            Assert.Throws<ArgumentNullException>(() => _createJwsSignature.SignWithRsa(JwsAlg.RS256, string.Empty, string.Empty));
+        }
+
+        [Test]
+        public void When_Trying_To_Rsa_Sign_With_Not_Xml_Synthax_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -32,10 +46,9 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
             var serializedKeys = "invalid_serialized_keys";
 
             // ACT & ASSERT
-            // TODO : Check the exception
-            _createJwsSignature.SignWithRsa(JwsAlg.RS256,
+           Assert.Throws<XmlSyntaxException>(() => _createJwsSignature.SignWithRsa(JwsAlg.RS256,
                 serializedKeys,
-                toBeEncrypted);
+                toBeEncrypted));
         }
 
         [Test]
