@@ -89,6 +89,11 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
                 return false;
             }
 
+            if (string.IsNullOrWhiteSpace(serializedKeys))
+            {
+                throw new ArgumentNullException("serializedKeys");
+            }
+
             var plainBytes = ASCIIEncoding.ASCII.GetBytes(input);
             var hashMethod = _mappingJwsAlgorithmToRsaHashingAlgorithms[algorithm];
             using (var rsa = new RSACryptoServiceProvider())

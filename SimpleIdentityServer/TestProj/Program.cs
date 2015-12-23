@@ -408,38 +408,82 @@ namespace TestProj
 
         }
 
-        static void Main(string[] args)
+        private static CngKey GenerateRandomCngKey(CngAlgorithm cngAlgorithm)
         {
-            const string message = "message";
-            byte[] encryptedBytes;
-            var alg = CngAlgorithm.Sha256;
-            byte[] privateKey;
-            byte[] publicKey;
-
+            // Generate the parameters : x, y, & d
             var keyCreationParameter = new CngKeyCreationParameters
             {
                 ExportPolicy = CngExportPolicies.AllowPlaintextExport
             };
-            
-            var cnk = CngKey.Create(CngAlgorithm.ECDsaP256, null, keyCreationParameter);
+
+            var cnk = CngKey.Create(cngAlgorithm, null, keyCreationParameter);
             var privateBlob = cnk.Export(CngKeyBlobFormat.EccPrivateBlob);
+            var length = new[]
+            {
+                privateBlob[4],
+                privateBlob[5],
+                privateBlob[6],
+                privateBlob[7]
+            };
 
-            var length = new[] { privateBlob[4], privateBlob[5], privateBlob[6], privateBlob[7] };
-            var partSize = BitConverter.ToInt32(length, 0); 
+            var partSize = BitConverter.ToInt32(length, 0);
             var keyParts = Slice(RightmostBits(privateBlob, partSize * 24), partSize);
-
-            // EXPORT
             var x = keyParts[0];
             var y = keyParts[1];
             var d = keyParts[2];
 
-            // IMPORT
+            // IMPORT THE PARAMETERS : x, y, d
             var partLength = BitConverter.GetBytes(partSize);
             var magic = BitConverter.GetBytes(0x32534345);
             var blob = Concat(magic, partLength, x, y, d);
-            var cngKey = CngKey.Import(blob, CngKeyBlobFormat.EccPrivateBlob);
+            return CngKey.Import(blob, CngKeyBlobFormat.EccPrivateBlob);
+        }
 
-            string s = "";
+        private static string SignWithEllipticCurve(string message,
+            CngKey cngKey)
+        {
+            var plainTextBytes = Encoding.UTF8.GetBytes(message);
+            string result;
+            using (var ecsdaSignature = new ECDsaCng(cngKey))
+            {
+                result = ecsdaSignature.SignData(plainTextBytes).Base64EncodeBytes();
+            }
+
+            return result;
+        }
+
+        private static bool CheckSignatureWithEllipticCurve(string message,
+            string signature,
+            CngKey cngKey)
+        {
+            var messageBytes = Encoding.UTF8.GetBytes(message);
+            var signatureBytes = signature.Base64DecodeBytes();
+            bool result;
+            using (var ecsdaSignature = new ECDsaCng(cngKey))
+            {
+                result = ecsdaSignature.VerifyData(messageBytes, 
+                    signatureBytes);
+            }
+
+            return result;
+        }
+
+        static void Main(string[] args)
+        {
+            const string message = "message";
+            var alg = CngAlgorithm.ECDsaP256;
+            var cngKey = GenerateRandomCngKey(alg);
+
+            // Sign the message
+            var signedMessage = SignWithEllipticCurve(message,
+                cngKey);
+            var isSignatureCorrect = CheckSignatureWithEllipticCurve(message,
+                signedMessage,
+                cngKey);
+
+            Console.WriteLine(signedMessage);
+            Console.WriteLine(isSignatureCorrect);
+            Console.ReadLine();
 
             // UnpackEccPublicBlob(publicBlob, out x, out y);
 
@@ -465,10 +509,6 @@ namespace TestProj
             // Verify the data with public key
             // var concat = Concat(x, y);
             // var publicKeyCng = CngKey.Import()
-            using (var check = new ECDsaCng())
-            {
-                
-            }
 
             /*
             var m =
