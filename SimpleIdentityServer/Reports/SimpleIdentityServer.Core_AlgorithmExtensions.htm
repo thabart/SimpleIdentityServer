@@ -14,12 +14,12 @@
 <tbody>
 <tr><th>Class:</th><td>SimpleIdentityServer.Core.Extensions.AlgorithmExtensions</td></tr>
 <tr><th>Assembly:</th><td>SimpleIdentityServer.Core</td></tr>
-<tr><th>File(s):</th><td><a href="#cProjectOTHERSSimpleIdentityServerSimpleIdentityServerSimpleIdentityServerCoreExtensionsAlgorithmExtensionscs">c:\Project\OTHERS\SimpleIdentityServer\SimpleIdentityServer\SimpleIdentityServer.Core\Extensions\AlgorithmExtensions.cs</a></td></tr>
-<tr><th>Covered lines:</th><td>4</td></tr>
-<tr><th>Uncovered lines:</th><td>4</td></tr>
+<tr><th>File(s):</th><td><a href="#CProjectSimpleIdentityServerSimpleIdentityServerSimpleIdentityServerCoreExtensionsAlgorithmExtensionscs">C:\Project\SimpleIdentityServer\SimpleIdentityServer\SimpleIdentityServer.Core\Extensions\AlgorithmExtensions.cs</a></td></tr>
+<tr><th>Covered lines:</th><td>8</td></tr>
+<tr><th>Uncovered lines:</th><td>0</td></tr>
 <tr><th>Coverable lines:</th><td>8</td></tr>
 <tr><th>Total lines:</th><td>37</td></tr>
-<tr><th>Line coverage:</th><td>50%</td></tr>
+<tr><th>Line coverage:</th><td>100%</td></tr>
 </tbody>
 </table>
 <h1>Metrics</h1>
@@ -27,11 +27,11 @@
 <thead><tr><th>Method</th><th>Cyclomatic Complexity</th><th>Sequence Coverage</th><th>Branch Coverage</th></tr></thead>
 <tbody>
 <tr><td title="SimpleIdentityServer.Core.Jwt.AllAlg SimpleIdentityServer.Core.Extensions.AlgorithmExtensions::ToAllAlg(SimpleIdentityServer.Core.Jwt.JwsAlg)">ToAllAlg(...)</td><td>1</td><td>100</td><td>100</td></tr>
-<tr><td title="SimpleIdentityServer.Core.Jwt.AllAlg SimpleIdentityServer.Core.Extensions.AlgorithmExtensions::ToAllAlg(SimpleIdentityServer.Core.Jwt.JweAlg)">ToAllAlg(...)</td><td>1</td><td>0</td><td>0</td></tr>
+<tr><td title="SimpleIdentityServer.Core.Jwt.AllAlg SimpleIdentityServer.Core.Extensions.AlgorithmExtensions::ToAllAlg(SimpleIdentityServer.Core.Jwt.JweAlg)">ToAllAlg(...)</td><td>1</td><td>100</td><td>100</td></tr>
 </tbody>
 </table>
 <h1>File(s)</h1>
-<h2 id="cProjectOTHERSSimpleIdentityServerSimpleIdentityServerSimpleIdentityServerCoreExtensionsAlgorithmExtensionscs">c:\Project\OTHERS\SimpleIdentityServer\SimpleIdentityServer\SimpleIdentityServer.Core\Extensions\AlgorithmExtensions.cs</h2>
+<h2 id="CProjectSimpleIdentityServerSimpleIdentityServerSimpleIdentityServerCoreExtensionsAlgorithmExtensionscs">C:\Project\SimpleIdentityServer\SimpleIdentityServer\SimpleIdentityServer.Core\Extensions\AlgorithmExtensions.cs</h2>
 <table class="lineAnalysis">
 <thead><tr><th></th><th>#</th><th>Line</th><th></th><th>Line coverage</th></tr></thead>
 <tbody>
@@ -60,20 +60,20 @@
 <tr data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><code>23</code></td><td></td><td class="lightgray"><code>&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;static&nbsp;class&nbsp;AlgorithmExtensions</code></td></tr>
 <tr data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><code>24</code></td><td></td><td class="lightgray"><code>&nbsp;&nbsp;&nbsp;&nbsp;{</code></td></tr>
 <tr data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><code>25</code></td><td></td><td class="lightgray"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;static&nbsp;AllAlg&nbsp;ToAllAlg(this&nbsp;JwsAlg&nbsp;alg)</code></td></tr>
-<tr data-coverage="{'AllTestMethods': {'VC': '2', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">2</td><td class="rightmargin right"><code>26</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</code></td></tr>
-<tr data-coverage="{'AllTestMethods': {'VC': '2', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">2</td><td class="rightmargin right"><code>27</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;name&nbsp;=&nbsp;Enum.GetName(typeof&nbsp;(JwsAlg),&nbsp;alg);</code></td></tr>
-<tr data-coverage="{'AllTestMethods': {'VC': '2', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">2</td><td class="rightmargin right"><code>28</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;(AllAlg)Enum.Parse(typeof&nbsp;(AllAlg),&nbsp;name);</code></td></tr>
-<tr data-coverage="{'AllTestMethods': {'VC': '2', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">2</td><td class="rightmargin right"><code>29</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</code></td></tr>
+<tr data-coverage="{'AllTestMethods': {'VC': '3', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">3</td><td class="rightmargin right"><code>26</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</code></td></tr>
+<tr data-coverage="{'AllTestMethods': {'VC': '3', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">3</td><td class="rightmargin right"><code>27</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;name&nbsp;=&nbsp;Enum.GetName(typeof&nbsp;(JwsAlg),&nbsp;alg);</code></td></tr>
+<tr data-coverage="{'AllTestMethods': {'VC': '3', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">3</td><td class="rightmargin right"><code>28</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;(AllAlg)Enum.Parse(typeof&nbsp;(AllAlg),&nbsp;name);</code></td></tr>
+<tr data-coverage="{'AllTestMethods': {'VC': '3', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">3</td><td class="rightmargin right"><code>29</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</code></td></tr>
 <tr data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><code>30</code></td><td></td><td class="lightgray"><code></code></td></tr>
 <tr data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><code>31</code></td><td></td><td class="lightgray"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;static&nbsp;AllAlg&nbsp;ToAllAlg(this&nbsp;JweAlg&nbsp;alg)</code></td></tr>
-<tr data-coverage="{'AllTestMethods': {'VC': '0', 'LVS': 'red'}}"><td class="red">&nbsp;</td><td class="leftmargin rightmargin right">0</td><td class="rightmargin right"><code>32</code></td><td></td><td class="lightred"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</code></td></tr>
-<tr data-coverage="{'AllTestMethods': {'VC': '0', 'LVS': 'red'}}"><td class="red">&nbsp;</td><td class="leftmargin rightmargin right">0</td><td class="rightmargin right"><code>33</code></td><td></td><td class="lightred"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;name&nbsp;=&nbsp;Enum.GetName(typeof(JweAlg),&nbsp;alg);</code></td></tr>
-<tr data-coverage="{'AllTestMethods': {'VC': '0', 'LVS': 'red'}}"><td class="red">&nbsp;</td><td class="leftmargin rightmargin right">0</td><td class="rightmargin right"><code>34</code></td><td></td><td class="lightred"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;(AllAlg)Enum.Parse(typeof(AllAlg),&nbsp;name);</code></td></tr>
-<tr data-coverage="{'AllTestMethods': {'VC': '0', 'LVS': 'red'}}"><td class="red">&nbsp;</td><td class="leftmargin rightmargin right">0</td><td class="rightmargin right"><code>35</code></td><td></td><td class="lightred"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</code></td></tr>
+<tr data-coverage="{'AllTestMethods': {'VC': '1', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">1</td><td class="rightmargin right"><code>32</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</code></td></tr>
+<tr data-coverage="{'AllTestMethods': {'VC': '1', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">1</td><td class="rightmargin right"><code>33</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;name&nbsp;=&nbsp;Enum.GetName(typeof(JweAlg),&nbsp;alg);</code></td></tr>
+<tr data-coverage="{'AllTestMethods': {'VC': '1', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">1</td><td class="rightmargin right"><code>34</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;(AllAlg)Enum.Parse(typeof(AllAlg),&nbsp;name);</code></td></tr>
+<tr data-coverage="{'AllTestMethods': {'VC': '1', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">1</td><td class="rightmargin right"><code>35</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</code></td></tr>
 <tr data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><code>36</code></td><td></td><td class="lightgray"><code>&nbsp;&nbsp;&nbsp;&nbsp;}</code></td></tr>
 <tr data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><code>37</code></td><td></td><td class="lightgray"><code>}</code></td></tr>
 </tbody>
 </table>
-<div class="footer">Generated by: ReportGenerator 2.3.5.0<br />21/12/2015 - 14:18:05<br /><a href="https://github.com/danielpalme/ReportGenerator">GitHub</a> | <a href="http://www.palmmedia.de">www.palmmedia.de</a></div></div>
+<div class="footer">Generated by: ReportGenerator 2.3.5.0<br />04-01-16 - 20:43:39<br /><a href="https://github.com/danielpalme/ReportGenerator">GitHub</a> | <a href="http://www.palmmedia.de">www.palmmedia.de</a></div></div>
 <script type="text/javascript" src="combined.js"></script>
 </body></html>

@@ -21,6 +21,7 @@ using System.Security.Claims;
 using SimpleIdentityServer.DataAccess.Fake;
 using SimpleIdentityServer.Core.Jwt.Serializer;
 using SimpleIdentityServer.Core.Jwt;
+using System.Security.Cryptography;
 
 namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 {
@@ -776,6 +777,10 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             Assert.That(result[Core.Jwt.Constants.StandardResourceOwnerClaimNames.Name].ToString(), Is.EqualTo(name));
         }
 
+        #endregion
+
+        #region FillInOtherClaimsIdentityTokenPayload
+
         [Test]
         public void When_Passing_No_Payload_To_Procedure_FillInOtherClaimsIdentityTokenPayload_Then_Exception_Is_Thrown()
         {
@@ -893,6 +898,86 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 authorizationParameter);
             Assert.IsTrue(jwsPayload.ContainsKey(Jwt.Constants.StandardClaimNames.AtHash));
             Assert.IsTrue(jwsPayload.ContainsKey(Jwt.Constants.StandardClaimNames.CHash));
+        }
+
+        #endregion
+
+        #region Encrypt 
+
+        [Test]
+        public void When_Encrypt_Jws_Then_Jwe_Is_Returned()
+        {
+            // ARRANGE
+            InitializeMockObjects();
+            var client = FakeDataSource.Instance().Clients.First();
+            client.IdTokenEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5;
+            var serializedRsa = string.Empty;
+            using (var provider = new RSACryptoServiceProvider())
+            {
+                serializedRsa = provider.ToXmlString(true);
+            };
+            var jsonWebKey = new DataAccess.Fake.Models.JsonWebKey
+            {
+                Alg = DataAccess.Fake.Models.AllAlg.RSA1_5,
+                KeyOps = new[]
+                    {
+                        DataAccess.Fake.Models.KeyOperations.Encrypt,
+                        DataAccess.Fake.Models.KeyOperations.Decrypt
+                    },
+                Kid = "3",
+                Kty = DataAccess.Fake.Models.KeyType.RSA,
+                Use = DataAccess.Fake.Models.Use.Enc,
+                SerializedKey = serializedRsa,
+            };
+            FakeDataSource.Instance().JsonWebKeys.Add(jsonWebKey);
+            var jws = "jws";
+
+            // ACT
+            var jwe = _jwtGenerator.Encrypt(jws,
+                client.ClientId);
+
+            // ASSERT
+            Assert.IsNotEmpty(jwe);
+        }
+
+        #endregion
+
+        #region Sign
+
+        [Test]
+        public void When_Sign_Payload_Then_Jws_Is_Returned()
+        {
+            // ARRANGE
+            InitializeMockObjects();
+            var client = FakeDataSource.Instance().Clients.First();
+            client.IdTokenEncryptedResponseAlg = Jwt.Constants.JwsAlgNames.RS256;
+            var serializedRsa = string.Empty;
+            using (var provider = new RSACryptoServiceProvider())
+            {
+                serializedRsa = provider.ToXmlString(true);
+            };
+            var jsonWebKey = new DataAccess.Fake.Models.JsonWebKey
+            {
+                Alg = DataAccess.Fake.Models.AllAlg.RS256,
+                KeyOps = new[]
+                {
+                    DataAccess.Fake.Models.KeyOperations.Sign,
+                   DataAccess.Fake.Models. KeyOperations.Verify
+                },
+                Kid = "a3rMUgMFv9tPclLa6yF3zAkfquE",
+                Kty = DataAccess.Fake.Models.KeyType.RSA,
+                Use = DataAccess.Fake.Models.Use.Sig,
+                SerializedKey = serializedRsa
+            };
+            FakeDataSource.Instance().JsonWebKeys.Add(jsonWebKey);
+            var jwsPayload = new JwsPayload();
+
+            // ACT
+            var jws = _jwtGenerator.Sign(jwsPayload,
+                client.ClientId);
+
+            // ASSERT
+            Assert.IsNotEmpty(jws);
         }
 
         #endregion
