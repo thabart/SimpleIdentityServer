@@ -142,6 +142,41 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
 
         #endregion
 
+        #region Elliptic curve algorithm
+
+        #region Generate Signature
+
+        [Test]
+        public void When_Passing_EmptyString_To_The_Method_Sign_With_EC_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+
+            // ACTS & ASSERTS
+            Assert.Throws<ArgumentNullException>(() => _createJwsSignature.SignWithEllipseCurve(null, null));
+            Assert.Throws<ArgumentNullException>(() => _createJwsSignature.SignWithEllipseCurve("serialized", null));
+        }
+
+        #endregion
+
+        #region Check signature
+
+        [Test]
+        public void When_Passing_Empty_String_To_The_Method_Check_EC_Signature_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+
+            // ACTS & ASSERTS
+            Assert.Throws<ArgumentNullException>(() => _createJwsSignature.VerifyWithEllipticCurve(null, null, null));
+            Assert.Throws<ArgumentNullException>(() => _createJwsSignature.VerifyWithEllipticCurve("serialized", null, null));
+            Assert.Throws<ArgumentNullException>(() => _createJwsSignature.VerifyWithEllipticCurve("serialized", "message", null));
+        }
+
+        #endregion
+
+        #endregion
+
         private void InitializeFakeObjects()
         {
             _cngKeySerializer = new Mock<ICngKeySerializer>();

@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Serializer\CngKeySerializerFixture.cs" />
     <Compile Include="Signature\CreateJwsSignatureFixture.cs" />
     <Compile Include="Signature\JwsGeneratorFixture.cs" />
   </ItemGroup>
