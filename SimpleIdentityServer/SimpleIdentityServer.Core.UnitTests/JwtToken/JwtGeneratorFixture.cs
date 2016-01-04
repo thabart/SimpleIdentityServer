@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using SimpleIdentityServer.DataAccess.Fake;
+using SimpleIdentityServer.Core.Jwt.Serializer;
 
 namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 {
@@ -785,7 +786,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             var scopeRepository = FakeFactories.GetScopeRepository();
             var claimsMapping = new ClaimsMapping();
             var parameterParserHelper = new ParameterParserHelper(scopeRepository);
-            var createJwsSignature = new CreateJwsSignature();
+            var createJwsSignature = new CreateJwsSignature(new CngKeySerializer());
             var aesEncryptionHelper = new AesEncryptionHelper();
             var jweHelper = new JweHelper(aesEncryptionHelper);
             var jwsGenerator = new JwsGenerator(createJwsSignature);

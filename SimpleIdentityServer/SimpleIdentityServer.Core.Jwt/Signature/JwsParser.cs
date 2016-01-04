@@ -90,6 +90,12 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
                         combinedProtectedHeaderAndPayLoad,
                         signature);
                     break;
+                case KeyType.EC:
+                    signatureIsCorrect = _createJwsSignature.VerifyWithEllipticCurve(
+                        jsonWebKey.SerializedKey,
+                        combinedProtectedHeaderAndPayLoad,
+                        signature);
+                    break;
             }
             
             if (!signatureIsCorrect)

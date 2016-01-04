@@ -46,6 +46,7 @@ using SimpleIdentityServer.Core.Jwt.Encrypt.Encryption;
 using SimpleIdentityServer.Core.Api.UserInfo;
 using SimpleIdentityServer.Core.Api.UserInfo.Actions;
 using SimpleIdentityServer.Core.Translation;
+using SimpleIdentityServer.Core.Jwt.Serializer;
 
 namespace SimpleIdentityServer.Api.Tests.Common
 {
@@ -201,6 +202,8 @@ namespace SimpleIdentityServer.Api.Tests.Common
             UnityContainer.RegisterType<IClientSecretBasicAuthentication, ClientSecretBasicAuthentication>();
             UnityContainer.RegisterType<IClientSecretPostAuthentication, ClientSecretPostAuthentication>();
             UnityContainer.RegisterType<IClientAssertionAuthentication, ClientAssertionAuthentication>();
+            
+            UnityContainer.RegisterType<ICngKeySerializer, CngKeySerializer>();
 
             UnityContainer.RegisterInstance(_simpleIdentityServerEventSource);
 

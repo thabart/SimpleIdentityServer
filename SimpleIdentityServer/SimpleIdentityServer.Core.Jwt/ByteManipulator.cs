@@ -89,5 +89,27 @@ namespace SimpleIdentityServer.Core.Jwt
 
             return equals;
         }
+
+        public static byte[] RightmostBits(byte[] data, int lengthBits)
+        {
+            var byteCount = lengthBits / 8;
+            var result = new byte[byteCount];
+            Buffer.BlockCopy(data, data.Length - byteCount, result, 0, byteCount);
+            return result;
+        }
+
+        public static byte[][] Slice(byte[] array, int count)
+        {
+            var sliceCount = array.Length / count;
+            var result = new byte[sliceCount][];
+            for (int i = 0; i < sliceCount; i++)
+            {
+                var slice = new byte[count];
+                Buffer.BlockCopy(array, i * count, slice, 0, count);
+                result[i] = slice;
+            }
+
+            return result;
+        }
     }
 }

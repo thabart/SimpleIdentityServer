@@ -25,6 +25,7 @@ using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Mapping;
 using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.Core.Jwt.Serializer;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 {
@@ -711,7 +712,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             var aesEncryptionHelper = new AesEncryptionHelper();
             var jweHelper = new JweHelper(aesEncryptionHelper);
             var jweParser = new JweParser(jweHelper);
-            var createJwsSignature = new CreateJwsSignature();
+            var createJwsSignature = new CreateJwsSignature(new CngKeySerializer());
             var jwsParser = new JwsParser(createJwsSignature);
             var jwtParser = new JwtParser(jweParser, jwsParser, jsonWebKeyRepository);
             var claimsMapping = new ClaimsMapping();

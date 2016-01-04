@@ -15,8 +15,10 @@
 #endregion
 
 using SimpleIdentityServer.Core.Common.Extensions;
+using SimpleIdentityServer.Core.Jwt.Serializer;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -34,6 +36,13 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
             string serializedKeys,
             string input,
             byte[] signature);
+
+        string SignWithEllipseCurve(string serializedKeys,
+           string combinedJwsNotSigned);
+
+         bool VerifyWithEllipticCurve(string serializedKeys,
+            string message,
+            byte[] signature);
     }
 
     public class CreateJwsSignature : ICreateJwsSignature
@@ -50,6 +59,13 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
                 JwsAlg.RS512, "SHA512"
             }
         };
+
+        private readonly ICngKeySerializer _cngKeySerializer;
+
+        public CreateJwsSignature(ICngKeySerializer cngKeySerializer)
+        {
+            _cngKeySerializer = cngKeySerializer;
+        }
 
         #region Rsa agorithm
 
@@ -107,21 +123,53 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
 
         #region Elliptic Curve algorithm
 
-        public string SignWithEllipseCurve(JwsAlg algorithm)
+        public string SignWithEllipseCurve(string serializedKeys,
+            string combinedJwsNotSigned)
         {
-            // TODO : Implement the elliptic curve signature
-            using (var ec = new ECDiffieHellmanCng())
+            if (string.IsNullOrWhiteSpace(serializedKeys))
             {
-
+                throw new ArgumentNullException("serializedKeys");
             }
 
-            return string.Empty;
+            if (string.IsNullOrWhiteSpace(combinedJwsNotSigned))
+            {
+                throw new ArgumentNullException("combinedJwsNotSigned");
+            }
+
+            var cngKey = _cngKeySerializer.Deserialize(serializedKeys);
+            var plainTextBytes = Encoding.UTF8.GetBytes(combinedJwsNotSigned);
+            using (var ec = new ECDsaCng(cngKey))
+            {
+                return ec.SignData(plainTextBytes).Base64EncodeBytes();
+            }
         }
 
-        public bool VerifyWithEllipticCurve()
+        public bool VerifyWithEllipticCurve(string serializedKeys,
+            string message,
+            byte[] signature)
         {
-            // TODO : Implement the verification with elliptic curve algorithm
-            return false;
+            if (string.IsNullOrWhiteSpace(serializedKeys))
+            {
+                throw new ArgumentNullException("serializedKeys");
+            }
+
+            if (string.IsNullOrWhiteSpace(message))
+            {
+                throw new ArgumentNullException("message");
+            }
+
+            if (signature == null || !signature.Any())
+            {
+                throw new ArgumentNullException("signature");
+            }
+
+            var cngKey = _cngKeySerializer.Deserialize(serializedKeys);
+            var messageBytes = Encoding.UTF8.GetBytes(message);
+            using (var ecsdaSignature = new ECDsaCng(cngKey))
+            {
+                return ecsdaSignature.VerifyData(messageBytes,
+                    signature);
+            }
         }
 
         #endregion

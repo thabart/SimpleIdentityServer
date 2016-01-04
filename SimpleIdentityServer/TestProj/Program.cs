@@ -418,6 +418,17 @@ namespace TestProj
 
             var cnk = CngKey.Create(cngAlgorithm, null, keyCreationParameter);
             var privateBlob = cnk.Export(CngKeyBlobFormat.EccPrivateBlob);
+            // Contains both the public & private portions of an ECC key
+            var magicNumber = new[]
+            {
+                privateBlob[0],
+                privateBlob[1],
+                privateBlob[2],
+                privateBlob[3]
+            };
+            
+            var m = BitConverter.ToInt32(magicNumber, 0);
+
             var length = new[]
             {
                 privateBlob[4],
@@ -426,15 +437,22 @@ namespace TestProj
                 privateBlob[7]
             };
 
+            // Part size in octet
             var partSize = BitConverter.ToInt32(length, 0);
-            var keyParts = Slice(RightmostBits(privateBlob, partSize * 24), partSize);
+            // Total size in bits equals to : part size * 8 (to convert into octet) * 3 (number of blocks)
+            var keyParts = Slice(RightmostBits(privateBlob, partSize * 8 * 3), partSize);
             var x = keyParts[0];
             var y = keyParts[1];
             var d = keyParts[2];
 
             // IMPORT THE PARAMETERS : x, y, d
             var partLength = BitConverter.GetBytes(partSize);
-            var magic = BitConverter.GetBytes(0x32534345);
+
+            // 256 => 844317509 ==> 32
+            // 384 => 877871941 ==> 48
+            // 521 => 911426373 ==> size 66
+
+            var magic = BitConverter.GetBytes(911426373);
             var blob = Concat(magic, partLength, x, y, d);
             return CngKey.Import(blob, CngKeyBlobFormat.EccPrivateBlob);
         }
@@ -471,7 +489,7 @@ namespace TestProj
         static void Main(string[] args)
         {
             const string message = "message";
-            var alg = CngAlgorithm.ECDsaP256;
+            var alg = CngAlgorithm.ECDsaP384;
             var cngKey = GenerateRandomCngKey(alg);
 
             // Sign the message

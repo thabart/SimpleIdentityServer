@@ -1,5 +1,7 @@
-﻿using NUnit.Framework;
+﻿using Moq;
+using NUnit.Framework;
 using SimpleIdentityServer.Core.Common.Extensions;
+using SimpleIdentityServer.Core.Jwt.Serializer;
 using SimpleIdentityServer.Core.Jwt.Signature;
 
 using System;
@@ -11,6 +13,8 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
     [TestFixture]
     public sealed class CreateJwsSignatureFixture
     {
+        private Mock<ICngKeySerializer> _cngKeySerializer;
+
         private ICreateJwsSignature _createJwsSignature;
 
         #region Rsa algorithm
@@ -140,7 +144,8 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
 
         private void InitializeFakeObjects()
         {
-            _createJwsSignature = new CreateJwsSignature();   
+            _cngKeySerializer = new Mock<ICngKeySerializer>();
+            _createJwsSignature = new CreateJwsSignature(_cngKeySerializer.Object);   
         }
     }
 }

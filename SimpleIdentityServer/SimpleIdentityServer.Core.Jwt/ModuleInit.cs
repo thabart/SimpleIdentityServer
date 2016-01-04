@@ -20,6 +20,7 @@ using SimpleIdentityServer.Core.Jwt.Encrypt;
 using SimpleIdentityServer.Core.Jwt.Encrypt.Encryption;
 using SimpleIdentityServer.Core.Jwt.Mapping;
 using SimpleIdentityServer.Core.Jwt.Signature;
+using SimpleIdentityServer.Core.Jwt.Serializer;
 
 namespace SimpleIdentityServer.Core.Jwt
 {
@@ -38,6 +39,8 @@ namespace SimpleIdentityServer.Core.Jwt
             register.RegisterType<IJwsGenerator, JwsGenerator>();
             register.RegisterType<ICreateJwsSignature, CreateJwsSignature>();
             register.RegisterType<IJwsParser, JwsParser>();
+
+            register.RegisterType<ICngKeySerializer, CngKeySerializer>();
         }
     }
 }
