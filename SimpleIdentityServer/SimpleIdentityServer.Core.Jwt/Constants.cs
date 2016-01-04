@@ -44,6 +44,16 @@ namespace SimpleIdentityServer.Core.Jwt
             /// Unique identifier of the JWT.
             /// </summary>
             public static string Jti = "jti";
+
+            /// <summary>
+            /// Access token hash value
+            /// </summary>
+            public static string AtHash = "at_hash";
+
+            /// <summary>
+            /// Authorization code hash value
+            /// </summary>
+            public static string CHash = "c_hash";
         }
 
         public static class StandardResourceOwnerClaimNames

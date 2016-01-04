@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using SimpleIdentityServer.DataAccess.Fake;
 using SimpleIdentityServer.Core.Jwt.Serializer;
+using SimpleIdentityServer.Core.Jwt;
 
 namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 {
@@ -773,6 +774,125 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             Assert.IsTrue(result.ContainsKey(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Name));
             Assert.That(result[Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject].ToString(), Is.EqualTo(subject));
             Assert.That(result[Core.Jwt.Constants.StandardResourceOwnerClaimNames.Name].ToString(), Is.EqualTo(name));
+        }
+
+        [Test]
+        public void When_Passing_No_Payload_To_Procedure_FillInOtherClaimsIdentityTokenPayload_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeMockObjects();
+
+            // ACT & ASSERT
+            Assert.Throws<ArgumentNullException>(() => _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(null,
+                null,
+                null,
+                null));
+        }
+
+        [Test]
+        public void When_Client_Doesnt_Exist_And_Trying_To_FillIn_Other_Claims_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeMockObjects();
+            var jwsPayload = new JwsPayload();
+            var authorizationParameter = new AuthorizationParameter
+            {
+                ClientId = "client_doesnt_exist"
+            };
+
+            // ACT & ASSERT
+            Assert.Throws<InvalidOperationException>(() => _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(jwsPayload,
+                null,
+                null,
+                authorizationParameter));
+        }
+
+        [Test]
+        public void When_JwsAlg_Is_None_And_Trying_To_FillIn_Other_Claims_Then_The_Properties_Are_Not_Filled_In()
+        {
+            // ARRANGE
+            InitializeMockObjects();
+            var client = FakeDataSource.Instance().Clients.First();
+            client.IdTokenSignedTResponseAlg = "none";
+            var jwsPayload = new JwsPayload();
+            var authorizationParameter = new AuthorizationParameter
+            {
+                ClientId = client.ClientId
+            };
+
+            // ACT & ASSERT
+            _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(jwsPayload,
+                null,
+                null,
+                authorizationParameter);
+            Assert.IsFalse(jwsPayload.ContainsKey(Jwt.Constants.StandardClaimNames.AtHash));
+            Assert.IsFalse(jwsPayload.ContainsKey(Jwt.Constants.StandardClaimNames.CHash));
+        }
+
+        [Test]
+        public void When_JwsAlg_Is_RS256_And_AuthorizationCode_And_AccessToken_Are_Not_Empty_Then_OtherClaims_Are_FilledIn()
+        {
+            // ARRANGE
+            InitializeMockObjects();
+            var client = FakeDataSource.Instance().Clients.First();
+            client.IdTokenSignedTResponseAlg = "RS256";
+            var jwsPayload = new JwsPayload();
+            var authorizationParameter = new AuthorizationParameter
+            {
+                ClientId = client.ClientId
+            };
+
+            // ACT & ASSERT
+            _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(jwsPayload,
+                "authorization_code",
+                "access_token",
+                authorizationParameter);
+            Assert.IsTrue(jwsPayload.ContainsKey(Jwt.Constants.StandardClaimNames.AtHash));
+            Assert.IsTrue(jwsPayload.ContainsKey(Jwt.Constants.StandardClaimNames.CHash));
+        }
+
+        [Test]
+        public void When_JwsAlg_Is_RS384_And_AuthorizationCode_And_AccessToken_Are_Not_Empty_Then_OtherClaims_Are_FilledIn()
+        {
+            // ARRANGE
+            InitializeMockObjects();
+            var client = FakeDataSource.Instance().Clients.First();
+            client.IdTokenSignedTResponseAlg = "RS384";
+            var jwsPayload = new JwsPayload();
+            var authorizationParameter = new AuthorizationParameter
+            {
+                ClientId = client.ClientId
+            };
+
+            // ACT & ASSERT
+            _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(jwsPayload,
+                "authorization_code",
+                "access_token",
+                authorizationParameter);
+            Assert.IsTrue(jwsPayload.ContainsKey(Jwt.Constants.StandardClaimNames.AtHash));
+            Assert.IsTrue(jwsPayload.ContainsKey(Jwt.Constants.StandardClaimNames.CHash));
+        }
+        
+        [Test]
+        public void When_JwsAlg_Is_RS512_And_AuthorizationCode_And_AccessToken_Are_Not_Empty_Then_OtherClaims_Are_FilledIn()
+        {
+            // ARRANGE
+            InitializeMockObjects();
+            var client = FakeDataSource.Instance().Clients.First();
+            client.IdTokenSignedTResponseAlg = "RS512";
+            var jwsPayload = new JwsPayload();
+            var authorizationParameter = new AuthorizationParameter
+            {
+                ClientId = client.ClientId
+            };
+
+            // ACT & ASSERT
+            _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(jwsPayload,
+                "authorization_code",
+                "access_token",
+                authorizationParameter);
+            Assert.IsTrue(jwsPayload.ContainsKey(Jwt.Constants.StandardClaimNames.AtHash));
+            Assert.IsTrue(jwsPayload.ContainsKey(Jwt.Constants.StandardClaimNames.CHash));
         }
 
         #endregion

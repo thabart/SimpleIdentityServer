@@ -35,6 +35,9 @@ using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Encrypt;
 using SimpleIdentityServer.Core.Exceptions;
+using System.Security.Cryptography;
+using System.Text;
+using SimpleIdentityServer.Core.Common.Extensions;
 
 namespace SimpleIdentityServer.Core.JwtToken
 {
@@ -56,6 +59,11 @@ namespace SimpleIdentityServer.Core.JwtToken
         JwsPayload GenerateFilteredUserInfoPayload(
             List<ClaimParameter> claimParameters,
             ClaimsPrincipal claimsPrincipal,
+            AuthorizationParameter authorizationParameter);
+
+        void FillInOtherClaimsIdentityTokenPayload(JwsPayload jwsPayload,
+            string authorizationCode,
+            string accessToken,
             AuthorizationParameter authorizationParameter);
 
         string Sign(
@@ -86,6 +94,46 @@ namespace SimpleIdentityServer.Core.JwtToken
         private readonly IJwsGenerator _jwsGenerator;
 
         private readonly IJweGenerator _jweGenerator;
+
+        private readonly Dictionary<JwsAlg, Func<string, string>> _mappingJwsAlgToHashingFunctions = new Dictionary<JwsAlg, Func<string, string>>
+        {
+            {
+                JwsAlg.ES256, HashWithSha256
+            },
+            {
+                JwsAlg.ES384, HashWithSha384
+            },
+            {
+                JwsAlg.ES512, HashWithSha512
+            },
+            {
+                JwsAlg.HS256, HashWithSha256
+            },
+            {
+                JwsAlg.HS384, HashWithSha384
+            },
+            {
+                JwsAlg.HS512, HashWithSha512
+            },
+            {
+                JwsAlg.PS256, HashWithSha256
+            },
+            {
+                JwsAlg.PS384, HashWithSha384
+            },
+            {
+                JwsAlg.PS512, HashWithSha512
+            },
+            {
+                JwsAlg.RS256, HashWithSha256
+            },
+            {
+                JwsAlg.RS384, HashWithSha384
+            },
+            {
+                JwsAlg.RS512, HashWithSha512
+            }
+        };
 
         public JwtGenerator(
             ISimpleIdentityServerConfigurator simpleIdentityServerConfigurator,
@@ -199,6 +247,49 @@ namespace SimpleIdentityServer.Core.JwtToken
             var result = new JwsPayload();
             FillInResourceOwnerClaimsByClaimsParameter(result, claimParameters, claimsPrincipal, authorizationParameter);
             return result;
+        }
+
+        public void FillInOtherClaimsIdentityTokenPayload(JwsPayload jwsPayload,
+            string authorizationCode,
+            string accessToken,
+            AuthorizationParameter authorizationParameter)
+        {
+            if (jwsPayload == null)
+            {
+                throw new ArgumentNullException("jwsPayload");
+            }
+
+            var client = _clientValidator.ValidateClientExist(authorizationParameter.ClientId);
+            if (client == null)
+            {
+                throw new InvalidOperationException(string.Format("the client id {0} doesn't exist", 
+                    authorizationParameter.ClientId));
+            }
+
+            var alg = GetJwsAlg(client);
+            if (alg == JwsAlg.none)
+            {
+                return;
+            }
+
+            if (!_mappingJwsAlgToHashingFunctions.ContainsKey(alg))
+            {
+                throw new InvalidOperationException(string.Format("the alg {0} is not supported",
+                    alg));
+            }
+            
+            var callback = _mappingJwsAlgToHashingFunctions[alg];
+            if (!string.IsNullOrWhiteSpace(authorizationCode))
+            {
+                var hashingAuthorizationCode = callback(authorizationCode);
+                jwsPayload.Add(Jwt.Constants.StandardClaimNames.CHash, hashingAuthorizationCode);
+            }
+            
+            if (!string.IsNullOrWhiteSpace(accessToken))
+            {
+                var hashingAccessToken = callback(accessToken);
+                jwsPayload.Add(Jwt.Constants.StandardClaimNames.AtHash, hashingAccessToken);
+            }
         }
 
         public string Sign(
@@ -685,6 +776,40 @@ namespace SimpleIdentityServer.Core.JwtToken
             var expirationInSeconds = expiredDateTime.ConvertToUnixTimestamp();
             var iatInSeconds = currentDateTime.ConvertToUnixTimestamp();
             return new KeyValuePair<double, double>(expirationInSeconds, iatInSeconds);
+        }
+
+        #endregion
+
+        #region Private static methods
+
+        private static string HashWithSha256(string parameter)
+        {
+            var sha256 = SHA256Managed.Create();
+            return GetFirstPart(parameter,
+                sha256);
+        }
+
+        private static string HashWithSha384(string parameter)
+        {
+            var sha384 = SHA384.Create();
+            return GetFirstPart(parameter,
+                sha384);
+        }
+
+        private static string HashWithSha512(string parameter)
+        {
+            var sha512 = SHA512.Create();
+            return GetFirstPart(parameter,
+                sha512);
+        }
+
+        private static string GetFirstPart(string parameter,
+            HashAlgorithm alg)
+        {
+            var hashingResultBytes = alg.ComputeHash(Encoding.UTF8.GetBytes(parameter));
+            var split = ByteManipulator.SplitByteArrayInHalf(hashingResultBytes);
+            var firstPart = split[0];
+            return firstPart.Base64EncodeBytes();
         }
 
         #endregion

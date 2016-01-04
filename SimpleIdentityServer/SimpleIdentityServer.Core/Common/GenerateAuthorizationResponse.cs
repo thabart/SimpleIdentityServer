@@ -93,6 +93,12 @@ namespace SimpleIdentityServer.Core.Common
                 throw new ArgumentNullException("the authorization response cannot be generated because there's no user logged-in");
             }
 
+            var newAccessTokenGranted = false;
+            var allowedTokenScopes = string.Empty;
+            GrantedToken grantedToken = null;
+            var newAuthorizationCodeGranted = false;
+            AuthorizationCode authorizationCode = null;
+
             _simpleIdentityServerEventSource.StartGeneratingAuthorizationResponseToClient(authorizationParameter.ClientId,
                 authorizationParameter.ResponseType);
 
@@ -100,23 +106,17 @@ namespace SimpleIdentityServer.Core.Common
             var idTokenPayload = GenerateIdTokenPayload(claimsPrincipal, authorizationParameter);
             var userInformationPayload = GenerateUserInformationPayload(claimsPrincipal, authorizationParameter);
 
-            if (responses.Contains(ResponseType.id_token))
-            {
-                var idToken = GenerateIdToken(idTokenPayload, authorizationParameter);
-                actionResult.RedirectInstruction.AddParameter(Constants.StandardAuthorizationResponseNames.IdTokenName, idToken);
-            }
-
             if (responses.Contains(ResponseType.token))
             {
-                var allowedTokenScopes = string.Empty;
                 if (!string.IsNullOrWhiteSpace(authorizationParameter.Scope))
                 {
                     allowedTokenScopes = string.Join(" ", _parameterParserHelper.ParseScopeParameters(authorizationParameter.Scope));
                 }
 
                 // Check if an access token has already been generated and can be reused for that :
-                // We assumed that an access token is unique for a specific client id, user information & id token payload & for certain scopes
-                var grantedToken = _grantedTokenRepository.GetToken(
+                // We assumed that an access token is unique for a specific client id, user information 
+                // & id token payload & for certain scopes
+                grantedToken = _grantedTokenRepository.GetToken(
                     allowedTokenScopes,
                     authorizationParameter.ClientId,
                     idTokenPayload,
@@ -129,13 +129,11 @@ namespace SimpleIdentityServer.Core.Common
                         userInformationPayload,
                         idTokenPayload);
 
-                    _grantedTokenRepository.Insert(grantedToken);
-                    _simpleIdentityServerEventSource.GrantAccessToClient(authorizationParameter.ClientId,
-                        grantedToken.AccessToken,
-                        allowedTokenScopes);
+                    newAccessTokenGranted = true;
                 }
-
-                actionResult.RedirectInstruction.AddParameter(Constants.StandardAuthorizationResponseNames.AccessTokenName, grantedToken.AccessToken);
+                
+                actionResult.RedirectInstruction.AddParameter(Constants.StandardAuthorizationResponseNames.AccessTokenName, 
+                    grantedToken.AccessToken);
             }
 
             if (responses.Contains(ResponseType.code))
@@ -146,7 +144,7 @@ namespace SimpleIdentityServer.Core.Common
                 {
                     // Insert a temporary authorization code 
                     // It will be used later to retrieve tha id_token or an access token.
-                    var authorizationCode = new AuthorizationCode
+                    authorizationCode = new AuthorizationCode
                     {
                         Code = Guid.NewGuid().ToString(),
                         RedirectUri = authorizationParameter.RedirectUrl,
@@ -156,13 +154,38 @@ namespace SimpleIdentityServer.Core.Common
                         IdTokenPayload = idTokenPayload,
                         UserInfoPayLoad = userInformationPayload
                     };
-
-                    _authorizationCodeRepository.AddAuthorizationCode(authorizationCode);
-                    _simpleIdentityServerEventSource.GrantAuthorizationCodeToClient(authorizationParameter.ClientId,
-                        authorizationCode.Code,
-                        authorizationParameter.Scope);
-                    actionResult.RedirectInstruction.AddParameter(Constants.StandardAuthorizationResponseNames.AuthorizationCodeName, authorizationCode.Code);
+                    
+                    newAuthorizationCodeGranted = true;
+                    actionResult.RedirectInstruction.AddParameter(Constants.StandardAuthorizationResponseNames.AuthorizationCodeName,
+                        authorizationCode.Code);
                 }
+            }
+
+            _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(idTokenPayload,
+                authorizationCode == null ? string.Empty : authorizationCode.Code,
+                grantedToken == null ? string.Empty : grantedToken.AccessToken,
+                authorizationParameter);
+
+            if (newAccessTokenGranted)
+            {
+                _grantedTokenRepository.Insert(grantedToken);
+                _simpleIdentityServerEventSource.GrantAccessToClient(authorizationParameter.ClientId,
+                    grantedToken.AccessToken,
+                    allowedTokenScopes);
+            }
+
+            if (newAuthorizationCodeGranted)
+            {
+                _authorizationCodeRepository.AddAuthorizationCode(authorizationCode);
+                _simpleIdentityServerEventSource.GrantAuthorizationCodeToClient(authorizationParameter.ClientId,
+                    authorizationCode.Code,
+                    authorizationParameter.Scope);
+            }
+
+            if (responses.Contains(ResponseType.id_token))
+            {
+                var idToken = GenerateIdToken(idTokenPayload, authorizationParameter);
+                actionResult.RedirectInstruction.AddParameter(Constants.StandardAuthorizationResponseNames.IdTokenName, idToken);
             }
 
             if (!string.IsNullOrWhiteSpace(authorizationParameter.State))
