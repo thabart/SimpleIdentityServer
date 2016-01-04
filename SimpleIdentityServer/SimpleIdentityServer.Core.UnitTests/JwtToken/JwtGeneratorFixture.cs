@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using System.Linq;
+﻿using System.Linq;
 using Moq;
 using NUnit.Framework;
 using SimpleIdentityServer.Core.Configuration;
