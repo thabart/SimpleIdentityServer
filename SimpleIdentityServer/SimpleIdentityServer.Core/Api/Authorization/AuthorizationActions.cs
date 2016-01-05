@@ -33,9 +33,9 @@ namespace SimpleIdentityServer.Core.Api.Authorization
 {
     public interface IAuthorizationActions
     {
-        ActionResult GetAuthorization(AuthorizationParameter parameter,
-            IPrincipal claimsPrincipal,
-            string code);
+        ActionResult GetAuthorization(
+            AuthorizationParameter parameter,
+            IPrincipal claimsPrincipal);
     }
 
     public class AuthorizationActions : IAuthorizationActions
@@ -64,9 +64,9 @@ namespace SimpleIdentityServer.Core.Api.Authorization
             _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
         }
 
-        public ActionResult GetAuthorization(AuthorizationParameter parameter,
-            IPrincipal claimsPrincipal,
-            string code)
+        public ActionResult GetAuthorization(
+            AuthorizationParameter parameter,
+            IPrincipal claimsPrincipal)
         {
             _authorizationCodeGrantTypeParameterValidator.Validate(parameter);
 
@@ -82,14 +82,12 @@ namespace SimpleIdentityServer.Core.Api.Authorization
                 case AuthorizationFlow.AuthorizationCodeFlow:
                     actionResult = _getAuthorizationCodeOperation.Execute(
                         parameter,
-                        claimsPrincipal,
-                        code);
+                        claimsPrincipal);
                     break;
                 case AuthorizationFlow.ImplicitFlow:
                     actionResult =  _getTokenViaImplicitWorkflowOperation.Execute(
                         parameter,
-                        claimsPrincipal,
-                        code);
+                        claimsPrincipal);
                     break;
                 case AuthorizationFlow.HybridFlow:
 

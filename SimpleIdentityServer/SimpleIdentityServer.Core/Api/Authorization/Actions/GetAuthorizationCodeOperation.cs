@@ -33,8 +33,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
     {
         ActionResult Execute(
             AuthorizationParameter authorizationParameter, 
-            IPrincipal claimsPrincipal,
-            string code);
+            IPrincipal claimsPrincipal);
     }
 
     public class GetAuthorizationCodeOperation : IGetAuthorizationCodeOperation
@@ -61,8 +60,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
 
         public ActionResult Execute(
             AuthorizationParameter authorizationParameter,
-            IPrincipal claimsPrincipal,
-            string code)
+            IPrincipal claimsPrincipal)
         {
             if (authorizationParameter == null)
             {
@@ -74,8 +72,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
                 authorizationParameter.Scope,
                 authorizationParameter.Claims == null ? string.Empty : authorizationParameter.Claims.ToString());
             var result = _processAuthorizationRequest.Process(authorizationParameter,
-                claimsPrincipal as ClaimsPrincipal,
-                code);
+                claimsPrincipal as ClaimsPrincipal);
             var client = _clientValidator.ValidateClientExist(authorizationParameter.ClientId);
             if (!_clientValidator.ValidateGrantType(GrantType.authorization_code, client))
             {

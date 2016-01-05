@@ -49,18 +49,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             InitializeMockingObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _processAuthorizationRequest.Process(null, null, string.Empty));
-        }
-
-        [Test]
-        public void When_Passing_NoEncryptedRequest_To_Function_Then_ArgumentNullException_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeMockingObjects();
-            var authorizationParameter = new AuthorizationParameter();
-
-            // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _processAuthorizationRequest.Process(authorizationParameter, null, string.Empty));
+            Assert.Throws<ArgumentNullException>(() => _processAuthorizationRequest.Process(null, null));
         }
 
         [Test]
@@ -69,7 +58,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             // ARRANGE
             InitializeMockingObjects();
             const string state = "state";
-            const string code = "code";
             const string clientId = "fake_client";
             var authorizationParameter = new AuthorizationParameter
             {
@@ -81,7 +69,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             // ACT & ASSERTS
             var exception =
                 Assert.Throws<IdentityServerExceptionWithState>(
-                    () => _processAuthorizationRequest.Process(authorizationParameter, null, code));
+                    () => _processAuthorizationRequest.Process(authorizationParameter, null));
             Assert.That(exception.Code, Is.EqualTo(ErrorCodes.InvalidClient));
             Assert.That(exception.Message, Is.EqualTo(string.Format(ErrorDescriptions.ClientIsNotValid, clientId)));
             Assert.That(exception.State, Is.EqualTo(state));
@@ -93,7 +81,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             // ARRANGE
             InitializeMockingObjects();
             const string state = "state";
-            const string code = "code";
             const string clientId = "MyBlog";
             const string redirectUrl = "not valid redirect url";
             var authorizationParameter = new AuthorizationParameter
@@ -107,7 +94,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             // ACT & ASSERTS
             var exception =
                 Assert.Throws<IdentityServerExceptionWithState>(
-                    () => _processAuthorizationRequest.Process(authorizationParameter, null, code));
+                    () => _processAuthorizationRequest.Process(authorizationParameter, null));
             Assert.That(exception.Code, Is.EqualTo(ErrorCodes.InvalidRequestCode));
             Assert.That(exception.Message, Is.EqualTo(string.Format(ErrorDescriptions.RedirectUrlIsNotValid, redirectUrl)));
             Assert.That(exception.State, Is.EqualTo(state));
@@ -119,7 +106,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             // ARRANGE
             InitializeMockingObjects();
             const string state = "state";
-            const string code = "code";
             const string clientId = "MyBlog";
             const string redirectUrl = "http://localhost";
             var authorizationParameter = new AuthorizationParameter
@@ -134,7 +120,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             // ACT & ASSERTS
             var exception =
                 Assert.Throws<IdentityServerExceptionWithState>(
-                    () => _processAuthorizationRequest.Process(authorizationParameter, null, code));
+                    () => _processAuthorizationRequest.Process(authorizationParameter, null));
             Assert.That(exception.Code, Is.EqualTo(ErrorCodes.InvalidScope));
             Assert.That(exception.Message, Is.EqualTo(string.Format(ErrorDescriptions.TheScopesNeedToBeSpecified, Core.Constants.StandardScopes.OpenId.Name)));
             Assert.That(exception.State, Is.EqualTo(state));
@@ -146,7 +132,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             // ARRANGE
             InitializeMockingObjects();
             const string state = "state";
-            const string code = "code";
             const string clientId = "MyBlog";
             const string redirectUrl = "http://localhost";
             var authorizationParameter = new AuthorizationParameter
@@ -161,7 +146,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             // ACT & ASSERTS
             var exception =
                 Assert.Throws<IdentityServerExceptionWithState>(
-                    () => _processAuthorizationRequest.Process(authorizationParameter, null, code));
+                    () => _processAuthorizationRequest.Process(authorizationParameter, null));
             Assert.That(exception.Code, Is.EqualTo(ErrorCodes.InvalidRequestCode));
             Assert.That(exception.Message, Is.EqualTo(string.Format(ErrorDescriptions.MissingParameter
                 , Core.Constants.StandardAuthorizationRequestParameterNames.ResponseTypeName)));
@@ -174,7 +159,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             // ARRANGE
             InitializeMockingObjects();
             const string state = "state";
-            const string code = "code";
             const string clientId = "MyBlog";
             const string redirectUrl = "http://localhost";
             var authorizationParameter = new AuthorizationParameter
@@ -195,7 +179,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             // ACT & ASSERTS
             var exception =
                 Assert.Throws<IdentityServerExceptionWithState>(
-                    () => _processAuthorizationRequest.Process(authorizationParameter, null, code));
+                    () => _processAuthorizationRequest.Process(authorizationParameter, null));
             Assert.That(exception.Code, Is.EqualTo(ErrorCodes.InvalidRequestCode));
             Assert.That(exception.Message, Is.EqualTo(string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType
                 , clientId, "code")));
@@ -208,7 +192,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             // ARRANGE
             InitializeMockingObjects();
             const string state = "state";
-            const string code = "code";
             const string clientId = "MyBlog";
             const string redirectUrl = "http://localhost";
             var authorizationParameter = new AuthorizationParameter
@@ -224,7 +207,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             // ACT & ASSERTS
             var exception =
                 Assert.Throws<IdentityServerExceptionWithState>(
-                    () => _processAuthorizationRequest.Process(authorizationParameter, null, code));
+                    () => _processAuthorizationRequest.Process(authorizationParameter, null));
             Assert.That(exception.Code, Is.EqualTo(ErrorCodes.LoginRequiredCode));
             Assert.That(exception.Message, Is.EqualTo(ErrorDescriptions.TheUserNeedsToBeAuthenticated));
             Assert.That(exception.State, Is.EqualTo(state));
@@ -236,7 +219,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             // ARRANGE
             InitializeMockingObjects();
             const string state = "state";
-            const string code = "code";
             const string clientId = "MyBlog";
             const string redirectUrl = "http://localhost";
             var authorizationParameter = new AuthorizationParameter
@@ -254,7 +236,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             // ACT & ASSERTS
             var exception =
                 Assert.Throws<IdentityServerExceptionWithState>(
-                    () => _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal, code));
+                    () => _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal));
             Assert.That(exception.Code, Is.EqualTo(ErrorCodes.InteractionRequiredCode));
             Assert.That(exception.Message, Is.EqualTo(ErrorDescriptions.TheUserNeedsToGiveHisConsent));
             Assert.That(exception.State, Is.EqualTo(state));
@@ -266,7 +248,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             // ARRANGE
             InitializeMockingObjects();
             const string state = "state";
-            const string code = "code";
             const string clientId = "MyBlog";
             const string subject = "habarthierry@hotmail.fr";
             const string redirectUrl = "http://localhost";
@@ -304,7 +285,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
 
             // ACT
-            var exception = Assert.Throws<IdentityServerExceptionWithState>(() => _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal, code));
+            var exception = Assert.Throws<IdentityServerExceptionWithState>(() => _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal));
             Assert.That(exception.Code, Is.EqualTo(ErrorCodes.InvalidRequestCode));
             Assert.That(exception.Message, Is.EqualTo(ErrorDescriptions.TheIdTokenHintParameterIsNotAValidToken));
         }
@@ -315,7 +296,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             // ARRANGE
             InitializeMockingObjects();
             const string state = "state";
-            const string code = "code";
             const string clientId = "MyBlog";
             const string subject = "habarthierry@hotmail.fr";
             const string redirectUrl = "http://localhost";
@@ -361,7 +341,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             authorizationParameter.IdTokenHint = _jwtGenerator.Sign(jwtPayload, clientId);
 
             // ACT
-            var exception = Assert.Throws<IdentityServerExceptionWithState>(() => _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal, code));
+            var exception = Assert.Throws<IdentityServerExceptionWithState>(() => _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal));
             Assert.That(exception.Code, Is.EqualTo(ErrorCodes.InvalidRequestCode));
             Assert.That(exception.Message, Is.EqualTo(ErrorDescriptions.TheIdentityTokenDoesntContainSimpleIdentityServerAsAudience));
         }
@@ -372,7 +352,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             // ARRANGE
             InitializeMockingObjects();
             const string state = "state";
-            const string code = "code";
             const string clientId = "MyBlog";
             const string subject = "habarthierry@hotmail.fr";
             const string issuerName = "audience";
@@ -423,7 +402,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             authorizationParameter.IdTokenHint = _jwtGenerator.Sign(jwtPayload, clientId);
 
             // ACT
-            var exception = Assert.Throws<IdentityServerExceptionWithState>(() => _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal, code));
+            var exception = Assert.Throws<IdentityServerExceptionWithState>(() => _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal));
             Assert.That(exception.Code, Is.EqualTo(ErrorCodes.InvalidRequestCode));
             Assert.That(exception.Message, Is.EqualTo(ErrorDescriptions.TheCurrentAuthenticatedUserDoesntMatchWithTheIdentityToken));
         }
@@ -434,7 +413,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             // ARRANGE
             InitializeMockingObjects();
             const string state = "state";
-            const string code = "code";
             const string clientId = "MyBlog";
             const string redirectUrl = "http://localhost";
             var authorizationParameter = new AuthorizationParameter
@@ -452,7 +430,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             // ACT & ASSERTS
             var exception =
                 Assert.Throws<IdentityServerExceptionWithState>(
-                    () => _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal, code));
+                    () => _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal));
             Assert.That(exception.Code, Is.EqualTo(ErrorCodes.InvalidRequestCode));
             Assert.That(exception.Message, Is.EqualTo(string.Format(ErrorDescriptions.ThePromptParameterIsNotSupported, "select_account")));
             Assert.That(exception.State, Is.EqualTo(state));
@@ -468,7 +446,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             // ARRANGE
             InitializeMockingObjects();
             const string state = "state";
-            const string code = "code";
             const string clientId = "MyBlog";
             const string redirectUrl = "http://localhost";
             const long maxAge = 300;
@@ -493,14 +470,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
 
             // ACT
-            var result = _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal, code);
+            var result = _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal);
 
             // ASSERTS
             Assert.IsNotNull(result);
             Assert.That(result.RedirectInstruction.Action, Is.EqualTo(Core.Results.IdentityServerEndPoints.AuthenticateIndex));
-            Assert.That(result.RedirectInstruction.Parameters.Count(), Is.EqualTo(1));
-            Assert.That(result.RedirectInstruction.Parameters.First().Name, Is.EqualTo(Core.Constants.StandardAuthorizationResponseNames.AuthorizationCodeName));
-            Assert.That(result.RedirectInstruction.Parameters.First().Value, Is.EqualTo(code));
         }
 
         [Test]
@@ -509,7 +483,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             // ARRANGE
             InitializeMockingObjects();
             const string state = "state";
-            const string code = "code";
             const string clientId = "MyBlog";
             const string redirectUrl = "http://localhost";
             var authorizationParameter = new AuthorizationParameter
@@ -522,14 +495,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             };
 
             // ACT
-            var result = _processAuthorizationRequest.Process(authorizationParameter, null, code);
+            var result = _processAuthorizationRequest.Process(authorizationParameter, null);
 
             // ASSERTS
             Assert.IsNotNull(result);
             Assert.That(result.RedirectInstruction.Action, Is.EqualTo(Core.Results.IdentityServerEndPoints.AuthenticateIndex));
-            Assert.That(result.RedirectInstruction.Parameters.Count(), Is.EqualTo(1));
-            Assert.That(result.RedirectInstruction.Parameters.First().Name, Is.EqualTo(Core.Constants.StandardAuthorizationResponseNames.AuthorizationCodeName));
-            Assert.That(result.RedirectInstruction.Parameters.First().Value, Is.EqualTo(code));
         }
 
         [Test]
@@ -538,7 +508,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             // ARRANGE
             InitializeMockingObjects();
             const string state = "state";
-            const string code = "code";
             const string clientId = "MyBlog";
             const string redirectUrl = "http://localhost";
             var authorizationParameter = new AuthorizationParameter
@@ -554,14 +523,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
 
             // ACT
-            var result = _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal, code);
+            var result = _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal);
 
             // ASSERTS
             Assert.IsNotNull(result);
             Assert.That(result.RedirectInstruction.Action, Is.EqualTo(Core.Results.IdentityServerEndPoints.ConsentIndex));
-            Assert.That(result.RedirectInstruction.Parameters.Count(), Is.EqualTo(1));
-            Assert.That(result.RedirectInstruction.Parameters.First().Name, Is.EqualTo(Core.Constants.StandardAuthorizationResponseNames.AuthorizationCodeName));
-            Assert.That(result.RedirectInstruction.Parameters.First().Value, Is.EqualTo(code));
         }
 
         [Test]
@@ -570,7 +536,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             // ARRANGE
             InitializeMockingObjects();
             const string state = "state";
-            const string code = "code";
             const string clientId = "MyBlog";
             const string redirectUrl = "http://localhost";
             var authorizationParameter = new AuthorizationParameter
@@ -584,14 +549,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             };
 
             // ACT
-            var result = _processAuthorizationRequest.Process(authorizationParameter, null, code);
+            var result = _processAuthorizationRequest.Process(authorizationParameter, null);
 
             // ASSERTS
             Assert.IsNotNull(result);
             Assert.That(result.RedirectInstruction.Action, Is.EqualTo(Core.Results.IdentityServerEndPoints.AuthenticateIndex));
-            Assert.That(result.RedirectInstruction.Parameters.Count(), Is.EqualTo(1));
-            Assert.That(result.RedirectInstruction.Parameters.First().Name, Is.EqualTo(Core.Constants.StandardAuthorizationResponseNames.AuthorizationCodeName));
-            Assert.That(result.RedirectInstruction.Parameters.First().Value, Is.EqualTo(code));
         }
 
         [Test]
@@ -600,7 +562,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             // ARRANGE
             InitializeMockingObjects();
             const string state = "state";
-            const string code = "code";
             const string clientId = "MyBlog";
             const string subject = "habarthierry@hotmail.fr";
             const string redirectUrl = "http://localhost";
@@ -637,7 +598,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
 
             // ACT
-            var result = _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal, code);
+            var result = _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal);
             
             // ASSERTS
             Assert.IsNotNull(result);
@@ -655,7 +616,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             // ARRANGE
             InitializeMockingObjects();
             const string state = "state";
-            const string code = "code";
             const string clientId = "MyBlog";
             const string redirectUrl = "http://localhost";
             const long maxAge = 300;
@@ -682,14 +642,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
 
             // ACT
-            var result = _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal, code);
+            var result = _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal);
 
             // ASSERTS
             Assert.IsNotNull(result);
             Assert.That(result.RedirectInstruction.Action, Is.EqualTo(Core.Results.IdentityServerEndPoints.AuthenticateIndex));
-            Assert.That(result.RedirectInstruction.Parameters.Count(), Is.EqualTo(1));
-            Assert.That(result.RedirectInstruction.Parameters.First().Name, Is.EqualTo(Core.Constants.StandardAuthorizationResponseNames.AuthorizationCodeName));
-            Assert.That(result.RedirectInstruction.Parameters.First().Value, Is.EqualTo(code));
             _simpleIdentityServerEventSource.Verify(s => s.StartProcessingAuthorizationRequest(jsonAuthorizationParameter));
             _simpleIdentityServerEventSource.Verify(s => s.EndProcessingAuthorizationRequest(jsonAuthorizationParameter, "RedirectToAction", "AuthenticateIndex"));
         }

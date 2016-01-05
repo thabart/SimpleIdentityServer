@@ -32,8 +32,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
     {
         ActionResult Execute(
             AuthorizationParameter authorizationParameter,
-            IPrincipal principal,
-            string code);
+            IPrincipal principal);
     }
 
     public class GetTokenViaImplicitWorkflowOperation : IGetTokenViaImplicitWorkflowOperation
@@ -56,8 +55,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
 
         public ActionResult Execute(
             AuthorizationParameter authorizationParameter,
-            IPrincipal principal,
-            string code)
+            IPrincipal principal)
         {
             if (authorizationParameter == null)
             {
@@ -78,8 +76,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
 
             var result = _processAuthorizationRequest.Process(
                 authorizationParameter,
-                principal as ClaimsPrincipal,
-                code);
+                principal as ClaimsPrincipal);
 
             if (result.Type == TypeActionResult.RedirectToCallBackUrl)
             {

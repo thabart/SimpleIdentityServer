@@ -36,7 +36,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _getAuthorizationCodeOperation.Execute(null, null, null));
+            Assert.Throws<ArgumentNullException>(() => _getAuthorizationCodeOperation.Execute(null, null));
         }
 
         [Test]
@@ -64,15 +64,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             var jsonAuthorizationParameter = authorizationParameter.SerializeWithJavascript();
             _processAuthorizationRequestFake.Setup(p => p.Process(
                 It.IsAny<AuthorizationParameter>(),
-                It.IsAny<ClaimsPrincipal>(),
-                It.IsAny<string>())).Returns(actionResult);
+                It.IsAny<ClaimsPrincipal>())).Returns(actionResult);
             _clientValidatorFake.Setup(c => c.ValidateClientExist(It.IsAny<string>()))
                 .Returns(client);
             _clientValidatorFake.Setup(c => c.ValidateGrantType(It.IsAny<GrantType>(), It.IsAny<Client>()))
                 .Returns(true);
 
             // ACT
-            _getAuthorizationCodeOperation.Execute(authorizationParameter, null, null);
+            _getAuthorizationCodeOperation.Execute(authorizationParameter, null);
 
             // ASSERTS
             _simpleIdentityServerEventSourceFake.Verify(s => s.StartAuthorizationCodeFlow(clientId, scope, string.Empty));
@@ -97,7 +96,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 
             // ACT & ASSERTS
             var exception = Assert.Throws<IdentityServerExceptionWithState>(
-                () => _getAuthorizationCodeOperation.Execute(authorizationParameter, null, null));
+                () => _getAuthorizationCodeOperation.Execute(authorizationParameter, null));
 
             Assert.IsNotNull(exception);
             Assert.IsTrue(exception.Code.Equals(ErrorCodes.InvalidRequestCode));

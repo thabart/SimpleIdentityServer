@@ -31,7 +31,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             InitializeFakeObjects();
             
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _getTokenViaImplicitWorkflowOperation.Execute(null, null, null));
+            Assert.Throws<ArgumentNullException>(() => _getTokenViaImplicitWorkflowOperation.Execute(null, null));
         }
 
         [Test]
@@ -45,7 +45,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             };
 
             // ACT & ASSERTS
-            var exception = Assert.Throws<IdentityServerExceptionWithState>(() => _getTokenViaImplicitWorkflowOperation.Execute(authorizationParameter, null, null));
+            var exception = Assert.Throws<IdentityServerExceptionWithState>(() => _getTokenViaImplicitWorkflowOperation.Execute(authorizationParameter, null));
             Assert.IsTrue(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.IsTrue(exception.Message == string.Format(ErrorDescriptions.MissingParameter, Constants.StandardAuthorizationRequestParameterNames.NonceName));
             Assert.IsTrue(exception.State == authorizationParameter.State);
@@ -76,11 +76,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             };
             var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity("fake"));
             _processAuthorizationRequestFake.Setup(p => p.Process(It.IsAny<AuthorizationParameter>(),
-                It.IsAny<ClaimsPrincipal>(),
-                It.IsAny<string>())).Returns(actionResult);
+                It.IsAny<ClaimsPrincipal>())).Returns(actionResult);
 
             // ACT
-            var result = _getTokenViaImplicitWorkflowOperation.Execute(authorizationParameter, claimsPrincipal, null);
+            var result = _getTokenViaImplicitWorkflowOperation.Execute(authorizationParameter, claimsPrincipal);
 
             // ASSERTS
             _simpleIdentityServerEventSourceFake.Verify(s => s.StartImplicitFlow(clientId, scope, string.Empty));

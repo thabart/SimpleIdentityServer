@@ -14,6 +14,7 @@ using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Results;
 
 using System.Net.Http;
+using SimpleIdentityServer.Core.Parameters;
 
 namespace SimpleIdentityServer.Api.Controllers.Api
 {
@@ -53,28 +54,41 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             }
 
             authorizationRequest = await ResolveAuthorizationRequest(authorizationRequest);
-            var encryptedRequest = _protector.Encrypt(authorizationRequest);
-            var encodedRequest = _encoder.Encode(encryptedRequest);
             var authenticatedUser = this.GetAuthenticatedUser();
             var parameter = authorizationRequest.ToParameter();
             var actionResult = _authorizationActions.GetAuthorization(
                 parameter,
-                authenticatedUser,
-                encodedRequest);
-            var parameters = _actionResultParser.GetRedirectionParameters(actionResult);
+                authenticatedUser);
+
             if (actionResult.Type == TypeActionResult.RedirectToCallBackUrl)
             {
                 var redirectUrl = new Uri(authorizationRequest.redirect_uri);
-                return this.CreateRedirectHttpTokenResponse(redirectUrl, 
-                    parameters, 
+                return this.CreateRedirectHttpTokenResponse(redirectUrl,
+                    _actionResultParser.GetRedirectionParameters(actionResult), 
                     actionResult.RedirectInstruction.ResponseMode);
             }
 
             if (actionResult.Type == TypeActionResult.RedirectToAction)
             {
+                if (actionResult.RedirectInstruction.Action == IdentityServerEndPoints.AuthenticateIndex ||
+                    actionResult.RedirectInstruction.Action == IdentityServerEndPoints.ConsentIndex)
+                {
+                    // Force the resource owner to be reauthenticated
+                    if (actionResult.RedirectInstruction.Action == IdentityServerEndPoints.AuthenticateIndex)
+                    {
+                        authorizationRequest.prompt = Enum.GetName(typeof(PromptParameter), PromptParameter.login);
+                    }
+
+                    // Add the encoded request into the query string
+                    var encryptedRequest = _protector.Encrypt(authorizationRequest);
+                    var encodedRequest = _encoder.Encode(encryptedRequest);
+                    actionResult.RedirectInstruction.AddParameter(Core.Constants.StandardAuthorizationResponseNames.AuthorizationCodeName,
+                        encodedRequest);
+                }
+
                 var url = GetRedirectionUrl(Request, actionResult.RedirectInstruction.Action);
                 var uri = new Uri(url);
-                var redirectionUrl = uri.AddParametersInQuery(parameters);
+                var redirectionUrl = uri.AddParametersInQuery(_actionResultParser.GetRedirectionParameters(actionResult));
                 return CreateMoveHttpResponse(redirectionUrl.ToString());
             }
 

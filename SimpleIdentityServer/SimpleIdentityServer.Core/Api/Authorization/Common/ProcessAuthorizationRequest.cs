@@ -38,8 +38,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
     {
         ActionResult Process(
             AuthorizationParameter authorizationParameter,
-            ClaimsPrincipal claimsPrincipal,
-            string code);
+            ClaimsPrincipal claimsPrincipal);
     }
 
     public class ProcessAuthorizationRequest : IProcessAuthorizationRequest
@@ -82,17 +81,11 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
 
         public ActionResult Process(
             AuthorizationParameter authorizationParameter, 
-            ClaimsPrincipal claimsPrincipal, 
-            string code)
+            ClaimsPrincipal claimsPrincipal)
         {
             if (authorizationParameter == null)
             {
                 throw new ArgumentNullException("authorization parameter may not be null");
-            }
-
-            if (string.IsNullOrWhiteSpace(code))
-            {
-                throw new ArgumentNullException("code parameter may not be null");
             }
 
             var serializedAuthorizationParameter = authorizationParameter.SerializeWithJavascript();
@@ -193,7 +186,6 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
                     if (maxAge < currentDateTimeUtc - authenticationDateTime)
                     {
                         result = _actionResultFactory.CreateAnEmptyActionResultWithRedirection();
-                        result.RedirectInstruction.AddParameter(Constants.StandardAuthorizationResponseNames.AuthorizationCodeName, code);
                         result.RedirectInstruction.Action = IdentityServerEndPoints.AuthenticateIndex;
                     }
                 }
@@ -204,8 +196,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
                 result = ProcessPromptParameters(
                     prompts,
                     claimsPrincipal,
-                    authorizationParameter,
-                    code);
+                    authorizationParameter);
 
                 ProcessIdTokenHint(result,
                     authorizationParameter,
@@ -305,13 +296,11 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
         /// <param name="prompts">Prompt authorizationParameter values</param>
         /// <param name="principal">User's claims</param>
         /// <param name="authorizationParameter">Authorization code grant-type authorizationParameter</param>
-        /// <param name="code">Encrypted and signed authorization code grant-type authorizationParameter</param>
         /// <returns>The action result interpreted by the controller</returns>
         private ActionResult ProcessPromptParameters(
             ICollection<PromptParameter> prompts,
             ClaimsPrincipal principal,
-            AuthorizationParameter authorizationParameter,
-            string code)
+            AuthorizationParameter authorizationParameter)
         {
             if (prompts == null || !prompts.Any())
             {
@@ -354,7 +343,6 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
             if (prompts.Contains(PromptParameter.login))
             {
                 var result = _actionResultFactory.CreateAnEmptyActionResultWithRedirection();
-                result.RedirectInstruction.AddParameter(Constants.StandardAuthorizationResponseNames.AuthorizationCodeName, code);
                 result.RedirectInstruction.Action = IdentityServerEndPoints.AuthenticateIndex;
                 return result;
             }
@@ -362,7 +350,6 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
             if (prompts.Contains(PromptParameter.consent))
             {
                 var result = _actionResultFactory.CreateAnEmptyActionResultWithRedirection();
-                result.RedirectInstruction.AddParameter(Constants.StandardAuthorizationResponseNames.AuthorizationCodeName, code);
                 if (!endUserIsAuthenticated)
                 {
                     result.RedirectInstruction.Action = IdentityServerEndPoints.AuthenticateIndex;

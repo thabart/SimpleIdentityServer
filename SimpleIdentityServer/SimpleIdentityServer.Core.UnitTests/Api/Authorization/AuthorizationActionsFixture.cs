@@ -49,7 +49,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                     ResponseType.id_token
                 });
             _getTokenViaImplicitWorkflowOperationFake.Setup(g => g.Execute(It.IsAny<AuthorizationParameter>(),
-                It.IsAny<IPrincipal>(), It.IsAny<string>())).Returns(actionResult);
+                It.IsAny<IPrincipal>())).Returns(actionResult);
 
             const string clientId = "clientId";
             const string responseType = "id_token";
@@ -67,7 +67,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             var serializedParameter = actionResult.RedirectInstruction.Parameters.SerializeWithJavascript();
 
             // ACT
-            _authorizationActions.GetAuthorization(authorizationParameter, null, string.Empty);
+            _authorizationActions.GetAuthorization(authorizationParameter, null);
 
             // ASSERTS
             _simpleIdentityServerEventSourceFake.Verify(s => s.StartAuthorization(clientId, responseType, scope, string.Empty));
@@ -101,7 +101,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                     ResponseType.id_token
                 });
             getTokenViaImplicitWorkflowOperationStub.Setup(g => g.Execute(It.IsAny<AuthorizationParameter>(),
-                It.IsAny<IPrincipal>(), It.IsAny<string>())).Returns(actionResult);
+                It.IsAny<IPrincipal>())).Returns(actionResult);
 
             const string clientId = "clientId";
             const string responseType = "id_token";
@@ -118,7 +118,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             var serializedParameter = actionResult.RedirectInstruction.Parameters.SerializeWithJavascript();
 
             // ACT
-            var result = authorizationActions.GetAuthorization(authorizationParameter, null, string.Empty);
+            var result = authorizationActions.GetAuthorization(authorizationParameter, null);
 
             // ASSERTS
             simpleIdentityServerEventSourceMock.Verify(s => s.StartAuthorization(clientId, responseType, scope, string.Empty));
