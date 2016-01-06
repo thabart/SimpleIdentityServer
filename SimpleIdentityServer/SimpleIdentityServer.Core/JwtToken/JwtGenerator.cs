@@ -443,7 +443,7 @@ namespace SimpleIdentityServer.Core.JwtToken
             var expirationInSeconds = timeKeyValuePair.Key;
             var issuedAtTime = timeKeyValuePair.Value;
             var acrValues = Constants.StandardArcParameterNames.OpenIdCustomAuthLevel + ".password=1";
-            const string amr = "password";
+            var amr = new []{ "password" };
             var azp = string.Empty;
 
             var clients = _clientRepository.GetAll();
@@ -554,7 +554,7 @@ namespace SimpleIdentityServer.Core.JwtToken
 
             if (amrParameter != null)
             {
-                var isAmrParameterValid = ValidateClaimValue(amr, amrParameter);
+                var isAmrParameterValid = ValidateClaimValues(amr, amrParameter);
                 if (!isAmrParameterValid)
                 {
                     throw new IdentityServerExceptionWithState(ErrorCodes.InvalidGrant,
