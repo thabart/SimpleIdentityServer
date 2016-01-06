@@ -29,6 +29,8 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
             JsonWebKey jsonWebKey);
 
         JwsProtectedHeader GetHeader(string jws);
+
+        JwsPayload GetPayload(string jws);
     }
 
     public class JwsParser : IJwsParser
@@ -45,15 +47,20 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
         /// Validate the signature and returns the JWSPayLoad.
         /// </summary>
         /// <param name="jws"></param>
+        /// <param name="jsonWebKey"></param>
         /// <returns></returns>
         public JwsPayload ValidateSignature(
             string jws,
             JsonWebKey jsonWebKey)
         {
-            // Checks the JSON web key
-            if (jsonWebKey == null || string.IsNullOrWhiteSpace(jws))
+            if (string.IsNullOrWhiteSpace(jws))
             {
-                throw new ArgumentNullException("the JWS cannot be checked because either the JWS or json web key is null");
+                throw new ArgumentNullException("jws");
+            }
+
+            if (jsonWebKey == null)
+            {
+                throw new ArgumentNullException("jsonWebKey");
             }
 
             var parts = GetParts(jws);
@@ -117,6 +124,24 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
             var base64EncodedProtectedHeader = parts[0];
             var serializedProtectedHeader = base64EncodedProtectedHeader.Base64Decode();
             return serializedProtectedHeader.DeserializeWithJavascript<JwsProtectedHeader>();
+        }
+        
+        public JwsPayload GetPayload(string jws)
+        {
+            if (string.IsNullOrWhiteSpace(jws))
+            {
+                throw new ArgumentNullException("jws");
+            }
+
+            var parts = GetParts(jws);
+            if (!parts.Any())
+            {
+                return null;
+            }
+
+            var base64EncodedSerialized = parts[1];
+            var serializedPayload = base64EncodedSerialized.Base64Decode();
+            return serializedPayload.DeserializeWithJavascript<JwsPayload>();
         }
 
         /// <summary>

@@ -488,6 +488,18 @@ namespace TestProj
 
         static void Main(string[] args)
         {
+            var m =
+                "eyJhbGciOiJub25lIn0.eyJub25jZSI6ICJzaHBNZWxMUnlQQWoiLCAic3RhdGUiOiAibWxOeW4zaTVRUWNXNFB3NiIsICJyZWRpcmVjdF91cmkiOiAiaHR0cHM6Ly9vcC5jZXJ0aWZpY2F0aW9uLm9wZW5pZC5uZXQ6NjAxODYvYXV0aHpfY2IiLCAicmVzcG9uc2VfdHlwZSI6ICJpZF90b2tlbiB0b2tlbiIsICJjbGllbnRfaWQiOiAiTXlCbG9nIiwgInNjb3BlIjogIm9wZW5pZCJ9.";
+
+            var p = m.Split('.')[1];
+            var payload = p.Base64Decode();
+
+            var idToken =
+                "eyJhbGciOiJSUzI1NiIsImtpZCI6ImEzck1VZ01Gdjl0UGNsTGE2eUYzekFrZnF1RSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjUwNDkvIiwiYXVkIjpbIk15QmxvZyIsIk15QmxvZ0NsaWVudFNlY3JldFBvc3QiLCJodHRwOi8vbG9jYWxob3N0OjUwNDkvIl0sImV4cCI6MTQ1NTEwMTgxNCwiaWF0IjoxNDUyMTAxODE0LCJub25jZSI6InNocE1lbExSeVBBaiIsImFjciI6Im9wZW5pZC5wYXBlLmF1dGhfbGV2ZWwubnMucGFzc3dvcmQ9MSIsImFtciI6InBhc3N3b3JkIiwiYXpwIjoiTXlCbG9nIiwic3ViIjoiYWRtaW5pc3RyYXRvckBob3RtYWlsLmJlIiwiYXRfaGFzaCI6InJ6eDJYR1pDNzJseVpocE1LS242aXcifQ.n1mfeJ1r3qVP96AalTQR2EW5tjRo4hOEbzGlS3hnV2PhXI-soaXDf6fcIo7XQYWj5rAkjCl0QmKgBhXbzh_2_EqsSebRopBtAvPrDR-UL4v6A-4EC8cwETuoOI6UL05SE81aHNVpBpHmrZ_3VboyeWeHt_SLOMQ_ifK6c2kQYvk";
+            var i = idToken.Split('.')[1].Base64Decode();
+            var header = idToken.Split('.')[0].Base64Decode();
+
+
             const string message = "message";
             var alg = CngAlgorithm.ECDsaP384;
             var cngKey = GenerateRandomCngKey(alg);

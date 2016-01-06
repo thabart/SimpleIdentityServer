@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using System;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Encrypt;
 using SimpleIdentityServer.Core.Jwt.Signature;
@@ -65,6 +66,11 @@ namespace SimpleIdentityServer.Core.JwtToken
         public string Decrypt(
             string jwe)
         {
+            if (string.IsNullOrWhiteSpace(jwe))
+            {
+                throw new ArgumentNullException("jwe");
+            }
+
             const string emptyResult = null;
             var protectedHeader = _jweParser.GetHeader(jwe);
             if (protectedHeader == null)
@@ -84,6 +90,11 @@ namespace SimpleIdentityServer.Core.JwtToken
         public JwsPayload UnSign(
             string jws)
         {
+            if (string.IsNullOrWhiteSpace(jws))
+            {
+                throw new ArgumentNullException("jws");
+            }
+
             const JwsPayload emptyResult = null;
             var protectedHeader = _jwsParser.GetHeader(jws);
             if (protectedHeader == null)
@@ -92,9 +103,15 @@ namespace SimpleIdentityServer.Core.JwtToken
             }
 
             var jsonWebKey = _jsonWebKeyRepository.GetByKid(protectedHeader.Kid);
-            if (jsonWebKey == null)
+            if (jsonWebKey == null 
+                && protectedHeader.Alg != Jwt.Constants.JwsAlgNames.NONE)
             {
                 return emptyResult;
+            }
+            
+            if (protectedHeader.Alg == Jwt.Constants.JwsAlgNames.NONE)
+            {
+                return _jwsParser.GetPayload(jws);
             }
 
             return _jwsParser.ValidateSignature(jws, jsonWebKey);
