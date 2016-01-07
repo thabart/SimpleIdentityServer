@@ -212,6 +212,7 @@
     <Compile Include="Extensions\ResourceOwnerExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Factories\HttpClientFactory.cs" />
+    <Compile Include="Helpers\AuthorizationFlowHelper.cs" />
     <Compile Include="Helpers\ConsentHelper.cs" />
     <Compile Include="JwtToken\JwtGenerator.cs" />
     <Compile Include="JwtToken\JwtParser.cs" />

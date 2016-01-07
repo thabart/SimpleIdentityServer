@@ -113,7 +113,7 @@ namespace SimpleIdentityServer.Api.Extensions
 
             if (string.IsNullOrWhiteSpace(responseMode) || !Enum.TryParse(responseMode, out responseModeEnum))
             {
-                responseModeEnum = ResponseMode.query;
+                responseModeEnum = ResponseMode.None;
             }
 
             var result = new AuthorizationRequest

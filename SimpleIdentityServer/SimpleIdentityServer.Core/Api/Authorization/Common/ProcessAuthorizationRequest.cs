@@ -85,7 +85,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
         {
             if (authorizationParameter == null)
             {
-                throw new ArgumentNullException("authorization parameter may not be null");
+                throw new ArgumentNullException("authorizationParameter");
             }
 
             var serializedAuthorizationParameter = authorizationParameter.SerializeWithJavascript();

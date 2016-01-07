@@ -51,6 +51,7 @@ namespace SimpleIdentityServer.Core
             register.RegisterType<ISecurityHelper, SecurityHelper>();
             register.RegisterType<IGrantedTokenGeneratorHelper, GrantedTokenGeneratorHelper>();
             register.RegisterType<IConsentHelper, ConsentHelper>();
+            register.RegisterType<IAuthorizationFlowHelper, AuthorizationFlowHelper>();
             register.RegisterType<IClientValidator, ClientValidator>();
             register.RegisterType<IResourceOwnerValidator, ResourceOwnerValidator>();
             register.RegisterType<IScopeValidator, ScopeValidator>();

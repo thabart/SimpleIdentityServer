@@ -16,6 +16,7 @@
 
 using System;
 using System.Security.Claims;
+using SimpleIdentityServer.Core.Api.Authorization;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Helpers;
@@ -51,6 +52,8 @@ namespace SimpleIdentityServer.Core.Common
 
         private readonly IConsentHelper _consentHelper;
 
+        private readonly IAuthorizationFlowHelper _authorizationFlowHelper;
+
         private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
 
         public GenerateAuthorizationResponse(
@@ -60,7 +63,8 @@ namespace SimpleIdentityServer.Core.Common
             IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
             IGrantedTokenRepository grantedTokenRepository,
             IConsentHelper consentHelper,
-            ISimpleIdentityServerEventSource simpleIdentityServerEventSource)
+            ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
+            IAuthorizationFlowHelper authorizationFlowHelper)
         {
             _authorizationCodeRepository = authorizationCodeRepository;
             _parameterParserHelper = parameterParserHelper;
@@ -69,6 +73,7 @@ namespace SimpleIdentityServer.Core.Common
             _grantedTokenRepository = grantedTokenRepository;
             _consentHelper = consentHelper;
             _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
+            _authorizationFlowHelper = authorizationFlowHelper;
         }
 
         #region Public methods
@@ -80,17 +85,17 @@ namespace SimpleIdentityServer.Core.Common
         {
             if (authorizationParameter == null)
             {
-                throw new ArgumentNullException("cannot generate the authorization response because the authorization parameter is null");    
+                throw new ArgumentNullException("authorizationParameter");    
             }
 
             if (actionResult == null || actionResult.RedirectInstruction == null)
             {
-                throw new ArgumentNullException("cannot generate the authorization response because the action result is null");
+                throw new ArgumentNullException("actionResult");
             }
 
             if (claimsPrincipal == null)
             {
-                throw new ArgumentNullException("the authorization response cannot be generated because there's no user logged-in");
+                throw new ArgumentNullException("claimsPrincipal");
             }
 
             var newAccessTokenGranted = false;
@@ -200,6 +205,21 @@ namespace SimpleIdentityServer.Core.Common
                 actionResult.RedirectInstruction.AddParameter("redirect_uri", authorizationParameter.RedirectUrl);
             }
 
+            // Set the response mode
+            if (actionResult.Type == TypeActionResult.RedirectToCallBackUrl)
+            {
+                var responseMode = authorizationParameter.ResponseMode;
+                if (responseMode == ResponseMode.None)
+                {
+                    var responseTypes = _parameterParserHelper.ParseResponseType(authorizationParameter.ResponseType);
+                    var authorizationFlow = _authorizationFlowHelper.GetAuthorizationFlow(responseTypes,
+                        authorizationParameter.State);
+                    responseMode = GetResponseMode(authorizationFlow);
+                }
+
+                actionResult.RedirectInstruction.ResponseMode = responseMode;
+            }
+
             _simpleIdentityServerEventSource.EndGeneratingAuthorizationResponseToClient(authorizationParameter.ClientId,
                actionResult.RedirectInstruction.Parameters.SerializeWithJavascript());
         }
@@ -272,6 +292,15 @@ namespace SimpleIdentityServer.Core.Common
             }
 
             return jwsPayload;
+        }
+
+        #endregion
+
+        #region Private static methods
+        
+        private static ResponseMode GetResponseMode(AuthorizationFlow authorizationFlow)
+        {
+            return Constants.MappingAuthorizationFlowAndResponseModes[authorizationFlow];
         }
 
         #endregion

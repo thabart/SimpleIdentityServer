@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using Moq;
 using NUnit.Framework;
+using SimpleIdentityServer.Core.Api.Authorization;
 using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Helpers;
@@ -33,6 +34,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
         private Mock<IConsentHelper> _consentHelperFake;
 
         private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSource;
+
+        private Mock<IAuthorizationFlowHelper> _authorizationFlowHelperFake; 
 
         private IGenerateAuthorizationResponse _generateAuthorizationResponse;
 
@@ -303,6 +306,53 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             _simpleIdentityServerEventSource.Verify(s => s.EndGeneratingAuthorizationResponseToClient(clientId, actionResult.RedirectInstruction.Parameters.SerializeWithJavascript()));
         }
 
+        [Test]
+        public void When_Redirecting_To_Callback_And_There_Is_No_Response_Mode_Specified_Then_The_Response_Mode_Is_Set()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            const string idToken = "idToken";
+            const string clientId = "clientId";
+            const string scope = "scope";
+            const string responseType = "id_token";
+            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity("fake"));
+            var authorizationParameter = new AuthorizationParameter
+            {
+                ClientId = clientId,
+                Scope = scope,
+                ResponseType = responseType,
+                ResponseMode = ResponseMode.None
+            };
+            var actionResult = new ActionResult
+            {
+                RedirectInstruction = new RedirectInstruction(),
+                Type = TypeActionResult.RedirectToCallBackUrl
+            };
+            var jwsPayload = new JwsPayload();
+            _parameterParserHelperFake.Setup(p => p.ParseResponseType(It.IsAny<string>()))
+                .Returns(new List<ResponseType>
+                {
+                    ResponseType.id_token  
+                });
+            _jwtGeneratorFake.Setup(
+                j => j.GenerateIdTokenPayloadForScopes(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
+                .Returns(jwsPayload);
+            _jwtGeneratorFake.Setup(
+                j => j.GenerateUserInfoPayloadForScope(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
+                .Returns(jwsPayload);
+            _jwtGeneratorFake.Setup(j => j.Encrypt(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(idToken);
+            _authorizationFlowHelperFake.Setup(
+                a => a.GetAuthorizationFlow(It.IsAny<ICollection<ResponseType>>(), It.IsAny<string>()))
+                .Returns(AuthorizationFlow.ImplicitFlow);
+
+            // ACT
+            _generateAuthorizationResponse.Execute(actionResult, authorizationParameter, claimsPrincipal);
+
+            // ASSERT
+            Assert.IsTrue(actionResult.RedirectInstruction.ResponseMode == ResponseMode.fragment);
+        }
+
         private void InitializeFakeObjects()
         {
             _authorizationCodeRepositoryFake = new Mock<IAuthorizationCodeRepository>();
@@ -312,6 +362,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             _grantedTokenRepositoryFake = new Mock<IGrantedTokenRepository>();
             _consentHelperFake = new Mock<IConsentHelper>();
             _simpleIdentityServerEventSource = new Mock<ISimpleIdentityServerEventSource>();
+            _authorizationFlowHelperFake = new Mock<IAuthorizationFlowHelper>();
             _generateAuthorizationResponse = new GenerateAuthorizationResponse(
                 _authorizationCodeRepositoryFake.Object,
                 _parameterParserHelperFake.Object,
@@ -319,7 +370,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 _grantedTokenGeneratorHelperFake.Object,
                 _grantedTokenRepositoryFake.Object,
                 _consentHelperFake.Object,
-                _simpleIdentityServerEventSource.Object);
+                _simpleIdentityServerEventSource.Object,
+                _authorizationFlowHelperFake.Object);
         }
     }
 }
