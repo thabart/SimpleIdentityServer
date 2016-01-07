@@ -25,8 +25,6 @@ namespace SimpleIdentityServer.Host
                 .AddJsonFile("appsettings.json")
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
-            
-            System.Console.WriteLine("coucou");
         }
         
         public void ConfigureServices(IServiceCollection services)
