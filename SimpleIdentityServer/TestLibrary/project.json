@@ -1,0 +1,14 @@
+﻿{
+  "version": "1.0.0-*",
+  "description": "TestLibrary Class Library",
+  "authors": [ "habar" ],
+  "tags": [ "" ],
+  "projectUrl": "",
+  "licenseUrl": "",
+
+  "dependencies": { },
+
+  "frameworks": {
+    "dnx451": { }
+  }
+}
