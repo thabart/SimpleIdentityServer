@@ -13,7 +13,7 @@ install:
 - cmd: powershell -NoProfile -ExecutionPolicy unrestricted -Command "&{iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/aspnet/Home/dev/dnvminstall.ps1'))}"
 before_build:
 - cd SimpleIdentityServer
-- appveyor DownloadFile https://dist.nuget.org/win-x86-commandline/v3.2.0-rc/nuget.exe
+- appveyor DownloadFile https://dist.nuget.org/win-x86-commandline/v3.3.0/nuget.exe
 - cmd: dnvm upgrade
 - cmd: dnu restore
 - cmd: nuget restore
