@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.Api", "SimpleIdentityServer\SimpleIdentityServer.Api.csproj", "{F7815B84-F5C1-474B-BB65-90C4F5BBB397}"
 EndProject
@@ -59,6 +59,13 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.Core.UnitTests", "SimpleIdentityServer.Core.UnitTests\SimpleIdentityServer.Core.UnitTests.csproj", "{C63A4A3E-0167-4B83-BC84-65C072EE166F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.Core.Jwt.UnitTests", "SimpleIdentityServer.Core.Jwt.UnitTests\SimpleIdentityServer.Core.Jwt.UnitTests.csproj", "{64858639-0D4C-431C-B92D-8C87F8AFC1CC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4E9F414E-071D-4AFD-A016-2CDC0C1E2F65}"
+	ProjectSection(SolutionItems) = preProject
+		global.json = global.json
+	EndProjectSection
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Host", "SimpleIdentityServer.Host\SimpleIdentityServer.Host.xproj", "{6D8192C8-37CC-481E-83CA-6D2E3BCBEE09}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -134,6 +141,10 @@ Global
 		{64858639-0D4C-431C-B92D-8C87F8AFC1CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{64858639-0D4C-431C-B92D-8C87F8AFC1CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{64858639-0D4C-431C-B92D-8C87F8AFC1CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D8192C8-37CC-481E-83CA-6D2E3BCBEE09}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D8192C8-37CC-481E-83CA-6D2E3BCBEE09}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D8192C8-37CC-481E-83CA-6D2E3BCBEE09}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D8192C8-37CC-481E-83CA-6D2E3BCBEE09}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -159,6 +170,7 @@ Global
 		{8B826264-E6B7-4119-B58F-C2E04342FD64} = {9A27F1E3-D0E9-4D81-8AF2-1B0278F01871}
 		{C63A4A3E-0167-4B83-BC84-65C072EE166F} = {5C423D4F-E2DD-48D7-842C-BC9D3B8576DE}
 		{64858639-0D4C-431C-B92D-8C87F8AFC1CC} = {5C423D4F-E2DD-48D7-842C-BC9D3B8576DE}
+		{6D8192C8-37CC-481E-83CA-6D2E3BCBEE09} = {52E4BD73-432A-462A-BC9A-8493301FC6C2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.Interception.2.1.505.0\lib\NET35;packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Caching.5.0.505.0\lib\NET35;packages\Unity.2.1.505.0\lib\NET35

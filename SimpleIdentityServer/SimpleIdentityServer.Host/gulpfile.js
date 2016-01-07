@@ -1,4 +1,4 @@
-/// <binding Clean='clean' />
+﻿/// <binding Clean='clean' />
 "use strict";
 var gulp = require("gulp"),
   rimraf = require("rimraf"),
