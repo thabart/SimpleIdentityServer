@@ -255,7 +255,7 @@ namespace SimpleIdentityServer.Core.Common
                 jwsPayload = _jwtGenerator.GenerateFilteredIdTokenPayload(
                     claimsPrincipal,
                     authorizationParameter,
-                    authorizationParameter.Claims.IdToken);
+                    authorizationParameter.Claims.IdToken.Clone());
             }
             else
             {
@@ -282,7 +282,7 @@ namespace SimpleIdentityServer.Core.Common
                 authorizationParameter.Claims.IsAnyUserInfoClaimParameter())
             {
                 jwsPayload = _jwtGenerator.GenerateFilteredUserInfoPayload(
-                    authorizationParameter.Claims.UserInfo,
+                    authorizationParameter.Claims.UserInfo.Clone(),
                     claimsPrincipal,
                     authorizationParameter);
             }

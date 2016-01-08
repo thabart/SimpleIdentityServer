@@ -46,7 +46,7 @@ namespace SimpleIdentityServer.Core.Parameters
         select_account
     }
 
-    public class ClaimParameter
+    public class ClaimParameter : ICloneable
     {
         public string Name { get; set; }
 
@@ -137,6 +137,15 @@ namespace SimpleIdentityServer.Core.Parameters
 
             var result = (object[])value;
             return result.Select(r => r.ToString()).ToArray();
+        }
+
+        public object Clone()
+        {
+            return new ClaimParameter
+            {
+                Name = this.Name,
+                Parameters = Parameters
+            };
         }
     }
 
