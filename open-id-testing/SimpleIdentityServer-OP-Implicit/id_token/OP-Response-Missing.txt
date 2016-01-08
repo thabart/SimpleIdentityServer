@@ -1,27 +1,20 @@
 Test info
 
 Profile: {'openid-configuration': 'config', 'response_type': 'id_token', 'crypto': 'sign', 'registration': 'static'}
-Timestamp: 2016-01-04T19:06:32Z
+Timestamp: 2016-01-08T08:41:21Z
 Test description: Authorization request missing the response_type parameter [Basic, Implicit, Hybrid]
 Test ID: OP-Response-Missing
 Issuer: https://simpleidentityserver.azurewebsites.net
 Test output
 
 
-__AuthorizationRequest:pre__
-[check-response-type]
-	status: OK
-	description: Checks that the asked for response type are among the supported
-[check-endpoint]
-	status: OK
-	description: Checks that the necessary endpoint exists at a server
 Trace output
 
 
-0.000322 ------------ DiscoveryRequest ------------
-0.000347 Provider info discover from 'https://simpleidentityserver.azurewebsites.net'
-0.000354 --> URL: https://simpleidentityserver.azurewebsites.net/.well-known/openid-configuration
-1.105518 ProviderConfigurationResponse: {
+0.000465 ------------ DiscoveryRequest ------------
+0.000482 Provider info discover from 'https://simpleidentityserver.azurewebsites.net'
+0.000489 --> URL: https://simpleidentityserver.azurewebsites.net/.well-known/openid-configuration
+0.453146 ProviderConfigurationResponse: {
   "authorization_endpoint": "https://simpleidentityserver.azurewebsites.net/authorization",
   "check_session_iframe": "https://simpleidentityserver.azurewebsites.net/check_session",
   "claims_parameter_supported": true,
@@ -93,14 +86,14 @@ Trace output
   "userinfo_endpoint": "https://simpleidentityserver.azurewebsites.net/userinfo",
   "version": "1.0"
 }
-1.786396 JWKS: {
+1.055767 JWKS: {
   "keys": [
     {
       "alg": "RS256",
       "e": "AQAB",
       "kid": "a3rMUgMFv9tPclLa6yF3zAkfquE",
       "kty": "RSA",
-      "n": "2afL3PFlYeNcSLh3Xx_NgRABsEawTjmkF18_o0LTjRLx5OAuf0NdvpCKYzym60dzz5z0A9DBmUcEo_qpr1wmfZSgCGQUrGy__GaGBeKuVnFveaaW_4TDdhBdDIiQeC4M4mE7pBFr2y6KAI9Euy39AISm9PzsXXtnhY5D648UaEs",
+      "n": "0eZ10Id9xnIykh4MQADjNtW5a_1DsTlrQpdyoGiCTLSej2Z2yN53QWYfwy5OkQaWwwlXh5GDXIslll8stmXvLz1rvbah3-dhYqcUGB34dviS0HsdeNs_XpNyRGUJQLnhT52h_Y6qK_8d_eEDwgYCuUJfBr56xJWqJ2K7-iQMrQ8",
       "use": "sig"
     },
     {
@@ -108,14 +101,11 @@ Trace output
       "e": "AQAB",
       "kid": "3",
       "kty": "RSA",
-      "n": "2afL3PFlYeNcSLh3Xx_NgRABsEawTjmkF18_o0LTjRLx5OAuf0NdvpCKYzym60dzz5z0A9DBmUcEo_qpr1wmfZSgCGQUrGy__GaGBeKuVnFveaaW_4TDdhBdDIiQeC4M4mE7pBFr2y6KAI9Euy39AISm9PzsXXtnhY5D648UaEs",
+      "n": "0eZ10Id9xnIykh4MQADjNtW5a_1DsTlrQpdyoGiCTLSej2Z2yN53QWYfwy5OkQaWwwlXh5GDXIslll8stmXvLz1rvbah3-dhYqcUGB34dviS0HsdeNs_XpNyRGUJQLnhT52h_Y6qK_8d_eEDwgYCuUJfBr56xJWqJ2K7-iQMrQ8",
       "use": "enc"
     }
   ]
 }
-4.696672 ------------ AuthorizationRequest ------------
-4.697173 --> URL: https://simpleidentityserver.azurewebsites.net/authorization?scope=openid&state=VEiNuMHeYirV1vzG&redirect_uri=https%3A%2F%2Fop.certification.openid.net%3A60186%2Fauthz_cb&client_id=MyBlog
-4.697183 --> BODY: None
 Result
 
 PARTIAL RESULT

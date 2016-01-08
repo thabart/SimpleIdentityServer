@@ -1,7 +1,7 @@
 Test info
 
 Profile: {'openid-configuration': 'config', 'response_type': 'id_token+token', 'crypto': 'sign', 'registration': 'static'}
-Timestamp: 2016-01-04T19:55:41Z
+Timestamp: 2016-01-08T15:31:22Z
 Test description: Scope requesting email claims [Basic, Implicit, Hybrid]
 Test ID: OP-scope-email
 Issuer: https://simpleidentityserver.azurewebsites.net
@@ -29,10 +29,10 @@ __X:==== END ====__
 Trace output
 
 
-0.000316 ------------ DiscoveryRequest ------------
-0.000331 Provider info discover from 'https://simpleidentityserver.azurewebsites.net'
-0.000338 --> URL: https://simpleidentityserver.azurewebsites.net/.well-known/openid-configuration
-0.455684 ProviderConfigurationResponse: {
+0.000483 ------------ DiscoveryRequest ------------
+0.000500 Provider info discover from 'https://simpleidentityserver.azurewebsites.net'
+0.000507 --> URL: https://simpleidentityserver.azurewebsites.net/.well-known/openid-configuration
+0.442968 ProviderConfigurationResponse: {
   "authorization_endpoint": "https://simpleidentityserver.azurewebsites.net/authorization",
   "check_session_iframe": "https://simpleidentityserver.azurewebsites.net/check_session",
   "claims_parameter_supported": true,
@@ -104,14 +104,14 @@ Trace output
   "userinfo_endpoint": "https://simpleidentityserver.azurewebsites.net/userinfo",
   "version": "1.0"
 }
-0.925957 JWKS: {
+0.860901 JWKS: {
   "keys": [
     {
       "alg": "RS256",
       "e": "AQAB",
       "kid": "a3rMUgMFv9tPclLa6yF3zAkfquE",
       "kty": "RSA",
-      "n": "2afL3PFlYeNcSLh3Xx_NgRABsEawTjmkF18_o0LTjRLx5OAuf0NdvpCKYzym60dzz5z0A9DBmUcEo_qpr1wmfZSgCGQUrGy__GaGBeKuVnFveaaW_4TDdhBdDIiQeC4M4mE7pBFr2y6KAI9Euy39AISm9PzsXXtnhY5D648UaEs",
+      "n": "0427bhuSJxy2yITT8Xf5pD6lzMyF-buGwc3XhiBMZkc3Y0jFuF2-Avlm4mExEq-KdlRVYuyGCwi3a37RnMCBk9ulYJmAPTKuWzdGatPp-0c1sG0e51z5se_bZiLcK1FxVd1S-w1aq562KER6-kafWbz7HlVpifN7x0pLPZO6Gvk",
       "use": "sig"
     },
     {
@@ -119,25 +119,25 @@ Trace output
       "e": "AQAB",
       "kid": "3",
       "kty": "RSA",
-      "n": "2afL3PFlYeNcSLh3Xx_NgRABsEawTjmkF18_o0LTjRLx5OAuf0NdvpCKYzym60dzz5z0A9DBmUcEo_qpr1wmfZSgCGQUrGy__GaGBeKuVnFveaaW_4TDdhBdDIiQeC4M4mE7pBFr2y6KAI9Euy39AISm9PzsXXtnhY5D648UaEs",
+      "n": "0427bhuSJxy2yITT8Xf5pD6lzMyF-buGwc3XhiBMZkc3Y0jFuF2-Avlm4mExEq-KdlRVYuyGCwi3a37RnMCBk9ulYJmAPTKuWzdGatPp-0c1sG0e51z5se_bZiLcK1FxVd1S-w1aq562KER6-kafWbz7HlVpifN7x0pLPZO6Gvk",
       "use": "enc"
     }
   ]
 }
-0.931157 ------------ AuthorizationRequest ------------
-0.931650 --> URL: https://simpleidentityserver.azurewebsites.net/authorization?nonce=K808xxTvKoxe&state=fIJDxKB8aZs5AYS1&redirect_uri=https%3A%2F%2Fop.certification.openid.net%3A60186%2Fauthz_cb&response_type=id_token+token&client_id=MyBlog&scope=openid+email
-0.931658 --> BODY: None
-1.394940 QUERY_STRING:
-2.724772 <-- access_token=NzJmMjQ0NzUtOTdjNi00NWY3LTg1YjUtNWYxOTk3ZjBjODMy&id_token=eyJhbGciOiJSUzI1NiIsImtpZCI6ImEzck1VZ01Gdjl0UGNsTGE2eUYzekFrZnF1RSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL3NpbXBsZWlkZW50aXR5c2VydmVyLmF6dXJld2Vic2l0ZXMubmV0LyIsImF1ZCI6WyJNeUJsb2ciLCJNeUJsb2dDbGllbnRTZWNyZXRQb3N0IiwiaHR0cHM6Ly9zaW1wbGVpZGVudGl0eXNlcnZlci5henVyZXdlYnNpdGVzLm5ldC8iXSwiZXhwIjoxNDU0OTM3MzM5LCJpYXQiOjE0NTE5MzczMzksIm5vbmNlIjoiSzgwOHh4VHZLb3hlIiwiYWNyIjoib3BlbmlkLnBhcGUuYXV0aF9sZXZlbC5ucy5wYXNzd29yZD0xIiwiYW1yIjoicGFzc3dvcmQiLCJhenAiOiJNeUJsb2ciLCJzdWIiOiJhZG1pbmlzdHJhdG9yQGhvdG1haWwuYmUiLCJlbWFpbCI6ImhhYmFydGhpZXJyeUBob3RtYWlsLmZyIiwiZW1haWxfdmVyaWZpZWQiOiJUcnVlIiwiYXRfaGFzaCI6ImFudURKUmRVYzE5Y28tMUhpRkRXWncifQ.TM2LkhLMZI35OVME7xC0z4L1wRkizwiHEMelNhs-f8gXfK2zN7n203HkTXluohZ0tTPHKaNfKvKnJAAlAeWSciijfh2T4yVWJ3268iollWjFaNqUcVMu47AMHC0ie8ml6HxOwIxtOwGKqlptC16paEzk2aDIoefdjnib6JY7Qd4&state=fIJDxKB8aZs5AYS1
-3.211570 AuthorizationResponse: {
-  "access_token": "NzJmMjQ0NzUtOTdjNi00NWY3LTg1YjUtNWYxOTk3ZjBjODMy",
+0.871663 ------------ AuthorizationRequest ------------
+0.872102 --> URL: https://simpleidentityserver.azurewebsites.net/authorization?nonce=yEwDxuxVEVrl&state=pHd9sO3vNVxHHZEE&redirect_uri=https%3A%2F%2Fop.certification.openid.net%3A60186%2Fauthz_cb&response_type=id_token+token&client_id=MyBlog&scope=openid+email
+0.872110 --> BODY: None
+1.329682 QUERY_STRING:
+2.407045 <-- access_token=MzdmMTM0MjQtMjg0NS00NDg4LWFhZjktNjAwZWZjNzBkMjYy&id_token=eyJhbGciOiJSUzI1NiIsImtpZCI6ImEzck1VZ01Gdjl0UGNsTGE2eUYzekFrZnF1RSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL3NpbXBsZWlkZW50aXR5c2VydmVyLmF6dXJld2Vic2l0ZXMubmV0LyIsImF1ZCI6WyJNeUJsb2ciLCJNeUJsb2dDbGllbnRTZWNyZXRQb3N0IiwiaHR0cHM6Ly9zaW1wbGVpZGVudGl0eXNlcnZlci5henVyZXdlYnNpdGVzLm5ldC8iXSwiZXhwIjoxNDU1MjY3MDc5LCJpYXQiOjE0NTIyNjcwNzksIm5vbmNlIjoieUV3RHh1eFZFVnJsIiwiYWNyIjoib3BlbmlkLnBhcGUuYXV0aF9sZXZlbC5ucy5wYXNzd29yZD0xIiwiYW1yIjpbInBhc3N3b3JkIl0sImF6cCI6Ik15QmxvZyIsInN1YiI6ImFkbWluaXN0cmF0b3JAaG90bWFpbC5iZSIsImVtYWlsIjoiaGFiYXJ0aGllcnJ5QGhvdG1haWwuZnIiLCJlbWFpbF92ZXJpZmllZCI6IlRydWUiLCJhdF9oYXNoIjoiZm90TU1rY25STS1YeHlEUG1HTG10ZyJ9.fFKadjJg8M3BDB1Q-VUouXp-Vkd4HMu8kfe7_ye8pxTd4j6mkGkW-SfwSw9M9I-DeFspqmwEpNysyg04LN3fcqQAZfjZ6ApgKM8FqUY1_nBbL2OxzxX9g7cmvVlRVjMTKyUN2NkI2HkXt0jh-nUR2gJom_zev94uf7XHdsw1wIc&state=pHd9sO3vNVxHHZEE
+3.035158 AuthorizationResponse: {
+  "access_token": "MzdmMTM0MjQtMjg0NS00NDg4LWFhZjktNjAwZWZjNzBkMjYy",
   "id_token": {
     "claims": {
       "acr": "openid.pape.auth_level.ns.password=1",
       "amr": [
         "password"
       ],
-      "at_hash": "anuDJRdUc19co-1HiFDWZw",
+      "at_hash": "fotMMkcnRM-XxyDPmGLmtg",
       "aud": [
         "MyBlog",
         "MyBlogClientSecretPost",
@@ -146,10 +146,10 @@ Trace output
       "azp": "MyBlog",
       "email": "habarthierry@hotmail.fr",
       "email_verified": "True",
-      "exp": 1454937339,
-      "iat": 1451937339,
+      "exp": 1455267079,
+      "iat": 1452267079,
       "iss": "https://simpleidentityserver.azurewebsites.net/",
-      "nonce": "K808xxTvKoxe",
+      "nonce": "yEwDxuxVEVrl",
       "sub": "administrator@hotmail.be"
     },
     "jws header parameters": {
@@ -158,22 +158,22 @@ Trace output
       "typ": "JWT"
     }
   },
-  "state": "fIJDxKB8aZs5AYS1"
+  "state": "pHd9sO3vNVxHHZEE"
 }
-3.212145 ------------ UserInfoRequest ------------
-3.212419 --> URL: https://simpleidentityserver.azurewebsites.net/userinfo
-3.212426 --> BODY: None
-3.212436 --> HEADERS: {'Authorization': u'Bearer NzJmMjQ0NzUtOTdjNi00NWY3LTg1YjUtNWYxOTk3ZjBjODMy'}
-3.669208 <-- STATUS: 200
-3.669292 Available verification keys: [(u'a3rMUgMFv9tPclLa6yF3zAkfquE', u'RSA')]
-3.669327 Available decryption keys: [('a0', 'RSA'), ('a3', 'EC')]
-3.669348 <-- BODY: {"sub":"administrator@hotmail.be","email":"habarthierry@hotmail.fr","email_verified":"True"}
-3.670249 UserInfo: {
+3.035758 ------------ UserInfoRequest ------------
+3.036041 --> URL: https://simpleidentityserver.azurewebsites.net/userinfo
+3.036048 --> BODY: None
+3.036058 --> HEADERS: {'Authorization': u'Bearer MzdmMTM0MjQtMjg0NS00NDg4LWFhZjktNjAwZWZjNzBkMjYy'}
+3.491814 <-- STATUS: 200
+3.491878 Available verification keys: [(u'a3rMUgMFv9tPclLa6yF3zAkfquE', u'RSA')]
+3.491912 Available decryption keys: [('a0', 'RSA'), ('a3', 'EC')]
+3.491931 <-- BODY: {"sub":"administrator@hotmail.be","email":"habarthierry@hotmail.fr","email_verified":"True"}
+3.492682 UserInfo: {
   "email": "habarthierry@hotmail.fr",
   "email_verified": "True",
   "sub": "administrator@hotmail.be"
 }
-3.675421 ==== END ====
+3.504068 ==== END ====
 Result
 
 PASSED

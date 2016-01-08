@@ -1,7 +1,7 @@
 Test info
 
 Profile: {'openid-configuration': 'config', 'response_type': 'id_token+token', 'crypto': 'sign', 'registration': 'static'}
-Timestamp: 2016-01-04T19:53:59Z
+Timestamp: 2016-01-08T15:29:55Z
 Test description: Reject requests without nonce unless using the code flow [Implicit, Hybrid]
 Test ID: OP-nonce-NoReq-noncode
 Issuer: https://simpleidentityserver.azurewebsites.net
@@ -18,10 +18,10 @@ __AuthorizationRequest:pre__
 Trace output
 
 
-0.000317 ------------ DiscoveryRequest ------------
-0.000333 Provider info discover from 'https://simpleidentityserver.azurewebsites.net'
-0.000340 --> URL: https://simpleidentityserver.azurewebsites.net/.well-known/openid-configuration
-0.464512 ProviderConfigurationResponse: {
+0.000307 ------------ DiscoveryRequest ------------
+0.000323 Provider info discover from 'https://simpleidentityserver.azurewebsites.net'
+0.000329 --> URL: https://simpleidentityserver.azurewebsites.net/.well-known/openid-configuration
+0.630751 ProviderConfigurationResponse: {
   "authorization_endpoint": "https://simpleidentityserver.azurewebsites.net/authorization",
   "check_session_iframe": "https://simpleidentityserver.azurewebsites.net/check_session",
   "claims_parameter_supported": true,
@@ -93,14 +93,14 @@ Trace output
   "userinfo_endpoint": "https://simpleidentityserver.azurewebsites.net/userinfo",
   "version": "1.0"
 }
-0.939231 JWKS: {
+1.230409 JWKS: {
   "keys": [
     {
       "alg": "RS256",
       "e": "AQAB",
       "kid": "a3rMUgMFv9tPclLa6yF3zAkfquE",
       "kty": "RSA",
-      "n": "2afL3PFlYeNcSLh3Xx_NgRABsEawTjmkF18_o0LTjRLx5OAuf0NdvpCKYzym60dzz5z0A9DBmUcEo_qpr1wmfZSgCGQUrGy__GaGBeKuVnFveaaW_4TDdhBdDIiQeC4M4mE7pBFr2y6KAI9Euy39AISm9PzsXXtnhY5D648UaEs",
+      "n": "0427bhuSJxy2yITT8Xf5pD6lzMyF-buGwc3XhiBMZkc3Y0jFuF2-Avlm4mExEq-KdlRVYuyGCwi3a37RnMCBk9ulYJmAPTKuWzdGatPp-0c1sG0e51z5se_bZiLcK1FxVd1S-w1aq562KER6-kafWbz7HlVpifN7x0pLPZO6Gvk",
       "use": "sig"
     },
     {
@@ -108,14 +108,14 @@ Trace output
       "e": "AQAB",
       "kid": "3",
       "kty": "RSA",
-      "n": "2afL3PFlYeNcSLh3Xx_NgRABsEawTjmkF18_o0LTjRLx5OAuf0NdvpCKYzym60dzz5z0A9DBmUcEo_qpr1wmfZSgCGQUrGy__GaGBeKuVnFveaaW_4TDdhBdDIiQeC4M4mE7pBFr2y6KAI9Euy39AISm9PzsXXtnhY5D648UaEs",
+      "n": "0427bhuSJxy2yITT8Xf5pD6lzMyF-buGwc3XhiBMZkc3Y0jFuF2-Avlm4mExEq-KdlRVYuyGCwi3a37RnMCBk9ulYJmAPTKuWzdGatPp-0c1sG0e51z5se_bZiLcK1FxVd1S-w1aq562KER6-kafWbz7HlVpifN7x0pLPZO6Gvk",
       "use": "enc"
     }
   ]
 }
-0.943111 ------------ AuthorizationRequest ------------
-0.943527 --> URL: https://simpleidentityserver.azurewebsites.net/authorization?scope=openid&state=hXCQ8P5Sr3uKyxbM&redirect_uri=https%3A%2F%2Fop.certification.openid.net%3A60186%2Fauthz_cb&response_type=id_token+token&client_id=MyBlog
-0.943535 --> BODY: None
+1.241210 ------------ AuthorizationRequest ------------
+1.241623 --> URL: https://simpleidentityserver.azurewebsites.net/authorization?scope=openid&state=KIC6RGClqVVW4QEz&redirect_uri=https%3A%2F%2Fop.certification.openid.net%3A60186%2Fauthz_cb&response_type=id_token+token&client_id=MyBlog
+1.241631 --> BODY: None
 Result
 
 PARTIAL RESULT

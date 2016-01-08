@@ -1,7 +1,7 @@
 Test info
 
 Profile: {'openid-configuration': 'config', 'response_type': 'id_token+token', 'crypto': 'sign', 'registration': 'static'}
-Timestamp: 2016-01-06T16:26:02Z
+Timestamp: 2016-01-08T15:41:32Z
 Test description: Verify that jwks_uri is published [Config, Dynamic]
 Test ID: OP-Discovery-jwks_uri
 Issuer: https://simpleidentityserver.azurewebsites.net
@@ -22,10 +22,10 @@ __X:==== END ====__
 Trace output
 
 
-0.000458 ------------ DiscoveryRequest ------------
-0.000475 Provider info discover from 'https://simpleidentityserver.azurewebsites.net'
-0.000483 --> URL: https://simpleidentityserver.azurewebsites.net/.well-known/openid-configuration
-0.464539 ProviderConfigurationResponse: {
+0.000344 ------------ DiscoveryRequest ------------
+0.000359 Provider info discover from 'https://simpleidentityserver.azurewebsites.net'
+0.000366 --> URL: https://simpleidentityserver.azurewebsites.net/.well-known/openid-configuration
+0.584927 ProviderConfigurationResponse: {
   "authorization_endpoint": "https://simpleidentityserver.azurewebsites.net/authorization",
   "check_session_iframe": "https://simpleidentityserver.azurewebsites.net/check_session",
   "claims_parameter_supported": true,
@@ -97,14 +97,14 @@ Trace output
   "userinfo_endpoint": "https://simpleidentityserver.azurewebsites.net/userinfo",
   "version": "1.0"
 }
-0.955558 JWKS: {
+1.185272 JWKS: {
   "keys": [
     {
       "alg": "RS256",
       "e": "AQAB",
       "kid": "a3rMUgMFv9tPclLa6yF3zAkfquE",
       "kty": "RSA",
-      "n": "iCkf2sL5_hq7Sq3Us_5Pg0i4qJ6zVU82x1D93rtt48Bwjf96uGIHxNuOp9LPCMqM9d5p-OirAgYNZZw2XfpIvMIIFQPOed0NFkVb3n-_I-yc33mh6A6q_3uXwbb2gKBdkkpbjloyCn8EPFO4e28pyyxpc7YM-3xtNhB0vzkQzf0",
+      "n": "0427bhuSJxy2yITT8Xf5pD6lzMyF-buGwc3XhiBMZkc3Y0jFuF2-Avlm4mExEq-KdlRVYuyGCwi3a37RnMCBk9ulYJmAPTKuWzdGatPp-0c1sG0e51z5se_bZiLcK1FxVd1S-w1aq562KER6-kafWbz7HlVpifN7x0pLPZO6Gvk",
       "use": "sig"
     },
     {
@@ -112,12 +112,12 @@ Trace output
       "e": "AQAB",
       "kid": "3",
       "kty": "RSA",
-      "n": "iCkf2sL5_hq7Sq3Us_5Pg0i4qJ6zVU82x1D93rtt48Bwjf96uGIHxNuOp9LPCMqM9d5p-OirAgYNZZw2XfpIvMIIFQPOed0NFkVb3n-_I-yc33mh6A6q_3uXwbb2gKBdkkpbjloyCn8EPFO4e28pyyxpc7YM-3xtNhB0vzkQzf0",
+      "n": "0427bhuSJxy2yITT8Xf5pD6lzMyF-buGwc3XhiBMZkc3Y0jFuF2-Avlm4mExEq-KdlRVYuyGCwi3a37RnMCBk9ulYJmAPTKuWzdGatPp-0c1sG0e51z5se_bZiLcK1FxVd1S-w1aq562KER6-kafWbz7HlVpifN7x0pLPZO6Gvk",
       "use": "enc"
     }
   ]
 }
-0.965446 ==== END ====
+1.196375 ==== END ====
 Result
 
 PASSED

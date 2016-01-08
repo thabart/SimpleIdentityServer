@@ -1,7 +1,7 @@
 Test info
 
 Profile: {'openid-configuration': 'config', 'response_type': 'id_token+token', 'crypto': 'sign', 'registration': 'static'}
-Timestamp: 2016-01-05T15:15:54Z
+Timestamp: 2016-01-08T15:35:55Z
 Test description: Providing acr_values [Basic, Implicit, Hybrid]
 Test ID: OP-Req-acr_values
 Issuer: https://simpleidentityserver.azurewebsites.net
@@ -27,10 +27,10 @@ __X:==== END ====__
 Trace output
 
 
-0.000659 ------------ DiscoveryRequest ------------
-0.000675 Provider info discover from 'https://simpleidentityserver.azurewebsites.net'
-0.000683 --> URL: https://simpleidentityserver.azurewebsites.net/.well-known/openid-configuration
-0.461155 ProviderConfigurationResponse: {
+0.000460 ------------ DiscoveryRequest ------------
+0.000477 Provider info discover from 'https://simpleidentityserver.azurewebsites.net'
+0.000484 --> URL: https://simpleidentityserver.azurewebsites.net/.well-known/openid-configuration
+0.705656 ProviderConfigurationResponse: {
   "authorization_endpoint": "https://simpleidentityserver.azurewebsites.net/authorization",
   "check_session_iframe": "https://simpleidentityserver.azurewebsites.net/check_session",
   "claims_parameter_supported": true,
@@ -102,14 +102,14 @@ Trace output
   "userinfo_endpoint": "https://simpleidentityserver.azurewebsites.net/userinfo",
   "version": "1.0"
 }
-0.965590 JWKS: {
+1.188922 JWKS: {
   "keys": [
     {
       "alg": "RS256",
       "e": "AQAB",
       "kid": "a3rMUgMFv9tPclLa6yF3zAkfquE",
       "kty": "RSA",
-      "n": "1OwOJW9ifciy6JdJYpPr5surRI3i-OKHh258PqzYcThu_jaAdqg7Vamh7HuNU8BQShwqfKLqUGfJpnRn4NXI-iDwqBqse8ht6Ii5p4dN504bueh8ijCbtEadz512FLXn2bj93V7uO1EuwvglmBGOC6-IzgchDW3rUmkJ3FYCg6U",
+      "n": "0427bhuSJxy2yITT8Xf5pD6lzMyF-buGwc3XhiBMZkc3Y0jFuF2-Avlm4mExEq-KdlRVYuyGCwi3a37RnMCBk9ulYJmAPTKuWzdGatPp-0c1sG0e51z5se_bZiLcK1FxVd1S-w1aq562KER6-kafWbz7HlVpifN7x0pLPZO6Gvk",
       "use": "sig"
     },
     {
@@ -117,35 +117,35 @@ Trace output
       "e": "AQAB",
       "kid": "3",
       "kty": "RSA",
-      "n": "1OwOJW9ifciy6JdJYpPr5surRI3i-OKHh258PqzYcThu_jaAdqg7Vamh7HuNU8BQShwqfKLqUGfJpnRn4NXI-iDwqBqse8ht6Ii5p4dN504bueh8ijCbtEadz512FLXn2bj93V7uO1EuwvglmBGOC6-IzgchDW3rUmkJ3FYCg6U",
+      "n": "0427bhuSJxy2yITT8Xf5pD6lzMyF-buGwc3XhiBMZkc3Y0jFuF2-Avlm4mExEq-KdlRVYuyGCwi3a37RnMCBk9ulYJmAPTKuWzdGatPp-0c1sG0e51z5se_bZiLcK1FxVd1S-w1aq562KER6-kafWbz7HlVpifN7x0pLPZO6Gvk",
       "use": "enc"
     }
   ]
 }
-0.973898 ------------ AuthorizationRequest ------------
-0.974420 --> URL: https://simpleidentityserver.azurewebsites.net/authorization?nonce=Agcz5Ff6hHYe&acr_values=1+2&state=fgzYBKhENtCsvbcy&redirect_uri=https%3A%2F%2Fop.certification.openid.net%3A60186%2Fauthz_cb&response_type=id_token+token&client_id=MyBlog&scope=openid
-0.974428 --> BODY: None
-1.375692 QUERY_STRING:
-1.994807 <-- access_token=YjhiMTIxNTYtZGM1MS00YTk3LTg2OWItNTdiM2U2NWI3MmM3&id_token=eyJhbGciOiJSUzI1NiIsImtpZCI6ImEzck1VZ01Gdjl0UGNsTGE2eUYzekFrZnF1RSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL3NpbXBsZWlkZW50aXR5c2VydmVyLmF6dXJld2Vic2l0ZXMubmV0LyIsImF1ZCI6WyJNeUJsb2ciLCJNeUJsb2dDbGllbnRTZWNyZXRQb3N0IiwiaHR0cHM6Ly9zaW1wbGVpZGVudGl0eXNlcnZlci5henVyZXdlYnNpdGVzLm5ldC8iXSwiZXhwIjoxNDU1MDA2OTUzLCJpYXQiOjE0NTIwMDY5NTMsIm5vbmNlIjoiQWdjejVGZjZoSFllIiwiYWNyIjoib3BlbmlkLnBhcGUuYXV0aF9sZXZlbC5ucy5wYXNzd29yZD0xIiwiYW1yIjoicGFzc3dvcmQiLCJhenAiOiJNeUJsb2ciLCJzdWIiOiJhZG1pbmlzdHJhdG9yQGhvdG1haWwuYmUiLCJhdF9oYXNoIjoiZHhzVXdWMWZvN2pRVVUzQkVYMXoxZyJ9.KBYgfsyt-bJ2itKDyOEVCLMdEOm6CME5rBpmAmz7TfpjnDceP16pj38apVTOkt_M3ovlfh3LtR7kumvvROly-9TrngqC1LiUPxsZ8u9mutbByj7vDXxJoL-XzXtVNhQmz_-ZYY5OdIV9pVw0smAaCWKH6KpVJUkEiDyAsvKDtx8&state=fgzYBKhENtCsvbcy
-2.477711 AuthorizationResponse: {
-  "access_token": "YjhiMTIxNTYtZGM1MS00YTk3LTg2OWItNTdiM2U2NWI3MmM3",
+1.200952 ------------ AuthorizationRequest ------------
+1.201406 --> URL: https://simpleidentityserver.azurewebsites.net/authorization?nonce=SmcnWH0t1wL2&acr_values=1+2&state=hPlBsqdoKSz2PZkj&redirect_uri=https%3A%2F%2Fop.certification.openid.net%3A60186%2Fauthz_cb&response_type=id_token+token&client_id=MyBlog&scope=openid
+1.201413 --> BODY: None
+1.638761 QUERY_STRING:
+2.679705 <-- access_token=YzIyYmM0ZTQtNjQ4Ny00NjJhLTk4ZGEtNjI5OWRkOThmNmQ1&id_token=eyJhbGciOiJSUzI1NiIsImtpZCI6ImEzck1VZ01Gdjl0UGNsTGE2eUYzekFrZnF1RSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL3NpbXBsZWlkZW50aXR5c2VydmVyLmF6dXJld2Vic2l0ZXMubmV0LyIsImF1ZCI6WyJNeUJsb2ciLCJNeUJsb2dDbGllbnRTZWNyZXRQb3N0IiwiaHR0cHM6Ly9zaW1wbGVpZGVudGl0eXNlcnZlci5henVyZXdlYnNpdGVzLm5ldC8iXSwiZXhwIjoxNDU1MjY3MzUyLCJpYXQiOjE0NTIyNjczNTIsIm5vbmNlIjoiU21jbldIMHQxd0wyIiwiYWNyIjoib3BlbmlkLnBhcGUuYXV0aF9sZXZlbC5ucy5wYXNzd29yZD0xIiwiYW1yIjpbInBhc3N3b3JkIl0sImF6cCI6Ik15QmxvZyIsInN1YiI6ImFkbWluaXN0cmF0b3JAaG90bWFpbC5iZSIsImF0X2hhc2giOiI1UWhjR2tRNzJqZlV5Q3d6bkhTelB3In0.gozWSF8jfB4wMYlcfPWC7RthLypWM4mZ_CbTReMObFwR1a-FNr4cCaC23akhh3jc2UKNCXXMlsEw7hlwYOVMhPu-KFeMnhL1E2nEILv5Bc_IzkfacQGdQwhNyPpKsVHMu6AQNIrZmKRb9yq-tMizEZatG8bb_XMENro5XbAGzu8&state=hPlBsqdoKSz2PZkj
+3.299796 AuthorizationResponse: {
+  "access_token": "YzIyYmM0ZTQtNjQ4Ny00NjJhLTk4ZGEtNjI5OWRkOThmNmQ1",
   "id_token": {
     "claims": {
       "acr": "openid.pape.auth_level.ns.password=1",
       "amr": [
         "password"
       ],
-      "at_hash": "dxsUwV1fo7jQUU3BEX1z1g",
+      "at_hash": "5QhcGkQ72jfUyCwznHSzPw",
       "aud": [
         "MyBlog",
         "MyBlogClientSecretPost",
         "https://simpleidentityserver.azurewebsites.net/"
       ],
       "azp": "MyBlog",
-      "exp": 1455006953,
-      "iat": 1452006953,
+      "exp": 1455267352,
+      "iat": 1452267352,
       "iss": "https://simpleidentityserver.azurewebsites.net/",
-      "nonce": "Agcz5Ff6hHYe",
+      "nonce": "SmcnWH0t1wL2",
       "sub": "administrator@hotmail.be"
     },
     "jws header parameters": {
@@ -154,9 +154,9 @@ Trace output
       "typ": "JWT"
     }
   },
-  "state": "fgzYBKhENtCsvbcy"
+  "state": "hPlBsqdoKSz2PZkj"
 }
-2.478198 ==== END ====
+3.300272 ==== END ====
 Result
 
 PASSED
