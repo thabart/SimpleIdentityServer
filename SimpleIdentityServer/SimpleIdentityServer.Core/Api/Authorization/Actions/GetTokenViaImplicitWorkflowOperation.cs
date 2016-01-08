@@ -21,9 +21,10 @@ using SimpleIdentityServer.Core.Api.Authorization.Common;
 using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
-
+using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
+using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
 
 namespace SimpleIdentityServer.Core.Api.Authorization.Actions
@@ -41,16 +42,20 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
 
         private readonly IGenerateAuthorizationResponse _generateAuthorizationResponse;
 
+        private readonly IClientValidator _clientValidator;
+
         private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
 
         public GetTokenViaImplicitWorkflowOperation(
             IProcessAuthorizationRequest processAuthorizationRequest,
             IGenerateAuthorizationResponse generateAuthorizationResponse,
+            IClientValidator clientValidator,
             ISimpleIdentityServerEventSource simpleIdentityServerEventSource)
         {
             _processAuthorizationRequest = processAuthorizationRequest;
             _generateAuthorizationResponse = generateAuthorizationResponse;
             _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
+            _clientValidator = clientValidator;
         }
 
         public ActionResult Execute(
@@ -59,8 +64,9 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
         {
             if (authorizationParameter == null)
             {
-                throw new ArgumentNullException("cannot process the implicit workflow if the authorizationParameter is null");
+                throw new ArgumentNullException("authorizationParameter");
             }
+
             if (string.IsNullOrWhiteSpace(authorizationParameter.Nonce))
             {
                 throw new IdentityServerExceptionWithState(
@@ -73,6 +79,17 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
                 authorizationParameter.ClientId, 
                 authorizationParameter.Scope,
                 authorizationParameter.Claims == null ? string.Empty : authorizationParameter.Claims.ToString());
+
+            var client = _clientValidator.ValidateClientExist(authorizationParameter.ClientId);
+            if (!_clientValidator.ValidateGrantType(GrantType.@implicit, client))
+            {
+                throw new IdentityServerExceptionWithState(
+                    ErrorCodes.InvalidRequestCode,
+                    string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType,
+                        authorizationParameter.ClientId,
+                        "implicit"),
+                    authorizationParameter.State);
+            }
 
             var result = _processAuthorizationRequest.Process(
                 authorizationParameter,

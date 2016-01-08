@@ -40,6 +40,61 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
         }
 
         [Test]
+        public void When_The_Client_Grant_Type_Is_Not_Supported_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            const string clientId = "clientId";
+            const string scope = "scope";
+            var authorizationParameter = new AuthorizationParameter
+            {
+                ClientId = clientId,
+                Scope = scope,
+                Claims = null
+            };
+            _clientValidatorFake.Setup(c => c.ValidateGrantType(It.IsAny<GrantType>(), It.IsAny<Client>()))
+                .Returns(false);
+
+            // ACT & ASSERTS
+            var exception = Assert.Throws<IdentityServerExceptionWithState>(
+                () => _getAuthorizationCodeOperation.Execute(authorizationParameter, null));
+
+            Assert.IsNotNull(exception);
+            Assert.IsTrue(exception.Code.Equals(ErrorCodes.InvalidRequestCode));
+            Assert.IsTrue(exception.Message.Equals(string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, clientId, "authorization_code")));
+        }
+
+        [Test]
+        public void When_Redirected_To_Callback_And_Resource_Owner_Is_Not_Authenticated_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var authorizationParameter = new AuthorizationParameter
+            {
+                State = "state"
+            };
+
+            var actionResult = new ActionResult
+            {
+                Type = TypeActionResult.RedirectToCallBackUrl
+            };
+
+            _processAuthorizationRequestFake.Setup(p => p.Process(It.IsAny<AuthorizationParameter>(),
+                It.IsAny<ClaimsPrincipal>()))
+                .Returns(actionResult);
+            _clientValidatorFake.Setup(c => c.ValidateGrantType(It.IsAny<GrantType>(), It.IsAny<Client>()))
+                .Returns(true);
+
+            // ACT & ASSERT
+            var ex = Assert.Throws<IdentityServerExceptionWithState>(
+                () => _getAuthorizationCodeOperation.Execute(authorizationParameter, null));
+            Assert.IsTrue(ex.Code == ErrorCodes.InvalidRequestCode);
+            Assert.IsTrue(ex.Message ==
+                          ErrorDescriptions.TheResponseCannotBeGeneratedBecauseResourceOwnerNeedsToBeAuthenticated);
+            Assert.IsTrue(ex.State == authorizationParameter.State);
+        }
+        
+        [Test]
         public void When_Passing_Valid_Request_Then_Events_Are_Logged()
         {
             // ARRANGE
@@ -76,31 +131,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             // ASSERTS
             _simpleIdentityServerEventSourceFake.Verify(s => s.StartAuthorizationCodeFlow(clientId, scope, string.Empty));
             _simpleIdentityServerEventSourceFake.Verify(s => s.EndAuthorizationCodeFlow(clientId, "RedirectToAction", "FormIndex"));
-        }
-
-        [Test]
-        public void When_The_Client_Grant_Type_Is_Not_Supported_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            const string clientId = "clientId";
-            const string scope = "scope";
-            var authorizationParameter = new AuthorizationParameter
-            {
-                ClientId = clientId,
-                Scope = scope,
-                Claims = null
-            };
-            _clientValidatorFake.Setup(c => c.ValidateGrantType(It.IsAny<GrantType>(), It.IsAny<Client>()))
-                .Returns(false);
-
-            // ACT & ASSERTS
-            var exception = Assert.Throws<IdentityServerExceptionWithState>(
-                () => _getAuthorizationCodeOperation.Execute(authorizationParameter, null));
-
-            Assert.IsNotNull(exception);
-            Assert.IsTrue(exception.Code.Equals(ErrorCodes.InvalidRequestCode));
-            Assert.IsTrue(exception.Message.Equals(string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, clientId, "authorization_code")));
         }
 
         public void InitializeFakeObjects()

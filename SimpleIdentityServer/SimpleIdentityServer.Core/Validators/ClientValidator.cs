@@ -30,7 +30,7 @@ namespace SimpleIdentityServer.Core.Validators
 
         bool ValidateGrantType(GrantType grantType, Client client);
 
-        bool ValidateGrantTypes(IList<GrantType> grantTypes, Client client);
+        bool ValidateGrantTypes(Client client, params GrantType[] grantTypes);
 
         bool ValidateResponseType(ResponseType responseType, Client client);
 
@@ -73,7 +73,7 @@ namespace SimpleIdentityServer.Core.Validators
             return client.GrantTypes != null && client.GrantTypes.Contains(grantType);
         }
 
-        public bool ValidateGrantTypes(IList<GrantType> grantTypes, Client client)
+        public bool ValidateGrantTypes(Client client, params GrantType[] grantTypes)
         {
             if (client == null)
             {

@@ -39,6 +39,9 @@ namespace SimpleIdentityServer.Core.Api.Authorization
 
         private readonly IGetTokenViaImplicitWorkflowOperation _getTokenViaImplicitWorkflowOperation;
 
+        private readonly IGetAuthorizationCodeAndTokenViaHybridWorkflowOperation
+            _getAuthorizationCodeAndTokenViaHybridWorkflowOperation;
+
         private readonly IAuthorizationCodeGrantTypeParameterAuthEdpValidator _authorizationCodeGrantTypeParameterValidator;
 
         private readonly IParameterParserHelper _parameterParserHelper;
@@ -50,6 +53,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization
         public AuthorizationActions(
             IGetAuthorizationCodeOperation getAuthorizationCodeOperation,
             IGetTokenViaImplicitWorkflowOperation getTokenViaImplicitWorkflowOperation,
+            IGetAuthorizationCodeAndTokenViaHybridWorkflowOperation getAuthorizationCodeAndTokenViaHybridWorkflowOperation,
             IAuthorizationCodeGrantTypeParameterAuthEdpValidator authorizationCodeGrantTypeParameterValidator,
             IParameterParserHelper parameterParserHelper,
             ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
@@ -57,6 +61,8 @@ namespace SimpleIdentityServer.Core.Api.Authorization
         {
             _getAuthorizationCodeOperation = getAuthorizationCodeOperation;
             _getTokenViaImplicitWorkflowOperation = getTokenViaImplicitWorkflowOperation;
+            _getAuthorizationCodeAndTokenViaHybridWorkflowOperation =
+                getAuthorizationCodeAndTokenViaHybridWorkflowOperation;
             _authorizationCodeGrantTypeParameterValidator = authorizationCodeGrantTypeParameterValidator;
             _parameterParserHelper = parameterParserHelper;
             _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
@@ -89,7 +95,9 @@ namespace SimpleIdentityServer.Core.Api.Authorization
                         claimsPrincipal);
                     break;
                 case AuthorizationFlow.HybridFlow:
-
+                    actionResult = _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(
+                        parameter,
+                        claimsPrincipal);
                     break;
             }
 

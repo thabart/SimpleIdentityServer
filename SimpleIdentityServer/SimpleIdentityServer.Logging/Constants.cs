@@ -17,17 +17,19 @@ namespace SimpleIdentityServer.Logging
             public const int AuthorizationCodeFlowEnded = 9;
             public const int ImplicitFlowStart = 10;
             public const int ImplicitFlowEnd = 11;
-            public const int AuthorizationEnded = 12;
-            public const int StartResourceOwnerCredentialsGrantType = 13;
-            public const int EndResourceOwnerCredentialsGrantType = 14;
-            public const int StartAuthorizationCodeGrantType = 15;
-            public const int EndAuthorizationCodeGrantType = 16;
-            public const int StartToAuthenticateTheClient = 17;
-            public const int FinishToAuthenticateTheClient = 18;
-            public const int ResourceOwnerIsAuthenticated = 19;
-            public const int ConsentHasBeenGivenByResourceOwner = 20;
-            public const int OpenIdFailure = 21;
-            public const int Failure = 22;
+            public const int HybridFlowStart = 12;
+            public const int HybridFlowEnd = 13;
+            public const int AuthorizationEnded = 14;
+            public const int StartResourceOwnerCredentialsGrantType = 15;
+            public const int EndResourceOwnerCredentialsGrantType = 16;
+            public const int StartAuthorizationCodeGrantType = 17;
+            public const int EndAuthorizationCodeGrantType = 18;
+            public const int StartToAuthenticateTheClient = 19;
+            public const int FinishToAuthenticateTheClient = 20;
+            public const int ResourceOwnerIsAuthenticated = 21;
+            public const int ConsentHasBeenGivenByResourceOwner = 22;
+            public const int OpenIdFailure = 23;
+            public const int Failure = 24;
         }
 
         public static class Tasks

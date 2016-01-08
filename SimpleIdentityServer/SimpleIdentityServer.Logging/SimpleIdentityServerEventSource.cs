@@ -59,6 +59,16 @@ namespace SimpleIdentityServer.Logging
             string actionType,
             string actionName);
 
+        void StartHybridFlow(
+            string clientId,
+            string scope,
+            string individualClaims);
+
+        void EndHybridFlow(
+            string clientId,
+            string actionType,
+            string actionName);
+
         void EndAuthorization(
             string actionType,
             string controllerAction,
@@ -325,6 +335,39 @@ namespace SimpleIdentityServer.Logging
             }
 
             WriteEvent(Constants.EventIds.ImplicitFlowEnd, clientId, actionType, actionName);
+        }
+
+        [Event(Constants.EventIds.HybridFlowStart,
+            Level = EventLevel.Informational,
+            Message = "start the hybrid flow",
+            Opcode = EventOpcode.Start,
+            Task = Constants.Tasks.Authorization)]
+        public void StartHybridFlow(
+            string clientId, 
+            string scope, 
+            string individualClaims)
+        {
+            if (!IsEnabled())
+            {
+                return;
+            }
+
+            WriteEvent(Constants.EventIds.HybridFlowStart, clientId, scope, individualClaims);
+        }
+
+        [Event(Constants.EventIds.HybridFlowEnd,
+            Level = EventLevel.Informational,
+            Message = "end the hybrid flow",
+            Opcode = EventOpcode.Stop,
+            Task = Constants.Tasks.Authorization)]
+        public void EndHybridFlow(string clientId, string actionType, string actionName)
+        {
+            if (!IsEnabled())
+            {
+                return;
+            }
+
+            WriteEvent(Constants.EventIds.HybridFlowEnd, clientId, actionType, actionName);
         }
 
         #endregion

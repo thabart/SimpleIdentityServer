@@ -80,6 +80,7 @@ namespace SimpleIdentityServer.Core
             register.RegisterType<ITokenActions, TokenActions>();
             register.RegisterType<IGetTokenByResourceOwnerCredentialsGrantTypeAction, GetTokenByResourceOwnerCredentialsGrantTypeAction>();
             register.RegisterType<IGetTokenByAuthorizationCodeGrantTypeAction, GetTokenByAuthorizationCodeGrantTypeAction>();
+            register.RegisterType<IGetAuthorizationCodeAndTokenViaHybridWorkflowOperation, GetAuthorizationCodeAndTokenViaHybridWorkflowOperation>();
 
             register.RegisterType<IConsentActions, ConsentActions>();
             register.RegisterType<IConfirmConsentAction, ConfirmConsentAction>();

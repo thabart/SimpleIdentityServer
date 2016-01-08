@@ -1,0 +1,291 @@
+Test info
+
+Profile: {'openid-configuration': 'config', 'response_type': 'code+id_token', 'crypto': 'sign', 'registration': 'static'}
+Timestamp: 2016-01-08T17:01:00Z
+Test description: Scope requesting all claims [Basic, Implicit, Hybrid]
+Test ID: OP-scope-All
+Issuer: https://simpleidentityserver.azurewebsites.net
+Test output
+
+
+__AuthorizationRequest:pre__
+[check-response-type]
+	status: OK
+	description: Checks that the asked for response type are among the supported
+[check-endpoint]
+	status: OK
+	description: Checks that the necessary endpoint exists at a server
+__After completing the test flow:__
+[check-http-response]
+	status: OK
+	description: Checks that the HTTP response status is within the 200 or 300 range
+[verify-response]
+	status: OK
+	description: Checks that the last response was one of a possible set of OpenID Connect Responses
+[verify-scopes]
+	status: OK
+	description: Verifies that the claims corresponding to the requested scopes are returned
+__X:==== END ====__
+Trace output
+
+
+0.000328 ------------ DiscoveryRequest ------------
+0.000343 Provider info discover from 'https://simpleidentityserver.azurewebsites.net'
+0.000349 --> URL: https://simpleidentityserver.azurewebsites.net/.well-known/openid-configuration
+1.208886 ProviderConfigurationResponse: {
+  "authorization_endpoint": "https://simpleidentityserver.azurewebsites.net/authorization",
+  "check_session_iframe": "https://simpleidentityserver.azurewebsites.net/check_session",
+  "claims_parameter_supported": true,
+  "claims_supported": [
+    "sub",
+    "name",
+    "family_name",
+    "given_name",
+    "middle_name",
+    "nickname",
+    "preferred_username",
+    "profile",
+    "picture",
+    "website",
+    "gender",
+    "birthdate",
+    "zoneinfo",
+    "locale",
+    "updated_at",
+    "email",
+    "email_verified",
+    "address",
+    "phone_number",
+    "phone_number_verified"
+  ],
+  "end_session_endpoint": "https://simpleidentityserver.azurewebsites.net/end_session",
+  "grant_types_supported": [
+    "authorization_code",
+    "client_credentials",
+    "password",
+    "refresh_token",
+    "implicit"
+  ],
+  "id_token_signing_alg_values_supported": [
+    "RS256"
+  ],
+  "issuer": "https://simpleidentityserver.azurewebsites.net",
+  "jwks_uri": "https://simpleidentityserver.azurewebsites.net/jwks",
+  "request_parameter_supported": false,
+  "request_uri_parameter_supported": true,
+  "require_request_uri_registration": true,
+  "response_modes_supported": [
+    "query"
+  ],
+  "response_types_supported": [
+    "code",
+    "id_token",
+    "id_token token",
+    "code id_token",
+    "code token",
+    "code id_token token"
+  ],
+  "revocation_endpoint": "https://simpleidentityserver.azurewebsites.net/revocation",
+  "scopes_supported": [
+    "openid",
+    "profile",
+    "email",
+    "address",
+    "phone"
+  ],
+  "subject_types_supported": [
+    "public"
+  ],
+  "token_endpoint": "https://simpleidentityserver.azurewebsites.net/token",
+  "token_endpoint_auth_methods_supported": [
+    "client_secret_basic",
+    "client_secret_post"
+  ],
+  "userinfo_endpoint": "https://simpleidentityserver.azurewebsites.net/userinfo",
+  "version": "1.0"
+}
+1.891463 JWKS: {
+  "keys": [
+    {
+      "alg": "RS256",
+      "e": "AQAB",
+      "kid": "a3rMUgMFv9tPclLa6yF3zAkfquE",
+      "kty": "RSA",
+      "n": "xaZF3OGWZnPiHaOBkmmtA2Ys5ALCtEKtq3unWGVpN9GFd4g5SN002GkmG2EQ5apCjWsKpWlft22W-7asOPExcO8lB31hAp-GTl_jkW5uw1YabKe1a4TyayXHJNTFfCuZG25GCc_OEKkeHmHGIcmv60fbP3kWaRS4_dt4A3cZJgs",
+      "use": "sig"
+    },
+    {
+      "alg": "RSA1_5",
+      "e": "AQAB",
+      "kid": "3",
+      "kty": "RSA",
+      "n": "xaZF3OGWZnPiHaOBkmmtA2Ys5ALCtEKtq3unWGVpN9GFd4g5SN002GkmG2EQ5apCjWsKpWlft22W-7asOPExcO8lB31hAp-GTl_jkW5uw1YabKe1a4TyayXHJNTFfCuZG25GCc_OEKkeHmHGIcmv60fbP3kWaRS4_dt4A3cZJgs",
+      "use": "enc"
+    }
+  ]
+}
+1.896707 ------------ AuthorizationRequest ------------
+1.897181 --> URL: https://simpleidentityserver.azurewebsites.net/authorization?nonce=HzQDA75P05CG&state=RVAX70VMuzC3eFdR&redirect_uri=https%3A%2F%2Fop.certification.openid.net%3A60186%2Fauthz_cb&response_type=code+id_token&client_id=MyBlog&scope=openid+profile+email+address+phone
+1.897189 --> BODY: None
+2.370225 QUERY_STRING:
+3.234785 <-- code=46f1f0f6-d8fb-488a-8efc-19b88b714f40&id_token=eyJhbGciOiJSUzI1NiIsImtpZCI6ImEzck1VZ01Gdjl0UGNsTGE2eUYzekFrZnF1RSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL3NpbXBsZWlkZW50aXR5c2VydmVyLmF6dXJld2Vic2l0ZXMubmV0LyIsImF1ZCI6WyJNeUJsb2ciLCJNeUJsb2dDbGllbnRTZWNyZXRQb3N0IiwiaHR0cHM6Ly9zaW1wbGVpZGVudGl0eXNlcnZlci5henVyZXdlYnNpdGVzLm5ldC8iXSwiZXhwIjoxNDU1MjcyNDU2LCJpYXQiOjE0NTIyNzI0NTYsIm5vbmNlIjoiSHpRREE3NVAwNUNHIiwiYWNyIjoib3BlbmlkLnBhcGUuYXV0aF9sZXZlbC5ucy5wYXNzd29yZD0xIiwiYW1yIjpbInBhc3N3b3JkIl0sImF6cCI6Ik15QmxvZyIsInN1YiI6ImFkbWluaXN0cmF0b3JAaG90bWFpbC5iZSIsImJpcnRoZGF0ZSI6IjE5ODktMTAtMDciLCJmYW1pbHlfbmFtZSI6ImhhYmFydCIsImdlbmRlciI6Ik0iLCJnaXZlbl9uYW1lIjoiSGFiYXJ0IFRoaWVycnkiLCJsb2NhbGUiOiJmci1GUiIsIm1pZGRsZV9uYW1lIjoiVGhpZXJyeSIsIm5hbWUiOiJhZG1pbmlzdHJhdG9yIiwibmlja25hbWUiOiJUaXRpIiwicGljdHVyZSI6Imh0dHBzOi8vdXBsb2FkLndpa2ltZWRpYS5vcmcvd2lraXBlZGlhL2NvbW1vbnMvdGh1bWIvNS81OC9TaGliYV9pbnVfdGFpa2kuanBnLzIyMHB4LVNoaWJhX2ludV90YWlraS5qcGciLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJUaGllcnJ5IiwicHJvZmlsZSI6Imh0dHA6Ly9sb2NhbGhvc3QvcHJvZmlsZSIsIndlYnNpdGUiOiJodHRwczovL2dpdGh1Yi5jb20vdGhhYmFydCIsInpvbmVpbmZvIjoiRXVyb3BlL1BhcmlzIiwidXBkYXRlZF9hdCI6IjE0NTIyNjY0NzQiLCJlbWFpbCI6ImhhYmFydGhpZXJyeUBob3RtYWlsLmZyIiwiZW1haWxfdmVyaWZpZWQiOiJUcnVlIiwiYWRkcmVzcyI6IntcImNvdW50cnlcIjpcIkZyYW5jZVwiLFwiZm9ybWF0dGVkXCI6bnVsbCxcImxvY2FsaXR5XCI6bnVsbCxcInBvc3RhbF9jb2RlXCI6bnVsbCxcInJlZ2lvblwiOm51bGwsXCJzdHJlZXRfYWRkcmVzc1wiOm51bGx9IiwicGhvbmVfbnVtYmVyIjoiMDAiLCJwaG9uZV9udW1iZXJfdmVyaWZpZWQiOiJGYWxzZSIsImNfaGFzaCI6IjNjZXF2ZVN5R19mR2FnQ3YzNzE3aFEifQ.HfXwdN-EsI1icw3zM2SliMzFuu8qwpqj7i6ZpkH7ui3riBKW8uJdfvOt1p6jkwhsZS7HAL-AsWcUahEXiG8PGJK4cnJFb8jMzB3JyA_5EJJAd7MnD_DeWHSUaEcWqwzROsV5MmAHCsrdbeOBbmwOLKSy5pQA-ZCX6np-8kbNBbQ&state=RVAX70VMuzC3eFdR
+3.888457 AuthorizationResponse: {
+  "code": "46f1f0f6-d8fb-488a-8efc-19b88b714f40",
+  "id_token": {
+    "claims": {
+      "acr": "openid.pape.auth_level.ns.password=1",
+      "address": {
+        "country": "France",
+        "formatted": null,
+        "locality": null,
+        "postal_code": null,
+        "region": null,
+        "street_address": null
+      },
+      "amr": [
+        "password"
+      ],
+      "aud": [
+        "MyBlog",
+        "MyBlogClientSecretPost",
+        "https://simpleidentityserver.azurewebsites.net/"
+      ],
+      "azp": "MyBlog",
+      "birthdate": "1989-10-07",
+      "c_hash": "3ceqveSyG_fGagCv3717hQ",
+      "email": "habarthierry@hotmail.fr",
+      "email_verified": "True",
+      "exp": 1455272456,
+      "family_name": "habart",
+      "gender": "M",
+      "given_name": "Habart Thierry",
+      "iat": 1452272456,
+      "iss": "https://simpleidentityserver.azurewebsites.net/",
+      "locale": "fr-FR",
+      "middle_name": "Thierry",
+      "name": "administrator",
+      "nickname": "Titi",
+      "nonce": "HzQDA75P05CG",
+      "phone_number": "00",
+      "phone_number_verified": "False",
+      "picture": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Shiba_inu_taiki.jpg/220px-Shiba_inu_taiki.jpg",
+      "preferred_username": "Thierry",
+      "profile": "http://localhost/profile",
+      "sub": "administrator@hotmail.be",
+      "updated_at": "1452266474",
+      "website": "https://github.com/thabart",
+      "zoneinfo": "Europe/Paris"
+    },
+    "jws header parameters": {
+      "alg": "RS256",
+      "kid": "a3rMUgMFv9tPclLa6yF3zAkfquE",
+      "typ": "JWT"
+    }
+  },
+  "state": "RVAX70VMuzC3eFdR"
+}
+3.889562 ------------ AccessTokenRequest ------------
+3.889972 --> URL: https://simpleidentityserver.azurewebsites.net/token
+3.889980 --> BODY: code=46f1f0f6-d8fb-488a-8efc-19b88b714f40&grant_type=authorization_code&redirect_uri=https%3A%2F%2Fop.certification.openid.net%3A60186%2Fauthz_cb
+3.889992 --> HEADERS: {'Content-Type': 'application/x-www-form-urlencoded', 'Authorization': u'Basic TXlCbG9nOk15QmxvZw=='}
+4.440506 <-- STATUS: 200
+4.440578 <-- BODY: {"access_token":"MzQwMTc2MTEtYzY4MC00MWExLWE1OWUtOWY1MDBkNzk2MDFj","id_token":"eyJhbGciOiJSUzI1NiIsImtpZCI6ImEzck1VZ01Gdjl0UGNsTGE2eUYzekFrZnF1RSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL3NpbXBsZWlkZW50aXR5c2VydmVyLmF6dXJld2Vic2l0ZXMubmV0LyIsImF1ZCI6WyJNeUJsb2ciLCJNeUJsb2dDbGllbnRTZWNyZXRQb3N0IiwiaHR0cHM6Ly9zaW1wbGVpZGVudGl0eXNlcnZlci5henVyZXdlYnNpdGVzLm5ldC8iXSwiZXhwIjoxNDU1MjcyNDU2LCJpYXQiOjE0NTIyNzI0NTYsIm5vbmNlIjoiSHpRREE3NVAwNUNHIiwiYWNyIjoib3BlbmlkLnBhcGUuYXV0aF9sZXZlbC5ucy5wYXNzd29yZD0xIiwiYW1yIjpbInBhc3N3b3JkIl0sImF6cCI6Ik15QmxvZyIsInN1YiI6ImFkbWluaXN0cmF0b3JAaG90bWFpbC5iZSIsImJpcnRoZGF0ZSI6IjE5ODktMTAtMDciLCJmYW1pbHlfbmFtZSI6ImhhYmFydCIsImdlbmRlciI6Ik0iLCJnaXZlbl9uYW1lIjoiSGFiYXJ0IFRoaWVycnkiLCJsb2NhbGUiOiJmci1GUiIsIm1pZGRsZV9uYW1lIjoiVGhpZXJyeSIsIm5hbWUiOiJhZG1pbmlzdHJhdG9yIiwibmlja25hbWUiOiJUaXRpIiwicGljdHVyZSI6Imh0dHBzOi8vdXBsb2FkLndpa2ltZWRpYS5vcmcvd2lraXBlZGlhL2NvbW1vbnMvdGh1bWIvNS81OC9TaGliYV9pbnVfdGFpa2kuanBnLzIyMHB4LVNoaWJhX2ludV90YWlraS5qcGciLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJUaGllcnJ5IiwicHJvZmlsZSI6Imh0dHA6Ly9sb2NhbGhvc3QvcHJvZmlsZSIsIndlYnNpdGUiOiJodHRwczovL2dpdGh1Yi5jb20vdGhhYmFydCIsInpvbmVpbmZvIjoiRXVyb3BlL1BhcmlzIiwidXBkYXRlZF9hdCI6IjE0NTIyNjY0NzQiLCJlbWFpbCI6ImhhYmFydGhpZXJyeUBob3RtYWlsLmZyIiwiZW1haWxfdmVyaWZpZWQiOiJUcnVlIiwiYWRkcmVzcyI6IntcImNvdW50cnlcIjpcIkZyYW5jZVwiLFwiZm9ybWF0dGVkXCI6bnVsbCxcImxvY2FsaXR5XCI6bnVsbCxcInBvc3RhbF9jb2RlXCI6bnVsbCxcInJlZ2lvblwiOm51bGwsXCJzdHJlZXRfYWRkcmVzc1wiOm51bGx9IiwicGhvbmVfbnVtYmVyIjoiMDAiLCJwaG9uZV9udW1iZXJfdmVyaWZpZWQiOiJGYWxzZSIsImNfaGFzaCI6IjNjZXF2ZVN5R19mR2FnQ3YzNzE3aFEifQ.HfXwdN-EsI1icw3zM2SliMzFuu8qwpqj7i6ZpkH7ui3riBKW8uJdfvOt1p6jkwhsZS7HAL-AsWcUahEXiG8PGJK4cnJFb8jMzB3JyA_5EJJAd7MnD_DeWHSUaEcWqwzROsV5MmAHCsrdbeOBbmwOLKSy5pQA-ZCX6np-8kbNBbQ","token_type":"Bearer","refresh_token":"OTcyYzdhY2MtNTBiMi00MTA4LWIyYzMtYWYxNTM1MDMyNzFm","expires_in":3600,"scope":"openid profile email address phone"}
+4.448103 AccessTokenResponse: {
+  "access_token": "MzQwMTc2MTEtYzY4MC00MWExLWE1OWUtOWY1MDBkNzk2MDFj",
+  "expires_in": 3600,
+  "id_token": {
+    "claims": {
+      "acr": "openid.pape.auth_level.ns.password=1",
+      "address": {
+        "country": "France",
+        "formatted": null,
+        "locality": null,
+        "postal_code": null,
+        "region": null,
+        "street_address": null
+      },
+      "amr": [
+        "password"
+      ],
+      "aud": [
+        "MyBlog",
+        "MyBlogClientSecretPost",
+        "https://simpleidentityserver.azurewebsites.net/"
+      ],
+      "azp": "MyBlog",
+      "birthdate": "1989-10-07",
+      "c_hash": "3ceqveSyG_fGagCv3717hQ",
+      "email": "habarthierry@hotmail.fr",
+      "email_verified": "True",
+      "exp": 1455272456,
+      "family_name": "habart",
+      "gender": "M",
+      "given_name": "Habart Thierry",
+      "iat": 1452272456,
+      "iss": "https://simpleidentityserver.azurewebsites.net/",
+      "locale": "fr-FR",
+      "middle_name": "Thierry",
+      "name": "administrator",
+      "nickname": "Titi",
+      "nonce": "HzQDA75P05CG",
+      "phone_number": "00",
+      "phone_number_verified": "False",
+      "picture": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Shiba_inu_taiki.jpg/220px-Shiba_inu_taiki.jpg",
+      "preferred_username": "Thierry",
+      "profile": "http://localhost/profile",
+      "sub": "administrator@hotmail.be",
+      "updated_at": "1452266474",
+      "website": "https://github.com/thabart",
+      "zoneinfo": "Europe/Paris"
+    },
+    "jws header parameters": {
+      "alg": "RS256",
+      "kid": "a3rMUgMFv9tPclLa6yF3zAkfquE",
+      "typ": "JWT"
+    }
+  },
+  "refresh_token": "OTcyYzdhY2MtNTBiMi00MTA4LWIyYzMtYWYxNTM1MDMyNzFm",
+  "scope": "openid profile email address phone",
+  "token_type": "Bearer"
+}
+4.454003 ------------ UserInfoRequest ------------
+4.454291 --> URL: https://simpleidentityserver.azurewebsites.net/userinfo
+4.454297 --> BODY: None
+4.454307 --> HEADERS: {'Authorization': u'Bearer MzQwMTc2MTEtYzY4MC00MWExLWE1OWUtOWY1MDBkNzk2MDFj'}
+5.011564 <-- STATUS: 200
+5.011634 Available verification keys: [(u'a3rMUgMFv9tPclLa6yF3zAkfquE', u'RSA')]
+5.011667 Available decryption keys: [('a0', 'RSA'), ('a3', 'EC')]
+5.011708 <-- BODY: {"sub":"administrator@hotmail.be","birthdate":"1989-10-07","family_name":"habart","gender":"M","given_name":"Habart Thierry","locale":"fr-FR","middle_name":"Thierry","name":"administrator","nickname":"Titi","picture":"https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Shiba_inu_taiki.jpg/220px-Shiba_inu_taiki.jpg","preferred_username":"Thierry","profile":"http://localhost/profile","website":"https://github.com/thabart","zoneinfo":"Europe/Paris","updated_at":"1452266474","email":"habarthierry@hotmail.fr","email_verified":"True","address":"{\"country\":\"France\",\"formatted\":null,\"locality\":null,\"postal_code\":null,\"region\":null,\"street_address\":null}","phone_number":"00","phone_number_verified":"False"}
+5.012696 UserInfo: {
+  "address": {
+    "country": "France",
+    "formatted": null,
+    "locality": null,
+    "postal_code": null,
+    "region": null,
+    "street_address": null
+  },
+  "birthdate": "1989-10-07",
+  "email": "habarthierry@hotmail.fr",
+  "email_verified": "True",
+  "family_name": "habart",
+  "gender": "M",
+  "given_name": "Habart Thierry",
+  "locale": "fr-FR",
+  "middle_name": "Thierry",
+  "name": "administrator",
+  "nickname": "Titi",
+  "phone_number": "00",
+  "phone_number_verified": "False",
+  "picture": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Shiba_inu_taiki.jpg/220px-Shiba_inu_taiki.jpg",
+  "preferred_username": "Thierry",
+  "profile": "http://localhost/profile",
+  "sub": "administrator@hotmail.be",
+  "updated_at": "1452266474",
+  "website": "https://github.com/thabart",
+  "zoneinfo": "Europe/Paris"
+}
+5.018079 ==== END ====
+Result
+
+PASSED

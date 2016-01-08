@@ -181,6 +181,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Api\Authorization\Actions\GetAuthorizationCodeAndTokenViaHybridWorkflowOperation.cs" />
     <Compile Include="Api\Authorization\Actions\GetTokenViaImplicitWorkflowOperation.cs" />
     <Compile Include="Api\Authorization\AuthorizationActions.cs" />
     <Compile Include="Api\Authorization\AuthorizationFlow.cs" />

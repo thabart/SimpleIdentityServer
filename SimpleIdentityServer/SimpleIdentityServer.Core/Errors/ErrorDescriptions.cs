@@ -130,5 +130,8 @@ namespace SimpleIdentityServer.Core.Errors
         public static string TheIdentityTokenDoesntContainSimpleIdentityServerAsAudience = "the identity token doesnt contain simple identity server in the audience";
 
         public static string TheCurrentAuthenticatedUserDoesntMatchWithTheIdentityToken = "the current authenticated user doesn't match with the identity token";
+
+        public static string TheResponseCannotBeGeneratedBecauseResourceOwnerNeedsToBeAuthenticated =
+            "the response cannot be generated because the resource owner needs to be authenticated";
     }
 }

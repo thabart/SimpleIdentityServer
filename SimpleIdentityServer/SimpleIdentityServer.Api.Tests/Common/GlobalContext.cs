@@ -158,6 +158,7 @@ namespace SimpleIdentityServer.Api.Tests.Common
             UnityContainer.RegisterType<ITokenActions, TokenActions>();
             UnityContainer.RegisterType<IGetTokenByResourceOwnerCredentialsGrantTypeAction, GetTokenByResourceOwnerCredentialsGrantTypeAction>();
             UnityContainer.RegisterType<IGetTokenByAuthorizationCodeGrantTypeAction, GetTokenByAuthorizationCodeGrantTypeAction>();
+            UnityContainer.RegisterType<IGetAuthorizationCodeAndTokenViaHybridWorkflowOperation, GetAuthorizationCodeAndTokenViaHybridWorkflowOperation>();
 
             UnityContainer.RegisterType<IConsentActions, ConsentActions>();
             UnityContainer.RegisterType<IConfirmConsentAction, ConfirmConsentAction>();

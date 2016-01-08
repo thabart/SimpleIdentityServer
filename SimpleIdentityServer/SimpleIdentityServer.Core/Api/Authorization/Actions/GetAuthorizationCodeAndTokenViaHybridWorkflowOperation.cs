@@ -19,43 +19,43 @@ using System.Security.Claims;
 using System.Security.Principal;
 using SimpleIdentityServer.Core.Api.Authorization.Common;
 using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Errors;
+using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Logging;
 
 namespace SimpleIdentityServer.Core.Api.Authorization.Actions
 {
-    public interface IGetAuthorizationCodeOperation
+    public interface IGetAuthorizationCodeAndTokenViaHybridWorkflowOperation
     {
         ActionResult Execute(
-            AuthorizationParameter authorizationParameter, 
+            AuthorizationParameter authorizationParameter,
             IPrincipal claimsPrincipal);
     }
 
-    public class GetAuthorizationCodeOperation : IGetAuthorizationCodeOperation
+    public sealed class GetAuthorizationCodeAndTokenViaHybridWorkflowOperation : IGetAuthorizationCodeAndTokenViaHybridWorkflowOperation
     {
+        private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
+
         private readonly IProcessAuthorizationRequest _processAuthorizationRequest;
 
-        private IClientValidator _clientValidator;
+        private readonly IClientValidator _clientValidator;
 
         private readonly IGenerateAuthorizationResponse _generateAuthorizationResponse;
 
-        private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
-
-        public GetAuthorizationCodeOperation(
+        public GetAuthorizationCodeAndTokenViaHybridWorkflowOperation(
+            ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
             IProcessAuthorizationRequest processAuthorizationRequest,
             IClientValidator clientValidator,
-            IGenerateAuthorizationResponse generateAuthorizationResponse,
-            ISimpleIdentityServerEventSource simpleIdentityServerEventSource)
+            IGenerateAuthorizationResponse generateAuthorizationResponse)
         {
+            _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
             _processAuthorizationRequest = processAuthorizationRequest;
             _clientValidator = clientValidator;
             _generateAuthorizationResponse = generateAuthorizationResponse;
-            _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
         }
 
         public ActionResult Execute(
@@ -67,22 +67,30 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
                 throw new ArgumentNullException("authorizationParameter");
             }
 
+            if (string.IsNullOrWhiteSpace(authorizationParameter.Nonce))
+            {
+                throw new IdentityServerExceptionWithState(
+                    ErrorCodes.InvalidRequestCode,
+                    string.Format(ErrorDescriptions.MissingParameter, Constants.StandardAuthorizationRequestParameterNames.NonceName),
+                    authorizationParameter.State);
+            }
+
             var claimsPrincipal = principal == null ? null : principal as ClaimsPrincipal;
 
-            _simpleIdentityServerEventSource.StartAuthorizationCodeFlow(
+            _simpleIdentityServerEventSource.StartHybridFlow(
                 authorizationParameter.ClientId,
                 authorizationParameter.Scope,
                 authorizationParameter.Claims == null ? string.Empty : authorizationParameter.Claims.ToString());
             var result = _processAuthorizationRequest.Process(authorizationParameter,
                 claimsPrincipal);
             var client = _clientValidator.ValidateClientExist(authorizationParameter.ClientId);
-            if (!_clientValidator.ValidateGrantType(GrantType.authorization_code, client))
+            if (!_clientValidator.ValidateGrantTypes(client, GrantType.@implicit, GrantType.authorization_code))
             {
                 throw new IdentityServerExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType,
                         authorizationParameter.ClientId,
-                        "authorization_code"),
+                        "implicit"),
                     authorizationParameter.State);
             }
 
@@ -101,7 +109,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
             }
 
             var actionTypeName = Enum.GetName(typeof(TypeActionResult), result.Type);
-            _simpleIdentityServerEventSource.EndAuthorizationCodeFlow(
+            _simpleIdentityServerEventSource.EndHybridFlow(
                 authorizationParameter.ClientId,
                 actionTypeName,
                 result.RedirectInstruction == null ? string.Empty : Enum.GetName(typeof(IdentityServerEndPoints), result.RedirectInstruction.Action));

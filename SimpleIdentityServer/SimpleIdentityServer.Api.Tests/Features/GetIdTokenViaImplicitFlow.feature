@@ -111,6 +111,7 @@ Scenario: Get an identity token by using the claims parameter: {id_token : { nam
 
 	And the id_token signature algorithm is set to none for the client MyHolidays
 	And the scopes openid are assigned to the client MyHolidays
+	And the grant-type implicit is supported by the client MyHolidays
 	And the response-types id_token are supported by the client MyHolidays
 	And create a resource owner
 	| Id                   | Name    |
@@ -140,6 +141,7 @@ Scenario: Get an identity token by using the claims parameter : {id_token : { "n
 
 	And the id_token signature algorithm is set to none for the client MyHolidays
 	And the scopes openid are assigned to the client MyHolidays
+	And the grant-type implicit is supported by the client MyHolidays
 	And the response-types id_token are supported by the client MyHolidays
 	And create a resource owner
 	| Id                   | Name    | Email                   |
@@ -170,6 +172,7 @@ Scenario: Get an identity token by using the claims parameter : {id_token : { na
 
 	And the id_token signature algorithm is set to none for the client MyHolidays
 	And the scopes openid are assigned to the client MyHolidays
+	And the grant-type implicit is supported by the client MyHolidays
 	And the response-types id_token are supported by the client MyHolidays
 	And create a resource owner
 	| Id                   | Name    |
@@ -194,6 +197,7 @@ Scenario: Get an identity token by using the claims parameter : {id_token : { na
 
 	And the id_token signature algorithm is set to none for the client MyHolidays
 	And the scopes openid are assigned to the client MyHolidays
+	And the grant-type implicit is supported by the client MyHolidays
 	And the response-types id_token are supported by the client MyHolidays
 	And create a resource owner
 	| Id                   | Name    |
@@ -218,6 +222,7 @@ Scenario: Get an identity token by using the claims parameter : {id_token : { na
 
 	And the id_token signature algorithm is set to none for the client MyHolidays
 	And the scopes openid are assigned to the client MyHolidays
+	And the grant-type implicit is supported by the client MyHolidays
 	And the response-types id_token are supported by the client MyHolidays
 	And create a resource owner
 	| Id                   | Name    |
