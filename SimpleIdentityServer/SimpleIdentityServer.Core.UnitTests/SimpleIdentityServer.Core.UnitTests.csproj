@@ -107,6 +107,7 @@
     <Compile Include="Fake\FakeFactories.cs" />
     <Compile Include="Fake\FakeOpenIdAssets.cs" />
     <Compile Include="Helpers\AuthorizationFlowHelperFixture.cs" />
+    <Compile Include="Helpers\ConsentHelperFixture.cs" />
     <Compile Include="JwtToken\JwtGeneratorFixture.cs" />
     <Compile Include="JwtToken\JwtParserFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

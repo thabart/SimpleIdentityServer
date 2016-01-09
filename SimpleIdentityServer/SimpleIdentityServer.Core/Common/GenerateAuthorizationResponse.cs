@@ -27,6 +27,7 @@ using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Logging;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Core.Common
 {
@@ -255,7 +256,7 @@ namespace SimpleIdentityServer.Core.Common
                 jwsPayload = _jwtGenerator.GenerateFilteredIdTokenPayload(
                     claimsPrincipal,
                     authorizationParameter,
-                    authorizationParameter.Claims.IdToken.Clone());
+                    Clone(authorizationParameter.Claims.IdToken));
             }
             else
             {
@@ -282,7 +283,7 @@ namespace SimpleIdentityServer.Core.Common
                 authorizationParameter.Claims.IsAnyUserInfoClaimParameter())
             {
                 jwsPayload = _jwtGenerator.GenerateFilteredUserInfoPayload(
-                    authorizationParameter.Claims.UserInfo.Clone(),
+                    Clone(authorizationParameter.Claims.UserInfo),
                     claimsPrincipal,
                     authorizationParameter);
             }
@@ -301,6 +302,13 @@ namespace SimpleIdentityServer.Core.Common
         private static ResponseMode GetResponseMode(AuthorizationFlow authorizationFlow)
         {
             return Constants.MappingAuthorizationFlowAndResponseModes[authorizationFlow];
+        }
+
+        private static List<ClaimParameter> Clone(List<ClaimParameter> claims)
+        {
+            var result = new List<ClaimParameter>();
+            claims.ForEach(c => result.Add(c));
+            return result;
         }
 
         #endregion

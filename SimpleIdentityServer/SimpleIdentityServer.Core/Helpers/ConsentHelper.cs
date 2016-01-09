@@ -13,15 +13,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Helpers
 {
@@ -50,6 +48,11 @@ namespace SimpleIdentityServer.Core.Helpers
             string subject,
             AuthorizationParameter authorizationParameter)
         {
+            if (authorizationParameter == null)
+            {
+                throw new ArgumentNullException("authorizationParameter");
+            }
+
             var consents = _consentRepository.GetConsentsForGivenUser(subject);
             Consent confirmedConsent = null;
             if (consents != null && consents.Any())
