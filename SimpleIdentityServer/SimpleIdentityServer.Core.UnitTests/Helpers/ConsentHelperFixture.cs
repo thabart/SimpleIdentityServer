@@ -7,6 +7,7 @@ using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SimpleIdentityServer.Core.UnitTests.Helpers
 {
@@ -94,6 +95,58 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
 
             // ASSERT
             Assert.IsNotNull(result);
+            Assert.IsTrue(result.Claims.Count == 1);
+            Assert.IsTrue(result.Claims.First() == claimName);
+        }
+
+        [Test]
+        public void When_A_Consent_Has_Been_Given_For_Scope_Profile_Then_Consent_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            const string subject = "subject";
+            const string scope = "profile";
+            const string clientId = "clientId";
+            var authorizationParameter = new AuthorizationParameter
+            {
+                ClientId = clientId,
+                Scope = scope
+            };
+            var consents = new List<Consent>
+            {
+                new Consent
+                {
+                    Client = new Client
+                    {
+                        ClientId = clientId
+                    },
+                    GrantedScopes = new List<Scope>
+                    {
+                        new Scope
+                        {
+                            Name = scope
+                        }
+                    }
+                }
+            };
+            var scopes = new List<string>
+            {
+                scope
+            };
+
+            _parameterParserHelperFake.Setup(p => p.ParseScopeParameters(It.IsAny<string>()))
+                .Returns(scopes);
+            _consentRepositoryFake.Setup(c => c.GetConsentsForGivenUser(It.IsAny<string>()))
+                .Returns(consents);
+
+            // ACT
+            var result = _consentHelper.GetConsentConfirmedByResourceOwner(subject,
+                authorizationParameter);
+
+            // ASSERT
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.GrantedScopes.Count == 1);
+            Assert.IsTrue(result.GrantedScopes.First().Name == scope);
         }
 
         private void InitializeFakeObjects()
