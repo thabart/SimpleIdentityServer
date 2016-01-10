@@ -214,12 +214,14 @@
     <Compile Include="Controllers\Api\AuthorizationController.cs" />
     <Compile Include="Controllers\Api\DiscoveryController.cs" />
     <Compile Include="Controllers\Api\JwksController.cs" />
+    <Compile Include="Controllers\Api\RegistrationController.cs" />
     <Compile Include="Controllers\Api\TokenController.cs" />
     <Compile Include="Controllers\Api\UserInfoController.cs" />
     <Compile Include="Controllers\AuthenticateController.cs" />
     <Compile Include="Controllers\ConsentController.cs" />
     <Compile Include="Controllers\FormController.cs" />
     <Compile Include="DTOs\Request\AuthorizationRequest.cs" />
+    <Compile Include="DTOs\Response\ClientResponse.cs" />
     <Compile Include="Extensions\ApiControllerExtensions.cs" />
     <Compile Include="Extensions\ControllerExtensions.cs" />
     <Compile Include="Extensions\HttpRequestMessageExtensions.cs" />

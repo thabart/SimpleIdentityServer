@@ -55,6 +55,14 @@ namespace SimpleIdentityServer.Api
                     controller = "Jwks"
                 });
 
+            config.Routes.MapHttpRoute("RegisterRoute",
+                Constants.EndPoints.Registration,
+                new
+                {
+                    controller = "Registration",
+                    action = "Post"
+                });
+
             config.Filters.Add(new IdentityServerExceptionFilter(simpleIdentityServerEventSource));
 
             appBuilder.UseWebApi(config);
