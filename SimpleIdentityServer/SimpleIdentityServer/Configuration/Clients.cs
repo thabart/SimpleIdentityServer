@@ -14,7 +14,7 @@ namespace SimpleIdentityServer.Api.Configuration
                     ClientId = "MyBlog",
                     DisplayName = "My blog",
                     ClientSecret = "MyBlog",
-                    TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_basic,
+                    TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
                     AllowedScopes = new List<Scope>
                     {
                         // PROTECTED API SCOPES

@@ -48,15 +48,26 @@ namespace SimpleIdentityServer.DataAccess.Fake.Repositories
 
         public bool CompareJwsPayload(JwsPayload firstJwsPayload, JwsPayload secondJwsPayload)
         {
-            if (firstJwsPayload.Count() != secondJwsPayload.Count())
+            foreach(var record in firstJwsPayload)
             {
-                return false;
+                if (record.Key == Constants.StandardClaimNames.CHash || 
+                    record.Key == Constants.StandardClaimNames.AtHash)
+                {
+                    continue;
+                }
+
+                if (!secondJwsPayload.ContainsKey(record.Key))
+                {
+                    return false;
+                }
+
+                if (secondJwsPayload[record.Key] != record.Value)
+                {
+                    return false;
+                }
             }
 
-            var firstSubject = firstJwsPayload.GetClaimValue(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject);
-            var secondSubject =
-                secondJwsPayload.GetClaimValue(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject);
-            return firstSubject == secondSubject;
+            return true;
         }
     }
 }
