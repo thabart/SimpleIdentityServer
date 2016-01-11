@@ -33,6 +33,7 @@ namespace SimpleIdentityServer.Core.Validators
     {
         public void Validate(RegistrationParameter parameter)
         {
+            const string localhost = "localhost";
             if (parameter == null)
             {
                 throw new ArgumentNullException("parameter");
@@ -82,6 +83,37 @@ namespace SimpleIdentityServer.Core.Validators
             if (parameter.ApplicationType == null)
             {
                 parameter.ApplicationType = ApplicationTypes.web;
+            }
+
+            // Check the parameters when the application type is web
+            if (parameter.ApplicationType == ApplicationTypes.web)
+            {
+                foreach(var redirectUri in parameter.RedirectUris)
+                {
+                    var uri = new Uri(redirectUri);
+                    if (uri.Scheme != Uri.UriSchemeHttps ||
+                        string.Compare(uri.Host, localhost, StringComparison.InvariantCultureIgnoreCase) == 0)
+                    {
+                        throw new IdentityServerException(
+                            ErrorCodes.InvalidRedirectUri,
+                            ErrorDescriptions.TheRedirectUriParameterIsNotValid);
+                    }
+                }
+            }
+
+            // Check the parameters when the application type is native
+            if (parameter.ApplicationType == ApplicationTypes.native)
+            {
+                foreach(var redirectUri in parameter.RedirectUris)
+                {
+                    var uri = new Uri(redirectUri);
+                    if (string.Compare(uri.Host, localhost, StringComparison.InvariantCultureIgnoreCase) != 0)
+                    {
+                        throw new IdentityServerException(
+                            ErrorCodes.InvalidRedirectUri,
+                            ErrorDescriptions.TheRedirectUriParameterIsNotValid);
+                    }
+                }
             }
 
 

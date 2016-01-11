@@ -54,6 +54,11 @@ namespace SimpleIdentityServer.Core.Translation
             string concatenateListOfCodeLanguages,
             List<string> translationCodes)
         {
+            if (translationCodes == null)
+            {
+                throw new ArgumentNullException("translationCodes");
+            }
+
             var preferredLanguage = GetPreferredLanguage(concatenateListOfCodeLanguages);
             var result = new Dictionary<string, string>();
             foreach(var translationCode in translationCodes)

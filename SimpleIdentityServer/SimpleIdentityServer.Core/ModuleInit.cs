@@ -40,6 +40,7 @@ using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Api.UserInfo;
 using SimpleIdentityServer.Core.Api.UserInfo.Actions;
 using SimpleIdentityServer.Core.Translation;
+using System;
 
 namespace SimpleIdentityServer.Core
 {
@@ -48,6 +49,11 @@ namespace SimpleIdentityServer.Core
     {
         public void Initialize(IModuleRegister register)
         {
+            if (register == null)
+            {
+                throw new ArgumentNullException("register");
+            }
+
             register.RegisterType<ISecurityHelper, SecurityHelper>();
             register.RegisterType<IGrantedTokenGeneratorHelper, GrantedTokenGeneratorHelper>();
             register.RegisterType<IConsentHelper, ConsentHelper>();
