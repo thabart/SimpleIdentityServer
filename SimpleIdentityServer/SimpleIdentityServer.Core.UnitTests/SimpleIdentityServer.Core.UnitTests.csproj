@@ -114,6 +114,7 @@
     <Compile Include="Validators\AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture.cs" />
     <Compile Include="Validators\AuthorizationCodeGrantTypeParameterTokenEdpValidatorFixture.cs" />
     <Compile Include="Validators\ClientValidatorFixture.cs" />
+    <Compile Include="Validators\RegistrationParameterValidatorFixture.cs" />
     <Compile Include="Validators\ResourceOwnerGrantTypeParameterValidatorFixture.cs" />
     <Compile Include="WebSite\Authenticate\AuthenticateActionsFixture.cs" />
     <Compile Include="WebSite\Authenticate\AuthenticateHelperFixture.cs" />

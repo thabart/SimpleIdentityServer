@@ -192,6 +192,8 @@
     <Compile Include="Api\Jwks\Actions\GetSetOfPublicKeysUsedToValidateJwsAction.cs" />
     <Compile Include="Api\Jwks\Actions\JsonWebKeyEnricher.cs" />
     <Compile Include="Api\Jwks\JwksActions.cs" />
+    <Compile Include="Api\Registration\Actions\RegisterClientAction.cs" />
+    <Compile Include="Api\Registration\RegistrationActions.cs" />
     <Compile Include="Api\Token\Actions\GetTokenByAuthorizationCodeGrantTypeAction.cs" />
     <Compile Include="Api\Token\TokenActions.cs" />
     <Compile Include="Api\UserInfo\Actions\GetJwsPayload.cs" />
@@ -221,6 +223,7 @@
     <Compile Include="Models\Translation.cs" />
     <Compile Include="Parameters\AuthorizationCodeGrantTypeParameter.cs" />
     <Compile Include="Parameters\ClientCredentialsParameter.cs" />
+    <Compile Include="Parameters\RegistrationParameter.cs" />
     <Compile Include="Repositories\IJsonWebKeyRepository.cs" />
     <Compile Include="Repositories\IJwtBearerClientRepository.cs" />
     <Compile Include="Repositories\ITranslationRepository.cs" />
@@ -229,6 +232,7 @@
     <Compile Include="Validators\AuthorizationCodeGrantTypeParameterAuthEdpValidator.cs" />
     <Compile Include="Validators\AuthorizationCodeGrantTypeParameterTokenEdpValidator.cs" />
     <Compile Include="Validators\GrantedTokenValidator.cs" />
+    <Compile Include="Validators\RegistrationParameterValidator.cs" />
     <Compile Include="Validators\ResourceOwnerGrantTypeParameterValidator.cs" />
     <Compile Include="WebSite\Authenticate\Actions\AuthenticateResourceOwnerAction.cs" />
     <Compile Include="WebSite\Authenticate\Actions\LocalUserAuthenticationAction.cs" />

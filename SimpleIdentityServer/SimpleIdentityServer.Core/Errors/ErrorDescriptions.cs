@@ -133,5 +133,8 @@ namespace SimpleIdentityServer.Core.Errors
 
         public static string TheResponseCannotBeGeneratedBecauseResourceOwnerNeedsToBeAuthenticated =
             "the response cannot be generated because the resource owner needs to be authenticated";
+
+
+        public static string TheRedirectUriParameterIsNotValid = "one or more redirect_uri values are invalid";
     }
 }

@@ -13,6 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 namespace SimpleIdentityServer.Core.Errors
 {
     public static class ErrorCodes
@@ -40,6 +41,10 @@ namespace SimpleIdentityServer.Core.Errors
         public static string LoginRequiredCode = "login_required";
 
         public static string InteractionRequiredCode = "interaction_required";
+
+        public static string InvalidRedirectUri = "invalid_redirect_uri";
+
+        public static string InvalidClientMetaData = "invalid_client_metadata";
 
         #endregion
     }

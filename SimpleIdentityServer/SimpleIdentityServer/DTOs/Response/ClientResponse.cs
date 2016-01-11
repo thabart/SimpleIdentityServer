@@ -6,97 +6,97 @@ namespace SimpleIdentityServer.Api.DTOs.Response
     [DataContract]
     public class ClientResponse
     {
-        [DataMember(Name = "redirect_uris")]
+        [DataMember(Name = Core.Constants.StandardRegistrationRequestParameterNames.RedirectUris)]
         public List<string> RedirectUris { get; set; }
 
-        [DataMember(Name = "response_types")]
+        [DataMember(Name = Core.Constants.StandardRegistrationRequestParameterNames.ResponseTypes)]
         public List<string> ResponseTypes { get; set; }
 
-        [DataMember(Name = "grant_types")]
+        [DataMember(Name = Core.Constants.StandardRegistrationRequestParameterNames.GrantTypes)]
         public List<string> GrantTypes { get; set; }
 
-        [DataMember(Name = "application_type")]
+        [DataMember(Name = Core.Constants.StandardRegistrationRequestParameterNames.ApplicationType)]
         public string ApplicationType { get; set; }
 
-        [DataMember(Name = "contacts")]
+        [DataMember(Name = Core.Constants.StandardRegistrationRequestParameterNames.Contacts)]
         public List<string> Contacts { get; set; }
 
-        [DataMember(Name = "client_name")]
+        [DataMember(Name = Core.Constants.StandardRegistrationRequestParameterNames.ClientName)]
         public string ClientName { get; set; }
 
-        [DataMember(Name = "logo_uri")]
+        [DataMember(Name = Core.Constants.StandardRegistrationRequestParameterNames.LogoUri)]
         public string LogoUri { get; set; }
 
-        [DataMember(Name = "client_uri")]
+        [DataMember(Name = Core.Constants.StandardRegistrationRequestParameterNames.ClientUri)]
         public string ClientUri { get; set; }
 
-        [DataMember(Name = "policy_uri")]
+        [DataMember(Name = Core.Constants.StandardRegistrationRequestParameterNames.PolicyUri)]
         public string PolicyUri { get; set; }
 
-        [DataMember(Name = "tos_uri")]
+        [DataMember(Name = Core.Constants.StandardRegistrationRequestParameterNames.TosUri)]
         public string TosUri { get; set; }
 
-        [DataMember(Name = "jwks_uri")]
+        [DataMember(Name = Core.Constants.StandardRegistrationRequestParameterNames.JwksUri)]
         public string JwksUri { get; set; }
 
         /// <summary>
         /// The Client Json Web Key set are passed by value
         /// </summary>
-        [DataMember(Name = "jwks")]
+        [DataMember(Name = Core.Constants.StandardRegistrationRequestParameterNames.Jwks)]
         public string Jwks { get; set; }
 
-        [DataMember(Name = "sector_identifier_uri")]
+        [DataMember(Name = Core.Constants.StandardRegistrationRequestParameterNames.SectoreIdentifierUri)]
         public string SectorIdentifierUri { get; set; }
 
-        [DataMember(Name = "subject_type")]
+        [DataMember(Name = Core.Constants.StandardRegistrationRequestParameterNames.SubjectType)]
         public string SubjectType { get; set; }
 
-        [DataMember(Name = "id_token_signed_response_alg")]
+        [DataMember(Name = Core.Constants.StandardRegistrationRequestParameterNames.IdTokenSignedResponseAlg)]
         public string IdTokenSignedResponseAlg { get; set; }
 
-        [DataMember(Name = "id_token_encrypted_response_alg")]
+        [DataMember(Name = Core.Constants.StandardRegistrationRequestParameterNames.IdTokenEncryptedResponseAlg)]
         public string IdTokenEncryptedResponseAlg { get; set; }
 
-        [DataMember(Name = "id_token_encrypted_response_enc")]
+        [DataMember(Name = Core.Constants.StandardRegistrationRequestParameterNames.IdTokenEncryptedResponseEnc)]
         public string IdTokenEncryptedResponseEnc { get; set; }
 
-        [DataMember(Name = "userinfo_signed_response_alg")]
+        [DataMember(Name = Core.Constants.StandardRegistrationRequestParameterNames.UserInfoSignedResponseAlg)]
         public string UserInfoSignedResponseAlg { get; set; }
 
-        [DataMember(Name = "userinfo_encrypted_response_alg")]
+        [DataMember(Name = Core.Constants.StandardRegistrationRequestParameterNames.UserInfoEncryptedResponseAlg)]
         public string UserInfoEncryptedResponseAlg { get; set; }
 
-        [DataMember(Name = "userinfo_encrypted_response_enc")]
+        [DataMember(Name = Core.Constants.StandardRegistrationRequestParameterNames.UserInfoEncryptedResponseEnc)]
         public string UserInfoEncryptedResponseEnc { get; set; }
 
-        [DataMember(Name = "request_object_signing_alg")]
+        [DataMember(Name = Core.Constants.StandardRegistrationRequestParameterNames.RequestObjectSigningAlg)]
         public string RequestObjectSigningAlg { get; set; }
 
-        [DataMember(Name = "request_object_encryption_alg")]
+        [DataMember(Name = Core.Constants.StandardRegistrationRequestParameterNames.RequestObjectEncryptionAlg)]
         public string RequestObjectEncryptionAlg { get; set; }
 
-        [DataMember(Name = "request_object_encryption_enc")]
+        [DataMember(Name = Core.Constants.StandardRegistrationRequestParameterNames.RequestObjectEncryptionEnc)]
         public string RequestObjectEncryptionEnc { get; set; }
 
-        [DataMember(Name = "token_endpoint_auth_method")]
+        [DataMember(Name = Core.Constants.StandardRegistrationRequestParameterNames.TokenEndPointAuthMethod)]
         public string TokenEndPointAuthMethod { get; set; }
 
-        [DataMember(Name = "token_endpoint_auth_signing_alg")]
+        [DataMember(Name = Core.Constants.StandardRegistrationRequestParameterNames.TokenEndPointAuthSigningAlg)]
         public string TokenEndPointAuthSigningAlg { get; set; }
 
-        [DataMember(Name = "default_max_age")]
+        [DataMember(Name = Core.Constants.StandardRegistrationRequestParameterNames.DefaultMaxAge)]
         public string DefaultMaxAge { get; set; }
 
-        [DataMember(Name = "require_auth_time")]
+        [DataMember(Name = Core.Constants.StandardRegistrationRequestParameterNames.RequireAuthTime)]
         public string RequireAuthTime { get; set; }
 
-        [DataMember(Name = "default_acr_values")]
+        [DataMember(Name = Core.Constants.StandardRegistrationRequestParameterNames.DefaultAcrValues)]
         public string DefaultAcrValues { get; set; }
 
-        [DataMember(Name = "initiate_login_uri")]
+        [DataMember(Name = Core.Constants.StandardRegistrationRequestParameterNames.InitiateLoginUri)]
         public string InitiateLoginUri { get; set; }
 
-        [DataMember(Name = "request_uris")]
+        [DataMember(Name = Core.Constants.StandardRegistrationRequestParameterNames.RequestUris)]
         public List<string> RequestUris { get; set; }
     }
 }

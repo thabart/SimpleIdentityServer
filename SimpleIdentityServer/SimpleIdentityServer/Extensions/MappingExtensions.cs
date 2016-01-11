@@ -6,8 +6,10 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 using SimpleIdentityServer.Api.DTOs.Request;
+using SimpleIdentityServer.Api.DTOs.Response;
 using SimpleIdentityServer.Api.ViewModels;
 using SimpleIdentityServer.Core.Jwt;
+using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using Display = SimpleIdentityServer.Api.DTOs.Request.Display;
 using ResponseMode = SimpleIdentityServer.Api.DTOs.Request.ResponseMode;
@@ -195,6 +197,43 @@ namespace SimpleIdentityServer.Api.Extensions
                 {
                     Core.Constants.StandardAuthorizationRequestParameterNames.UiLocalesName, request.ui_locales
                 }
+            };
+        }
+
+        public static RegistrationParameter ToParameter(this ClientResponse clientResponse)
+        {
+            return new RegistrationParameter
+            {
+                ApplicationType = clientResponse.ApplicationType,
+                ClientName = clientResponse.ClientName,
+                ClientUri = clientResponse.ClientUri,
+                Contacts = clientResponse.Contacts,
+                DefaultAcrValues = clientResponse.DefaultAcrValues,
+                DefaultMaxAge = clientResponse.DefaultMaxAge,
+                GrantTypes = clientResponse.GrantTypes,
+                IdTokenEncryptedResponseAlg = clientResponse.IdTokenEncryptedResponseAlg,
+                IdTokenEncryptedResponseEnc = clientResponse.IdTokenEncryptedResponseEnc,
+                IdTokenSignedResponseAlg = clientResponse.IdTokenSignedResponseAlg,
+                InitiateLoginUri = clientResponse.InitiateLoginUri,
+                Jwks = clientResponse.Jwks,
+                JwksUri = clientResponse.JwksUri,
+                LogoUri = clientResponse.LogoUri,
+                PolicyUri = clientResponse.PolicyUri,
+                RedirectUris = clientResponse.RedirectUris,
+                RequestObjectEncryptionAlg = clientResponse.RequestObjectEncryptionAlg,
+                RequestObjectEncryptionEnc = clientResponse.RequestObjectEncryptionEnc,
+                RequestObjectSigningAlg = clientResponse.RequestObjectSigningAlg,
+                RequestUris = clientResponse.RequestUris,
+                RequireAuthTime = clientResponse.RequireAuthTime,
+                ResponseTypes = clientResponse.ResponseTypes,
+                SectorIdentifierUri = clientResponse.SectorIdentifierUri,
+                SubjectType = clientResponse.SubjectType,
+                TokenEndPointAuthMethod = clientResponse.TokenEndPointAuthMethod,
+                TokenEndPointAuthSigningAlg = clientResponse.TokenEndPointAuthSigningAlg,
+                TosUri = clientResponse.TosUri,
+                UserInfoEncryptedResponseAlg = clientResponse.UserInfoEncryptedResponseAlg,
+                UserInfoEncryptedResponseEnc = clientResponse.UserInfoEncryptedResponseEnc,
+                UserInfoSignedResponseAlg = clientResponse.UserInfoSignedResponseAlg
             };
         }
 
