@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Models;
 using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Core.Parameters
@@ -22,11 +23,11 @@ namespace SimpleIdentityServer.Core.Parameters
     {
         public List<string> RedirectUris { get; set; }
 
-        public List<string> ResponseTypes { get; set; }
+        public List<ResponseType> ResponseTypes { get; set; }
 
-        public List<string> GrantTypes { get; set; }
+        public List<GrantType> GrantTypes { get; set; }
 
-        public string ApplicationType { get; set; }
+        public ApplicationTypes? ApplicationType { get; set; }
 
         public List<string> Contacts { get; set; }
 

@@ -43,6 +43,12 @@ namespace SimpleIdentityServer.Core.Models
         none
     }
 
+    public enum ApplicationTypes
+    {
+        native,
+        web
+    }
+
     public class Client
     {
         /// <summary>
@@ -120,5 +126,10 @@ namespace SimpleIdentityServer.Core.Models
         /// Gets or sets an array of Redirection URI values used by the client.
         /// </summary>
         public List<string> RedirectionUrls { get; set; }
+
+        /// <summary>
+        /// Gets or sets the type of application
+        /// </summary>
+        public ApplicationTypes ApplicationType { get; set; }
     }
 }

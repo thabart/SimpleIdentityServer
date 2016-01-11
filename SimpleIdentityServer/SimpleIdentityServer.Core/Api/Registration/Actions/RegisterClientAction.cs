@@ -21,21 +21,9 @@ namespace SimpleIdentityServer.Core.Api.Registration.Actions
 {
     public interface IRegisterClientAction
     {
-        void Execute(RegistrationParameter parameter);
     }
 
     public class RegisterClientAction : IRegisterClientAction
     {
-        private readonly IRegistrationParameterValidator _registrationParameterValidator;
-
-        public RegisterClientAction(IRegistrationParameterValidator registrationParameterValidator)
-        {
-            _registrationParameterValidator = registrationParameterValidator;
-        }
-
-        public void Execute(RegistrationParameter parameter)
-        {
-            _registrationParameterValidator.Validate(parameter);
-        }
     }
 }

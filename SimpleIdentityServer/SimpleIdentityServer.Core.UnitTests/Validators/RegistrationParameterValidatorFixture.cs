@@ -5,6 +5,7 @@ using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Validators;
+using SimpleIdentityServer.Core.Models;
 
 namespace SimpleIdentityServer.Core.UnitTests.Validators
 {
@@ -56,6 +57,71 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             var ex = Assert.Throws<IdentityServerException>(() => _registrationParameterValidator.Validate(parameter));
             Assert.IsTrue(ex.Code == ErrorCodes.InvalidRedirectUri);
             Assert.IsTrue(ex.Message == ErrorDescriptions.TheRedirectUriParameterIsNotValid);
+        }
+
+        [Test]
+        public void When_ResponseType_Is_Not_Defined_Then_Set_To_Code()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var parameter = new RegistrationParameter
+            {
+                RedirectUris = new List<string>
+                {
+                    "http://localhost"
+                }
+            };
+
+            // ACT
+            _registrationParameterValidator.Validate(parameter);
+
+            // ASSERT
+            Assert.IsNotNull(parameter);
+            Assert.IsTrue(parameter.ResponseTypes.Count == 1);
+            Assert.IsTrue(parameter.ResponseTypes.Contains(Core.Models.ResponseType.code));
+        }
+
+        [Test]
+        public void When_GrantType_Is_Not_Defined_Then_Set_To_Authorization_Code()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var parameter = new RegistrationParameter
+            {
+                RedirectUris = new List<string>
+                {
+                    "http://localhost"
+                }
+            };
+
+            // ACT
+            _registrationParameterValidator.Validate(parameter);
+
+            // ASSERT
+            Assert.IsNotNull(parameter);
+            Assert.IsTrue(parameter.GrantTypes.Count == 1);
+            Assert.IsTrue(parameter.GrantTypes.Contains(Models.GrantType.authorization_code));
+        }
+
+        [Test]
+        public void When_Application_Type_Is_Not_Defined_Then_Set_To_Web_Application()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var parameter = new RegistrationParameter
+            {
+                RedirectUris = new List<string>
+                {
+                    "http://localhost"
+                }
+            };
+
+            // ACT
+            _registrationParameterValidator.Validate(parameter);
+
+            // ASSERT
+            Assert.IsNotNull(parameter);
+            Assert.IsTrue(parameter.ApplicationType == ApplicationTypes.web);
         }
 
         private void InitializeFakeObjects()

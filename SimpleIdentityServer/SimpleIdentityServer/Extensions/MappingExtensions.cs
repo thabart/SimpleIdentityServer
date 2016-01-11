@@ -202,15 +202,60 @@ namespace SimpleIdentityServer.Api.Extensions
 
         public static RegistrationParameter ToParameter(this ClientResponse clientResponse)
         {
+            var responseTypes = new List<Core.Models.ResponseType>();
+            var redirectUris = new List<string>();
+            var grantTypes = new List<GrantType>();
+            ApplicationTypes? applicationType = null;
+            if (!string.IsNullOrEmpty(clientResponse.ResponseTypes))
+            {
+                var responseTypeSplitted = clientResponse.ResponseTypes.Split(' ');
+                foreach(var responseType in responseTypeSplitted)
+                {
+                    Core.Models.ResponseType responseTypeEnum;
+                    if (Enum.TryParse(responseType, out responseTypeEnum))
+                    {
+                        responseTypes.Add(responseTypeEnum);
+                    }
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(clientResponse.RedirectUris))
+            {
+                var redirectUrisSplitted = clientResponse.RedirectUris.Split(' ');
+                foreach(var redirectUri in redirectUrisSplitted)
+                {
+                    redirectUris.Add(redirectUri);
+                }
+            }
+
+            if(!string.IsNullOrWhiteSpace(clientResponse.GrantTypes))
+            {
+                var grantTypesSplitted = clientResponse.GrantTypes.Split(' ');
+                foreach(var grantType in grantTypesSplitted)
+                {
+                    GrantType grantTypeEnum;
+                    if (Enum.TryParse(grantType, out grantTypeEnum))
+                    {
+                        grantTypes.Add(grantTypeEnum);
+                    }
+                }
+            }
+
+            ApplicationTypes appTypeEnum;
+            if (Enum.TryParse(clientResponse.ApplicationType, out appTypeEnum))
+            {
+                applicationType = appTypeEnum;
+            }
+
             return new RegistrationParameter
             {
-                ApplicationType = clientResponse.ApplicationType,
+                ApplicationType = applicationType,
                 ClientName = clientResponse.ClientName,
                 ClientUri = clientResponse.ClientUri,
                 Contacts = clientResponse.Contacts,
                 DefaultAcrValues = clientResponse.DefaultAcrValues,
                 DefaultMaxAge = clientResponse.DefaultMaxAge,
-                GrantTypes = clientResponse.GrantTypes,
+                GrantTypes = grantTypes,
                 IdTokenEncryptedResponseAlg = clientResponse.IdTokenEncryptedResponseAlg,
                 IdTokenEncryptedResponseEnc = clientResponse.IdTokenEncryptedResponseEnc,
                 IdTokenSignedResponseAlg = clientResponse.IdTokenSignedResponseAlg,
@@ -219,13 +264,13 @@ namespace SimpleIdentityServer.Api.Extensions
                 JwksUri = clientResponse.JwksUri,
                 LogoUri = clientResponse.LogoUri,
                 PolicyUri = clientResponse.PolicyUri,
-                RedirectUris = clientResponse.RedirectUris,
+                RedirectUris = redirectUris,
                 RequestObjectEncryptionAlg = clientResponse.RequestObjectEncryptionAlg,
                 RequestObjectEncryptionEnc = clientResponse.RequestObjectEncryptionEnc,
                 RequestObjectSigningAlg = clientResponse.RequestObjectSigningAlg,
                 RequestUris = clientResponse.RequestUris,
                 RequireAuthTime = clientResponse.RequireAuthTime,
-                ResponseTypes = clientResponse.ResponseTypes,
+                ResponseTypes = responseTypes,
                 SectorIdentifierUri = clientResponse.SectorIdentifierUri,
                 SubjectType = clientResponse.SubjectType,
                 TokenEndPointAuthMethod = clientResponse.TokenEndPointAuthMethod,

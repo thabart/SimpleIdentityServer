@@ -19,6 +19,8 @@ using System.Linq;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Parameters;
+using System.Collections.Generic;
+using SimpleIdentityServer.Core.Models;
 
 namespace SimpleIdentityServer.Core.Validators
 {
@@ -36,6 +38,7 @@ namespace SimpleIdentityServer.Core.Validators
                 throw new ArgumentNullException("parameter");
             }
 
+            // Validate the redirection uris
             if (parameter.RedirectUris == null ||
                 !parameter.RedirectUris.Any())
             {
@@ -54,6 +57,34 @@ namespace SimpleIdentityServer.Core.Validators
                         ErrorDescriptions.TheRedirectUriParameterIsNotValid);
                 }
             }
+
+            // If the response type is not defined then set to code
+            if (parameter.ResponseTypes == null ||
+                !parameter.ResponseTypes.Any())
+            {
+                parameter.ResponseTypes = new List<ResponseType>
+                {
+                    ResponseType.code
+                };
+            }
+
+            // If the grant type is not defined then set to authorization_code
+            if (parameter.GrantTypes == null ||
+                !parameter.GrantTypes.Any())
+            {
+                parameter.GrantTypes = new List<GrantType>
+                {
+                    GrantType.authorization_code
+                };
+            }
+
+            // If the application type is not defined then set to web
+            if (parameter.ApplicationType == null)
+            {
+                parameter.ApplicationType = ApplicationTypes.web;
+            }
+
+
         }
     }
 }
