@@ -25,5 +25,7 @@ namespace SimpleIdentityServer.Core.Jwt.Exceptions
 
         public static string CannotExtractParametersFromJsonWebKey =
             "cannot extract the parameters from the json web key";
+
+        public static string OneOfTheParameterIsNotBase64Encoded = "one of the parameter is not base64";
     }
 }

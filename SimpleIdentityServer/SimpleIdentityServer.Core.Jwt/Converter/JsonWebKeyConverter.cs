@@ -22,6 +22,8 @@ using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Jwt.Exceptions;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Core.Jwt.Serializer;
+using System.Xml.Serialization;
+using System.IO;
 
 namespace SimpleIdentityServer.Core.Jwt.Converter
 {
@@ -32,13 +34,6 @@ namespace SimpleIdentityServer.Core.Jwt.Converter
 
     public class JsonWebKeyConverter : IJsonWebKeyConverter
     {
-        private readonly ICngKeySerializer _cngKeySerializer;
-
-        public JsonWebKeyConverter(ICngKeySerializer cngKeySerializer)
-        {
-            _cngKeySerializer = cngKeySerializer;
-        }
-
         public IEnumerable<JsonWebKey> ConvertFromJson(string json)
         {
             if (string.IsNullOrWhiteSpace(json))
@@ -143,7 +138,7 @@ namespace SimpleIdentityServer.Core.Jwt.Converter
             return result;
         }
 
-        private static string ExtractEcKeyInformation(Dictionary<string, object> information,
+        private string ExtractEcKeyInformation(Dictionary<string, object> information,
             Use usage)
         {
             if (usage == Use.Sig)
@@ -156,7 +151,30 @@ namespace SimpleIdentityServer.Core.Jwt.Converter
                     throw new InvalidOperationException(ErrorDescriptions.CannotExtractParametersFromJsonWebKey);
                 }
 
+                byte[] xCoordinateBytes,
+                    yCoordinateBytes;
+                try
+                {
+                    xCoordinateBytes = xCoordinate.Value.ToString().Base64DecodeBytes();
+                    yCoordinateBytes = yCoordinate.Value.ToString().Base64DecodeBytes();
+                }
+                catch (Exception)
+                {
+                    throw new InvalidOperationException(ErrorDescriptions.OneOfTheParameterIsNotBase64Encoded);
+                }
 
+                var cngKeySerialized = new CngKeySerialized
+                {
+                    X = xCoordinateBytes,
+                    Y = yCoordinateBytes
+                };
+
+                var serializer = new XmlSerializer(typeof(CngKeySerialized));
+                using (var writer = new StringWriter())
+                {
+                    serializer.Serialize(writer, cngKeySerialized);
+                    return writer.ToString();
+                }
             }
 
             return string.Empty;

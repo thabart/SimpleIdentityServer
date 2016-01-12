@@ -9,14 +9,14 @@ using SimpleIdentityServer.Core.Jwt.Exceptions;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using Moq;
 using SimpleIdentityServer.Core.Jwt.Serializer;
+using System.Xml.Serialization;
+using System.IO;
 
 namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
 {
     [TestFixture]
     public sealed class JsonWebKeyConverterFixture
     {
-        private Mock<ICngKeySerializer> _cngKeySerializerFake;
-
         private IJsonWebKeyConverter _jsonWebKeyConverter;
 
         [Test]
@@ -203,6 +203,48 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
         }
 
         [Test]
+        public void When_Passing_JsonWeb_Key_Used_For_The_Signature_With_Ec_Key_Which_Contains_Invalid_XCoordinate_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var jsonWebKey = new Dictionary<string, object>
+            {
+                {
+                    Constants.JsonWebKeyParameterNames.KeyTypeName,
+                    Constants.KeyTypeValues.EcName
+                },
+                {
+                    Constants.JsonWebKeyParameterNames.KeyIdentifierName,
+                    "kid"
+                },
+                {
+                    Constants.JsonWebKeyParameterNames.UseName,
+                    Constants.UseValues.Signature
+                },
+                {
+                    Constants.JsonWebKeyParameterNames.EcKey.XCoordinateName,
+                    "-%-!è'x_coordinate"
+                },
+                {
+                    Constants.JsonWebKeyParameterNames.EcKey.YCoordinateName,
+                    "y_coordinate"
+                }
+            };
+            var jsonWebKeySet = new JsonWebKeySet
+            {
+                Keys = new List<Dictionary<string, object>>
+                {
+                    jsonWebKey
+                }
+            };
+            var json = jsonWebKeySet.SerializeWithJavascript();
+
+            // ACT & ASSERTS
+            var ex = Assert.Throws<InvalidOperationException>(() => _jsonWebKeyConverter.ConvertFromJson(json));
+            Assert.IsTrue(ex.Message == ErrorDescriptions.OneOfTheParameterIsNotBase64Encoded);
+        }
+
+        [Test]
         public void When_Passing_JsonWeb_Key_Used_For_The_Signature_With_Rsa_Key_Then_JsonWeb_Key_Is_Returned()
         {
             // ARRANGE
@@ -249,10 +291,67 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
             }
         }
 
+        [Test]
+        public void When_Passing_JsonWeb_Key_Used_For_The_Signature_With_Ec_Key_Then_JsonWeb_Key_Is_Returned()
+        {
+            // ARRANGE
+            var xCoordinate = "x_coordinate".Base64Encode();
+            var yCoordinate = "y_coordinate".Base64Encode();
+            InitializeFakeObjects();
+            var jsonWebKey = new Dictionary<string, object>
+            {
+                {
+                    Constants.JsonWebKeyParameterNames.KeyTypeName,
+                    Constants.KeyTypeValues.EcName
+                },
+                {
+                    Constants.JsonWebKeyParameterNames.KeyIdentifierName,
+                    "kid"
+                },
+                {
+                    Constants.JsonWebKeyParameterNames.UseName,
+                    Constants.UseValues.Signature
+                },
+                {
+                    Constants.JsonWebKeyParameterNames.EcKey.XCoordinateName,
+                    xCoordinate
+                },
+                {
+                    Constants.JsonWebKeyParameterNames.EcKey.YCoordinateName,
+                    yCoordinate
+                }
+            };
+            var jsonWebKeySet = new JsonWebKeySet
+            {
+                Keys = new List<Dictionary<string, object>>
+                {
+                    jsonWebKey
+                }
+            };
+            var cngKeySerialized = new CngKeySerialized
+            {
+                X = xCoordinate.Base64DecodeBytes(),
+                Y = yCoordinate.Base64DecodeBytes()
+            };
+            var json = jsonWebKeySet.SerializeWithJavascript();
+            var serializer = new XmlSerializer(typeof(CngKeySerialized));
+            var serializedKeys = string.Empty;
+            using (var writer = new StringWriter())
+            {
+                serializer.Serialize(writer, cngKeySerialized);
+                serializedKeys = writer.ToString();
+            }
+
+            // ACT & ASSERTS
+            var result = _jsonWebKeyConverter.ConvertFromJson(json);
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.Count() == 1);
+            Assert.IsTrue(result.First().SerializedKey == serializedKeys);
+        }
+
         private void InitializeFakeObjects()
         {
-            _cngKeySerializerFake = new Mock<ICngKeySerializer>();
-            _jsonWebKeyConverter = new JsonWebKeyConverter(_cngKeySerializerFake.Object);
+            _jsonWebKeyConverter = new JsonWebKeyConverter();
         }
     }
 }
