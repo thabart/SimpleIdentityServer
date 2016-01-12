@@ -478,6 +478,13 @@ namespace SimpleIdentityServer.Core.Jwt
 
                 public static string ExponentName = "e";
             }
+
+            public static class EcKey
+            {
+                public static string XCoordinateName = "x";
+
+                public static string YCoordinateName = "y";
+            }
         }
 
         public static class KeyTypeValues

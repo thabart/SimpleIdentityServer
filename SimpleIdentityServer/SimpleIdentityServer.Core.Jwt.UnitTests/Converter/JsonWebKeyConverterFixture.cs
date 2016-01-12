@@ -7,12 +7,16 @@ using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Jwt.Converter;
 using SimpleIdentityServer.Core.Jwt.Exceptions;
 using SimpleIdentityServer.Core.Jwt.Signature;
+using Moq;
+using SimpleIdentityServer.Core.Jwt.Serializer;
 
 namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
 {
     [TestFixture]
     public sealed class JsonWebKeyConverterFixture
     {
+        private Mock<ICngKeySerializer> _cngKeySerializerFake;
+
         private IJsonWebKeyConverter _jsonWebKeyConverter;
 
         [Test]
@@ -165,6 +169,40 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
         }
 
         [Test]
+        public void When_Passing_JsonWeb_Key_Used_For_The_Signature_With_Ec_Key_But_Which_Doesnt_Contains_XCoordinate_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var jsonWebKey = new Dictionary<string, object>
+            {
+                {
+                    Constants.JsonWebKeyParameterNames.KeyTypeName,
+                    Constants.KeyTypeValues.EcName
+                },
+                {
+                    Constants.JsonWebKeyParameterNames.KeyIdentifierName,
+                    "kid"
+                },
+                {
+                    Constants.JsonWebKeyParameterNames.UseName,
+                    Constants.UseValues.Signature
+                }
+            };
+            var jsonWebKeySet = new JsonWebKeySet
+            {
+                Keys = new List<Dictionary<string, object>>
+                {
+                    jsonWebKey
+                }
+            };
+            var json = jsonWebKeySet.SerializeWithJavascript();
+
+            // ACT & ASSERTS
+            var ex = Assert.Throws<InvalidOperationException>(() => _jsonWebKeyConverter.ConvertFromJson(json));
+            Assert.IsTrue(ex.Message == ErrorDescriptions.CannotExtractParametersFromJsonWebKey);
+        }
+
+        [Test]
         public void When_Passing_JsonWeb_Key_Used_For_The_Signature_With_Rsa_Key_Then_JsonWeb_Key_Is_Returned()
         {
             // ARRANGE
@@ -213,7 +251,8 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
 
         private void InitializeFakeObjects()
         {
-            _jsonWebKeyConverter = new JsonWebKeyConverter();
+            _cngKeySerializerFake = new Mock<ICngKeySerializer>();
+            _jsonWebKeyConverter = new JsonWebKeyConverter(_cngKeySerializerFake.Object);
         }
     }
 }

@@ -21,6 +21,7 @@ using System.Security.Cryptography;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Jwt.Exceptions;
 using SimpleIdentityServer.Core.Jwt.Signature;
+using SimpleIdentityServer.Core.Jwt.Serializer;
 
 namespace SimpleIdentityServer.Core.Jwt.Converter
 {
@@ -31,6 +32,13 @@ namespace SimpleIdentityServer.Core.Jwt.Converter
 
     public class JsonWebKeyConverter : IJsonWebKeyConverter
     {
+        private readonly ICngKeySerializer _cngKeySerializer;
+
+        public JsonWebKeyConverter(ICngKeySerializer cngKeySerializer)
+        {
+            _cngKeySerializer = cngKeySerializer;
+        }
+
         public IEnumerable<JsonWebKey> ConvertFromJson(string json)
         {
             if (string.IsNullOrWhiteSpace(json))
@@ -93,7 +101,8 @@ namespace SimpleIdentityServer.Core.Jwt.Converter
                             useEnum);
                         break;
                     case Constants.KeyTypeValues.EcName:
-
+                        serializedKey = ExtractEcKeyInformation(jsonWebKey,
+                            useEnum);
                         break;
                 }
 
@@ -137,6 +146,19 @@ namespace SimpleIdentityServer.Core.Jwt.Converter
         private static string ExtractEcKeyInformation(Dictionary<string, object> information,
             Use usage)
         {
+            if (usage == Use.Sig)
+            {
+                var xCoordinate = information.FirstOrDefault(i => i.Key == Constants.JsonWebKeyParameterNames.EcKey.XCoordinateName);
+                var yCoordinate = information.FirstOrDefault(i => i.Key == Constants.JsonWebKeyParameterNames.EcKey.YCoordinateName);
+                if (xCoordinate.Equals(default(KeyValuePair<string, object>)) ||
+                    yCoordinate.Equals(default(KeyValuePair<string, object>)))
+                {
+                    throw new InvalidOperationException(ErrorDescriptions.CannotExtractParametersFromJsonWebKey);
+                }
+
+
+            }
+
             return string.Empty;
         }
     }
