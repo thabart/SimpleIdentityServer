@@ -15,9 +15,12 @@
 #endregion
 
 using System;
+using System.Linq;
+using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Encrypt;
 using SimpleIdentityServer.Core.Jwt.Signature;
+using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
 
 namespace SimpleIdentityServer.Core.JwtToken
@@ -43,6 +46,8 @@ namespace SimpleIdentityServer.Core.JwtToken
 
         private readonly IJsonWebKeyRepository _jsonWebKeyRepository;
 
+        // private readonly IHttpClientFactory _httpClientFactory;
+
         public JwtParser(
             IJweParser jweParser,
             IJwsParser jwsParser,
@@ -51,6 +56,7 @@ namespace SimpleIdentityServer.Core.JwtToken
             _jweParser = jweParser;
             _jwsParser = jwsParser;
             _jsonWebKeyRepository = jsonWebKeyRepository;
+            // _httpClientFactory = httpClientFactory;
         }
 
         public bool IsJweToken(string jwe)
@@ -116,5 +122,43 @@ namespace SimpleIdentityServer.Core.JwtToken
 
             return _jwsParser.ValidateSignature(jws, jsonWebKey);
         }
+        
+        /*
+        private JsonWebKey GetJsonWebKeyFromClient(Client client,
+            string kid)
+        {
+            JsonWebKey result = null;
+            if (!string.IsNullOrWhiteSpace(client.JwksUri))
+            {
+                Uri uri = null;
+                if (!Uri.TryCreate(client.JwksUri, UriKind.Absolute, out uri))
+                {
+                    return null;
+                }
+
+                var httpClient = _httpClientFactory.GetHttpClient();
+                httpClient.BaseAddress = uri;
+                var request = httpClient.GetAsync(uri.AbsoluteUri).Result;
+                try
+                {
+                    request.EnsureSuccessStatusCode();
+                    var content = request.Content.ReadAsStringAsync().Result;
+                    
+                }
+                catch (Exception)
+                {
+                    return null;
+                }
+            }
+
+            if (client.JsonWebKeys != null && 
+                client.JsonWebKeys.Any())
+            {
+                result = client.JsonWebKeys.FirstOrDefault(j => j.Kid == kid);
+            }
+
+            return result;
+        }
+         */
     }
 }

@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 using System.Collections.Generic;
+using SimpleIdentityServer.Core.Jwt;
 
 namespace SimpleIdentityServer.Core.Models
 {
@@ -136,5 +137,10 @@ namespace SimpleIdentityServer.Core.Models
         /// Url for the Client's JSON Web Key Set document
         /// </summary>
         public string JwksUri { get; set; }
+
+        /// <summary>
+        /// Gets or sets the list of json web keys
+        /// </summary>
+        public List<JsonWebKey> JsonWebKeys { get; set; } 
     }
 }

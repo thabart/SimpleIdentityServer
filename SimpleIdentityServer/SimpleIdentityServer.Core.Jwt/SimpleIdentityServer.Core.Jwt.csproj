@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="ByteManipulator.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="Converter\JsonWebKeyConverter.cs" />
     <Compile Include="Encrypt\Algorithms\IAlgorithm.cs" />
     <Compile Include="Encrypt\Algorithms\RsaAlgorithm.cs" />
     <Compile Include="Encrypt\Encryption\AesEncryption.cs" />
@@ -54,6 +55,7 @@
     <Compile Include="Encrypt\JweHelper.cs" />
     <Compile Include="Encrypt\JweParser.cs" />
     <Compile Include="Encrypt\JweProtectedHeader.cs" />
+    <Compile Include="Exceptions\ErrorDescriptions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Extensions\StructExtensions.cs" />
     <Compile Include="JsonWebKey.cs" />

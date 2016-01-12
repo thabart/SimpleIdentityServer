@@ -480,26 +480,42 @@ namespace SimpleIdentityServer.Core.Jwt
             }
         }
 
+        public static class KeyTypeValues
+        {
+            public const string RsaName = "RSA";
+
+            public const string EcName = "EC";
+
+            public const string OctName = "oct";
+        }
+
+        public static class UseValues
+        {
+            public static string Signature = "sig";
+
+            public static string Encryption = "enc";
+        }
+
         public static Dictionary<KeyType, string> MappingKeyTypeEnumToName = new Dictionary<KeyType, string>
         {
             {
-                KeyType.RSA, "RSA"
+                KeyType.RSA, KeyTypeValues.RsaName
             },
             {
-                KeyType.EC, "EC"
+                KeyType.EC, KeyTypeValues.EcName
             },
             {
-                KeyType.oct, "oct"
+                KeyType.oct, KeyTypeValues.OctName
             }
         };
 
         public static Dictionary<Use, string> MappingUseEnumerationToName  = new Dictionary<Use, string>
         {
             {
-                Use.Sig, "sig"
+                Use.Sig, UseValues.Signature
             },
             {
-                Use.Enc, "enc"
+                Use.Enc, UseValues.Encryption
             }
         };
 
