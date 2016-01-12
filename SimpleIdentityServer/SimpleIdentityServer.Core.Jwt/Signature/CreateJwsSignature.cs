@@ -136,7 +136,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
                 throw new ArgumentNullException("combinedJwsNotSigned");
             }
 
-            var cngKey = _cngKeySerializer.Deserialize(serializedKeys);
+            var cngKey = _cngKeySerializer.DeserializeCngKeyWithPrivateKey(serializedKeys);
             var plainTextBytes = Encoding.UTF8.GetBytes(combinedJwsNotSigned);
             using (var ec = new ECDsaCng(cngKey))
             {
@@ -163,7 +163,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
                 throw new ArgumentNullException("signature");
             }
 
-            var cngKey = _cngKeySerializer.Deserialize(serializedKeys);
+            var cngKey = _cngKeySerializer.DeserializeCngKeyWithPrivateKey(serializedKeys);
             var messageBytes = Encoding.UTF8.GetBytes(message);
             using (var ecsdaSignature = new ECDsaCng(cngKey))
             {

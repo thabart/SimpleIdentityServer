@@ -24,16 +24,20 @@ namespace SimpleIdentityServer.Core.Jwt.Serializer
 {
     public interface ICngKeySerializer
     {
-        string Serialize(CngKey toBeSerialized);
+        string SerializeCngKeyWithPrivateKey(CngKey toBeSerialized);
 
-        CngKey Deserialize(string serializedBlob);
+        CngKey DeserializeCngKeyWithPrivateKey(string serializedBlob);
+
+        string SerializeCngKeyWithPublicKey(CngKey toBeSerialized);
+
+        CngKey DeserializeCngKeyWithPublicKey(string serializedBlob);
     }
 
     public class CngKeySerializer : ICngKeySerializer
     {
         #region Fields
 
-        private readonly Dictionary<int, int> MappingSizeAndMagicNumber = new Dictionary<int, int>
+        private readonly Dictionary<int, int> MappingSizeAndMagicNumberForPrivateKey = new Dictionary<int, int>
         {
             {
                 32, 844317509
@@ -46,11 +50,24 @@ namespace SimpleIdentityServer.Core.Jwt.Serializer
             }
         };
 
+        public readonly Dictionary<int, int> MappingSizeAndMagicNumberForPublicKey = new Dictionary<int, int>
+        {
+            {
+                32, 827540293
+            },
+            {
+                48, 861094725
+            },
+            {
+                66, 894649157
+            }
+        };
+
         #endregion
 
         #region Public methods
 
-        public string Serialize(CngKey toBeSerialized)
+        public string SerializeCngKeyWithPrivateKey(CngKey toBeSerialized)
         {
             if (toBeSerialized == null)
             {
@@ -68,7 +85,7 @@ namespace SimpleIdentityServer.Core.Jwt.Serializer
 
             // Part size in octet
             var partLength = BitConverter.ToInt32(lengthBytes, 0);
-            if (!MappingSizeAndMagicNumber.ContainsKey(partLength))
+            if (!MappingSizeAndMagicNumberForPrivateKey.ContainsKey(partLength))
             {
                 throw new InvalidOperationException(string.Format("the part length {0} is not correct", partLength));
             }
@@ -90,7 +107,7 @@ namespace SimpleIdentityServer.Core.Jwt.Serializer
             }
         }
 
-        public CngKey Deserialize(string serializedBlob)
+        public CngKey DeserializeCngKeyWithPrivateKey(string serializedBlob)
         {
             if (string.IsNullOrWhiteSpace(serializedBlob))
             {
@@ -108,13 +125,13 @@ namespace SimpleIdentityServer.Core.Jwt.Serializer
                 }
 
                 var partLength = cngKeySerialized.X.Length;
-                if (!MappingSizeAndMagicNumber.ContainsKey(partLength))
+                if (!MappingSizeAndMagicNumberForPrivateKey.ContainsKey(partLength))
                 {
                     throw new InvalidOperationException(string.Format("the part length {0} is not valid", partLength));
                 }
 
                 var partSize = BitConverter.GetBytes(partLength);
-                var magicNumber = MappingSizeAndMagicNumber[partLength];
+                var magicNumber = MappingSizeAndMagicNumberForPrivateKey[partLength];
                 var magicBytes = BitConverter.GetBytes(magicNumber);
                 var blob = ByteManipulator.Concat(magicBytes, 
                     partSize, 
@@ -123,6 +140,80 @@ namespace SimpleIdentityServer.Core.Jwt.Serializer
                     cngKeySerialized.D);
 
                 return CngKey.Import(blob, CngKeyBlobFormat.EccPrivateBlob);
+            }
+        }
+
+        public string SerializeCngKeyWithPublicKey(CngKey toBeSerialized)
+        {
+            if (toBeSerialized == null)
+            {
+                throw new ArgumentNullException("toBeSerialized");
+            }
+
+            var publicBlob = toBeSerialized.Export(CngKeyBlobFormat.EccPublicBlob);
+            var lengthBytes = new[]
+            {
+                publicBlob[4],
+                publicBlob[5],
+                publicBlob[6],
+                publicBlob[7]
+            };
+
+            // Part size in octet
+            var partLength = BitConverter.ToInt32(lengthBytes, 0);
+            if (!MappingSizeAndMagicNumberForPublicKey.ContainsKey(partLength))
+            {
+                throw new InvalidOperationException(string.Format("the part length {0} is not correct", partLength));
+            }
+
+            var allPartsInBytes = ByteManipulator.RightmostBits(publicBlob, partLength * 8 * 2);
+            var keyParts = ByteManipulator.Slice(allPartsInBytes, partLength);
+            var cngKey = new CngKeySerialized
+            {
+                X = keyParts[0],
+                Y = keyParts[1]
+            };
+
+            var serializer = new XmlSerializer(typeof(CngKeySerialized));
+            using (var writer = new StringWriter())
+            {
+                serializer.Serialize(writer, cngKey);
+                return writer.ToString();
+            }
+        }
+
+        public CngKey DeserializeCngKeyWithPublicKey(string serializedBlob)
+        {
+            if (string.IsNullOrWhiteSpace(serializedBlob))
+            {
+                throw new ArgumentNullException("serializedBlob");
+            }
+
+
+            var serializer = new XmlSerializer(typeof(CngKeySerialized));
+            using (var reader = new StringReader(serializedBlob))
+            {
+                var cngKeySerialized = (CngKeySerialized)serializer.Deserialize(reader);
+                if (cngKeySerialized.X.Length != cngKeySerialized.Y.Length)
+                {
+                    throw new InvalidOperationException("the size of the different parts is not equal (x, y)");
+                }
+
+                var partLength = cngKeySerialized.X.Length;
+                if (!MappingSizeAndMagicNumberForPublicKey.ContainsKey(partLength))
+                {
+                    throw new InvalidOperationException(string.Format("the part length {0} is not valid", partLength));
+                }
+
+                var partSize = BitConverter.GetBytes(partLength);
+                var magicNumber = MappingSizeAndMagicNumberForPublicKey[partLength];
+                var magicBytes = BitConverter.GetBytes(magicNumber);
+                var blob = ByteManipulator.Concat(magicBytes,
+                    partSize,
+                    cngKeySerialized.X,
+                    cngKeySerialized.Y);
+
+                return CngKey.Import(blob, CngKeyBlobFormat.EccPublicBlob);
             }
         }
 
