@@ -50,8 +50,7 @@ namespace SimpleIdentityServer.Core.Validators
 
             foreach (var redirectUri in parameter.RedirectUris)
             {
-                var redirectUrlIsCorrect = Uri.IsWellFormedUriString(redirectUri, UriKind.Absolute);
-                if (!redirectUrlIsCorrect)
+                if (!CheckUriIsWellFormed(redirectUri))
                 {
                     throw new IdentityServerException(
                         ErrorCodes.InvalidRedirectUri,
@@ -116,7 +115,108 @@ namespace SimpleIdentityServer.Core.Validators
                 }
             }
 
+            ValidateNotMandatoryUri(parameter.LogoUri, Constants.StandardRegistrationRequestParameterNames.LogoUri);
+            ValidateNotMandatoryUri(parameter.ClientUri, Constants.StandardRegistrationRequestParameterNames.ClientUri);
+            ValidateNotMandatoryUri(parameter.TosUri, Constants.StandardRegistrationRequestParameterNames.TosUri);
+            ValidateNotMandatoryUri(parameter.JwksUri, Constants.StandardRegistrationRequestParameterNames.JwksUri);
 
+            if (!string.IsNullOrWhiteSpace(parameter.Jwks))
+            {
+                if (!string.IsNullOrWhiteSpace(parameter.JwksUri))
+                {
+                    throw new IdentityServerException(
+                        ErrorCodes.InvalidClientMetaData,
+                        ErrorDescriptions.TheJwksParameterCannotBeSetBecauseJwksUrlIsUsed);
+                }
+            }
+
+            ValidateNotMandatoryUri(parameter.SectorIdentifierUri,
+                Constants.StandardRegistrationRequestParameterNames.SectoreIdentifierUri, true);
+
+            if (!string.IsNullOrWhiteSpace(parameter.IdTokenEncryptedResponseEnc) &&
+                Jwt.Constants.MappingNameToJweEncEnum.Keys.Contains(parameter.IdTokenEncryptedResponseEnc))
+            {
+                if (string.IsNullOrWhiteSpace(parameter.IdTokenEncryptedResponseAlg) ||
+                    !Jwt.Constants.MappingNameToJweAlgEnum.ContainsKey(parameter.IdTokenEncryptedResponseAlg))
+                {
+                    throw new IdentityServerException(
+                        ErrorCodes.InvalidClientMetaData,
+                        ErrorDescriptions.TheParameterIsTokenEncryptedResponseAlgMustBeSpecified);
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(parameter.UserInfoEncryptedResponseEnc) &&
+                Jwt.Constants.MappingNameToJweEncEnum.Keys.Contains(parameter.UserInfoEncryptedResponseEnc))
+            {
+                if (string.IsNullOrWhiteSpace(parameter.UserInfoEncryptedResponseAlg) ||
+                    !Jwt.Constants.MappingNameToJweAlgEnum.ContainsKey(parameter.UserInfoEncryptedResponseAlg))
+                {
+                    throw new IdentityServerException(
+                        ErrorCodes.InvalidClientMetaData,
+                        ErrorDescriptions.TheParameterUserInfoEncryptedResponseAlgMustBeSpecified);
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(parameter.RequestObjectEncryptionEnc) &&
+                Jwt.Constants.MappingNameToJweEncEnum.Keys.Contains(parameter.RequestObjectEncryptionEnc))
+            {
+                if (string.IsNullOrWhiteSpace(parameter.RequestObjectEncryptionAlg) ||
+                    !Jwt.Constants.MappingNameToJweAlgEnum.ContainsKey(parameter.RequestObjectEncryptionAlg))
+                {
+                    throw new IdentityServerException(
+                        ErrorCodes.InvalidClientMetaData,
+                        ErrorDescriptions.TheParameterRequestObjectEncryptionAlgMustBeSpecified);
+                }
+            }
+
+            ValidateNotMandatoryUri(parameter.InitiateLoginUri,
+                Constants.StandardRegistrationRequestParameterNames.InitiateLoginUri, true);
+
+            if (parameter.RequestUris != null &&
+                parameter.RequestUris.Any())
+            {
+                foreach (var requestUri in parameter.RequestUris)
+                {
+                    if (!CheckUriIsWellFormed(requestUri))
+                    {
+                        throw new IdentityServerException(
+                            ErrorCodes.InvalidClientMetaData,
+                            ErrorDescriptions.OneOfTheRequestUriIsNotValid);
+                    }
+                }
+            }
+        }
+
+        private static void ValidateNotMandatoryUri(string uri,
+            string parameterName,
+            bool checkSchemeIsHttps = false)
+        {
+            // Check the parameter logo_uri is valid
+            if (!string.IsNullOrWhiteSpace(uri))
+            {
+                if (!CheckUriIsWellFormed(uri))
+                {
+                    throw new IdentityServerException(
+                        ErrorCodes.InvalidClientMetaData,
+                        string.Format(ErrorDescriptions.ParameterIsNotCorrect, parameterName));
+                }
+
+                if (checkSchemeIsHttps)
+                {
+                    var u = new Uri(uri);
+                    if (u.Scheme != Uri.UriSchemeHttps)
+                    {
+                        throw new IdentityServerException(
+                            ErrorCodes.InvalidClientMetaData,
+                            string.Format(ErrorDescriptions.ParameterIsNotCorrect, parameterName));
+                    }
+                }
+            }
+        }
+
+        private static bool CheckUriIsWellFormed(string uri)
+        {
+            return Uri.IsWellFormedUriString(uri, UriKind.Absolute);
         }
     }
 }

@@ -135,5 +135,19 @@ namespace SimpleIdentityServer.Core.Errors
             "the response cannot be generated because the resource owner needs to be authenticated";
 
         public static string TheRedirectUriParameterIsNotValid = "one or more redirect_uri values are invalid";
+
+        public static string TheJwksParameterCannotBeSetBecauseJwksUrlIsUsed =
+            "the jwks parameter cannot be set because the Jwks Url has already been set";
+
+        public static string TheParameterIsTokenEncryptedResponseAlgMustBeSpecified =
+            "the parameter id_token_encrypted_response_alg must be specified";
+
+        public static string TheParameterUserInfoEncryptedResponseAlgMustBeSpecified =
+            "the parameter userinfo_encrypted_response_alg must be specified";
+
+        public static string TheParameterRequestObjectEncryptionAlgMustBeSpecified =
+            "the parameter request_object_encryption_alg must be specified";
+
+        public static string OneOfTheRequestUriIsNotValid = "one of the request_uri is not valid";
     }
 }

@@ -206,10 +206,10 @@ namespace SimpleIdentityServer.Api.Extensions
             var redirectUris = new List<string>();
             var grantTypes = new List<GrantType>();
             ApplicationTypes? applicationType = null;
-            if (!string.IsNullOrEmpty(clientResponse.ResponseTypes))
+            if (clientResponse.ResponseTypes != null &&
+                clientResponse.ResponseTypes.Any())
             {
-                var responseTypeSplitted = clientResponse.ResponseTypes.Split(' ');
-                foreach(var responseType in responseTypeSplitted)
+                foreach (var responseType in clientResponse.ResponseTypes)
                 {
                     Core.Models.ResponseType responseTypeEnum;
                     if (Enum.TryParse(responseType, out responseTypeEnum))
@@ -219,19 +219,10 @@ namespace SimpleIdentityServer.Api.Extensions
                 }
             }
 
-            if (!string.IsNullOrWhiteSpace(clientResponse.RedirectUris))
+            if(clientResponse.GrantTypes != null &&
+                clientResponse.GrantTypes.Any())
             {
-                var redirectUrisSplitted = clientResponse.RedirectUris.Split(' ');
-                foreach(var redirectUri in redirectUrisSplitted)
-                {
-                    redirectUris.Add(redirectUri);
-                }
-            }
-
-            if(!string.IsNullOrWhiteSpace(clientResponse.GrantTypes))
-            {
-                var grantTypesSplitted = clientResponse.GrantTypes.Split(' ');
-                foreach(var grantType in grantTypesSplitted)
+                foreach (var grantType in clientResponse.GrantTypes)
                 {
                     GrantType grantTypeEnum;
                     if (Enum.TryParse(grantType, out grantTypeEnum))
@@ -252,7 +243,7 @@ namespace SimpleIdentityServer.Api.Extensions
                 ApplicationType = applicationType,
                 ClientName = clientResponse.ClientName,
                 ClientUri = clientResponse.ClientUri,
-                Contacts = clientResponse.Contacts,
+                Contacts = clientResponse.Contacts == null ? new List<string>() : clientResponse.Contacts.ToList(),
                 DefaultAcrValues = clientResponse.DefaultAcrValues,
                 DefaultMaxAge = clientResponse.DefaultMaxAge,
                 GrantTypes = grantTypes,

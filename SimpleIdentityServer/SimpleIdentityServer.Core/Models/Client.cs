@@ -131,5 +131,10 @@ namespace SimpleIdentityServer.Core.Models
         /// Gets or sets the type of application
         /// </summary>
         public ApplicationTypes ApplicationType { get; set; }
+
+        /// <summary>
+        /// Url for the Client's JSON Web Key Set document
+        /// </summary>
+        public string JwksUri { get; set; }
     }
 }

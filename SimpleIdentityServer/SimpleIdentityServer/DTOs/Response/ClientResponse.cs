@@ -7,19 +7,19 @@ namespace SimpleIdentityServer.Api.DTOs.Response
     public class ClientResponse
     {
         [DataMember(Name = Core.Constants.StandardRegistrationRequestParameterNames.RedirectUris)]
-        public string RedirectUris { get; set; }
+        public string[] RedirectUris { get; set; }
 
         [DataMember(Name = Core.Constants.StandardRegistrationRequestParameterNames.ResponseTypes)]
-        public string ResponseTypes { get; set; }
+        public string[] ResponseTypes { get; set; }
 
         [DataMember(Name = Core.Constants.StandardRegistrationRequestParameterNames.GrantTypes)]
-        public string GrantTypes { get; set; }
+        public string[] GrantTypes { get; set; }
 
         [DataMember(Name = Core.Constants.StandardRegistrationRequestParameterNames.ApplicationType)]
         public string ApplicationType { get; set; }
 
         [DataMember(Name = Core.Constants.StandardRegistrationRequestParameterNames.Contacts)]
-        public List<string> Contacts { get; set; }
+        public string[] Contacts { get; set; }
 
         [DataMember(Name = Core.Constants.StandardRegistrationRequestParameterNames.ClientName)]
         public string ClientName { get; set; }
