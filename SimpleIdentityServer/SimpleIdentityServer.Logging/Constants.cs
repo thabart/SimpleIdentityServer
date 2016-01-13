@@ -30,6 +30,8 @@ namespace SimpleIdentityServer.Logging
             public const int ConsentHasBeenGivenByResourceOwner = 22;
             public const int OpenIdFailure = 23;
             public const int Failure = 24;
+            public const int StartRegistration = 25;
+            public const int EndRegistration = 26;
         }
 
         public static class Tasks
@@ -40,6 +42,7 @@ namespace SimpleIdentityServer.Logging
             public const EventTask Grant = (EventTask) 4;
             public const EventTask Authenticate = (EventTask) 5;
             public const EventTask Consent = (EventTask)6;
+            public const EventTask Registration = (EventTask)7;
         }
     }
 }

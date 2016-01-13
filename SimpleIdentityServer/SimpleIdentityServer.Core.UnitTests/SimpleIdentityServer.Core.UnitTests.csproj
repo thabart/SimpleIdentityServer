@@ -92,6 +92,7 @@
     <Compile Include="Api\Authorization\GetTokenViaImplicitWorkflowOperationFixture.cs" />
     <Compile Include="Api\Authorization\ProcessAuthorizationRequestFixture.cs" />
     <Compile Include="Api\Discovery\CreateDiscoveryDocumentationActionFixture.cs" />
+    <Compile Include="Api\Registration\RegisterClientActionFixture.cs" />
     <Compile Include="Api\Token\GetTokenByAuthorizationCodeGrantTypeActionFixture.cs" />
     <Compile Include="Api\Token\GetTokenByResourceOwnerCredentialsGrantTypeActionFixture.cs" />
     <Compile Include="Api\Token\TokenActionsFixture.cs" />

@@ -116,6 +116,16 @@ namespace SimpleIdentityServer.Logging
             string state);
 
         void Failure(string message);
+
+        #region Events linked to the registration process
+
+        void StartRegistration(string clientName);
+
+        void EndRegistration(
+            string clientId,
+            string clientName);
+
+        #endregion
     }
 
     [EventSource(Name = "SimpleIdentityServer")]
@@ -562,6 +572,41 @@ namespace SimpleIdentityServer.Logging
                 subject,
                 clientId,
                 consentId);
+        }
+
+        [Event(Constants.EventIds.StartRegistration,
+            Level = EventLevel.Informational,
+            Message = "start the registration process",
+            Opcode = EventOpcode.Start,
+            Task = Constants.Tasks.Registration)]
+        public void StartRegistration(string clientName)
+        {
+            if (!IsEnabled())
+            {
+                return;
+            }
+
+            WriteEvent(Constants.EventIds.StartRegistration,
+                clientName);
+        }
+
+        [Event(Constants.EventIds.EndRegistration,
+            Level = EventLevel.Informational,
+            Message = "end the registration process",
+            Opcode = EventOpcode.Stop,
+            Task = Constants.Tasks.Registration)]
+        public void EndRegistration(
+            string clientId,
+            string clientName)
+        {
+            if (!IsEnabled())
+            {
+                return;
+            }
+
+            WriteEvent(Constants.EventIds.EndRegistration,
+                clientId,
+                clientName);
         }
 
         #endregion
