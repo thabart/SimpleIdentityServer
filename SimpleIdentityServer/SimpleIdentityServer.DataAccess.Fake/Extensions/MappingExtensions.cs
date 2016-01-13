@@ -26,7 +26,27 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
                 RedirectionUrls = client.RedirectionUrls == null ? null : client.RedirectionUrls.Select(r => new FAKEMODELS.RedirectionUrl
                 {
                     Url = r
-                }).ToList()
+                }).ToList(),
+                JwksUri = client.JwksUri,
+                JsonWebKeys = client.JsonWebKeys == null ? null : client.JsonWebKeys.Select(s => s.ToFake()).ToList(),
+                ApplicationType = client.ApplicationType.ToFake()
+            };
+        }
+
+
+        public static FAKEMODELS.JsonWebKey ToFake(this JSON.JsonWebKey jsonWebKey)
+        {
+            return new FAKEMODELS.JsonWebKey
+            {
+                X5u = jsonWebKey.X5u,
+                X5tS256 = jsonWebKey.X5tS256,
+                X5t = jsonWebKey.X5t,
+                Kid = jsonWebKey.Kid,
+                Alg = jsonWebKey.Alg.ToFake(),
+                Kty = jsonWebKey.Kty.ToFake(),
+                Use = jsonWebKey.Use.ToFake(),
+                KeyOps = jsonWebKey.KeyOps == null ? null : jsonWebKey.KeyOps.Select(ko => ko.ToFake()).ToArray(),
+                SerializedKey = jsonWebKey.SerializedKey
             };
         }
 
@@ -151,6 +171,11 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
             return (FAKEMODELS.TokenEndPointAuthenticationMethods)tokenEdp;
         }
 
+        public static FAKEMODELS.ApplicationTypes ToFake(this MODELS.ApplicationTypes applicationType)
+        {
+            return (FAKEMODELS.ApplicationTypes)applicationType;
+        }
+
         public static FAKEMODELS.ScopeType ToFake(this MODELS.ScopeType scopeType)
         {
             return (FAKEMODELS.ScopeType)scopeType;
@@ -203,6 +228,9 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
                 IdTokenEncryptedResponseAlg = client.IdTokenEncryptedResponseAlg,
                 IdTokenEncryptedResponseEnc = client.IdTokenEncryptedResponseEnc,
                 IdTokenSignedTResponseAlg = client.IdTokenSignedTResponseAlg,
+                JwksUri = client.JwksUri,
+                JsonWebKeys = client.JsonWebKeys == null ? null : client.JsonWebKeys.Select(j => j.ToBusiness()).ToList(),
+                ApplicationType = client.ApplicationType.ToBusiness()
             };
         }
 
@@ -330,6 +358,11 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
         public static MODELS.ScopeType ToBusiness(this FAKEMODELS.ScopeType scopeType)
         {
             return (MODELS.ScopeType) scopeType;
+        }
+
+        public static MODELS.ApplicationTypes ToBusiness(this FAKEMODELS.ApplicationTypes applicationType)
+        {
+            return (MODELS.ApplicationTypes) applicationType;
         }
 
         public static MODELS.TokenEndPointAuthenticationMethods ToBusiness(this FAKEMODELS.TokenEndPointAuthenticationMethods tokenEdp)

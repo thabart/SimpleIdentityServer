@@ -239,7 +239,8 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
                 string jwsToken;
                 if (_jwtParser.IsJweToken(token))
                 {
-                    jwsToken = _jwtParser.Decrypt(token);
+                    jwsToken = _jwtParser.Decrypt(token,
+                        authorizationParameter.ClientId);
                     if (string.IsNullOrWhiteSpace(jwsToken))
                     {
                         throw new IdentityServerExceptionWithState(
@@ -253,7 +254,8 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
                     jwsToken = token;
                 }
 
-                var jwsPayload = _jwtParser.UnSign(jwsToken);
+                var jwsPayload = _jwtParser.UnSign(jwsToken,
+                    authorizationParameter.ClientId);
                 if (jwsPayload == null)
                 {
                     throw new IdentityServerExceptionWithState(

@@ -26,6 +26,12 @@ namespace SimpleIdentityServer.DataAccess.Fake.Models
         none
     }
 
+    public enum ApplicationTypes
+    {
+        native,
+        web
+    }
+
     public class Client
     {
         /// <summary>
@@ -103,5 +109,20 @@ namespace SimpleIdentityServer.DataAccess.Fake.Models
         /// Gets or sets an array of Redirection URI values used by the client.
         /// </summary>
         public List<RedirectionUrl> RedirectionUrls { get; set; }
+
+        /// <summary>
+        /// Gets or sets the type of application
+        /// </summary>
+        public ApplicationTypes ApplicationType { get; set; }
+
+        /// <summary>
+        /// Url for the Client's JSON Web Key Set document
+        /// </summary>
+        public string JwksUri { get; set; }
+
+        /// <summary>
+        /// Gets or sets the list of json web keys
+        /// </summary>
+        public List<JsonWebKey> JsonWebKeys { get; set; } 
     }
 }

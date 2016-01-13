@@ -7,6 +7,7 @@ using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Helpers;
+using SimpleIdentityServer.Core.Jwt.Converter;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.UnitTests.Fake;
 using SimpleIdentityServer.Core.Validators;
@@ -347,7 +348,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
         }
         
         [Test]
-        public void When_Passing_An_IdentityToken_Different_From_The_Current_Authenticated_User__Then_An_Exception_Is_Thrown()
+        public void When_Passing_An_IdentityToken_Different_From_The_Current_Authenticated_User_Then_An_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeMockingObjects();
@@ -394,11 +395,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                     subjectClaim.Type, "wrong subjet"
                 },
                 {
-                    Jwt.Constants.StandardClaimNames.Audiences, new string[] {  issuerName }
+                    Jwt.Constants.StandardClaimNames.Audiences, new [] {  issuerName }
                 }
             };
             _simpleIdentityServerConfiguratorStub.Setup(s => s.GetIssuerName()).Returns(issuerName);
-
             authorizationParameter.IdTokenHint = _jwtGenerator.Sign(jwtPayload, clientId);
 
             // ACT
@@ -671,7 +671,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             var jweParser = new JweParser(jweHelper);
             var createJwsSignature = new CreateJwsSignature(new CngKeySerializer());
             var jwsParser = new JwsParser(createJwsSignature);
-            var jwtParser = new JwtParser(jweParser, jwsParser, jsonWebKeyRepository);
+            var jsonWebKeyConverter = new JsonWebKeyConverter();
+            var httpClientFactory = new HttpClientFactory();
+            var jwtParser = new JwtParser(jweParser, jwsParser, httpClientFactory, clientValidator, jsonWebKeyConverter);
             var claimsMapping = new ClaimsMapping();
             var jwsGenerator = new JwsGenerator(createJwsSignature);
             var jweGenerator = new JweGenerator(jweHelper);

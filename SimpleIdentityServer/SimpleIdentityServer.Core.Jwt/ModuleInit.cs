@@ -17,6 +17,7 @@
 using System.ComponentModel.Composition;
 
 using SimpleIdentityServer.Common;
+using SimpleIdentityServer.Core.Jwt.Converter;
 using SimpleIdentityServer.Core.Jwt.Encrypt;
 using SimpleIdentityServer.Core.Jwt.Encrypt.Encryption;
 using SimpleIdentityServer.Core.Jwt.Mapping;
@@ -42,6 +43,8 @@ namespace SimpleIdentityServer.Core.Jwt
             register.RegisterType<IJwsParser, JwsParser>();
 
             register.RegisterType<ICngKeySerializer, CngKeySerializer>();
+
+            register.RegisterType<IJsonWebKeyConverter, JsonWebKeyConverter>();
         }
     }
 }

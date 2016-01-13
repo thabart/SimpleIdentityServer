@@ -122,7 +122,8 @@ namespace SimpleIdentityServer.Api.Controllers.Api
         {
             if (!string.IsNullOrWhiteSpace(authorizationRequest.request))
             {
-                var result = GetAuthorizationRequestFromJwt(authorizationRequest.request);
+                var result = GetAuthorizationRequestFromJwt(authorizationRequest.request,
+                    authorizationRequest.client_id);
                 if (result == null)
                 {
                     throw new IdentityServerExceptionWithState(
@@ -141,13 +142,15 @@ namespace SimpleIdentityServer.Api.Controllers.Api
                 {
                     try
                     {
-                        var httpClient = new HttpClient();
-                        httpClient.BaseAddress = uri;
+                        var httpClient = new HttpClient
+                        {
+                            BaseAddress = uri
+                        };
 
                         var httpResult = await httpClient.GetAsync(uri.AbsoluteUri);
                         httpResult.EnsureSuccessStatusCode();
                         var request = await httpResult.Content.ReadAsStringAsync();
-                        var result = GetAuthorizationRequestFromJwt(request);
+                        var result = GetAuthorizationRequestFromJwt(request, authorizationRequest.client_id);
                         if (result == null)
                         {
                             throw new IdentityServerExceptionWithState(
@@ -176,15 +179,16 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             return authorizationRequest;
         }
 
-        private AuthorizationRequest GetAuthorizationRequestFromJwt(string token)
+        private AuthorizationRequest GetAuthorizationRequestFromJwt(string token,
+            string clientId)
         {
             var jwsToken = token;
             if (_jwtParser.IsJweToken(token))
             {
-                jwsToken = _jwtParser.Decrypt(token);
+                jwsToken = _jwtParser.Decrypt(token, clientId);
             }
 
-            var jwsPayload = _jwtParser.UnSign(jwsToken);
+            var jwsPayload = _jwtParser.UnSign(jwsToken, clientId);
             return jwsPayload == null ? null : jwsPayload.ToAuthorizationRequest();
         }
     }

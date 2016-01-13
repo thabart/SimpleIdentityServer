@@ -105,6 +105,8 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             Assert.IsNotNull(jsonWebKey);
             var jwsGenerator = _context.UnityContainer.Resolve<IJwsGenerator>();
             _request = jwsGenerator.Generate(jwsPayload, jwsAlg, jsonWebKey.ToBusiness());
+
+            FakeDataSource.Instance().Clients.First().JsonWebKeys = FakeDataSource.Instance().JsonWebKeys;
         }
 
         [Given("encrypt the authorization request with (.*) kid, JweAlg: (.*) and JweEnc: (.*)")]

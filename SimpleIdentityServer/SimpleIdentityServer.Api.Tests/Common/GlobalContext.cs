@@ -26,6 +26,7 @@ using SimpleIdentityServer.Core.Authenticate;
 using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Helpers;
+using SimpleIdentityServer.Core.Jwt.Converter;
 using SimpleIdentityServer.Core.Jwt.Encrypt;
 using SimpleIdentityServer.Core.Jwt.Mapping;
 using SimpleIdentityServer.Core.Jwt.Signature;
@@ -204,6 +205,8 @@ namespace SimpleIdentityServer.Api.Tests.Common
             UnityContainer.RegisterType<IClientSecretBasicAuthentication, ClientSecretBasicAuthentication>();
             UnityContainer.RegisterType<IClientSecretPostAuthentication, ClientSecretPostAuthentication>();
             UnityContainer.RegisterType<IClientAssertionAuthentication, ClientAssertionAuthentication>();
+
+            UnityContainer.RegisterType<IJsonWebKeyConverter, JsonWebKeyConverter>();
             
             UnityContainer.RegisterType<ICngKeySerializer, CngKeySerializer>();
 

@@ -16,12 +16,14 @@
 
 using System;
 using System.Linq;
+using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Jwt;
+using SimpleIdentityServer.Core.Jwt.Converter;
 using SimpleIdentityServer.Core.Jwt.Encrypt;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Validators;
 
 namespace SimpleIdentityServer.Core.JwtToken
 {
@@ -32,10 +34,12 @@ namespace SimpleIdentityServer.Core.JwtToken
         bool IsJwsToken(string jws);
 
         string Decrypt(
-               string jwe);
+            string jwe,
+            string clientId);
 
         JwsPayload UnSign(
-            string jws);
+            string jws,
+            string clientId);
     }
 
     public class JwtParser : IJwtParser
@@ -43,20 +47,25 @@ namespace SimpleIdentityServer.Core.JwtToken
         private readonly IJweParser _jweParser;
 
         private readonly IJwsParser _jwsParser;
+        
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        private readonly IJsonWebKeyRepository _jsonWebKeyRepository;
+        private readonly IClientValidator _clientValidator;
 
-        // private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IJsonWebKeyConverter _jsonWebKeyConverter;
 
         public JwtParser(
             IJweParser jweParser,
             IJwsParser jwsParser,
-            IJsonWebKeyRepository jsonWebKeyRepository)
+            IHttpClientFactory httpClientFactory,
+            IClientValidator clientValidator,
+            IJsonWebKeyConverter jsonWebKeyConverter)
         {
             _jweParser = jweParser;
             _jwsParser = jwsParser;
-            _jsonWebKeyRepository = jsonWebKeyRepository;
-            // _httpClientFactory = httpClientFactory;
+            _httpClientFactory = httpClientFactory;
+            _clientValidator = clientValidator;
+            _jsonWebKeyConverter = jsonWebKeyConverter;
         }
 
         public bool IsJweToken(string jwe)
@@ -70,11 +79,23 @@ namespace SimpleIdentityServer.Core.JwtToken
         }
 
         public string Decrypt(
-            string jwe)
+            string jwe,
+            string clientId)
         {
             if (string.IsNullOrWhiteSpace(jwe))
             {
                 throw new ArgumentNullException("jwe");
+            }
+
+            if (string.IsNullOrWhiteSpace(clientId))
+            {
+                throw new ArgumentNullException("clientId");
+            }
+
+            var client = _clientValidator.ValidateClientExist(clientId);
+            if (client == null)
+            {
+                throw new InvalidOperationException(string.Format(ErrorDescriptions.ClientIsNotValid, clientId));
             }
 
             const string emptyResult = null;
@@ -84,7 +105,8 @@ namespace SimpleIdentityServer.Core.JwtToken
                 return emptyResult;
             }
 
-            var jsonWebKey = _jsonWebKeyRepository.GetByKid(protectedHeader.Kid);
+            var jsonWebKey = GetJsonWebKeyFromClient(client,
+                protectedHeader.Kid);
             if (jsonWebKey == null)
             {
                 return emptyResult;
@@ -94,11 +116,23 @@ namespace SimpleIdentityServer.Core.JwtToken
         }
 
         public JwsPayload UnSign(
-            string jws)
+            string jws,
+            string clientId)
         {
             if (string.IsNullOrWhiteSpace(jws))
             {
                 throw new ArgumentNullException("jws");
+            }
+
+            if (string.IsNullOrWhiteSpace(clientId))
+            {
+                throw new ArgumentNullException("clientId");
+            }
+
+            var client = _clientValidator.ValidateClientExist(clientId);
+            if (client == null)
+            {
+                throw new InvalidOperationException(string.Format(ErrorDescriptions.ClientIsNotValid, clientId));
             }
 
             const JwsPayload emptyResult = null;
@@ -108,7 +142,8 @@ namespace SimpleIdentityServer.Core.JwtToken
                 return emptyResult;
             }
 
-            var jsonWebKey = _jsonWebKeyRepository.GetByKid(protectedHeader.Kid);
+            var jsonWebKey = GetJsonWebKeyFromClient(client,
+                protectedHeader.Kid);
             if (jsonWebKey == null 
                 && protectedHeader.Alg != Jwt.Constants.JwsAlgNames.NONE)
             {
@@ -123,11 +158,11 @@ namespace SimpleIdentityServer.Core.JwtToken
             return _jwsParser.ValidateSignature(jws, jsonWebKey);
         }
         
-        /*
         private JsonWebKey GetJsonWebKeyFromClient(Client client,
             string kid)
         {
             JsonWebKey result = null;
+            // Fetch the json web key from the jwks_uri
             if (!string.IsNullOrWhiteSpace(client.JwksUri))
             {
                 Uri uri = null;
@@ -142,8 +177,9 @@ namespace SimpleIdentityServer.Core.JwtToken
                 try
                 {
                     request.EnsureSuccessStatusCode();
-                    var content = request.Content.ReadAsStringAsync().Result;
-                    
+                    var json = request.Content.ReadAsStringAsync().Result;
+                    var jsonWebKeys = _jsonWebKeyConverter.ConvertFromJson(json);
+                    return jsonWebKeys.FirstOrDefault(j => j.Kid == kid);
                 }
                 catch (Exception)
                 {
@@ -151,6 +187,7 @@ namespace SimpleIdentityServer.Core.JwtToken
                 }
             }
 
+            // Fetch the json web key from the jwks
             if (client.JsonWebKeys != null && 
                 client.JsonWebKeys.Any())
             {
@@ -159,6 +196,5 @@ namespace SimpleIdentityServer.Core.JwtToken
 
             return result;
         }
-         */
     }
 }

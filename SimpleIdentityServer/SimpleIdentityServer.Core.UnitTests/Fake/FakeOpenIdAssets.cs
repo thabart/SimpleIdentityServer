@@ -50,20 +50,20 @@ namespace SimpleIdentityServer.Core.UnitTests.Fake
                             Description = "Access to the profile",
                             Claims = new List<string>
                             {
-                                Core.Jwt.Constants.StandardResourceOwnerClaimNames.Name,
-                                Core.Jwt.Constants.StandardResourceOwnerClaimNames.FamilyName,
-                                Core.Jwt.Constants.StandardResourceOwnerClaimNames.GivenName,
-                                Core.Jwt.Constants.StandardResourceOwnerClaimNames.MiddleName,
-                                Core.Jwt.Constants.StandardResourceOwnerClaimNames.NickName,
-                                Core.Jwt.Constants.StandardResourceOwnerClaimNames.PreferredUserName,
-                                Core.Jwt.Constants.StandardResourceOwnerClaimNames.Profile,
-                                Core.Jwt.Constants.StandardResourceOwnerClaimNames.Picture,
-                                Core.Jwt.Constants.StandardResourceOwnerClaimNames.WebSite,
-                                Core.Jwt.Constants.StandardResourceOwnerClaimNames.Gender,
-                                Core.Jwt.Constants.StandardResourceOwnerClaimNames.BirthDate,
-                                Core.Jwt.Constants.StandardResourceOwnerClaimNames.ZoneInfo,
-                                Core.Jwt.Constants.StandardResourceOwnerClaimNames.Locale,
-                                Core.Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt
+                                Jwt.Constants.StandardResourceOwnerClaimNames.Name,
+                                Jwt.Constants.StandardResourceOwnerClaimNames.FamilyName,
+                                Jwt.Constants.StandardResourceOwnerClaimNames.GivenName,
+                                Jwt.Constants.StandardResourceOwnerClaimNames.MiddleName,
+                                Jwt.Constants.StandardResourceOwnerClaimNames.NickName,
+                                Jwt.Constants.StandardResourceOwnerClaimNames.PreferredUserName,
+                                Jwt.Constants.StandardResourceOwnerClaimNames.Profile,
+                                Jwt.Constants.StandardResourceOwnerClaimNames.Picture,
+                                Jwt.Constants.StandardResourceOwnerClaimNames.WebSite,
+                                Jwt.Constants.StandardResourceOwnerClaimNames.Gender,
+                                Jwt.Constants.StandardResourceOwnerClaimNames.BirthDate,
+                                Jwt.Constants.StandardResourceOwnerClaimNames.ZoneInfo,
+                                Jwt.Constants.StandardResourceOwnerClaimNames.Locale,
+                                Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt
                             },
                             Type = ScopeType.ResourceOwner
                         },
@@ -76,8 +76,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Fake
                             Description = "Access to the email",
                             Claims = new List<string>
                             {
-                                Core.Jwt.Constants.StandardResourceOwnerClaimNames.Email,
-                                Core.Jwt.Constants.StandardResourceOwnerClaimNames.EmailVerified
+                                Jwt.Constants.StandardResourceOwnerClaimNames.Email,
+                                Jwt.Constants.StandardResourceOwnerClaimNames.EmailVerified
                             },
                             Type = ScopeType.ResourceOwner
                         },
@@ -90,7 +90,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Fake
                             Description = "Access to the address",
                             Claims = new List<string>
                             {
-                                Core.Jwt.Constants.StandardResourceOwnerClaimNames.Address
+                                Jwt.Constants.StandardResourceOwnerClaimNames.Address
                             },
                             Type = ScopeType.ResourceOwner
                         },
@@ -103,8 +103,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Fake
                             Description = "Access to the phone",
                             Claims = new List<string>
                             {
-                                Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber,
-                                Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumberVerified
+                                Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber,
+                                Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumberVerified
                             },
                             Type = ScopeType.ResourceOwner
                         }
@@ -137,7 +137,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Fake
                         {
                             Url = "https://op.certification.openid.net:60186/authz_cb"
                         }
-                    },
+                    }
                 }
             };
         }
