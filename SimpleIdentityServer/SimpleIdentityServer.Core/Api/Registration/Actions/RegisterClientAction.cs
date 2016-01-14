@@ -251,7 +251,37 @@ namespace SimpleIdentityServer.Core.Api.Registration.Actions
             {
                 ClientId = Guid.NewGuid().ToString(),
                 ClientSecretExpiresAt = 0,
-                ClientIdIssuedAt = DateTime.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture)
+                ClientIdIssuedAt = DateTime.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture),
+                ApplicationType = Enum.GetName(typeof(ApplicationTypes), client.ApplicationType),
+                ClientUri = client.ClientUri,
+                ClientName = client.ClientName,
+                Contacts = client.Contacts == null ? null : client.Contacts.ToArray(),
+                DefaultAcrValues = client.DefaultAcrValues,
+                GrantTypes = client.GrantTypes == null ? null : client.GrantTypes.Select(g => Enum.GetName(typeof(GrantType), g)).ToArray(),
+                DefaultMaxAge = client.DefaultMaxAge,
+                IdTokenEncryptedResponseAlg = client.IdTokenEncryptedResponseAlg,
+                IdTokenEncryptedResponseEnc = client.IdTokenEncryptedResponseEnc,
+                JwksUri = client.JwksUri,
+                RequestObjectEncryptionAlg = client.RequestObjectEncryptionAlg,
+                RequestObjectEncryptionEnc = client.RequestObjectEncryptionEnc,
+                IdTokenSignedResponseAlg = client.IdTokenSignedResponseAlg,
+                LogoUri = client.LogoUri,
+                Jwks = registrationParameter.Jwks,
+                RequireAuthTime = client.RequireAuthTime,
+                InitiateLoginUri = client.InitiateLoginUri,
+                PolicyUri = client.PolicyUri,
+                RequestObjectSigningAlg =  client.RequestObjectSigningAlg,
+                UserInfoEncryptedResponseAlg = client.UserInfoEncryptedResponseAlg,
+                UserInfoEncryptedResponseEnc = client.UserInfoEncryptedResponseEnc,
+                UserInfoSignedResponseAlg = client.UserInfoSignedResponseAlg,
+                TosUri = client.TosUri,
+                SectorIdentifierUri = client.SectorIdentifierUri,
+                SubjectType = client.SubjectType,
+                ResponseTypes = client.ResponseTypes == null ? null : client.ResponseTypes.Select(r => Enum.GetName(typeof(ResponseType), r)).ToArray(),
+                RequestUris = client.RequestUris,
+                RedirectUris = client.RedirectionUrls == null ? null : client.RedirectionUrls.ToArray(),
+                TokenEndPointAuthSigningAlg = client.TokenEndPointAuthSigningAlg,
+                TokenEndPointAuthMethod = Enum.GetName(typeof(TokenEndPointAuthenticationMethods), client.TokenEndPointAuthMethod)
             };
 
             if (client.TokenEndPointAuthMethod != TokenEndPointAuthenticationMethods.private_key_jwt)
