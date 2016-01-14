@@ -2,6 +2,7 @@
 
 namespace SimpleIdentityServer.Core.Results
 {
+    [DataContract]
     public class RegistrationResponse
     {
         [DataMember(Name = Constants.StandardRegistrationResponseNames.ClientId)]

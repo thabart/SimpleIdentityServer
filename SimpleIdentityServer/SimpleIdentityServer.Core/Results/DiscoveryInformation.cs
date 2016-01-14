@@ -146,7 +146,7 @@ namespace SimpleIdentityServer.Core.Results
         /// <summary>
         /// Gets or sets the Registration End Point.
         /// </summary>
-        // [DataMember(Name = "registration_endpoint")]
+        [DataMember(Name = "registration_endpoint")]
         public string RegistrationEndPoint { get; set; }
 
         /// <summary>

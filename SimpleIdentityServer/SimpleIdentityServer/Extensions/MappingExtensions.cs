@@ -203,7 +203,9 @@ namespace SimpleIdentityServer.Api.Extensions
         public static RegistrationParameter ToParameter(this ClientResponse clientResponse)
         {
             var responseTypes = new List<Core.Models.ResponseType>();
-            var redirectUris = new List<string>();
+            var redirectUris = clientResponse.RedirectUris == null
+                ? new List<string>()
+                : clientResponse.RedirectUris.ToList();
             var grantTypes = new List<GrantType>();
             ApplicationTypes? applicationType = null;
             if (clientResponse.ResponseTypes != null &&
