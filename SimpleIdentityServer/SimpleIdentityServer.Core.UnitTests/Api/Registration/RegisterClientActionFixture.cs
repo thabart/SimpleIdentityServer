@@ -68,6 +68,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
             Assert.IsTrue(client.RequestObjectEncryptionAlg == string.Empty);
             Assert.IsTrue(client.TokenEndPointAuthMethod == TokenEndPointAuthenticationMethods.client_secret_basic);
             Assert.IsTrue(client.TokenEndPointAuthSigningAlg == string.Empty);
+            Assert.IsTrue(client.AllowedScopes.Contains(Constants.StandardScopes.OpenId));
         }
 
         [Test]
@@ -242,6 +243,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
             Assert.IsTrue(client.InitiateLoginUri == initiateLoginUri);
             Assert.IsTrue(client.RequestUris.First() == requestUri);
             Assert.IsNotEmpty(result.ClientSecret);
+            Assert.IsTrue(client.AllowedScopes.Contains(Constants.StandardScopes.OpenId));
         }
 
         private void InitializeFakeObjects()

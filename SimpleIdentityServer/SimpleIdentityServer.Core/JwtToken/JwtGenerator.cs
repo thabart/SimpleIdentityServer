@@ -454,7 +454,8 @@ namespace SimpleIdentityServer.Core.JwtToken
             {
                 var isClientSupportIdTokenResponseType =
                     _clientValidator.ValidateResponseType(ResponseType.id_token, client);
-                if (isClientSupportIdTokenResponseType)
+                if (isClientSupportIdTokenResponseType ||
+                    client.ClientId == authorizationParameter.ClientId)
                 {
                     audiences.Add(client.ClientId);
                 }
