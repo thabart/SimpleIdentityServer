@@ -17,19 +17,37 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
             {
                 IdTokenEncryptedResponseAlg = client.IdTokenEncryptedResponseAlg,
                 IdTokenEncryptedResponseEnc = client.IdTokenEncryptedResponseEnc,
-                IdTokenSignedTResponseAlg = client.IdTokenSignedTResponseAlg,
+                IdTokenSignedResponseAlg = client.IdTokenSignedResponseAlg,
                 ClientId = client.ClientId,
                 ClientSecret = client.ClientSecret,
                 TokenEndPointAuthMethod = client.TokenEndPointAuthMethod.ToFake(),
-                DisplayName = client.DisplayName,
+                ClientName = client.ClientName,
                 AllowedScopes = client.AllowedScopes == null ? null : client.AllowedScopes.Select(s => s.ToFake()).ToList(),
-                RedirectionUrls = client.RedirectionUrls == null ? null : client.RedirectionUrls.Select(r => new FAKEMODELS.RedirectionUrl
-                {
-                    Url = r
-                }).ToList(),
+                RedirectionUrls = client.RedirectionUrls,
                 JwksUri = client.JwksUri,
                 JsonWebKeys = client.JsonWebKeys == null ? null : client.JsonWebKeys.Select(s => s.ToFake()).ToList(),
-                ApplicationType = client.ApplicationType.ToFake()
+                ApplicationType = client.ApplicationType.ToFake(),
+                Contacts = client.Contacts,
+                DefaultAcrValues = client.DefaultAcrValues,
+                DefaultMaxAge = client.DefaultMaxAge,
+                InitiateLoginUri = client.InitiateLoginUri,
+                RequestObjectEncryptionAlg = client.RequestObjectEncryptionAlg,
+                RequestObjectEncryptionEnc = client.RequestObjectEncryptionEnc,
+                RequestObjectSigningAlg = client.RequestObjectSigningAlg,
+                RequestUris = client.RequestUris,
+                SectorIdentifierUri = client.SectorIdentifierUri,
+                RequireAuthTime = client.RequireAuthTime,
+                SubjectType = client.SubjectType,
+                TokenEndPointAuthSigningAlg = client.TokenEndPointAuthSigningAlg,
+                UserInfoEncryptedResponseAlg = client.UserInfoEncryptedResponseAlg,
+                UserInfoEncryptedResponseEnc = client.UserInfoEncryptedResponseEnc,
+                UserInfoSignedResponseAlg = client.UserInfoSignedResponseAlg,
+                ClientUri = client.ClientUri,
+                GrantTypes = client.GrantTypes == null ? null : client.GrantTypes.Select(g => g.ToFake()).ToList(),
+                TosUri = client.TosUri,
+                LogoUri = client.LogoUri,
+                PolicyUri = client.PolicyUri,
+                ResponseTypes = client.ResponseTypes == null ? null : client.ResponseTypes.Select(r => r.ToFake()).ToList()
             };
         }
 
@@ -171,6 +189,16 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
             return (FAKEMODELS.TokenEndPointAuthenticationMethods)tokenEdp;
         }
 
+        public static FAKEMODELS.GrantType ToFake(this MODELS.GrantType grantType)
+        {
+            return (FAKEMODELS.GrantType)grantType;
+        }
+
+        public static FAKEMODELS.ResponseType ToFake(this MODELS.ResponseType responseType)
+        {
+            return (FAKEMODELS.ResponseType)responseType;
+        }
+
         public static FAKEMODELS.ApplicationTypes ToFake(this MODELS.ApplicationTypes applicationType)
         {
             return (FAKEMODELS.ApplicationTypes)applicationType;
@@ -216,9 +244,9 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
                 ClientId = client.ClientId,
                 ClientSecret = client.ClientSecret,
                 TokenEndPointAuthMethod = client.TokenEndPointAuthMethod.ToBusiness(),
-                DisplayName = client.DisplayName,
+                ClientName = client.ClientName,
                 AllowedScopes = client.AllowedScopes == null ? null : client.AllowedScopes.Select(s => s.ToBusiness()).ToList(),
-                RedirectionUrls = client.RedirectionUrls == null ? null : client.RedirectionUrls.Select(r => r.Url).ToList(),
+                RedirectionUrls = client.RedirectionUrls,
                 ClientUri = client.ClientUri,
                 LogoUri = client.LogoUri,
                 TosUri = client.TosUri,
@@ -227,10 +255,25 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
                 ResponseTypes = client.ResponseTypes == null ? null : client.ResponseTypes.Select(rt => rt.ToBusiness()).ToList(),
                 IdTokenEncryptedResponseAlg = client.IdTokenEncryptedResponseAlg,
                 IdTokenEncryptedResponseEnc = client.IdTokenEncryptedResponseEnc,
-                IdTokenSignedTResponseAlg = client.IdTokenSignedTResponseAlg,
+                IdTokenSignedResponseAlg = client.IdTokenSignedResponseAlg,
                 JwksUri = client.JwksUri,
                 JsonWebKeys = client.JsonWebKeys == null ? null : client.JsonWebKeys.Select(j => j.ToBusiness()).ToList(),
-                ApplicationType = client.ApplicationType.ToBusiness()
+                ApplicationType = client.ApplicationType.ToBusiness(),
+                Contacts = client.Contacts,
+                DefaultAcrValues = client.DefaultAcrValues,
+                DefaultMaxAge = client.DefaultMaxAge,
+                InitiateLoginUri = client.InitiateLoginUri,
+                RequestObjectEncryptionAlg = client.RequestObjectEncryptionAlg,
+                RequestObjectEncryptionEnc = client.RequestObjectEncryptionEnc,
+                RequestObjectSigningAlg = client.RequestObjectSigningAlg,
+                RequestUris = client.RequestUris,
+                SectorIdentifierUri = client.SectorIdentifierUri,
+                RequireAuthTime = client.RequireAuthTime,
+                SubjectType = client.SubjectType,
+                TokenEndPointAuthSigningAlg = client.TokenEndPointAuthSigningAlg,
+                UserInfoEncryptedResponseAlg = client.UserInfoEncryptedResponseAlg,
+                UserInfoEncryptedResponseEnc = client.UserInfoEncryptedResponseEnc,
+                UserInfoSignedResponseAlg = client.UserInfoSignedResponseAlg
             };
         }
 

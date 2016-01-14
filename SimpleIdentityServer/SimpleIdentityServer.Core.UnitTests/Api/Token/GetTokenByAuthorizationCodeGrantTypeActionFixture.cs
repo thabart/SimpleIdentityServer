@@ -32,7 +32,7 @@ namespace SimpleIdentityServer.Core.Api.Token
 
         private Mock<IAuthenticateClient> _authenticateClientFake;
 
-        private Mock<IJwtGenerator> _jwtGeneratorFake;
+        private Mock<IClientHelper> _clientHelper;
 
         private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSourceFake;
 
@@ -258,6 +258,68 @@ namespace SimpleIdentityServer.Core.Api.Token
         }
 
         [Test]
+        public void When_Requesting_An_Existed_Granted_Token_Then_Check_Id_Token_Is_Signed_And_Encrypted()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            const string accessToken = "accessToken";
+            const string identityToken = "identityToken";
+            const string clientId = "clientId";
+            var authorizationCodeGrantTypeParameter = new AuthorizationCodeGrantTypeParameter
+            {
+                ClientAssertion = "clientAssertion",
+                ClientAssertionType = "clientAssertionType",
+                ClientSecret = "clientSecret",
+                RedirectUri = "redirectUri",
+                ClientId = clientId
+            };
+            var client = new Client
+            {
+                ClientId = clientId,
+                IdTokenSignedResponseAlg = Jwt.Constants.JwsAlgNames.RS256,
+                IdTokenEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5,
+                IdTokenEncryptedResponseEnc = Jwt.Constants.JweEncNames.A128CBC_HS256
+            };
+            var authorizationCode = new AuthorizationCode
+            {
+                ClientId = clientId,
+                RedirectUri = "redirectUri",
+                CreateDateTime = DateTime.UtcNow
+            };
+            var grantedToken = new GrantedToken
+            {
+                ClientId = clientId,
+                AccessToken = accessToken,
+                IdToken = identityToken,
+                IdTokenPayLoad = new JwsPayload()
+            };
+
+            string errorMessage;
+            _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(),
+                out errorMessage))
+                .Returns(client);
+            _authorizationCodeRepositoryFake.Setup(a => a.GetAuthorizationCode(It.IsAny<string>()))
+                .Returns(authorizationCode);
+            _simpleIdentityServerConfiguratorFake.Setup(s => s.GetAuthorizationCodeValidityPeriodInSeconds())
+                .Returns(3000);
+            _clientValidatorFake.Setup(c => c.ValidateRedirectionUrl(It.IsAny<string>(), It.IsAny<Client>()))
+                .Returns("redirectUri");
+            _clientValidatorFake.Setup(c => c.ValidateClientExist(It.IsAny<string>()))
+                .Returns(client);
+            _grantedTokenRepositoryFake.Setup(g => g.GetToken(It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<JwsPayload>(),
+                It.IsAny<JwsPayload>()))
+                .Returns(grantedToken);
+
+            // ACT
+            _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null);
+
+            // ASSERTS
+            _clientHelper.Verify(j => j.GenerateIdToken(clientId, It.IsAny<JwsPayload>()));
+        }
+
+        [Test]
         public void When_Requesting_Token_And_There_Is_No_Valid_Granted_Token_Then_Grant_A_New_One()
         {
             // ARRANGE
@@ -330,7 +392,7 @@ namespace SimpleIdentityServer.Core.Api.Token
             _grantedTokenGeneratorHelperFake = new Mock<IGrantedTokenGeneratorHelper>();
             _grantedTokenRepositoryFake = new Mock<IGrantedTokenRepository>();
             _authenticateClientFake = new Mock<IAuthenticateClient>();
-            _jwtGeneratorFake = new Mock<IJwtGenerator>();
+            _clientHelper = new Mock<IClientHelper>();
             _simpleIdentityServerConfiguratorFake = new Mock<ISimpleIdentityServerConfigurator>();
             _simpleIdentityServerEventSourceFake = new Mock<ISimpleIdentityServerEventSource>();
 
@@ -341,7 +403,7 @@ namespace SimpleIdentityServer.Core.Api.Token
                 _grantedTokenGeneratorHelperFake.Object,
                 _grantedTokenRepositoryFake.Object,
                 _authenticateClientFake.Object,
-                _jwtGeneratorFake.Object,
+                _clientHelper.Object,
                 _simpleIdentityServerEventSourceFake.Object); 
         }
     }

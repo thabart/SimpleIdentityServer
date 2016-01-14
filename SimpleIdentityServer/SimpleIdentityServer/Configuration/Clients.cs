@@ -12,7 +12,7 @@ namespace SimpleIdentityServer.Api.Configuration
                 new Client
                 {
                     ClientId = "MyBlog",
-                    DisplayName = "My blog",
+                    ClientName = "My blog",
                     ClientSecret = "MyBlog",
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
                     AllowedScopes = new List<Scope>
@@ -113,33 +113,21 @@ namespace SimpleIdentityServer.Api.Configuration
                         ResponseType.code,
                         ResponseType.id_token
                     },
-                    IdTokenSignedTResponseAlg = "RS256",
+                    IdTokenSignedResponseAlg = "RS256",
                     // IdTokenEncryptedResponseAlg = "RSA1_5",
                     // IdTokenEncryptedResponseEnc = "A128CBC-HS256",
-                    RedirectionUrls = new List<RedirectionUrl>
+                    RedirectionUrls = new List<string>
                     {
-                        new RedirectionUrl
-                        {
-                            Url = "https://op.certification.openid.net:60360/authz_cb"
-                        },
-                        new RedirectionUrl
-                        {
-                            Url = "http://localhost"
-                        },
-                        new RedirectionUrl
-                        {
-                            Url = "https://op.certification.openid.net:60186/authz_cb"
-                        },
-                        new RedirectionUrl
-                        {
-                            Url = "https://op.certification.openid.net:60428/authz_cb"
-                        }
-                    },
+                        "https://op.certification.openid.net:60360/authz_cb",
+                        "http://localhost",
+                        "https://op.certification.openid.net:60186/authz_cb",
+                        "https://op.certification.openid.net:60428/authz_cb"
+                    }
                 },
                 new Client
                 {
                     ClientId = "MyBlogClientSecretPost",
-                    DisplayName = "My blog",
+                    ClientName = "My blog",
                     ClientSecret = "MyBlogClientSecretPost",
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
                     AllowedScopes = new List<Scope>
@@ -240,28 +228,16 @@ namespace SimpleIdentityServer.Api.Configuration
                         ResponseType.code,
                         ResponseType.id_token
                     },
-                    IdTokenSignedTResponseAlg = "RS256",
+                    IdTokenSignedResponseAlg = "RS256",
                     // IdTokenEncryptedResponseAlg = "RSA1_5",
                     // IdTokenEncryptedResponseEnc = "A128CBC-HS256",
-                    RedirectionUrls = new List<RedirectionUrl>
+                    RedirectionUrls = new List<string>
                     {
-                        new RedirectionUrl
-                        {
-                            Url = "https://op.certification.openid.net:60360/authz_cb"
-                        },
-                        new RedirectionUrl
-                        {
-                            Url = "http://localhost"
-                        },
-                        new RedirectionUrl
-                        {
-                            Url = "https://op.certification.openid.net:60186/authz_cb"
-                        },
-                        new RedirectionUrl
-                        {
-                            Url = "https://op.certification.openid.net:60428/authz_cb"
-                        }
-                    },
+                        "https://op.certification.openid.net:60360/authz_cb",
+                        "http://localhost",
+                        "https://op.certification.openid.net:60186/authz_cb",
+                        "https://op.certification.openid.net:60428/authz_cb"
+                    }
                 }
             };
         }

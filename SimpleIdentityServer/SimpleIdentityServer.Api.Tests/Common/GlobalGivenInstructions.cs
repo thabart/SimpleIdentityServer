@@ -131,9 +131,9 @@ namespace SimpleIdentityServer.Api.Tests.Common
                 return;
             }
 
-            client.RedirectionUrls = new List<RedirectionUrl>
+            client.RedirectionUrls = new List<string>
             {
-                new RedirectionUrl { Url = redirectionUri}
+                redirectionUri
             };
         }
 
@@ -182,7 +182,7 @@ namespace SimpleIdentityServer.Api.Tests.Common
                 return;
             }
 
-            client.IdTokenSignedTResponseAlg = algorithm;
+            client.IdTokenSignedResponseAlg = algorithm;
         }
 
         [Given("the grant-type (.*) is supported by the client (.*)")]

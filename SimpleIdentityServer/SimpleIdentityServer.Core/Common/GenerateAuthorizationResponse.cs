@@ -57,6 +57,8 @@ namespace SimpleIdentityServer.Core.Common
 
         private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
 
+        private readonly IClientHelper _clientHelper;
+
         public GenerateAuthorizationResponse(
             IAuthorizationCodeRepository authorizationCodeRepository,
             IParameterParserHelper parameterParserHelper,
@@ -65,7 +67,8 @@ namespace SimpleIdentityServer.Core.Common
             IGrantedTokenRepository grantedTokenRepository,
             IConsentHelper consentHelper,
             ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
-            IAuthorizationFlowHelper authorizationFlowHelper)
+            IAuthorizationFlowHelper authorizationFlowHelper,
+            IClientHelper clientHelper)
         {
             _authorizationCodeRepository = authorizationCodeRepository;
             _parameterParserHelper = parameterParserHelper;
@@ -75,6 +78,7 @@ namespace SimpleIdentityServer.Core.Common
             _consentHelper = consentHelper;
             _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
             _authorizationFlowHelper = authorizationFlowHelper;
+            _clientHelper = clientHelper;
         }
 
         #region Public methods
@@ -84,14 +88,15 @@ namespace SimpleIdentityServer.Core.Common
             AuthorizationParameter authorizationParameter,
             ClaimsPrincipal claimsPrincipal)
         {
-            if (authorizationParameter == null)
-            {
-                throw new ArgumentNullException("authorizationParameter");    
-            }
-
             if (actionResult == null || actionResult.RedirectInstruction == null)
             {
                 throw new ArgumentNullException("actionResult");
+            }
+
+
+            if (authorizationParameter == null)
+            {
+                throw new ArgumentNullException("authorizationParameter");    
             }
 
             if (claimsPrincipal == null)
@@ -241,8 +246,8 @@ namespace SimpleIdentityServer.Core.Common
             JwsPayload jwsPayload,
             AuthorizationParameter authorizationParameter)
         {
-            var idToken = _jwtGenerator.Sign(jwsPayload, authorizationParameter.ClientId);
-            return _jwtGenerator.Encrypt(idToken, authorizationParameter.ClientId);
+            return _clientHelper.GenerateIdToken(authorizationParameter.ClientId,
+                jwsPayload);
         }
 
         private JwsPayload GenerateIdTokenPayload(

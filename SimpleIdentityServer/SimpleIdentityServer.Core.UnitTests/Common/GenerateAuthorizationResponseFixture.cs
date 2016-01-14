@@ -35,12 +35,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
 
         private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSource;
 
-        private Mock<IAuthorizationFlowHelper> _authorizationFlowHelperFake; 
+        private Mock<IAuthorizationFlowHelper> _authorizationFlowHelperFake;
+
+        private Mock<IClientHelper> _clientHelperFake;
 
         private IGenerateAuthorizationResponse _generateAuthorizationResponse;
 
         [Test]
-        public void When_Passing_No_Authorization_Request_Then_Exception_Is_Thrown()
+        public void When_Passing_No_Action_Result_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -50,14 +52,17 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
         }
 
         [Test]
-        public void When_Passing_No_ActionResult_Then_Exception_Is_Thrown()
+        public void When_Passing_No_Authorization_Request_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
+            var redirectInstruction = new ActionResult
+            {
+                RedirectInstruction = new RedirectInstruction()
+            };
             
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(
-                () => _generateAuthorizationResponse.Execute(null, new AuthorizationParameter(), null));
+            Assert.Throws<ArgumentNullException>(() => _generateAuthorizationResponse.Execute(redirectInstruction, null, null));
         }
 
         [Test]
@@ -65,10 +70,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
         {
             // ARRANGE
             InitializeFakeObjects();
+            var redirectInstruction = new ActionResult
+            {
+                RedirectInstruction = new RedirectInstruction()
+            };
 
             // ACT & ASSERT
             Assert.Throws<ArgumentNullException>(
-                () => _generateAuthorizationResponse.Execute(new ActionResult(), new AuthorizationParameter(), null));
+                () => _generateAuthorizationResponse.Execute(redirectInstruction, new AuthorizationParameter(), null));
         }
 
         [Test]
@@ -95,14 +104,17 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             _jwtGeneratorFake.Setup(
                 j => j.GenerateUserInfoPayloadForScope(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
                 .Returns(jwsPayload);
-            _jwtGeneratorFake.Setup(j => j.Encrypt(It.IsAny<string>(), It.IsAny<string>()))
+            _jwtGeneratorFake.Setup(j => j.Encrypt(It.IsAny<string>(), It.IsAny<JweAlg>(), It.IsAny<JweEnc>()))
+                .Returns(idToken);
+            _clientHelperFake.Setup(c => c.GenerateIdToken(It.IsAny<string>(),
+                It.IsAny<JwsPayload>()))
                 .Returns(idToken);
 
             // ACT
             _generateAuthorizationResponse.Execute(actionResult, authorizationParameter, claimsPrincipal);
 
             // ASSERT
-            Assert.IsTrue(actionResult.RedirectInstruction.Parameters.Any(p => p.Name == Core.Constants.StandardAuthorizationResponseNames.IdTokenName));
+            Assert.IsTrue(actionResult.RedirectInstruction.Parameters.Any(p => p.Name == Constants.StandardAuthorizationResponseNames.IdTokenName));
             Assert.IsTrue(actionResult.RedirectInstruction.Parameters.Any(p => p.Value == idToken));
         }
 
@@ -140,7 +152,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             _jwtGeneratorFake.Setup(
                 j => j.GenerateUserInfoPayloadForScope(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
                 .Returns(jwsPayload);
-            _jwtGeneratorFake.Setup(j => j.Encrypt(It.IsAny<string>(), It.IsAny<string>()))
+            _jwtGeneratorFake.Setup(j => j.Encrypt(It.IsAny<string>(), It.IsAny<JweAlg>(), It.IsAny<JweEnc>()))
                 .Returns(idToken);
             _parameterParserHelperFake.Setup(p => p.ParseScopeParameters(It.IsAny<string>()))
                 .Returns(() => new List<string> { scope });
@@ -199,7 +211,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             _jwtGeneratorFake.Setup(
                 j => j.GenerateUserInfoPayloadForScope(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
                 .Returns(jwsPayload);
-            _jwtGeneratorFake.Setup(j => j.Encrypt(It.IsAny<string>(), It.IsAny<string>()))
+            _jwtGeneratorFake.Setup(j => j.Encrypt(It.IsAny<string>(), It.IsAny<JweAlg>(), It.IsAny<JweEnc>()))
                 .Returns(idToken);
             _parameterParserHelperFake.Setup(p => p.ParseScopeParameters(It.IsAny<string>()))
                 .Returns(() => new List<string> { scope });
@@ -248,7 +260,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             _jwtGeneratorFake.Setup(
                 j => j.GenerateUserInfoPayloadForScope(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
                 .Returns(jwsPayload);
-            _jwtGeneratorFake.Setup(j => j.Encrypt(It.IsAny<string>(), It.IsAny<string>()))
+            _jwtGeneratorFake.Setup(j => j.Encrypt(It.IsAny<string>(), It.IsAny<JweAlg>(), It.IsAny<JweEnc>()))
                 .Returns(idToken);
             _consentHelperFake.Setup(c => c.GetConsentConfirmedByResourceOwner(It.IsAny<string>(),
                 It.IsAny<AuthorizationParameter>()))
@@ -279,6 +291,12 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 Scope = scope,
                 ResponseType = responseType
             };
+            var client = new Client
+            {
+                IdTokenEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5,
+                IdTokenEncryptedResponseEnc = Jwt.Constants.JweEncNames.A128CBC_HS256,
+                IdTokenSignedResponseAlg = Jwt.Constants.JwsAlgNames.RS256
+            };
             var actionResult = new ActionResult
             {
                 RedirectInstruction = new RedirectInstruction()
@@ -295,7 +313,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             _jwtGeneratorFake.Setup(
                 j => j.GenerateUserInfoPayloadForScope(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
                 .Returns(jwsPayload);
-            _jwtGeneratorFake.Setup(j => j.Encrypt(It.IsAny<string>(), It.IsAny<string>()))
+            _jwtGeneratorFake.Setup(j => j.Encrypt(It.IsAny<string>(), It.IsAny<JweAlg>(), It.IsAny<JweEnc>()))
                 .Returns(idToken);
 
             // ACT
@@ -323,6 +341,12 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 ResponseType = responseType,
                 ResponseMode = ResponseMode.None
             };
+            var client = new Client
+            {
+                IdTokenEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5,
+                IdTokenEncryptedResponseEnc = Jwt.Constants.JweEncNames.A128CBC_HS256,
+                IdTokenSignedResponseAlg = Jwt.Constants.JwsAlgNames.RS256
+            };
             var actionResult = new ActionResult
             {
                 RedirectInstruction = new RedirectInstruction(),
@@ -340,7 +364,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             _jwtGeneratorFake.Setup(
                 j => j.GenerateUserInfoPayloadForScope(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
                 .Returns(jwsPayload);
-            _jwtGeneratorFake.Setup(j => j.Encrypt(It.IsAny<string>(), It.IsAny<string>()))
+            _jwtGeneratorFake.Setup(j => j.Encrypt(It.IsAny<string>(), It.IsAny<JweAlg>(), It.IsAny<JweEnc>()))
                 .Returns(idToken);
             _authorizationFlowHelperFake.Setup(
                 a => a.GetAuthorizationFlow(It.IsAny<ICollection<ResponseType>>(), It.IsAny<string>()))
@@ -363,6 +387,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             _consentHelperFake = new Mock<IConsentHelper>();
             _simpleIdentityServerEventSource = new Mock<ISimpleIdentityServerEventSource>();
             _authorizationFlowHelperFake = new Mock<IAuthorizationFlowHelper>();
+            _clientHelperFake = new Mock<IClientHelper>();
             _generateAuthorizationResponse = new GenerateAuthorizationResponse(
                 _authorizationCodeRepositoryFake.Object,
                 _parameterParserHelperFake.Object,
@@ -371,7 +396,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 _grantedTokenRepositoryFake.Object,
                 _consentHelperFake.Object,
                 _simpleIdentityServerEventSource.Object,
-                _authorizationFlowHelperFake.Object);
+                _authorizationFlowHelperFake.Object,
+                _clientHelperFake.Object);
         }
     }
 }

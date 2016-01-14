@@ -85,10 +85,10 @@ namespace SimpleIdentityServer.Api.DTOs.Response
         public string TokenEndPointAuthSigningAlg { get; set; }
 
         [DataMember(Name = Core.Constants.StandardRegistrationRequestParameterNames.DefaultMaxAge)]
-        public string DefaultMaxAge { get; set; }
+        public int DefaultMaxAge { get; set; }
 
         [DataMember(Name = Core.Constants.StandardRegistrationRequestParameterNames.RequireAuthTime)]
-        public string RequireAuthTime { get; set; }
+        public bool RequireAuthTime { get; set; }
 
         [DataMember(Name = Core.Constants.StandardRegistrationRequestParameterNames.DefaultAcrValues)]
         public string DefaultAcrValues { get; set; }

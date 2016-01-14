@@ -62,7 +62,7 @@ namespace SimpleIdentityServer.Api.Controllers
             TranslateConsentScreen(request.ui_locales);
             var viewModel = new ConsentViewModel
             {
-                ClientDisplayName = client.DisplayName,
+                ClientDisplayName = client.ClientName,
                 AllowedScopeDescriptions = !scopes.Any() ? new List<string>() : scopes.Select(s => s.Description).ToList(),
                 AllowedIndividualClaims = claims,
                 Code = code

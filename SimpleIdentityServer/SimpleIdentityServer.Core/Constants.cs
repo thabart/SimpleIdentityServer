@@ -354,7 +354,12 @@ namespace SimpleIdentityServer.Core
             {
                 AuthorizationFlow.HybridFlow, ResponseMode.fragment
             }
-        }; 
+        };
+
+        public static class SubjectTypeNames
+        {
+            public const string Public = "public";
+        }
 
         public static class Supported
         {
@@ -382,12 +387,22 @@ namespace SimpleIdentityServer.Core
             public static List<string> SupportedSubjectTypes = new List<string>
             {
                 // Same subject value to all clients.
-                "public"
+                SubjectTypeNames.Public
             };
 
             public static List<string> SupportedJwsAlgs = new List<string>
             {
                 Jwt.Constants.JwsAlgNames.RS256
+            }; 
+
+            public static List<string> SupportedJweAlgs = new List<string>
+            {
+                Jwt.Constants.JweAlgNames.RSA1_5
+            }; 
+
+            public static List<string> SupportedJweEncs = new List<string>
+            {
+                Jwt.Constants.JweEncNames.A128CBC_HS256
             }; 
 
             public static List<TokenEndPointAuthenticationMethods> SupportedTokenEndPointAuthenticationMethods = new List

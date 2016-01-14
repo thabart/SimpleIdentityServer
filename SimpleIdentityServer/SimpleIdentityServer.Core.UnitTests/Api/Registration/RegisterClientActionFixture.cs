@@ -1,6 +1,9 @@
-﻿using Moq;
+﻿using System.Linq;
+using Moq;
 using NUnit.Framework;
 using SimpleIdentityServer.Core.Api.Registration.Actions;
+using SimpleIdentityServer.Core.Jwt;
+using SimpleIdentityServer.Core.Jwt.Converter;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Validators;
@@ -16,6 +19,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
         private Mock<IRegistrationParameterValidator> _registrationParameterValidatorFake;
 
         private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSourceFake;
+
+        private Mock<IJsonWebKeyConverter> _jsonWebKeyConverterFake;
 
         private IRegisterClientAction _registerClientAction;
 
@@ -49,6 +54,72 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
             Assert.IsTrue(client.ResponseTypes.Contains(ResponseType.code));
             Assert.IsTrue(client.GrantTypes.Contains(GrantType.authorization_code));
             Assert.IsTrue(client.ApplicationType == ApplicationTypes.web);
+            Assert.IsTrue(client.IdTokenSignedResponseAlg == Jwt.Constants.JwsAlgNames.RS256);
+            Assert.IsTrue(client.IdTokenEncryptedResponseAlg == string.Empty);
+            Assert.IsTrue(client.UserInfoSignedResponseAlg == Jwt.Constants.JwsAlgNames.NONE);
+            Assert.IsTrue(client.UserInfoEncryptedResponseAlg == string.Empty);
+            Assert.IsTrue(client.RequestObjectSigningAlg == string.Empty);
+            Assert.IsTrue(client.RequestObjectEncryptionAlg == string.Empty);
+            Assert.IsTrue(client.TokenEndPointAuthMethod == TokenEndPointAuthenticationMethods.client_secret_basic);
+            Assert.IsTrue(client.TokenEndPointAuthSigningAlg == string.Empty);
+        }
+
+        [Test]
+        public void When_Passing_Registration_Parameter_With_A_Not_Supported_IdTokenEncryptedResponseEnc_Then_Default_Value_Is_A128CBC_HS256()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            const string clientName = "client_name";
+            var registrationParameter = new RegistrationParameter
+            {
+                ClientName = clientName,
+                IdTokenEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5
+            };
+
+            // ACT
+            var client = _registerClientAction.Execute(registrationParameter);
+
+            // ASSERT
+            Assert.IsTrue(client.IdTokenEncryptedResponseEnc == Jwt.Constants.JweEncNames.A128CBC_HS256);
+            
+        }
+
+        [Test]
+        public void When_Passing_Registration_Parameter_With_A_Not_Supported_UserInfoEncryptedResponseEnc_Then_Default_Value_Is_A128CBC_HS256()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            const string clientName = "client_name";
+            var registrationParameter = new RegistrationParameter
+            {
+                ClientName = clientName,
+                UserInfoEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5
+            };
+
+            // ACT
+            var client = _registerClientAction.Execute(registrationParameter);
+
+            // ASSERT
+            Assert.IsTrue(client.UserInfoEncryptedResponseEnc == Jwt.Constants.JweEncNames.A128CBC_HS256);
+        }
+
+        [Test]
+        public void When_Passing_Registration_Parameter_With_A_Not_Supported_RequestObjectEncryptionEnc_Then_Default_Value_Is_A128CBC_HS256()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            const string clientName = "client_name";
+            var registrationParameter = new RegistrationParameter
+            {
+                ClientName = clientName,
+                RequestObjectEncryptionAlg = Jwt.Constants.JweAlgNames.RSA1_5
+            };
+
+            // ACT
+            var client = _registerClientAction.Execute(registrationParameter);
+
+            // ASSERT
+            Assert.IsTrue(client.RequestObjectEncryptionEnc == Jwt.Constants.JweEncNames.A128CBC_HS256);
         }
 
         [Test]
@@ -57,6 +128,18 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
             // ARRANGE
             InitializeFakeObjects();
             const string clientName = "client_name";
+            const string clientUri = "client_uri";
+            const string policyUri = "policy_uri";
+            const string tosUri = "tos_uri";
+            const string jwksUri = "jwks_uri";
+            const string jwks = "jwks";
+            const string kid = "kid";
+            const string sectorIdentifierUri = "sector_identifier_uri";
+            const double defaultMaxAge = 3;
+            const string defaultAcrValues = "default_acr_values";
+            const bool requireAuthTime = false;
+            const string initiateLoginUri = "initiate_login_uri";
+            const string requestUri = "request_uri";
             var registrationParameter = new RegistrationParameter
             {
                 ClientName = clientName,
@@ -68,8 +151,42 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
                 {
                     GrantType.@implicit
                 },
-                ApplicationType = ApplicationTypes.native
+                ApplicationType = ApplicationTypes.native,
+                ClientUri = clientUri,
+                PolicyUri = policyUri,
+                TosUri = tosUri,
+                JwksUri = jwksUri,
+                Jwks = jwks,
+                SectorIdentifierUri = sectorIdentifierUri,
+                IdTokenSignedResponseAlg = Jwt.Constants.JwsAlgNames.RS256,
+                IdTokenEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5,
+                IdTokenEncryptedResponseEnc = Jwt.Constants.JweEncNames.A128CBC_HS256,
+                UserInfoSignedResponseAlg = Jwt.Constants.JwsAlgNames.RS256,
+                UserInfoEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5,
+                UserInfoEncryptedResponseEnc = Jwt.Constants.JweEncNames.A128CBC_HS256,
+                RequestObjectSigningAlg = Jwt.Constants.JwsAlgNames.RS256,
+                RequestObjectEncryptionAlg = Jwt.Constants.JweAlgNames.RSA1_5,
+                RequestObjectEncryptionEnc = Jwt.Constants.JweEncNames.A128CBC_HS256,
+                TokenEndPointAuthMethod = "private_key_jwt",
+                TokenEndPointAuthSigningAlg = Jwt.Constants.JwsAlgNames.RS256,
+                DefaultMaxAge = defaultMaxAge,
+                DefaultAcrValues = defaultAcrValues,
+                RequireAuthTime = requireAuthTime,
+                InitiateLoginUri = initiateLoginUri,
+                RequestUris = new List<string>
+                {
+                    requestUri
+                }
             };
+            var jsonWebKeys = new List<JsonWebKey>
+            {
+                new JsonWebKey
+                {
+                    Kid = kid
+                }
+            };
+            _jsonWebKeyConverterFake.Setup(j => j.ConvertFromJson(It.IsAny<string>()))
+                .Returns(jsonWebKeys);
 
             // ACT
             var client = _registerClientAction.Execute(registrationParameter);
@@ -80,15 +197,40 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
             Assert.IsTrue(client.ResponseTypes.Contains(ResponseType.token));
             Assert.IsTrue(client.GrantTypes.Contains(GrantType.@implicit));
             Assert.IsTrue(client.ApplicationType == ApplicationTypes.native);
+            Assert.IsTrue(client.ClientName == clientName);
+            Assert.IsTrue(client.ClientUri == clientUri);
+            Assert.IsTrue(client.PolicyUri == policyUri);
+            Assert.IsTrue(client.TosUri == tosUri);
+            Assert.IsTrue(client.JwksUri == jwksUri);
+            Assert.IsNotNull(client.JsonWebKeys);
+            Assert.IsTrue(client.JsonWebKeys.First().Kid == kid);
+            Assert.IsTrue(client.IdTokenSignedResponseAlg == Jwt.Constants.JwsAlgNames.RS256);
+            Assert.IsTrue(client.IdTokenEncryptedResponseAlg == Jwt.Constants.JweAlgNames.RSA1_5);
+            Assert.IsTrue(client.IdTokenEncryptedResponseEnc == Jwt.Constants.JweEncNames.A128CBC_HS256);
+            Assert.IsTrue(client.UserInfoSignedResponseAlg == Jwt.Constants.JwsAlgNames.RS256);
+            Assert.IsTrue(client.UserInfoEncryptedResponseAlg == Jwt.Constants.JweAlgNames.RSA1_5);
+            Assert.IsTrue(client.UserInfoEncryptedResponseEnc == Jwt.Constants.JweEncNames.A128CBC_HS256);
+            Assert.IsTrue(client.RequestObjectSigningAlg == Jwt.Constants.JwsAlgNames.RS256);
+            Assert.IsTrue(client.RequestObjectEncryptionAlg == Jwt.Constants.JweAlgNames.RSA1_5);
+            Assert.IsTrue(client.RequestObjectEncryptionEnc == Jwt.Constants.JweEncNames.A128CBC_HS256);
+            Assert.IsTrue(client.TokenEndPointAuthMethod == TokenEndPointAuthenticationMethods.private_key_jwt);
+            Assert.IsTrue(client.TokenEndPointAuthSigningAlg == Jwt.Constants.JwsAlgNames.RS256);
+            Assert.IsTrue(client.DefaultMaxAge == defaultMaxAge);
+            Assert.IsTrue(client.DefaultAcrValues == defaultAcrValues);
+            Assert.IsTrue(client.RequireAuthTime == requireAuthTime);
+            Assert.IsTrue(client.InitiateLoginUri == initiateLoginUri);
+            Assert.IsTrue(client.RequestUris.First() == requestUri);
         }
 
         private void InitializeFakeObjects()
         {
             _registrationParameterValidatorFake = new Mock<IRegistrationParameterValidator>();
             _simpleIdentityServerEventSourceFake = new Mock<ISimpleIdentityServerEventSource>();
+            _jsonWebKeyConverterFake = new Mock<IJsonWebKeyConverter>();
             _registerClientAction = new RegisterClientAction(
                 _registrationParameterValidatorFake.Object,
-                _simpleIdentityServerEventSourceFake.Object);
+                _simpleIdentityServerEventSourceFake.Object,
+                _jsonWebKeyConverterFake.Object);
         }
     }
 }

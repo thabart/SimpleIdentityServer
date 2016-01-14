@@ -104,11 +104,13 @@
     <Compile Include="Common\GenerateAuthorizationResponseFixture.cs" />
     <Compile Include="Extensions\ClaimPrincipalExtensionsFixture.cs" />
     <Compile Include="Extensions\ClaimsParameterExtensionsFixture.cs" />
+    <Compile Include="Extensions\ClientExtensionsFixture.cs" />
     <Compile Include="Extensions\ResourceOwnerExtensionsFixture.cs" />
     <Compile Include="Fake\FakeFactories.cs" />
     <Compile Include="Fake\FakeHttpMessageHandler.cs" />
     <Compile Include="Fake\FakeOpenIdAssets.cs" />
     <Compile Include="Helpers\AuthorizationFlowHelperFixture.cs" />
+    <Compile Include="Helpers\ClientHelperFixture.cs" />
     <Compile Include="Helpers\ConsentHelperFixture.cs" />
     <Compile Include="JwtToken\JwtGeneratorFixture.cs" />
     <Compile Include="JwtToken\JwtParserFixture.cs" />

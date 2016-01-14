@@ -14,13 +14,13 @@
 <tbody>
 <tr><th>Class:</th><td>SimpleIdentityServer.Core.JwtToken.JwtParser</td></tr>
 <tr><th>Assembly:</th><td>SimpleIdentityServer.Core</td></tr>
-<tr><th>File(s):</th><td><a href="#CProjectSimpleIdentityServerSimpleIdentityServerSimpleIdentityServerCoreJwtTokenJwtParsercs">C:\Project\SimpleIdentityServer\SimpleIdentityServer\SimpleIdentityServer.Core\JwtToken\JwtParser.cs</a></td></tr>
+<tr><th>File(s):</th><td><a href="#cProjectOTHERSSimpleIdentityServerSimpleIdentityServerSimpleIdentityServerCoreJwtTokenJwtParsercs">c:\Project\OTHERS\SimpleIdentityServer\SimpleIdentityServer\SimpleIdentityServer.Core\JwtToken\JwtParser.cs</a></td></tr>
 <tr><th>Covered lines:</th><td>93</td></tr>
 <tr><th>Uncovered lines:</th><td>0</td></tr>
 <tr><th>Coverable lines:</th><td>93</td></tr>
 <tr><th>Total lines:</th><td>200</td></tr>
 <tr><th>Line coverage:</th><td>100%</td></tr>
-<tr><th>Branch coverage:</th><td>100%</td></tr>
+<tr><th>Branch coverage:</th><td>94.4%</td></tr>
 </tbody>
 </table>
 <h1>Metrics</h1>
@@ -32,11 +32,11 @@
 <tr><td title="System.Boolean SimpleIdentityServer.Core.JwtToken.JwtParser::IsJwsToken(System.String)">IsJwsToken(...)</td><td>1</td><td>100</td><td>100</td></tr>
 <tr><td title="System.String SimpleIdentityServer.Core.JwtToken.JwtParser::Decrypt(System.String,System.String)">Decrypt(...)</td><td>6</td><td>100</td><td>100</td></tr>
 <tr><td title="SimpleIdentityServer.Core.Jwt.JwsPayload SimpleIdentityServer.Core.JwtToken.JwtParser::UnSign(System.String,System.String)">UnSign(...)</td><td>8</td><td>100</td><td>100</td></tr>
-<tr><td title="SimpleIdentityServer.Core.Jwt.JsonWebKey SimpleIdentityServer.Core.JwtToken.JwtParser::GetJsonWebKeyFromClient(SimpleIdentityServer.Core.Models.Client,System.String)">GetJsonWebKeyFromClient(...)</td><td>5</td><td>100</td><td>100</td></tr>
+<tr><td title="SimpleIdentityServer.Core.Jwt.JsonWebKey SimpleIdentityServer.Core.JwtToken.JwtParser::GetJsonWebKeyFromClient(SimpleIdentityServer.Core.Models.Client,System.String)">GetJsonWebKeyFromClient(...)</td><td>7</td><td>100</td><td>84.62</td></tr>
 </tbody>
 </table>
 <h1>File(s)</h1>
-<h2 id="CProjectSimpleIdentityServerSimpleIdentityServerSimpleIdentityServerCoreJwtTokenJwtParsercs">C:\Project\SimpleIdentityServer\SimpleIdentityServer\SimpleIdentityServer.Core\JwtToken\JwtParser.cs</h2>
+<h2 id="cProjectOTHERSSimpleIdentityServerSimpleIdentityServerSimpleIdentityServerCoreJwtTokenJwtParsercs">c:\Project\OTHERS\SimpleIdentityServer\SimpleIdentityServer\SimpleIdentityServer.Core\JwtToken\JwtParser.cs</h2>
 <table class="lineAnalysis">
 <thead><tr><th></th><th>#</th><th>Line</th><th></th><th>Line coverage</th></tr></thead>
 <tbody>
@@ -221,7 +221,7 @@
 <tr data-coverage="{'AllTestMethods': {'VC': '3', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">3</td><td class="rightmargin right"><code>179</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;request.EnsureSuccessStatusCode();</code></td></tr>
 <tr data-coverage="{'AllTestMethods': {'VC': '2', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">2</td><td class="rightmargin right"><code>180</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;json&nbsp;=&nbsp;request.Content.ReadAsStringAsync().Result;</code></td></tr>
 <tr data-coverage="{'AllTestMethods': {'VC': '2', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">2</td><td class="rightmargin right"><code>181</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;jsonWebKeys&nbsp;=&nbsp;_jsonWebKeyConverter.ConvertFromJson(json);</code></td></tr>
-<tr data-coverage="{'AllTestMethods': {'VC': '3', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">3</td><td class="rightmargin right"><code>182</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;jsonWebKeys.FirstOrDefault(j&nbsp;=&gt;&nbsp;j.Kid&nbsp;==&nbsp;kid);</code></td></tr>
+<tr title="1 of 2 branches are covered" data-coverage="{'AllTestMethods': {'VC': '3', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">3</td><td class="rightmargin right"><code>182</code></td><td class="branch coverage50">&nbsp;</td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;jsonWebKeys.FirstOrDefault(j&nbsp;=&gt;&nbsp;j.Kid&nbsp;==&nbsp;kid);</code></td></tr>
 <tr data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><code>183</code></td><td></td><td class="lightgray"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</code></td></tr>
 <tr data-coverage="{'AllTestMethods': {'VC': '1', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">1</td><td class="rightmargin right"><code>184</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;catch&nbsp;(Exception)</code></td></tr>
 <tr data-coverage="{'AllTestMethods': {'VC': '1', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">1</td><td class="rightmargin right"><code>185</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</code></td></tr>
@@ -233,7 +233,7 @@
 <tr title="4 of 4 branches are covered" data-coverage="{'AllTestMethods': {'VC': '8', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">8</td><td class="rightmargin right"><code>191</code></td><td class="branch coverage100">&nbsp;</td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(client.JsonWebKeys&nbsp;!=&nbsp;null&nbsp;&amp;&amp;</code></td></tr>
 <tr data-coverage="{'AllTestMethods': {'VC': '8', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">8</td><td class="rightmargin right"><code>192</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;client.JsonWebKeys.Any())</code></td></tr>
 <tr data-coverage="{'AllTestMethods': {'VC': '4', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">4</td><td class="rightmargin right"><code>193</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</code></td></tr>
-<tr data-coverage="{'AllTestMethods': {'VC': '8', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">8</td><td class="rightmargin right"><code>194</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;result&nbsp;=&nbsp;client.JsonWebKeys.FirstOrDefault(j&nbsp;=&gt;&nbsp;j.Kid&nbsp;==&nbsp;kid);</code></td></tr>
+<tr title="1 of 2 branches are covered" data-coverage="{'AllTestMethods': {'VC': '8', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">8</td><td class="rightmargin right"><code>194</code></td><td class="branch coverage50">&nbsp;</td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;result&nbsp;=&nbsp;client.JsonWebKeys.FirstOrDefault(j&nbsp;=&gt;&nbsp;j.Kid&nbsp;==&nbsp;kid);</code></td></tr>
 <tr data-coverage="{'AllTestMethods': {'VC': '4', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">4</td><td class="rightmargin right"><code>195</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</code></td></tr>
 <tr data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><code>196</code></td><td></td><td class="lightgray"><code></code></td></tr>
 <tr data-coverage="{'AllTestMethods': {'VC': '8', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">8</td><td class="rightmargin right"><code>197</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;result;</code></td></tr>
@@ -242,6 +242,6 @@
 <tr data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><code>200</code></td><td></td><td class="lightgray"><code>}</code></td></tr>
 </tbody>
 </table>
-<div class="footer">Generated by: ReportGenerator 2.3.5.0<br />13-01-16 - 23:34:21<br /><a href="https://github.com/danielpalme/ReportGenerator">GitHub</a> | <a href="http://www.palmmedia.de">www.palmmedia.de</a></div></div>
+<div class="footer">Generated by: ReportGenerator 2.3.5.0<br />14/01/2016 - 17:50:00<br /><a href="https://github.com/danielpalme/ReportGenerator">GitHub</a> | <a href="http://www.palmmedia.de">www.palmmedia.de</a></div></div>
 <script type="text/javascript" src="combined.js"></script>
 </body></html>

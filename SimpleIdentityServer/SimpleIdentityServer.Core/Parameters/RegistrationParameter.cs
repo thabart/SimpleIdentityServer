@@ -74,9 +74,9 @@ namespace SimpleIdentityServer.Core.Parameters
 
         public string TokenEndPointAuthSigningAlg { get; set; }
 
-        public string DefaultMaxAge { get; set; }
+        public double DefaultMaxAge { get; set; }
 
-        public string RequireAuthTime { get; set; }
+        public bool RequireAuthTime { get; set; }
 
         public string DefaultAcrValues { get; set; }
 

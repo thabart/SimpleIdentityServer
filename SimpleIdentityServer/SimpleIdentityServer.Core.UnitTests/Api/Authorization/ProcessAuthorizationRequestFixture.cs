@@ -27,6 +27,7 @@ using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Mapping;
 using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Core.Jwt.Serializer;
+using JwsAlg = SimpleIdentityServer.Core.Jwt.JwsAlg;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 {
@@ -339,7 +340,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                 }
             };
 
-            authorizationParameter.IdTokenHint = _jwtGenerator.Sign(jwtPayload, clientId);
+            authorizationParameter.IdTokenHint = _jwtGenerator.Sign(jwtPayload, JwsAlg.RS256);
 
             // ACT
             var exception = Assert.Throws<IdentityServerExceptionWithState>(() => _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal));
@@ -399,7 +400,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                 }
             };
             _simpleIdentityServerConfiguratorStub.Setup(s => s.GetIssuerName()).Returns(issuerName);
-            authorizationParameter.IdTokenHint = _jwtGenerator.Sign(jwtPayload, clientId);
+            authorizationParameter.IdTokenHint = _jwtGenerator.Sign(jwtPayload, JwsAlg.RS256);
 
             // ACT
             var exception = Assert.Throws<IdentityServerExceptionWithState>(() => _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal));

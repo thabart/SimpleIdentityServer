@@ -22,6 +22,7 @@ using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
+using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.JwtToken;
@@ -53,7 +54,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
         private readonly IAuthenticateClient _authenticateClient;
 
-        private readonly IJwtGenerator _jwtGenerator;
+        private readonly IClientHelper _clientHelper;
 
         private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
 
@@ -64,7 +65,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
             IGrantedTokenRepository grantedTokenRepository,
             IAuthenticateClient authenticateClient,
-            IJwtGenerator jwtGenerator,
+            IClientHelper clientHelper,
             ISimpleIdentityServerEventSource simpleIdentityServerEventSource)
         {
             _clientValidator = clientValidator;
@@ -73,7 +74,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
             _grantedTokenRepository = grantedTokenRepository;
             _authenticateClient = authenticateClient;
-            _jwtGenerator = jwtGenerator;
+            _clientHelper = clientHelper;
             _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
         }
 
@@ -83,7 +84,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
         {
             if (authorizationCodeGrantTypeParameter == null)
             {
-                throw new ArgumentNullException("the authorization code grant-type parameter cannot be null");
+                throw new ArgumentNullException("authorizationCodeGrantTypeParameter");
             }
 
             var authorizationCode = ValidateParameter(
@@ -113,9 +114,9 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
             if (grantedToken.IdTokenPayLoad != null)
             {
-                grantedToken.IdToken = GenerateIdToken(
-                    grantedToken.IdTokenPayLoad,
-                    grantedToken.ClientId);
+                grantedToken.IdToken = _clientHelper.GenerateIdToken(
+                    grantedToken.ClientId,
+                    grantedToken.IdTokenPayLoad);
             }
 
             return grantedToken;
@@ -211,22 +212,6 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             }
 
             return result;
-        }
-        
-        /// <summary>
-        /// Generate the JWS payload for identity token.
-        /// If at least one claim is defined then returns the filtered result
-        /// Otherwise returns the default payload based on the scopes.
-        /// </summary>
-        /// <param name="jwsPayload"></param>
-        /// <param name="clientId"></param>
-        /// <returns></returns>
-        private string GenerateIdToken(
-            JwsPayload jwsPayload,
-            string clientId)
-        {
-            var idToken = _jwtGenerator.Sign(jwsPayload, clientId);
-            return _jwtGenerator.Encrypt(idToken, clientId);
         }
         
         private static string[] GetParameters(string authorizationHeaderValue)

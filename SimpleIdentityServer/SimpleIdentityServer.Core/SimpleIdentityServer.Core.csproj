@@ -210,12 +210,14 @@
     <Compile Include="Exceptions\CollectionExtensions.cs" />
     <Compile Include="Extensions\AlgorithmExtensions.cs" />
     <Compile Include="Extensions\ClaimsParameterExtensions.cs" />
+    <Compile Include="Extensions\ClientExtensions.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\DateTimeOffsetExtensions.cs" />
     <Compile Include="Extensions\ResourceOwnerExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Factories\HttpClientFactory.cs" />
     <Compile Include="Helpers\AuthorizationFlowHelper.cs" />
+    <Compile Include="Helpers\ClientHelper.cs" />
     <Compile Include="Helpers\ConsentHelper.cs" />
     <Compile Include="JwtToken\JwtGenerator.cs" />
     <Compile Include="JwtToken\JwtParser.cs" />

@@ -817,7 +817,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             // ARRANGE
             InitializeMockObjects();
             var client = FakeDataSource.Instance().Clients.First();
-            client.IdTokenSignedTResponseAlg = "none";
+            client.IdTokenSignedResponseAlg = "none";
             var jwsPayload = new JwsPayload();
             var authorizationParameter = new AuthorizationParameter
             {
@@ -839,7 +839,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             // ARRANGE
             InitializeMockObjects();
             var client = FakeDataSource.Instance().Clients.First();
-            client.IdTokenSignedTResponseAlg = "RS256";
+            client.IdTokenSignedResponseAlg = Jwt.Constants.JwsAlgNames.RS256;
             var jwsPayload = new JwsPayload();
             var authorizationParameter = new AuthorizationParameter
             {
@@ -861,7 +861,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             // ARRANGE
             InitializeMockObjects();
             var client = FakeDataSource.Instance().Clients.First();
-            client.IdTokenSignedTResponseAlg = "RS384";
+            client.IdTokenSignedResponseAlg = Jwt.Constants.JwsAlgNames.RS384;
             var jwsPayload = new JwsPayload();
             var authorizationParameter = new AuthorizationParameter
             {
@@ -883,7 +883,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             // ARRANGE
             InitializeMockObjects();
             var client = FakeDataSource.Instance().Clients.First();
-            client.IdTokenSignedTResponseAlg = "RS512";
+            client.IdTokenSignedResponseAlg = Jwt.Constants.JwsAlgNames.RS512;
             var jwsPayload = new JwsPayload();
             var authorizationParameter = new AuthorizationParameter
             {
@@ -933,7 +933,8 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 
             // ACT
             var jwe = _jwtGenerator.Encrypt(jws,
-                client.ClientId);
+                JweAlg.RSA1_5,
+                JweEnc.A128CBC_HS256);
 
             // ASSERT
             Assert.IsNotEmpty(jwe);
@@ -973,7 +974,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 
             // ACT
             var jws = _jwtGenerator.Sign(jwsPayload,
-                client.ClientId);
+                JwsAlg.RS256);
 
             // ASSERT
             Assert.IsNotEmpty(jws);
