@@ -6,6 +6,7 @@ using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Converter;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
+using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
 using System;
@@ -21,6 +22,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
         private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSourceFake;
 
         private Mock<IJsonWebKeyConverter> _jsonWebKeyConverterFake;
+
+        private Mock<IClientRepository> _clientRepositoryFake;
 
         private IRegisterClientAction _registerClientAction;
 
@@ -44,9 +47,12 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
             {
                 ClientName = clientName
             };
+            var client = new Client();
+            _clientRepositoryFake.Setup(c => c.InsertClient(It.IsAny<Client>()))
+                .Callback<Client>(c => client = c);
 
             // ACT
-            var client = _registerClientAction.Execute(registrationParameter);
+            _registerClientAction.Execute(registrationParameter);
 
             // ASSERT
             _registrationParameterValidatorFake.Verify(r => r.Validate(registrationParameter));
@@ -75,9 +81,12 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
                 ClientName = clientName,
                 IdTokenEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5
             };
+            var client = new Client();
+            _clientRepositoryFake.Setup(c => c.InsertClient(It.IsAny<Client>()))
+                .Callback<Client>(c => client = c);
 
             // ACT
-            var client = _registerClientAction.Execute(registrationParameter);
+            _registerClientAction.Execute(registrationParameter);
 
             // ASSERT
             Assert.IsTrue(client.IdTokenEncryptedResponseEnc == Jwt.Constants.JweEncNames.A128CBC_HS256);
@@ -95,9 +104,12 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
                 ClientName = clientName,
                 UserInfoEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5
             };
+            var client = new Client();
+            _clientRepositoryFake.Setup(c => c.InsertClient(It.IsAny<Client>()))
+                .Callback<Client>(c => client = c);
 
             // ACT
-            var client = _registerClientAction.Execute(registrationParameter);
+            _registerClientAction.Execute(registrationParameter);
 
             // ASSERT
             Assert.IsTrue(client.UserInfoEncryptedResponseEnc == Jwt.Constants.JweEncNames.A128CBC_HS256);
@@ -114,9 +126,12 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
                 ClientName = clientName,
                 RequestObjectEncryptionAlg = Jwt.Constants.JweAlgNames.RSA1_5
             };
+            var client = new Client();
+            _clientRepositoryFake.Setup(c => c.InsertClient(It.IsAny<Client>()))
+                .Callback<Client>(c => client = c);
 
             // ACT
-            var client = _registerClientAction.Execute(registrationParameter);
+            _registerClientAction.Execute(registrationParameter);
 
             // ASSERT
             Assert.IsTrue(client.RequestObjectEncryptionEnc == Jwt.Constants.JweEncNames.A128CBC_HS256);
@@ -167,7 +182,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
                 RequestObjectSigningAlg = Jwt.Constants.JwsAlgNames.RS256,
                 RequestObjectEncryptionAlg = Jwt.Constants.JweAlgNames.RSA1_5,
                 RequestObjectEncryptionEnc = Jwt.Constants.JweEncNames.A128CBC_HS256,
-                TokenEndPointAuthMethod = "private_key_jwt",
+                TokenEndPointAuthMethod = "client_secret_post",
                 TokenEndPointAuthSigningAlg = Jwt.Constants.JwsAlgNames.RS256,
                 DefaultMaxAge = defaultMaxAge,
                 DefaultAcrValues = defaultAcrValues,
@@ -187,13 +202,19 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
             };
             _jsonWebKeyConverterFake.Setup(j => j.ConvertFromJson(It.IsAny<string>()))
                 .Returns(jsonWebKeys);
+            var client = new Client();
+            _clientRepositoryFake.Setup(c => c.InsertClient(It.IsAny<Client>()))
+                .Callback<Client>(c => client = c);
 
             // ACT
-            var client = _registerClientAction.Execute(registrationParameter);
+            var result = _registerClientAction.Execute(registrationParameter);
 
             // ASSERT
             _registrationParameterValidatorFake.Verify(r => r.Validate(registrationParameter));
             _simpleIdentityServerEventSourceFake.Verify(s => s.StartRegistration(clientName));
+            _clientRepositoryFake.Verify(c => c.InsertClient(It.IsAny<Client>()));
+            _simpleIdentityServerEventSourceFake.Verify(s => s.EndRegistration(It.IsAny<string>(), clientName));
+            
             Assert.IsTrue(client.ResponseTypes.Contains(ResponseType.token));
             Assert.IsTrue(client.GrantTypes.Contains(GrantType.@implicit));
             Assert.IsTrue(client.ApplicationType == ApplicationTypes.native);
@@ -213,13 +234,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
             Assert.IsTrue(client.RequestObjectSigningAlg == Jwt.Constants.JwsAlgNames.RS256);
             Assert.IsTrue(client.RequestObjectEncryptionAlg == Jwt.Constants.JweAlgNames.RSA1_5);
             Assert.IsTrue(client.RequestObjectEncryptionEnc == Jwt.Constants.JweEncNames.A128CBC_HS256);
-            Assert.IsTrue(client.TokenEndPointAuthMethod == TokenEndPointAuthenticationMethods.private_key_jwt);
+            Assert.IsTrue(client.TokenEndPointAuthMethod == TokenEndPointAuthenticationMethods.client_secret_post);
             Assert.IsTrue(client.TokenEndPointAuthSigningAlg == Jwt.Constants.JwsAlgNames.RS256);
             Assert.IsTrue(client.DefaultMaxAge == defaultMaxAge);
             Assert.IsTrue(client.DefaultAcrValues == defaultAcrValues);
             Assert.IsTrue(client.RequireAuthTime == requireAuthTime);
             Assert.IsTrue(client.InitiateLoginUri == initiateLoginUri);
             Assert.IsTrue(client.RequestUris.First() == requestUri);
+            Assert.IsNotEmpty(result.ClientSecret);
         }
 
         private void InitializeFakeObjects()
@@ -227,10 +249,12 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
             _registrationParameterValidatorFake = new Mock<IRegistrationParameterValidator>();
             _simpleIdentityServerEventSourceFake = new Mock<ISimpleIdentityServerEventSource>();
             _jsonWebKeyConverterFake = new Mock<IJsonWebKeyConverter>();
+            _clientRepositoryFake = new Mock<IClientRepository>();
             _registerClientAction = new RegisterClientAction(
                 _registrationParameterValidatorFake.Object,
                 _simpleIdentityServerEventSourceFake.Object,
-                _jsonWebKeyConverterFake.Object);
+                _jsonWebKeyConverterFake.Object,
+                _clientRepositoryFake.Object);
         }
     }
 }

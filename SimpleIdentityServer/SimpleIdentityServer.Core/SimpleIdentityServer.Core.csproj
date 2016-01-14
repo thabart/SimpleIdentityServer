@@ -230,6 +230,7 @@
     <Compile Include="Repositories\IJwtBearerClientRepository.cs" />
     <Compile Include="Repositories\ITranslationRepository.cs" />
     <Compile Include="Results\DiscoveryInformation.cs" />
+    <Compile Include="Results\RegistrationResponse.cs" />
     <Compile Include="Translation\TranslationManager.cs" />
     <Compile Include="Validators\AuthorizationCodeGrantTypeParameterAuthEdpValidator.cs" />
     <Compile Include="Validators\AuthorizationCodeGrantTypeParameterTokenEdpValidator.cs" />

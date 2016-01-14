@@ -24,6 +24,8 @@ using SimpleIdentityServer.Core.Api.Discovery;
 using SimpleIdentityServer.Core.Api.Discovery.Actions;
 using SimpleIdentityServer.Core.Api.Jwks;
 using SimpleIdentityServer.Core.Api.Jwks.Actions;
+using SimpleIdentityServer.Core.Api.Registration;
+using SimpleIdentityServer.Core.Api.Registration.Actions;
 using SimpleIdentityServer.Core.Api.Token;
 using SimpleIdentityServer.Core.Api.Token.Actions;
 using SimpleIdentityServer.Core.Authenticate;
@@ -68,6 +70,7 @@ namespace SimpleIdentityServer.Core
             register.RegisterType<IResourceOwnerGrantTypeParameterValidator, ResourceOwnerGrantTypeParameterValidator>();
             register.RegisterType<IAuthorizationCodeGrantTypeParameterTokenEdpValidator,
                 AuthorizationCodeGrantTypeParameterTokenEdpValidator>();
+            register.RegisterType<IRegistrationParameterValidator, RegistrationParameterValidator>();
             register.RegisterType<IProtector, Protector.Protector>();
             register.RegisterType<ICompressor, Compressor>();
             register.RegisterType<IEncoder, Encoder>();
@@ -93,6 +96,9 @@ namespace SimpleIdentityServer.Core
             register.RegisterType<IConsentActions, ConsentActions>();
             register.RegisterType<IConfirmConsentAction, ConfirmConsentAction>();
             register.RegisterType<IDisplayConsentAction, DisplayConsentAction>();
+
+            register.RegisterType<IRegisterClientAction, RegisterClientAction>();
+            register.RegisterType<IRegistrationActions, RegistrationActions>();
 
             register.RegisterType<IJwksActions, JwksActions>();
             register.RegisterType<IGetSetOfPublicKeysUsedToValidateJwsAction, GetSetOfPublicKeysUsedToValidateJwsAction>();

@@ -14,20 +14,35 @@
 // limitations under the License.
 #endregion
 
+using System;
+using SimpleIdentityServer.Core.Api.Registration.Actions;
 using SimpleIdentityServer.Core.Parameters;
+using SimpleIdentityServer.Core.Results;
 
 namespace SimpleIdentityServer.Core.Api.Registration
 {
     public interface IRegistrationActions
     {
-        
+        RegistrationResponse PostRegistration(RegistrationParameter registrationParameter);
     }
 
-    public class RegistrationActions
+    public class RegistrationActions : IRegistrationActions
     {
-        public void PostRegistration(RegistrationParameter parameter)
+        private readonly IRegisterClientAction _registerClientAction;
+
+        public RegistrationActions(IRegisterClientAction registerClientAction)
         {
-            
+            _registerClientAction = registerClientAction;
+        }
+
+        public RegistrationResponse PostRegistration(RegistrationParameter registrationParameter)
+        {
+            if (registrationParameter == null)
+            {
+                throw new ArgumentNullException("registrationParameter");
+            }
+
+            return _registerClientAction.Execute(registrationParameter);
         }
     }
 }

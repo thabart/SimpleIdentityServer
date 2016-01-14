@@ -216,6 +216,19 @@ namespace SimpleIdentityServer.Core
             public static string RequestUriName = "request_uri";
         }
 
+        /// <summary>
+        /// Read this RFC for more information
+        /// </summary>
+        public static class StandardRegistrationResponseNames
+        {
+            public const string ClientId = "client_id";
+            public const string ClientSecret = "client_secret";
+            public const string RegistrationAccessToken = "registration_access_token";
+            public const string RegistrationClientUri = "registration_client_uri";
+            public const string ClientIdIssuedAt = "client_id_issued_at";
+            public const string ClientSecretExpiresAt = "client_secret_expires_at";
+        }
+
         public static class StandardRegistrationRequestParameterNames
         {
             public const string RedirectUris = "redirect_uris";

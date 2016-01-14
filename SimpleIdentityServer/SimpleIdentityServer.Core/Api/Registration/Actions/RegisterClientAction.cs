@@ -15,9 +15,13 @@
 #endregion
 
 using System;
+using System.Globalization;
+using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Jwt.Converter;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
+using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
 using System.Linq;
@@ -27,7 +31,7 @@ namespace SimpleIdentityServer.Core.Api.Registration.Actions
 {
     public interface IRegisterClientAction
     {
-        Client Execute(RegistrationParameter registrationParameter);
+        RegistrationResponse Execute(RegistrationParameter registrationParameter);
     }
 
     public class RegisterClientAction : IRegisterClientAction
@@ -38,17 +42,21 @@ namespace SimpleIdentityServer.Core.Api.Registration.Actions
 
         private readonly IJsonWebKeyConverter _jsonWebKeyConverter;
 
+        private readonly IClientRepository _clientRepository;
+
         public RegisterClientAction(
             IRegistrationParameterValidator registrationParameterValidator,
             ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
-            IJsonWebKeyConverter jsonWebKeyConverter)
+            IJsonWebKeyConverter jsonWebKeyConverter,
+            IClientRepository clientRepository)
         {
             _registrationParameterValidator = registrationParameterValidator;
             _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
             _jsonWebKeyConverter = jsonWebKeyConverter;
+            _clientRepository = clientRepository;
         }
 
-        public Client Execute(RegistrationParameter registrationParameter)
+        public RegistrationResponse Execute(RegistrationParameter registrationParameter)
         {
             if (registrationParameter == null)
             {
@@ -239,7 +247,26 @@ namespace SimpleIdentityServer.Core.Api.Registration.Actions
                 client.TokenEndPointAuthSigningAlg = string.Empty;
             }
 
-            return client;
+            var result = new RegistrationResponse
+            {
+                ClientId = Guid.NewGuid().ToString(),
+                ClientSecretExpiresAt = 0,
+                ClientIdIssuedAt = DateTime.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture)
+            };
+
+            if (client.TokenEndPointAuthMethod != TokenEndPointAuthenticationMethods.private_key_jwt)
+            {
+                result.ClientSecret = Guid.NewGuid().ToString();
+                client.ClientSecret = result.ClientSecret;
+            }
+
+            client.ClientId = result.ClientId;
+            _clientRepository.InsertClient(client);
+
+            _simpleIdentityServerEventSource.EndRegistration(result.ClientId, 
+                client.ClientName);
+
+            return result;
         }
     }
 }
