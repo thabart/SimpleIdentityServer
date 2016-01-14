@@ -416,13 +416,15 @@ namespace SimpleIdentityServer.Core
             public static List<string> SupportedJweEncs = new List<string>
             {
                 Jwt.Constants.JweEncNames.A128CBC_HS256
-            }; 
+            };
 
             public static List<TokenEndPointAuthenticationMethods> SupportedTokenEndPointAuthenticationMethods = new List
                 <TokenEndPointAuthenticationMethods>
             {
                 TokenEndPointAuthenticationMethods.client_secret_basic,
-                TokenEndPointAuthenticationMethods.client_secret_post
+                TokenEndPointAuthenticationMethods.client_secret_post,
+                TokenEndPointAuthenticationMethods.client_secret_jwt,
+                TokenEndPointAuthenticationMethods.private_key_jwt
             };
 
             public static List<string> SupportedClaims = new List<string>
