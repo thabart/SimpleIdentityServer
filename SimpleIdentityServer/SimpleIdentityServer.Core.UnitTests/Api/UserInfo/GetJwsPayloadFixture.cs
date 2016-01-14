@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using SimpleIdentityServer.Core.Api.UserInfo.Actions;
 using SimpleIdentityServer.Core.Exceptions;
+using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
@@ -17,7 +18,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
 
         private Mock<IGrantedTokenRepository> _grantedTokenRepositoryFake;
 
-        private Mock<IJwtParser> _jwtParserFake;
+        private Mock<IJwtGenerator> _jwtGeneratorFake;
 
         private Mock<IClientRepository> _clientRepositoryFake;
 
@@ -105,16 +106,49 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
             Assert.IsNotNull(result);
         }
 
+        [Test]
+        public void When_Algorithms_For_Sign_And_Encrypt_Are_Specified_Then_Functions_Are_Called()
+        {            
+            // ARRANGE
+            InitializeFakeObjects();
+            string errorMessageCode,
+                errorMessageDescription;
+            var grantedToken = new GrantedToken
+            {
+                UserInfoPayLoad = new Jwt.JwsPayload()
+            };
+            var client = new Client
+            {
+                UserInfoSignedResponseAlg = Jwt.Constants.JwsAlgNames.RS256,
+                UserInfoEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5
+            };
+            _grantedTokenValidatorFake.Setup(g => g.CheckAccessToken(It.IsAny<string>(), out errorMessageCode, out errorMessageDescription))
+                .Returns(true);
+            _grantedTokenRepositoryFake.Setup(g => g.GetToken(It.IsAny<string>()))
+                .Returns(grantedToken);
+            _clientRepositoryFake.Setup(c => c.GetClientById(It.IsAny<string>()))
+                .Returns(client);
+
+            // ACT
+            var result = _getJwsPayload.Execute("access_token");
+
+            // ASSERT
+            _jwtGeneratorFake.Verify(j => j.Sign(It.IsAny<JwsPayload>(), It.IsAny<JwsAlg>()));
+            _jwtGeneratorFake.Verify(j => j.Encrypt(It.IsAny<string>(),
+                It.IsAny<JweAlg>(),
+                JweEnc.A128CBC_HS256));
+        }
+
         private void InitializeFakeObjects()
         {
             _grantedTokenValidatorFake = new Mock<IGrantedTokenValidator>();
             _grantedTokenRepositoryFake = new Mock<IGrantedTokenRepository>();
-            _jwtParserFake = new Mock<IJwtParser>();
+            _jwtGeneratorFake = new Mock<IJwtGenerator>();
             _clientRepositoryFake = new Mock<IClientRepository>();
             _getJwsPayload = new GetJwsPayload(
                 _grantedTokenValidatorFake.Object,
                 _grantedTokenRepositoryFake.Object,
-                _jwtParserFake.Object,
+                _jwtGeneratorFake.Object,
                 _clientRepositoryFake.Object);
         }
     }

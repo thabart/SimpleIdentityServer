@@ -18,7 +18,6 @@ using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Validators;
 using System;
@@ -36,19 +35,19 @@ namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
 
         private readonly IGrantedTokenRepository _grantedTokenRepository;
 
-        private readonly IJwtParser _jwtParser;
+        private readonly IJwtGenerator _jwtGenerator;
 
         private readonly IClientRepository _clientRepository;
 
         public GetJwsPayload(
             IGrantedTokenValidator grantedTokenValidator,
             IGrantedTokenRepository grantedTokenRepository,
-            IJwtParser jwtParser,
+            IJwtGenerator jwtGenerator,
             IClientRepository clientRepository)
         {
             _grantedTokenValidator = grantedTokenValidator;
             _grantedTokenRepository = grantedTokenRepository;
-            _jwtParser = jwtParser;
+            _jwtGenerator = jwtGenerator;
             _clientRepository = clientRepository;
         }
 
@@ -73,10 +72,27 @@ namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
             var grantedToken = _grantedTokenRepository.GetToken(accessToken);
             var client = _clientRepository.GetClientById(grantedToken.ClientId);
             var signedResponseAlg = client.GetUserInfoSignedResponseAlg();
+            var userInformationPayload = grantedToken.UserInfoPayLoad;
             if (signedResponseAlg == null ||
                 signedResponseAlg.Value == JwsAlg.none)
             {
                 return grantedToken.UserInfoPayLoad;
+            }
+
+            var jws = _jwtGenerator.Sign(userInformationPayload,
+                signedResponseAlg.Value);
+            var encryptedResponseAlg = client.GetUserInfoEncryptedResponseAlg();
+            var encryptedResponseEnc = client.GetUserInfoEncryptedResponseEnc();
+            if (encryptedResponseAlg != null)
+            {
+                if (encryptedResponseEnc == null)
+                {
+                    encryptedResponseEnc = JweEnc.A128CBC_HS256;
+                }
+
+                _jwtGenerator.Encrypt(jws,
+                    encryptedResponseAlg.Value,
+                    encryptedResponseEnc.Value);
             }
 
             return null;
