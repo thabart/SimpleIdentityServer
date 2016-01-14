@@ -13,11 +13,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using SimpleIdentityServer.Core.Exceptions;
+using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.JwtToken;
+using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Validators;
+using System;
 
 namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
 {
@@ -34,18 +38,27 @@ namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
 
         private readonly IJwtParser _jwtParser;
 
+        private readonly IClientRepository _clientRepository;
+
         public GetJwsPayload(
             IGrantedTokenValidator grantedTokenValidator,
             IGrantedTokenRepository grantedTokenRepository,
-            IJwtParser jwtParser)
+            IJwtParser jwtParser,
+            IClientRepository clientRepository)
         {
             _grantedTokenValidator = grantedTokenValidator;
             _grantedTokenRepository = grantedTokenRepository;
             _jwtParser = jwtParser;
+            _clientRepository = clientRepository;
         }
 
         public JwsPayload Execute(string accessToken)
         {
+            if (string.IsNullOrWhiteSpace(accessToken))
+            {
+                throw new ArgumentNullException("accessToken");
+            }
+
             string messageErrorCode;
             string messageErrorDescription;
             // Check if the access token is still valid otherwise raise an authorization exception.
@@ -58,7 +71,15 @@ namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
             }
 
             var grantedToken = _grantedTokenRepository.GetToken(accessToken);
-            return grantedToken.UserInfoPayLoad;
+            var client = _clientRepository.GetClientById(grantedToken.ClientId);
+            var signedResponseAlg = client.GetUserInfoSignedResponseAlg();
+            if (signedResponseAlg == null ||
+                signedResponseAlg.Value == JwsAlg.none)
+            {
+                return grantedToken.UserInfoPayLoad;
+            }
+
+            return null;
         }
     }
 }
