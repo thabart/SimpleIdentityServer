@@ -298,37 +298,39 @@ this.FeatureBackground();
 #line 75
  testRunner.And("assign audiences http://localhost/identity to the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 76
- testRunner.And("expiration time 300 in seconds to the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("add json web keys 1,2 to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 77
- testRunner.And("sign the jws payload with 1 kid", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("expiration time 300 in seconds to the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 78
+ testRunner.And("sign the jws payload with 1 kid", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 79
  testRunner.And("encrypt the jws token with 2 kid, encryption algorithm A128CBC_HS256 and password" +
                     " MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 79
- testRunner.And("set the client assertion value", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 80
+ testRunner.And("set the client assertion value", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 81
  testRunner.And("set the client id MyHolidays into the request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 82
+#line 83
  testRunner.When("retrieve token via client assertion authentication", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
             TechTalk.SpecFlow.Table table13 = new TechTalk.SpecFlow.Table(new string[] {
                         "TokenType"});
             table13.AddRow(new string[] {
                         "Bearer"});
-#line 84
+#line 85
  testRunner.Then("the following token is returned", ((string)(null)), table13, "Then ");
-#line 87
+#line 88
  testRunner.And("decrypt the id_token parameter from the response", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             TechTalk.SpecFlow.Table table14 = new TechTalk.SpecFlow.Table(new string[] {
                         "Alg"});
             table14.AddRow(new string[] {
                         "none"});
-#line 88
+#line 89
  testRunner.And("the protected JWS header is returned", ((string)(null)), table14, "And ");
-#line 91
- testRunner.And("the parameter nonce with value parameterNonce is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 92
+ testRunner.And("the parameter nonce with value parameterNonce is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 93
  testRunner.And("the claim sub with value habarthierry@loki.be is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
@@ -341,11 +343,11 @@ this.FeatureBackground();
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("request an id token and access token via the authorization grant type flow. The c" +
                     "lient credentials are passed via private_key_jwt authentication method", ((string[])(null)));
-#line 95
+#line 96
 this.ScenarioSetup(scenarioInfo);
 #line 5
 this.FeatureBackground();
-#line 96
+#line 97
  testRunner.Given("the token endpoint authentication method private_key_jwt is assigned to the clien" +
                     "t MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
@@ -361,7 +363,7 @@ this.FeatureBackground();
                         "Sign",
                         "RSA",
                         "Sig"});
-#line 97
+#line 98
  testRunner.And("add json web keys", ((string)(null)), table15, "And ");
 #line hidden
             TechTalk.SpecFlow.Table table16 = new TechTalk.SpecFlow.Table(new string[] {
@@ -372,7 +374,7 @@ this.FeatureBackground();
                         "authorization_code",
                         "http://localhost",
                         "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"});
-#line 100
+#line 101
  testRunner.And("create a request to retrieve a token", ((string)(null)), table16, "And ");
 #line hidden
             TechTalk.SpecFlow.Table table17 = new TechTalk.SpecFlow.Table(new string[] {
@@ -383,37 +385,39 @@ this.FeatureBackground();
                         "MyHolidays",
                         "MyHolidays",
                         "1"});
-#line 103
+#line 104
  testRunner.And("create the JWS payload", ((string)(null)), table17, "And ");
-#line 106
- testRunner.And("assign audiences http://localhost/identity to the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 107
- testRunner.And("expiration time 300 in seconds to the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("assign audiences http://localhost/identity to the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 108
- testRunner.And("sign the jws payload with 1 kid", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("add json web keys 1 to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 109
- testRunner.And("set the client assertion value", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("expiration time 300 in seconds to the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 110
+ testRunner.And("sign the jws payload with 1 kid", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 111
+ testRunner.And("set the client assertion value", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 113
  testRunner.When("retrieve token via client assertion authentication", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
             TechTalk.SpecFlow.Table table18 = new TechTalk.SpecFlow.Table(new string[] {
                         "TokenType"});
             table18.AddRow(new string[] {
                         "Bearer"});
-#line 113
+#line 115
  testRunner.Then("the following token is returned", ((string)(null)), table18, "Then ");
-#line 116
+#line 118
  testRunner.And("decrypt the id_token parameter from the response", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             TechTalk.SpecFlow.Table table19 = new TechTalk.SpecFlow.Table(new string[] {
                         "Alg"});
             table19.AddRow(new string[] {
                         "none"});
-#line 117
+#line 119
  testRunner.And("the protected JWS header is returned", ((string)(null)), table19, "And ");
-#line 120
+#line 122
  testRunner.And("the parameter nonce with value parameterNonce is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 121
+#line 123
  testRunner.And("the claim sub with value habarthierry@loki.be is returned by the JWS payload", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();

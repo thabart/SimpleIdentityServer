@@ -73,6 +73,7 @@ Scenario: request an id token and access token via the authorization grant type 
 	| iss        | sub        | jti |
 	| MyHolidays | MyHolidays | 1   |
 	And assign audiences http://localhost/identity to the JWS payload
+	And add json web keys 1,2 to the client MyHolidays
 	And expiration time 300 in seconds to the JWS payload
 	And sign the jws payload with 1 kid
 	And encrypt the jws token with 2 kid, encryption algorithm A128CBC_HS256 and password MyHolidays
@@ -95,8 +96,8 @@ Scenario: request an id token and access token via the authorization grant type 
 Scenario: request an id token and access token via the authorization grant type flow. The client credentials are passed via private_key_jwt authentication method
 	Given the token endpoint authentication method private_key_jwt is assigned to the client MyHolidays
 	And add json web keys
-	| Kid | Alg    | Operation | Kty | Use |
-	| 1   | RS256  | Sign      | RSA | Sig |
+	| Kid | Alg   | Operation | Kty | Use |
+	| 1   | RS256 | Sign      | RSA | Sig |
 	And create a request to retrieve a token
 	| grant_type         | redirect_uri     | client_assertion_type                                  |
 	| authorization_code | http://localhost | urn:ietf:params:oauth:client-assertion-type:jwt-bearer |
@@ -104,6 +105,7 @@ Scenario: request an id token and access token via the authorization grant type 
 	| iss        | sub        | jti |
 	| MyHolidays | MyHolidays | 1   |
 	And assign audiences http://localhost/identity to the JWS payload
+	And add json web keys 1 to the client MyHolidays
 	And expiration time 300 in seconds to the JWS payload
 	And sign the jws payload with 1 kid
 	And set the client assertion value

@@ -158,6 +158,19 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             _jwsPayload.Add(Core.Jwt.Constants.StandardClaimNames.Audiences, audiences.ToArray());
         }
 
+        [Given("add json web keys (.*) to the client (.*)")]
+        public void GivenAddJsonWeKeyToTheClient(List<string> kids, string clientId)
+        {
+            var client = FakeDataSource.Instance().Clients.FirstOrDefault(c => c.ClientId == clientId);
+            client.JsonWebKeys = new List<MODELS.JsonWebKey>();
+            var jsonWebKeys = FakeDataSource.Instance().JsonWebKeys;
+            foreach (var kid in kids)
+            {
+                var jsonWebKey = jsonWebKeys.FirstOrDefault(j => j.Kid.Equals(kid));
+                client.JsonWebKeys.Add(jsonWebKey);
+            }
+        }
+
         [Given("expiration time (.*) in seconds to the JWS payload")]
         public void GivenExpirationTimeInSecondsToJwsPayload(int expirationTimeInSeconds)
         {
