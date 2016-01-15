@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
+using SimpleIdentityServer.Core.Jwt.Signature;
 
 namespace SimpleIdentityServer.Core.Results
 {
@@ -63,7 +64,7 @@ namespace SimpleIdentityServer.Core.Results
         /// The Client Json Web Key set are passed by value
         /// </summary>
         [DataMember(Name = Constants.StandardRegistrationRequestParameterNames.Jwks)]
-        public string Jwks { get; set; }
+        public JsonWebKeySet Jwks { get; set; }
 
         [DataMember(Name = Constants.StandardRegistrationRequestParameterNames.SectoreIdentifierUri)]
         public string SectorIdentifierUri { get; set; }

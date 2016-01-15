@@ -29,30 +29,19 @@ namespace SimpleIdentityServer.Core.Jwt.Converter
 {
     public interface IJsonWebKeyConverter
     {
-        IEnumerable<JsonWebKey> ConvertFromJson(string json);
+        IEnumerable<JsonWebKey> ExtractSerializedKeys(JsonWebKeySet jsonWebKeySet);
     }
 
     public class JsonWebKeyConverter : IJsonWebKeyConverter
     {
-        public IEnumerable<JsonWebKey> ConvertFromJson(string json)
+        public IEnumerable<JsonWebKey> ExtractSerializedKeys(JsonWebKeySet jsonWebKeySet)
         {
-            if (string.IsNullOrWhiteSpace(json))
+            if (jsonWebKeySet == null)
             {
-                throw new ArgumentNullException("json");
-            }
-
-            JsonWebKeySet jsonWebKeySet = null;
-            try
-            {
-                jsonWebKeySet = json.DeserializeWithJavascript<JsonWebKeySet>();
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException(ErrorDescriptions.JwksCannotBeDeserialied, ex);
+                throw new ArgumentNullException("jsonWebKeySet");
             }
             
-            if (jsonWebKeySet == null ||
-                    jsonWebKeySet.Keys == null ||
+            if (jsonWebKeySet.Keys == null ||
                     !jsonWebKeySet.Keys.Any())
             {
                 return new List<JsonWebKey>();
@@ -92,12 +81,10 @@ namespace SimpleIdentityServer.Core.Jwt.Converter
                 switch (keyType.Value.ToString())
                 {
                     case Constants.KeyTypeValues.RsaName:
-                        serializedKey = ExtractRsaKeyInformation(jsonWebKey,
-                            useEnum);
+                        serializedKey = ExtractRsaKeyInformation(jsonWebKey);
                         break;
                     case Constants.KeyTypeValues.EcName:
-                        serializedKey = ExtractEcKeyInformation(jsonWebKey,
-                            useEnum);
+                        serializedKey = ExtractEcKeyInformation(jsonWebKey);
                         break;
                 }
 
@@ -108,76 +95,63 @@ namespace SimpleIdentityServer.Core.Jwt.Converter
             return result;
         }
 
-        private static string ExtractRsaKeyInformation(Dictionary<string, object> information,
-            Use usage)
+        private static string ExtractRsaKeyInformation(Dictionary<string, object> information)
         {
-            var result = string.Empty;
-            if (usage == Use.Sig)
+            var modulusKeyPair = information.FirstOrDefault(i => i.Key == Constants.JsonWebKeyParameterNames.RsaKey.ModulusName);
+            var exponentKeyPair = information.FirstOrDefault(i => i.Key == Constants.JsonWebKeyParameterNames.RsaKey.ExponentName);
+            if (modulusKeyPair.Equals(default(KeyValuePair<string, object>)) ||
+                exponentKeyPair.Equals(default(KeyValuePair<string, object>)))
             {
-                var modulusKeyPair = information.FirstOrDefault(i => i.Key == Constants.JsonWebKeyParameterNames.RsaKey.ModulusName);
-                var exponentKeyPair = information.FirstOrDefault(i => i.Key == Constants.JsonWebKeyParameterNames.RsaKey.ExponentName);
-                if (modulusKeyPair.Equals(default(KeyValuePair<string, object>)) ||
-                    exponentKeyPair.Equals(default(KeyValuePair<string, object>)))
-                {
-                    throw new InvalidOperationException(ErrorDescriptions.CannotExtractParametersFromJsonWebKey);
-                }
-
-                var rsaParameters = new RSAParameters
-                {
-                    Modulus = modulusKeyPair.Value.ToString().Base64DecodeBytes(),
-                    Exponent = exponentKeyPair.Value.ToString().Base64DecodeBytes()
-                };
-
-                using (var rsaCryptoServiceProvider = new RSACryptoServiceProvider())
-                {
-                    rsaCryptoServiceProvider.ImportParameters(rsaParameters);
-                    return rsaCryptoServiceProvider.ToXmlString(false);
-                }
+                throw new InvalidOperationException(ErrorDescriptions.CannotExtractParametersFromJsonWebKey);
             }
-
-            return result;
+            
+            var rsaParameters = new RSAParameters
+            {
+                Modulus = modulusKeyPair.Value.ToString().Base64DecodeBytes(),
+                Exponent = exponentKeyPair.Value.ToString().Base64DecodeBytes()
+            };
+            
+            using (var rsaCryptoServiceProvider = new RSACryptoServiceProvider())
+            {
+                rsaCryptoServiceProvider.ImportParameters(rsaParameters);
+                return rsaCryptoServiceProvider.ToXmlString(false);
+            }
         }
 
-        private string ExtractEcKeyInformation(Dictionary<string, object> information,
-            Use usage)
+        private string ExtractEcKeyInformation(Dictionary<string, object> information)
         {
-            if (usage == Use.Sig)
+            var xCoordinate = information.FirstOrDefault(i => i.Key == Constants.JsonWebKeyParameterNames.EcKey.XCoordinateName);
+            var yCoordinate = information.FirstOrDefault(i => i.Key == Constants.JsonWebKeyParameterNames.EcKey.YCoordinateName);
+            if (xCoordinate.Equals(default(KeyValuePair<string, object>)) ||
+                yCoordinate.Equals(default(KeyValuePair<string, object>)))
             {
-                var xCoordinate = information.FirstOrDefault(i => i.Key == Constants.JsonWebKeyParameterNames.EcKey.XCoordinateName);
-                var yCoordinate = information.FirstOrDefault(i => i.Key == Constants.JsonWebKeyParameterNames.EcKey.YCoordinateName);
-                if (xCoordinate.Equals(default(KeyValuePair<string, object>)) ||
-                    yCoordinate.Equals(default(KeyValuePair<string, object>)))
-                {
-                    throw new InvalidOperationException(ErrorDescriptions.CannotExtractParametersFromJsonWebKey);
-                }
-
-                byte[] xCoordinateBytes,
-                    yCoordinateBytes;
-                try
-                {
-                    xCoordinateBytes = xCoordinate.Value.ToString().Base64DecodeBytes();
-                    yCoordinateBytes = yCoordinate.Value.ToString().Base64DecodeBytes();
-                }
-                catch (Exception)
-                {
-                    throw new InvalidOperationException(ErrorDescriptions.OneOfTheParameterIsNotBase64Encoded);
-                }
-
-                var cngKeySerialized = new CngKeySerialized
-                {
-                    X = xCoordinateBytes,
-                    Y = yCoordinateBytes
-                };
-
-                var serializer = new XmlSerializer(typeof(CngKeySerialized));
-                using (var writer = new StringWriter())
-                {
-                    serializer.Serialize(writer, cngKeySerialized);
-                    return writer.ToString();
-                }
+                throw new InvalidOperationException(ErrorDescriptions.CannotExtractParametersFromJsonWebKey);
             }
-
-            return string.Empty;
+            
+            byte[] xCoordinateBytes,
+                yCoordinateBytes;
+            try
+            {
+                xCoordinateBytes = xCoordinate.Value.ToString().Base64DecodeBytes();
+                yCoordinateBytes = yCoordinate.Value.ToString().Base64DecodeBytes();
+            }
+            catch (Exception)
+            {
+                throw new InvalidOperationException(ErrorDescriptions.OneOfTheParameterIsNotBase64Encoded);
+            }
+            
+            var cngKeySerialized = new CngKeySerialized
+            {
+                X = xCoordinateBytes,
+                Y = yCoordinateBytes
+            };
+            
+            var serializer = new XmlSerializer(typeof(CngKeySerialized));
+            using (var writer = new StringWriter())
+            {
+                serializer.Serialize(writer, cngKeySerialized);
+                return writer.ToString();
+            }
         }
     }
 }

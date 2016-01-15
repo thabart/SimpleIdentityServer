@@ -4,6 +4,7 @@ using NUnit.Framework;
 using SimpleIdentityServer.Core.Api.Registration.Actions;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Converter;
+using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
@@ -152,7 +153,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
             const string policyUri = "policy_uri";
             const string tosUri = "tos_uri";
             const string jwksUri = "jwks_uri";
-            const string jwks = "jwks";
             const string kid = "kid";
             const string sectorIdentifierUri = "sector_identifier_uri";
             const double defaultMaxAge = 3;
@@ -176,7 +176,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
                 PolicyUri = policyUri,
                 TosUri = tosUri,
                 JwksUri = jwksUri,
-                Jwks = jwks,
+                Jwks = new JsonWebKeySet(),
                 SectorIdentifierUri = sectorIdentifierUri,
                 IdTokenSignedResponseAlg = Jwt.Constants.JwsAlgNames.RS256,
                 IdTokenEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5,
@@ -205,7 +205,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
                     Kid = kid
                 }
             };
-            _jsonWebKeyConverterFake.Setup(j => j.ConvertFromJson(It.IsAny<string>()))
+            _jsonWebKeyConverterFake.Setup(j => j.ExtractSerializedKeys(It.IsAny<JsonWebKeySet>()))
                 .Returns(jsonWebKeys);
             var client = new Client();
             _clientRepositoryFake.Setup(c => c.InsertClient(It.IsAny<Client>()))

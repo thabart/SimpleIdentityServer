@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Core.Models;
 using System.Collections.Generic;
 
@@ -46,7 +47,7 @@ namespace SimpleIdentityServer.Core.Parameters
         /// <summary>
         /// The Client Json Web Key set are passed by value
         /// </summary>
-        public string Jwks { get; set; }
+        public JsonWebKeySet Jwks { get; set; }
 
         public string SectorIdentifierUri { get; set; }
 

@@ -120,7 +120,7 @@ namespace SimpleIdentityServer.Core.Validators
             ValidateNotMandatoryUri(parameter.TosUri, Constants.StandardRegistrationRequestParameterNames.TosUri);
             ValidateNotMandatoryUri(parameter.JwksUri, Constants.StandardRegistrationRequestParameterNames.JwksUri);
 
-            if (!string.IsNullOrWhiteSpace(parameter.Jwks))
+            if (parameter.Jwks != null)
             {
                 if (!string.IsNullOrWhiteSpace(parameter.JwksUri))
                 {

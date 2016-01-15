@@ -26,18 +26,7 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _jsonWebKeyConverter.ConvertFromJson(null));
-        }
-
-        [Test]
-        public void When_Passing_Invalid_Json_Then_An_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-
-            // ACT & ASSERTS
-            var ex = Assert.Throws<InvalidOperationException>(() => _jsonWebKeyConverter.ConvertFromJson("invalid"));
-            Assert.IsTrue(ex.Message == ErrorDescriptions.JwksCannotBeDeserialied);
+            Assert.Throws<ArgumentNullException>(() => _jsonWebKeyConverter.ExtractSerializedKeys(null));
         }
 
         [Test]
@@ -59,10 +48,8 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
                 }
             };
 
-            var json = jsonWebKeySet.SerializeWithJavascript();
-
             // ACT & ASSERTS
-            var ex = Assert.Throws<InvalidOperationException>(() => _jsonWebKeyConverter.ConvertFromJson(json));
+            var ex = Assert.Throws<InvalidOperationException>(() => _jsonWebKeyConverter.ExtractSerializedKeys(jsonWebKeySet));
             Assert.IsTrue(ex.Message == ErrorDescriptions.JwkIsInvalid);
         }
 
@@ -93,10 +80,8 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
                 }
             };
 
-            var json = jsonWebKeySet.SerializeWithJavascript();
-
             // ACT & ASSERTS
-            var ex = Assert.Throws<InvalidOperationException>(() => _jsonWebKeyConverter.ConvertFromJson(json));
+            var ex = Assert.Throws<InvalidOperationException>(() => _jsonWebKeyConverter.ExtractSerializedKeys(jsonWebKeySet));
             Assert.IsTrue(ex.Message == ErrorDescriptions.JwkIsInvalid);
         }
 
@@ -130,7 +115,7 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
             var json = jsonWebKeySet.SerializeWithJavascript();
 
             // ACT & ASSERTS
-            var ex = Assert.Throws<InvalidOperationException>(() => _jsonWebKeyConverter.ConvertFromJson(json));
+            var ex = Assert.Throws<InvalidOperationException>(() => _jsonWebKeyConverter.ExtractSerializedKeys(jsonWebKeySet));
             Assert.IsTrue(ex.Message == ErrorDescriptions.JwkIsInvalid);
         }
 
@@ -164,7 +149,7 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
             var json = jsonWebKeySet.SerializeWithJavascript();
 
             // ACT & ASSERTS
-            var ex = Assert.Throws<InvalidOperationException>(() => _jsonWebKeyConverter.ConvertFromJson(json));
+            var ex = Assert.Throws<InvalidOperationException>(() => _jsonWebKeyConverter.ExtractSerializedKeys(jsonWebKeySet));
             Assert.IsTrue(ex.Message == ErrorDescriptions.CannotExtractParametersFromJsonWebKey);
         }
 
@@ -198,7 +183,7 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
             var json = jsonWebKeySet.SerializeWithJavascript();
 
             // ACT & ASSERTS
-            var ex = Assert.Throws<InvalidOperationException>(() => _jsonWebKeyConverter.ConvertFromJson(json));
+            var ex = Assert.Throws<InvalidOperationException>(() => _jsonWebKeyConverter.ExtractSerializedKeys(jsonWebKeySet));
             Assert.IsTrue(ex.Message == ErrorDescriptions.CannotExtractParametersFromJsonWebKey);
         }
 
@@ -240,7 +225,7 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
             var json = jsonWebKeySet.SerializeWithJavascript();
 
             // ACT & ASSERTS
-            var ex = Assert.Throws<InvalidOperationException>(() => _jsonWebKeyConverter.ConvertFromJson(json));
+            var ex = Assert.Throws<InvalidOperationException>(() => _jsonWebKeyConverter.ExtractSerializedKeys(jsonWebKeySet));
             Assert.IsTrue(ex.Message == ErrorDescriptions.OneOfTheParameterIsNotBase64Encoded);
         }
 
@@ -281,10 +266,8 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
 
                 var expectedXml = rsa.ToXmlString(false);
 
-                var json = jsonWebKeySet.SerializeWithJavascript();
-
                 // ACT & ASSERTS
-                var result = _jsonWebKeyConverter.ConvertFromJson(json);
+                var result = _jsonWebKeyConverter.ExtractSerializedKeys(jsonWebKeySet);
                 Assert.IsNotNull(result);
                 Assert.IsTrue(result.Count() == 1);
                 Assert.IsTrue(result.First().SerializedKey == expectedXml);
@@ -333,7 +316,6 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
                 X = xCoordinate.Base64DecodeBytes(),
                 Y = yCoordinate.Base64DecodeBytes()
             };
-            var json = jsonWebKeySet.SerializeWithJavascript();
             var serializer = new XmlSerializer(typeof(CngKeySerialized));
             var serializedKeys = string.Empty;
             using (var writer = new StringWriter())
@@ -343,7 +325,7 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
             }
 
             // ACT & ASSERTS
-            var result = _jsonWebKeyConverter.ConvertFromJson(json);
+            var result = _jsonWebKeyConverter.ExtractSerializedKeys(jsonWebKeySet);
             Assert.IsNotNull(result);
             Assert.IsTrue(result.Count() == 1);
             Assert.IsTrue(result.First().SerializedKey == serializedKeys);

@@ -20,10 +20,9 @@ using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Jwt;
-using SimpleIdentityServer.Core.Jwt.Encrypt;
 using SimpleIdentityServer.Core.Jwt.Signature;
+using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Validators;
 
 namespace SimpleIdentityServer.Core.Authenticate
@@ -57,28 +56,24 @@ namespace SimpleIdentityServer.Core.Authenticate
 
     public class ClientAssertionAuthentication : IClientAssertionAuthentication
     {
-        private readonly IJweParser _jweParser;
-
         private readonly IJwsParser _jwsParser;
-
-        private readonly IJsonWebKeyRepository _jsonWebKeyRepository;
-
+        
         private readonly ISimpleIdentityServerConfigurator _simpleIdentityServerConfigurator;
 
         private readonly IClientValidator _clientValidator;
 
+        private readonly IJwtParser _jwtParser;
+
         public ClientAssertionAuthentication(
-            IJweParser jweParser,
             IJwsParser jwsParser,
-            IJsonWebKeyRepository jsonWebKeyRepository,
             ISimpleIdentityServerConfigurator simpleIdentityServerConfigurator,
-            IClientValidator clientValidator)
+            IClientValidator clientValidator,
+            IJwtParser jwtParser)
         {
-            _jweParser = jweParser;
             _jwsParser = jwsParser;
-            _jsonWebKeyRepository = jsonWebKeyRepository;
             _simpleIdentityServerConfigurator = simpleIdentityServerConfigurator;
             _clientValidator = clientValidator;
+            _jwtParser = jwtParser;
         }
 
         /// <summary>
@@ -91,36 +86,37 @@ namespace SimpleIdentityServer.Core.Authenticate
             AuthenticateInstruction instruction,
             out string messageError)
         {
-            var clientAssertionSplitted = new string[0];
-            if (instruction != null)
+            if (instruction == null)
             {
-                var clientAssertion = instruction.ClientAssertion;
-                clientAssertionSplitted = clientAssertion.Split('.');
+                throw new ArgumentNullException("instruction");
             }
-
-            if (clientAssertionSplitted.Count() != 3)
+            
+            var clientAssertion = instruction.ClientAssertion;
+            var isJwsToken = _jwtParser.IsJwsToken(clientAssertion);
+            if (!isJwsToken)
             {
                 messageError = ErrorDescriptions.TheClientAssertionIsNotAJwsToken;
                 return null;
             }
 
             var jws = instruction.ClientAssertion;
-            var jwsHeader = _jwsParser.GetHeader(jws);
-            if (jwsHeader == null)
+            var jwsPayload = _jwsParser.GetPayload(jws);
+            if (jwsPayload == null)
             {
-                messageError = ErrorDescriptions.TheHeaderCannotBeExtractedFromJwsToken;
+                messageError = ErrorDescriptions.TheJwsPayloadCannotBeExtracted;
                 return null;
             }
 
-            var jwsJsonWebKey = _jsonWebKeyRepository.GetByKid(jwsHeader.Kid);
-            var payLoad = _jwsParser.ValidateSignature(jws, jwsJsonWebKey);
-            if (payLoad == null)
+            var clientId = jwsPayload.Issuer;
+            var payload = _jwtParser.UnSign(jws,
+                clientId);
+            if (payload == null)
             {
                 messageError = ErrorDescriptions.TheSignatureIsNotCorrect;
                 return null;
             }
 
-            return ValidateJwsPayLoad(payLoad, out messageError);
+            return ValidateJwsPayLoad(payload, out messageError);
         }
 
         /// <summary>
@@ -135,58 +131,46 @@ namespace SimpleIdentityServer.Core.Authenticate
             string clientSecret,
             out string messageError)
         {
-            var clientAssertionSplitted = new string[0];
-            if (instruction != null)
+            if (instruction == null)
             {
-                var clientAssertion = instruction.ClientAssertion;
-                clientAssertionSplitted = clientAssertion.Split('.');
+                throw new ArgumentNullException("instruction");
             }
 
-            if (clientAssertionSplitted.Count() != 5)
+            var clientAssertion = instruction.ClientAssertion;
+            var isJweToken = _jwtParser.IsJweToken(clientAssertion);
+            if (!isJweToken)
             {
                 messageError = ErrorDescriptions.TheClientAssertionIsNotAJweToken;
                 return null;
             }
 
             var jwe = instruction.ClientAssertion;
-            var jweHeader = _jweParser.GetHeader(jwe);
-            if (jweHeader == null)
+            var clientId = instruction.ClientIdFromHttpRequestBody;
+            var jws = _jwtParser.DecryptWithPassword(jwe,
+                clientId,
+                clientSecret);
+            if (string.IsNullOrWhiteSpace(jws))
             {
-                messageError = ErrorDescriptions.TheHeaderCannotBeExtractedFromJweToken;
+                messageError = ErrorDescriptions.TheJweTokenCannotBeDecrypted;
                 return null;
             }
 
-            var jweJsonWebKey = _jsonWebKeyRepository.GetByKid(jweHeader.Kid);
-            var decryptedResult = _jweParser.ParseByUsingSymmetricPassword(jwe, jweJsonWebKey, clientSecret);
-            if (string.IsNullOrWhiteSpace(decryptedResult))
-            {
-                messageError = ErrorDescriptions.TheClientAssertionCannotBeDecrypted;
-                return null;
-            }
-
-            var decryptedResultSplitted = decryptedResult.Split('.');
-            if (decryptedResultSplitted.Count() != 3)
+            var isJwsToken = _jwtParser.IsJwsToken(jws);
+            if (!isJwsToken)
             {
                 messageError = ErrorDescriptions.TheClientAssertionIsNotAJwsToken;
                 return null;
             }
-            
-            var jwsHeader = _jwsParser.GetHeader(decryptedResult);
-            if (jwsHeader == null)
+
+            var jwsPayload = _jwtParser.UnSign(jws,
+                clientId);
+            if (jwsPayload == null)
             {
-                messageError = ErrorDescriptions.TheHeaderCannotBeExtractedFromJwsToken;
+                messageError = ErrorDescriptions.TheJwsPayloadCannotBeExtracted;
                 return null;
             }
 
-            var jwsJsonWebKey = _jsonWebKeyRepository.GetByKid(jwsHeader.Kid);
-            var payLoad = _jwsParser.ValidateSignature(decryptedResult, jwsJsonWebKey);
-            if (payLoad == null)
-            {
-                messageError = ErrorDescriptions.TheSignatureIsNotCorrect;
-                return null;
-            }
-
-            return ValidateJwsPayLoad(payLoad, out messageError);
+            return ValidateJwsPayLoad(jwsPayload, out messageError);
         }
 
         /// <summary>
@@ -202,29 +186,27 @@ namespace SimpleIdentityServer.Core.Authenticate
             }
 
             var clientAssertion = instruction.ClientAssertion;
-            var clientAssertionSplitted = clientAssertion.Split('.');
-            if (clientAssertionSplitted.Count() != 5
-                && clientAssertionSplitted.Count() != 3)
+            var isJweToken = _jwtParser.IsJweToken(clientAssertion);
+            var isJwsToken = _jwtParser.IsJwsToken(clientAssertion);
+            if (isJweToken && isJwsToken)
             {
                 return string.Empty;
             }
             
             // It's a JWE token then return the client_id from the HTTP body
-            if (clientAssertionSplitted.Count() == 5)
+            if (isJweToken)
             {
                 return instruction.ClientIdFromHttpRequestBody;
             }
 
             // It's a JWS token then return the client_id from the token.
-            var jwsHeader = _jwsParser.GetHeader(clientAssertion);
-            var jwsJsonWebKey = _jsonWebKeyRepository.GetByKid(jwsHeader.Kid);
-            var payLoad = _jwsParser.ValidateSignature(clientAssertion, jwsJsonWebKey);
-            if (payLoad == null)
+            var payload = _jwsParser.GetPayload(clientAssertion);
+            if (payload == null)
             {
                 return string.Empty;
             }
 
-            return payLoad.Issuer;
+            return payload.Issuer;
         }
 
         private Client ValidateJwsPayLoad(

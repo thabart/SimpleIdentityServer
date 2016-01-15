@@ -100,7 +100,11 @@ namespace SimpleIdentityServer.Core.Errors
 
         public static string TheHeaderCannotBeExtractedFromJwsToken = "the header cannot be extracted from JWS token";
 
+        public static string TheJwsPayloadCannotBeExtracted = "the jws payload cannot be extracted";
+
         public static string TheHeaderCannotBeExtractedFromJweToken = "the header cannot be extracted from JWE token";
+
+        public static string TheJweTokenCannotBeDecrypted = "the jwe token cannot be decrypted";
 
         public static string TheClientAssertionIsNotAJwsToken = "the client assertion is not a JWS token";
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
+using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Core.Models;
@@ -274,7 +275,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
                     "https://google.fr"
                 },
                 JwksUri = "http://localhost/identity",
-                Jwks = "jwks"
+                Jwks = new JsonWebKeySet()
             };
 
             // ACT & ASSERTS
@@ -521,7 +522,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
                     "http://localhost"
                 },
                 ApplicationType = ApplicationTypes.native,
-                Jwks = "jwks",
+                Jwks = new JsonWebKeySet(),
                 IdTokenEncryptedResponseAlg = Jwt.Constants.JweAlgNames.A128KW,
                 IdTokenEncryptedResponseEnc = Jwt.Constants.JweEncNames.A128CBC_HS256,
                 UserInfoEncryptedResponseAlg = Jwt.Constants.JweAlgNames.A128KW,

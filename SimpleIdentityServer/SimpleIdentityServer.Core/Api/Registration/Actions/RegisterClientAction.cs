@@ -119,9 +119,9 @@ namespace SimpleIdentityServer.Core.Api.Registration.Actions
             client.ApplicationType = registrationParameter.ApplicationType == null ? ApplicationTypes.web
                 : registrationParameter.ApplicationType.Value;
 
-            if (!string.IsNullOrWhiteSpace(registrationParameter.Jwks))
+            if (registrationParameter.Jwks != null)
             {
-                var jsonWebKeys = _jsonWebKeyConverter.ConvertFromJson(registrationParameter.Jwks);
+                var jsonWebKeys = _jsonWebKeyConverter.ExtractSerializedKeys(registrationParameter.Jwks);
                 if (jsonWebKeys != null &&
                     jsonWebKeys.Any())
                 {
@@ -277,7 +277,7 @@ namespace SimpleIdentityServer.Core.Api.Registration.Actions
                 RequestObjectEncryptionEnc = GetDefaultValue(client.RequestObjectEncryptionEnc),
                 IdTokenSignedResponseAlg = GetDefaultValue(client.IdTokenSignedResponseAlg),
                 LogoUri = GetDefaultValue(client.LogoUri),
-                Jwks = GetDefaultValue(registrationParameter.Jwks),
+                Jwks = registrationParameter.Jwks,
                 RequireAuthTime = client.RequireAuthTime,
                 InitiateLoginUri = GetDefaultValue(client.InitiateLoginUri),
                 PolicyUri = GetDefaultValue(client.PolicyUri),
