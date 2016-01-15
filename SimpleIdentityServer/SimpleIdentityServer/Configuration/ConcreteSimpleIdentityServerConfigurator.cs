@@ -12,8 +12,7 @@ namespace SimpleIdentityServer.Api.Configuration
             var request = HttpContext.Current.Request;
             var scheme = request.Url.Scheme;
             var authority = request.Url.Authority;
-            var virtualPathRoot = HostingEnvironment.ApplicationVirtualPath;
-            return scheme + "://" + authority + virtualPathRoot;
+            return scheme + "://" + authority + "/" + Constants.EndPoints.Token;
         }
 
         /// <summary>
