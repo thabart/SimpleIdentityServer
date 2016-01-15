@@ -69,6 +69,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
             Assert.IsTrue(client.TokenEndPointAuthMethod == TokenEndPointAuthenticationMethods.client_secret_basic);
             Assert.IsTrue(client.TokenEndPointAuthSigningAlg == string.Empty);
             Assert.IsTrue(client.AllowedScopes.Contains(Constants.StandardScopes.OpenId));
+            Assert.IsTrue(client.AllowedScopes.Contains(Constants.StandardScopes.Address));
+            Assert.IsTrue(client.AllowedScopes.Contains(Constants.StandardScopes.Email));
+            Assert.IsTrue(client.AllowedScopes.Contains(Constants.StandardScopes.Phone));
+            Assert.IsTrue(client.AllowedScopes.Contains(Constants.StandardScopes.ProfileScope));
         }
 
         [Test]
@@ -244,6 +248,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
             Assert.IsTrue(client.RequestUris.First() == requestUri);
             Assert.IsNotEmpty(result.ClientSecret);
             Assert.IsTrue(client.AllowedScopes.Contains(Constants.StandardScopes.OpenId));
+            Assert.IsTrue(client.AllowedScopes.Contains(Constants.StandardScopes.Address));
+            Assert.IsTrue(client.AllowedScopes.Contains(Constants.StandardScopes.Email));
+            Assert.IsTrue(client.AllowedScopes.Contains(Constants.StandardScopes.Phone));
+            Assert.IsTrue(client.AllowedScopes.Contains(Constants.StandardScopes.ProfileScope));
         }
 
         private void InitializeFakeObjects()

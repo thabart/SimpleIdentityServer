@@ -249,7 +249,11 @@ namespace SimpleIdentityServer.Core.Api.Registration.Actions
 
             client.AllowedScopes = new List<Scope>
             {
-                Constants.StandardScopes.OpenId
+                Constants.StandardScopes.OpenId,
+                Constants.StandardScopes.ProfileScope,
+                Constants.StandardScopes.Address,
+                Constants.StandardScopes.Email,
+                Constants.StandardScopes.Phone
             };
 
             var result = new RegistrationResponse
