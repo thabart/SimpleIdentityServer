@@ -238,7 +238,7 @@ namespace SimpleIdentityServer.Core.Authenticate
             // 3. Check if the audience is correct
             if (jwsAudiences == null || 
                 !jwsAudiences.Any() || 
-                !jwsAudiences.Contains(expectedIssuer))
+                !jwsAudiences.Any(j => j.Contains(expectedIssuer)))
             {
                 messageError = ErrorDescriptions.TheAudiencePassedInJwtIsNotCorrect;
                 return null;
