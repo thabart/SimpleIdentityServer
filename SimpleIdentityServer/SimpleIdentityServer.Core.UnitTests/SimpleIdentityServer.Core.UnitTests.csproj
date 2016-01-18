@@ -95,6 +95,7 @@
     <Compile Include="Api\Registration\RegisterClientActionFixture.cs" />
     <Compile Include="Api\Registration\RegistrationActionsFixture.cs" />
     <Compile Include="Api\Token\GetTokenByAuthorizationCodeGrantTypeActionFixture.cs" />
+    <Compile Include="Api\Token\GetTokenByRefreshTokenGrantTypeActionFixture.cs" />
     <Compile Include="Api\Token\GetTokenByResourceOwnerCredentialsGrantTypeActionFixture.cs" />
     <Compile Include="Api\Token\TokenActionsFixture.cs" />
     <Compile Include="Api\UserInfo\GetJwsPayloadFixture.cs" />
@@ -122,6 +123,7 @@
     <Compile Include="Validators\AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture.cs" />
     <Compile Include="Validators\AuthorizationCodeGrantTypeParameterTokenEdpValidatorFixture.cs" />
     <Compile Include="Validators\ClientValidatorFixture.cs" />
+    <Compile Include="Validators\RefreshTokenGrantTypeParameterValidatorFixture.cs" />
     <Compile Include="Validators\RegistrationParameterValidatorFixture.cs" />
     <Compile Include="Validators\ResourceOwnerGrantTypeParameterValidatorFixture.cs" />
     <Compile Include="WebSite\Authenticate\AuthenticateActionsFixture.cs" />

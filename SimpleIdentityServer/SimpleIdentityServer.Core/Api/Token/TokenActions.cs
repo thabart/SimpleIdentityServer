@@ -33,6 +33,10 @@ namespace SimpleIdentityServer.Core.Api.Token
         GrantedToken GetTokenByAuthorizationCodeGrantType(
             AuthorizationCodeGrantTypeParameter parameter,
             AuthenticationHeaderValue authenticationHeaderValue);
+
+        GrantedToken GetTokenByRefreshTokenGrantType(
+            RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter,
+            AuthenticationHeaderValue authenticationHeaderValue);
     }
 
     public class TokenActions : ITokenActions
@@ -45,6 +49,10 @@ namespace SimpleIdentityServer.Core.Api.Token
 
         private readonly IAuthorizationCodeGrantTypeParameterTokenEdpValidator _authorizationCodeGrantTypeParameterTokenEdpValidator;
 
+        private readonly IRefreshTokenGrantTypeParameterValidator _refreshTokenGrantTypeParameterValidator;
+
+        private readonly IGetTokenByRefreshTokenGrantTypeAction _getTokenByRefreshTokenGrantTypeAction;
+
         private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
 
         public TokenActions(
@@ -52,29 +60,33 @@ namespace SimpleIdentityServer.Core.Api.Token
             IGetTokenByAuthorizationCodeGrantTypeAction getTokenByAuthorizationCodeGrantTypeAction,
             IResourceOwnerGrantTypeParameterValidator resourceOwnerGrantTypeParameterValidator,
             IAuthorizationCodeGrantTypeParameterTokenEdpValidator authorizationCodeGrantTypeParameterTokenEdpValidator,
+            IRefreshTokenGrantTypeParameterValidator refreshTokenGrantTypeParameterValidator,
+            IGetTokenByRefreshTokenGrantTypeAction getTokenByRefreshTokenGrantTypeAction,
             ISimpleIdentityServerEventSource simpleIdentityServerEventSource)
         {
             _getTokenByResourceOwnerCredentialsGrantType = getTokenByResourceOwnerCredentialsGrantType;
             _getTokenByAuthorizationCodeGrantTypeAction = getTokenByAuthorizationCodeGrantTypeAction;
             _resourceOwnerGrantTypeParameterValidator = resourceOwnerGrantTypeParameterValidator;
             _authorizationCodeGrantTypeParameterTokenEdpValidator = authorizationCodeGrantTypeParameterTokenEdpValidator;
+            _refreshTokenGrantTypeParameterValidator = refreshTokenGrantTypeParameterValidator;
+            _getTokenByRefreshTokenGrantTypeAction = getTokenByRefreshTokenGrantTypeAction;
             _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
         }
 
         public GrantedToken GetTokenByResourceOwnerCredentialsGrantType(
-            ResourceOwnerGrantTypeParameter parameter,
+            ResourceOwnerGrantTypeParameter resourceOwnerGrantTypeParameter,
             AuthenticationHeaderValue authenticationHeaderValue)
         {
-            if (parameter == null)
+            if (resourceOwnerGrantTypeParameter == null)
             {
-                throw new ArgumentNullException("the resource owner grant type parameter cannot be null");
+                throw new ArgumentNullException("resourceOwnerGrantTypeParameter");
             }
 
-            _simpleIdentityServerEventSource.StartGetTokenByResourceOwnerCredentials(parameter.ClientId,
-                parameter.UserName,
-                parameter.Password);
-            _resourceOwnerGrantTypeParameterValidator.Validate(parameter);
-            var result = _getTokenByResourceOwnerCredentialsGrantType.Execute(parameter,
+            _simpleIdentityServerEventSource.StartGetTokenByResourceOwnerCredentials(resourceOwnerGrantTypeParameter.ClientId,
+                resourceOwnerGrantTypeParameter.UserName,
+                resourceOwnerGrantTypeParameter.Password);
+            _resourceOwnerGrantTypeParameterValidator.Validate(resourceOwnerGrantTypeParameter);
+            var result = _getTokenByResourceOwnerCredentialsGrantType.Execute(resourceOwnerGrantTypeParameter,
                 authenticationHeaderValue);
             var accessToken = result != null ? result.AccessToken : string.Empty;
             var identityToken = result != null ? result.IdToken : string.Empty;
@@ -83,20 +95,40 @@ namespace SimpleIdentityServer.Core.Api.Token
         }
 
         public GrantedToken GetTokenByAuthorizationCodeGrantType(
-            AuthorizationCodeGrantTypeParameter parameter,
+            AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter,
             AuthenticationHeaderValue authenticationHeaderValue)
         {
-            if (parameter == null)
+            if (authorizationCodeGrantTypeParameter == null)
             {
-                throw new ArgumentNullException("the authorization code grant type parameter cannot be null");
+                throw new ArgumentNullException("authorizationCodeGrantTypeParameter");
             }
 
             _simpleIdentityServerEventSource.StartGetTokenByAuthorizationCode(
-                parameter.ClientId,
-                parameter.Code);
-            _authorizationCodeGrantTypeParameterTokenEdpValidator.Validate(parameter);
-            var result = _getTokenByAuthorizationCodeGrantTypeAction.Execute(parameter, authenticationHeaderValue);
+                authorizationCodeGrantTypeParameter.ClientId,
+                authorizationCodeGrantTypeParameter.Code);
+            _authorizationCodeGrantTypeParameterTokenEdpValidator.Validate(authorizationCodeGrantTypeParameter);
+            var result = _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, authenticationHeaderValue);
             _simpleIdentityServerEventSource.EndGetTokenByAuthorizationCode(
+                result.AccessToken,
+                result.IdToken);
+            return result;
+        }
+
+        public GrantedToken GetTokenByRefreshTokenGrantType(
+            RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter, 
+            AuthenticationHeaderValue authenticationHeaderValue)
+        {
+            if (refreshTokenGrantTypeParameter == null)
+            {
+                throw new ArgumentNullException("refreshTokenGrantTypeParameter");
+            }
+
+            _simpleIdentityServerEventSource.StartGetTokenByRefreshToken(
+                refreshTokenGrantTypeParameter.ClientId,
+                refreshTokenGrantTypeParameter.RefreshToken);
+            _refreshTokenGrantTypeParameterValidator.Validate(refreshTokenGrantTypeParameter);
+            var result = _getTokenByRefreshTokenGrantTypeAction.Execute(refreshTokenGrantTypeParameter);
+            _simpleIdentityServerEventSource.EndGetTokenByRefreshToken(
                 result.AccessToken,
                 result.IdToken);
             return result;

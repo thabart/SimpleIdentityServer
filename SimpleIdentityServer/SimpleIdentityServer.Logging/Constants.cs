@@ -32,6 +32,8 @@ namespace SimpleIdentityServer.Logging
             public const int Failure = 24;
             public const int StartRegistration = 25;
             public const int EndRegistration = 26;
+            public const int StartRefreshTokenGrantType = 27;
+            public const int EndRefreshTokenGrantType = 28;
         }
 
         public static class Tasks

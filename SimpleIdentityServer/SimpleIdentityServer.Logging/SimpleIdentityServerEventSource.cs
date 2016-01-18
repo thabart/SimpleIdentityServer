@@ -103,6 +103,14 @@ namespace SimpleIdentityServer.Logging
             string clientId,
             string authenticateType);
 
+        void StartGetTokenByRefreshToken(
+            string clientId,
+            string refreshToken);
+
+        void EndGetTokenByRefreshToken(
+            string accessToken,
+            string identityToken);
+
         #endregion
 
         void AuthenticateResourceOwner(string subject);
@@ -480,6 +488,43 @@ namespace SimpleIdentityServer.Logging
             WriteEvent(Constants.EventIds.FinishToAuthenticateTheClient,
                 clientId,
                 authenticationType);
+        }
+
+        [Event(Constants.EventIds.StartRefreshTokenGrantType,
+            Level = EventLevel.Informational,
+            Message = "start refresh token grant-type",
+            Opcode = EventOpcode.Start,
+            Task = Constants.Tasks.Token)]
+        public void StartGetTokenByRefreshToken(
+            string clientId, 
+            string refreshToken)
+        {
+            if (!IsEnabled())
+            {
+                return;
+            }
+
+            WriteEvent(Constants.EventIds.StartRefreshTokenGrantType,
+                clientId,
+                refreshToken);
+        }
+
+
+        [Event(Constants.EventIds.EndRefreshTokenGrantType,
+            Level = EventLevel.Informational,
+            Message = "end refresh token grant-type",
+            Opcode = EventOpcode.Stop,
+            Task = Constants.Tasks.Token)]
+        public void EndGetTokenByRefreshToken(string accessToken, string identityToken)
+        {
+            if (!IsEnabled())
+            {
+                return;
+            }
+
+            WriteEvent(Constants.EventIds.EndRefreshTokenGrantType,
+                accessToken,
+                identityToken);
         }
 
         #endregion

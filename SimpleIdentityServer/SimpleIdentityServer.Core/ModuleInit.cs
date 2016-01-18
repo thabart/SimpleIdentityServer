@@ -125,6 +125,9 @@ namespace SimpleIdentityServer.Core
             register.RegisterType<IClientSecretPostAuthentication, ClientSecretPostAuthentication>();
             register.RegisterType<IClientAssertionAuthentication, ClientAssertionAuthentication>();
 
+            register.RegisterType<IGetTokenByRefreshTokenGrantTypeAction, GetTokenByRefreshTokenGrantTypeAction>();
+            register.RegisterType<IRefreshTokenGrantTypeParameterValidator, RefreshTokenGrantTypeParameterValidator>();
+
             register.RegisterType<ITranslationManager, TranslationManager>();
 
             register.RegisterType<IHttpClientFactory, HttpClientFactory>();

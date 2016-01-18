@@ -69,5 +69,11 @@ namespace SimpleIdentityServer.DataAccess.Fake.Repositories
 
             return true;
         }
+
+        public GrantedToken GetTokenByRefreshToken(string refreshToken)
+        {
+            var result = FakeDataSource.Instance().GrantedTokens.FirstOrDefault(g => g.RefreshToken == refreshToken);
+            return result == null ? null : result.ToBusiness();
+        }
     }
 }

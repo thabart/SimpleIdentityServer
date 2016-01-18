@@ -16,12 +16,12 @@
 
 namespace SimpleIdentityServer.Core.Parameters
 {
-    public class AuthorizationCodeGrantTypeParameter
-    {
+    public sealed class RefreshTokenGrantTypeParameter
+    {        
         /// <summary>
-        /// Gets or sets the authorization code.
+        /// Gets or sets the refresh token.
         /// </summary>
-        public string Code { get; set; }
+        public string RefreshToken { get; set; }
 
         /// <summary>
         /// Gets or sets the redirection url.

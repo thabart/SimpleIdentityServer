@@ -6,6 +6,7 @@
         password,
         client_credentials,
         authorization_code,
-        validate_bearer
+        validate_bearer,
+        refresh_token
     }
 }

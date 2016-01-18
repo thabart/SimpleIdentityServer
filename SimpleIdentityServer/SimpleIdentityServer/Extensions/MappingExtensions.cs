@@ -100,6 +100,19 @@ namespace SimpleIdentityServer.Api.Extensions
             };
         }
 
+        public static RefreshTokenGrantTypeParameter ToRefreshTokenGrantTypeParameter(this TokenRequest request)
+        {
+            return new RefreshTokenGrantTypeParameter
+            {
+                ClientId = request.client_id,
+                ClientSecret = request.client_secret,
+                RefreshToken = request.refresh_token,
+                RedirectUri = request.redirect_uri,
+                ClientAssertion = request.client_assertion,
+                ClientAssertionType = request.client_assertion_type
+            };
+        }
+
         public static AuthorizationRequest ToAuthorizationRequest(this JwsPayload jwsPayload)
         {
             Display displayEnum;

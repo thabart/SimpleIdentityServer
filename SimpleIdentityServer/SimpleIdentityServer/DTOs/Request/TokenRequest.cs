@@ -21,5 +21,7 @@
         public string client_assertion_type { get; set; }
 
         public string client_assertion { get; set; }
+
+        public string refresh_token { get; set; }
     }
 }

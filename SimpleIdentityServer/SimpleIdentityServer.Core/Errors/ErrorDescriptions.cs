@@ -160,5 +160,7 @@ namespace SimpleIdentityServer.Core.Errors
 
         public static string OneOrMoreSectorIdentifierUriIsNotARedirectUri =
             "one or more sector uri is not a redirect_uri";
+
+        public static string TheRefreshTokenIsNotValid = "the refresh token is not valid";
     }
 }

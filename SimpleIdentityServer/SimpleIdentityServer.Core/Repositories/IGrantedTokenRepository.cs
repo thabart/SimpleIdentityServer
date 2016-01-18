@@ -29,5 +29,7 @@ namespace SimpleIdentityServer.Core.Repositories
             string clientId,
             JwsPayload idTokenJwsPayload,
             JwsPayload userInfoJwsPayload);
+
+        GrantedToken GetTokenByRefreshToken(string refreshToken);
     }
 }

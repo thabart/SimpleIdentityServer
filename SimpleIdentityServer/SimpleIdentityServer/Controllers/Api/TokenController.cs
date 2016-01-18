@@ -38,6 +38,11 @@ namespace SimpleIdentityServer.Api.Controllers.Api
                         authCodeParameter,
                         authorizationHeader);
                     break;
+                case GrantTypeRequest.refresh_token:
+                    var refreshTokenParameter = tokenRequest.ToRefreshTokenGrantTypeParameter();
+                    result = _tokenActions.GetTokenByRefreshTokenGrantType(refreshTokenParameter,
+                        authorizationHeader);
+                    break;
             }
 
             return result;

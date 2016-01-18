@@ -207,6 +207,9 @@ namespace SimpleIdentityServer.Api.Tests.Common
             UnityContainer.RegisterType<IClientSecretPostAuthentication, ClientSecretPostAuthentication>();
             UnityContainer.RegisterType<IClientAssertionAuthentication, ClientAssertionAuthentication>();
 
+            UnityContainer.RegisterType<IGetTokenByRefreshTokenGrantTypeAction, GetTokenByRefreshTokenGrantTypeAction>();
+            UnityContainer.RegisterType<IRefreshTokenGrantTypeParameterValidator, RefreshTokenGrantTypeParameterValidator>();
+
             UnityContainer.RegisterType<IJsonWebKeyConverter, JsonWebKeyConverter>();
             
             UnityContainer.RegisterType<ICngKeySerializer, CngKeySerializer>();
