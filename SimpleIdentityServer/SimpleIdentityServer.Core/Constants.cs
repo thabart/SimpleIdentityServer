@@ -378,6 +378,7 @@ namespace SimpleIdentityServer.Core
         public static class SubjectTypeNames
         {
             public const string Public = "public";
+            public const string PairWise = "pairwise";
         }
 
         public static class Supported
@@ -406,7 +407,8 @@ namespace SimpleIdentityServer.Core
             public static List<string> SupportedSubjectTypes = new List<string>
             {
                 // Same subject value to all clients.
-                SubjectTypeNames.Public
+                SubjectTypeNames.Public,
+                SubjectTypeNames.PairWise
             };
 
             public static List<string> SupportedJwsAlgs = new List<string>

@@ -155,5 +155,10 @@ namespace SimpleIdentityServer.Core.Errors
             "the parameter request_object_encryption_alg must be specified";
 
         public static string OneOfTheRequestUriIsNotValid = "one of the request_uri is not valid";
+
+        public static string TheSectorIdentifierUrisCannotBeRetrieved = "the sector identifier uris cannot be retrieved";
+
+        public static string OneOrMoreSectorIdentifierUriIsNotARedirectUri =
+            "one or more sector uri is not a redirect_uri";
     }
 }

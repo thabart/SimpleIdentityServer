@@ -1,10 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
+using Moq;
 using NUnit.Framework;
+using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
+using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Core.Parameters;
+using SimpleIdentityServer.Core.UnitTests.Fake;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Core.Models;
 
@@ -13,6 +19,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
     [TestFixture]
     public sealed class RegistrationParameterValidatorFixture
     {
+        private Mock<IHttpClientFactory> _httpClientFactoryFake;
+
         private IRegistrationParameterValidator _registrationParameterValidator;
 
         [Test]
@@ -344,6 +352,68 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
         }
 
         [Test]
+        public void When_SectorIdentifierUri_Cannot_Be_Retrieved_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var parameter = new RegistrationParameter
+            {
+                RedirectUris = new List<string>
+                {
+                    "https://google.fr"
+                },
+                SectorIdentifierUri = "https://localhost/identity"
+            };
+
+            var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.BadRequest);
+            var handler = new FakeHttpMessageHandler(httpResponseMessage);
+            var httpClientFake = new HttpClient(handler);
+            _httpClientFactoryFake.Setup(h => h.GetHttpClient())
+                .Returns(httpClientFake);
+
+
+            // ACT & ASSERTS
+            var ex = Assert.Throws<IdentityServerException>(() => _registrationParameterValidator.Validate(parameter));
+            Assert.IsTrue(ex.Code == ErrorCodes.InvalidClientMetaData);
+            Assert.IsTrue(ex.Message == ErrorDescriptions.TheSectorIdentifierUrisCannotBeRetrieved);
+        }
+
+        [Test]
+        public void When_SectorIdentifierUri_Is_Not_A_Redirect_Uri_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var parameter = new RegistrationParameter
+            {
+                RedirectUris = new List<string>
+                {
+                    "https://google.fr"
+                },
+                SectorIdentifierUri = "https://localhost/identity"
+            };
+
+            var sectorIdentifierUris = new List<string>
+            {
+                "https://localhost/sector_identifier"
+            };
+            var json = sectorIdentifierUris.SerializeWithJavascript();
+            var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.Accepted)
+            {
+                Content = new StringContent(json)
+            };
+            var handler = new FakeHttpMessageHandler(httpResponseMessage);
+            var httpClientFake = new HttpClient(handler);
+            _httpClientFactoryFake.Setup(h => h.GetHttpClient())
+                .Returns(httpClientFake);
+
+
+            // ACT & ASSERTS
+            var ex = Assert.Throws<IdentityServerException>(() => _registrationParameterValidator.Validate(parameter));
+            Assert.IsTrue(ex.Code == ErrorCodes.InvalidClientMetaData);
+            Assert.IsTrue(ex.Message == ErrorDescriptions.OneOrMoreSectorIdentifierUriIsNotARedirectUri);
+        }
+
+        [Test]
         public void When_IdTokenEncryptedResponseEnc_Is_Specified_But_Not_IdTokenEncryptedResponseAlg_Then_Exception_Is_Thrown()
         {
             // ARRANGE
@@ -555,13 +625,28 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
                 SectorIdentifierUri = "https://localhost"
             };
 
+            var sectorIdentifierUris = new List<string>
+            {
+                "http://localhost"
+            };
+            var json = sectorIdentifierUris.SerializeWithJavascript();
+            var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.Accepted)
+            {
+                Content = new StringContent(json)
+            };
+            var handler = new FakeHttpMessageHandler(httpResponseMessage);
+            var httpClientFake = new HttpClient(handler);
+            _httpClientFactoryFake.Setup(h => h.GetHttpClient())
+                .Returns(httpClientFake);
+
             // ACT & ASSERTS
             Assert.DoesNotThrow(() => _registrationParameterValidator.Validate(parameter));
         }
 
         private void InitializeFakeObjects()
         {
-            _registrationParameterValidator = new RegistrationParameterValidator();
+            _httpClientFactoryFake = new Mock<IHttpClientFactory>();
+            _registrationParameterValidator = new RegistrationParameterValidator(_httpClientFactoryFake.Object);
         }
     }
 }

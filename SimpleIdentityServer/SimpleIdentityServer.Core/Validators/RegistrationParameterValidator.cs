@@ -16,8 +16,11 @@
 
 using System;
 using System.Linq;
+using System.Net.Http;
+using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
+using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Parameters;
 using System.Collections.Generic;
 using SimpleIdentityServer.Core.Models;
@@ -31,6 +34,13 @@ namespace SimpleIdentityServer.Core.Validators
 
     public class RegistrationParameterValidator : IRegistrationParameterValidator
     {
+        private readonly IHttpClientFactory _httpClientFactory;
+
+        public RegistrationParameterValidator(IHttpClientFactory httpClientFactory)
+        {
+            _httpClientFactory = httpClientFactory;
+        }
+
         public void Validate(RegistrationParameter parameter)
         {
             const string localhost = "localhost";
@@ -141,6 +151,21 @@ namespace SimpleIdentityServer.Core.Validators
             ValidateNotMandatoryUri(parameter.SectorIdentifierUri,
                 Constants.StandardRegistrationRequestParameterNames.SectoreIdentifierUri, true);
 
+            // Based on the RFC : http://openid.net/specs/openid-connect-registration-1_0.html#SectorIdentifierValidation validate the sector_identifier_uri
+            if (!string.IsNullOrWhiteSpace(parameter.SectorIdentifierUri))
+            {
+                var sectorIdentifierUris = GetSectorIdentifierUris(parameter.SectorIdentifierUri);
+                foreach (var sectorIdentifierUri in sectorIdentifierUris)
+                {
+                    if (!parameter.RedirectUris.Contains(sectorIdentifierUri))
+                    {
+                        throw new IdentityServerException(
+                            ErrorCodes.InvalidClientMetaData,
+                            ErrorDescriptions.OneOrMoreSectorIdentifierUriIsNotARedirectUri);
+                    }
+                }
+            }
+
             if (!string.IsNullOrWhiteSpace(parameter.IdTokenEncryptedResponseEnc) &&
                 Jwt.Constants.MappingNameToJweEncEnum.Keys.Contains(parameter.IdTokenEncryptedResponseEnc))
             {
@@ -192,6 +217,24 @@ namespace SimpleIdentityServer.Core.Validators
                             ErrorDescriptions.OneOfTheRequestUriIsNotValid);
                     }
                 }
+            }
+        }
+
+        private List<string> GetSectorIdentifierUris(string sectorIdentifierUri)
+        {
+            var httpClient = _httpClientFactory.GetHttpClient();
+            try
+            {
+                var response = httpClient.GetAsync(sectorIdentifierUri).Result;
+                response.EnsureSuccessStatusCode();
+                var result = response.Content.ReadAsStringAsync().Result;
+                return result.DeserializeWithJavascript<List<string>>();
+            }
+            catch (Exception)
+            {
+                throw new IdentityServerException(
+                    ErrorCodes.InvalidClientMetaData,
+                    ErrorDescriptions.TheSectorIdentifierUrisCannotBeRetrieved);
             }
         }
 
