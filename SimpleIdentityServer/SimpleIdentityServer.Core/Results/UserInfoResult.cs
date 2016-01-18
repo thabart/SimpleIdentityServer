@@ -14,28 +14,12 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Api.UserInfo.Actions;
-using SimpleIdentityServer.Core.Results;
+using System.Net.Http;
 
-namespace SimpleIdentityServer.Core.Api.UserInfo
+namespace SimpleIdentityServer.Core.Results
 {
-    public interface IUserInfoActions
+    public class UserInfoResult
     {
-        UserInfoResult GetUserInformation(string accessToken);
-    }
-
-    public class UserInfoActions : IUserInfoActions
-    {
-        private readonly IGetJwsPayload _getJwsPayload;
-
-        public UserInfoActions(IGetJwsPayload getJwsPayload)
-        {
-            _getJwsPayload = getJwsPayload;
-        }
-
-        public UserInfoResult GetUserInformation(string accessToken)
-        {
-            return _getJwsPayload.Execute(accessToken);
-        }
+        public HttpContent Content { get; set; }
     }
 }

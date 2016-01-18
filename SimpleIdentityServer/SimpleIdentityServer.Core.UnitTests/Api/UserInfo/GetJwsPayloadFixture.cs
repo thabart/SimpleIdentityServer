@@ -111,6 +111,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
         {            
             // ARRANGE
             InitializeFakeObjects();
+            const string jwt = "jwt";
             string errorMessageCode,
                 errorMessageDescription;
             var grantedToken = new GrantedToken
@@ -128,6 +129,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
                 .Returns(grantedToken);
             _clientRepositoryFake.Setup(c => c.GetClientById(It.IsAny<string>()))
                 .Returns(client);
+            _jwtGeneratorFake.Setup(j => j.Encrypt(It.IsAny<string>(),
+                It.IsAny<JweAlg>(),
+                It.IsAny<JweEnc>()))
+                .Returns(jwt);
 
             // ACT
             var result = _getJwsPayload.Execute("access_token");
@@ -137,6 +142,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
             _jwtGeneratorFake.Verify(j => j.Encrypt(It.IsAny<string>(),
                 It.IsAny<JweAlg>(),
                 JweEnc.A128CBC_HS256));
+            var contentType = result.Content.Headers.ContentType;
+            Assert.IsNotNull(contentType);
+            Assert.IsTrue(contentType.MediaType == "application/jwt");
         }
 
         private void InitializeFakeObjects()

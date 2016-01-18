@@ -14,11 +14,15 @@
 // limitations under the License.
 #endregion
 
+using System.Net.Http;
+using System.Net.Http.Formatting;
+using System.Text;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Validators;
 using System;
 
@@ -26,7 +30,7 @@ namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
 {
     public interface IGetJwsPayload
     {
-        JwsPayload Execute(string accessToken);
+        UserInfoResult Execute(string accessToken);
     }
 
     public class GetJwsPayload : IGetJwsPayload
@@ -51,7 +55,7 @@ namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
             _clientRepository = clientRepository;
         }
 
-        public JwsPayload Execute(string accessToken)
+        public UserInfoResult Execute(string accessToken)
         {
             if (string.IsNullOrWhiteSpace(accessToken))
             {
@@ -76,10 +80,13 @@ namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
             if (signedResponseAlg == null ||
                 signedResponseAlg.Value == JwsAlg.none)
             {
-                return grantedToken.UserInfoPayLoad;
+                return new UserInfoResult
+                {
+                    Content = new ObjectContent(typeof(JwsPayload), grantedToken.UserInfoPayLoad, new JsonMediaTypeFormatter())
+                };
             }
 
-            var jws = _jwtGenerator.Sign(userInformationPayload,
+            var jwt = _jwtGenerator.Sign(userInformationPayload,
                 signedResponseAlg.Value);
             var encryptedResponseAlg = client.GetUserInfoEncryptedResponseAlg();
             var encryptedResponseEnc = client.GetUserInfoEncryptedResponseEnc();
@@ -90,12 +97,15 @@ namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
                     encryptedResponseEnc = JweEnc.A128CBC_HS256;
                 }
 
-                _jwtGenerator.Encrypt(jws,
+                jwt = _jwtGenerator.Encrypt(jwt,
                     encryptedResponseAlg.Value,
                     encryptedResponseEnc.Value);
             }
 
-            return null;
+            return new UserInfoResult
+            {
+                Content = new StringContent(jwt, Encoding.UTF8, "application/jwt")
+            };
         }
     }
 }

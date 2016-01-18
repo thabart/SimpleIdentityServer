@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Net.Http.Headers;
-using System.Threading.Tasks;
 using System.Web;
 using SimpleIdentityServer.Core.Api.UserInfo;
 using SimpleIdentityServer.Core.Errors;
@@ -44,7 +42,9 @@ namespace SimpleIdentityServer.Api.Controllers.Api
                 }
 
                 var result = _userInfoActions.GetUserInformation(accessToken);
-                return Request.CreateResponse(HttpStatusCode.OK, result);
+                var response = Request.CreateResponse(HttpStatusCode.OK);
+                response.Content = result.Content;
+                return response;
             }
             catch (AuthorizationException)
             {
