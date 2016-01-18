@@ -57,7 +57,7 @@ namespace SimpleIdentityServer.Core.Api.Discovery.Actions
             var tokenAuthMethodSupported = GetSupportedTokenEndPointAuthMethods();
 
             result.ClaimsParameterSupported = true;
-            result.RequestParameterSupported = false;
+            result.RequestParameterSupported = true;
             result.RequestUriParameterSupported = true;
             result.RequireRequestUriRegistration = true;
             result.ClaimsSupported = Constants.Supported.SupportedClaims.ToArray();
