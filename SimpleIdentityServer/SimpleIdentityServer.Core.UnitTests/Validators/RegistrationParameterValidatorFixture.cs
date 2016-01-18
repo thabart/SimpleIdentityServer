@@ -61,6 +61,25 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
         }
 
         [Test]
+        public void When_One_Request_Uri_Contains_A_Fragment_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var parameter = new RegistrationParameter
+            {
+                RedirectUris = new List<string>
+                {
+                    "http://localhost#localhost"
+                }
+            };
+
+            // ACT & ASSERTS
+            var ex = Assert.Throws<IdentityServerException>(() => _registrationParameterValidator.Validate(parameter));
+            Assert.IsTrue(ex.Code == ErrorCodes.InvalidRedirectUri);
+            Assert.IsTrue(ex.Message == ErrorDescriptions.TheRedirectUriContainsAFragment);
+        }
+
+        [Test]
         public void When_ResponseType_Is_Not_Defined_Then_Set_To_Code()
         {
             // ARRANGE

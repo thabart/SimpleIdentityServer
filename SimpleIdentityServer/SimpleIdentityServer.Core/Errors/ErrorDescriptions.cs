@@ -140,6 +140,8 @@ namespace SimpleIdentityServer.Core.Errors
 
         public static string TheRedirectUriParameterIsNotValid = "one or more redirect_uri values are invalid";
 
+        public static string TheRedirectUriContainsAFragment = "one or more redirect_uri contains a fragment";
+
         public static string TheJwksParameterCannotBeSetBecauseJwksUrlIsUsed =
             "the jwks parameter cannot be set because the Jwks Url has already been set";
 

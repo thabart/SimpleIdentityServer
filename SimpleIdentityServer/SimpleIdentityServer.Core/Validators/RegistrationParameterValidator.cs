@@ -56,6 +56,14 @@ namespace SimpleIdentityServer.Core.Validators
                         ErrorCodes.InvalidRedirectUri,
                         ErrorDescriptions.TheRedirectUriParameterIsNotValid);
                 }
+
+                var uri = new Uri(redirectUri);
+                if (!string.IsNullOrWhiteSpace(uri.Fragment))
+                {
+                    throw new IdentityServerException(
+                        ErrorCodes.InvalidRedirectUri,
+                        ErrorDescriptions.TheRedirectUriContainsAFragment);
+                }
             }
 
             // If the response type is not defined then set to code
