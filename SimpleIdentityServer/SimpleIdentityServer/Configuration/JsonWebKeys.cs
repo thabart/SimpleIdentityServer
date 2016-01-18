@@ -1,4 +1,5 @@
-﻿using SimpleIdentityServer.DataAccess.Fake.Models;
+﻿using System;
+using SimpleIdentityServer.DataAccess.Fake.Models;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 
@@ -24,7 +25,7 @@ namespace SimpleIdentityServer.Api.Configuration
                         KeyOperations.Sign,
                         KeyOperations.Verify
                     },
-                    Kid = "a3rMUgMFv9tPclLa6yF3zAkfquE",
+                    Kid = Guid.NewGuid().ToString(),
                     Kty = KeyType.RSA,
                     Use = Use.Sig,
                     SerializedKey = serializedRsa,
@@ -37,7 +38,7 @@ namespace SimpleIdentityServer.Api.Configuration
                         KeyOperations.Encrypt,
                         KeyOperations.Decrypt
                     },
-                    Kid = "3",
+                    Kid = Guid.NewGuid().ToString(),
                     Kty = KeyType.RSA,
                     Use = Use.Enc,
                     SerializedKey = serializedRsa,

@@ -1,7 +1,7 @@
 Test info
 
 Profile: {'openid-configuration': 'config', 'response_type': 'code', 'crypto': 'sign', 'registration': 'dynamic'}
-Timestamp: 2016-01-18T15:21:50Z
+Timestamp: 2016-01-18T16:55:40Z
 Test description: Can rotate OP signing keys [Dynamic]
 Test ID: OP-Rotation-OP-Sig
 Issuer: https://simpleidentityserver.azurewebsites.net
@@ -13,17 +13,16 @@ __After completing the test flow:__
 	status: OK
 	description: Checks that the HTTP response status is within the 200 or 300 range
 [new-signing-keys]
-	status: WARNING
+	status: OK
 	description: Verifies that two set of signing keys are not the same
-	info: Did not detect any change in signing keys
 __X:==== END ====__
 Trace output
 
 
-0.000342 ------------ DiscoveryRequest ------------
-0.000359 Provider info discover from 'https://simpleidentityserver.azurewebsites.net'
-0.000366 --> URL: https://simpleidentityserver.azurewebsites.net/.well-known/openid-configuration
-0.460780 ProviderConfigurationResponse: {
+0.000560 ------------ DiscoveryRequest ------------
+0.000578 Provider info discover from 'https://simpleidentityserver.azurewebsites.net'
+0.000585 --> URL: https://simpleidentityserver.azurewebsites.net/.well-known/openid-configuration
+1.415561 ProviderConfigurationResponse: {
   "authorization_endpoint": "https://simpleidentityserver.azurewebsites.net/authorization",
   "check_session_iframe": "https://simpleidentityserver.azurewebsites.net/check_session",
   "claims_parameter_supported": true,
@@ -99,30 +98,30 @@ Trace output
   "userinfo_endpoint": "https://simpleidentityserver.azurewebsites.net/userinfo",
   "version": "1.0"
 }
-1.129077 JWKS: {
+2.190947 JWKS: {
   "keys": [
     {
       "alg": "RS256",
       "e": "AQAB",
-      "kid": "a3rMUgMFv9tPclLa6yF3zAkfquE",
+      "kid": "eac94770-6857-4af1-a61b-86201db8a173",
       "kty": "RSA",
-      "n": "p-z3kCspS7cZzR0-bbxKI4B-0jUJhqgFEcDhQ_Fykm6iw7fDxNSxiiRviGQABNLuFO_PfU-OMsgOPmGn5n_ndoNTo2nZ2yjnYalWnxHqtsXgrVU3Bg9WOtLoaNFzMy0VNlIqXi6hfz4jAnalj8k4R4nNAJX4dfhKFl5pCDumRfE",
+      "n": "vTFkulFwxD3Xl5Y7HGNul-KOhf4uB9IvJ-KczuU0E1ScIENPAWfA5lYNs1nTYPiBfIcSi9CtP95kJhJb8J3GQVHeQvQFQ2Hh_y2yejIxIyvhtdcq5IzUUGr1rToVXVZbUNjcobv_9U_8sIvJD148aH57GXAkKjTflk6Q7R-VWEk",
       "use": "sig"
     },
     {
       "alg": "RSA1_5",
       "e": "AQAB",
-      "kid": "3",
+      "kid": "6803a34a-08e2-472f-aa24-3ff3bb9b9e8a",
       "kty": "RSA",
-      "n": "p-z3kCspS7cZzR0-bbxKI4B-0jUJhqgFEcDhQ_Fykm6iw7fDxNSxiiRviGQABNLuFO_PfU-OMsgOPmGn5n_ndoNTo2nZ2yjnYalWnxHqtsXgrVU3Bg9WOtLoaNFzMy0VNlIqXi6hfz4jAnalj8k4R4nNAJX4dfhKFl5pCDumRfE",
+      "n": "vTFkulFwxD3Xl5Y7HGNul-KOhf4uB9IvJ-KczuU0E1ScIENPAWfA5lYNs1nTYPiBfIcSi9CtP95kJhJb8J3GQVHeQvQFQ2Hh_y2yejIxIyvhtdcq5IzUUGr1rToVXVZbUNjcobv_9U_8sIvJD148aH57GXAkKjTflk6Q7R-VWEk",
       "use": "enc"
     }
   ]
 }
-4.956048 ------------ DiscoveryRequest ------------
-4.956071 Provider info discover from 'https://simpleidentityserver.azurewebsites.net'
-4.956078 --> URL: https://simpleidentityserver.azurewebsites.net/.well-known/openid-configuration
-5.413696 ProviderConfigurationResponse: {
+25.310976 ------------ DiscoveryRequest ------------
+25.310998 Provider info discover from 'https://simpleidentityserver.azurewebsites.net'
+25.311005 --> URL: https://simpleidentityserver.azurewebsites.net/.well-known/openid-configuration
+25.950877 ProviderConfigurationResponse: {
   "authorization_endpoint": "https://simpleidentityserver.azurewebsites.net/authorization",
   "check_session_iframe": "https://simpleidentityserver.azurewebsites.net/check_session",
   "claims_parameter_supported": true,
@@ -198,49 +197,47 @@ Trace output
   "userinfo_endpoint": "https://simpleidentityserver.azurewebsites.net/userinfo",
   "version": "1.0"
 }
-5.830994 JWKS: {
+26.420252 JWKS: {
   "keys": [
     {
       "alg": "RS256",
       "e": "AQAB",
-      "kid": "a3rMUgMFv9tPclLa6yF3zAkfquE",
+      "kid": "92140d36-946e-41f2-b7bb-2e486cacf2b9",
       "kty": "RSA",
-      "n": "p-z3kCspS7cZzR0-bbxKI4B-0jUJhqgFEcDhQ_Fykm6iw7fDxNSxiiRviGQABNLuFO_PfU-OMsgOPmGn5n_ndoNTo2nZ2yjnYalWnxHqtsXgrVU3Bg9WOtLoaNFzMy0VNlIqXi6hfz4jAnalj8k4R4nNAJX4dfhKFl5pCDumRfE",
+      "n": "z0wCOX9c62FtdfB3LsHsPx9ojyHc7i7MXMLnDceWcSg42kMU46FQ9DC0_FcGhQVzoYDX0VXyo2QeUN7lnKMMGalARArvHNrZAprhwsV0mtY1_Z5P49OkehqVWyCsKg1VTD6n2eLEhko_DXtkl9x-TuJmPEekt0MAX9HK026fTes",
       "use": "sig"
     },
     {
       "alg": "RSA1_5",
       "e": "AQAB",
-      "kid": "3",
+      "kid": "df4c579d-e10b-4d3d-8e09-f673f0b5694c",
       "kty": "RSA",
-      "n": "p-z3kCspS7cZzR0-bbxKI4B-0jUJhqgFEcDhQ_Fykm6iw7fDxNSxiiRviGQABNLuFO_PfU-OMsgOPmGn5n_ndoNTo2nZ2yjnYalWnxHqtsXgrVU3Bg9WOtLoaNFzMy0VNlIqXi6hfz4jAnalj8k4R4nNAJX4dfhKFl5pCDumRfE",
+      "n": "z0wCOX9c62FtdfB3LsHsPx9ojyHc7i7MXMLnDceWcSg42kMU46FQ9DC0_FcGhQVzoYDX0VXyo2QeUN7lnKMMGalARArvHNrZAprhwsV0mtY1_Z5P49OkehqVWyCsKg1VTD6n2eLEhko_DXtkl9x-TuJmPEekt0MAX9HK026fTes",
       "use": "enc"
     }
   ]
 }
-6.417955 JWKS: {
+26.918867 JWKS: {
   "keys": [
     {
       "alg": "RS256",
       "e": "AQAB",
-      "kid": "a3rMUgMFv9tPclLa6yF3zAkfquE",
+      "kid": "92140d36-946e-41f2-b7bb-2e486cacf2b9",
       "kty": "RSA",
-      "n": "p-z3kCspS7cZzR0-bbxKI4B-0jUJhqgFEcDhQ_Fykm6iw7fDxNSxiiRviGQABNLuFO_PfU-OMsgOPmGn5n_ndoNTo2nZ2yjnYalWnxHqtsXgrVU3Bg9WOtLoaNFzMy0VNlIqXi6hfz4jAnalj8k4R4nNAJX4dfhKFl5pCDumRfE",
+      "n": "z0wCOX9c62FtdfB3LsHsPx9ojyHc7i7MXMLnDceWcSg42kMU46FQ9DC0_FcGhQVzoYDX0VXyo2QeUN7lnKMMGalARArvHNrZAprhwsV0mtY1_Z5P49OkehqVWyCsKg1VTD6n2eLEhko_DXtkl9x-TuJmPEekt0MAX9HK026fTes",
       "use": "sig"
     },
     {
       "alg": "RSA1_5",
       "e": "AQAB",
-      "kid": "3",
+      "kid": "df4c579d-e10b-4d3d-8e09-f673f0b5694c",
       "kty": "RSA",
-      "n": "p-z3kCspS7cZzR0-bbxKI4B-0jUJhqgFEcDhQ_Fykm6iw7fDxNSxiiRviGQABNLuFO_PfU-OMsgOPmGn5n_ndoNTo2nZ2yjnYalWnxHqtsXgrVU3Bg9WOtLoaNFzMy0VNlIqXi6hfz4jAnalj8k4R4nNAJX4dfhKFl5pCDumRfE",
+      "n": "z0wCOX9c62FtdfB3LsHsPx9ojyHc7i7MXMLnDceWcSg42kMU46FQ9DC0_FcGhQVzoYDX0VXyo2QeUN7lnKMMGalARArvHNrZAprhwsV0mtY1_Z5P49OkehqVWyCsKg1VTD6n2eLEhko_DXtkl9x-TuJmPEekt0MAX9HK026fTes",
       "use": "enc"
     }
   ]
 }
-6.853091 ==== END ====
+27.592552 ==== END ====
 Result
 
-WARNING
-Warnings:
-Did not detect any change in signing keys
+PASSED
