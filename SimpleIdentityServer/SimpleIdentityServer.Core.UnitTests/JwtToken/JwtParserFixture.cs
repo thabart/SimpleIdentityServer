@@ -16,6 +16,7 @@ using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.UnitTests.Fake;
 using SimpleIdentityServer.Core.Validators;
+using SimpleIdentityServer.Core.Repositories;
 
 namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 {
@@ -32,9 +33,84 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 
         private Mock<IJsonWebKeyConverter> _jsonWebKeyConverterMock;
 
+        private Mock<IJsonWebKeyRepository> _jsonWebKeyRepositoryMock;
+
         private IJwtParser _jwtParser;
 
         #region Decrypt method
+
+        [Test]
+        public void When_Passing_Empty_String_To_Decrypt_Without_ClientId_Method_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+
+            // ACT & ASSERT
+            Assert.Throws<ArgumentNullException>(() => _jwtParser.Decrypt(string.Empty));
+        }
+
+        [Test]
+        public void When_Passing_Not_Valid_Header_To_Decrypt_Without_ClientId_Method_Then_Empty_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            const string clientId = "client_id";
+            _jwsParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
+                .Returns(() => null);
+
+            // ACT
+            var result = _jwtParser.Decrypt("jws");
+
+            // ASSERT
+            Assert.IsEmpty(result);
+        }
+
+        [Test]
+        public void When_Passing_Jwe_With_Not_Existing_JsonWebKey_To_Decrypt_Without_ClientId_Method_Then_Empty_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var jwsProtectedHeader = new JweProtectedHeader
+            {
+                Alg = Jwt.Constants.JwsAlgNames.PS256
+            };
+            _jweParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
+                .Returns(jwsProtectedHeader);
+            _jsonWebKeyRepositoryMock.Setup(j => j.GetByKid(It.IsAny<string>()))
+                .Returns(() => null);
+
+            // ACT
+            var result = _jwtParser.Decrypt("jws");
+
+            // ASSERT
+            Assert.IsEmpty(result);
+        }
+
+        [Test]
+        public void When_Passing_Valid_Request_To_Decrypt_Without_ClientId_Method_Then_Parse_Method_Is_Called()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var jwsProtectedHeader = new JweProtectedHeader
+            {
+                Alg = Jwt.Constants.JwsAlgNames.PS256
+            };
+            var jsonWebKey = new JsonWebKey();
+            _jweParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
+                .Returns(jwsProtectedHeader);
+            _jsonWebKeyRepositoryMock.Setup(j => j.GetByKid(It.IsAny<string>()))
+                .Returns(jsonWebKey);
+
+            // ACT
+            var result = _jwtParser.Decrypt("jws");
+
+            // ASSERT
+            _jweParserMock.Verify(j => j.Parse(It.IsAny<string>(), It.IsAny<JsonWebKey>()));
+        }
+
+        #endregion
+
+        #region Decrypt with client_id method
 
         [Test]
         public void When_Passing_Empty_String_To_Decrypt_Method_Then_Exception_Is_Thrown()
@@ -229,6 +305,70 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
         #endregion
 
         #region Unsign method
+
+        [Test]
+        public void When_Passing_Null_To_Unsign_Without_ClientId_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+
+            // ACT & ASSERT
+            Assert.Throws<ArgumentNullException>(() => _jwtParser.UnSign(string.Empty));
+        }
+
+        [Test]
+        public void When_Passing_Not_Valid_Header_To_Unsign_Without_ClientId_Then_Null_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            _jwsParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
+                .Returns(() => null);
+
+            // ACT
+            var result = _jwtParser.UnSign("jws");
+
+            // ASSERT
+            Assert.IsTrue(result == null);
+        }
+
+        [Test]
+        public void When_Passing_Valid_Request_To_Unsign_Without_ClientId_Then_No_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            const string jws = "jws";
+            const string clientId = "client_id";
+            const string kid = "1";
+            var jsonWebKey = new JsonWebKey
+            {
+                Kid = kid,
+                SerializedKey = "serialized_key"
+            };
+            var payLoad = new JwsPayload();
+            var jwsProtectedHeader = new JwsProtectedHeader
+            {
+                Alg = Jwt.Constants.JwsAlgNames.PS256,
+                Kid = kid
+            };
+
+            _jwsParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
+                .Returns(jwsProtectedHeader);
+            _jsonWebKeyRepositoryMock.Setup(j => j.GetByKid(It.IsAny<string>()))
+                .Returns(jsonWebKey);
+            _jwsParserMock.Setup(j => j.ValidateSignature(It.IsAny<string>(), It.IsAny<JsonWebKey>()))
+                .Returns(payLoad);
+
+            // ACT
+            var result = _jwtParser.UnSign(jws);
+
+            // ASSERT
+            Assert.IsNotNull(result);
+            _jwsParserMock.Verify(j => j.ValidateSignature(jws, jsonWebKey));
+        }
+
+        #endregion
+
+        #region Unsign with client_id method
 
         [Test]
         public void When_Passing_Empty_String_To_Function_Unsign_Then_Exception_Is_Thrown()
@@ -574,12 +714,14 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             _httpClientFactoryMock = new Mock<IHttpClientFactory>();
             _clientValidatorMock = new Mock<IClientValidator>();
             _jsonWebKeyConverterMock = new Mock<IJsonWebKeyConverter>();
+            _jsonWebKeyRepositoryMock = new Mock<IJsonWebKeyRepository>();
             _jwtParser = new JwtParser(
                 _jweParserMock.Object,
                 _jwsParserMock.Object,
                 _httpClientFactoryMock.Object,
                 _clientValidatorMock.Object,
-                _jsonWebKeyConverterMock.Object);
+                _jsonWebKeyConverterMock.Object,
+                _jsonWebKeyRepositoryMock.Object);
         }
     }
 }

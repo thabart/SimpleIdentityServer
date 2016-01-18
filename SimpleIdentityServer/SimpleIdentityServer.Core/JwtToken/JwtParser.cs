@@ -25,6 +25,7 @@ using SimpleIdentityServer.Core.Jwt.Encrypt;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Validators;
+using SimpleIdentityServer.Core.Repositories;
 
 namespace SimpleIdentityServer.Core.JwtToken
 {
@@ -35,6 +36,9 @@ namespace SimpleIdentityServer.Core.JwtToken
         bool IsJwsToken(string jws);
 
         string Decrypt(
+            string jwe);
+
+        string Decrypt(
             string jwe,
             string clientId);
 
@@ -42,6 +46,9 @@ namespace SimpleIdentityServer.Core.JwtToken
             string jwe,
             string clientId,
             string password);
+
+        JwsPayload UnSign(
+            string jws);
 
         JwsPayload UnSign(
             string jws,
@@ -60,18 +67,22 @@ namespace SimpleIdentityServer.Core.JwtToken
 
         private readonly IJsonWebKeyConverter _jsonWebKeyConverter;
 
+        private readonly IJsonWebKeyRepository _jsonWebKeyRepository;
+
         public JwtParser(
             IJweParser jweParser,
             IJwsParser jwsParser,
             IHttpClientFactory httpClientFactory,
             IClientValidator clientValidator,
-            IJsonWebKeyConverter jsonWebKeyConverter)
+            IJsonWebKeyConverter jsonWebKeyConverter,
+            IJsonWebKeyRepository jsonWebKeyRepository)
         {
             _jweParser = jweParser;
             _jwsParser = jwsParser;
             _httpClientFactory = httpClientFactory;
             _clientValidator = clientValidator;
             _jsonWebKeyConverter = jsonWebKeyConverter;
+            _jsonWebKeyRepository = jsonWebKeyRepository;
         }
 
         public bool IsJweToken(string jwe)
@@ -82,6 +93,29 @@ namespace SimpleIdentityServer.Core.JwtToken
         public bool IsJwsToken(string jws)
         {
             return _jwsParser.GetHeader(jws) != null;
+        }
+
+        public string Decrypt(
+            string jwe)
+        {
+            if (string.IsNullOrWhiteSpace(jwe))
+            {
+                throw new ArgumentNullException("jwe");
+            }
+
+            var protectedHeader = _jweParser.GetHeader(jwe);
+            if (protectedHeader == null)
+            {
+                return string.Empty;
+            }
+
+            var jsonWebKey = _jsonWebKeyRepository.GetByKid(protectedHeader.Kid);
+            if (jsonWebKey == null)
+            {
+                return string.Empty;
+            }
+            
+            return _jweParser.Parse(jwe, jsonWebKey);
         }
 
         public string Decrypt(
@@ -113,6 +147,25 @@ namespace SimpleIdentityServer.Core.JwtToken
                 jsonWebKey,
                 password);
         }
+        
+        public JwsPayload UnSign(string jws)
+        {
+            if (string.IsNullOrWhiteSpace(jws))
+            {
+                throw new ArgumentNullException("jws");
+            }
+
+            var protectedHeader = _jwsParser.GetHeader(jws);
+            if (protectedHeader == null)
+            {
+                return null;
+            }
+
+            var jsonWebKey = _jsonWebKeyRepository.GetByKid(protectedHeader.Kid);
+            return UnSignWithJsonWebKey(jsonWebKey,
+                protectedHeader,
+                jws);
+        }
 
         public JwsPayload UnSign(
             string jws,
@@ -133,23 +186,34 @@ namespace SimpleIdentityServer.Core.JwtToken
             {
                 throw new InvalidOperationException(string.Format(ErrorDescriptions.ClientIsNotValid, clientId));
             }
-
-            const JwsPayload emptyResult = null;
+            
             var protectedHeader = _jwsParser.GetHeader(jws);
             if (protectedHeader == null)
             {
-                return emptyResult;
+                return null;
             }
 
             var jsonWebKey = GetJsonWebKeyFromClient(client,
                 protectedHeader.Kid);
-            if (jsonWebKey == null 
-                && protectedHeader.Alg != Jwt.Constants.JwsAlgNames.NONE)
+            return UnSignWithJsonWebKey(jsonWebKey,
+                protectedHeader,
+                jws);
+        }
+
+        #region Private methods
+
+        private JwsPayload UnSignWithJsonWebKey(
+            JsonWebKey jsonWebKey,
+            JwsProtectedHeader jwsProtectedHeader,
+            string jws)
+        {
+            if (jsonWebKey == null
+                && jwsProtectedHeader.Alg != Jwt.Constants.JwsAlgNames.NONE)
             {
-                return emptyResult;
+                return null;
             }
-            
-            if (protectedHeader.Alg == Jwt.Constants.JwsAlgNames.NONE)
+
+            if (jwsProtectedHeader.Alg == Jwt.Constants.JwsAlgNames.NONE)
             {
                 return _jwsParser.GetPayload(jws);
             }
@@ -228,5 +292,6 @@ namespace SimpleIdentityServer.Core.JwtToken
             return result;
         }
 
+        #endregion
     }
 }

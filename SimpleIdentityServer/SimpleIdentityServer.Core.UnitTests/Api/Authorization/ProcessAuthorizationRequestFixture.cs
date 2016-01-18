@@ -674,7 +674,13 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             var jwsParser = new JwsParser(createJwsSignature);
             var jsonWebKeyConverter = new JsonWebKeyConverter();
             var httpClientFactory = new HttpClientFactory();
-            var jwtParser = new JwtParser(jweParser, jwsParser, httpClientFactory, clientValidator, jsonWebKeyConverter);
+            var jwtParser = new JwtParser(
+                jweParser, 
+                jwsParser, 
+                httpClientFactory, 
+                clientValidator, 
+                jsonWebKeyConverter,
+                jsonWebKeyRepository);
             var claimsMapping = new ClaimsMapping();
             var jwsGenerator = new JwsGenerator(createJwsSignature);
             var jweGenerator = new JweGenerator(jweHelper);
