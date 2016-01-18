@@ -64,6 +64,12 @@ namespace SimpleIdentityServer.Api.Configuration
                     Code = Core.Constants.StandardTranslationCodes.LoginExternalAccount,
                     Value = "Login with your external account"
                 },
+                new Translation
+                {
+                    LanguageTag = "en",
+                    Code = Core.Constants.StandardTranslationCodes.LinkToThePolicy,
+                    Value = "policy"
+                },
                 // Swedish
                 new Translation
                 {

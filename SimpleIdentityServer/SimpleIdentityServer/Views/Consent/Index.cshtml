@@ -60,6 +60,14 @@
                 </ul>
             </div>
         }
+        
+        @if (!string.IsNullOrWhiteSpace(Model.PolicyUri))
+        {
+            <div style="padding-bottom: 10px;">
+                <a href="@Model.PolicyUri" target="_blank">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.LinkToThePolicy]</a>
+            </div>
+        }
+        
         <div>
             <a href="@Url.Action("Cancel", new { code = Model.Code })" class="btn btn-default">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.CancelCode]</a>
             <a href="@Url.Action("Confirm", new { code = Model.Code })" class="btn btn-default">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.ConfirmCode]</a>

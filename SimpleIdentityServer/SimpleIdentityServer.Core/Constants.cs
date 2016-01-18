@@ -307,6 +307,8 @@ namespace SimpleIdentityServer.Core
             public static string CancelCode = "cancel";
 
             public static string ConfirmCode = "confirm";
+
+            public static string LinkToThePolicy = "policy";
         }
 
         public static readonly Dictionary<List<ResponseType>, AuthorizationFlow> MappingResponseTypesToAuthorizationFlows = new Dictionary<List<ResponseType>, AuthorizationFlow>

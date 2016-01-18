@@ -65,6 +65,7 @@ namespace SimpleIdentityServer.Api.Controllers
                 AllowedScopeDescriptions = !scopes.Any() ? new List<string>() : scopes.Select(s => s.Description).ToList(),
                 AllowedIndividualClaims = claims,
                 LogoUri = client.LogoUri,
+                PolicyUri = client.PolicyUri,
                 Code = code
             };
             return View(viewModel);
@@ -103,7 +104,8 @@ namespace SimpleIdentityServer.Api.Controllers
                 Core.Constants.StandardTranslationCodes.IndividualClaimsCode,
                 Core.Constants.StandardTranslationCodes.ScopesCode,
                 Core.Constants.StandardTranslationCodes.CancelCode,
-                Core.Constants.StandardTranslationCodes.ConfirmCode
+                Core.Constants.StandardTranslationCodes.ConfirmCode,
+                Core.Constants.StandardTranslationCodes.LinkToThePolicy
             });
             ViewBag.Translations = translations;
         }
