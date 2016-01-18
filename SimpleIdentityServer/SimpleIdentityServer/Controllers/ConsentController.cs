@@ -66,6 +66,7 @@ namespace SimpleIdentityServer.Api.Controllers
                 AllowedIndividualClaims = claims,
                 LogoUri = client.LogoUri,
                 PolicyUri = client.PolicyUri,
+                TosUri = client.TosUri,
                 Code = code
             };
             return View(viewModel);
@@ -105,7 +106,8 @@ namespace SimpleIdentityServer.Api.Controllers
                 Core.Constants.StandardTranslationCodes.ScopesCode,
                 Core.Constants.StandardTranslationCodes.CancelCode,
                 Core.Constants.StandardTranslationCodes.ConfirmCode,
-                Core.Constants.StandardTranslationCodes.LinkToThePolicy
+                Core.Constants.StandardTranslationCodes.LinkToThePolicy,
+                Core.Constants.StandardTranslationCodes.Tos
             });
             ViewBag.Translations = translations;
         }

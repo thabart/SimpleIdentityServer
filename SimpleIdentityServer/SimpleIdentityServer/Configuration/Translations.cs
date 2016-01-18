@@ -70,6 +70,12 @@ namespace SimpleIdentityServer.Api.Configuration
                     Code = Core.Constants.StandardTranslationCodes.LinkToThePolicy,
                     Value = "policy"
                 },
+                new Translation
+                {
+                    LanguageTag = "en",
+                    Code = Core.Constants.StandardTranslationCodes.Tos,
+                    Value = "Terms of Service"
+                },
                 // Swedish
                 new Translation
                 {

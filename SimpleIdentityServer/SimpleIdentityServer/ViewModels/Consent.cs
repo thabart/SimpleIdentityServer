@@ -14,6 +14,8 @@ namespace SimpleIdentityServer.Api.ViewModels
 
         public string PolicyUri { get; set; }
 
+        public string TosUri { get; set; }
+
         public string Code { get; set; }
     }
 }

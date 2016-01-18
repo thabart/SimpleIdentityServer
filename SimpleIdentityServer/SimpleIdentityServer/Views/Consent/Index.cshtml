@@ -61,10 +61,18 @@
             </div>
         }
         
-        @if (!string.IsNullOrWhiteSpace(Model.PolicyUri))
+        @if (!string.IsNullOrWhiteSpace(Model.PolicyUri) ||
+            !string.IsNullOrWhiteSpace(Model.TosUri))
         {
             <div style="padding-bottom: 10px;">
-                <a href="@Model.PolicyUri" target="_blank">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.LinkToThePolicy]</a>
+                @if (!string.IsNullOrWhiteSpace(Model.PolicyUri))
+                {
+                    <a href="@Model.PolicyUri" target="_blank">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.LinkToThePolicy] &nbsp;</a>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.TosUri))
+                {
+                    <a href="@Model.TosUri" target="_blank">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.Tos]</a>
+                }
             </div>
         }
         
