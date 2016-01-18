@@ -113,7 +113,9 @@ namespace SimpleIdentityServer.Api.Controllers
                 Core.Constants.StandardTranslationCodes.LoginCode,
                 Core.Constants.StandardTranslationCodes.UserNameCode,
                 Core.Constants.StandardTranslationCodes.PasswordCode,
-                Core.Constants.StandardTranslationCodes.RememberMyLoginCode
+                Core.Constants.StandardTranslationCodes.RememberMyLoginCode,
+                Core.Constants.StandardTranslationCodes.LoginLocalAccount,
+                Core.Constants.StandardTranslationCodes.LoginExternalAccount
             });
 
             ViewBag.Translations = translations;

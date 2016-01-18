@@ -8,7 +8,9 @@ namespace SimpleIdentityServer.Api.ViewModels
 
         public List<string> AllowedScopeDescriptions { get; set; }
 
-        public List<string> AllowedIndividualClaims { get; set; } 
+        public List<string> AllowedIndividualClaims { get; set; }
+
+        public string LogoUri { get; set; }
 
         public string Code { get; set; }
     }

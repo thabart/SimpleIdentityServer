@@ -5,58 +5,64 @@
 
 @model SimpleIdentityServer.Api.ViewModels.ConsentViewModel
 
-<div class="container col-lg-8 col-md-offset-2">
-    <div class="row">
-        <div class="col-lg-2">
-            <img src="@Url.Content("~/Content/img/OAuth2.png")" width="100" height="100" />
+@{
+    var accessToCode = ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.ApplicationWouldLikeToCode];
+    var accessToValue = string.Format(accessToCode, Model.ClientDisplayName);
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="col-center">
+            @if (string.IsNullOrWhiteSpace(Model.LogoUri))
+            {
+                <img src="@Url.Content("~/Content/img/OAuth2.png")" width="150" height="150" />
+            }
+            else
+            {
+                <img src="@Url.Content(Model.LogoUri)" width="150" height="150" />
+            }
         </div>
-        <div class="col-lg-10">
-            <h3>
-                @Model.ClientDisplayName
-            </h3>
+        <div>
+            <h2>
+                @accessToValue
+            </h2>
         </div>
-    </div>
-    <div class="row">
-        <div class="page-header">
-            <h3>@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.ApplicationWouldLikeToCode]</h3>
+        @if (Model.AllowedScopeDescriptions.Any())
+        {
+            <div>
+                <h4>@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.ScopesCode]</h4>
+            </div>
+            <div>
+                <ul class="list-group">
+                    @foreach (var scope in Model.AllowedScopeDescriptions)
+                    {
+                        <li class="list-group-item">
+                            @scope
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+        
+        @if (Model.AllowedIndividualClaims.Any())
+        {
+            <div class="row">
+                <h4>@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.IndividualClaimsCode]</h4>
+            </div>
+            <div class="row">
+                <ul class="list-group">
+                    @foreach (var claim in Model.AllowedIndividualClaims)
+                    {
+                        <li class="list-group-item">
+                            @claim
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+        <div>
+            <a href="@Url.Action("Cancel", new { code = Model.Code })" class="btn btn-default">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.CancelCode]</a>
+            <a href="@Url.Action("Confirm", new { code = Model.Code })" class="btn btn-default">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.ConfirmCode]</a>
         </div>
-    </div>
-    @if (Model.AllowedScopeDescriptions.Any())
-    {
-        <div class="row">
-            <h4>@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.ScopesCode]</h4>
-        </div>
-        <div class="row">
-            <ul class="list-group">
-                @foreach (var scope in Model.AllowedScopeDescriptions)
-                {
-                    <li class="list-group-item">
-                        @scope
-                    </li>
-                }
-            </ul>
-        </div>
-    }
-    
-    @if (Model.AllowedIndividualClaims.Any())
-    {
-        <div class="row">
-            <h4>@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.IndividualClaimsCode]</h4>
-        </div>
-        <div class="row">
-            <ul class="list-group">
-                @foreach (var claim in Model.AllowedIndividualClaims)
-                {
-                    <li class="list-group-item">
-                        @claim
-                    </li>
-                }
-            </ul>
-        </div>
-    }
-    
-    <div class="row">
-        <a href="@Url.Action("Cancel", new { code = Model.Code })" class="btn btn-default">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.CancelCode]</a>
-        <a href="@Url.Action("Confirm", new { code = Model.Code })" class="btn btn-default">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.ConfirmCode]</a>
     </div>
 </div>

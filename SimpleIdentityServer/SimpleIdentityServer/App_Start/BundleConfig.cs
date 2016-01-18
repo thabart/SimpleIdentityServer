@@ -12,7 +12,8 @@ namespace SimpleIdentityServer.Api
                 ));
 
             bundles.Add(new StyleBundle("~/content/css").Include(
-                "~/Content/bootstrap.css"
+                "~/Content/bootstrap.css",
+                "~/Content/style.css"
                 ));
         }
     }

@@ -15,6 +15,7 @@ namespace SimpleIdentityServer.Api.Configuration
                     ClientName = "My blog",
                     ClientSecret = "MyBlog",
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
+                    LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
                     AllowedScopes = new List<Scope>
                     {
                         // PROTECTED API SCOPES

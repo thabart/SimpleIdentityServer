@@ -1,6 +1,5 @@
 ﻿using SimpleIdentityServer.Api.DTOs.Request;
 using SimpleIdentityServer.Api.Extensions;
-using SimpleIdentityServer.Api.Parsers;
 using SimpleIdentityServer.Api.ViewModels;
 using SimpleIdentityServer.Core.WebSite.Consent;
 using SimpleIdentityServer.Core.Models;
@@ -65,6 +64,7 @@ namespace SimpleIdentityServer.Api.Controllers
                 ClientDisplayName = client.ClientName,
                 AllowedScopeDescriptions = !scopes.Any() ? new List<string>() : scopes.Select(s => s.Description).ToList(),
                 AllowedIndividualClaims = claims,
+                LogoUri = client.LogoUri,
                 Code = code
             };
             return View(viewModel);

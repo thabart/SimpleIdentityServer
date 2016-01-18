@@ -7,30 +7,34 @@
 
 @section PageTitle
 {
-    <div class="page-header">
-        <h1>
-            @ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.LoginCode]
-        </h1>
-    </div>
+    <h1>
+        @ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.LoginCode]
+    </h1>
 }
 
-<!-- Local login -->
-<div class="col-md-6 col-sm-6">
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <h3 class="panel-title">Local Login</h3>
+<div class="row">
+    <div class="col-md-6">
+        <h2>
+            @ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.LoginExternalAccount]
+        </h2>
+    </div>
+    <div class="col-md-6">
+        <div>
+            <h2>
+                @ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.LoginLocalAccount]
+            </h2>
         </div>
-        <div class="panel-body">
+        <div>
             <form name="form" method="POST" action="@Url.Action("Index")">
                 <fieldset>
                     <input type="hidden" value="@Model.Code" name="Code" />
                     <div class="form-group">
                         <label>@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.UserNameCode]</label>
-                        <input maxlength="100" class="form-control" value="@Model.UserName" name="UserName"/>
+                        <input maxlength="100" class="form-control" value="@Model.UserName" name="UserName" type="text" />
                     </div>
                     <div class="form-group">
                         <label>@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.PasswordCode]</label>
-                        <input maxlength="100" class="form-control" value="@Model.Password" name="Password" />
+                        <input maxlength="100" class="form-control" value="@Model.Password" name="Password" type="password" />
                     </div>
                     <div class="form-group">
                         <label>
@@ -45,9 +49,4 @@
             </form>
         </div>
     </div>
-</div>
-
-<!-- External logins -->
-<div class="col-md-6 col-sm-6">
-    
 </div>

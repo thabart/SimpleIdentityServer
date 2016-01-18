@@ -28,8 +28,8 @@ namespace SimpleIdentityServer.Api.Configuration
                     Name = "openid",
                     IsExposed = true,
                     IsInternal = true,
-                    IsDisplayedInConsent = false,
-                    Description = "openid",
+                    IsDisplayedInConsent = true,
+                    Description = "access to the openid scope",
                     Type = ScopeType.ProtectedApi
                 },
                 new Scope

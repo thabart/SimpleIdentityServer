@@ -86,7 +86,8 @@ namespace SimpleIdentityServer.Core.Api.Registration.Actions
                 DefaultAcrValues = registrationParameter.DefaultAcrValues,
                 RequireAuthTime = registrationParameter.RequireAuthTime,
                 InitiateLoginUri  = registrationParameter.InitiateLoginUri,
-                RequestUris = registrationParameter.RequestUris
+                RequestUris = registrationParameter.RequestUris,
+                LogoUri = registrationParameter.LogoUri
             };
 
             // If omitted then the default value is authorization code response type

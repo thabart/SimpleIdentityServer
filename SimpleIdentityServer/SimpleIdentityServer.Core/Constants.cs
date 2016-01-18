@@ -286,19 +286,23 @@ namespace SimpleIdentityServer.Core
 
         public static class StandardTranslationCodes
         {
-            public static string ApplicationWouldLikeToCode = "Application would like to";
+            public static string ApplicationWouldLikeToCode = "application_would_like_to";
 
-            public static string ScopesCode = "Scopes";
+            public static string ScopesCode = "scopes";
 
-            public static string IndividualClaimsCode = "individual claims";
+            public static string IndividualClaimsCode = "individual_claims";
 
-            public static string LoginCode = "Login";
+            public static string LoginCode = "login";
 
-            public static string UserNameCode = "Username";
+            public static string LoginExternalAccount = "login_external_account";
 
-            public static string PasswordCode = "Password";
+            public static string LoginLocalAccount = "login_local_account";
 
-            public static string RememberMyLoginCode = "remember my login";
+            public static string UserNameCode = "username";
+
+            public static string PasswordCode = "password";
+
+            public static string RememberMyLoginCode = "remember_my_login";
 
             public static string CancelCode = "cancel";
 

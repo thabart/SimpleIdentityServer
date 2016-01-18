@@ -14,7 +14,7 @@ namespace SimpleIdentityServer.Api.Configuration
                 {
                     LanguageTag = "en",
                     Code = Core.Constants.StandardTranslationCodes.ApplicationWouldLikeToCode,
-                    Value = "the application would like to :"
+                    Value = "the client {0} would like to access"
                 },
                 new Translation
                 {
@@ -52,12 +52,24 @@ namespace SimpleIdentityServer.Api.Configuration
                     Code = Core.Constants.StandardTranslationCodes.CancelCode,
                     Value = "Cancel"
                 },
+                new Translation
+                {
+                    LanguageTag = "en",
+                    Code = Core.Constants.StandardTranslationCodes.LoginLocalAccount,
+                    Value = "Login with your local account"
+                },
+                new Translation
+                {
+                    LanguageTag = "en",
+                    Code = Core.Constants.StandardTranslationCodes.LoginExternalAccount,
+                    Value = "Login with your external account"
+                },
                 // Swedish
                 new Translation
                 {
                     LanguageTag = "se",
                     Code = Core.Constants.StandardTranslationCodes.ApplicationWouldLikeToCode,
-                    Value = "tillämpning skulle vilja:"
+                    Value = "tillämpning {0} skulle vilja:"
                 },
                 new Translation
                 {
