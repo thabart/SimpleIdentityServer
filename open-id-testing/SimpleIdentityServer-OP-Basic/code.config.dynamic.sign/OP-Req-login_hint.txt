@@ -1,0 +1,174 @@
+Test info
+
+Profile: {'openid-configuration': 'config', 'response_type': 'code', 'crypto': 'sign', 'registration': 'dynamic'}
+Timestamp: 2016-01-18T22:06:56Z
+Test description: Providing login_hint [Basic, Implicit, Hybrid]
+Test ID: OP-Req-login_hint
+Issuer: https://simpleidentityserver.azurewebsites.net
+Test output
+
+
+__RegistrationRequest:post__
+[check]
+	status: INFORMATION
+	description: Registration Response
+	info: {"client_id":"d926d1f0-2067-4cb6-b57e-7e432c2691ca","client_secret":"ff9fa5ba-c1a5-405a-ba7f-828a1d1ee28d","client_id_issued_at":"1453154781","client_secret_expires_at":0,"redirect_uris":["https://op.certification.openid.net:60186/authz_cb"],"response_types":["code"],"grant_types":["authorization_code"],"application_type":"web","contacts":["roland.hedberg@umu.se"],"client_name":"","logo_uri":"","client_uri":"","policy_uri":"","tos_uri":"","jwks_uri":"https://op.certification.openid.net:60186/export/jwk_60186.json","jwks":null,"sector_identifier_uri":"","subject_type":"public","id_token_signed_response_alg":"RS256","id_token_encrypted_response_alg":"","id_token_encrypted_response_enc":"","userinfo_signed_response_alg":"none","userinfo_encrypted_response_alg":"","userinfo_encrypted_response_enc":"","request_object_signing_alg":"","request_object_encryption_alg":"","request_object_encryption_enc":"","token_endpoint_auth_method":"client_secret_basic","token_endpoint_auth_signing_alg":"","default_max_age":3600.0,"require_auth_time":true,"default_acr_values":"","initiate_login_uri":"","request_uris":[]}
+__AuthorizationRequest:pre__
+[check-response-type]
+	status: OK
+	description: Checks that the asked for response type are among the supported
+[check-endpoint]
+	status: OK
+	description: Checks that the necessary endpoint exists at a server
+__After completing the test flow:__
+[verify-authn-response]
+	status: OK
+	description: Checks that the last response was a JSON encoded authentication message
+__X:==== END ====__
+Trace output
+
+
+26.974707 ------------ DiscoveryRequest ------------
+26.974728 Provider info discover from 'https://simpleidentityserver.azurewebsites.net'
+26.974734 --> URL: https://simpleidentityserver.azurewebsites.net/.well-known/openid-configuration
+27.578000 ProviderConfigurationResponse: {
+  "authorization_endpoint": "https://simpleidentityserver.azurewebsites.net/authorization",
+  "check_session_iframe": "https://simpleidentityserver.azurewebsites.net/check_session",
+  "claims_parameter_supported": true,
+  "claims_supported": [
+    "sub",
+    "name",
+    "family_name",
+    "given_name",
+    "middle_name",
+    "nickname",
+    "preferred_username",
+    "profile",
+    "picture",
+    "website",
+    "gender",
+    "birthdate",
+    "zoneinfo",
+    "locale",
+    "updated_at",
+    "email",
+    "email_verified",
+    "address",
+    "phone_number",
+    "phone_number_verified"
+  ],
+  "end_session_endpoint": "https://simpleidentityserver.azurewebsites.net/end_session",
+  "grant_types_supported": [
+    "authorization_code",
+    "client_credentials",
+    "password",
+    "refresh_token",
+    "implicit"
+  ],
+  "id_token_signing_alg_values_supported": [
+    "RS256"
+  ],
+  "issuer": "https://simpleidentityserver.azurewebsites.net",
+  "jwks_uri": "https://simpleidentityserver.azurewebsites.net/jwks",
+  "registration_endpoint": "https://simpleidentityserver.azurewebsites.net/registration",
+  "request_parameter_supported": true,
+  "request_uri_parameter_supported": true,
+  "require_request_uri_registration": true,
+  "response_modes_supported": [
+    "query"
+  ],
+  "response_types_supported": [
+    "code",
+    "id_token",
+    "id_token token",
+    "code id_token",
+    "code token",
+    "code id_token token"
+  ],
+  "revocation_endpoint": "https://simpleidentityserver.azurewebsites.net/revocation",
+  "scopes_supported": [
+    "openid",
+    "profile",
+    "email",
+    "address",
+    "phone"
+  ],
+  "subject_types_supported": [
+    "public",
+    "pairwise"
+  ],
+  "token_endpoint": "https://simpleidentityserver.azurewebsites.net/token",
+  "token_endpoint_auth_methods_supported": [
+    "client_secret_basic",
+    "client_secret_post",
+    "client_secret_jwt",
+    "private_key_jwt"
+  ],
+  "userinfo_endpoint": "https://simpleidentityserver.azurewebsites.net/userinfo",
+  "version": "1.0"
+}
+28.178343 JWKS: {
+  "keys": [
+    {
+      "alg": "RS256",
+      "e": "AQAB",
+      "kid": "5c0addb9-f99b-4721-a1d2-f740a15d8e95",
+      "kty": "RSA",
+      "n": "uIbjVRhSZsSkHB5adWM45g6efj_1ZToddvtgrf75lv_fJr_nKqpehfvzt8qUnd3vyOkBb4C6-k6nWJZUldR4rHN4C5qO9-3brSQPALOtoQhyP3cntiKWFKQfctW8HLYRwTA7ofPDB0js11Ni4F_bmsauHPrAQIr-PneeNo2-a7U",
+      "use": "sig"
+    },
+    {
+      "alg": "RSA1_5",
+      "e": "AQAB",
+      "kid": "50b851b6-8a69-46fd-9a7c-6a14b14bd71a",
+      "kty": "RSA",
+      "n": "uIbjVRhSZsSkHB5adWM45g6efj_1ZToddvtgrf75lv_fJr_nKqpehfvzt8qUnd3vyOkBb4C6-k6nWJZUldR4rHN4C5qO9-3brSQPALOtoQhyP3cntiKWFKQfctW8HLYRwTA7ofPDB0js11Ni4F_bmsauHPrAQIr-PneeNo2-a7U",
+      "use": "enc"
+    }
+  ]
+}
+28.195448 ------------ RegistrationRequest ------------
+28.195857 --> URL: https://simpleidentityserver.azurewebsites.net/registration
+28.195863 --> BODY: {"subject_type": "public", "jwks_uri": "https://op.certification.openid.net:60186/export/jwk_60186.json", "contacts": ["roland.hedberg@umu.se"], "application_type": "web", "grant_types": ["authorization_code"], "post_logout_redirect_uris": ["https://op.certification.openid.net:60186/logout"], "redirect_uris": ["https://op.certification.openid.net:60186/authz_cb"], "response_types": ["code"], "require_auth_time": true, "default_max_age": 3600}
+28.195875 --> HEADERS: {'Content-Type': 'application/json'}
+28.689204 <-- STATUS: 200
+28.689271 <-- BODY: {"client_id":"d926d1f0-2067-4cb6-b57e-7e432c2691ca","client_secret":"ff9fa5ba-c1a5-405a-ba7f-828a1d1ee28d","client_id_issued_at":"1453154781","client_secret_expires_at":0,"redirect_uris":["https://op.certification.openid.net:60186/authz_cb"],"response_types":["code"],"grant_types":["authorization_code"],"application_type":"web","contacts":["roland.hedberg@umu.se"],"client_name":"","logo_uri":"","client_uri":"","policy_uri":"","tos_uri":"","jwks_uri":"https://op.certification.openid.net:60186/export/jwk_60186.json","jwks":null,"sector_identifier_uri":"","subject_type":"public","id_token_signed_response_alg":"RS256","id_token_encrypted_response_alg":"","id_token_encrypted_response_enc":"","userinfo_signed_response_alg":"none","userinfo_encrypted_response_alg":"","userinfo_encrypted_response_enc":"","request_object_signing_alg":"","request_object_encryption_alg":"","request_object_encryption_enc":"","token_endpoint_auth_method":"client_secret_basic","token_endpoint_auth_signing_alg":"","default_max_age":3600.0,"require_auth_time":true,"default_acr_values":"","initiate_login_uri":"","request_uris":[]}
+28.690179 RegistrationResponse: {
+  "application_type": "web",
+  "client_id": "d926d1f0-2067-4cb6-b57e-7e432c2691ca",
+  "client_id_issued_at": "1453154781",
+  "client_secret": "ff9fa5ba-c1a5-405a-ba7f-828a1d1ee28d",
+  "client_secret_expires_at": 0,
+  "contacts": [
+    "roland.hedberg@umu.se"
+  ],
+  "default_max_age": 3600.0,
+  "grant_types": [
+    "authorization_code"
+  ],
+  "id_token_signed_response_alg": "RS256",
+  "jwks": null,
+  "jwks_uri": "https://op.certification.openid.net:60186/export/jwk_60186.json",
+  "redirect_uris": [
+    "https://op.certification.openid.net:60186/authz_cb"
+  ],
+  "require_auth_time": true,
+  "response_types": [
+    "code"
+  ],
+  "subject_type": "public",
+  "token_endpoint_auth_method": "client_secret_basic",
+  "userinfo_signed_response_alg": "none"
+}
+28.706842 ------------ AuthorizationRequest ------------
+28.707279 --> URL: https://simpleidentityserver.azurewebsites.net/authorization?login_hint=buffy%40simpleidentityserver.azurewebsites.net&state=OUXB6r01Bg0bWKbz&redirect_uri=https%3A%2F%2Fop.certification.openid.net%3A60186%2Fauthz_cb&response_type=code&client_id=d926d1f0-2067-4cb6-b57e-7e432c2691ca&scope=openid
+28.707287 --> BODY: None
+63.530521 <-- code=a4ddb6af-58c7-48e7-b1da-01bf85eadacc&state=OUXB6r01Bg0bWKbz
+63.530973 AuthorizationResponse: {
+  "code": "a4ddb6af-58c7-48e7-b1da-01bf85eadacc",
+  "state": "OUXB6r01Bg0bWKbz"
+}
+63.531284 ==== END ====
+Result
+
+PASSED
