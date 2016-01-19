@@ -226,10 +226,15 @@ namespace SimpleIdentityServer.Api.Extensions
             {
                 foreach (var responseType in clientResponse.ResponseTypes)
                 {
-                    Core.Models.ResponseType responseTypeEnum;
-                    if (Enum.TryParse(responseType, out responseTypeEnum))
+                    var responseTypeSplitted = responseType.Split(' ');
+                    foreach (var response in responseTypeSplitted)
                     {
-                        responseTypes.Add(responseTypeEnum);
+                        Core.Models.ResponseType responseTypeEnum;
+                        if (Enum.TryParse(response, out responseTypeEnum) &&
+                            !responseTypes.Contains(responseTypeEnum))
+                        {
+                            responseTypes.Add(responseTypeEnum);
+                        }
                     }
                 }
             }
