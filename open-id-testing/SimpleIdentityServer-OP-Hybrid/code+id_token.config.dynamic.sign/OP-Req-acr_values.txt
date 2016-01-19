@@ -1,0 +1,382 @@
+Test info
+
+Profile: {'openid-configuration': 'config', 'response_type': 'code+id_token', 'crypto': 'sign', 'registration': 'dynamic'}
+Timestamp: 2016-01-19T14:57:32Z
+Test description: Providing acr_values [Basic, Implicit, Hybrid]
+Test ID: OP-Req-acr_values
+Issuer: https://simpleidentityserver.azurewebsites.net
+Test output
+
+
+__RegistrationRequest:post__
+[check]
+	status: INFORMATION
+	description: Registration Response
+	info: {"client_id":"efcb876a-3c33-46b1-9abe-0d85f05091a6","client_secret":"709ea70a-7323-44eb-a57c-c36f816a756d","client_id_issued_at":"1453215447","client_secret_expires_at":0,"redirect_uris":["https://op.certification.openid.net:60186/authz_cb"],"response_types":["code","id_token"],"grant_types":["authorization_code","implicit"],"application_type":"web","contacts":["roland.hedberg@umu.se"],"client_name":"","logo_uri":"","client_uri":"","policy_uri":"","tos_uri":"","jwks_uri":"https://op.certification.openid.net:60186/export/jwk_60186.json","jwks":null,"sector_identifier_uri":"","subject_type":"public","id_token_signed_response_alg":"RS256","id_token_encrypted_response_alg":"","id_token_encrypted_response_enc":"","userinfo_signed_response_alg":"none","userinfo_encrypted_response_alg":"","userinfo_encrypted_response_enc":"","request_object_signing_alg":"","request_object_encryption_alg":"","request_object_encryption_enc":"","token_endpoint_auth_method":"client_secret_basic","token_endpoint_auth_signing_alg":"","default_max_age":3600.0,"require_auth_time":true,"default_acr_values":"","initiate_login_uri":"","request_uris":[]}
+__AuthorizationRequest:pre__
+[check-response-type]
+	status: OK
+	description: Checks that the asked for response type are among the supported
+[check-endpoint]
+	status: OK
+	description: Checks that the necessary endpoint exists at a server
+__After completing the test flow:__
+[verify-response]
+	status: OK
+	description: Checks that the last response was one of a possible set of OpenID Connect Responses
+[used-acr-value]
+	status: OK
+	description: The acr value in the ID Token
+	info: Used acr value: openid.pape.auth_level.ns.password=1, preferred: ['1', '2']
+__X:==== END ====__
+Trace output
+
+
+0.000327 ------------ DiscoveryRequest ------------
+0.000343 Provider info discover from 'https://simpleidentityserver.azurewebsites.net'
+0.000350 --> URL: https://simpleidentityserver.azurewebsites.net/.well-known/openid-configuration
+0.641669 ProviderConfigurationResponse: {
+  "authorization_endpoint": "https://simpleidentityserver.azurewebsites.net/authorization",
+  "check_session_iframe": "https://simpleidentityserver.azurewebsites.net/check_session",
+  "claims_parameter_supported": true,
+  "claims_supported": [
+    "sub",
+    "name",
+    "family_name",
+    "given_name",
+    "middle_name",
+    "nickname",
+    "preferred_username",
+    "profile",
+    "picture",
+    "website",
+    "gender",
+    "birthdate",
+    "zoneinfo",
+    "locale",
+    "updated_at",
+    "email",
+    "email_verified",
+    "address",
+    "phone_number",
+    "phone_number_verified"
+  ],
+  "end_session_endpoint": "https://simpleidentityserver.azurewebsites.net/end_session",
+  "grant_types_supported": [
+    "authorization_code",
+    "client_credentials",
+    "password",
+    "refresh_token",
+    "implicit"
+  ],
+  "id_token_signing_alg_values_supported": [
+    "RS256"
+  ],
+  "issuer": "https://simpleidentityserver.azurewebsites.net",
+  "jwks_uri": "https://simpleidentityserver.azurewebsites.net/jwks",
+  "registration_endpoint": "https://simpleidentityserver.azurewebsites.net/registration",
+  "request_parameter_supported": true,
+  "request_uri_parameter_supported": true,
+  "require_request_uri_registration": true,
+  "response_modes_supported": [
+    "query"
+  ],
+  "response_types_supported": [
+    "code",
+    "id_token",
+    "id_token token",
+    "code id_token",
+    "code token",
+    "code id_token token"
+  ],
+  "revocation_endpoint": "https://simpleidentityserver.azurewebsites.net/revocation",
+  "scopes_supported": [
+    "openid",
+    "profile",
+    "email",
+    "address",
+    "phone"
+  ],
+  "subject_types_supported": [
+    "public",
+    "pairwise"
+  ],
+  "token_endpoint": "https://simpleidentityserver.azurewebsites.net/token",
+  "token_endpoint_auth_methods_supported": [
+    "client_secret_basic",
+    "client_secret_post",
+    "client_secret_jwt",
+    "private_key_jwt"
+  ],
+  "userinfo_endpoint": "https://simpleidentityserver.azurewebsites.net/userinfo",
+  "version": "1.0"
+}
+1.194732 JWKS: {
+  "keys": [
+    {
+      "alg": "RS256",
+      "e": "AQAB",
+      "kid": "b2e894bb-84b8-4960-8556-5547f2fb6375",
+      "kty": "RSA",
+      "n": "tVVFFy7VJDoBpUnKBH7p0ljlJBwIodCqrfLAPx7dLpirFKEeRW_MXFlQaOYlzliJhCOJHuSM6B_tlWnNWYABt7mzLxH9AaQAuXRNaRF-V3xjddrFmEk4Hvfqdox2N6n3Ke52RBqg6rz_cdi3n7sK7UXT38GfQrZLs63dHps75Ds",
+      "use": "sig"
+    },
+    {
+      "alg": "RSA1_5",
+      "e": "AQAB",
+      "kid": "cc9d9f07-f664-4c0e-8d0e-edb8d942ad04",
+      "kty": "RSA",
+      "n": "tVVFFy7VJDoBpUnKBH7p0ljlJBwIodCqrfLAPx7dLpirFKEeRW_MXFlQaOYlzliJhCOJHuSM6B_tlWnNWYABt7mzLxH9AaQAuXRNaRF-V3xjddrFmEk4Hvfqdox2N6n3Ke52RBqg6rz_cdi3n7sK7UXT38GfQrZLs63dHps75Ds",
+      "use": "enc"
+    }
+  ]
+}
+1.204274 ------------ RegistrationRequest ------------
+1.204691 --> URL: https://simpleidentityserver.azurewebsites.net/registration
+1.204699 --> BODY: {"subject_type": "public", "jwks_uri": "https://op.certification.openid.net:60186/export/jwk_60186.json", "contacts": ["roland.hedberg@umu.se"], "application_type": "web", "grant_types": ["authorization_code", "implicit"], "post_logout_redirect_uris": ["https://op.certification.openid.net:60186/logout"], "redirect_uris": ["https://op.certification.openid.net:60186/authz_cb"], "response_types": ["code id_token"], "require_auth_time": true, "default_max_age": 3600}
+1.204708 --> HEADERS: {'Content-Type': 'application/json'}
+1.912799 <-- STATUS: 200
+1.912870 <-- BODY: {"client_id":"efcb876a-3c33-46b1-9abe-0d85f05091a6","client_secret":"709ea70a-7323-44eb-a57c-c36f816a756d","client_id_issued_at":"1453215447","client_secret_expires_at":0,"redirect_uris":["https://op.certification.openid.net:60186/authz_cb"],"response_types":["code","id_token"],"grant_types":["authorization_code","implicit"],"application_type":"web","contacts":["roland.hedberg@umu.se"],"client_name":"","logo_uri":"","client_uri":"","policy_uri":"","tos_uri":"","jwks_uri":"https://op.certification.openid.net:60186/export/jwk_60186.json","jwks":null,"sector_identifier_uri":"","subject_type":"public","id_token_signed_response_alg":"RS256","id_token_encrypted_response_alg":"","id_token_encrypted_response_enc":"","userinfo_signed_response_alg":"none","userinfo_encrypted_response_alg":"","userinfo_encrypted_response_enc":"","request_object_signing_alg":"","request_object_encryption_alg":"","request_object_encryption_enc":"","token_endpoint_auth_method":"client_secret_basic","token_endpoint_auth_signing_alg":"","default_max_age":3600.0,"require_auth_time":true,"default_acr_values":"","initiate_login_uri":"","request_uris":[]}
+1.913808 RegistrationResponse: {
+  "application_type": "web",
+  "client_id": "efcb876a-3c33-46b1-9abe-0d85f05091a6",
+  "client_id_issued_at": "1453215447",
+  "client_secret": "709ea70a-7323-44eb-a57c-c36f816a756d",
+  "client_secret_expires_at": 0,
+  "contacts": [
+    "roland.hedberg@umu.se"
+  ],
+  "default_max_age": 3600.0,
+  "grant_types": [
+    "authorization_code",
+    "implicit"
+  ],
+  "id_token_signed_response_alg": "RS256",
+  "jwks": null,
+  "jwks_uri": "https://op.certification.openid.net:60186/export/jwk_60186.json",
+  "redirect_uris": [
+    "https://op.certification.openid.net:60186/authz_cb"
+  ],
+  "require_auth_time": true,
+  "response_types": [
+    "code",
+    "id_token"
+  ],
+  "subject_type": "public",
+  "token_endpoint_auth_method": "client_secret_basic",
+  "userinfo_signed_response_alg": "none"
+}
+1.923400 ------------ AuthorizationRequest ------------
+1.923847 --> URL: https://simpleidentityserver.azurewebsites.net/authorization?nonce=S7GaqpfgksRK&acr_values=1+2&state=U00arcEH3gMYbvg9&redirect_uri=https%3A%2F%2Fop.certification.openid.net%3A60186%2Fauthz_cb&response_type=code+id_token&client_id=efcb876a-3c33-46b1-9abe-0d85f05091a6&scope=openid
+1.923855 --> BODY: None
+4.134059 QUERY_STRING:
+4.950663 <-- code=917b9d59-0409-408c-8d49-a13287336b10&id_token=eyJhbGciOiJSUzI1NiIsImtpZCI6ImIyZTg5NGJiLTg0YjgtNDk2MC04NTU2LTU1NDdmMmZiNjM3NSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL3NpbXBsZWlkZW50aXR5c2VydmVyLmF6dXJld2Vic2l0ZXMubmV0LyIsImF1ZCI6WyJNeUJsb2ciLCJNeUJsb2dDbGllbnRTZWNyZXRQb3N0IiwiODZiYmI2ODktM2FiMy00NTRjLWFmYjItM2JjNzVlZmFlNzBmIiwiNjhlNmU3OTctNmJiOC00NjBkLWIxZTgtNmJiYWI0ZjA3YjIxIiwiMDAxN2YzMGUtMWE2ZC00NDBkLWJkMjAtNmEzNGFlZTBkMjUwIiwiZGNlMDk2OWItMTE0Mi00YTU3LWE2NzItOGE5ODY4ZjFhZWM0IiwiNGU0ZjFkYzktYTlmZi00ZjA0LWExOWUtZTZhYjU0YTQwMTgwIiwiYTYzMGQ5YjQtNjhkMi00ZjhjLWI1ZDYtYzY5MmYxYmEyMjAxIiwiYmM0ZDRjNzktMjRjMy00MTk3LTk4YzAtNzkyZDMxY2NhYjdmIiwiOWQ3ZWMyMDktNmI0Mi00MjY4LTk0ZDMtZjE5NTNlYTM3MDZlIiwiZGRmNDZkZjYtM2IyMi00OWUyLWJhN2EtZDU1MTRlNzBkMTI5IiwiOWQxZDY0ODYtNjk0ZS00YzMxLWJmMGEtMzJkZTY0YmEyYzA5IiwiNGU4NDBiYjctMWJlMy00ZTYwLTg2NjEtY2U3MDk5NjFiMDg0IiwiYzFmZjNkMDQtZjc4Ny00OTBlLTlmNGEtOTM5Y2EwNTkyNTk2IiwiMzA2NWUwNjgtMDU3NC00YjgxLWIzOGItMThkOTQyYzNmZmNmIiwiMTBkMzUzNWItZjBkNC00N2RkLTk3M2YtYWI5ZDY1NWY4MDc5IiwiMGNmOWM0NmUtYTQyNC00Y2QxLWIyMmEtMjZlZTk1ZTE0MWVlIiwiYmFkNDkzZTEtNTUyMy00MjVmLTg1YmQtYzNjYjJlZGMxMTI0IiwiYzk2MDAwNDktNTJjNi00N2E1LTg2OWYtOTVlZmE5NTZhNmI2IiwiNjAyOWMwYTgtYmY2ZS00ZjAzLWFkZDUtYjk3MmU2Nzg3NzIxIiwiMjA1YmIxYzItMjRiZi00YjAxLWExYzctNThlMGY0YmM4YzcxIiwiNzVjZGZmZGEtZDJlNS00MjAxLWI4NjQtMzUyOWMxMTZhNDE3IiwiMWQ5YTk1OTQtNTg0MS00YTZiLWFkNGItMjFhMjJhYTc2YjM1IiwiYzI4YTA2YTAtNDA5OS00Y2YwLTlmNmUtMmVkNWY4ZTUxNTQxIiwiYWE2MDY4N2MtOGM1MC00OWRmLTliNGQtZGIzOWU2NWQyMjI2IiwiZjI2ZWU0OTUtNTdhMi00ODM4LTkwNjYtNDMxYzEwNTc2MzZiIiwiOWRlMGZlYTgtMmMzYS00Y2FmLThjOGUtZmIzYzEzNGM0NjJmIiwiYTBlOGIwNzMtODM1YS00M2UxLTgwMmEtNjQxM2VjMGFlNGUwIiwiZGQ0NjhjMDYtM2U5NS00YzE2LTkxZDItY2VlNjkzOWUyZGRjIiwiZjQwZTg2ODMtMmJlNi00YzIyLWE4YTItZTEwMDdiZjQ0MzRlIiwiMzY4Mjk1ODEtZGFjMi00YWVjLThlNDUtOTg4MjU0ZDhkZmMxIiwiYmU5ZTY4Y2YtN2M4Mi00ZGMwLWIzODktYjM0MTFiZTk2MzYwIiwiMmM1YjY2ZWItZDkyYS00YmM3LTgxYzYtOWUwYWM3Mjc2MmNiIiwiOWVhNTliZGYtNjkzNS00NGFmLWIxNDMtNDYzYTRiZmJiNTMyIiwiMTAxNDVkN2UtM2IwMS00NDk3LWI1ODktYThkNTM5ZDcyMWZlIiwiYmZkZjM3MzctNzg5My00NjY2LTlkZWQtMTNhNGE5ZWI1Nzk5IiwiYWNlZGQwNTMtNGQzNy00NmQ2LTg0NGEtMTM3YmZiODIwNGU4IiwiNDFhY2ZmYmUtZjE3Mi00NmQ5LTlhNmMtNzUwYmE0NzY1MzQ2IiwiMmJmNmU4MTktZGRhYi00YjMzLTlhYWQtNTFkY2U0ZTYzODExIiwiMGVkZDdjNWYtMjUzNy00MWE1LTg2Y2MtY2YxNDE1ZmE4NDc2IiwiYTMxNDdlOGQtNDhmMS00Y2RjLWJkYjUtNjI2NWVkNDFmZTI3IiwiMmMwOTRiNmMtYWUxMi00NzE1LWJjZjYtOTllNTg3MjhlOTA1IiwiMmMwMjk1OWQtMzUyMS00NGExLWIwYTMtOTJlOWNmYTQ1NjI2IiwiYTAyMDdjYjAtMmU1My00ZDA4LThmZWItYTc2MzFlM2U4YzVmIiwiMzk0MTQ2YzAtYTQxOS00MGE0LWFhYmYtNDMyZTA3Zjg2MmQ5IiwiM2NlM2ZiYTctNDg5My00MGI0LWI3Y2QtODc0YTcyOGEwZDMyIiwiZjFhYzJlZmMtMzU4OS00MGM4LWI3YzAtMTg4ZWUwMTE2MDI1IiwiZWVkZjgyMDAtNDQyZi00MzYwLTk4ZTctMDFmMmQwNzYzYzYwIiwiNDVkMDExYjItYjkzNy00NDQ3LWIzYTMtYTg4OTk5ZmU3NDc1IiwiN2FhZWJlOGMtNDYyMi00OTNiLTgwNzMtZDg0OTJiOWQwOTQ0IiwiZWE1MzRiNzUtMmE5Yy00NmUyLTkzNzktZGVmMmYxM2UxMDEzIiwiZWU4ZWU3NzEtNThmMC00MDJjLTk2OTgtOWQ1YTY3NmVhMzQ4IiwiODRkM2Y2Y2ItMzEyZi00ZWZhLTk3NGYtMTJiOTI4MTYxMzY3IiwiZDZjN2IyYTgtYjRkNy00NTUwLWFiNGEtOGY5NzQ3NzI5M2UzIiwiZDRlZWVmNzEtMGMyMy00NzUwLThmMTQtYjZmZDYwNTBkN2M2IiwiZjM2MmQ3ZDAtNGFlNC00YjcwLWFhODAtZmM4NTg0MzhmYjQ1IiwiYTYzYjYzYTUtNDg3OS00MzY2LTlmYTItNTA3OGRjMDYwN2MyIiwiN2UzYzBlMmUtNmM1Yi00ZGQ1LWE2MGQtYjk4OTlmNTUzMWEyIiwiNmYzYjA1YmEtNjI0My00YWM5LTlmMjYtMzI0MDFkMjFhOTgzIiwiYTRkOWU4YzUtOWQ2MC00OThjLTliNmUtN2YzODI4MjQ2N2U4IiwiYTc2NTM4Y2QtNTJmYi00ZDQ0LWI2OTMtZmJhYmYwMmQ2YTQ0IiwiYWYwM2U2ODAtZTFhNi00Y2U3LTljZDQtZjk2Y2FmYWVkYjg2IiwiMmYxMjgzMmYtODY1Mi00ZmI5LWE1ODItNDFiZGM1MThjZTM0IiwiYWQwOTQ5YTAtMDZkMi00OTFmLWFkOWItZWYxNTI1YmRjNzc5IiwiZjQzMzk2Y2ItMjhmYS00NDE3LWEyMjUtNmNjNTRjMTA0NDM3IiwiNjdiMWE2NGYtZTE1YS00OTM2LTlhNjEtM2UyODZhMDk3MTkwIiwiNWViOTdkODUtMDRhZC00Yzc5LWExNzEtY2U3Mjg2ZDk5M2MwIiwiMDg0ZDE5MjUtNjNlMi00MGZiLWFhMTAtMmZmZGI3MDE2MjFjIiwiZWRiNzJmMDktYTQ2Yi00ZmE1LWE5ZjAtM2QzZDQzZGM3MTBkIiwiZjRkZjZlODAtMjlkNy00ZjJkLTg0OGEtZDYwZGJhYmYxNGZmIiwiZWZjYjg3NmEtM2MzMy00NmIxLTlhYmUtMGQ4NWYwNTA5MWE2IiwiaHR0cHM6Ly9zaW1wbGVpZGVudGl0eXNlcnZlci5henVyZXdlYnNpdGVzLm5ldC8iXSwiZXhwIjoxNDU2MjE1NDUwLCJpYXQiOjE0NTMyMTU0NTAsIm5vbmNlIjoiUzdHYXFwZmdrc1JLIiwiYWNyIjoib3BlbmlkLnBhcGUuYXV0aF9sZXZlbC5ucy5wYXNzd29yZD0xIiwiYW1yIjpbInBhc3N3b3JkIl0sImF6cCI6ImVmY2I4NzZhLTNjMzMtNDZiMS05YWJlLTBkODVmMDUwOTFhNiIsInN1YiI6ImFkbWluaXN0cmF0b3JAaG90bWFpbC5iZSIsImNfaGFzaCI6Ikd3VWgwaGJ5VnBsU3RQcDk3SlpTTlEifQ.ALMiyZdihha_zHR16odFstbwfX6veUpxiDzFgQi0oAr3drxuFhtdfmlxrusgQ1DqNIBVA2Lw_B6LKTCm6XMhzuPcs-hR7jeWDn8BN-vVko06TzZ8e2U_v2ZlgYuH3VoMNGeam1asH-1jj0-mJQ-pQ4MoTybhWO_Mn1WixmMjAZE&state=U00arcEH3gMYbvg9
+5.835357 AuthorizationResponse: {
+  "code": "917b9d59-0409-408c-8d49-a13287336b10",
+  "id_token": {
+    "claims": {
+      "acr": "openid.pape.auth_level.ns.password=1",
+      "amr": [
+        "password"
+      ],
+      "aud": [
+        "MyBlog",
+        "MyBlogClientSecretPost",
+        "86bbb689-3ab3-454c-afb2-3bc75efae70f",
+        "68e6e797-6bb8-460d-b1e8-6bbab4f07b21",
+        "0017f30e-1a6d-440d-bd20-6a34aee0d250",
+        "dce0969b-1142-4a57-a672-8a9868f1aec4",
+        "4e4f1dc9-a9ff-4f04-a19e-e6ab54a40180",
+        "a630d9b4-68d2-4f8c-b5d6-c692f1ba2201",
+        "bc4d4c79-24c3-4197-98c0-792d31ccab7f",
+        "9d7ec209-6b42-4268-94d3-f1953ea3706e",
+        "ddf46df6-3b22-49e2-ba7a-d5514e70d129",
+        "9d1d6486-694e-4c31-bf0a-32de64ba2c09",
+        "4e840bb7-1be3-4e60-8661-ce709961b084",
+        "c1ff3d04-f787-490e-9f4a-939ca0592596",
+        "3065e068-0574-4b81-b38b-18d942c3ffcf",
+        "10d3535b-f0d4-47dd-973f-ab9d655f8079",
+        "0cf9c46e-a424-4cd1-b22a-26ee95e141ee",
+        "bad493e1-5523-425f-85bd-c3cb2edc1124",
+        "c9600049-52c6-47a5-869f-95efa956a6b6",
+        "6029c0a8-bf6e-4f03-add5-b972e6787721",
+        "205bb1c2-24bf-4b01-a1c7-58e0f4bc8c71",
+        "75cdffda-d2e5-4201-b864-3529c116a417",
+        "1d9a9594-5841-4a6b-ad4b-21a22aa76b35",
+        "c28a06a0-4099-4cf0-9f6e-2ed5f8e51541",
+        "aa60687c-8c50-49df-9b4d-db39e65d2226",
+        "f26ee495-57a2-4838-9066-431c1057636b",
+        "9de0fea8-2c3a-4caf-8c8e-fb3c134c462f",
+        "a0e8b073-835a-43e1-802a-6413ec0ae4e0",
+        "dd468c06-3e95-4c16-91d2-cee6939e2ddc",
+        "f40e8683-2be6-4c22-a8a2-e1007bf4434e",
+        "36829581-dac2-4aec-8e45-988254d8dfc1",
+        "be9e68cf-7c82-4dc0-b389-b3411be96360",
+        "2c5b66eb-d92a-4bc7-81c6-9e0ac72762cb",
+        "9ea59bdf-6935-44af-b143-463a4bfbb532",
+        "10145d7e-3b01-4497-b589-a8d539d721fe",
+        "bfdf3737-7893-4666-9ded-13a4a9eb5799",
+        "acedd053-4d37-46d6-844a-137bfb8204e8",
+        "41acffbe-f172-46d9-9a6c-750ba4765346",
+        "2bf6e819-ddab-4b33-9aad-51dce4e63811",
+        "0edd7c5f-2537-41a5-86cc-cf1415fa8476",
+        "a3147e8d-48f1-4cdc-bdb5-6265ed41fe27",
+        "2c094b6c-ae12-4715-bcf6-99e58728e905",
+        "2c02959d-3521-44a1-b0a3-92e9cfa45626",
+        "a0207cb0-2e53-4d08-8feb-a7631e3e8c5f",
+        "394146c0-a419-40a4-aabf-432e07f862d9",
+        "3ce3fba7-4893-40b4-b7cd-874a728a0d32",
+        "f1ac2efc-3589-40c8-b7c0-188ee0116025",
+        "eedf8200-442f-4360-98e7-01f2d0763c60",
+        "45d011b2-b937-4447-b3a3-a88999fe7475",
+        "7aaebe8c-4622-493b-8073-d8492b9d0944",
+        "ea534b75-2a9c-46e2-9379-def2f13e1013",
+        "ee8ee771-58f0-402c-9698-9d5a676ea348",
+        "84d3f6cb-312f-4efa-974f-12b928161367",
+        "d6c7b2a8-b4d7-4550-ab4a-8f97477293e3",
+        "d4eeef71-0c23-4750-8f14-b6fd6050d7c6",
+        "f362d7d0-4ae4-4b70-aa80-fc858438fb45",
+        "a63b63a5-4879-4366-9fa2-5078dc0607c2",
+        "7e3c0e2e-6c5b-4dd5-a60d-b9899f5531a2",
+        "6f3b05ba-6243-4ac9-9f26-32401d21a983",
+        "a4d9e8c5-9d60-498c-9b6e-7f38282467e8",
+        "a76538cd-52fb-4d44-b693-fbabf02d6a44",
+        "af03e680-e1a6-4ce7-9cd4-f96cafaedb86",
+        "2f12832f-8652-4fb9-a582-41bdc518ce34",
+        "ad0949a0-06d2-491f-ad9b-ef1525bdc779",
+        "f43396cb-28fa-4417-a225-6cc54c104437",
+        "67b1a64f-e15a-4936-9a61-3e286a097190",
+        "5eb97d85-04ad-4c79-a171-ce7286d993c0",
+        "084d1925-63e2-40fb-aa10-2ffdb701621c",
+        "edb72f09-a46b-4fa5-a9f0-3d3d43dc710d",
+        "f4df6e80-29d7-4f2d-848a-d60dbabf14ff",
+        "efcb876a-3c33-46b1-9abe-0d85f05091a6",
+        "https://simpleidentityserver.azurewebsites.net/"
+      ],
+      "azp": "efcb876a-3c33-46b1-9abe-0d85f05091a6",
+      "c_hash": "GwUh0hbyVplStPp97JZSNQ",
+      "exp": 1456215450,
+      "iat": 1453215450,
+      "iss": "https://simpleidentityserver.azurewebsites.net/",
+      "nonce": "S7GaqpfgksRK",
+      "sub": "administrator@hotmail.be"
+    },
+    "jws header parameters": {
+      "alg": "RS256",
+      "kid": "b2e894bb-84b8-4960-8556-5547f2fb6375",
+      "typ": "JWT"
+    }
+  },
+  "state": "U00arcEH3gMYbvg9"
+}
+5.835986 ------------ AccessTokenRequest ------------
+5.836376 --> URL: https://simpleidentityserver.azurewebsites.net/token
+5.836383 --> BODY: code=917b9d59-0409-408c-8d49-a13287336b10&grant_type=authorization_code&redirect_uri=https%3A%2F%2Fop.certification.openid.net%3A60186%2Fauthz_cb
+5.836395 --> HEADERS: {'Content-Type': 'application/x-www-form-urlencoded', 'Authorization': u'Basic ZWZjYjg3NmEtM2MzMy00NmIxLTlhYmUtMGQ4NWYwNTA5MWE2OjcwOWVhNzBhLTczMjMtNDRlYi1hNTdjLWMzNmY4MTZhNzU2ZA=='}
+6.349544 <-- STATUS: 200
+6.349645 <-- BODY: {"access_token":"MmU0MTJlMGUtMGUzOC00NmY3LWJmMWQtMTQwMzRlOTdjNjVj","id_token":"eyJhbGciOiJSUzI1NiIsImtpZCI6ImIyZTg5NGJiLTg0YjgtNDk2MC04NTU2LTU1NDdmMmZiNjM3NSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL3NpbXBsZWlkZW50aXR5c2VydmVyLmF6dXJld2Vic2l0ZXMubmV0LyIsImF1ZCI6WyJNeUJsb2ciLCJNeUJsb2dDbGllbnRTZWNyZXRQb3N0IiwiODZiYmI2ODktM2FiMy00NTRjLWFmYjItM2JjNzVlZmFlNzBmIiwiNjhlNmU3OTctNmJiOC00NjBkLWIxZTgtNmJiYWI0ZjA3YjIxIiwiMDAxN2YzMGUtMWE2ZC00NDBkLWJkMjAtNmEzNGFlZTBkMjUwIiwiZGNlMDk2OWItMTE0Mi00YTU3LWE2NzItOGE5ODY4ZjFhZWM0IiwiNGU0ZjFkYzktYTlmZi00ZjA0LWExOWUtZTZhYjU0YTQwMTgwIiwiYTYzMGQ5YjQtNjhkMi00ZjhjLWI1ZDYtYzY5MmYxYmEyMjAxIiwiYmM0ZDRjNzktMjRjMy00MTk3LTk4YzAtNzkyZDMxY2NhYjdmIiwiOWQ3ZWMyMDktNmI0Mi00MjY4LTk0ZDMtZjE5NTNlYTM3MDZlIiwiZGRmNDZkZjYtM2IyMi00OWUyLWJhN2EtZDU1MTRlNzBkMTI5IiwiOWQxZDY0ODYtNjk0ZS00YzMxLWJmMGEtMzJkZTY0YmEyYzA5IiwiNGU4NDBiYjctMWJlMy00ZTYwLTg2NjEtY2U3MDk5NjFiMDg0IiwiYzFmZjNkMDQtZjc4Ny00OTBlLTlmNGEtOTM5Y2EwNTkyNTk2IiwiMzA2NWUwNjgtMDU3NC00YjgxLWIzOGItMThkOTQyYzNmZmNmIiwiMTBkMzUzNWItZjBkNC00N2RkLTk3M2YtYWI5ZDY1NWY4MDc5IiwiMGNmOWM0NmUtYTQyNC00Y2QxLWIyMmEtMjZlZTk1ZTE0MWVlIiwiYmFkNDkzZTEtNTUyMy00MjVmLTg1YmQtYzNjYjJlZGMxMTI0IiwiYzk2MDAwNDktNTJjNi00N2E1LTg2OWYtOTVlZmE5NTZhNmI2IiwiNjAyOWMwYTgtYmY2ZS00ZjAzLWFkZDUtYjk3MmU2Nzg3NzIxIiwiMjA1YmIxYzItMjRiZi00YjAxLWExYzctNThlMGY0YmM4YzcxIiwiNzVjZGZmZGEtZDJlNS00MjAxLWI4NjQtMzUyOWMxMTZhNDE3IiwiMWQ5YTk1OTQtNTg0MS00YTZiLWFkNGItMjFhMjJhYTc2YjM1IiwiYzI4YTA2YTAtNDA5OS00Y2YwLTlmNmUtMmVkNWY4ZTUxNTQxIiwiYWE2MDY4N2MtOGM1MC00OWRmLTliNGQtZGIzOWU2NWQyMjI2IiwiZjI2ZWU0OTUtNTdhMi00ODM4LTkwNjYtNDMxYzEwNTc2MzZiIiwiOWRlMGZlYTgtMmMzYS00Y2FmLThjOGUtZmIzYzEzNGM0NjJmIiwiYTBlOGIwNzMtODM1YS00M2UxLTgwMmEtNjQxM2VjMGFlNGUwIiwiZGQ0NjhjMDYtM2U5NS00YzE2LTkxZDItY2VlNjkzOWUyZGRjIiwiZjQwZTg2ODMtMmJlNi00YzIyLWE4YTItZTEwMDdiZjQ0MzRlIiwiMzY4Mjk1ODEtZGFjMi00YWVjLThlNDUtOTg4MjU0ZDhkZmMxIiwiYmU5ZTY4Y2YtN2M4Mi00ZGMwLWIzODktYjM0MTFiZTk2MzYwIiwiMmM1YjY2ZWItZDkyYS00YmM3LTgxYzYtOWUwYWM3Mjc2MmNiIiwiOWVhNTliZGYtNjkzNS00NGFmLWIxNDMtNDYzYTRiZmJiNTMyIiwiMTAxNDVkN2UtM2IwMS00NDk3LWI1ODktYThkNTM5ZDcyMWZlIiwiYmZkZjM3MzctNzg5My00NjY2LTlkZWQtMTNhNGE5ZWI1Nzk5IiwiYWNlZGQwNTMtNGQzNy00NmQ2LTg0NGEtMTM3YmZiODIwNGU4IiwiNDFhY2ZmYmUtZjE3Mi00NmQ5LTlhNmMtNzUwYmE0NzY1MzQ2IiwiMmJmNmU4MTktZGRhYi00YjMzLTlhYWQtNTFkY2U0ZTYzODExIiwiMGVkZDdjNWYtMjUzNy00MWE1LTg2Y2MtY2YxNDE1ZmE4NDc2IiwiYTMxNDdlOGQtNDhmMS00Y2RjLWJkYjUtNjI2NWVkNDFmZTI3IiwiMmMwOTRiNmMtYWUxMi00NzE1LWJjZjYtOTllNTg3MjhlOTA1IiwiMmMwMjk1OWQtMzUyMS00NGExLWIwYTMtOTJlOWNmYTQ1NjI2IiwiYTAyMDdjYjAtMmU1My00ZDA4LThmZWItYTc2MzFlM2U4YzVmIiwiMzk0MTQ2YzAtYTQxOS00MGE0LWFhYmYtNDMyZTA3Zjg2MmQ5IiwiM2NlM2ZiYTctNDg5My00MGI0LWI3Y2QtODc0YTcyOGEwZDMyIiwiZjFhYzJlZmMtMzU4OS00MGM4LWI3YzAtMTg4ZWUwMTE2MDI1IiwiZWVkZjgyMDAtNDQyZi00MzYwLTk4ZTctMDFmMmQwNzYzYzYwIiwiNDVkMDExYjItYjkzNy00NDQ3LWIzYTMtYTg4OTk5ZmU3NDc1IiwiN2FhZWJlOGMtNDYyMi00OTNiLTgwNzMtZDg0OTJiOWQwOTQ0IiwiZWE1MzRiNzUtMmE5Yy00NmUyLTkzNzktZGVmMmYxM2UxMDEzIiwiZWU4ZWU3NzEtNThmMC00MDJjLTk2OTgtOWQ1YTY3NmVhMzQ4IiwiODRkM2Y2Y2ItMzEyZi00ZWZhLTk3NGYtMTJiOTI4MTYxMzY3IiwiZDZjN2IyYTgtYjRkNy00NTUwLWFiNGEtOGY5NzQ3NzI5M2UzIiwiZDRlZWVmNzEtMGMyMy00NzUwLThmMTQtYjZmZDYwNTBkN2M2IiwiZjM2MmQ3ZDAtNGFlNC00YjcwLWFhODAtZmM4NTg0MzhmYjQ1IiwiYTYzYjYzYTUtNDg3OS00MzY2LTlmYTItNTA3OGRjMDYwN2MyIiwiN2UzYzBlMmUtNmM1Yi00ZGQ1LWE2MGQtYjk4OTlmNTUzMWEyIiwiNmYzYjA1YmEtNjI0My00YWM5LTlmMjYtMzI0MDFkMjFhOTgzIiwiYTRkOWU4YzUtOWQ2MC00OThjLTliNmUtN2YzODI4MjQ2N2U4IiwiYTc2NTM4Y2QtNTJmYi00ZDQ0LWI2OTMtZmJhYmYwMmQ2YTQ0IiwiYWYwM2U2ODAtZTFhNi00Y2U3LTljZDQtZjk2Y2FmYWVkYjg2IiwiMmYxMjgzMmYtODY1Mi00ZmI5LWE1ODItNDFiZGM1MThjZTM0IiwiYWQwOTQ5YTAtMDZkMi00OTFmLWFkOWItZWYxNTI1YmRjNzc5IiwiZjQzMzk2Y2ItMjhmYS00NDE3LWEyMjUtNmNjNTRjMTA0NDM3IiwiNjdiMWE2NGYtZTE1YS00OTM2LTlhNjEtM2UyODZhMDk3MTkwIiwiNWViOTdkODUtMDRhZC00Yzc5LWExNzEtY2U3Mjg2ZDk5M2MwIiwiMDg0ZDE5MjUtNjNlMi00MGZiLWFhMTAtMmZmZGI3MDE2MjFjIiwiZWRiNzJmMDktYTQ2Yi00ZmE1LWE5ZjAtM2QzZDQzZGM3MTBkIiwiZjRkZjZlODAtMjlkNy00ZjJkLTg0OGEtZDYwZGJhYmYxNGZmIiwiZWZjYjg3NmEtM2MzMy00NmIxLTlhYmUtMGQ4NWYwNTA5MWE2IiwiaHR0cHM6Ly9zaW1wbGVpZGVudGl0eXNlcnZlci5henVyZXdlYnNpdGVzLm5ldC8iXSwiZXhwIjoxNDU2MjE1NDUwLCJpYXQiOjE0NTMyMTU0NTAsIm5vbmNlIjoiUzdHYXFwZmdrc1JLIiwiYWNyIjoib3BlbmlkLnBhcGUuYXV0aF9sZXZlbC5ucy5wYXNzd29yZD0xIiwiYW1yIjpbInBhc3N3b3JkIl0sImF6cCI6ImVmY2I4NzZhLTNjMzMtNDZiMS05YWJlLTBkODVmMDUwOTFhNiIsInN1YiI6ImFkbWluaXN0cmF0b3JAaG90bWFpbC5iZSIsImNfaGFzaCI6Ikd3VWgwaGJ5VnBsU3RQcDk3SlpTTlEifQ.ALMiyZdihha_zHR16odFstbwfX6veUpxiDzFgQi0oAr3drxuFhtdfmlxrusgQ1DqNIBVA2Lw_B6LKTCm6XMhzuPcs-hR7jeWDn8BN-vVko06TzZ8e2U_v2ZlgYuH3VoMNGeam1asH-1jj0-mJQ-pQ4MoTybhWO_Mn1WixmMjAZE","token_type":"Bearer","refresh_token":"ODY3MWNiY2YtYTVmNC00MGZhLWFlYmMtYmQ5YjQ0NzE3MmY5","expires_in":3600,"scope":"openid"}
+6.357627 AccessTokenResponse: {
+  "access_token": "MmU0MTJlMGUtMGUzOC00NmY3LWJmMWQtMTQwMzRlOTdjNjVj",
+  "expires_in": 3600,
+  "id_token": {
+    "claims": {
+      "acr": "openid.pape.auth_level.ns.password=1",
+      "amr": [
+        "password"
+      ],
+      "aud": [
+        "MyBlog",
+        "MyBlogClientSecretPost",
+        "86bbb689-3ab3-454c-afb2-3bc75efae70f",
+        "68e6e797-6bb8-460d-b1e8-6bbab4f07b21",
+        "0017f30e-1a6d-440d-bd20-6a34aee0d250",
+        "dce0969b-1142-4a57-a672-8a9868f1aec4",
+        "4e4f1dc9-a9ff-4f04-a19e-e6ab54a40180",
+        "a630d9b4-68d2-4f8c-b5d6-c692f1ba2201",
+        "bc4d4c79-24c3-4197-98c0-792d31ccab7f",
+        "9d7ec209-6b42-4268-94d3-f1953ea3706e",
+        "ddf46df6-3b22-49e2-ba7a-d5514e70d129",
+        "9d1d6486-694e-4c31-bf0a-32de64ba2c09",
+        "4e840bb7-1be3-4e60-8661-ce709961b084",
+        "c1ff3d04-f787-490e-9f4a-939ca0592596",
+        "3065e068-0574-4b81-b38b-18d942c3ffcf",
+        "10d3535b-f0d4-47dd-973f-ab9d655f8079",
+        "0cf9c46e-a424-4cd1-b22a-26ee95e141ee",
+        "bad493e1-5523-425f-85bd-c3cb2edc1124",
+        "c9600049-52c6-47a5-869f-95efa956a6b6",
+        "6029c0a8-bf6e-4f03-add5-b972e6787721",
+        "205bb1c2-24bf-4b01-a1c7-58e0f4bc8c71",
+        "75cdffda-d2e5-4201-b864-3529c116a417",
+        "1d9a9594-5841-4a6b-ad4b-21a22aa76b35",
+        "c28a06a0-4099-4cf0-9f6e-2ed5f8e51541",
+        "aa60687c-8c50-49df-9b4d-db39e65d2226",
+        "f26ee495-57a2-4838-9066-431c1057636b",
+        "9de0fea8-2c3a-4caf-8c8e-fb3c134c462f",
+        "a0e8b073-835a-43e1-802a-6413ec0ae4e0",
+        "dd468c06-3e95-4c16-91d2-cee6939e2ddc",
+        "f40e8683-2be6-4c22-a8a2-e1007bf4434e",
+        "36829581-dac2-4aec-8e45-988254d8dfc1",
+        "be9e68cf-7c82-4dc0-b389-b3411be96360",
+        "2c5b66eb-d92a-4bc7-81c6-9e0ac72762cb",
+        "9ea59bdf-6935-44af-b143-463a4bfbb532",
+        "10145d7e-3b01-4497-b589-a8d539d721fe",
+        "bfdf3737-7893-4666-9ded-13a4a9eb5799",
+        "acedd053-4d37-46d6-844a-137bfb8204e8",
+        "41acffbe-f172-46d9-9a6c-750ba4765346",
+        "2bf6e819-ddab-4b33-9aad-51dce4e63811",
+        "0edd7c5f-2537-41a5-86cc-cf1415fa8476",
+        "a3147e8d-48f1-4cdc-bdb5-6265ed41fe27",
+        "2c094b6c-ae12-4715-bcf6-99e58728e905",
+        "2c02959d-3521-44a1-b0a3-92e9cfa45626",
+        "a0207cb0-2e53-4d08-8feb-a7631e3e8c5f",
+        "394146c0-a419-40a4-aabf-432e07f862d9",
+        "3ce3fba7-4893-40b4-b7cd-874a728a0d32",
+        "f1ac2efc-3589-40c8-b7c0-188ee0116025",
+        "eedf8200-442f-4360-98e7-01f2d0763c60",
+        "45d011b2-b937-4447-b3a3-a88999fe7475",
+        "7aaebe8c-4622-493b-8073-d8492b9d0944",
+        "ea534b75-2a9c-46e2-9379-def2f13e1013",
+        "ee8ee771-58f0-402c-9698-9d5a676ea348",
+        "84d3f6cb-312f-4efa-974f-12b928161367",
+        "d6c7b2a8-b4d7-4550-ab4a-8f97477293e3",
+        "d4eeef71-0c23-4750-8f14-b6fd6050d7c6",
+        "f362d7d0-4ae4-4b70-aa80-fc858438fb45",
+        "a63b63a5-4879-4366-9fa2-5078dc0607c2",
+        "7e3c0e2e-6c5b-4dd5-a60d-b9899f5531a2",
+        "6f3b05ba-6243-4ac9-9f26-32401d21a983",
+        "a4d9e8c5-9d60-498c-9b6e-7f38282467e8",
+        "a76538cd-52fb-4d44-b693-fbabf02d6a44",
+        "af03e680-e1a6-4ce7-9cd4-f96cafaedb86",
+        "2f12832f-8652-4fb9-a582-41bdc518ce34",
+        "ad0949a0-06d2-491f-ad9b-ef1525bdc779",
+        "f43396cb-28fa-4417-a225-6cc54c104437",
+        "67b1a64f-e15a-4936-9a61-3e286a097190",
+        "5eb97d85-04ad-4c79-a171-ce7286d993c0",
+        "084d1925-63e2-40fb-aa10-2ffdb701621c",
+        "edb72f09-a46b-4fa5-a9f0-3d3d43dc710d",
+        "f4df6e80-29d7-4f2d-848a-d60dbabf14ff",
+        "efcb876a-3c33-46b1-9abe-0d85f05091a6",
+        "https://simpleidentityserver.azurewebsites.net/"
+      ],
+      "azp": "efcb876a-3c33-46b1-9abe-0d85f05091a6",
+      "c_hash": "GwUh0hbyVplStPp97JZSNQ",
+      "exp": 1456215450,
+      "iat": 1453215450,
+      "iss": "https://simpleidentityserver.azurewebsites.net/",
+      "nonce": "S7GaqpfgksRK",
+      "sub": "administrator@hotmail.be"
+    },
+    "jws header parameters": {
+      "alg": "RS256",
+      "kid": "b2e894bb-84b8-4960-8556-5547f2fb6375",
+      "typ": "JWT"
+    }
+  },
+  "refresh_token": "ODY3MWNiY2YtYTVmNC00MGZhLWFlYmMtYmQ5YjQ0NzE3MmY5",
+  "scope": "openid",
+  "token_type": "Bearer"
+}
+6.368513 ==== END ====
+Result
+
+PASSED
