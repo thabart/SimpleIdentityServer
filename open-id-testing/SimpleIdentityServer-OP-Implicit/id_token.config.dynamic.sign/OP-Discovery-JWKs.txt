@@ -1,0 +1,124 @@
+Test info
+
+Profile: {'openid-configuration': 'config', 'response_type': 'id_token', 'crypto': 'sign', 'registration': 'dynamic'}
+Timestamp: 2016-01-19T13:21:41Z
+Test description: Keys in OP JWKs well formed [Config, Dynamic]
+Test ID: OP-Discovery-JWKs
+Issuer: https://simpleidentityserver.azurewebsites.net
+Test output
+
+
+__After completing the test flow:__
+[verify-base64url]
+	status: OK
+	description: Verifies that the base64 encoded parts of a JWK is in fact base64url encoded and not just base64 encoded
+[check-http-response]
+	status: OK
+	description: Checks that the HTTP response status is within the 200 or 300 range
+__X:==== END ====__
+Trace output
+
+
+0.000332 ------------ DiscoveryRequest ------------
+0.000348 Provider info discover from 'https://simpleidentityserver.azurewebsites.net'
+0.000355 --> URL: https://simpleidentityserver.azurewebsites.net/.well-known/openid-configuration
+0.451862 ProviderConfigurationResponse: {
+  "authorization_endpoint": "https://simpleidentityserver.azurewebsites.net/authorization",
+  "check_session_iframe": "https://simpleidentityserver.azurewebsites.net/check_session",
+  "claims_parameter_supported": true,
+  "claims_supported": [
+    "sub",
+    "name",
+    "family_name",
+    "given_name",
+    "middle_name",
+    "nickname",
+    "preferred_username",
+    "profile",
+    "picture",
+    "website",
+    "gender",
+    "birthdate",
+    "zoneinfo",
+    "locale",
+    "updated_at",
+    "email",
+    "email_verified",
+    "address",
+    "phone_number",
+    "phone_number_verified"
+  ],
+  "end_session_endpoint": "https://simpleidentityserver.azurewebsites.net/end_session",
+  "grant_types_supported": [
+    "authorization_code",
+    "client_credentials",
+    "password",
+    "refresh_token",
+    "implicit"
+  ],
+  "id_token_signing_alg_values_supported": [
+    "RS256"
+  ],
+  "issuer": "https://simpleidentityserver.azurewebsites.net",
+  "jwks_uri": "https://simpleidentityserver.azurewebsites.net/jwks",
+  "registration_endpoint": "https://simpleidentityserver.azurewebsites.net/registration",
+  "request_parameter_supported": true,
+  "request_uri_parameter_supported": true,
+  "require_request_uri_registration": true,
+  "response_modes_supported": [
+    "query"
+  ],
+  "response_types_supported": [
+    "code",
+    "id_token",
+    "id_token token",
+    "code id_token",
+    "code token",
+    "code id_token token"
+  ],
+  "revocation_endpoint": "https://simpleidentityserver.azurewebsites.net/revocation",
+  "scopes_supported": [
+    "openid",
+    "profile",
+    "email",
+    "address",
+    "phone"
+  ],
+  "subject_types_supported": [
+    "public",
+    "pairwise"
+  ],
+  "token_endpoint": "https://simpleidentityserver.azurewebsites.net/token",
+  "token_endpoint_auth_methods_supported": [
+    "client_secret_basic",
+    "client_secret_post",
+    "client_secret_jwt",
+    "private_key_jwt"
+  ],
+  "userinfo_endpoint": "https://simpleidentityserver.azurewebsites.net/userinfo",
+  "version": "1.0"
+}
+0.983706 JWKS: {
+  "keys": [
+    {
+      "alg": "RS256",
+      "e": "AQAB",
+      "kid": "bd03cb9f-c02f-4850-a0fe-1fcc7225df97",
+      "kty": "RSA",
+      "n": "siXu90k4Veo3KHwcDBXBa42oplmUd6UKJAFueTkoN0FbYW8fg4jR1GvDS5fNEl7D2Nh85j7KtpF7W57PL13oPmCmxofqVhDvcVv8cK4lwmsOwTf6kgbMj6Gxvc8AOGKlL18eG5ql_V1LRb2HyZlJe1bfVVlBUnz8MqiQJP6jhss",
+      "use": "sig"
+    },
+    {
+      "alg": "RSA1_5",
+      "e": "AQAB",
+      "kid": "5a45afe7-fb05-4c68-930d-da2844c648cb",
+      "kty": "RSA",
+      "n": "siXu90k4Veo3KHwcDBXBa42oplmUd6UKJAFueTkoN0FbYW8fg4jR1GvDS5fNEl7D2Nh85j7KtpF7W57PL13oPmCmxofqVhDvcVv8cK4lwmsOwTf6kgbMj6Gxvc8AOGKlL18eG5ql_V1LRb2HyZlJe1bfVVlBUnz8MqiQJP6jhss",
+      "use": "enc"
+    }
+  ]
+}
+0.994025 ==== END ====
+Result
+
+PASSED

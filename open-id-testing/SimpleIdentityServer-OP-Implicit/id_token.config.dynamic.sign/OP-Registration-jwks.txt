@@ -1,0 +1,284 @@
+Test info
+
+Profile: {'openid-configuration': 'config', 'response_type': 'code', 'crypto': 'sign', 'registration': 'dynamic'}
+Timestamp: 2016-01-19T13:33:50Z
+Test description: Uses keys registered with jwks value [Dynamic]
+Test ID: OP-Registration-jwks
+Issuer: https://simpleidentityserver.azurewebsites.net
+Test output
+
+
+__RegistrationRequest:post__
+[check]
+	status: INFORMATION
+	description: Registration Response
+	info: {"client_id":"a6f9fe6b-809f-4ea5-939e-899b5faf9ff2","client_secret":null,"client_id_issued_at":"1453210425","client_secret_expires_at":0,"redirect_uris":["https://op.certification.openid.net:60186/authz_cb"],"response_types":["code"],"grant_types":["authorization_code"],"application_type":"web","contacts":["roland.hedberg@umu.se"],"client_name":"","logo_uri":"","client_uri":"","policy_uri":"","tos_uri":"","jwks_uri":"","jwks":{"keys":[{"use":"enc","e":"AQAB","d":"lZQv0_81euRLeUYU84Aodh0ar7ymDlzWP5NMra4Jklkb-lTBWkI-u4RMsPqGYyW3KHRoL_pgzZXSzQx8RLQfER6timRWb--NxMMKllZubByU3RqH2ooNuocJurspYiXkznPW1Mg9DaNXL0C2hwWPQHTeUVISpjgi5TCOV1ccWVyksFruya_VNL1CIByB-L0GL1rqbKv32cDwi2A3_jJa61cpzfLSIBe-lvCO6tuiDsR4qgJnUwnndQFwEI_4mLmD3iNWXrc8N-poleV8mBfMqBB5fWwy_ZTFCpmQ5AywGmctaik_wNhMoWuA4tUfY6_1LdKld-5Cjq55eLtuJjtvuQ","n":"tx3Hjdbc19lkTiohbJrNj4jf2_90MEE122CRrwtFu6saDywKcG7Bi7w2FMAK2oTkuWfqhWRb5BEGmnSXdiCEPO5d-ytqP3nwlZXHaCDYscpP8bB4YLhvCn7R8Efw6gwQle24QPRP3lYoFeuUbDUq7GKA5SfaZUvWoeWjqyLIaBspKQsC26_Umx1E4IXLrMSL6nkRnrYcVZBAXrYCeTP1XtsV38_lZVJfHSaJaUy4PKaj3yvgm93EV2CXybPti7CCMXZ34VqqWiF64pQjZsPu3ZTr7ha_TTQq499-zYRQNDvIVsBDLQQIgrbctuGqj6lrXb31Jj3JIEYqH_4h5X9d0Q","q":"1q-r-bmMFbIzrLK2U3elksZq8CqUqZxlSfkGMZuVkxgYMS-e4FPzEp2iirG-eO11aa0cpMMoBdTnVdGJ_ZUR93w0lGf9XnQAJqxP7eOsrUoiW4VWlWH4WfOiLgpO-pFtyTz_JksYYaotc_Z3Zy-Szw6a39IDbuYGy1qL-15oQuc","p":"2lrYPppRbcQWu4LtWN6tOVUrtCOPv1eLTKTc7q8vCMcem1Ox5QFB7KnUtNZ5Ni7wnZUeVDfimNebtjNsGvDSrpgIlo9dEnFBQsQIkzZ2SkoYfgmF8hNdi6P-BfRjdgYouy4c6xAnGDgSMTip1YnPRyvbMaoYT9E_tEcBW5wOeoc","kid":"a0","kty":"RSA"},{"use":"sig","e":"AQAB","d":"DodXDEtkovWWGsMEXYy_nEEMCWyROMOebCnCv0ey3i4M4bh2dmwqgz0e-IKQAFlGiMkidGL1lNbq0uFS04FbuRAR06dYw1cbrNbDdhrWFxKTd1L5D9p-x-gW-YDWhpI8rUGRa76JXkOSxZUbg09_QyUd99CXAHh-FXi_ZkIKD8hK6FrAs68qhLf8MNkUv63DTduw7QgeFfQivdopePxyGuMk5n8veqwsUZsklQkhNlTYQqeM1xb2698ZQcNYkl0OssEsSJKRjXt-LRPowKrdvTuTo2p--HMI0pIEeFs7H_u5OW3jihjvoFClGPynHQhgWmQzlQRvWRXh6FhDVqFeGQ","n":"zfZzttF7HmnTYwSMPdxKs5AoczbNS2mOPz-tN1g4ljqI_F1DG8cgQDcN_VDufxoFGRERo2FK6WEN41LhbGEyP6uL6wW6Cy29qE9QZcvY5mXrncndRSOkNcMizvuEJes_fMYrmP_lPiC6kWiqItTk9QBWqJfiYKhCx9cSDXsBmJXn3KWQCVHvj1ANFWW0CWLMKlWN-_NMNLIWJN_pEAocTZMzxSFBK1b5_5J8ZS7hfWRF6MQmjsJcz2jzA21SQZNpre3kwnTGRSwo05sAS-TyeadDqQPWgbqX69UzcGq5irhzN8cpZ_JaTk3Y_uV6owanTZLVvCgdjaAnMYeZhb0KFw","q":"5E5XKK5njT-zzRqqTeY2tgP9PJBACeaH_xQRHZ_1ydE7tVd7HdgdaEHfQ1jvKIHFkknWWOBAY1mlBc4YDirLShB_voShD8C-Hx3nF5sne5fleVfU-sZy6Za4B2U75PcE62oZgCPauOTAEm9Xuvrt5aMMovyzR8ecJZhm9bw7naU","p":"5vJHCSM3H3q4RltYzENC9RyZZV8EUmpkv9moyguT5t-BUGA-T4W_FGIxzOPXRWOckIplKkoDKhavUeNmTZMCUcue0nkICSJpvNE4Nb2p5PZk_QqSdQNvCasQtdojEG0AmfVD85SU551CYxJdLdDFOqyK2entpMr8lhokem189As","kid":"a1","kty":"RSA"},{"d":"Q6fA7egyfywA13Q67EJBq0I4wj0MOLfplrF2A-WHBR4","use":"sig","crv":"P-256","kty":"EC","y":"nLq3k5Y3wOTC7qycNBmSpNFyaRwvQtWwKqnEuR9ouCY","x":"qtNqcBfopX-twneusyFOre7ZRRGvmKXfwM9paWUUoDk","kid":"a2"},{"d":"Gxya7jJtMyyLnMJhYlrDiowxbC2ZjeX31t58z0efVho","use":"enc","crv":"P-256","kty":"EC","y":"ourp6BwmEKWI_WVP_DNZIM7Sa70GoUf20mIArPiWw1E","x":"s1qFrgX3tpp78fLFCJHad_f0ykfIi4Z6aCE94uUtSXM","kid":"a3"}]},"sector_identifier_uri":"","subject_type":"public","id_token_signed_response_alg":"RS256","id_token_encrypted_response_alg":"","id_token_encrypted_response_enc":"","userinfo_signed_response_alg":"none","userinfo_encrypted_response_alg":"","userinfo_encrypted_response_enc":"","request_object_signing_alg":"","request_object_encryption_alg":"","request_object_encryption_enc":"","token_endpoint_auth_method":"private_key_jwt","token_endpoint_auth_signing_alg":"","default_max_age":3600.0,"require_auth_time":true,"default_acr_values":"","initiate_login_uri":"","request_uris":[]}
+__AuthorizationRequest:pre__
+[check-response-type]
+	status: OK
+	description: Checks that the asked for response type are among the supported
+[check-endpoint]
+	status: OK
+	description: Checks that the necessary endpoint exists at a server
+__After completing the test flow:__
+[verify-response]
+	status: OK
+	description: Checks that the last response was one of a possible set of OpenID Connect Responses
+__X:==== END ====__
+Trace output
+
+
+0.000352 ------------ DiscoveryRequest ------------
+0.000366 Provider info discover from 'https://simpleidentityserver.azurewebsites.net/'
+0.000373 --> URL: https://simpleidentityserver.azurewebsites.net/.well-known/openid-configuration
+0.663913 ProviderConfigurationResponse: {
+  "authorization_endpoint": "https://simpleidentityserver.azurewebsites.net/authorization",
+  "check_session_iframe": "https://simpleidentityserver.azurewebsites.net/check_session",
+  "claims_parameter_supported": true,
+  "claims_supported": [
+    "sub",
+    "name",
+    "family_name",
+    "given_name",
+    "middle_name",
+    "nickname",
+    "preferred_username",
+    "profile",
+    "picture",
+    "website",
+    "gender",
+    "birthdate",
+    "zoneinfo",
+    "locale",
+    "updated_at",
+    "email",
+    "email_verified",
+    "address",
+    "phone_number",
+    "phone_number_verified"
+  ],
+  "end_session_endpoint": "https://simpleidentityserver.azurewebsites.net/end_session",
+  "grant_types_supported": [
+    "authorization_code",
+    "client_credentials",
+    "password",
+    "refresh_token",
+    "implicit"
+  ],
+  "id_token_signing_alg_values_supported": [
+    "RS256"
+  ],
+  "issuer": "https://simpleidentityserver.azurewebsites.net",
+  "jwks_uri": "https://simpleidentityserver.azurewebsites.net/jwks",
+  "registration_endpoint": "https://simpleidentityserver.azurewebsites.net/registration",
+  "request_parameter_supported": true,
+  "request_uri_parameter_supported": true,
+  "require_request_uri_registration": true,
+  "response_modes_supported": [
+    "query"
+  ],
+  "response_types_supported": [
+    "code",
+    "id_token",
+    "id_token token",
+    "code id_token",
+    "code token",
+    "code id_token token"
+  ],
+  "revocation_endpoint": "https://simpleidentityserver.azurewebsites.net/revocation",
+  "scopes_supported": [
+    "openid",
+    "profile",
+    "email",
+    "address",
+    "phone"
+  ],
+  "subject_types_supported": [
+    "public",
+    "pairwise"
+  ],
+  "token_endpoint": "https://simpleidentityserver.azurewebsites.net/token",
+  "token_endpoint_auth_methods_supported": [
+    "client_secret_basic",
+    "client_secret_post",
+    "client_secret_jwt",
+    "private_key_jwt"
+  ],
+  "userinfo_endpoint": "https://simpleidentityserver.azurewebsites.net/userinfo",
+  "version": "1.0"
+}
+1.323264 JWKS: {
+  "keys": [
+    {
+      "alg": "RS256",
+      "e": "AQAB",
+      "kid": "bd03cb9f-c02f-4850-a0fe-1fcc7225df97",
+      "kty": "RSA",
+      "n": "siXu90k4Veo3KHwcDBXBa42oplmUd6UKJAFueTkoN0FbYW8fg4jR1GvDS5fNEl7D2Nh85j7KtpF7W57PL13oPmCmxofqVhDvcVv8cK4lwmsOwTf6kgbMj6Gxvc8AOGKlL18eG5ql_V1LRb2HyZlJe1bfVVlBUnz8MqiQJP6jhss",
+      "use": "sig"
+    },
+    {
+      "alg": "RSA1_5",
+      "e": "AQAB",
+      "kid": "5a45afe7-fb05-4c68-930d-da2844c648cb",
+      "kty": "RSA",
+      "n": "siXu90k4Veo3KHwcDBXBa42oplmUd6UKJAFueTkoN0FbYW8fg4jR1GvDS5fNEl7D2Nh85j7KtpF7W57PL13oPmCmxofqVhDvcVv8cK4lwmsOwTf6kgbMj6Gxvc8AOGKlL18eG5ql_V1LRb2HyZlJe1bfVVlBUnz8MqiQJP6jhss",
+      "use": "enc"
+    }
+  ]
+}
+1.344878 ------------ RegistrationRequest ------------
+1.345383 --> URL: https://simpleidentityserver.azurewebsites.net/registration
+1.345391 --> BODY: {"token_endpoint_auth_method": "private_key_jwt", "subject_type": "public", "jwks_uri": null, "jwks": {"keys": [{"use": "enc", "e": "AQAB", "d": "lZQv0_81euRLeUYU84Aodh0ar7ymDlzWP5NMra4Jklkb-lTBWkI-u4RMsPqGYyW3KHRoL_pgzZXSzQx8RLQfER6timRWb--NxMMKllZubByU3RqH2ooNuocJurspYiXkznPW1Mg9DaNXL0C2hwWPQHTeUVISpjgi5TCOV1ccWVyksFruya_VNL1CIByB-L0GL1rqbKv32cDwi2A3_jJa61cpzfLSIBe-lvCO6tuiDsR4qgJnUwnndQFwEI_4mLmD3iNWXrc8N-poleV8mBfMqBB5fWwy_ZTFCpmQ5AywGmctaik_wNhMoWuA4tUfY6_1LdKld-5Cjq55eLtuJjtvuQ", "n": "tx3Hjdbc19lkTiohbJrNj4jf2_90MEE122CRrwtFu6saDywKcG7Bi7w2FMAK2oTkuWfqhWRb5BEGmnSXdiCEPO5d-ytqP3nwlZXHaCDYscpP8bB4YLhvCn7R8Efw6gwQle24QPRP3lYoFeuUbDUq7GKA5SfaZUvWoeWjqyLIaBspKQsC26_Umx1E4IXLrMSL6nkRnrYcVZBAXrYCeTP1XtsV38_lZVJfHSaJaUy4PKaj3yvgm93EV2CXybPti7CCMXZ34VqqWiF64pQjZsPu3ZTr7ha_TTQq499-zYRQNDvIVsBDLQQIgrbctuGqj6lrXb31Jj3JIEYqH_4h5X9d0Q", "q": "1q-r-bmMFbIzrLK2U3elksZq8CqUqZxlSfkGMZuVkxgYMS-e4FPzEp2iirG-eO11aa0cpMMoBdTnVdGJ_ZUR93w0lGf9XnQAJqxP7eOsrUoiW4VWlWH4WfOiLgpO-pFtyTz_JksYYaotc_Z3Zy-Szw6a39IDbuYGy1qL-15oQuc", "p": "2lrYPppRbcQWu4LtWN6tOVUrtCOPv1eLTKTc7q8vCMcem1Ox5QFB7KnUtNZ5Ni7wnZUeVDfimNebtjNsGvDSrpgIlo9dEnFBQsQIkzZ2SkoYfgmF8hNdi6P-BfRjdgYouy4c6xAnGDgSMTip1YnPRyvbMaoYT9E_tEcBW5wOeoc", "kid": "a0", "kty": "RSA"}, {"use": "sig", "e": "AQAB", "d": "DodXDEtkovWWGsMEXYy_nEEMCWyROMOebCnCv0ey3i4M4bh2dmwqgz0e-IKQAFlGiMkidGL1lNbq0uFS04FbuRAR06dYw1cbrNbDdhrWFxKTd1L5D9p-x-gW-YDWhpI8rUGRa76JXkOSxZUbg09_QyUd99CXAHh-FXi_ZkIKD8hK6FrAs68qhLf8MNkUv63DTduw7QgeFfQivdopePxyGuMk5n8veqwsUZsklQkhNlTYQqeM1xb2698ZQcNYkl0OssEsSJKRjXt-LRPowKrdvTuTo2p--HMI0pIEeFs7H_u5OW3jihjvoFClGPynHQhgWmQzlQRvWRXh6FhDVqFeGQ", "n": "zfZzttF7HmnTYwSMPdxKs5AoczbNS2mOPz-tN1g4ljqI_F1DG8cgQDcN_VDufxoFGRERo2FK6WEN41LhbGEyP6uL6wW6Cy29qE9QZcvY5mXrncndRSOkNcMizvuEJes_fMYrmP_lPiC6kWiqItTk9QBWqJfiYKhCx9cSDXsBmJXn3KWQCVHvj1ANFWW0CWLMKlWN-_NMNLIWJN_pEAocTZMzxSFBK1b5_5J8ZS7hfWRF6MQmjsJcz2jzA21SQZNpre3kwnTGRSwo05sAS-TyeadDqQPWgbqX69UzcGq5irhzN8cpZ_JaTk3Y_uV6owanTZLVvCgdjaAnMYeZhb0KFw", "q": "5E5XKK5njT-zzRqqTeY2tgP9PJBACeaH_xQRHZ_1ydE7tVd7HdgdaEHfQ1jvKIHFkknWWOBAY1mlBc4YDirLShB_voShD8C-Hx3nF5sne5fleVfU-sZy6Za4B2U75PcE62oZgCPauOTAEm9Xuvrt5aMMovyzR8ecJZhm9bw7naU", "p": "5vJHCSM3H3q4RltYzENC9RyZZV8EUmpkv9moyguT5t-BUGA-T4W_FGIxzOPXRWOckIplKkoDKhavUeNmTZMCUcue0nkICSJpvNE4Nb2p5PZk_QqSdQNvCasQtdojEG0AmfVD85SU551CYxJdLdDFOqyK2entpMr8lhokem189As", "kid": "a1", "kty": "RSA"}, {"d": "Q6fA7egyfywA13Q67EJBq0I4wj0MOLfplrF2A-WHBR4", "use": "sig", "crv": "P-256", "kty": "EC", "y": "nLq3k5Y3wOTC7qycNBmSpNFyaRwvQtWwKqnEuR9ouCY", "x": "qtNqcBfopX-twneusyFOre7ZRRGvmKXfwM9paWUUoDk", "kid": "a2"}, {"d": "Gxya7jJtMyyLnMJhYlrDiowxbC2ZjeX31t58z0efVho", "use": "enc", "crv": "P-256", "kty": "EC", "y": "ourp6BwmEKWI_WVP_DNZIM7Sa70GoUf20mIArPiWw1E", "x": "s1qFrgX3tpp78fLFCJHad_f0ykfIi4Z6aCE94uUtSXM", "kid": "a3"}]}, "application_type": "web", "contacts": ["roland.hedberg@umu.se"], "post_logout_redirect_uris": ["https://op.certification.openid.net:60186/logout"], "redirect_uris": ["https://op.certification.openid.net:60186/authz_cb"], "response_types": ["code"], "require_auth_time": true, "grant_types": ["authorization_code"], "default_max_age": 3600}
+1.345403 --> HEADERS: {'Content-Type': 'application/json'}
+2.067885 <-- STATUS: 200
+2.067985 <-- BODY: {"client_id":"a6f9fe6b-809f-4ea5-939e-899b5faf9ff2","client_secret":null,"client_id_issued_at":"1453210425","client_secret_expires_at":0,"redirect_uris":["https://op.certification.openid.net:60186/authz_cb"],"response_types":["code"],"grant_types":["authorization_code"],"application_type":"web","contacts":["roland.hedberg@umu.se"],"client_name":"","logo_uri":"","client_uri":"","policy_uri":"","tos_uri":"","jwks_uri":"","jwks":{"keys":[{"use":"enc","e":"AQAB","d":"lZQv0_81euRLeUYU84Aodh0ar7ymDlzWP5NMra4Jklkb-lTBWkI-u4RMsPqGYyW3KHRoL_pgzZXSzQx8RLQfER6timRWb--NxMMKllZubByU3RqH2ooNuocJurspYiXkznPW1Mg9DaNXL0C2hwWPQHTeUVISpjgi5TCOV1ccWVyksFruya_VNL1CIByB-L0GL1rqbKv32cDwi2A3_jJa61cpzfLSIBe-lvCO6tuiDsR4qgJnUwnndQFwEI_4mLmD3iNWXrc8N-poleV8mBfMqBB5fWwy_ZTFCpmQ5AywGmctaik_wNhMoWuA4tUfY6_1LdKld-5Cjq55eLtuJjtvuQ","n":"tx3Hjdbc19lkTiohbJrNj4jf2_90MEE122CRrwtFu6saDywKcG7Bi7w2FMAK2oTkuWfqhWRb5BEGmnSXdiCEPO5d-ytqP3nwlZXHaCDYscpP8bB4YLhvCn7R8Efw6gwQle24QPRP3lYoFeuUbDUq7GKA5SfaZUvWoeWjqyLIaBspKQsC26_Umx1E4IXLrMSL6nkRnrYcVZBAXrYCeTP1XtsV38_lZVJfHSaJaUy4PKaj3yvgm93EV2CXybPti7CCMXZ34VqqWiF64pQjZsPu3ZTr7ha_TTQq499-zYRQNDvIVsBDLQQIgrbctuGqj6lrXb31Jj3JIEYqH_4h5X9d0Q","q":"1q-r-bmMFbIzrLK2U3elksZq8CqUqZxlSfkGMZuVkxgYMS-e4FPzEp2iirG-eO11aa0cpMMoBdTnVdGJ_ZUR93w0lGf9XnQAJqxP7eOsrUoiW4VWlWH4WfOiLgpO-pFtyTz_JksYYaotc_Z3Zy-Szw6a39IDbuYGy1qL-15oQuc","p":"2lrYPppRbcQWu4LtWN6tOVUrtCOPv1eLTKTc7q8vCMcem1Ox5QFB7KnUtNZ5Ni7wnZUeVDfimNebtjNsGvDSrpgIlo9dEnFBQsQIkzZ2SkoYfgmF8hNdi6P-BfRjdgYouy4c6xAnGDgSMTip1YnPRyvbMaoYT9E_tEcBW5wOeoc","kid":"a0","kty":"RSA"},{"use":"sig","e":"AQAB","d":"DodXDEtkovWWGsMEXYy_nEEMCWyROMOebCnCv0ey3i4M4bh2dmwqgz0e-IKQAFlGiMkidGL1lNbq0uFS04FbuRAR06dYw1cbrNbDdhrWFxKTd1L5D9p-x-gW-YDWhpI8rUGRa76JXkOSxZUbg09_QyUd99CXAHh-FXi_ZkIKD8hK6FrAs68qhLf8MNkUv63DTduw7QgeFfQivdopePxyGuMk5n8veqwsUZsklQkhNlTYQqeM1xb2698ZQcNYkl0OssEsSJKRjXt-LRPowKrdvTuTo2p--HMI0pIEeFs7H_u5OW3jihjvoFClGPynHQhgWmQzlQRvWRXh6FhDVqFeGQ","n":"zfZzttF7HmnTYwSMPdxKs5AoczbNS2mOPz-tN1g4ljqI_F1DG8cgQDcN_VDufxoFGRERo2FK6WEN41LhbGEyP6uL6wW6Cy29qE9QZcvY5mXrncndRSOkNcMizvuEJes_fMYrmP_lPiC6kWiqItTk9QBWqJfiYKhCx9cSDXsBmJXn3KWQCVHvj1ANFWW0CWLMKlWN-_NMNLIWJN_pEAocTZMzxSFBK1b5_5J8ZS7hfWRF6MQmjsJcz2jzA21SQZNpre3kwnTGRSwo05sAS-TyeadDqQPWgbqX69UzcGq5irhzN8cpZ_JaTk3Y_uV6owanTZLVvCgdjaAnMYeZhb0KFw","q":"5E5XKK5njT-zzRqqTeY2tgP9PJBACeaH_xQRHZ_1ydE7tVd7HdgdaEHfQ1jvKIHFkknWWOBAY1mlBc4YDirLShB_voShD8C-Hx3nF5sne5fleVfU-sZy6Za4B2U75PcE62oZgCPauOTAEm9Xuvrt5aMMovyzR8ecJZhm9bw7naU","p":"5vJHCSM3H3q4RltYzENC9RyZZV8EUmpkv9moyguT5t-BUGA-T4W_FGIxzOPXRWOckIplKkoDKhavUeNmTZMCUcue0nkICSJpvNE4Nb2p5PZk_QqSdQNvCasQtdojEG0AmfVD85SU551CYxJdLdDFOqyK2entpMr8lhokem189As","kid":"a1","kty":"RSA"},{"d":"Q6fA7egyfywA13Q67EJBq0I4wj0MOLfplrF2A-WHBR4","use":"sig","crv":"P-256","kty":"EC","y":"nLq3k5Y3wOTC7qycNBmSpNFyaRwvQtWwKqnEuR9ouCY","x":"qtNqcBfopX-twneusyFOre7ZRRGvmKXfwM9paWUUoDk","kid":"a2"},{"d":"Gxya7jJtMyyLnMJhYlrDiowxbC2ZjeX31t58z0efVho","use":"enc","crv":"P-256","kty":"EC","y":"ourp6BwmEKWI_WVP_DNZIM7Sa70GoUf20mIArPiWw1E","x":"s1qFrgX3tpp78fLFCJHad_f0ykfIi4Z6aCE94uUtSXM","kid":"a3"}]},"sector_identifier_uri":"","subject_type":"public","id_token_signed_response_alg":"RS256","id_token_encrypted_response_alg":"","id_token_encrypted_response_enc":"","userinfo_signed_response_alg":"none","userinfo_encrypted_response_alg":"","userinfo_encrypted_response_enc":"","request_object_signing_alg":"","request_object_encryption_alg":"","request_object_encryption_enc":"","token_endpoint_auth_method":"private_key_jwt","token_endpoint_auth_signing_alg":"","default_max_age":3600.0,"require_auth_time":true,"default_acr_values":"","initiate_login_uri":"","request_uris":[]}
+2.069085 RegistrationResponse: {
+  "application_type": "web",
+  "client_id": "a6f9fe6b-809f-4ea5-939e-899b5faf9ff2",
+  "client_id_issued_at": "1453210425",
+  "client_secret": null,
+  "client_secret_expires_at": 0,
+  "contacts": [
+    "roland.hedberg@umu.se"
+  ],
+  "default_max_age": 3600.0,
+  "grant_types": [
+    "authorization_code"
+  ],
+  "id_token_signed_response_alg": "RS256",
+  "jwks": {
+    "keys": [
+      {
+        "d": "lZQv0_81euRLeUYU84Aodh0ar7ymDlzWP5NMra4Jklkb-lTBWkI-u4RMsPqGYyW3KHRoL_pgzZXSzQx8RLQfER6timRWb--NxMMKllZubByU3RqH2ooNuocJurspYiXkznPW1Mg9DaNXL0C2hwWPQHTeUVISpjgi5TCOV1ccWVyksFruya_VNL1CIByB-L0GL1rqbKv32cDwi2A3_jJa61cpzfLSIBe-lvCO6tuiDsR4qgJnUwnndQFwEI_4mLmD3iNWXrc8N-poleV8mBfMqBB5fWwy_ZTFCpmQ5AywGmctaik_wNhMoWuA4tUfY6_1LdKld-5Cjq55eLtuJjtvuQ",
+        "e": "AQAB",
+        "kid": "a0",
+        "kty": "RSA",
+        "n": "tx3Hjdbc19lkTiohbJrNj4jf2_90MEE122CRrwtFu6saDywKcG7Bi7w2FMAK2oTkuWfqhWRb5BEGmnSXdiCEPO5d-ytqP3nwlZXHaCDYscpP8bB4YLhvCn7R8Efw6gwQle24QPRP3lYoFeuUbDUq7GKA5SfaZUvWoeWjqyLIaBspKQsC26_Umx1E4IXLrMSL6nkRnrYcVZBAXrYCeTP1XtsV38_lZVJfHSaJaUy4PKaj3yvgm93EV2CXybPti7CCMXZ34VqqWiF64pQjZsPu3ZTr7ha_TTQq499-zYRQNDvIVsBDLQQIgrbctuGqj6lrXb31Jj3JIEYqH_4h5X9d0Q",
+        "p": "2lrYPppRbcQWu4LtWN6tOVUrtCOPv1eLTKTc7q8vCMcem1Ox5QFB7KnUtNZ5Ni7wnZUeVDfimNebtjNsGvDSrpgIlo9dEnFBQsQIkzZ2SkoYfgmF8hNdi6P-BfRjdgYouy4c6xAnGDgSMTip1YnPRyvbMaoYT9E_tEcBW5wOeoc",
+        "q": "1q-r-bmMFbIzrLK2U3elksZq8CqUqZxlSfkGMZuVkxgYMS-e4FPzEp2iirG-eO11aa0cpMMoBdTnVdGJ_ZUR93w0lGf9XnQAJqxP7eOsrUoiW4VWlWH4WfOiLgpO-pFtyTz_JksYYaotc_Z3Zy-Szw6a39IDbuYGy1qL-15oQuc",
+        "use": "enc"
+      },
+      {
+        "d": "DodXDEtkovWWGsMEXYy_nEEMCWyROMOebCnCv0ey3i4M4bh2dmwqgz0e-IKQAFlGiMkidGL1lNbq0uFS04FbuRAR06dYw1cbrNbDdhrWFxKTd1L5D9p-x-gW-YDWhpI8rUGRa76JXkOSxZUbg09_QyUd99CXAHh-FXi_ZkIKD8hK6FrAs68qhLf8MNkUv63DTduw7QgeFfQivdopePxyGuMk5n8veqwsUZsklQkhNlTYQqeM1xb2698ZQcNYkl0OssEsSJKRjXt-LRPowKrdvTuTo2p--HMI0pIEeFs7H_u5OW3jihjvoFClGPynHQhgWmQzlQRvWRXh6FhDVqFeGQ",
+        "e": "AQAB",
+        "kid": "a1",
+        "kty": "RSA",
+        "n": "zfZzttF7HmnTYwSMPdxKs5AoczbNS2mOPz-tN1g4ljqI_F1DG8cgQDcN_VDufxoFGRERo2FK6WEN41LhbGEyP6uL6wW6Cy29qE9QZcvY5mXrncndRSOkNcMizvuEJes_fMYrmP_lPiC6kWiqItTk9QBWqJfiYKhCx9cSDXsBmJXn3KWQCVHvj1ANFWW0CWLMKlWN-_NMNLIWJN_pEAocTZMzxSFBK1b5_5J8ZS7hfWRF6MQmjsJcz2jzA21SQZNpre3kwnTGRSwo05sAS-TyeadDqQPWgbqX69UzcGq5irhzN8cpZ_JaTk3Y_uV6owanTZLVvCgdjaAnMYeZhb0KFw",
+        "p": "5vJHCSM3H3q4RltYzENC9RyZZV8EUmpkv9moyguT5t-BUGA-T4W_FGIxzOPXRWOckIplKkoDKhavUeNmTZMCUcue0nkICSJpvNE4Nb2p5PZk_QqSdQNvCasQtdojEG0AmfVD85SU551CYxJdLdDFOqyK2entpMr8lhokem189As",
+        "q": "5E5XKK5njT-zzRqqTeY2tgP9PJBACeaH_xQRHZ_1ydE7tVd7HdgdaEHfQ1jvKIHFkknWWOBAY1mlBc4YDirLShB_voShD8C-Hx3nF5sne5fleVfU-sZy6Za4B2U75PcE62oZgCPauOTAEm9Xuvrt5aMMovyzR8ecJZhm9bw7naU",
+        "use": "sig"
+      },
+      {
+        "crv": "P-256",
+        "d": "Q6fA7egyfywA13Q67EJBq0I4wj0MOLfplrF2A-WHBR4",
+        "kid": "a2",
+        "kty": "EC",
+        "use": "sig",
+        "x": "qtNqcBfopX-twneusyFOre7ZRRGvmKXfwM9paWUUoDk",
+        "y": "nLq3k5Y3wOTC7qycNBmSpNFyaRwvQtWwKqnEuR9ouCY"
+      },
+      {
+        "crv": "P-256",
+        "d": "Gxya7jJtMyyLnMJhYlrDiowxbC2ZjeX31t58z0efVho",
+        "kid": "a3",
+        "kty": "EC",
+        "use": "enc",
+        "x": "s1qFrgX3tpp78fLFCJHad_f0ykfIi4Z6aCE94uUtSXM",
+        "y": "ourp6BwmEKWI_WVP_DNZIM7Sa70GoUf20mIArPiWw1E"
+      }
+    ]
+  },
+  "redirect_uris": [
+    "https://op.certification.openid.net:60186/authz_cb"
+  ],
+  "require_auth_time": true,
+  "response_types": [
+    "code"
+  ],
+  "subject_type": "public",
+  "token_endpoint_auth_method": "private_key_jwt",
+  "userinfo_signed_response_alg": "none"
+}
+2.091106 ------------ AuthorizationRequest ------------
+2.091543 --> URL: https://simpleidentityserver.azurewebsites.net/authorization?scope=openid&state=TCTpAPm07QajK2oJ&redirect_uri=https%3A%2F%2Fop.certification.openid.net%3A60186%2Fauthz_cb&response_type=code&client_id=a6f9fe6b-809f-4ea5-939e-899b5faf9ff2
+2.091551 --> BODY: None
+5.207163 <-- code=eb924760-fb26-4108-8a8d-1b3c1be278d4&state=TCTpAPm07QajK2oJ
+5.207618 AuthorizationResponse: {
+  "code": "eb924760-fb26-4108-8a8d-1b3c1be278d4",
+  "state": "TCTpAPm07QajK2oJ"
+}
+5.208058 ------------ AccessTokenRequest ------------
+5.235372 --> URL: https://simpleidentityserver.azurewebsites.net/token
+5.235383 --> BODY: code=eb924760-fb26-4108-8a8d-1b3c1be278d4&client_assertion_type=urn%3Aietf%3Aparams%3Aoauth%3Aclient-assertion-type%3Ajwt-bearer&redirect_uri=https%3A%2F%2Fop.certification.openid.net%3A60186%2Fauthz_cb&client_assertion=eyJhbGciOiJSUzI1NiIsImtpZCI6ImExIn0.eyJhdWQiOiBbImh0dHBzOi8vc2ltcGxlaWRlbnRpdHlzZXJ2ZXIuYXp1cmV3ZWJzaXRlcy5uZXQvdG9rZW4iXSwgImlzcyI6ICJhNmY5ZmU2Yi04MDlmLTRlYTUtOTM5ZS04OTliNWZhZjlmZjIiLCAianRpIjogImRuUXNaOFFuIiwgImV4cCI6IDE0NTMyMTEwMjguOTU1MTgsICJpYXQiOiAxNDUzMjEwNDI4Ljk1NTE4LCAic3ViIjogImE2ZjlmZTZiLTgwOWYtNGVhNS05MzllLTg5OWI1ZmFmOWZmMiJ9.DMMNrdNjOYxmvNqGHyfjrBdCft1und6RLDDk0pqfx1hrkzedls3r7iuAABcDTK0a0LfAqD84vhFFP6lpk0k48vBjNm1pq4dlYuK4FZCPtqNxTELJU9T4yEmKg2MEXtIb7cj21Ai0Hw4RwWwrC2U71yBtotTHJ8o8XZKOuVXV8fW-GHydA3GnNBGsTOL3RU6QJ6Fq21abdPZDg1VJ4c0Q3up9d8fy_YK8IP8wzQnvgWXVQLv0WzZCB7KYkeThWdX13lbNyEq9WP65cNRhM-XoAsmRWIe2hVvpPR7aqevlOumVDOxNG2XqCPGrxtnDFSeFx9hkiPWHP6TV1JCpMmzd3w&grant_type=authorization_code
+5.235394 --> HEADERS: {'Content-Type': 'application/x-www-form-urlencoded'}
+5.935643 <-- STATUS: 200
+5.935757 <-- BODY: {"access_token":"NTIwZGJmOGUtN2RjMS00OTMyLThjZTAtNWU5ZjRhZDQwZDhj","id_token":"eyJhbGciOiJSUzI1NiIsImtpZCI6ImJkMDNjYjlmLWMwMmYtNDg1MC1hMGZlLTFmY2M3MjI1ZGY5NyIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL3NpbXBsZWlkZW50aXR5c2VydmVyLmF6dXJld2Vic2l0ZXMubmV0LyIsImF1ZCI6WyJNeUJsb2ciLCJNeUJsb2dDbGllbnRTZWNyZXRQb3N0IiwiMDEyOGRmYWMtMGI0Yy00MTRmLTk2OGUtZTk3MTZlYWJjZTRhIiwiNGFjN2Y5ZWItZGU5Mi00MmYxLTg2ZjctODgzZDYxOTYxOTc2IiwiMzliMGU3YWUtOTEyOC00MjczLWE0NjktNGM5YWI0Mjg2Zjk2IiwiMDkyNTBlMDMtMmE1YS00ZmFlLTk5ZjktODQ5NGRjNTk2YzU4IiwiNDNlYmE1YjAtODZiZi00YTE5LTg4MTQtZDFlNWE4N2YwYTVmIiwiZjc4YjdlYjktMmYxZi00ODgyLWI2NWEtYzUyZmZlZWY3M2QzIiwiODI2YjVlOTMtYjk2Mi00MmQzLTk2MDEtNWM1YjBjNmY3MmMzIiwiNDQ4Mjk3NTMtZWNjMC00NzU5LWIwNWQtYmQ3OWIzNDNhNGQ1IiwiMTFmZmRjMmUtMDY0NS00MDEyLThiZDQtZTY0MGU2NzBjOTE2IiwiMDA0YTFlNTYtN2Q3OS00NGZmLWIyYjgtMjczMzQwNDNkZjcxIiwiNmMzYjFlNzMtZWFhYi00MjVjLTg5MjEtNDk2NmNlODZiNzU3IiwiN2NmMDc4ZWMtMzY5MS00Mjg3LWFkMDMtMmFlMzEzNDFhMDRjIiwiNGQ3OGJjZDctNmI4Yi00ZDM3LThhZjEtYjAxODk1YjhjYTkyIiwiMzc0NmYzZDMtMDkzZi00ZTkzLTgzY2ItOTNmMDRhNzAxYzQ0IiwiNWY4OGVmZGMtMzJmMC00MDNiLWExOTYtZDVkYTcwMTM2MDhiIiwiNTE2ZTMxY2UtODBmYy00ZWU2LTlkNGQtM2Q4MmI5ZTk5ZjUyIiwiYmIxN2E5NGUtY2RmZC00YWQ1LTk0NjgtM2I0YjU5OGNiZjNhIiwiODZkY2M3ZjItNjkyZS00ZWMwLWE1N2EtMDgyYTE2MDU3ODMzIiwiOGZlOWQxZDItMDE3MS00NDFhLWJiMDQtNmI0OGEwMGQ2ODhlIiwiYmQ1OGM4MDItZTBhNi00ODYyLTkxZmMtNjVjNjM4M2ZjYTM4IiwiZWMzMGM4NjctMTNmNC00ZDgxLWFjYzUtMTljOWQ0ODc4NmU3IiwiMzQyYmI1ZGEtNDRkNC00NGQ3LWI2YzEtMTRmNGMyMjhiNTU0IiwiN2UxOTdiMzktZDM0NS00NDZhLWI4OGItMzczMDI2MGMzYzA3IiwiNWE1ZmRiMWEtNjgwMi00OGNiLWIzZGUtOWFmOTA5YTY0OTdhIiwiODM3MDk3ODMtNzgxZS00NTgwLWFkN2UtZmJmNGExNTlkY2MzIiwiNTIxNmE2ZjItZmU1MC00M2MzLTg1NGUtZjc0NWEzZDU0YTNiIiwiYzNkMTZmZDYtM2IzOC00NWU1LThlZTItMDllNGU4YmJkZDAwIiwiYmExNmYzOTAtMDg3My00YjI1LTgwODMtMDQzMGU4Njg1MWI1IiwiNWYxN2Q4YjItOTFlYy00ZjZmLTllOWMtM2Y5MzVkNGU1MDc2IiwiODM3ZTU4ZGYtNzY1YS00OGFkLWE4NTYtNDIwOGEzMTgyN2IzIiwiMTI1ZWQxZDQtNGZlMi00ZWRkLWEzY2YtMjNkNGZlYWM5MzE5IiwiOWY3ZGQ0OTAtYjMyYS00NDQyLTg4M2YtNDcyZmVmMTc5NDNjIiwiYTZmOWZlNmItODA5Zi00ZWE1LTkzOWUtODk5YjVmYWY5ZmYyIiwiaHR0cHM6Ly9zaW1wbGVpZGVudGl0eXNlcnZlci5henVyZXdlYnNpdGVzLm5ldC8iXSwiZXhwIjoxNDU2MjEwNDI4LCJpYXQiOjE0NTMyMTA0MjgsImFjciI6Im9wZW5pZC5wYXBlLmF1dGhfbGV2ZWwubnMucGFzc3dvcmQ9MSIsImFtciI6WyJwYXNzd29yZCJdLCJhenAiOiJhNmY5ZmU2Yi04MDlmLTRlYTUtOTM5ZS04OTliNWZhZjlmZjIiLCJzdWIiOiJhZG1pbmlzdHJhdG9yQGhvdG1haWwuYmUiLCJjX2hhc2giOiI1d0hkblBVU1M2MWJsbkM1bjBsbVRBIn0.EeCEualCN8hwK4sSHhxUalJGP6wbDr3dIP4_mrHjy5BjfQ3ANv6_PN53erHktwJyEUfHr9hf6r10WjUlY95w0NIkLR-GO5a2HBVGzUWozadfCn5dxjQBX5y7UreoPrKMhAJY05o4m0QeLdLy2ZNOLlCRM9DiUAIL1o0n3EFPbLE","token_type":"Bearer","refresh_token":"ZTY1Zjk1MzEtZmRiMS00MWRkLThlZTUtZjBlZTg0YjI5ZWZi","expires_in":3600,"scope":"openid"}
+6.484682 AccessTokenResponse: {
+  "access_token": "NTIwZGJmOGUtN2RjMS00OTMyLThjZTAtNWU5ZjRhZDQwZDhj",
+  "expires_in": 3600,
+  "id_token": {
+    "claims": {
+      "acr": "openid.pape.auth_level.ns.password=1",
+      "amr": [
+        "password"
+      ],
+      "aud": [
+        "MyBlog",
+        "MyBlogClientSecretPost",
+        "0128dfac-0b4c-414f-968e-e9716eabce4a",
+        "4ac7f9eb-de92-42f1-86f7-883d61961976",
+        "39b0e7ae-9128-4273-a469-4c9ab4286f96",
+        "09250e03-2a5a-4fae-99f9-8494dc596c58",
+        "43eba5b0-86bf-4a19-8814-d1e5a87f0a5f",
+        "f78b7eb9-2f1f-4882-b65a-c52ffeef73d3",
+        "826b5e93-b962-42d3-9601-5c5b0c6f72c3",
+        "44829753-ecc0-4759-b05d-bd79b343a4d5",
+        "11ffdc2e-0645-4012-8bd4-e640e670c916",
+        "004a1e56-7d79-44ff-b2b8-27334043df71",
+        "6c3b1e73-eaab-425c-8921-4966ce86b757",
+        "7cf078ec-3691-4287-ad03-2ae31341a04c",
+        "4d78bcd7-6b8b-4d37-8af1-b01895b8ca92",
+        "3746f3d3-093f-4e93-83cb-93f04a701c44",
+        "5f88efdc-32f0-403b-a196-d5da7013608b",
+        "516e31ce-80fc-4ee6-9d4d-3d82b9e99f52",
+        "bb17a94e-cdfd-4ad5-9468-3b4b598cbf3a",
+        "86dcc7f2-692e-4ec0-a57a-082a16057833",
+        "8fe9d1d2-0171-441a-bb04-6b48a00d688e",
+        "bd58c802-e0a6-4862-91fc-65c6383fca38",
+        "ec30c867-13f4-4d81-acc5-19c9d48786e7",
+        "342bb5da-44d4-44d7-b6c1-14f4c228b554",
+        "7e197b39-d345-446a-b88b-3730260c3c07",
+        "5a5fdb1a-6802-48cb-b3de-9af909a6497a",
+        "83709783-781e-4580-ad7e-fbf4a159dcc3",
+        "5216a6f2-fe50-43c3-854e-f745a3d54a3b",
+        "c3d16fd6-3b38-45e5-8ee2-09e4e8bbdd00",
+        "ba16f390-0873-4b25-8083-0430e86851b5",
+        "5f17d8b2-91ec-4f6f-9e9c-3f935d4e5076",
+        "837e58df-765a-48ad-a856-4208a31827b3",
+        "125ed1d4-4fe2-4edd-a3cf-23d4feac9319",
+        "9f7dd490-b32a-4442-883f-472fef17943c",
+        "a6f9fe6b-809f-4ea5-939e-899b5faf9ff2",
+        "https://simpleidentityserver.azurewebsites.net/"
+      ],
+      "azp": "a6f9fe6b-809f-4ea5-939e-899b5faf9ff2",
+      "c_hash": "5wHdnPUSS61blnC5n0lmTA",
+      "exp": 1456210428,
+      "iat": 1453210428,
+      "iss": "https://simpleidentityserver.azurewebsites.net/",
+      "sub": "administrator@hotmail.be"
+    },
+    "jws header parameters": {
+      "alg": "RS256",
+      "kid": "bd03cb9f-c02f-4850-a0fe-1fcc7225df97",
+      "typ": "JWT"
+    }
+  },
+  "refresh_token": "ZTY1Zjk1MzEtZmRiMS00MWRkLThlZTUtZjBlZTg0YjI5ZWZi",
+  "scope": "openid",
+  "token_type": "Bearer"
+}
+6.503181 ==== END ====
+Result
+
+PASSED
