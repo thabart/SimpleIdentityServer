@@ -36,6 +36,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
             modelBuilder.Configurations.Add(new ResourceOwnerMapping());
             modelBuilder.Configurations.Add(new JsonWebKeyMapping());
             modelBuilder.Configurations.Add(new GrantedTokenMapping());
+            modelBuilder.Configurations.Add(new ClientMapping());
         }
     }
 }

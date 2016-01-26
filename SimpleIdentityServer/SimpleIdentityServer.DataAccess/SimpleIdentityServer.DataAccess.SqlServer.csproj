@@ -56,6 +56,7 @@
     <Compile Include="Extensions\MappingExtensions.cs" />
     <Compile Include="Mappings\AddressMapping.cs" />
     <Compile Include="Mappings\ClaimMapping.cs" />
+    <Compile Include="Mappings\ClientMapping.cs" />
     <Compile Include="Mappings\GrantedTokenMapping.cs" />
     <Compile Include="Mappings\JsonWebKeyMapping.cs" />
     <Compile Include="Mappings\ResourceOwnerMapping.cs" />
@@ -81,9 +82,14 @@
     <Compile Include="Migrations\201601261852507_GrantedToken.Designer.cs">
       <DependentUpon>201601261852507_GrantedToken.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201601262013526_Client.cs" />
+    <Compile Include="Migrations\201601262013526_Client.Designer.cs">
+      <DependentUpon>201601262013526_Client.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Address.cs" />
     <Compile Include="Models\Claim.cs" />
+    <Compile Include="Models\Client.cs" />
     <Compile Include="Models\GrantedToken.cs" />
     <Compile Include="Models\JsonWebKey.cs" />
     <Compile Include="Models\ResourceOwner.cs" />
@@ -135,6 +141,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201601261852507_GrantedToken.resx">
       <DependentUpon>201601261852507_GrantedToken.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201601262013526_Client.resx">
+      <DependentUpon>201601262013526_Client.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

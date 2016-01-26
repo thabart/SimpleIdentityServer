@@ -1,40 +1,7 @@
-﻿#region copyright
-// Copyright 2015 Habart Thierry
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-//     http://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
+﻿using System.Collections.Generic;
 
-using System.Collections.Generic;
-using SimpleIdentityServer.Core.Jwt;
-
-namespace SimpleIdentityServer.Core.Models
+namespace SimpleIdentityServer.DataAccess.SqlServer.Models
 {
-    public enum ResponseType
-    {
-        code,
-        token,
-        id_token
-    }
-
-    public enum GrantType
-    {
-        authorization_code,
-        @implicit,
-        refresh_token,
-        client_credentials,
-        password
-    }
-
     public enum TokenEndPointAuthenticationMethods
     {
         // Defaut value
@@ -44,7 +11,6 @@ namespace SimpleIdentityServer.Core.Models
         private_key_jwt,
         none
     }
-
     public enum ApplicationTypes
     {
         native,
@@ -110,24 +76,19 @@ namespace SimpleIdentityServer.Core.Models
         public TokenEndPointAuthenticationMethods TokenEndPointAuthMethod { get; set; }
 
         /// <summary>
-        /// Gets or sets an array containing a list of OAUTH2.0 response_type values
+        /// Gets or sets a list of concatenated response types separated by ','
         /// </summary>
-        public List<ResponseType> ResponseTypes { get; set; }
+        public string ResponseTypes { get; set; }
 
         /// <summary>
-        /// Gets or sets an array containing a list of OAUTH2.0 grant types
+        /// Gets or sets a list of concatenated grant-types
         /// </summary>
-        public List<GrantType> GrantTypes { get; set; }
+        public string GrantTypes { get; set; }
 
         /// <summary>
-        /// Gets or sets a list of OAUTH2.0 grant_types.
+        /// Gets or sets a list of concatenated redirection uris.
         /// </summary>
-        public List<Scope> AllowedScopes { get; set; }
-
-        /// <summary>
-        /// Gets or sets an array of Redirection URI values used by the client.
-        /// </summary>
-        public List<string> RedirectionUrls { get; set; }
+        public string RedirectionUrls { get; set; }
 
         /// <summary>
         /// Gets or sets the type of application
@@ -140,14 +101,9 @@ namespace SimpleIdentityServer.Core.Models
         public string JwksUri { get; set; }
 
         /// <summary>
-        /// Gets or sets the list of json web keys
+        /// Gets or sets a list of concatenated contacts separated by ','
         /// </summary>
-        public List<JsonWebKey> JsonWebKeys { get; set; }
-
-        /// <summary>
-        /// Gets or sets the list of contacts
-        /// </summary>
-        public List<string> Contacts { get; set; }
+        public string Contacts { get; set; }
 
         /// <summary>
         /// Get or set the sector identifier uri
@@ -215,8 +171,19 @@ namespace SimpleIdentityServer.Core.Models
         public string InitiateLoginUri { get; set; }
 
         /// <summary>
-        /// Gets or sets the list of request uris
+        /// Gets or sets a list of concatenated request uris separated by ','
         /// </summary>
-        public List<string> RequestUris { get; set; } 
+        public string RequestUris { get; set; }
+
+
+        /// <summary>
+        /// Gets or sets a list of OAUTH2.0 grant_types.
+        /// </summary>
+        public virtual ICollection<Scope> AllowedScopes { get; set; }
+
+        /// <summary>
+        /// Gets or sets the list of json web keys
+        /// </summary>
+        public virtual ICollection<JsonWebKey> JsonWebKeys { get; set; }
     }
 }

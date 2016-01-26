@@ -32,5 +32,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Models
         public ScopeType Type { get; set; }
 
         public virtual ICollection<Claim> Claims { get; set; }
+
+        public virtual ICollection<Client> Clients { get; set; }
     }
 }
