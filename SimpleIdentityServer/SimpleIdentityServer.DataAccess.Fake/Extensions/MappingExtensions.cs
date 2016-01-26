@@ -176,7 +176,7 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
             {
                 Name = scope.Name,
                 Description = scope.Description,
-                IsInternal = scope.IsInternal,
+                IsOpenIdScope = scope.IsOpenIdScope,
                 IsExposed = scope.IsExposed,
                 Claims = scope.Claims,
                 Type = scope.Type.ToFake(),
@@ -345,7 +345,7 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
             {
                 Name = scope.Name,
                 Description = scope.Description,
-                IsInternal = scope.IsInternal,
+                IsOpenIdScope = scope.IsOpenIdScope,
                 IsExposed = scope.IsExposed,
                 Claims = scope.Claims,
                 Type = scope.Type.ToBusiness(),

@@ -14,7 +14,7 @@ namespace SimpleIdentityServer.DataAccess.Fake.Models
 
         public string Description { get; set; }
 
-        public bool IsInternal { get; set; }
+        public bool IsOpenIdScope { get; set; }
 
         public bool IsExposed { get; set; }
 

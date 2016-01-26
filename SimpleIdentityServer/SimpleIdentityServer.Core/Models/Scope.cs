@@ -37,7 +37,7 @@ namespace SimpleIdentityServer.Core.Models
         /// <summary>
         /// Gets or sets a boolean whether the scope is internal : openid, profile ...
         /// </summary>
-        public bool IsInternal { get; set; }
+        public bool IsOpenIdScope { get; set; }
 
         /// <summary>
         /// Gets or sets a boolean whether the scope is exposed in the well-known configuration endpoint.

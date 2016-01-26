@@ -18,7 +18,7 @@ namespace SimpleIdentityServer.Api.Tests.Extensions
                 IsDisplayedInConsent = scope.IsDisplayedInConsent,
                 Name = scope.Name,
                 Type = (ScopeType)scope.Type,
-                IsInternal = scope.IsInternal,
+                IsOpenIdScope = scope.IsInternal,
                 Claims = string.IsNullOrWhiteSpace(scope.Claims) ? null : scope.Claims.Split(' ').ToList()
             };
         }

@@ -122,7 +122,6 @@ namespace SimpleIdentityServer.Core.Jwt
             StandardResourceOwnerClaimNames.PreferredUserName,
             StandardResourceOwnerClaimNames.Profile,
             StandardResourceOwnerClaimNames.Role,
-            StandardResourceOwnerClaimNames.Subject,
             StandardResourceOwnerClaimNames.UpdatedAt,
             StandardResourceOwnerClaimNames.WebSite,
             StandardResourceOwnerClaimNames.ZoneInfo

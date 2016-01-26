@@ -76,7 +76,7 @@ namespace SimpleIdentityServer.Core
             {
                 Name = "profile",
                 IsExposed = true,
-                IsInternal = true,
+                IsOpenIdScope = true,
                 IsDisplayedInConsent = true,
                 Description = "Access to the profile",
                 Claims = new List<string>
@@ -103,7 +103,7 @@ namespace SimpleIdentityServer.Core
             {
                 Name = "email",
                 IsExposed = true,
-                IsInternal = true,
+                IsOpenIdScope = true,
                 IsDisplayedInConsent = true,
                 Description = "Access to the email",
                 Claims = new List<string>
@@ -118,7 +118,7 @@ namespace SimpleIdentityServer.Core
             {
                 Name = "address",
                 IsExposed = true,
-                IsInternal = true,
+                IsOpenIdScope = true,
                 IsDisplayedInConsent = true,
                 Description = "Access to the address",
                 Claims = new List<string>
@@ -132,7 +132,7 @@ namespace SimpleIdentityServer.Core
             {
                 Name = "phone",
                 IsExposed = true,
-                IsInternal = true,
+                IsOpenIdScope = true,
                 IsDisplayedInConsent = true,
                 Description = "Access to the phone",
                 Claims = new List<string>
@@ -147,7 +147,7 @@ namespace SimpleIdentityServer.Core
             {
                 Name = "openid",
                 IsExposed = true,
-                IsInternal = true,
+                IsOpenIdScope = true,
                 IsDisplayedInConsent = false,
                 Description = "openid",
                 Type = ScopeType.ProtectedApi

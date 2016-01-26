@@ -33,7 +33,7 @@ namespace SimpleIdentityServer.Api.Configuration
                         {
                             Name = "openid",
                             IsExposed = true,
-                            IsInternal = true,
+                            IsOpenIdScope = true,
                             Description = "openid",
                             Type = ScopeType.ProtectedApi
                         },
@@ -42,7 +42,7 @@ namespace SimpleIdentityServer.Api.Configuration
                         {
                             Name = "profile",
                             IsExposed = true,
-                            IsInternal = true,
+                            IsOpenIdScope = true,
                             Description = "Access to the profile",
                             Claims = new List<string>
                             {
@@ -67,7 +67,7 @@ namespace SimpleIdentityServer.Api.Configuration
                         {
                             Name = "email",
                             IsExposed = true,
-                            IsInternal = true,
+                            IsOpenIdScope = true,
                             IsDisplayedInConsent = true,
                             Description = "Access to the email",
                             Claims = new List<string>
@@ -81,7 +81,7 @@ namespace SimpleIdentityServer.Api.Configuration
                         {
                             Name = "address",
                             IsExposed = true,
-                            IsInternal = true,
+                            IsOpenIdScope = true,
                             IsDisplayedInConsent = true,
                             Description = "Access to the address",
                             Claims = new List<string>
@@ -94,7 +94,7 @@ namespace SimpleIdentityServer.Api.Configuration
                         {
                             Name = "phone",
                             IsExposed = true,
-                            IsInternal = true,
+                            IsOpenIdScope = true,
                             IsDisplayedInConsent = true,
                             Description = "Access to the phone",
                             Claims = new List<string>
@@ -148,7 +148,7 @@ namespace SimpleIdentityServer.Api.Configuration
                         {
                             Name = "openid",
                             IsExposed = true,
-                            IsInternal = true,
+                            IsOpenIdScope = true,
                             Description = "openid",
                             Type = ScopeType.ProtectedApi
                         },
@@ -157,7 +157,7 @@ namespace SimpleIdentityServer.Api.Configuration
                         {
                             Name = "profile",
                             IsExposed = true,
-                            IsInternal = true,
+                            IsOpenIdScope = true,
                             Description = "Access to the profile",
                             Claims = new List<string>
                             {
@@ -182,7 +182,7 @@ namespace SimpleIdentityServer.Api.Configuration
                         {
                             Name = "email",
                             IsExposed = true,
-                            IsInternal = true,
+                            IsOpenIdScope = true,
                             IsDisplayedInConsent = true,
                             Description = "Access to the email",
                             Claims = new List<string>
@@ -196,7 +196,7 @@ namespace SimpleIdentityServer.Api.Configuration
                         {
                             Name = "address",
                             IsExposed = true,
-                            IsInternal = true,
+                            IsOpenIdScope = true,
                             IsDisplayedInConsent = true,
                             Description = "Access to the address",
                             Claims = new List<string>
@@ -209,7 +209,7 @@ namespace SimpleIdentityServer.Api.Configuration
                         {
                             Name = "phone",
                             IsExposed = true,
-                            IsInternal = true,
+                            IsOpenIdScope = true,
                             IsDisplayedInConsent = true,
                             Description = "Access to the phone",
                             Claims = new List<string>

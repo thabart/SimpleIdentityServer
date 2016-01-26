@@ -75,7 +75,7 @@ namespace SimpleIdentityServer.Api.Tests.Features
 #line hidden
             TechTalk.SpecFlow.Table table1 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
-                        "IsInternal",
+                        "IsOpenIdScope",
                         "Claims"});
             table1.AddRow(new string[] {
                         "openid",

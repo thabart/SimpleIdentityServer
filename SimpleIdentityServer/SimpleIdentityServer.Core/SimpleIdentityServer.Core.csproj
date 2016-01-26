@@ -271,7 +271,6 @@
     <Compile Include="Exceptions\IdentityServerExceptionWithState.cs" />
     <Compile Include="Helpers\SecurityHelper.cs" />
     <Compile Include="Helpers\GrantedTokenGeneratorHelper.cs" />
-    <Compile Include="Model.cs" />
     <Compile Include="ModuleInit.cs" />
     <Compile Include="Api\Authorization\Actions\GetAuthorizationCodeOperation.cs" />
     <Compile Include="Api\Token\Actions\GetTokenByResourceOwnerCredentialsGrantTypeAction.cs" />

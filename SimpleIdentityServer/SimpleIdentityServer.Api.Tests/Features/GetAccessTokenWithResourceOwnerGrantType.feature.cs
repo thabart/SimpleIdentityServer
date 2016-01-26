@@ -109,7 +109,7 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table2 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
-                        "IsInternal"});
+                        "IsOpenIdScope"});
             table2.AddRow(new string[] {
                         "roles",
                         "true"});
@@ -157,7 +157,7 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table4 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
-                        "IsInternal"});
+                        "IsOpenIdScope"});
             table4.AddRow(new string[] {
                         "roles",
                         "true"});
@@ -201,7 +201,7 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table6 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
-                        "IsInternal"});
+                        "IsOpenIdScope"});
             table6.AddRow(new string[] {
                         "roles",
                         "true"});
@@ -245,7 +245,7 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table8 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
-                        "IsInternal"});
+                        "IsOpenIdScope"});
             table8.AddRow(new string[] {
                         "roles",
                         "true"});
@@ -291,7 +291,7 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table10 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
-                        "IsInternal"});
+                        "IsOpenIdScope"});
             table10.AddRow(new string[] {
                         "roles",
                         "true"});
@@ -337,7 +337,7 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table12 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
-                        "IsInternal"});
+                        "IsOpenIdScope"});
             table12.AddRow(new string[] {
                         "roles",
                         "true"});
@@ -383,7 +383,7 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table14 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
-                        "IsInternal"});
+                        "IsOpenIdScope"});
             table14.AddRow(new string[] {
                         "roles",
                         "true"});
@@ -429,7 +429,7 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table16 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
-                        "IsInternal"});
+                        "IsOpenIdScope"});
             table16.AddRow(new string[] {
                         "roles",
                         "true"});

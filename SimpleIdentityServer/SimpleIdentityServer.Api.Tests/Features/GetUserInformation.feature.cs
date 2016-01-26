@@ -81,7 +81,7 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table1 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
-                        "IsInternal",
+                        "IsOpenIdScope",
                         "Claims"});
             table1.AddRow(new string[] {
                         "openid",
@@ -236,7 +236,7 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table5 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
-                        "IsInternal",
+                        "IsOpenIdScope",
                         "Claims"});
             table5.AddRow(new string[] {
                         "openid",
@@ -348,7 +348,7 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table10 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
-                        "IsInternal",
+                        "IsOpenIdScope",
                         "Claims"});
             table10.AddRow(new string[] {
                         "openid",
@@ -435,7 +435,7 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table13 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
-                        "IsInternal",
+                        "IsOpenIdScope",
                         "Claims"});
             table13.AddRow(new string[] {
                         "openid",
@@ -521,7 +521,7 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table16 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
-                        "IsInternal",
+                        "IsOpenIdScope",
                         "Claims"});
             table16.AddRow(new string[] {
                         "openid",
@@ -622,7 +622,7 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table19 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
-                        "IsInternal",
+                        "IsOpenIdScope",
                         "Claims"});
             table19.AddRow(new string[] {
                         "openid",
@@ -710,7 +710,7 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table22 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
-                        "IsInternal",
+                        "IsOpenIdScope",
                         "Claims"});
             table22.AddRow(new string[] {
                         "openid",
@@ -866,7 +866,7 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table26 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
-                        "IsInternal",
+                        "IsOpenIdScope",
                         "Claims"});
             table26.AddRow(new string[] {
                         "openid",

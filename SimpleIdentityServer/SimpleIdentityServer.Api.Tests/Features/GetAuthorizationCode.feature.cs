@@ -81,7 +81,7 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table1 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
-                        "IsInternal"});
+                        "IsOpenIdScope"});
             table1.AddRow(new string[] {
                         "PlanningApi",
                         "true"});
@@ -129,7 +129,7 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table3 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
-                        "IsInternal"});
+                        "IsOpenIdScope"});
             table3.AddRow(new string[] {
                         "PlanningApi",
                         "true"});
@@ -190,7 +190,7 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table6 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
-                        "IsInternal"});
+                        "IsOpenIdScope"});
             table6.AddRow(new string[] {
                         "PlanningApi",
                         "true"});
@@ -240,7 +240,7 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table8 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
-                        "IsInternal"});
+                        "IsOpenIdScope"});
             table8.AddRow(new string[] {
                         "PlanningApi",
                         "true"});
@@ -310,7 +310,7 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table11 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
-                        "IsInternal"});
+                        "IsOpenIdScope"});
             table11.AddRow(new string[] {
                         "PlanningApi",
                         "true"});
@@ -382,7 +382,7 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table14 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
-                        "IsInternal"});
+                        "IsOpenIdScope"});
             table14.AddRow(new string[] {
                         "PlanningApi",
                         "true"});
@@ -450,7 +450,7 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table17 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
-                        "IsInternal"});
+                        "IsOpenIdScope"});
             table17.AddRow(new string[] {
                         "PlanningApi",
                         "true"});
@@ -503,7 +503,7 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table19 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
-                        "IsInternal"});
+                        "IsOpenIdScope"});
             table19.AddRow(new string[] {
                         "PlanningApi",
                         "true"});
@@ -564,7 +564,7 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table22 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
-                        "IsInternal"});
+                        "IsOpenIdScope"});
             table22.AddRow(new string[] {
                         "PlanningApi",
                         "true"});
@@ -623,7 +623,7 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table25 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
-                        "IsInternal"});
+                        "IsOpenIdScope"});
             table25.AddRow(new string[] {
                         "PlanningApi",
                         "true"});
@@ -693,7 +693,7 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table29 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
-                        "IsInternal"});
+                        "IsOpenIdScope"});
             table29.AddRow(new string[] {
                         "PlanningApi",
                         "true"});
@@ -752,7 +752,7 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table32 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
-                        "IsInternal"});
+                        "IsOpenIdScope"});
             table32.AddRow(new string[] {
                         "PlanningApi",
                         "true"});

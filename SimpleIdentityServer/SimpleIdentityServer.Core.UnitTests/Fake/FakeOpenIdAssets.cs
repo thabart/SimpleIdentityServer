@@ -37,7 +37,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Fake
                         {
                             Name = "openid",
                             IsExposed = true,
-                            IsInternal = true,
+                            IsOpenIdScope = true,
                             Description = "openid",
                             Type = ScopeType.ProtectedApi
                         },
@@ -46,7 +46,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Fake
                         {
                             Name = "profile",
                             IsExposed = true,
-                            IsInternal = true,
+                            IsOpenIdScope = true,
                             Description = "Access to the profile",
                             Claims = new List<string>
                             {
@@ -71,7 +71,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Fake
                         {
                             Name = "email",
                             IsExposed = true,
-                            IsInternal = true,
+                            IsOpenIdScope = true,
                             IsDisplayedInConsent = true,
                             Description = "Access to the email",
                             Claims = new List<string>
@@ -85,7 +85,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Fake
                         {
                             Name = "address",
                             IsExposed = true,
-                            IsInternal = true,
+                            IsOpenIdScope = true,
                             IsDisplayedInConsent = true,
                             Description = "Access to the address",
                             Claims = new List<string>
@@ -98,7 +98,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Fake
                         {
                             Name = "phone",
                             IsExposed = true,
-                            IsInternal = true,
+                            IsOpenIdScope = true,
                             IsDisplayedInConsent = true,
                             Description = "Access to the phone",
                             Claims = new List<string>
@@ -145,21 +145,21 @@ namespace SimpleIdentityServer.Core.UnitTests.Fake
                 {
                     Name = "BlogApi",
                     Description = "Access to the blog API",
-                    IsInternal = false,
+                    IsOpenIdScope = false,
                     IsDisplayedInConsent = true
                 },
                 new Scope
                 {
                     Name = "BlogApi:AddArticle",
                     Description = "Access to the add article operation",
-                    IsInternal = false,
+                    IsOpenIdScope = false,
                     IsDisplayedInConsent = true
                 },
                 new Scope
                 {
                     Name = "openid",
                     IsExposed = true,
-                    IsInternal = true,
+                    IsOpenIdScope = true,
                     IsDisplayedInConsent = false,
                     Description = "openid",
                     Type = ScopeType.ProtectedApi
@@ -168,7 +168,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Fake
                 {
                     Name = "profile",
                     IsExposed = true,
-                    IsInternal = true,
+                    IsOpenIdScope = true,
                     Description = "Access to the profile",
                     Claims = new List<string>
                     {
@@ -194,7 +194,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Fake
                 {
                     Name = "email",
                     IsExposed = true,
-                    IsInternal = true,
+                    IsOpenIdScope = true,
                     IsDisplayedInConsent = true,
                     Description = "Access to the email",
                     Claims = new List<string>
@@ -208,7 +208,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Fake
                 {
                     Name = "address",
                     IsExposed = true,
-                    IsInternal = true,
+                    IsOpenIdScope = true,
                     IsDisplayedInConsent = true,
                     Description = "Access to the address",
                     Claims = new List<string>
@@ -221,7 +221,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Fake
                 {
                     Name = "phone",
                     IsExposed = true,
-                    IsInternal = true,
+                    IsOpenIdScope = true,
                     IsDisplayedInConsent = true,
                     Description = "Access to the phone",
                     Claims = new List<string>
