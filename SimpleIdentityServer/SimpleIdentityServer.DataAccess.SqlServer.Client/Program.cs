@@ -2,6 +2,7 @@
 using System.Linq;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.DataAccess.SqlServer.Repositories;
+using SimpleIdentityServer.Core.Models;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Client
 {
@@ -92,12 +93,59 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Client
             Console.WriteLine(jsonWebK.Alg);
         }
 
+        static void TestGrantedTokenRepository()
+        {
+            const string refreshToken = "refreshtoken";
+            const string accessToken = "accesstoken";
+            const string scope = "openid";
+            const string clientId = "clientId";
+            var grantedTokenRepository = new GrantedTokenRepository();
+            Console.WriteLine("============================================");
+            Console.WriteLine("Insert a new token");
+            var grantedToken = new GrantedToken
+            {
+                Scope = scope,
+                ExpiresIn = 1000,
+                CreateDateTime = DateTime.UtcNow,
+                AccessToken = accessToken,
+                RefreshToken = refreshToken,
+                IdTokenPayLoad = new JwsPayload(),
+                UserInfoPayLoad = new JwsPayload(),
+                ClientId = clientId
+            };
+            grantedTokenRepository.Insert(grantedToken);
+            
+            Console.WriteLine("============================================");
+            Console.WriteLine("get granted token with refresh token");
+            var token = grantedTokenRepository.GetTokenByRefreshToken(refreshToken);
+            Console.WriteLine(token.Scope);
+            
+            Console.WriteLine("============================================");
+            Console.WriteLine("get granted token with access token");
+            token = grantedTokenRepository.GetToken(accessToken);
+            Console.WriteLine(token.ClientId);
+
+            Console.WriteLine("============================================");
+            Console.WriteLine("get granted token");
+            token = grantedTokenRepository.GetToken(scope,
+                clientId,
+                new JwsPayload(),
+                new JwsPayload());
+            Console.WriteLine(token.AccessToken);
+
+
+            Console.WriteLine("============================================");
+            Console.WriteLine("delete the granted token");
+            grantedTokenRepository.Delete(grantedToken);
+        }
+
         static void Main(string[] args)
         {
             // TestTranslationRepository();
             // TestScopeRepository();
             // TestResourceOwnerRepository();
             // TestJsonWebKeyRepository();
+            TestGrantedTokenRepository();
             Console.ReadLine();
         }
     }

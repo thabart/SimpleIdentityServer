@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SimpleIdentityServer.Core.Common.Extensions;
+using SimpleIdentityServer.Core.Jwt;
+
 using Domain = SimpleIdentityServer.Core.Models;
 using Model = SimpleIdentityServer.DataAccess.SqlServer.Models;
 using Jwt = SimpleIdentityServer.Core.Jwt;
@@ -110,6 +113,21 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                 X5u = x5u,
                 SerializedKey = jsonWebKey.SerializedKey,
                 KeyOps = keyOperationsEnums.ToArray()
+            };
+        }
+
+        public static Domain.GrantedToken ToDomain(this Model.GrantedToken grantedToken)
+        {
+            return new Domain.GrantedToken
+            {
+                AccessToken = grantedToken.AccessToken,
+                ClientId = grantedToken.ClientId,
+                CreateDateTime = grantedToken.CreateDateTime,
+                ExpiresIn = grantedToken.ExpiresIn,
+                RefreshToken = grantedToken.RefreshToken,
+                Scope = grantedToken.Scope,
+                IdTokenPayLoad = string.IsNullOrWhiteSpace(grantedToken.IdTokenPayLoad) ? null : grantedToken.IdTokenPayLoad.DeserializeWithJavascript<JwsPayload>(),
+                UserInfoPayLoad = string.IsNullOrWhiteSpace(grantedToken.UserInfoPayLoad) ? null : grantedToken.UserInfoPayLoad.DeserializeWithJavascript<JwsPayload>()
             };
         }
 

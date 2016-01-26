@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Models;
@@ -74,6 +74,11 @@ namespace SimpleIdentityServer.DataAccess.Fake.Repositories
         {
             var result = FakeDataSource.Instance().GrantedTokens.FirstOrDefault(g => g.RefreshToken == refreshToken);
             return result == null ? null : result.ToBusiness();
+        }
+
+        public bool Delete(GrantedToken grantedToken)
+        {
+            throw new NotImplementedException();
         }
     }
 }

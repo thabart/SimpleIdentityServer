@@ -22,6 +22,8 @@ namespace SimpleIdentityServer.Core.Repositories
     {
         bool Insert(GrantedToken grantedToken);
 
+        bool Delete(GrantedToken grantedToken);
+
         GrantedToken GetToken(string accessToken);
 
         GrantedToken GetToken(

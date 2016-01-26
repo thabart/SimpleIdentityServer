@@ -23,6 +23,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
         public virtual IDbSet<ResourceOwner> ResourceOwners { get; set; }
 
         public virtual IDbSet<JsonWebKey> JsonWebKeys { get; set; } 
+
+        public virtual IDbSet<GrantedToken> GrantedTokens { get; set; }
         
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -33,6 +35,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
             modelBuilder.Configurations.Add(new AddressMapping());
             modelBuilder.Configurations.Add(new ResourceOwnerMapping());
             modelBuilder.Configurations.Add(new JsonWebKeyMapping());
+            modelBuilder.Configurations.Add(new GrantedTokenMapping());
         }
     }
 }
