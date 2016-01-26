@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Data.Entity.Migrations;
+using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.DataAccess.SqlServer.Models;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
@@ -14,20 +16,22 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
 
         protected override void Seed(SimpleIdentityServerContext context)
         {
-            InsertClaims(context);
-            InsertScopes(context);
-            InsertTranslations(context);
+            // InsertClaims(context);
+            // InsertScopes(context);
+            // InsertTranslations(context);
+            InsertResourceOwners(context);
         }
 
         private static void InsertClaims(SimpleIdentityServerContext context)
         {
-            context.Claims.AddOrUpdate(p => p.Code,
-                new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject });
+            context.Claims.AddOrUpdate(new [] {
+                new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject }
+            });
         }
 
         private static void InsertScopes(SimpleIdentityServerContext context)
         {
-            context.Scopes.AddOrUpdate(p => p.Name,
+            context.Scopes.AddOrUpdate(new [] {
                 new Models.Scope
                 {
                     Name = "openid",
@@ -103,12 +107,13 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                         new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumberVerified }
                     },
                     Type = ScopeType.ResourceOwner
-                });
+                }
+            });
         }
 
         private static void InsertTranslations(SimpleIdentityServerContext context)
         {
-            context.Translations.AddOrUpdate(c => c.Code,
+            context.Translations.AddOrUpdate(new [] {
                 new Models.Translation
                 {
                     LanguageTag = "en",
@@ -260,7 +265,42 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                     LanguageTag = "fr",
                     Code = Core.Constants.StandardTranslationCodes.CancelCode,
                     Value = "annuler"
-                });
+                }
+            });
+        }
+
+        private static void InsertResourceOwners(SimpleIdentityServerContext context)
+        {
+            context.ResourceOwners.AddOrUpdate(new []
+            {
+                new Models.ResourceOwner
+                {
+                    Id = "administrator@hotmail.be",
+                    Name = "administrator",
+                    Address = new Address
+                    {
+                        Country  = "France"
+                    },
+                    BirthDate = "1989-10-07",
+                    Email = "habarthierry@hotmail.fr",
+                    EmailVerified = true,
+                    FamilyName = "habart",
+                    Gender = "M",
+                    GivenName = "Habart Thierry",
+                    Locale = "fr-FR",
+                    MiddleName = "Thierry",
+                    NickName = "Titi",
+                    PhoneNumber = "00",
+                    PhoneNumberVerified = false,
+                    Picture = "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Shiba_inu_taiki.jpg/220px-Shiba_inu_taiki.jpg",
+                    PreferredUserName = "Thierry",
+                    Profile = "http://localhost/profile",
+                    UpdatedAt = DateTime.Now.ConvertToUnixTimestamp(),
+                    WebSite = "https://github.com/thabart",
+                    ZoneInfo = "Europe/Paris",
+                    Password = "5E884898DA28047151D0E56F8DC6292773603D0D6AABBDD62A11EF721D1542D8"
+                }
+            });
         }
     }
 }

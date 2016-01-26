@@ -12,6 +12,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
         public void Initialize(IModuleRegister register)
         {
             register.RegisterType<ITranslationRepository, TranslationRepository>();
+            register.RegisterType<IResourceOwnerRepository, ResourceOwnerRepository>();
+            register.RegisterType<IScopeRepository, ScopeRepository>();
         }
     }
 }

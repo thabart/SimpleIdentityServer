@@ -51,10 +51,26 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Client
             }
         }
 
+        static void TestResourceOwnerRepository()
+        {
+            var resourceOwnerRepository = new ResourceOwnerRepository();
+            Console.WriteLine("============================================");
+            Console.WriteLine("Get resource owner via his credentials");
+            var resourceOwner = resourceOwnerRepository.GetResourceOwnerByCredentials("administrator",
+                "5E884898DA28047151D0E56F8DC6292773603D0D6AABBDD62A11EF721D1542D8");
+            Console.WriteLine(resourceOwner.GivenName);
+
+            Console.WriteLine("============================================");
+            Console.WriteLine("Get the resource owner via his subject");
+            resourceOwner = resourceOwnerRepository.GetBySubject("administrator@hotmail.be");
+            Console.WriteLine(resourceOwner.BirthDate);
+        }
+
         static void Main(string[] args)
         {
-            TestTranslationRepository();
-            TestScopeRepository();
+            // TestTranslationRepository();
+            // TestScopeRepository();
+            TestResourceOwnerRepository();
             Console.ReadLine();
         }
     }

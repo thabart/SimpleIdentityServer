@@ -33,6 +33,46 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
             };
         }
 
+        public static Domain.ResourceOwner ToDomain(this Model.ResourceOwner resourceOwner)
+        {
+            return new Domain.ResourceOwner
+            {
+                BirthDate = resourceOwner.BirthDate,
+                Name = resourceOwner.Name,
+                Email = resourceOwner.Email,
+                EmailVerified = resourceOwner.EmailVerified,
+                FamilyName = resourceOwner.FamilyName,
+                Gender = resourceOwner.Gender,
+                GivenName = resourceOwner.GivenName,
+                Id = resourceOwner.Id,
+                Locale = resourceOwner.Locale,
+                MiddleName = resourceOwner.MiddleName,
+                NickName = resourceOwner.NickName,
+                Password = resourceOwner.Password,
+                PhoneNumber = resourceOwner.PhoneNumber,
+                PhoneNumberVerified = resourceOwner.PhoneNumberVerified,
+                Picture = resourceOwner.Picture,
+                PreferredUserName = resourceOwner.PreferredUserName,
+                Profile = resourceOwner.Profile,
+                UpdatedAt = resourceOwner.UpdatedAt,
+                WebSite = resourceOwner.WebSite,
+                ZoneInfo = resourceOwner.ZoneInfo,
+                Address = resourceOwner.Address == null ? null : resourceOwner.Address.ToDomain()
+            };
+        }
+
+        public static Domain.Address ToDomain(this Model.Address address)
+        {
+            return new Domain.Address
+            {
+                Country = address.Country,
+                Formatted = address.Formatted,
+                Locality = address.Locality,
+                PostalCode = address.PostalCode,
+                Region = address.Region
+            };
+        }
+
         #endregion
     }
 }
