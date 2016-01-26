@@ -142,7 +142,6 @@ namespace SimpleIdentityServer.Api.Tests.Common
             UnityContainer.RegisterType<IConsentRepository, FakeConsentRepository>();
             UnityContainer.RegisterType<IAuthorizationCodeRepository, FakeAuthorizationCodeRepository>();
             UnityContainer.RegisterType<IJsonWebKeyRepository, FakeJsonWebKeyRepository>();
-            UnityContainer.RegisterType<IJwtBearerClientRepository, FakeJwtBearerClientRepository>();
             UnityContainer.RegisterType<ITranslationRepository, FakeTranslationRepository>();
 
             UnityContainer.RegisterType<IParameterParserHelper, ParameterParserHelper>();

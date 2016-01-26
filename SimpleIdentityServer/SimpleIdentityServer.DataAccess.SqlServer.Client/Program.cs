@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.DataAccess.SqlServer.Repositories;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Client
@@ -66,11 +68,36 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Client
             Console.WriteLine(resourceOwner.BirthDate);
         }
 
+        static void TestJsonWebKeyRepository()
+        {
+            var jsonWebKeyRepository = new JsonWebKeyRepository();
+            Console.WriteLine("============================================");
+            Console.WriteLine("Display all the Json Web Keys");
+            var jsonWebKeys = jsonWebKeyRepository.GetAll();
+            foreach (var jsonWebKey in jsonWebKeys)
+            {
+                Console.WriteLine(jsonWebKey.Kid);
+            }
+
+            Console.WriteLine("============================================");
+            Console.WriteLine("Pick-up one json web key");
+            var jsonWebK = jsonWebKeyRepository.GetByAlgorithm(Use.Sig, AllAlg.RS256,
+                new[] {KeyOperations.Sign, KeyOperations.Verify})
+                .First();
+            Console.WriteLine(jsonWebK.SerializedKey);
+
+            Console.WriteLine("============================================");
+            Console.WriteLine("Display the json web key by its KID");
+            jsonWebK = jsonWebKeyRepository.GetByKid("1");
+            Console.WriteLine(jsonWebK.Alg);
+        }
+
         static void Main(string[] args)
         {
             // TestTranslationRepository();
             // TestScopeRepository();
-            TestResourceOwnerRepository();
+            // TestResourceOwnerRepository();
+            // TestJsonWebKeyRepository();
             Console.ReadLine();
         }
     }

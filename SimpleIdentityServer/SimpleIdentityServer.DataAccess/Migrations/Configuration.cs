@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Entity.Migrations;
+using System.Security.Cryptography;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.DataAccess.SqlServer.Models;
 
@@ -16,10 +17,11 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
 
         protected override void Seed(SimpleIdentityServerContext context)
         {
-            // InsertClaims(context);
-            // InsertScopes(context);
-            // InsertTranslations(context);
+            InsertClaims(context);
+            InsertScopes(context);
+            InsertTranslations(context);
             InsertResourceOwners(context);
+            InsertJsonWebKeys(context);
         }
 
         private static void InsertClaims(SimpleIdentityServerContext context)
@@ -299,6 +301,37 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                     WebSite = "https://github.com/thabart",
                     ZoneInfo = "Europe/Paris",
                     Password = "5E884898DA28047151D0E56F8DC6292773603D0D6AABBDD62A11EF721D1542D8"
+                }
+            });
+        }
+
+        private static void InsertJsonWebKeys(SimpleIdentityServerContext context)
+        {
+            var serializedRsa = string.Empty;
+            using (var provider = new RSACryptoServiceProvider())
+            {
+                serializedRsa = provider.ToXmlString(true);
+            }
+
+            context.JsonWebKeys.AddOrUpdate(new []
+            {
+                new Models.JsonWebKey
+                {
+                    Alg = AllAlg.RS256,
+                    KeyOps = "0,1",
+                    Kid = "1",
+                    Kty = KeyType.RSA,
+                    Use = Use.Sig,
+                    SerializedKey = serializedRsa,
+                },
+                new Models.JsonWebKey
+                {
+                    Alg = AllAlg.RSA1_5,
+                    KeyOps = "2,3",
+                    Kid = "2",
+                    Kty = KeyType.RSA,
+                    Use = Use.Enc,
+                    SerializedKey = serializedRsa,
                 }
             });
         }

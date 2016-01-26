@@ -56,6 +56,7 @@
     <Compile Include="Extensions\MappingExtensions.cs" />
     <Compile Include="Mappings\AddressMapping.cs" />
     <Compile Include="Mappings\ClaimMapping.cs" />
+    <Compile Include="Mappings\JsonWebKeyMapping.cs" />
     <Compile Include="Mappings\ResourceOwnerMapping.cs" />
     <Compile Include="Mappings\ScopeMapping.cs" />
     <Compile Include="Mappings\TranslationMapping.cs" />
@@ -71,13 +72,19 @@
     <Compile Include="Migrations\201601261501474_ResourceOwner.Designer.cs">
       <DependentUpon>201601261501474_ResourceOwner.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201601261601240_JsonWebKey.cs" />
+    <Compile Include="Migrations\201601261601240_JsonWebKey.Designer.cs">
+      <DependentUpon>201601261601240_JsonWebKey.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Address.cs" />
     <Compile Include="Models\Claim.cs" />
+    <Compile Include="Models\JsonWebKey.cs" />
     <Compile Include="Models\ResourceOwner.cs" />
     <Compile Include="Models\Scope.cs" />
     <Compile Include="ModuleInit.cs" />
-    <Compile Include="Repositories\ClientRepository.cs" />
+    <Compile Include="Repositories\JsonWebKeyRepository.cs" />
+    <Compile Include="Repositories\ResourceOwnerRepository.cs" />
     <Compile Include="Repositories\ScopeRepository.cs" />
     <Compile Include="SimpleIdentityServerContext.cs" />
     <Compile Include="Models\Translation.cs" />
@@ -111,6 +118,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201601261501474_ResourceOwner.resx">
       <DependentUpon>201601261501474_ResourceOwner.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201601261601240_JsonWebKey.resx">
+      <DependentUpon>201601261601240_JsonWebKey.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

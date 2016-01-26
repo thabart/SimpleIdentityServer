@@ -229,7 +229,6 @@
     <Compile Include="Parameters\RefreshTokenGrantTypeParameter.cs" />
     <Compile Include="Parameters\RegistrationParameter.cs" />
     <Compile Include="Repositories\IJsonWebKeyRepository.cs" />
-    <Compile Include="Repositories\IJwtBearerClientRepository.cs" />
     <Compile Include="Repositories\ITranslationRepository.cs" />
     <Compile Include="Results\DiscoveryInformation.cs" />
     <Compile Include="Results\RegistrationResponse.cs" />

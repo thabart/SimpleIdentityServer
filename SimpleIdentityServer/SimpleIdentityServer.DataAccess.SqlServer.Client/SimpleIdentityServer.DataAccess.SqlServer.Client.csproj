@@ -53,6 +53,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SimpleIdentityServer.Core.Jwt\SimpleIdentityServer.Core.Jwt.csproj">
+      <Project>{0b0286dd-acfd-4822-8a9d-2da39b8aec29}</Project>
+      <Name>SimpleIdentityServer.Core.Jwt</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SimpleIdentityServer.Core\SimpleIdentityServer.Core.csproj">
       <Project>{3d519f94-39f1-45f5-b080-b2d719021a10}</Project>
       <Name>SimpleIdentityServer.Core</Name>
