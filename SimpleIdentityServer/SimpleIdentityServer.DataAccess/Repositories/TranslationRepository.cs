@@ -15,6 +15,11 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             using (var context = new SimpleIdentityServerContext())
             {
                 var result = context.Translations.FirstOrDefault(t => t.Code == code && t.LanguageTag == languageTag);
+                if (result == null)
+                {
+                    return null;
+                }
+
                 return result.ToDomain();
             }
         }
