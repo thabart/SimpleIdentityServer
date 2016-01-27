@@ -47,7 +47,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                             : ConcatListOfIntegers(client.ResponseTypes.Select(r => (int) r).ToList());
                         if (client.AllowedScopes != null)
                         {
-                            var scopeNames = scopes.Select(s => s.Name).ToList();
+                            var scopeNames = client.AllowedScopes.Select(s => s.Name).ToList();
                             scopes = context.Scopes.Where(s => scopeNames.Contains(s.Name))
                                 .ToList();
                         }

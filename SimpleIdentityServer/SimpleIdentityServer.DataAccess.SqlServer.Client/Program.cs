@@ -156,10 +156,82 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Client
                         Kid = "10"
                     }
                 },
+                AllowedScopes = new List<Scope>
+                {
+                    new Scope
+                    {
+                        Name = "openid"
+                    }
+                },
                 ResponseTypes = new List<ResponseType> {  ResponseType.code }
             };
 
             clientRepository.InsertClient(client);
+
+            Console.WriteLine("============================================");
+            Console.WriteLine("Delete the client");
+            clientRepository.DeleteClient(client);
+        }
+
+        static void TestConsentRepository()
+        {
+            var clientRepository = new ClientRepository();
+            var consentRepository = new ConsentRepository();
+            Console.WriteLine("============================================");
+            Console.WriteLine("Insert a new client");
+            var client = new Core.Models.Client
+            {
+                ClientId = "client_id",
+                JsonWebKeys = new List<Core.Jwt.JsonWebKey>
+                {
+                    new Core.Jwt.JsonWebKey
+                    {
+                        Kid = "10"
+                    }
+                },
+                AllowedScopes = new List<Scope>
+                {
+                    new Scope
+                    {
+                        Name = "openid"
+                    }
+                },
+                ResponseTypes = new List<ResponseType> { ResponseType.code }
+            };
+
+            clientRepository.InsertClient(client);
+
+            Console.WriteLine("============================================");
+            Console.WriteLine("Insert a new consent");
+            var consent = new Core.Models.Consent
+            {
+                GrantedScopes = new List<Scope>
+                {
+                    new Scope
+                    {
+                        Name = "openid"
+                    }
+                },
+                ResourceOwner = new ResourceOwner
+                {
+                    Id = "administrator@hotmail.be"
+                },
+                Client = client,
+                Claims = new List<string>
+                {
+                    "email_verified"
+                }
+            };
+            var insertedConsent = consentRepository.InsertConsent(consent);
+            
+            Console.WriteLine("============================================");
+            Console.WriteLine("Get the consent");
+            var result = consentRepository.GetConsentsForGivenUser("administrator@hotmail.be");
+            Console.WriteLine(result.First().Claims.First());
+            
+            Console.WriteLine("============================================");
+            Console.WriteLine("Delete the consent");
+            consentRepository.DeleteConsent(insertedConsent);
 
             Console.WriteLine("============================================");
             Console.WriteLine("Delete the client");
@@ -173,7 +245,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Client
             // TestResourceOwnerRepository();
             // TestJsonWebKeyRepository();
             // TestGrantedTokenRepository();
-            TestClientRepository();
+            // TestClientRepository();
+            TestConsentRepository();
             Console.ReadLine();
         }
     }

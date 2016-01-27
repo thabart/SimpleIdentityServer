@@ -7,13 +7,13 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
-    public sealed partial class Translation : IMigrationMetadata
+    public sealed partial class Initialize : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(Translation));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(Initialize));
         
         string IMigrationMetadata.Id
         {
-            get { return "201601261228437_Translation"; }
+            get { return "201601271522454_Initialize"; }
         }
         
         string IMigrationMetadata.Source

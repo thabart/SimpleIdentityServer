@@ -23,6 +23,8 @@ namespace SimpleIdentityServer.Core.Repositories
     {
         List<Consent> GetConsentsForGivenUser(string subject);
 
-        void InsertConsent(Consent record);
+        Consent InsertConsent(Consent record);
+
+        bool DeleteConsent(Consent record);
     }
 }

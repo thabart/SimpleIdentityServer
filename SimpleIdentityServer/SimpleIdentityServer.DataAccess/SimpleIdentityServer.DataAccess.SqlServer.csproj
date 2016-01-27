@@ -57,48 +57,27 @@
     <Compile Include="Mappings\AddressMapping.cs" />
     <Compile Include="Mappings\ClaimMapping.cs" />
     <Compile Include="Mappings\ClientMapping.cs" />
+    <Compile Include="Mappings\ConsentMapping.cs" />
     <Compile Include="Mappings\GrantedTokenMapping.cs" />
     <Compile Include="Mappings\JsonWebKeyMapping.cs" />
     <Compile Include="Mappings\ResourceOwnerMapping.cs" />
     <Compile Include="Mappings\ScopeMapping.cs" />
     <Compile Include="Mappings\TranslationMapping.cs" />
-    <Compile Include="Migrations\201601261228437_Translation.cs" />
-    <Compile Include="Migrations\201601261228437_Translation.Designer.cs">
-      <DependentUpon>201601261228437_Translation.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201601261327382_Scope.cs" />
-    <Compile Include="Migrations\201601261327382_Scope.Designer.cs">
-      <DependentUpon>201601261327382_Scope.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201601261501474_ResourceOwner.cs" />
-    <Compile Include="Migrations\201601261501474_ResourceOwner.Designer.cs">
-      <DependentUpon>201601261501474_ResourceOwner.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201601261601240_JsonWebKey.cs" />
-    <Compile Include="Migrations\201601261601240_JsonWebKey.Designer.cs">
-      <DependentUpon>201601261601240_JsonWebKey.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201601261852507_GrantedToken.cs" />
-    <Compile Include="Migrations\201601261852507_GrantedToken.Designer.cs">
-      <DependentUpon>201601261852507_GrantedToken.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201601262013526_Client.cs" />
-    <Compile Include="Migrations\201601262013526_Client.Designer.cs">
-      <DependentUpon>201601262013526_Client.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201601271428001_DeleteOnCascadeTheLink_ClientJsonWebKey.cs" />
-    <Compile Include="Migrations\201601271428001_DeleteOnCascadeTheLink_ClientJsonWebKey.Designer.cs">
-      <DependentUpon>201601271428001_DeleteOnCascadeTheLink_ClientJsonWebKey.cs</DependentUpon>
+    <Compile Include="Migrations\201601271522454_Initialize.cs" />
+    <Compile Include="Migrations\201601271522454_Initialize.Designer.cs">
+      <DependentUpon>201601271522454_Initialize.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Address.cs" />
     <Compile Include="Models\Claim.cs" />
     <Compile Include="Models\Client.cs" />
+    <Compile Include="Models\Consent.cs" />
     <Compile Include="Models\GrantedToken.cs" />
     <Compile Include="Models\JsonWebKey.cs" />
     <Compile Include="Models\ResourceOwner.cs" />
     <Compile Include="Models\Scope.cs" />
     <Compile Include="ModuleInit.cs" />
+    <Compile Include="Repositories\ConsentRepository.cs" />
     <Compile Include="Repositories\GrantedTokenRepository.cs" />
     <Compile Include="Repositories\JsonWebKeyRepository.cs" />
     <Compile Include="Repositories\ResourceOwnerRepository.cs" />
@@ -132,26 +111,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201601261228437_Translation.resx">
-      <DependentUpon>201601261228437_Translation.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201601261327382_Scope.resx">
-      <DependentUpon>201601261327382_Scope.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201601261501474_ResourceOwner.resx">
-      <DependentUpon>201601261501474_ResourceOwner.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201601261601240_JsonWebKey.resx">
-      <DependentUpon>201601261601240_JsonWebKey.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201601261852507_GrantedToken.resx">
-      <DependentUpon>201601261852507_GrantedToken.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201601262013526_Client.resx">
-      <DependentUpon>201601262013526_Client.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201601271428001_DeleteOnCascadeTheLink_ClientJsonWebKey.resx">
-      <DependentUpon>201601271428001_DeleteOnCascadeTheLink_ClientJsonWebKey.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201601271522454_Initialize.resx">
+      <DependentUpon>201601271522454_Initialize.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

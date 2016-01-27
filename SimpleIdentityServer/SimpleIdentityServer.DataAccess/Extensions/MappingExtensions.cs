@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Jwt;
@@ -201,6 +202,18 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                 JsonWebKeys = jsonWebKeys,
                 GrantTypes = grantTypes,
                 ResponseTypes = responseTypes
+            };
+        }
+
+        public static Domain.Consent ToDomain(this Model.Consent consent)
+        {
+            return new Domain.Consent
+            {
+                Id = consent.Id.ToString(CultureInfo.InvariantCulture),
+                Client = consent.Client == null ? null : consent.Client.ToDomain(),
+                Claims = consent.Claims == null ? null : consent.Claims.Select(c => c.Code).ToList(),
+                ResourceOwner = consent.ResourceOwner == null ? null : consent.ResourceOwner.ToDomain(),
+                GrantedScopes = consent.GrantedScopes == null ? null : consent.GrantedScopes.Select(s => s.ToDomain()).ToList()
             };
         }
 

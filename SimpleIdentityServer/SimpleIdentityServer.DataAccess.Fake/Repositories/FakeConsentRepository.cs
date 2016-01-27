@@ -23,10 +23,16 @@ namespace SimpleIdentityServer.DataAccess.Fake.Repositories
             return result.Select(c => c.ToBusiness()).ToList();
         }
 
-        public void InsertConsent(Consent record)
+        public Consent InsertConsent(Consent record)
         {
             var newRecord = record.ToFake();
             FakeDataSource.Instance().Consents.Add(newRecord);
+            return null;
+        }
+        
+        public bool DeleteConsent(Consent record)
+        {
+            throw new NotImplementedException();
         }
     }
 }
