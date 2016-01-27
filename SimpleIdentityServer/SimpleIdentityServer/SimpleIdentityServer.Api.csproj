@@ -37,7 +37,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Fake|AnyCPU' ">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Fake|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -312,9 +312,13 @@
       <Project>{3d519f94-39f1-45f5-b080-b2d719021a10}</Project>
       <Name>SimpleIdentityServer.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SimpleIdentityServer.DataAccess.SqlServer.Client\SimpleIdentityServer.DataAccess.SqlServer.Client.csproj">
+    <ProjectReference Include="..\SimpleIdentityServer.DataAccess.Fake\SimpleIdentityServer.DataAccess.Fake.csproj" Condition="'$(Configuration)'=='Fake'">
+      <Project>{7b5c6ff2-994b-4a4c-80f3-09f682e34979}</Project>
+      <Name>SimpleIdentityServer.DataAccess.Fake</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SimpleIdentityServer.DataAccess.SqlServer.Client\SimpleIdentityServer.DataAccess.SqlServer.Client.csproj" Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'">
       <Project>{d97473e9-b126-4e12-9094-c15d614d9785}</Project>
-      <Name>SimpleIdentityServer.DataAccess.SqlServer.Client</Name>
+      <Name>SimpleIdentityServer.DataAccess.SqlServer</Name>
     </ProjectReference>
     <ProjectReference Include="..\SimpleIdentityServer.Logging\SimpleIdentityServer.Logging.csproj">
       <Project>{67042bc4-7c0d-4519-8f25-e79175d9781d}</Project>

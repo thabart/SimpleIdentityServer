@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using SimpleIdentityServer.Core.Models;
 #if FAKE
-using SimpleIdentityServer.DataAccess.Fake;
+using SimpleIdentityServer.DataAccess.Fake.Models;
 #endif
 
 namespace SimpleIdentityServer.Api.Configuration

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using SimpleIdentityServer.Core.Extensions;
 #if FAKE
-using SimpleIdentityServer.DataAccess.Fake;
+using SimpleIdentityServer.DataAccess.Fake.Models;
 #endif
 
 namespace SimpleIdentityServer.Api.Configuration
