@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="Extensions\MappingExtensions.cs" />
     <Compile Include="Mappings\AddressMapping.cs" />
+    <Compile Include="Mappings\AuthorizationCodeMapping.cs" />
     <Compile Include="Mappings\ClaimMapping.cs" />
     <Compile Include="Mappings\ClientMapping.cs" />
     <Compile Include="Mappings\ConsentMapping.cs" />
@@ -63,12 +64,13 @@
     <Compile Include="Mappings\ResourceOwnerMapping.cs" />
     <Compile Include="Mappings\ScopeMapping.cs" />
     <Compile Include="Mappings\TranslationMapping.cs" />
-    <Compile Include="Migrations\201601271522454_Initialize.cs" />
-    <Compile Include="Migrations\201601271522454_Initialize.Designer.cs">
-      <DependentUpon>201601271522454_Initialize.cs</DependentUpon>
+    <Compile Include="Migrations\201601271546164_Initialize.cs" />
+    <Compile Include="Migrations\201601271546164_Initialize.Designer.cs">
+      <DependentUpon>201601271546164_Initialize.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Address.cs" />
+    <Compile Include="Models\AuthorizationCode.cs" />
     <Compile Include="Models\Claim.cs" />
     <Compile Include="Models\Client.cs" />
     <Compile Include="Models\Consent.cs" />
@@ -77,6 +79,7 @@
     <Compile Include="Models\ResourceOwner.cs" />
     <Compile Include="Models\Scope.cs" />
     <Compile Include="ModuleInit.cs" />
+    <Compile Include="Repositories\AuthorizationCodeRepository.cs" />
     <Compile Include="Repositories\ConsentRepository.cs" />
     <Compile Include="Repositories\GrantedTokenRepository.cs" />
     <Compile Include="Repositories\JsonWebKeyRepository.cs" />
@@ -111,8 +114,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201601271522454_Initialize.resx">
-      <DependentUpon>201601271522454_Initialize.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201601271546164_Initialize.resx">
+      <DependentUpon>201601271546164_Initialize.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

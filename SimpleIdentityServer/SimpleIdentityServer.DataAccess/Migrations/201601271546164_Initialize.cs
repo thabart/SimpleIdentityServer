@@ -144,6 +144,20 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                 .Index(t => t.Client_ClientId);
             
             CreateTable(
+                "dbo.authorizationCodes",
+                c => new
+                    {
+                        Code = c.String(nullable: false, maxLength: 128),
+                        RedirectUri = c.String(),
+                        CreateDateTime = c.DateTime(nullable: false),
+                        ClientId = c.String(),
+                        IdTokenPayload = c.String(),
+                        UserInfoPayLoad = c.String(),
+                        Scopes = c.String(),
+                    })
+                .PrimaryKey(t => t.Code);
+            
+            CreateTable(
                 "dbo.grantedTokens",
                 c => new
                     {
@@ -255,6 +269,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
             DropTable("dbo.scopeClaims");
             DropTable("dbo.translations");
             DropTable("dbo.grantedTokens");
+            DropTable("dbo.authorizationCodes");
             DropTable("dbo.jsonWebKeys");
             DropTable("dbo.clients");
             DropTable("dbo.scopes");

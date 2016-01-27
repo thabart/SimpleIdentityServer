@@ -217,6 +217,20 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
             };
         }
 
+        public static Domain.AuthorizationCode ToDomain(this Model.AuthorizationCode authorizationCode)
+        {
+            return new Domain.AuthorizationCode
+            {
+                Code = authorizationCode.Code,
+                ClientId = authorizationCode.ClientId,
+                CreateDateTime = authorizationCode.CreateDateTime,
+                RedirectUri = authorizationCode.RedirectUri,
+                Scopes = authorizationCode.Scopes,
+                UserInfoPayLoad = string.IsNullOrWhiteSpace(authorizationCode.UserInfoPayLoad) ? null : authorizationCode.UserInfoPayLoad.DeserializeWithJavascript<JwsPayload>(),
+                IdTokenPayload = string.IsNullOrWhiteSpace(authorizationCode.IdTokenPayload) ? null : authorizationCode.IdTokenPayload.DeserializeWithJavascript<JwsPayload>()
+            };
+        }
+
         #endregion
 
         #region Private static methods

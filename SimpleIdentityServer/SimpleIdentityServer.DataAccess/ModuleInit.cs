@@ -14,6 +14,11 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
             register.RegisterType<ITranslationRepository, TranslationRepository>();
             register.RegisterType<IResourceOwnerRepository, ResourceOwnerRepository>();
             register.RegisterType<IScopeRepository, ScopeRepository>();
+            register.RegisterType<IAuthorizationCodeRepository, AuthorizationCodeRepository>();
+            register.RegisterType<IClientRepository, ClientRepository>();
+            register.RegisterType<IConsentRepository, ConsentRepository>();
+            register.RegisterType<IGrantedTokenRepository, GrantedTokenRepository>();
+            register.RegisterType<IJsonWebKeyRepository, JsonWebKeyRepository>();
         }
     }
 }

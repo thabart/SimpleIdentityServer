@@ -28,7 +28,9 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
 
         public virtual IDbSet<Client> Clients { get; set; } 
 
-        public virtual IDbSet<Consent> Consents { get; set; } 
+        public virtual IDbSet<Consent> Consents { get; set; }
+
+        public virtual IDbSet<AuthorizationCode> AuthorizationCodes { get; set; } 
         
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -42,6 +44,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
             modelBuilder.Configurations.Add(new GrantedTokenMapping());
             modelBuilder.Configurations.Add(new ClientMapping());
             modelBuilder.Configurations.Add(new ConsentMapping());
+            modelBuilder.Configurations.Add(new AuthorizationCodeMapping());
         }
     }
 }

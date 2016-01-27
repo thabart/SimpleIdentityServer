@@ -238,6 +238,34 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Client
             clientRepository.DeleteClient(client);
         }
 
+        static void TestAuthorizationCodeRepository()
+        {
+            const string code = "authorization_code";
+            var authorizationCodeRepository = new AuthorizationCodeRepository();
+            Console.WriteLine("============================================");
+            Console.WriteLine("Insert a new authorization code");
+            var authorizationCode = new AuthorizationCode
+            {
+                ClientId = "clientId",
+                Code = code,
+                IdTokenPayload = new JwsPayload(),
+                Scopes = "scopes",
+                CreateDateTime = DateTime.Now
+            };
+
+            authorizationCodeRepository.AddAuthorizationCode(authorizationCode);
+
+            Console.WriteLine("============================================");
+            Console.WriteLine("Get the authorization code");
+            var result = authorizationCodeRepository.GetAuthorizationCode(code);
+            Console.WriteLine(result.Scopes);
+
+            Console.WriteLine("============================================");
+            Console.WriteLine("Remove the authorization code");
+            var success = authorizationCodeRepository.RemoveAuthorizationCode(code);
+            Console.WriteLine(success);
+        }
+
         static void Main(string[] args)
         {
             // TestTranslationRepository();
@@ -246,7 +274,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Client
             // TestJsonWebKeyRepository();
             // TestGrantedTokenRepository();
             // TestClientRepository();
-            TestConsentRepository();
+            // TestConsentRepository();
+            TestAuthorizationCodeRepository();
             Console.ReadLine();
         }
     }

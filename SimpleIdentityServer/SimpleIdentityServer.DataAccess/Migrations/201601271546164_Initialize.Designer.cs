@@ -13,7 +13,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201601271522454_Initialize"; }
+            get { return "201601271546164_Initialize"; }
         }
         
         string IMigrationMetadata.Source
