@@ -12,7 +12,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
     {
         public Configuration()
         {
-            AutomaticMigrationsEnabled = true;
+            AutomaticMigrationsEnabled = false;
         }
 
         protected override void Seed(SimpleIdentityServerContext context)

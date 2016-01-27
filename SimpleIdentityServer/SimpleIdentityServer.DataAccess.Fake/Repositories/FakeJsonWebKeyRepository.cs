@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Repositories;
@@ -37,6 +38,24 @@ namespace SimpleIdentityServer.DataAccess.Fake.Repositories
             }
 
             return result.ToBusiness();
+        }
+
+        public bool Insert(JsonWebKey jsonWebKey)
+        {
+            var fakeJsonWebKey = jsonWebKey.ToFake();
+            FakeDataSource.Instance().JsonWebKeys.Add(fakeJsonWebKey);
+            return true;
+        }
+        public bool Delete(JsonWebKey jsonWebKey)
+        {
+            var jsonWebKeyToBeRemoved = FakeDataSource.Instance().JsonWebKeys.FirstOrDefault(j => j.Kid == jsonWebKey.Kid);
+            if (jsonWebKeyToBeRemoved == null)
+            {
+                return false;
+            }
+
+            FakeDataSource.Instance().JsonWebKeys.Remove(jsonWebKeyToBeRemoved);
+            return true;
         }
     }
 }

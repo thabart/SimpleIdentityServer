@@ -71,5 +71,83 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                 return jsonWebKey.ToDomain();
             }
         }
+
+        public bool Delete(Jwt.JsonWebKey jsonWebKey)
+        {
+            using (var context = new SimpleIdentityServerContext())
+            {
+                using (var transaction = context.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        var jsonWebKeyToBeRemoved = context.JsonWebKeys.FirstOrDefault(j => j.Kid == jsonWebKey.Kid);
+                        if (jsonWebKeyToBeRemoved == null)
+                        {
+                            return false;
+                        }
+
+                        context.JsonWebKeys.Remove(jsonWebKeyToBeRemoved);
+                        context.SaveChanges();
+                        transaction.Commit();
+                    }
+                    catch (Exception)
+                    {
+                        transaction.Rollback();
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        public bool Insert(Jwt.JsonWebKey jsonWebKey)
+        {
+            using (var context = new SimpleIdentityServerContext())
+            {
+                using (var transaction = context.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        var keyOperations = string.Empty;
+                        var x5u = string.Empty;
+                        if (jsonWebKey.KeyOps != null)
+                        {
+                            var keyOperationNumbers = jsonWebKey.KeyOps.Select(s => (int)s);
+                            keyOperations = string.Join(",", keyOperationNumbers);
+                        }
+
+                        if (jsonWebKey.X5u != null)
+                        {
+                            x5u = jsonWebKey.X5u.AbsoluteUri;
+                        }
+
+                        var newJsonWebKeyRecord = new Models.JsonWebKey
+                        {
+                            Kid = jsonWebKey.Kid,
+                            Alg = (Models.AllAlg)jsonWebKey.Alg,
+                            Kty = (Models.KeyType)jsonWebKey.Kty,
+                            Use = (Models.Use)jsonWebKey.Use,
+                            KeyOps = keyOperations,
+                            SerializedKey = jsonWebKey.SerializedKey,
+                            X5t = jsonWebKey.X5t,
+                            X5tS256 = jsonWebKey.X5tS256,
+                            X5u = x5u
+                        };
+
+                        context.JsonWebKeys.Add(newJsonWebKeyRecord);
+                        context.SaveChanges();
+                        transaction.Commit();
+                    }
+                    catch (Exception)
+                    {
+                        transaction.Rollback();
+                        return false;
+                    }
+                }
+            }
+
+            return true;     
+        }
     }
 }

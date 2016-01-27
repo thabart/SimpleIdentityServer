@@ -78,7 +78,14 @@ namespace SimpleIdentityServer.DataAccess.Fake.Repositories
 
         public bool Delete(GrantedToken grantedToken)
         {
-            throw new NotImplementedException();
+            var grantedTokenToBeRemoved = FakeDataSource.Instance().GrantedTokens.FirstOrDefault(c => c.AccessToken == grantedToken.AccessToken);
+            if (grantedTokenToBeRemoved == null)
+            {
+                return false;
+            }
+
+            FakeDataSource.Instance().GrantedTokens.Remove(grantedTokenToBeRemoved);
+            return true;
         }
     }
 }

@@ -177,7 +177,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                 return string.Empty;
             }
 
-            return string.Concat(list, ',');
+            return string.Join(",", list);
         }
 
         private static string ConcatListOfIntegers(IEnumerable<int> list)
@@ -187,7 +187,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                 return string.Empty;
             }
 
-            return string.Concat(list, ',');
+            return string.Join(",", list);
         }
 
         #endregion

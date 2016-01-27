@@ -93,6 +93,25 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Client
             Console.WriteLine("Display the json web key by its KID");
             jsonWebK = jsonWebKeyRepository.GetByKid("1");
             Console.WriteLine(jsonWebK.Alg);
+
+            Console.WriteLine("============================================");
+            Console.WriteLine("Add a new JSON WEB KEY");
+            var newJsonWebKey = new Core.Jwt.JsonWebKey
+            {
+                Kid = "newJsonWebKey",
+                KeyOps = new []
+                {
+                    Core.Jwt.KeyOperations.Decrypt
+                }
+            };
+
+            var isInserted = jsonWebKeyRepository.Insert(newJsonWebKey);
+            Console.WriteLine(isInserted);
+
+            Console.WriteLine("============================================");
+            Console.WriteLine("Delete the JSON WEB KEY");
+            var isDeleted = jsonWebKeyRepository.Delete(newJsonWebKey);
+            Console.WriteLine(isDeleted);
         }
 
         static void TestGrantedTokenRepository()
@@ -271,11 +290,11 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Client
             // TestTranslationRepository();
             // TestScopeRepository();
             // TestResourceOwnerRepository();
-            // TestJsonWebKeyRepository();
+            TestJsonWebKeyRepository();
             // TestGrantedTokenRepository();
             // TestClientRepository();
             // TestConsentRepository();
-            TestAuthorizationCodeRepository();
+            // TestAuthorizationCodeRepository();
             Console.ReadLine();
         }
     }

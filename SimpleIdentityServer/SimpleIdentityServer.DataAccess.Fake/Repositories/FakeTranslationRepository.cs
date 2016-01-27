@@ -20,7 +20,10 @@ namespace SimpleIdentityServer.DataAccess.Fake.Repositories
 
         public List<Translation> GetTranslations(string languageTag)
         {
-            throw new NotImplementedException();
+            return FakeDataSource.Instance().Translations
+                .Where(t => t.LanguageTag == languageTag)
+                .Select(t => t.ToBusiness())
+                .ToList();
         }
 
         public Translation GetTranslationByCode(string languageTag, string code)

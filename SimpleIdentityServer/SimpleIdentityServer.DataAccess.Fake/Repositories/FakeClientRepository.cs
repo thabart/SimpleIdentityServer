@@ -36,7 +36,14 @@ namespace SimpleIdentityServer.DataAccess.Fake.Repositories
         
         public bool DeleteClient(Client client)
         {
-            throw new System.NotImplementedException();
+            var clientToBeRemoved = FakeDataSource.Instance().Clients.FirstOrDefault(c => c.ClientId == client.ClientId);
+            if (clientToBeRemoved == null)
+            {
+                return false;
+            }
+
+            FakeDataSource.Instance().Clients.Remove(clientToBeRemoved);
+            return true;
         }
     }
 }

@@ -29,5 +29,9 @@ namespace SimpleIdentityServer.Core.Repositories
             KeyOperations[] operations);
 
         JsonWebKey GetByKid(string kid);
+
+        bool Delete(Jwt.JsonWebKey jsonWebKey);
+
+        bool Insert(Jwt.JsonWebKey jsonWebKey);
     }
 }

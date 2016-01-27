@@ -32,7 +32,14 @@ namespace SimpleIdentityServer.DataAccess.Fake.Repositories
         
         public bool DeleteConsent(Consent record)
         {
-            throw new NotImplementedException();
+            var consentToBeRemoved = FakeDataSource.Instance().Consents.FirstOrDefault(c => c.Id == record.Id);
+            if (consentToBeRemoved == null)
+            {
+                return false;
+            }
+
+            FakeDataSource.Instance().Consents.Remove(consentToBeRemoved);
+            return true;
         }
     }
 }
