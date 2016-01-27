@@ -1,10 +1,13 @@
 ﻿using System;
-using SimpleIdentityServer.DataAccess.Fake.Models;
 using System.Collections.Generic;
 using System.Security.Cryptography;
+#if FAKE
+using SimpleIdentityServer.DataAccess.Fake;
+#endif
 
 namespace SimpleIdentityServer.Api.Configuration
 {
+#if FAKE
     public class JsonWebKeys
     {
         public static List<JsonWebKey> Get()
@@ -46,4 +49,5 @@ namespace SimpleIdentityServer.Api.Configuration
             };
         }
     }
+#endif
 }

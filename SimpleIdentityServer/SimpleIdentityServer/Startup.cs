@@ -8,11 +8,14 @@ using Microsoft.Practices.Unity;
 using Owin;
 
 using SimpleIdentityServer.Api.Configuration;
-using SimpleIdentityServer.DataAccess.Fake;
 
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.AspNet.Identity;
 using SimpleIdentityServer.Logging;
+
+#if FAKE
+using SimpleIdentityServer.DataAccess.Fake;
+#endif
 
 [assembly: OwinStartup(typeof(SimpleIdentityServer.Api.Startup))]
 
@@ -33,7 +36,9 @@ namespace SimpleIdentityServer.Api
             if (_isInitialized == false)
             {
                 ConfigureUnity(httpConfiguration, logging);
+#if FAKE
                 PopupulateFakeDataSource();
+#endif
                 _isInitialized = true;
             }
 
@@ -43,10 +48,10 @@ namespace SimpleIdentityServer.Api
             });
 
             SwaggerConfig.Configure(httpConfiguration);
-
             WebApiConfig.Register(httpConfiguration, app, logging);
         }
 
+#if FAKE
         private static void PopupulateFakeDataSource()
         {
             FakeDataSource.Instance().Clients = Clients.Get();
@@ -55,6 +60,7 @@ namespace SimpleIdentityServer.Api
             FakeDataSource.Instance().JsonWebKeys = JsonWebKeys.Get();
             FakeDataSource.Instance().Translations = Translations.Get();
         }
+#endif
 
         private static void ConfigureUnity(HttpConfiguration httpConfiguration, ISimpleIdentityServerEventSource simpleIdentityServerEventSource)
         {

@@ -7,7 +7,7 @@ using SimpleIdentityServer.DataAccess.SqlServer.Repositories;
 namespace SimpleIdentityServer.DataAccess.SqlServer
 {
     [Export(typeof(IModule))]
-    public sealed class ModuleInit
+    public sealed class ModuleInit : IModule
     {
         public void Initialize(IModuleRegister register)
         {

@@ -1,8 +1,11 @@
-﻿using SimpleIdentityServer.DataAccess.Fake.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+#if FAKE
+using SimpleIdentityServer.DataAccess.Fake;
+#endif
 
 namespace SimpleIdentityServer.Api.Configuration
 {
+#if FAKE
     public static class Translations
     {
         public static List<Translation> Get()
@@ -165,4 +168,5 @@ namespace SimpleIdentityServer.Api.Configuration
             };
         }
     }
+#endif
 }

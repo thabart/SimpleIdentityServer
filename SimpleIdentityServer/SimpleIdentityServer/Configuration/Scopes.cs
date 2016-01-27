@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
-using SimpleIdentityServer.DataAccess.Fake.Models;
+#if FAKE
+using SimpleIdentityServer.DataAccess.Fake;
+#endif
 
 namespace SimpleIdentityServer.Api.Configuration
 {
+#if FAKE
     public static class Scopes
     {
         public static List<Scope> Get()
@@ -102,4 +105,5 @@ namespace SimpleIdentityServer.Api.Configuration
             };
         } 
     }
+#endif
 }

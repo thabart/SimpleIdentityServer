@@ -2,7 +2,6 @@
 using SimpleIdentityServer.Api.Configuration;
 using SimpleIdentityServer.Core.Api.Jwks;
 using SimpleIdentityServer.Core.Jwt.Signature;
-using SimpleIdentityServer.DataAccess.Fake;
 
 namespace SimpleIdentityServer.Api.Controllers.Api
 {
@@ -23,7 +22,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
 
         public bool Put()
         {
-            FakeDataSource.Instance().JsonWebKeys = JsonWebKeys.Get();
+            // FakeDataSource.Instance().JsonWebKeys = JsonWebKeys.Get();
             return true;
         }
     }
