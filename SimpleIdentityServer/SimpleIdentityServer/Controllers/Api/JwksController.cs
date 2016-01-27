@@ -1,5 +1,4 @@
 ﻿using System.Web.Http;
-using SimpleIdentityServer.Api.Configuration;
 using SimpleIdentityServer.Core.Api.Jwks;
 using SimpleIdentityServer.Core.Jwt.Signature;
 
@@ -22,8 +21,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
 
         public bool Put()
         {
-            // FakeDataSource.Instance().JsonWebKeys = JsonWebKeys.Get();
-            return true;
+            return _jwksActions.RotateJwks();
         }
     }
 }

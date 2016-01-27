@@ -95,6 +95,8 @@
     <Compile Include="Api\Authorization\GetTokenViaImplicitWorkflowOperationFixture.cs" />
     <Compile Include="Api\Authorization\ProcessAuthorizationRequestFixture.cs" />
     <Compile Include="Api\Discovery\CreateDiscoveryDocumentationActionFixture.cs" />
+    <Compile Include="Api\Jwks\JwksActionsFixture.cs" />
+    <Compile Include="Api\Jwks\Operations\RotateJsonWebKeysOperationFixture.cs" />
     <Compile Include="Api\Registration\RegisterClientActionFixture.cs" />
     <Compile Include="Api\Registration\RegistrationActionsFixture.cs" />
     <Compile Include="Api\Token\GetTokenByAuthorizationCodeGrantTypeActionFixture.cs" />

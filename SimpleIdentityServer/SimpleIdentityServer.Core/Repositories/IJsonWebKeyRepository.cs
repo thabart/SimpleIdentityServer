@@ -33,5 +33,7 @@ namespace SimpleIdentityServer.Core.Repositories
         bool Delete(Jwt.JsonWebKey jsonWebKey);
 
         bool Insert(Jwt.JsonWebKey jsonWebKey);
+
+        bool Update(Jwt.JsonWebKey jsonWebKey);
     }
 }

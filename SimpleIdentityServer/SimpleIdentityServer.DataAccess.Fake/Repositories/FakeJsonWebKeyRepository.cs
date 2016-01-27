@@ -57,5 +57,17 @@ namespace SimpleIdentityServer.DataAccess.Fake.Repositories
             FakeDataSource.Instance().JsonWebKeys.Remove(jsonWebKeyToBeRemoved);
             return true;
         }
+
+        public bool Update(JsonWebKey jsonWebKey)
+        {
+            var jsonWebKeyToBeUpdated = FakeDataSource.Instance().JsonWebKeys.FirstOrDefault(j => j.Kid == jsonWebKey.Kid);
+            if (jsonWebKeyToBeUpdated == null)
+            {
+                return false;
+            }
+
+            jsonWebKeyToBeUpdated.SerializedKey = jsonWebKey.SerializedKey;
+            return true;
+        }
     }
 }

@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using System;
 using System.Collections.Generic;
 using SimpleIdentityServer.Core.Api.Jwks.Actions;
 using SimpleIdentityServer.Core.Jwt.Signature;
@@ -23,6 +24,8 @@ namespace SimpleIdentityServer.Core.Api.Jwks
     public interface IJwksActions
     {
         JsonWebKeySet GetJwks();
+
+        bool RotateJwks();
     }
 
     public class JwksActions : IJwksActions
@@ -32,13 +35,17 @@ namespace SimpleIdentityServer.Core.Api.Jwks
         private readonly IGetSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction
             _getSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction;
 
+        private readonly IRotateJsonWebKeysOperation _rotateJsonWebKeysOperation;
+
         public JwksActions(
             IGetSetOfPublicKeysUsedToValidateJwsAction getSetOfPublicKeysUsedToValidateJwsAction,
-            IGetSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction getSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction)
+            IGetSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction getSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction,
+            IRotateJsonWebKeysOperation rotateJsonWebKeysOperation)
         {
             _getSetOfPublicKeysUsedToValidateJwsAction = getSetOfPublicKeysUsedToValidateJwsAction;
             _getSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction =
                 getSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction;
+            _rotateJsonWebKeysOperation = rotateJsonWebKeysOperation;
         }
 
         public JsonWebKeySet GetJwks()
@@ -53,6 +60,11 @@ namespace SimpleIdentityServer.Core.Api.Jwks
             result.Keys.AddRange(publicKeysUsedToValidateSignature);
             result.Keys.AddRange(publicKeysUsedForClientEncryption);
             return result;
+        }
+
+        public bool RotateJwks()
+        {
+            return _rotateJsonWebKeysOperation.Execute();
         }
     }
 }

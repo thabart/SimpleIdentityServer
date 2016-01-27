@@ -149,5 +149,34 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 
             return true;     
         }
+
+        public bool Update(Jwt.JsonWebKey jsonWebKey)
+        {
+            using (var context = new SimpleIdentityServerContext())
+            {
+                using (var transaction = context.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        var jsonWebKeyToBeUpdated = context.JsonWebKeys.FirstOrDefault(j => j.Kid == jsonWebKey.Kid);
+                        if (jsonWebKeyToBeUpdated == null)
+                        {
+                            return false;
+                        }
+
+                        jsonWebKeyToBeUpdated.SerializedKey = jsonWebKey.SerializedKey;
+                        context.SaveChanges();
+                        transaction.Commit();
+                    }
+                    catch (Exception)
+                    {
+                        transaction.Rollback();
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
     }
 }

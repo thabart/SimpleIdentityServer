@@ -194,6 +194,7 @@
     <Compile Include="Api\Jwks\Actions\GetSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction.cs" />
     <Compile Include="Api\Jwks\Actions\GetSetOfPublicKeysUsedToValidateJwsAction.cs" />
     <Compile Include="Api\Jwks\Actions\JsonWebKeyEnricher.cs" />
+    <Compile Include="Api\Jwks\Actions\RotateJsonWebKeysOperation.cs" />
     <Compile Include="Api\Jwks\JwksActions.cs" />
     <Compile Include="Api\Registration\Actions\RegisterClientAction.cs" />
     <Compile Include="Api\Registration\RegistrationActions.cs" />

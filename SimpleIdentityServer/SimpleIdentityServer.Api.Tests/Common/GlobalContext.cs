@@ -176,6 +176,7 @@ namespace SimpleIdentityServer.Api.Tests.Common
             UnityContainer.RegisterType<ICreateDiscoveryDocumentationAction, CreateDiscoveryDocumentationAction>();
 
             UnityContainer.RegisterType<IJwksActions, JwksActions>();
+            UnityContainer.RegisterType<IRotateJsonWebKeysOperation, RotateJsonWebKeysOperation>();
             UnityContainer.RegisterType<IGetSetOfPublicKeysUsedToValidateJwsAction, GetSetOfPublicKeysUsedToValidateJwsAction>();
             UnityContainer.RegisterType<IJsonWebKeyEnricher, JsonWebKeyEnricher>();
             UnityContainer.RegisterType<IGetSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction, GetSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction>();

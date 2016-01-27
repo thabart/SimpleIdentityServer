@@ -101,6 +101,7 @@ namespace SimpleIdentityServer.Core
             register.RegisterType<IRegistrationActions, RegistrationActions>();
 
             register.RegisterType<IJwksActions, JwksActions>();
+            register.RegisterType<IRotateJsonWebKeysOperation, RotateJsonWebKeysOperation>();
             register.RegisterType<IGetSetOfPublicKeysUsedToValidateJwsAction, GetSetOfPublicKeysUsedToValidateJwsAction>();
             register.RegisterType<IJsonWebKeyEnricher, JsonWebKeyEnricher>();
             register.RegisterType<IGetSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction, GetSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction>();
