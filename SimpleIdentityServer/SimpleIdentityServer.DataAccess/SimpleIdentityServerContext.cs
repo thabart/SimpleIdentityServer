@@ -25,6 +25,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
         public virtual IDbSet<JsonWebKey> JsonWebKeys { get; set; } 
 
         public virtual IDbSet<GrantedToken> GrantedTokens { get; set; }
+
+        public virtual IDbSet<Client> Clients { get; set; } 
         
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

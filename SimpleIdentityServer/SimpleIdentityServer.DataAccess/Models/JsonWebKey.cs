@@ -125,5 +125,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Models
         /// Gets or sets the serialized key in XML
         /// </summary>
         public string SerializedKey { get; set; }
+
+        public virtual Client Client { get; set; }
     }
 }

@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.DataAccess.SqlServer.Repositories;
 using SimpleIdentityServer.Core.Models;
+using JsonWebKey = SimpleIdentityServer.DataAccess.SqlServer.Models.JsonWebKey;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Client
 {
@@ -139,13 +141,39 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Client
             grantedTokenRepository.Delete(grantedToken);
         }
 
+        static void TestClientRepository()
+        {
+            var clientRepository = new ClientRepository();
+            Console.WriteLine("============================================");
+            Console.WriteLine("Insert a new client");
+            var client = new Core.Models.Client
+            {
+                ClientId = "client_id",
+                JsonWebKeys = new List<Core.Jwt.JsonWebKey>
+                {
+                    new Core.Jwt.JsonWebKey
+                    {
+                        Kid = "10"
+                    }
+                },
+                ResponseTypes = new List<ResponseType> {  ResponseType.code }
+            };
+
+            clientRepository.InsertClient(client);
+
+            Console.WriteLine("============================================");
+            Console.WriteLine("Delete the client");
+            clientRepository.DeleteClient(client);
+        }
+
         static void Main(string[] args)
         {
             // TestTranslationRepository();
             // TestScopeRepository();
             // TestResourceOwnerRepository();
             // TestJsonWebKeyRepository();
-            TestGrantedTokenRepository();
+            // TestGrantedTokenRepository();
+            TestClientRepository();
             Console.ReadLine();
         }
     }

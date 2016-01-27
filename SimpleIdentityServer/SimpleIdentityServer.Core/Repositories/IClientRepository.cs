@@ -13,6 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using System.Collections.Generic;
 using SimpleIdentityServer.Core.Models;
 
@@ -23,6 +24,8 @@ namespace SimpleIdentityServer.Core.Repositories
         Client GetClientById(string clientId);
 
         bool InsertClient(Client client);
+
+        bool DeleteClient(Client client);
 
         IList<Client> GetAll();
     }

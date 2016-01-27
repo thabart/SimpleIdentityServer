@@ -33,5 +33,10 @@ namespace SimpleIdentityServer.DataAccess.Fake.Repositories
         {
             return FakeDataSource.Instance().Clients.Select(c => c.ToBusiness()).ToList();
         }
+        
+        public bool DeleteClient(Client client)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

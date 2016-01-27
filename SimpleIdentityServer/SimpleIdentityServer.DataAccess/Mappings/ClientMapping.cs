@@ -48,7 +48,9 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
                     c.MapRightKey("ScopeName");
                     c.ToTable("clientScopes");
                 });
-            HasMany(c => c.JsonWebKeys);
+            HasMany(c => c.JsonWebKeys)
+                .WithOptional(c => c.Client)
+                .WillCascadeOnDelete(true);
         }
     }
 }

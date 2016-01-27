@@ -131,6 +131,93 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
             };
         }
 
+        public static Domain.Client ToDomain(this Model.Client client)
+        {
+            var scopes = new List<Domain.Scope>();
+            var jsonWebKeys = new List<Jwt.JsonWebKey>();
+            var grantTypes = new List<Domain.GrantType>();
+            var responseTypes = new List<Domain.ResponseType>();
+
+            if (client.AllowedScopes != null)
+            {
+                client.AllowedScopes.ToList().ForEach(scope => scopes.Add(scope.ToDomain()));
+            }
+
+            if (client.JsonWebKeys != null)
+            {
+                client.JsonWebKeys.ToList().ForEach(jsonWebKey => jsonWebKeys.Add(jsonWebKey.ToDomain()));
+            }
+
+            GetList(client.GrantTypes).ForEach(grantType =>
+            {
+                Domain.GrantType grantTypeEnum;
+                if (Enum.TryParse(grantType, out grantTypeEnum))
+                {
+                    grantTypes.Add(grantTypeEnum);
+                }
+            });
+
+            GetList(client.ResponseTypes).ForEach(responseType =>
+            {
+                Domain.ResponseType responseTypeEnum;
+                if (Enum.TryParse(responseType, out responseTypeEnum))
+                {
+                    responseTypes.Add(responseTypeEnum);
+                }
+            });
+
+            return new Domain.Client
+            {
+                ClientId = client.ClientId,
+                ClientName = client.ClientName,
+                ClientUri = client.ClientUri,
+                ClientSecret = client.ClientSecret,
+                IdTokenEncryptedResponseAlg = client.IdTokenEncryptedResponseAlg,
+                IdTokenEncryptedResponseEnc = client.IdTokenEncryptedResponseEnc,
+                JwksUri = client.JwksUri,
+                TosUri = client.TosUri,
+                LogoUri = client.LogoUri,
+                PolicyUri = client.PolicyUri,
+                RequestObjectEncryptionAlg = client.RequestObjectEncryptionAlg,
+                RequestObjectEncryptionEnc = client.RequestObjectEncryptionEnc,
+                IdTokenSignedResponseAlg = client.IdTokenSignedResponseAlg,
+                RequireAuthTime = client.RequireAuthTime,
+                SectorIdentifierUri = client.SectorIdentifierUri,
+                SubjectType = client.SubjectType,
+                TokenEndPointAuthSigningAlg = client.TokenEndPointAuthSigningAlg,
+                UserInfoEncryptedResponseAlg = client.UserInfoEncryptedResponseAlg,
+                UserInfoSignedResponseAlg = client.UserInfoSignedResponseAlg,
+                UserInfoEncryptedResponseEnc = client.UserInfoEncryptedResponseEnc,
+                DefaultMaxAge = client.DefaultMaxAge,
+                DefaultAcrValues = client.DefaultAcrValues,
+                InitiateLoginUri = client.InitiateLoginUri,
+                RequestObjectSigningAlg = client.RequestObjectSigningAlg,
+                TokenEndPointAuthMethod = (Domain.TokenEndPointAuthenticationMethods)client.TokenEndPointAuthMethod,
+                ApplicationType = (Domain.ApplicationTypes)client.ApplicationType,
+                RequestUris = GetList(client.RequestUris),
+                RedirectionUrls = GetList(client.RedirectionUrls),
+                Contacts = GetList(client.Contacts),
+                AllowedScopes = scopes,
+                JsonWebKeys = jsonWebKeys,
+                GrantTypes = grantTypes,
+                ResponseTypes = responseTypes
+            };
+        }
+
+        #endregion
+
+        #region Private static methods
+
+        private static List<string> GetList(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return new List<string>();
+            }
+
+            return value.Split(',').ToList();
+        } 
+
         #endregion
     }
 }
