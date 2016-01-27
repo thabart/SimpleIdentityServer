@@ -1,4 +1,6 @@
-﻿namespace SimpleIdentityServer.DataAccess.SqlServer.Models
+﻿using System.Collections.Generic;
+
+namespace SimpleIdentityServer.DataAccess.SqlServer.Models
 {
     public class ResourceOwner
     {        
@@ -105,5 +107,10 @@
         public double UpdatedAt { get; set; }
 
         public string Password { get; set; }
+
+        /// <summary>
+        /// Gets or sets the list of consents
+        /// </summary>
+        public virtual ICollection<Consent> Consents { get; set; } 
     }
 }

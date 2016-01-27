@@ -185,5 +185,10 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Models
         /// Gets or sets the list of json web keys
         /// </summary>
         public virtual ICollection<JsonWebKey> JsonWebKeys { get; set; }
+
+        /// <summary>
+        /// Gets or sets the list of consents
+        /// </summary>
+        public virtual ICollection<Consent> Consents { get; set; } 
     }
 }

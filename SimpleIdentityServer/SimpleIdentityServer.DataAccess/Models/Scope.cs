@@ -34,5 +34,10 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Models
         public virtual ICollection<Claim> Claims { get; set; }
 
         public virtual ICollection<Client> Clients { get; set; }
+
+        /// <summary>
+        /// Gets or sets the list of consents
+        /// </summary>
+        public virtual ICollection<Consent> Consents { get; set; } 
     }
 }

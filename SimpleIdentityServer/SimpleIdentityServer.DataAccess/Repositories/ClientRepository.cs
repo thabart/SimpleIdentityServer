@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
@@ -15,7 +16,10 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
         {
             using (var context = new SimpleIdentityServerContext())
             {
-                var client = context.Clients.FirstOrDefault(c => c.ClientId == clientId);
+                var client = context.Clients
+                            .Include(c => c.AllowedScopes)
+                            .Include(c => c.JsonWebKeys)
+                            .FirstOrDefault(c => c.ClientId == clientId);
                 if (client == null)
                 {
                     return null;
@@ -138,7 +142,10 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                 {
                     try
                     {
-                        var connectedClient = context.Clients.FirstOrDefault(c => c.ClientId == client.ClientId);
+                        var connectedClient = context.Clients
+                            .Include(c => c.AllowedScopes)
+                            .Include(c => c.JsonWebKeys)
+                            .FirstOrDefault(c => c.ClientId == client.ClientId);
                         if (connectedClient == null)
                         {
                             return false;
