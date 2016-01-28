@@ -1,0 +1,325 @@
+﻿#region copyright
+// Copyright 2015 Habart Thierry
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
+using System;
+using System.Globalization;
+using SimpleIdentityServer.Core.Extensions;
+using SimpleIdentityServer.Core.Jwt.Converter;
+using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Parameters;
+using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Results;
+using SimpleIdentityServer.Core.Validators;
+using SimpleIdentityServer.Logging;
+using System.Linq;
+using System.Collections.Generic;
+
+namespace SimpleIdentityServer.Core.Api.Registration.Actions
+{
+    public interface IRegisterClientAction
+    {
+        RegistrationResponse Execute(RegistrationParameter registrationParameter);
+    }
+
+    public class RegisterClientAction : IRegisterClientAction
+    {
+        private readonly IRegistrationParameterValidator _registrationParameterValidator;
+
+        private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
+
+        private readonly IJsonWebKeyConverter _jsonWebKeyConverter;
+
+        private readonly IClientRepository _clientRepository;
+
+        public RegisterClientAction(
+            IRegistrationParameterValidator registrationParameterValidator,
+            ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
+            IJsonWebKeyConverter jsonWebKeyConverter,
+            IClientRepository clientRepository)
+        {
+            _registrationParameterValidator = registrationParameterValidator;
+            _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
+            _jsonWebKeyConverter = jsonWebKeyConverter;
+            _clientRepository = clientRepository;
+        }
+
+        public RegistrationResponse Execute(RegistrationParameter registrationParameter)
+        {
+            if (registrationParameter == null)
+            {
+                throw new ArgumentNullException("registrationParameter");
+            }
+
+            // Validate the parameters
+            _registrationParameterValidator.Validate(registrationParameter);
+
+            _simpleIdentityServerEventSource.StartRegistration(registrationParameter.ClientName);
+
+            // Generate the client
+            var client = new Client
+            {
+                RedirectionUrls = registrationParameter.RedirectUris,
+                Contacts = registrationParameter.Contacts,
+                // TODO : should support different languages for the client_name
+                ClientName = registrationParameter.ClientName,
+                ClientUri = registrationParameter.ClientUri,
+                PolicyUri = registrationParameter.PolicyUri,
+                TosUri = registrationParameter.TosUri,
+                JwksUri = registrationParameter.JwksUri,
+                SectorIdentifierUri = registrationParameter.SectorIdentifierUri,
+                // TODO : should support both subject types
+                SubjectType = Constants.SubjectTypeNames.Public,
+                DefaultMaxAge = registrationParameter.DefaultMaxAge,
+                DefaultAcrValues = registrationParameter.DefaultAcrValues,
+                RequireAuthTime = registrationParameter.RequireAuthTime,
+                InitiateLoginUri  = registrationParameter.InitiateLoginUri,
+                RequestUris = registrationParameter.RequestUris,
+                LogoUri = registrationParameter.LogoUri
+            };
+
+            // If omitted then the default value is authorization code response type
+            if (registrationParameter.ResponseTypes == null ||
+                !registrationParameter.ResponseTypes.Any())
+            {
+                client.ResponseTypes = new List<ResponseType>
+                {
+                    ResponseType.code
+                };
+            }
+            else
+            {
+                client.ResponseTypes = registrationParameter.ResponseTypes;
+            }
+
+            // If omitted then the default value is authorization code grant type
+            if (registrationParameter.GrantTypes == null ||
+                !registrationParameter.GrantTypes.Any())
+            {
+                client.GrantTypes = new List<GrantType>
+                {
+                    GrantType.authorization_code
+                };
+            } else
+            {
+                client.GrantTypes = registrationParameter.GrantTypes;
+            }
+
+            client.ApplicationType = registrationParameter.ApplicationType == null ? ApplicationTypes.web
+                : registrationParameter.ApplicationType.Value;
+
+            if (registrationParameter.Jwks != null)
+            {
+                var jsonWebKeys = _jsonWebKeyConverter.ExtractSerializedKeys(registrationParameter.Jwks);
+                if (jsonWebKeys != null &&
+                    jsonWebKeys.Any())
+                {
+                    client.JsonWebKeys = jsonWebKeys.ToList();
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(registrationParameter.IdTokenSignedResponseAlg) &&
+                Constants.Supported.SupportedJwsAlgs.Contains(registrationParameter.IdTokenSignedResponseAlg))
+            {
+                client.IdTokenSignedResponseAlg = registrationParameter.IdTokenSignedResponseAlg;
+            }
+            else
+            {
+                client.IdTokenSignedResponseAlg = Jwt.Constants.JwsAlgNames.RS256;
+            }
+
+            if (!string.IsNullOrWhiteSpace(registrationParameter.IdTokenEncryptedResponseAlg) &&
+                Constants.Supported.SupportedJweAlgs.Contains(registrationParameter.IdTokenEncryptedResponseAlg))
+            {
+                client.IdTokenEncryptedResponseAlg = registrationParameter.IdTokenEncryptedResponseAlg;
+            }
+            else
+            {
+                client.IdTokenEncryptedResponseAlg = string.Empty;
+            }
+
+            if (!string.IsNullOrWhiteSpace(client.IdTokenEncryptedResponseAlg))
+            {
+                if (!string.IsNullOrWhiteSpace(registrationParameter.IdTokenEncryptedResponseEnc) &&
+                    Constants.Supported.SupportedJweEncs.Contains(registrationParameter.IdTokenEncryptedResponseEnc))
+                {
+                    client.IdTokenEncryptedResponseEnc = registrationParameter.IdTokenEncryptedResponseEnc;
+                }
+                else
+                {
+                    client.IdTokenEncryptedResponseEnc = Jwt.Constants.JweEncNames.A128CBC_HS256;
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(registrationParameter.UserInfoSignedResponseAlg) &&
+                Constants.Supported.SupportedJwsAlgs.Contains(registrationParameter.UserInfoSignedResponseAlg))
+            {
+                client.UserInfoSignedResponseAlg = registrationParameter.UserInfoSignedResponseAlg;
+            }
+            else
+            {
+                client.UserInfoSignedResponseAlg = Jwt.Constants.JwsAlgNames.NONE;
+            }
+
+            if (!string.IsNullOrWhiteSpace(registrationParameter.UserInfoEncryptedResponseAlg) &&
+                Constants.Supported.SupportedJweAlgs.Contains(registrationParameter.UserInfoEncryptedResponseAlg))
+            {
+                client.UserInfoEncryptedResponseAlg = registrationParameter.UserInfoEncryptedResponseAlg;
+            }
+            else
+            {
+                client.UserInfoEncryptedResponseAlg = string.Empty;
+            }
+
+            if (!string.IsNullOrWhiteSpace(client.UserInfoEncryptedResponseAlg))
+            {
+                if (!string.IsNullOrWhiteSpace(registrationParameter.UserInfoEncryptedResponseEnc) &&
+                    Constants.Supported.SupportedJweEncs.Contains(registrationParameter.UserInfoEncryptedResponseEnc))
+                {
+                    client.UserInfoEncryptedResponseEnc = registrationParameter.UserInfoEncryptedResponseEnc;
+                }
+                else
+                {
+                    client.UserInfoEncryptedResponseEnc = Jwt.Constants.JweEncNames.A128CBC_HS256;
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(registrationParameter.RequestObjectSigningAlg) &&
+                Constants.Supported.SupportedJwsAlgs.Contains(registrationParameter.RequestObjectSigningAlg))
+            {
+                client.RequestObjectSigningAlg = registrationParameter.RequestObjectSigningAlg;
+            }
+            else
+            {
+                client.RequestObjectSigningAlg = string.Empty;
+            }
+
+            if (!string.IsNullOrWhiteSpace(registrationParameter.RequestObjectEncryptionAlg) &&
+                Constants.Supported.SupportedJweAlgs.Contains(registrationParameter.RequestObjectEncryptionAlg))
+            {
+                client.RequestObjectEncryptionAlg = registrationParameter.RequestObjectEncryptionAlg;
+            }
+            else
+            {
+                client.RequestObjectEncryptionAlg = string.Empty;
+            }
+
+            if (!string.IsNullOrWhiteSpace(client.RequestObjectEncryptionAlg))
+            {
+                if (!string.IsNullOrWhiteSpace(registrationParameter.RequestObjectEncryptionEnc) &&
+                    Constants.Supported.SupportedJweEncs.Contains(registrationParameter.RequestObjectEncryptionEnc))
+                {
+                    client.RequestObjectEncryptionEnc = registrationParameter.RequestObjectEncryptionEnc;
+                }
+                else
+                {
+                    client.RequestObjectEncryptionEnc = Jwt.Constants.JweEncNames.A128CBC_HS256;
+                }
+            }
+
+            TokenEndPointAuthenticationMethods tokenEndPointAuthenticationMethod;
+            if (string.IsNullOrWhiteSpace(registrationParameter.TokenEndPointAuthMethod) ||
+                !Enum.TryParse(registrationParameter.TokenEndPointAuthMethod, out tokenEndPointAuthenticationMethod))
+            {
+                tokenEndPointAuthenticationMethod = TokenEndPointAuthenticationMethods.client_secret_basic;
+            }
+
+            client.TokenEndPointAuthMethod = tokenEndPointAuthenticationMethod;
+
+            if (!string.IsNullOrWhiteSpace(registrationParameter.TokenEndPointAuthSigningAlg) &&
+                Constants.Supported.SupportedJwsAlgs.Contains(registrationParameter.TokenEndPointAuthSigningAlg))
+            {
+                client.TokenEndPointAuthSigningAlg = registrationParameter.TokenEndPointAuthSigningAlg;
+            }
+            else
+            {
+                client.TokenEndPointAuthSigningAlg = string.Empty;
+            }
+
+            client.AllowedScopes = new List<Scope>
+            {
+                Constants.StandardScopes.OpenId,
+                Constants.StandardScopes.ProfileScope,
+                Constants.StandardScopes.Address,
+                Constants.StandardScopes.Email,
+                Constants.StandardScopes.Phone
+            };
+
+            var result = new RegistrationResponse
+            {
+                ClientId = Guid.NewGuid().ToString(),
+                ClientSecretExpiresAt = 0,
+                ClientIdIssuedAt = DateTime.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture),
+                ApplicationType = Enum.GetName(typeof(ApplicationTypes), client.ApplicationType),
+                ClientUri = GetDefaultValue(client.ClientUri),
+                ClientName = GetDefaultValue(client.ClientName),
+                Contacts = GetDefaultValues(client.Contacts).ToArray(),
+                DefaultAcrValues = GetDefaultValue(client.DefaultAcrValues),
+                GrantTypes = client.GrantTypes == null ?
+                    new string[0] : 
+                    client.GrantTypes.Select(g => Enum.GetName(typeof(GrantType), g)).ToArray(),
+                DefaultMaxAge = client.DefaultMaxAge,
+                IdTokenEncryptedResponseAlg = GetDefaultValue(client.IdTokenEncryptedResponseAlg),
+                IdTokenEncryptedResponseEnc = GetDefaultValue(client.IdTokenEncryptedResponseEnc),
+                JwksUri = GetDefaultValue(client.JwksUri),
+                RequestObjectEncryptionAlg = GetDefaultValue(client.RequestObjectEncryptionAlg),
+                RequestObjectEncryptionEnc = GetDefaultValue(client.RequestObjectEncryptionEnc),
+                IdTokenSignedResponseAlg = GetDefaultValue(client.IdTokenSignedResponseAlg),
+                LogoUri = GetDefaultValue(client.LogoUri),
+                Jwks = registrationParameter.Jwks,
+                RequireAuthTime = client.RequireAuthTime,
+                InitiateLoginUri = GetDefaultValue(client.InitiateLoginUri),
+                PolicyUri = GetDefaultValue(client.PolicyUri),
+                RequestObjectSigningAlg = GetDefaultValue(client.RequestObjectSigningAlg),
+                UserInfoEncryptedResponseAlg = GetDefaultValue(client.UserInfoEncryptedResponseAlg),
+                UserInfoEncryptedResponseEnc = GetDefaultValue(client.UserInfoEncryptedResponseEnc),
+                UserInfoSignedResponseAlg = GetDefaultValue(client.UserInfoSignedResponseAlg),
+                TosUri = GetDefaultValue(client.TosUri),
+                SectorIdentifierUri = GetDefaultValue(client.SectorIdentifierUri),
+                SubjectType = GetDefaultValue(client.SubjectType),
+                ResponseTypes = client.ResponseTypes == null ? new string[0] :
+                    client.ResponseTypes.Select(r => Enum.GetName(typeof(ResponseType), r)).ToArray(),
+                RequestUris = GetDefaultValues(client.RequestUris).ToList(),
+                RedirectUris = GetDefaultValues(client.RedirectionUrls).ToArray(),
+                TokenEndPointAuthSigningAlg = GetDefaultValue(client.TokenEndPointAuthSigningAlg),
+                TokenEndPointAuthMethod = Enum.GetName(typeof(TokenEndPointAuthenticationMethods), client.TokenEndPointAuthMethod)
+            };
+
+            if (client.TokenEndPointAuthMethod != TokenEndPointAuthenticationMethods.private_key_jwt)
+            {
+                result.ClientSecret = Guid.NewGuid().ToString();
+                client.ClientSecret = result.ClientSecret;
+            }
+
+            client.ClientId = result.ClientId;
+            _clientRepository.InsertClient(client);
+
+            _simpleIdentityServerEventSource.EndRegistration(result.ClientId, 
+                client.ClientName);
+
+            return result;
+        }
+
+        private static string GetDefaultValue(string value)
+        {
+            return value == null ? string.Empty : value;
+        }
+
+        private static IEnumerable<string> GetDefaultValues(IEnumerable<string> value)
+        {
+            return value == null ? new string[0] : value;
+        }
+    }
+}

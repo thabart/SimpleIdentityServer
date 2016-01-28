@@ -1,0 +1,20 @@
+{
+  "version": "1.0.0-*",
+  "description": "SimpleIdentityServer.DataAccess.SqlServer Class Library",
+  "authors": [ "thierry habart" ],
+  "tags": [""],
+  "projectUrl": "",
+  "licenseUrl": "",
+  
+  "dependencies": {
+      "EntityFramework": "6.1.3"
+  },
+  
+  "tooling": {
+    "defaultNamespace": "SimpleIdentityServer.DataAccess.SqlServer"
+  },
+  
+  "frameworks": {
+    "dnx451": { }
+  }
+}

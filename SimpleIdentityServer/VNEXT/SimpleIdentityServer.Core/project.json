@@ -1,0 +1,28 @@
+{
+  "version": "1.0.0-*",
+  "description": "SimpleIdentityServer.Core Class Library",
+  "authors": [ "thierry habart" ],
+  "tags": [""],
+  "projectUrl": "",
+  "licenseUrl": "",
+  
+  "dependencies": {
+	  "CommonServiceLocator": "1.0",
+      "Microsoft.AspNet.WebApi.Client": "5.2.3",
+	  "SimpleIdentityServer.Core.Jwt": "",
+	  "SimpleIdentityServer.Logging": ""
+  },
+  
+  "tooling": {
+    "defaultNamespace": "SimpleIdentityServer.Core"
+  },
+  
+  "frameworks": {
+    "dnx451": {        
+        "frameworkAssemblies": {
+            "System.Net.Http": "4.0.0.0",
+            "System.IdentityModel": "4.0.0.0"
+        }
+     }
+  }
+}
