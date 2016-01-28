@@ -1,0 +1,21 @@
+{
+  "version": "1.0.0-*",
+  "description": "SimpleIdentityServer.Core.Common Class Library",
+  "authors": [ "thierry habart" ],
+  "tags": [""],
+  "projectUrl": "",
+  "licenseUrl": "",
+  "tooling": {
+    "defaultNamespace": "SimpleIdentityServer.Core.Common"
+  },
+  
+  "frameworks": {
+    "dnx451": {		
+        "frameworkAssemblies": {
+            "System.Runtime.Serialization": "4.0.0.0",
+			"System.Web.Extensions": "4.0.0.0",
+			"System.Xml": "4.0.0.0"
+        } 
+	}
+  }
+}

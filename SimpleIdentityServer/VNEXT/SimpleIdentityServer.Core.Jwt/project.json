@@ -1,0 +1,26 @@
+{
+  "version": "1.0.0-*",
+  "description": "SimpleIdentityServer.Core.Jwt Class Library",
+  "authors": [ "thierry habart" ],
+  "tags": [""],
+  "projectUrl": "",
+  "licenseUrl": "",
+  
+  "dependencies": {
+      "SimpleIdentityServer.Common": "",
+      "SimpleIdentityServer.Core.Common": ""
+  },
+  
+  "tooling": {
+    "defaultNamespace": "SimpleIdentityServer.Core.Jwt"
+  },
+  
+  "frameworks": {
+    "dnx451": {
+        "frameworkAssemblies": {
+            "System.ComponentModel.Composition": "4.0.0.0",
+            "System.Runtime.Serialization": "4.0.0.0"
+        } 
+    }
+  }
+}

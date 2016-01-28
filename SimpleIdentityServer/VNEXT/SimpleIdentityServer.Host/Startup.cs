@@ -54,6 +54,8 @@ namespace SimpleIdentityServer.Host
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+            
+            
         }
 
         #endregion
