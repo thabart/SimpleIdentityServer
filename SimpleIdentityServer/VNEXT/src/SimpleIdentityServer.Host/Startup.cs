@@ -4,6 +4,8 @@ using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNet.Authentication.Cookies;
+using Microsoft.AspNet.Identity;
 
 namespace SimpleIdentityServer.Host
 {
@@ -32,8 +34,9 @@ namespace SimpleIdentityServer.Host
             // Purpose of this method is to setup the dependency injection
             // IServiceCollection interface is responsible for learning about any services that will be supplied to the running application
 
-            services.AddLogging();
 
+
+            services.AddLogging();
             services.AddMvc();
         }
 
@@ -46,16 +49,18 @@ namespace SimpleIdentityServer.Host
             // Specify what frameworks will be used : including MVC, API
             app.UseIISPlatformHandler(options => options.AuthenticationDescriptions.Clear());
 
+            app.UseCookieAuthentication(opt => {
+                opt.AuthenticationScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            });
+
             app.UseStaticFiles();
 
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller}/{action}/{id?}");
             });
-            
-            
         }
 
         #endregion

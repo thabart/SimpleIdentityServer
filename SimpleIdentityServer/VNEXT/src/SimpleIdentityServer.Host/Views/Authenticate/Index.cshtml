@@ -1,0 +1,52 @@
+﻿@{
+    ViewBag.Title = "Index";
+    ViewBag.ProductName = "Simple Identity Server";
+}
+
+@model SimpleIdentityServer.Api.ViewModels.AuthorizeViewModel
+
+@section PageTitle
+{
+    <h1>
+        @ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.LoginCode]
+    </h1>
+}
+
+<div class="row">
+    <div class="col-md-6">
+        <h2>
+            @ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.LoginExternalAccount]
+        </h2>
+    </div>
+    <div class="col-md-6">
+        <div>
+            <h2>
+                @ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.LoginLocalAccount]
+            </h2>
+        </div>
+        <div>
+            <form name="form" method="POST" action="@Url.Action("Index")">
+                <fieldset>
+                    <input type="hidden" value="@Model.Code" name="Code" />
+                    <div class="form-group">
+                        <label>@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.UserNameCode]</label>
+                        <input maxlength="100" class="form-control" value="@Model.UserName" name="UserName" type="text" />
+                    </div>
+                    <div class="form-group">
+                        <label>@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.PasswordCode]</label>
+                        <input maxlength="100" class="form-control" value="@Model.Password" name="Password" type="password" />
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" value="@Model.IsChecked" name="IsChecked" />
+                            <strong>@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.RememberMyLoginCode]</strong>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.LoginCode]</button>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</div>

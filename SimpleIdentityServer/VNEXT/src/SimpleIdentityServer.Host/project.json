@@ -24,7 +24,14 @@
         "Microsoft.Extensions.Logging": "1.0.0-rc1-final",
         "Microsoft.Extensions.Logging.Console": "1.0.0-rc1-final",
         "Microsoft.Extensions.Logging.Debug": "1.0.0-rc1-final",
-        "TestLibrary": ""
+        "Unity": "2.1.505.0",
+        "Microsoft.AspNet.WebApi.Client": "5.2.3",
+        "Swashbuckle": "5.2.2",
+        "WebActivatorEx": "2.0",
+        "SimpleIdentityServer.Core": "",
+        "SimpleIdentityServer.Core.Jwt": "",
+        "SimpleIdentityServer.DataAccess.Fake": "",
+        "SimpleIdentityServer.RateLimitation": ""
     },
 
     "commands": {
@@ -32,7 +39,11 @@
     },
 
     "frameworks": {
-        "dnx451": { }
+        "dnx451": {                 
+            "frameworkAssemblies": {
+                "System.Web": "4.0.0.0"
+            }
+        }
     },
 
     "exclude": [
@@ -44,6 +55,7 @@
         "**.user",
         "**.vspscc"
     ],
+    
     "scripts": {
         "prepublish": [
             "npm install",
