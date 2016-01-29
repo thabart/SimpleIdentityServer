@@ -8,7 +8,8 @@
   
   "dependencies": {
 	  "CommonServiceLocator": "1.0",
-      "Microsoft.AspNet.WebApi.Client": "5.2.3",
+    "Microsoft.AspNet.WebApi.Client": "5.2.3",    
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc1-final",
 	  "SimpleIdentityServer.Core.Jwt": "",
 	  "SimpleIdentityServer.Logging": ""
   },

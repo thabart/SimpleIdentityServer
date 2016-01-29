@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNet.Authentication.Cookies;
-using Microsoft.AspNet.Identity;
+using SimpleIdentityServer.Core;
 
 namespace SimpleIdentityServer.Host
 {
@@ -34,7 +34,7 @@ namespace SimpleIdentityServer.Host
             // Purpose of this method is to setup the dependency injection
             // IServiceCollection interface is responsible for learning about any services that will be supplied to the running application
 
-
+            services.AddSimpleIdentityServerCore();
 
             services.AddLogging();
             services.AddMvc();
