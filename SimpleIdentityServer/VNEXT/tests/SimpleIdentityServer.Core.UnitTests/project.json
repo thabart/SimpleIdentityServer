@@ -1,0 +1,29 @@
+{
+    "version": "1.0.0-*",
+    "description": "SimpleIdentityServer.Core.UnitTests Unit test project",
+    "authors": [ "thierry habart" ],
+    "tags": [ "" ],
+    "projectUrl": "",
+    "licenseUrl": "",
+    "tooling": {
+      "defaultNamespace": "SimpleIdentityServer.Core.UnitTests"
+    },
+    "dependencies": {
+		"Moq": "4.2.1510.2205",
+        "xunit": "2.1.0",
+        "xunit.runner.dnx": "2.1.0-rc1-build204",
+		"SimpleIdentityServer.DataAccess.Fake": "",
+		"SimpleIdentityServer.Core.Jwt": "",
+		"SimpleIdentityServer.Core": ""
+    },
+    "commands": {
+        "test": "xunit.runner.dnx"
+    },
+    "frameworks": {
+        "dnx451": {			
+			"frameworkAssemblies": {
+				"System.Core": "4.0.0.0"
+			}
+		}
+    }
+}

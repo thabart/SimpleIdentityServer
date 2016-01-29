@@ -1,0 +1,21 @@
+{
+  "version": "1.0.0-*",
+  "description": "SimpleIdentityServer.DataAccess.Fake class Library",
+  "authors": [ "thierry habart" ],
+  "tags": [""],
+  "projectUrl": "",
+  "licenseUrl": "",
+  "tooling": {
+    "defaultNamespace": "SimpleIdentityServer.DataAccess.Fake"
+  },
+  
+  "dependencies": {
+      "EntityFramework": "6.1.3",
+	  "SimpleIdentityServer.Core.Jwt": "",
+	  "SimpleIdentityServer.Core": ""
+  },
+  
+  "frameworks": {
+    "dnx451": { }
+  }
+}

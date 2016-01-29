@@ -1,5 +1,8 @@
 ﻿{
-  "projects": [ "SimpleIdentityServer.Host", "SimpleIdentityServer.Common", "SimpleIdentityServer.Core.Common", "SimpleIdentityServer.Core.Jwt" ],
+  "projects": [ 
+		"src",
+		"tests"
+  ],
   "sdk": {
     "version": "1.0.0-rc1-update1",
     "runtime": "clr",

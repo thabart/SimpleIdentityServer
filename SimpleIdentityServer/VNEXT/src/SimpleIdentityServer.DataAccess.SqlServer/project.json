@@ -7,7 +7,8 @@
   "licenseUrl": "",
   
   "dependencies": {
-      "EntityFramework": "6.1.3"
+      "EntityFramework": "6.1.3",
+	  "SimpleIdentityServer.Core": ""
   },
   
   "tooling": {
