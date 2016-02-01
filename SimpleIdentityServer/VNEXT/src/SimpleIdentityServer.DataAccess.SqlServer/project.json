@@ -6,7 +6,8 @@
   "projectUrl": "",
   "licenseUrl": "",
   
-  "dependencies": {
+  "dependencies": {  
+      "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc1-final",
       "EntityFramework": "6.1.3",
 	  "SimpleIdentityServer.Core": ""
   },

@@ -10,7 +10,8 @@
   },
   
   "dependencies": {
-      "EntityFramework": "6.1.3",
+      "EntityFramework": "6.1.3",  
+      "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc1-final",
 	  "SimpleIdentityServer.Core.Jwt": "",
 	  "SimpleIdentityServer.Core": ""
   },

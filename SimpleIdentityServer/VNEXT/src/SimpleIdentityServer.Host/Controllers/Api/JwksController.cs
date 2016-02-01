@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNet.Mvc;
 using SimpleIdentityServer.Core.Api.Jwks;
 using SimpleIdentityServer.Core.Jwt.Signature;
+using SimpleIdentityServer.Host;
 
 namespace SimpleIdentityServer.Api.Controllers.Api
 {
+    [Route(Constants.EndPoints.Jwks)]
     public class JwksController : Controller
     {
         private readonly IJwksActions _jwksActions;

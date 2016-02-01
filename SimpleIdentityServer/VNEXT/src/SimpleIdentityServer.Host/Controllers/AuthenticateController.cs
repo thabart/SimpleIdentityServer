@@ -40,6 +40,10 @@ namespace SimpleIdentityServer.Host.Controllers
         [HttpGet]
         public ActionResult Index(string code)
         {
+            if (string.IsNullOrWhiteSpace(code)) {
+                throw new ArgumentNullException("code");
+            }
+            
             var authenticatedUser = this.GetAuthenticatedUser();
             var decodedCode = _encoder.Decode(code);
             var request = _protector.Decrypt<AuthorizationRequest>(decodedCode);

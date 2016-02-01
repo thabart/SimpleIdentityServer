@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Net;
 using System.Threading.Tasks;
-using System.Web.Http;
 
 using SimpleIdentityServer.Host.DTOs.Request;
 using SimpleIdentityServer.Host.Extensions;
@@ -20,6 +18,7 @@ using SimpleIdentityServer.Host;
 
 namespace SimpleIdentityServer.Api.Controllers.Api
 {
+    [Microsoft.AspNet.Mvc.Route(Constants.EndPoints.Authorization)]
     public class AuthorizationController : Controller
     {
         private readonly IAuthorizationActions _authorizationActions;

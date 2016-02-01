@@ -4,12 +4,12 @@ using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.Core.Api.Registration;
 using SimpleIdentityServer.Core.Results;
 
-using Swashbuckle.Swagger.Annotations;
-
 using Microsoft.AspNet.Mvc;
+using SimpleIdentityServer.Host;
 
 namespace SimpleIdentityServer.Api.Controllers.Api
 {
+    [Route(Constants.EndPoints.Registration)]
     public class RegistrationController : Controller
     {
         private readonly IRegistrationActions _registerActions;
@@ -19,7 +19,6 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             _registerActions = registerActions;
         }
 
-        [SwaggerOperation("RegisterOperation")]
         public RegistrationResponse Post(ClientResponse client)
         {
             if (client == null)

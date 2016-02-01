@@ -1,11 +1,8 @@
 ﻿using System.Collections.Generic;
-#if FAKE
-using SimpleIdentityServer.DataAccess.Fake.Models;
-#endif
+using SimpleIdentityServer.Core.Models;
 
 namespace SimpleIdentityServer.Api.Configuration
 {
-#if FAKE
     public static class Clients
     {
         public static List<Client> Get()
@@ -248,5 +245,4 @@ namespace SimpleIdentityServer.Api.Configuration
             };
         }
     }
-#endif
 }

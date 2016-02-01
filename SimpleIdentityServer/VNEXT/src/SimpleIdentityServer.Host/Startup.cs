@@ -4,8 +4,7 @@ using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNet.Authentication.Cookies;
-using SimpleIdentityServer.Core;
+using SimpleIdentityServer.Api.Configuration;
 
 namespace SimpleIdentityServer.Host
 {
@@ -30,12 +29,17 @@ namespace SimpleIdentityServer.Host
         }
 
         public void ConfigureServices(IServiceCollection services)
-        {
-            // Purpose of this method is to setup the dependency injection
-            // IServiceCollection interface is responsible for learning about any services that will be supplied to the running application
-
-            services.AddSimpleIdentityServerCore();
-
+        {            
+            // Configure Simple identity server
+            services.AddSimpleIdentityServer(new SimpleIdentityServerHostOptions {
+                DataSourceType = DataSourceTypes.InMemory,
+                Clients = Clients.Get(),
+                JsonWebKeys = JsonWebKeys.Get(),
+                ResourceOwners = ResourceOwners.Get(),
+                Scopes = Scopes.Get(),
+                Translations = Translations.Get()
+            });
+            
             services.AddLogging();
             services.AddMvc();
         }
@@ -45,22 +49,8 @@ namespace SimpleIdentityServer.Host
             ILoggerFactory loggerFactory)
         {
             loggerFactory.AddConsole();
-
-            // Specify what frameworks will be used : including MVC, API
-            app.UseIISPlatformHandler(options => options.AuthenticationDescriptions.Clear());
-
-            app.UseCookieAuthentication(opt => {
-                opt.AuthenticationScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            });
-
-            app.UseStaticFiles();
-
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller}/{action}/{id?}");
-            });
+            
+            app.UseSimpleIdentityServer();
         }
 
         #endregion

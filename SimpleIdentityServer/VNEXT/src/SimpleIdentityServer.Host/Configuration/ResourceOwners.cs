@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using SimpleIdentityServer.Core.Extensions;
-#if FAKE
-using SimpleIdentityServer.DataAccess.Fake.Models;
-#endif
+using SimpleIdentityServer.Core.Models;
 
 namespace SimpleIdentityServer.Api.Configuration
 {
-#if FAKE
     public static class ResourceOwners
     {
         public static List<ResourceOwner> Get()
@@ -44,5 +41,4 @@ namespace SimpleIdentityServer.Api.Configuration
             };
         } 
     }
-#endif
 }

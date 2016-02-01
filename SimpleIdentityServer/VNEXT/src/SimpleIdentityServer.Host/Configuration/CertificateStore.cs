@@ -9,7 +9,7 @@ namespace SimpleIdentityServer.Api.Configuration
         public X509Certificate2 Get()
         {
             var assembly = typeof (CertificateStore).Assembly;
-            using (var stream = assembly.GetManifestResourceStream("SimpleIdentityServer.Api.SimpleIdentityServer.pfx"))
+            using (var stream = assembly.GetManifestResourceStream("SimpleIdentityServer.Host.SimpleIdentityServer.pfx"))
             {
                 return new X509Certificate2(ReadStream(stream), "loki", X509KeyStorageFlags.Exportable 
                     | X509KeyStorageFlags.MachineKeySet);

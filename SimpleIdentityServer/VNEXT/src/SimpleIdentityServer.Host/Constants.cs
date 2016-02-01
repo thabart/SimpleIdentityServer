@@ -23,23 +23,23 @@ namespace SimpleIdentityServer.Host
 
         public static class EndPoints
         {
-            public static string DiscoveryAction = ".well-known/openid-configuration";
+            public const string DiscoveryAction = ".well-known/openid-configuration";
 
-            public static string Authorization = "authorization";
+            public const string Authorization = "authorization";
 
-            public static string Token = "token";
+            public const string Token = "token";
 
-            public static string UserInfo = "userinfo";
+            public const string UserInfo = "userinfo";
 
-            public static string Jwks = "jwks";
+            public const string Jwks = "jwks";
 
-            public static string Registration = "registration";
+            public const string Registration = "registration";
 
-            public static string EndSession = "end_session";
+            public const string EndSession = "end_session";
 
-            public static string CheckSession = "check_session";
+            public const string CheckSession = "check_session";
 
-            public static string Revocation = "revocation";
+            public const string Revocation = "revocation";
         }
     }
 }

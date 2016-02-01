@@ -3,9 +3,10 @@ using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.Core.Api.Discovery;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Host;
-
+    
 namespace SimpleIdentityServer.Api.Controllers.Api
 {
+    [Route(Constants.EndPoints.DiscoveryAction)]
     public class DiscoveryController : Controller
     {
         private readonly IDiscoveryActions _discoveryActions;

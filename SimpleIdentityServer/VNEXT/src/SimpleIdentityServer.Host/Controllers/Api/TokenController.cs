@@ -4,12 +4,13 @@ using SimpleIdentityServer.Host.DTOs.Request;
 using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.Core.Api.Token;
 
-using SimpleIdentityServer.Api.Attributes;
 using SimpleIdentityServer.RateLimitation.Attributes;
 using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Host;
 
 namespace SimpleIdentityServer.Api.Controllers.Api
 {
+    [Route(Constants.EndPoints.Token)]
     public class TokenController : ApiController
     {
         private readonly ITokenActions _tokenActions;
@@ -20,7 +21,6 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             _tokenActions = tokenActions;
         }
         
-        [SwaggerOperation("PostToken")]
         [RateLimitationFilter(RateLimitationElementName = "PostToken")]
         public GrantedToken Post(TokenRequest tokenRequest)
         {
