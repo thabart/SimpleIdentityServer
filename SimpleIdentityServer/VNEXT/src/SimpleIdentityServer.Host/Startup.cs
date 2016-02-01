@@ -52,7 +52,9 @@ namespace SimpleIdentityServer.Host
         {
             loggerFactory.AddConsole();
             
-            app.UseSimpleIdentityServer();
+            // app.Map("/api", a => {
+                app.UseSimpleIdentityServer();
+            // });
         }
 
         #endregion

@@ -1,12 +1,16 @@
-﻿@using System.Web.Optimization
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
+@addTagHelper "*, Microsoft.AspNet.Mvc.TagHelpers"
 <html>
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>@ViewBag.Title</title>
-        @Styles.Render("~/content/css")
+        <link rel="stylesheet" href="~/output/site.min.css" />
+        <!--
+        <environment names="">
+
+        </environment>
+        -->
     </head>
     <body>
         <div class="navbar navbar-inverse">
@@ -27,8 +31,7 @@
                 @RenderBody()
             </div>
         </div>
-        
-        @Scripts.Render("~/bundles/js")
+        <script src="~/output/site.min.js"></script>
         @RenderSection("Scripts", required:false)
     </body>
 </html>

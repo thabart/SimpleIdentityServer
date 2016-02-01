@@ -8,7 +8,15 @@ namespace SimpleIdentityServer.Host.Extensions
     {
         public static string GetAbsoluteUriWithVirtualPath(this HttpRequest requestMessage)
         {
-            return requestMessage.PathBase;
+            var host = requestMessage.Host.Value;
+            var http = "http://";
+            if (requestMessage.IsHttps)
+            {
+                http = "https://";
+            }
+
+            var relativePath = requestMessage.PathBase.Value;
+            return http + host + relativePath;
         }
         
         public static async Task<string> ReadAsStringAsync(this HttpRequest request) {

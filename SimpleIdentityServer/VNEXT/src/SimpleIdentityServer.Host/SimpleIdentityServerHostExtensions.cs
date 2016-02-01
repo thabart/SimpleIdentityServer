@@ -72,6 +72,7 @@ namespace SimpleIdentityServer.Host
             });
                         
             app.UseSwaggerGen();
+            // Manage the virtual directory : swaggerUrl: "/api/swagger/v1/swagger.json"
             app.UseSwaggerUi();
         }
         
@@ -100,7 +101,7 @@ namespace SimpleIdentityServer.Host
                     Version = "v1",
                     Title = "Simple Identity Server",
                     TermsOfService = "None"
-               });
+               });                
             });
         }
         
