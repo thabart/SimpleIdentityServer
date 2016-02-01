@@ -9,14 +9,17 @@ using Jwt = SimpleIdentityServer.Core.Jwt;
 namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 {
     public sealed class JsonWebKeyRepository : IJsonWebKeyRepository
-    {
+    {       
+         private readonly SimpleIdentityServerContext _context;
+        
+        public JsonWebKeyRepository(SimpleIdentityServerContext context) {
+            _context = context;
+        }
+        
         public IList<Jwt.JsonWebKey> GetAll()
         {
-            using (var context = new SimpleIdentityServerContext())
-            {
-                var jsonWebKeys = context.JsonWebKeys.ToList();
+                var jsonWebKeys = _context.JsonWebKeys.ToList();
                 return jsonWebKeys.Select(j => j.ToDomain()).ToList();
-            }
         }
 
         public IList<Jwt.JsonWebKey> GetByAlgorithm(
@@ -24,11 +27,9 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             Jwt.AllAlg algorithm, 
             Jwt.KeyOperations[] operations)
         {
-            using (var context = new SimpleIdentityServerContext())
-            {
                 var algEnum = (Models.AllAlg) algorithm;
                 var useEnum = (Models.Use) use;
-                var jsonWebKeys = context.JsonWebKeys
+                var jsonWebKeys = _context.JsonWebKeys
                     .Where(j => j.Use == useEnum && j.Alg == algEnum)
                     .ToList();
                 jsonWebKeys = jsonWebKeys.Where(j =>
@@ -55,39 +56,33 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                 }).ToList();
 
                 return jsonWebKeys.Select(j => j.ToDomain()).ToList();
-            }
         }
 
         public Jwt.JsonWebKey GetByKid(string kid)
         {
-            using (var context = new SimpleIdentityServerContext())
-            {
-                var jsonWebKey = context.JsonWebKeys.FirstOrDefault(j => j.Kid == kid);
+                var jsonWebKey = _context.JsonWebKeys.FirstOrDefault(j => j.Kid == kid);
                 if (jsonWebKey == null)
                 {
                     return null;
                 }
 
                 return jsonWebKey.ToDomain();
-            }
         }
 
         public bool Delete(Jwt.JsonWebKey jsonWebKey)
         {
-            using (var context = new SimpleIdentityServerContext())
-            {
-                using (var transaction = context.Database.BeginTransaction())
+                using (var transaction = _context.Database.BeginTransaction())
                 {
                     try
                     {
-                        var jsonWebKeyToBeRemoved = context.JsonWebKeys.FirstOrDefault(j => j.Kid == jsonWebKey.Kid);
+                        var jsonWebKeyToBeRemoved = _context.JsonWebKeys.FirstOrDefault(j => j.Kid == jsonWebKey.Kid);
                         if (jsonWebKeyToBeRemoved == null)
                         {
                             return false;
                         }
 
-                        context.JsonWebKeys.Remove(jsonWebKeyToBeRemoved);
-                        context.SaveChanges();
+                        _context.JsonWebKeys.Remove(jsonWebKeyToBeRemoved);
+                        _context.SaveChanges();
                         transaction.Commit();
                     }
                     catch (Exception)
@@ -96,16 +91,13 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                         return false;
                     }
                 }
-            }
 
             return true;
         }
 
         public bool Insert(Jwt.JsonWebKey jsonWebKey)
         {
-            using (var context = new SimpleIdentityServerContext())
-            {
-                using (var transaction = context.Database.BeginTransaction())
+                using (var transaction = _context.Database.BeginTransaction())
                 {
                     try
                     {
@@ -135,8 +127,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                             X5u = x5u
                         };
 
-                        context.JsonWebKeys.Add(newJsonWebKeyRecord);
-                        context.SaveChanges();
+                        _context.JsonWebKeys.Add(newJsonWebKeyRecord);
+                        _context.SaveChanges();
                         transaction.Commit();
                     }
                     catch (Exception)
@@ -145,27 +137,24 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                         return false;
                     }
                 }
-            }
 
             return true;     
         }
 
         public bool Update(Jwt.JsonWebKey jsonWebKey)
         {
-            using (var context = new SimpleIdentityServerContext())
-            {
-                using (var transaction = context.Database.BeginTransaction())
+                using (var transaction = _context.Database.BeginTransaction())
                 {
                     try
                     {
-                        var jsonWebKeyToBeUpdated = context.JsonWebKeys.FirstOrDefault(j => j.Kid == jsonWebKey.Kid);
+                        var jsonWebKeyToBeUpdated = _context.JsonWebKeys.FirstOrDefault(j => j.Kid == jsonWebKey.Kid);
                         if (jsonWebKeyToBeUpdated == null)
                         {
                             return false;
                         }
 
                         jsonWebKeyToBeUpdated.SerializedKey = jsonWebKey.SerializedKey;
-                        context.SaveChanges();
+                        _context.SaveChanges();
                         transaction.Commit();
                     }
                     catch (Exception)
@@ -174,7 +163,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                         return false;
                     }
                 }
-            }
 
             return true;
         }

@@ -14,6 +14,8 @@ namespace SimpleIdentityServer.Host
     {
         public DataSourceTypes DataSourceType { get; set;}
         
+        public string ConnectionString { get; set;}
+        
         public List<Client> Clients { get; set; }
         
         public List<JsonWebKey> JsonWebKeys { get; set;}

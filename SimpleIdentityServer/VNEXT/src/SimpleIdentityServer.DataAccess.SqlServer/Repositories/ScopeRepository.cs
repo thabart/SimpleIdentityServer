@@ -10,11 +10,15 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 {
     public sealed class ScopeRepository : IScopeRepository
     {
+         private readonly SimpleIdentityServerContext _context;
+        
+        public ScopeRepository(SimpleIdentityServerContext context) {
+            _context = context;
+        }
+        
         public bool InsertScope(Domains.Scope scope)
         {
-            using (var context = new SimpleIdentityServerContext())
-            {
-                using (var transaction = context.Database.BeginTransaction())
+                using (var transaction = _context.Database.BeginTransaction())
                 {
                     try
                     {
@@ -34,8 +38,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                             record.Claims = scope.Claims.Select(c => new Models.Claim {Code = c}).ToList();
                         }
 
-                        context.Scopes.Add(record);
-                        context.SaveChanges();
+                        _context.Scopes.Add(record);
+                        _context.SaveChanges();
                         transaction.Commit();
                     }
                     catch (Exception)
@@ -44,16 +48,13 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                         return false;
                     }
                 }
-            }
 
             return true;
         }
 
         public Domains.Scope GetScopeByName(string name)
         {
-            using (var context = new SimpleIdentityServerContext())
-            {
-                var result = context.Scopes
+                var result = _context.Scopes
                     .Include(s => s.Claims)
                     .FirstOrDefault(s => s.Name == name);
                 if (result == null)
@@ -62,16 +63,12 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                 }
                 
                 return result.ToDomain();
-            }
         }
 
         public IList<Domains.Scope> GetAllScopes()
         {
-            using (var context = new SimpleIdentityServerContext())
-            {
-                var result = context.Scopes.ToList();
+                var result = _context.Scopes.ToList();
                 return result.Select(r => r.ToDomain()).ToList();
-            }
         }
     }
 }

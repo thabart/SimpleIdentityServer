@@ -22,13 +22,16 @@ namespace SimpleIdentityServer.Host
     {
         #region Public static methods
         
-        public static void AddSimpleIdentityServer(this IServiceCollection serviceCollection, SimpleIdentityServerHostOptions options) 
+        public static void AddSimpleIdentityServer(
+            this IServiceCollection serviceCollection, 
+            SimpleIdentityServerHostOptions options) 
         {
             if (options == null) {
                 throw new ArgumentNullException("options");
             }
             
-            if (options.DataSourceType == DataSourceTypes.InMemory) {
+            if (options.DataSourceType == DataSourceTypes.InMemory) 
+            {
                 var clients = options.Clients.Select(c => c.ToFake()).ToList();
                 var jsonWebKeys = options.JsonWebKeys.Select(j => j.ToFake()).ToList();
                 var resourceOwners = options.ResourceOwners.Select(r => r.ToFake()).ToList();
@@ -40,8 +43,11 @@ namespace SimpleIdentityServer.Host
                 FakeDataSource.Instance().Scopes = scopes;
                 FakeDataSource.Instance().Translations = translations;
                 serviceCollection.AddSimpleIdentityServerFake();
-            } else {
+            }
+            else 
+            {
                 serviceCollection.AddSimpleIdentityServerSqlServer();
+                serviceCollection.AddTransient<SimpleIdentityServerContext>((a) => new SimpleIdentityServerContext(options.ConnectionString));
             }
             
             ConfigureSimpleIdentityServer(serviceCollection);

@@ -10,34 +10,34 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 {
     public class GrantedTokenRepository : IGrantedTokenRepository
     {
+        private readonly SimpleIdentityServerContext _context;
+        
+        public GrantedTokenRepository(SimpleIdentityServerContext context) {
+            _context = context;
+        }
+        
         #region Public methods
 
         public GrantedToken GetToken(string accessToken)
         {
-            using (var context = new SimpleIdentityServerContext())
-            {
-                var grantedToken = context.GrantedTokens.FirstOrDefault(g => g.AccessToken == accessToken);
+                var grantedToken = _context.GrantedTokens.FirstOrDefault(g => g.AccessToken == accessToken);
                 if (grantedToken == null)
                 {
                     return null;
                 }
 
                 return grantedToken.ToDomain();
-            }
         }
 
         public GrantedToken GetTokenByRefreshToken(string refreshToken)
         {
-            using (var context = new SimpleIdentityServerContext())
-            {
-                var grantedToken = context.GrantedTokens.FirstOrDefault(g => g.RefreshToken == refreshToken);
+                var grantedToken = _context.GrantedTokens.FirstOrDefault(g => g.RefreshToken == refreshToken);
                 if (grantedToken == null)
                 {
                     return null;
                 }
 
                 return grantedToken.ToDomain();
-            }
         }
 
         public GrantedToken GetToken(
@@ -46,9 +46,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             JwsPayload idTokenJwsPayload, 
             JwsPayload userInfoJwsPayload)
         {
-            using (var context = new SimpleIdentityServerContext())
-            {
-                var grantedTokens = context.GrantedTokens.Where(g => g.Scope == scopes && g.ClientId == clientId)
+                var grantedTokens = _context.GrantedTokens.Where(g => g.Scope == scopes && g.ClientId == clientId)
                     .ToList();
                 if (grantedTokens == null || !grantedTokens.Any())
                 {
@@ -65,16 +63,13 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                         return grantedToken.ToDomain();
                     }
                 }
-            }
 
             return null;
         }
 
         public bool Insert(GrantedToken grantedToken)
         {
-            using (var context = new SimpleIdentityServerContext())
-            {
-                using (var transaction = context.Database.BeginTransaction())
+                using (var transaction = _context.Database.BeginTransaction())
                 {
                     try
                     {
@@ -90,8 +85,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                             UserInfoPayLoad = grantedToken.UserInfoPayLoad == null ? string.Empty : grantedToken.UserInfoPayLoad.SerializeWithJavascript()
                         };
 
-                        context.GrantedTokens.Add(record);
-                        context.SaveChanges();
+                        _context.GrantedTokens.Add(record);
+                        _context.SaveChanges();
                         transaction.Commit();
                     }
                     catch (Exception)
@@ -100,22 +95,19 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                         return false;
                     }
                 }
-            }
 
             return true;
         }
 
         public bool Delete(GrantedToken grantedToken)
         {
-            using (var context = new SimpleIdentityServerContext())
-            {
-                using (var transaction = context.Database.BeginTransaction())
+                using (var transaction = _context.Database.BeginTransaction())
                 {
                     try
                     {
-                        var token = context.GrantedTokens.FirstOrDefault(g => g.AccessToken == grantedToken.AccessToken);
-                        context.GrantedTokens.Remove(token);
-                        context.SaveChanges();
+                        var token = _context.GrantedTokens.FirstOrDefault(g => g.AccessToken == grantedToken.AccessToken);
+                        _context.GrantedTokens.Remove(token);
+                        _context.SaveChanges();
                         transaction.Commit();
                     }
                     catch(Exception)
@@ -124,7 +116,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                         return false;
                     }
                 }
-            }
 
             return true;
         }

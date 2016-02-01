@@ -7,8 +7,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
 {
     public class SimpleIdentityServerContext : DbContext
     {
-        public SimpleIdentityServerContext()
-            : base("name=SimpleIdentityServerContext")
+        public SimpleIdentityServerContext(string connectionString)
+            : base(connectionString)
         {
         }
 

@@ -10,13 +10,17 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 {
     public sealed class ClientRepository : IClientRepository
     {
+        private readonly SimpleIdentityServerContext _context;
+        
+        public ClientRepository(SimpleIdentityServerContext context) {
+            _context = context;
+        }
+        
         #region Public methods
 
         public Core.Models.Client GetClientById(string clientId)
         {
-            using (var context = new SimpleIdentityServerContext())
-            {
-                var client = context.Clients
+                var client = _context.Clients
                             .Include(c => c.AllowedScopes)
                             .Include(c => c.JsonWebKeys)
                             .FirstOrDefault(c => c.ClientId == clientId);
@@ -26,14 +30,11 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                 }
 
                 return client.ToDomain();
-            }
         }
 
         public bool InsertClient(Core.Models.Client client)
         {
-            using (var context = new SimpleIdentityServerContext())
-            {
-                using (var transaction = context.Database.BeginTransaction())
+                using (var transaction = _context.Database.BeginTransaction())
                 {
                     try
                     {
@@ -48,7 +49,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                         if (client.AllowedScopes != null)
                         {
                             var scopeNames = client.AllowedScopes.Select(s => s.Name).ToList();
-                            scopes = context.Scopes.Where(s => scopeNames.Contains(s.Name))
+                            scopes = _context.Scopes.Where(s => scopeNames.Contains(s.Name))
                                 .ToList();
                         }
 
@@ -110,8 +111,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                             ResponseTypes = responseTypes
                         };
 
-                        context.Clients.Add(newClient);
-                        context.SaveChanges();
+                        _context.Clients.Add(newClient);
+                        _context.SaveChanges();
                         transaction.Commit();
                     }
                     catch (Exception)
@@ -120,29 +121,23 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                         return false;
                     }
                 }
-            }
 
             return true;
         }
 
         public IList<Core.Models.Client> GetAll()
         {
-            using (var context = new SimpleIdentityServerContext())
-            {
-                var clients = context.Clients.ToList();
+                var clients = _context.Clients.ToList();
                 return clients.Select(client => client.ToDomain()).ToList();
-            }
         }
 
         public bool DeleteClient(Core.Models.Client client)
         {
-            using (var context = new SimpleIdentityServerContext())
-            {
-                using (var transaction = context.Database.BeginTransaction())
+                using (var transaction = _context.Database.BeginTransaction())
                 {
                     try
                     {
-                        var connectedClient = context.Clients
+                        var connectedClient = _context.Clients
                             .Include(c => c.AllowedScopes)
                             .Include(c => c.JsonWebKeys)
                             .FirstOrDefault(c => c.ClientId == client.ClientId);
@@ -151,8 +146,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                             return false;
                         }
 
-                        context.Clients.Remove(connectedClient);
-                        context.SaveChanges();
+                        _context.Clients.Remove(connectedClient);
+                        _context.SaveChanges();
                         transaction.Commit();
                     }
                     catch (Exception)
@@ -161,7 +156,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                         return false;
                     }
                 }
-            }
 
             return true;
         }

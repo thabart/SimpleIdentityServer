@@ -5,6 +5,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SimpleIdentityServer.Api.Configuration;
+using System.Diagnostics;
+using System;
 
 namespace SimpleIdentityServer.Host
 {
@@ -30,9 +32,11 @@ namespace SimpleIdentityServer.Host
 
         public void ConfigureServices(IServiceCollection services)
         {            
+            var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
             // Configure Simple identity server
             services.AddSimpleIdentityServer(new SimpleIdentityServerHostOptions {
-                DataSourceType = DataSourceTypes.InMemory,
+                DataSourceType = DataSourceTypes.SqlServer,
+                ConnectionString = connectionString,
                 Clients = Clients.Get(),
                 JsonWebKeys = JsonWebKeys.Get(),
                 ResourceOwners = ResourceOwners.Get(),

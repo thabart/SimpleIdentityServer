@@ -8,27 +8,28 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 {
     public sealed class ResourceOwnerRepository : IResourceOwnerRepository
     {
+         private readonly SimpleIdentityServerContext _context;
+        
+        public ResourceOwnerRepository(SimpleIdentityServerContext context) {
+            _context = context;
+        }
+        
         public Domains.ResourceOwner GetResourceOwnerByCredentials(
             string userName, 
             string hashedPassword)
         {
-            using (var context = new SimpleIdentityServerContext())
-            {
-                var user = context.ResourceOwners.FirstOrDefault(r => r.Name == userName && r.Password == hashedPassword);
+                var user = _context.ResourceOwners.FirstOrDefault(r => r.Name == userName && r.Password == hashedPassword);
                 if (user == null)
                 {
                     return null;
                 }
 
                 return user.ToDomain();
-            }
         }
 
         public bool Insert(Domains.ResourceOwner resourceOwner)
         {
-            using (var context = new SimpleIdentityServerContext())
-            {
-                using (var transaction = context.Database.BeginTransaction())
+                using (var transaction = _context.Database.BeginTransaction())
                 {
                     try
                     {
@@ -69,8 +70,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                             };
                         }
 
-                        context.ResourceOwners.Add(user);
-                        context.SaveChangesAsync();
+                        _context.ResourceOwners.Add(user);
+                        _context.SaveChangesAsync();
                         transaction.Commit();
                     }
                     catch (Exception)
@@ -79,23 +80,19 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                         return false;
                     }
                 }
-            }
 
             return true;
         }
 
         public Domains.ResourceOwner GetBySubject(string subject)
         {
-            using (var context = new SimpleIdentityServerContext())
-            {
-                var user = context.ResourceOwners.FirstOrDefault(r => r.Id == subject);
+                var user = _context.ResourceOwners.FirstOrDefault(r => r.Id == subject);
                 if (user == null)
                 {
                     return null;
                 }
 
                 return user.ToDomain();
-            }
         }
     }
 }

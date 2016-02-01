@@ -9,11 +9,22 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 {
     public sealed  class AuthorizationCodeRepository : IAuthorizationCodeRepository
     {
+        private readonly SimpleIdentityServerContext _context;
+        
+        #region Constructor
+        
+        public AuthorizationCodeRepository(SimpleIdentityServerContext context) 
+        {
+            _context = context;
+        }
+        
+        #endregion
+        
+        #region Public methods
+        
         public bool AddAuthorizationCode(Core.Models.AuthorizationCode authorizationCode)
         {
-            using (var context = new SimpleIdentityServerContext())
-            {
-                using (var transaction = context.Database.BeginTransaction())
+                using (var transaction = _context.Database.BeginTransaction())
                 {
                     try
                     {
@@ -27,8 +38,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                             IdTokenPayload = authorizationCode.IdTokenPayload ==  null ? string.Empty : authorizationCode.IdTokenPayload.SerializeWithJavascript(),
                             UserInfoPayLoad = authorizationCode.UserInfoPayLoad == null ? string.Empty : authorizationCode.UserInfoPayLoad.SerializeWithJavascript()
                         };
-                        context.AuthorizationCodes.Add(newAuthorizationCode);
-                        context.SaveChanges();
+                        _context.AuthorizationCodes.Add(newAuthorizationCode);
+                        _context.SaveChanges();
                         transaction.Commit();
                     }
                     catch (Exception)
@@ -36,41 +47,35 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                         transaction.Rollback();
                     }
                 }
-            }
 
             return true;
         }
 
         public Core.Models.AuthorizationCode GetAuthorizationCode(string code)
         {
-            using (var context = new SimpleIdentityServerContext())
-            {
-                var authorizationCode = context.AuthorizationCodes.FirstOrDefault(a => a.Code == code);
+                var authorizationCode = _context.AuthorizationCodes.FirstOrDefault(a => a.Code == code);
                 if (authorizationCode == null)
                 {
                     return null;
                 }
 
                 return authorizationCode.ToDomain();
-            }
         }
 
         public bool RemoveAuthorizationCode(string code)
         {
-            using (var context = new SimpleIdentityServerContext())
-            {
-                using (var transaction = context.Database.BeginTransaction())
+                using (var transaction = _context.Database.BeginTransaction())
                 {
                     try
                     {
-                        var authorizationCode = context.AuthorizationCodes.FirstOrDefault(a => a.Code == code);
+                        var authorizationCode = _context.AuthorizationCodes.FirstOrDefault(a => a.Code == code);
                         if (authorizationCode == null)
                         {
                             return false;
                         }
 
-                        context.AuthorizationCodes.Remove(authorizationCode);
-                        context.SaveChanges();
+                        _context.AuthorizationCodes.Remove(authorizationCode);
+                        _context.SaveChanges();
                         transaction.Commit();
                     }
                     catch (Exception)
@@ -78,9 +83,10 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                         transaction.Rollback();
                     }
                 }
-            }
 
             return true;
         }
+        
+        #endregion
     }
 }

@@ -7,39 +7,35 @@ using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
 namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 {
     public sealed class TranslationRepository : ITranslationRepository
-    {
+    {         
+        private readonly SimpleIdentityServerContext _context;
+        
+        public TranslationRepository(SimpleIdentityServerContext context) {
+            _context = context;
+        }
         public Translation GetTranslationByCode(
             string languageTag, 
             string code)
         {
-            using (var context = new SimpleIdentityServerContext())
-            {
-                var result = context.Translations.FirstOrDefault(t => t.Code == code && t.LanguageTag == languageTag);
+                var result = _context.Translations.FirstOrDefault(t => t.Code == code && t.LanguageTag == languageTag);
                 if (result == null)
                 {
                     return null;
                 }
 
                 return result.ToDomain();
-            }
         }
 
         public List<Translation> GetTranslations(string languageTag)
         {
-            using (var context = new SimpleIdentityServerContext())
-            {
-                var result = context.Translations.Where(t => t.LanguageTag == languageTag).ToList();
+                var result = _context.Translations.Where(t => t.LanguageTag == languageTag).ToList();
                 return result.Select(r => r.ToDomain()).ToList();
-            }
         }
 
         public List<string> GetSupportedLanguageTag()
         {
-            using (var context = new SimpleIdentityServerContext())
-            {
-                var result = context.Translations.Select(t => t.LanguageTag).Distinct();
+                var result = _context.Translations.Select(t => t.LanguageTag).Distinct();
                 return result.ToList();
-            }
         }
     }
 }
