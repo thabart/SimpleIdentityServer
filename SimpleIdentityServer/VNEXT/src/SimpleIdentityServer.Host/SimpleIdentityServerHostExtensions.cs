@@ -60,6 +60,7 @@ namespace SimpleIdentityServer.Host
             app.UseIISPlatformHandler(options => options.AuthenticationDescriptions.Clear());
             app.UseCookieAuthentication(options => {
                 options.AuthenticationScheme = "SimpleIdentityServerAuthentication";
+                options.AutomaticAuthenticate = true;
             });
 
             app.UseStaticFiles();

@@ -40,6 +40,7 @@ namespace SimpleIdentityServer.Api.Controllers
         
         public ActionResult Index(string code)
         {
+            var user = Request.HttpContext.User;
             code = _encoder.Decode(code);
             var request = _protector.Decrypt<AuthorizationRequest>(code);
             var client = new Client();
