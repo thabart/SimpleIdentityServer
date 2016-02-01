@@ -19,6 +19,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             _registerActions = registerActions;
         }
 
+        [HttpPost]
         public RegistrationResponse Post(ClientResponse client)
         {
             if (client == null)

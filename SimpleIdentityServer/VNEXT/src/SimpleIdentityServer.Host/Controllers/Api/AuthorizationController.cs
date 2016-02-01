@@ -45,6 +45,9 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             _jwtParser = jwtParser;
         }
 
+        #region Public methods
+
+        [HttpGet]
         public async Task<Microsoft.AspNet.Mvc.ActionResult> Get([FromQuery]AuthorizationRequest authorizationRequest)
         {
             if (authorizationRequest == null)
@@ -95,6 +98,27 @@ namespace SimpleIdentityServer.Api.Controllers.Api
 
             return null;
         }
+        
+        #endregion
+        
+        #region Private methods
+        
+        private AuthorizationRequest GetAuthorizationRequestFromJwt(string token,
+            string clientId)
+        {
+            var jwsToken = token;
+            if (_jwtParser.IsJweToken(token))
+            {
+                jwsToken = _jwtParser.Decrypt(token, clientId);
+            }
+
+            var jwsPayload = _jwtParser.UnSign(jwsToken, clientId);
+            return jwsPayload == null ? null : jwsPayload.ToAuthorizationRequest();
+        }
+        
+        #endregion
+        
+        #region Private static methods
         
         private static string GetRedirectionUrl(
             Microsoft.AspNet.Http.HttpRequest request,
@@ -172,18 +196,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
 
             return authorizationRequest;
         }
-
-        private AuthorizationRequest GetAuthorizationRequestFromJwt(string token,
-            string clientId)
-        {
-            var jwsToken = token;
-            if (_jwtParser.IsJweToken(token))
-            {
-                jwsToken = _jwtParser.Decrypt(token, clientId);
-            }
-
-            var jwsPayload = _jwtParser.UnSign(jwsToken, clientId);
-            return jwsPayload == null ? null : jwsPayload.ToAuthorizationRequest();
-        }
+        
+        #endregion
     }
 }

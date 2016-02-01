@@ -15,6 +15,7 @@ using SimpleIdentityServer.DataAccess.SqlServer;
 using SimpleIdentityServer.DataAccess.Fake.Extensions;
 using SimpleIdentityServer.Host.Parsers;
 using SimpleIdentityServer.Logging;
+using Swashbuckle.SwaggerGen;
 
 namespace SimpleIdentityServer.Host 
 {
@@ -68,6 +69,9 @@ namespace SimpleIdentityServer.Host
                     name: "default",
                     template: "{controller}/{action=Index}/{id?}");
             });
+                        
+            app.UseSwaggerGen();
+            app.UseSwaggerUi();
         }
         
         #endregion
@@ -88,6 +92,15 @@ namespace SimpleIdentityServer.Host
             services.AddTransient<IActionResultParser, ActionResultParser>();
             services.AddTransient<ISimpleIdentityServerConfigurator, ConcreteSimpleIdentityServerConfigurator>();
             services.AddInstance<ISimpleIdentityServerEventSource>(logging);
+            
+            services.AddSwaggerGen();
+            services.ConfigureSwaggerDocument(options => {
+               options.SingleApiVersion(new Info {
+                    Version = "v1",
+                    Title = "Simple Identity Server",
+                    TermsOfService = "None"
+               });
+            });
         }
         
         #endregion

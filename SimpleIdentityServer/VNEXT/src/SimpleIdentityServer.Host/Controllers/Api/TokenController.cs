@@ -22,6 +22,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
         }
         
         [RateLimitationFilter(RateLimitationElementName = "PostToken")]
+        [HttpPost]
         public GrantedToken Post(TokenRequest tokenRequest)
         {
             GrantedToken result = null;

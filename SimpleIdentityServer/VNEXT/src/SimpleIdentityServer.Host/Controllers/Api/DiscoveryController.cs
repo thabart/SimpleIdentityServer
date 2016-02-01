@@ -16,6 +16,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             _discoveryActions = discoveryActions;
         }
 
+        [HttpGet]
         public DiscoveryInformation Get()
         {
             return GetMetadata();

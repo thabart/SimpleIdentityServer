@@ -35,7 +35,7 @@ namespace SimpleIdentityServer.Host
             var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
             // Configure Simple identity server
             services.AddSimpleIdentityServer(new SimpleIdentityServerHostOptions {
-                DataSourceType = DataSourceTypes.SqlServer,
+                DataSourceType = DataSourceTypes.InMemory,
                 ConnectionString = connectionString,
                 Clients = Clients.Get(),
                 JsonWebKeys = JsonWebKeys.Get(),

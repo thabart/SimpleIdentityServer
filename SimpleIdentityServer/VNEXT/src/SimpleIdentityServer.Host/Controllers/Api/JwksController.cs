@@ -15,12 +15,14 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             _jwksActions = jwksActions;
         }
 
+        [HttpGet]
         public JsonWebKeySet Get()
         {
             var jsonWebKeySet = _jwksActions.GetJwks();
             return jsonWebKeySet;
         }
 
+        [HttpPut]
         public bool Put()
         {
             return _jwksActions.RotateJwks();
