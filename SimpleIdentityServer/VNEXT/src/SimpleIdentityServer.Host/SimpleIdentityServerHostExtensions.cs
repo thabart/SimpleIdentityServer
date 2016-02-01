@@ -16,6 +16,7 @@ using SimpleIdentityServer.DataAccess.Fake.Extensions;
 using SimpleIdentityServer.Host.Parsers;
 using SimpleIdentityServer.Logging;
 using Swashbuckle.SwaggerGen;
+using Microsoft.AspNet.Identity;
 
 namespace SimpleIdentityServer.Host 
 {
@@ -57,8 +58,8 @@ namespace SimpleIdentityServer.Host
         public static void UseSimpleIdentityServer(this IApplicationBuilder app) 
         {
             app.UseIISPlatformHandler(options => options.AuthenticationDescriptions.Clear());
-            app.UseCookieAuthentication(opt => {
-                opt.AuthenticationScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            app.UseCookieAuthentication(options => {
+                options.AuthenticationScheme = "SimpleIdentityServerAuthentication";
             });
 
             app.UseStaticFiles();

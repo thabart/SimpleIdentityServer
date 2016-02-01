@@ -82,16 +82,14 @@ namespace SimpleIdentityServer.Host.Controllers
                     out claims);
 
 
-                var claimIdentity = new ClaimsIdentity(claims, DefaultAuthenticationTypes.ApplicationCookie);
-                /*
-                this.HttpContext.Response.SignIn(
-                    new AuthenticationProperties
-                    {
-                        IsPersistent = false,
-                        ExpiresUtc = DateTime.UtcNow.AddDays(7)
-                    },
-                    claimIdentity
-                );*/
+                var claimsIdentity = new ClaimsIdentity(claims, DefaultAuthenticationTypes.ApplicationCookie);
+                var principal = new ClaimsPrincipal(claimsIdentity);
+                HttpContext.Authentication.SignInAsync("SimpleIdentityServerAuthentication", 
+                    principal,
+                    new AuthenticationProperties {
+                        ExpiresUtc = DateTime.UtcNow.AddDays(7),
+                        IsPersistent = false
+                    });
 
                 var result = this.CreateRedirectionFromActionResult(actionResult,
                     request);

@@ -5,8 +5,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SimpleIdentityServer.Api.Configuration;
-using System.Diagnostics;
-using System;
 
 namespace SimpleIdentityServer.Host
 {

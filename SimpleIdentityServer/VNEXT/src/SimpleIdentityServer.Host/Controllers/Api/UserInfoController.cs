@@ -5,14 +5,15 @@ using System.Web;
 using SimpleIdentityServer.Core.Api.UserInfo;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
-using System.Net;
-using System.Net.Http;
 using System.Collections.Generic;
 using Microsoft.AspNet.Mvc;
+using SimpleIdentityServer.Host;
+using Microsoft.Extensions.Primitives;
+using SimpleIdentityServer.Host.Extensions;
 
 namespace SimpleIdentityServer.Api.Controllers.Api
 {
-    /*
+    [Route(Constants.EndPoints.UserInfo)]
     public class UserInfoController : Controller
     {
         private readonly IUserInfoActions _userInfoActions;
@@ -22,15 +23,23 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             _userInfoActions = userInfoActions;
         }
 
+        #region Public methods
+
+        [HttpGet]
         public Microsoft.AspNet.Mvc.ActionResult Get()
         {
             return ProcessRequest();
         }
 
+        [HttpPost]
         public Microsoft.AspNet.Mvc.ActionResult Post()
         {
             return ProcessRequest();
         }
+        
+        #endregion
+        
+        #region Private methods
 
         private Microsoft.AspNet.Mvc.ActionResult ProcessRequest()
         {
@@ -80,14 +89,13 @@ namespace SimpleIdentityServer.Api.Controllers.Api
         private string GetAccessTokenFromAuthorizationHeader()
         {
             const string authorizationName = "Authorization";
-            if (!Request.Headers.Contains(authorizationName))
-            {
+            StringValues values;
+            if (!Request.Headers.TryGetValue(authorizationName, out values)) {
                 return string.Empty;
             }
 
-            var authenticationHeader = Request.Headers.GetValues(authorizationName).First();
+            var authenticationHeader = values.First();
             var authorization = AuthenticationHeaderValue.Parse(authenticationHeader);
-
             var scheme = authorization.Scheme;
             if (string.Compare(scheme, "Bearer", StringComparison.InvariantCultureIgnoreCase) != 0)
             {
@@ -107,19 +115,20 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             const string contentTypeValue = "application/x-www-form-urlencoded";
             string accessTokenName = Core.Constants.StandardAuthorizationResponseNames.AccessTokenName;
             var emptyResult = string.Empty;
-            if (Request.Content == null 
-                || !Request.Content.Headers.Contains(contentTypeName))
+            StringValues values;
+            if (Request.Headers == null 
+                || !Request.Headers.TryGetValue(contentTypeName, out values))
             {
                 return emptyResult;
             }
 
-            var contentTypeHeader = Request.Content.Headers.GetValues(contentTypeName).First();
+            var contentTypeHeader = values.First();
             if (string.Compare(contentTypeHeader, contentTypeValue) !=  0)
             {
                 return emptyResult;
             }
 
-            var content = Request.Content.ReadAsStringAsync().Result;
+            var content = Request.ReadAsStringAsync().Result;
             var queryString = HttpUtility.ParseQueryString(content);
             if (!queryString.AllKeys.Contains(accessTokenName))
             {
@@ -136,9 +145,15 @@ namespace SimpleIdentityServer.Api.Controllers.Api
         private string GetAccessTokenFromQueryString()
         {
             string accessTokenName = Core.Constants.StandardAuthorizationResponseNames.AccessTokenName;
-            var queryString = Request.GetQueryNameValuePairs();
-            var record = queryString.FirstOrDefault(q => q.Key == accessTokenName);
-            return record.Equals(default(KeyValuePair<string, string>)) ? string.Empty : record.Value;
+            var query = Request.Query;
+            var record = query.FirstOrDefault(q => q.Key == accessTokenName);
+            if (record.Equals(default(KeyValuePair<string, StringValues>))) {
+                return string.Empty;
+            } else {
+                return record.Value.First();
+            }
         }
-    }*/
+        
+        #endregion
+    }
 }
