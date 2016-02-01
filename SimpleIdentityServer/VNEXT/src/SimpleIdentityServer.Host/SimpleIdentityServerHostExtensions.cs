@@ -17,6 +17,7 @@ using SimpleIdentityServer.Host.Parsers;
 using SimpleIdentityServer.Logging;
 using Swashbuckle.SwaggerGen;
 using Microsoft.AspNet.Identity;
+using SimpleIdentityServer.Host.MiddleWare;
 
 namespace SimpleIdentityServer.Host 
 {
@@ -64,7 +65,11 @@ namespace SimpleIdentityServer.Host
             });
 
             app.UseStaticFiles();
-            app.UseDeveloperExceptionPage();
+            // app.UseDeveloperExceptionPage();
+            app.UseSimpleIdentityServerExceptionHandler(new ExceptionHandlerMiddlewareOptions
+            {
+                SimpleIdentityServerEventSource = SimpleIdentityServerEventSource.Log
+            });
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

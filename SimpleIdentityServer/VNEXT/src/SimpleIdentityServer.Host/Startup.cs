@@ -53,7 +53,7 @@ namespace SimpleIdentityServer.Host
             loggerFactory.AddConsole();
             
             // app.Map("/api", a => {
-                app.UseSimpleIdentityServer();
+            app.UseSimpleIdentityServer();
             // });
         }
 
