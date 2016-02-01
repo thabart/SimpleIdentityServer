@@ -33,7 +33,8 @@ namespace SimpleIdentityServer.Host
             var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
             // Configure Simple identity server
             services.AddSimpleIdentityServer(new SimpleIdentityServerHostOptions {
-                DataSourceType = DataSourceTypes.InMemory,
+                DataSourceType = DataSourceTypes.SqlServer,
+                IsSwaggerEnabled = true,
                 ConnectionString = connectionString,
                 Clients = Clients.Get(),
                 JsonWebKeys = JsonWebKeys.Get(),
@@ -52,9 +53,11 @@ namespace SimpleIdentityServer.Host
         {
             loggerFactory.AddConsole();
             
-            // app.Map("/api", a => {
-            app.UseSimpleIdentityServer();
-            // });
+            app.UseSimpleIdentityServer(new SimpleIdentityServerHostOptions
+            {
+                IsSwaggerEnabled = true,
+                IsDeveloperModeEnabled = false
+            });
         }
 
         #endregion

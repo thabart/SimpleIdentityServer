@@ -18,6 +18,7 @@ using SimpleIdentityServer.Logging;
 using Swashbuckle.SwaggerGen;
 using Microsoft.AspNet.Identity;
 using SimpleIdentityServer.Host.MiddleWare;
+using Microsoft.AspNet.Http;
 
 namespace SimpleIdentityServer.Host 
 {
@@ -53,41 +54,71 @@ namespace SimpleIdentityServer.Host
                 serviceCollection.AddTransient<SimpleIdentityServerContext>((a) => new SimpleIdentityServerContext(options.ConnectionString));
             }
             
-            ConfigureSimpleIdentityServer(serviceCollection);
+            ConfigureSimpleIdentityServer(serviceCollection, options);
         }
         
-        public static void UseSimpleIdentityServer(this IApplicationBuilder app) 
+        public static void UseSimpleIdentityServer(
+            this IApplicationBuilder app,
+            SimpleIdentityServerHostOptions options) 
         {
-            app.UseIISPlatformHandler(options => options.AuthenticationDescriptions.Clear());
-            app.UseCookieAuthentication(options => {
-                options.AuthenticationScheme = "SimpleIdentityServerAuthentication";
-                options.AutomaticAuthenticate = true;
+            if (options == null)
+            {
+                throw new ArgumentNullException("options");
+            }
+
+            app.UseIISPlatformHandler(opts => opts.AuthenticationDescriptions.Clear());
+            app.UseCookieAuthentication(opts => {
+                opts.AuthenticationScheme = "SimpleIdentityServerAuthentication";
+                opts.AutomaticAuthenticate = true;
             });
 
             app.UseStaticFiles();
-            // app.UseDeveloperExceptionPage();
-            app.UseSimpleIdentityServerExceptionHandler(new ExceptionHandlerMiddlewareOptions
+
+            if (options.IsDeveloperModeEnabled)
             {
-                SimpleIdentityServerEventSource = SimpleIdentityServerEventSource.Log
-            });
+                app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseSimpleIdentityServerExceptionHandler(new ExceptionHandlerMiddlewareOptions
+                {
+                    SimpleIdentityServerEventSource = SimpleIdentityServerEventSource.Log
+                });
+            }
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
                     template: "{controller}/{action=Index}/{id?}");
             });
-                        
-            app.UseSwaggerGen();
-            // Manage the virtual directory : swaggerUrl: "/api/swagger/v1/swagger.json"
-            app.UseSwaggerUi();
+            
+            if (options.IsSwaggerEnabled)
+            {
+                app.UseSwaggerGen();
+                if (!string.IsNullOrWhiteSpace(options.SwaggerUrl))
+                {
+                    app.UseSwaggerUi(swaggerUrl : options.SwaggerUrl);
+                }
+                else
+                {
+                    app.UseSwaggerUi();
+                }
+            }        
         }
         
         #endregion
         
         #region Private static methods       
         
-        // Configure the dependencies of SimpleIdentityServer
-        private static void ConfigureSimpleIdentityServer(IServiceCollection services) 
+        /// <summary>
+        /// Add all the dependencies needed to run Simple Identity Server
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="options"></param>
+        private static void ConfigureSimpleIdentityServer(
+            IServiceCollection services,
+            SimpleIdentityServerHostOptions options) 
         {            
             services.AddSimpleIdentityServerCore();
             services.AddSimpleIdentityServerJwt();
@@ -101,14 +132,18 @@ namespace SimpleIdentityServer.Host
             services.AddTransient<ISimpleIdentityServerConfigurator, ConcreteSimpleIdentityServerConfigurator>();
             services.AddInstance<ISimpleIdentityServerEventSource>(logging);
             
-            services.AddSwaggerGen();
-            services.ConfigureSwaggerDocument(options => {
-               options.SingleApiVersion(new Info {
-                    Version = "v1",
-                    Title = "Simple Identity Server",
-                    TermsOfService = "None"
-               });                
-            });
+            if (options.IsSwaggerEnabled)
+            {
+                services.AddSwaggerGen();
+                services.ConfigureSwaggerDocument(opts => {
+                    opts.SingleApiVersion(new Info
+                    {
+                        Version = "v1",
+                        Title = "Simple Identity Server",
+                        TermsOfService = "None"
+                    });
+                });
+            }
         }
         
         #endregion
