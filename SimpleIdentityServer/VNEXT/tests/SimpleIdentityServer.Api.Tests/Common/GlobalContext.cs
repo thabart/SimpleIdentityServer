@@ -11,7 +11,7 @@ using Microsoft.Practices.Unity;
 using Moq;
 using Owin;
 using SimpleIdentityServer.Api.Configuration;
-using SimpleIdentityServer.Api.Parsers;
+using SimpleIdentityServer.Host.Parsers;
 using SimpleIdentityServer.Api.Tests.Common.Fakes;
 using SimpleIdentityServer.Core.Api.Authorization;
 using SimpleIdentityServer.Core.Api.Authorization.Actions;
