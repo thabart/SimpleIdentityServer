@@ -18,7 +18,7 @@ using SimpleIdentityServer.Host;
 
 namespace SimpleIdentityServer.Api.Controllers.Api
 {
-    [Microsoft.AspNet.Mvc.Route(Constants.EndPoints.Authorization)]
+    [Route(Constants.EndPoints.Authorization)]
     public class AuthorizationController : Controller
     {
         private readonly IAuthorizationActions _authorizationActions;
