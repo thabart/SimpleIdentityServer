@@ -1,0 +1,136 @@
+xUnit.net DNX Runner (32-bit DNX 4.5.1)
+  Discovering: SimpleIdentityServer.Api.Tests
+  Discovered:  SimpleIdentityServer.Api.Tests
+  Starting:    SimpleIdentityServer.Api.Tests
+Given a resource owner with username thierry and password loki is defined
+-> done: GlobalGivenInstructions.GivenResourceOwner("thierry", "loki") (0,0s)
+And a mobile application MyHolidays is defined
+-> done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
+And allowed number of requests is 2
+-> done: GetAccessTokenMultipleTimeSpec.GivenAllowedNumberOfRequests(2) (0,3s)
+And sliding time is 0.2
+-> done: GetAccessTokenMultipleTimeSpec.GivenSlidingTime(0,2) (0,0s)
+When requesting access tokens
+  --- table step argument ---
+  | client_id  | username | password |
+  | MyHolidays | thierry  | loki     |
+  | MyHolidays | thierry  | loki     |
+  | MyHolidays | thierry  | loki     |
+  | MyHolidays | thierry  | loki     |
+  | MyHolidays | thierry  | loki     |
+TESTTT
+OK
+TESTTT
+OK
+TESTTT
+429
+TESTTT
+429
+TESTTT
+429
+-> done: GetAccessTokenMultipleTimeSpec.WhenRequestingAccessTokens(<table>) (0,6s)
+Then 2 access tokens are generated
+-> done: GetAccessTokenMultipleTimeSpec.ThenTheResultShouldBe(2) (0,0s)
+And the errors should be returned
+  --- table step argument ---
+  | Message                          |
+  | Allow 2 requests per 0.2 minutes |
+  | Allow 2 requests per 0.2 minutes |
+  | Allow 2 requests per 0.2 minutes |
+-> done: GetAccessTokenMultipleTimeSpec.ThenErrorsShouldBe(<table>) (0,0s)
+And the http responses should be returned
+  --- table step argument ---
+  | StatusCode | NumberOfRemainingRequests | NumberOfRequests |
+  | 200        | 1                         | 2                |
+  | 200        | 0                         | 2                |
+  | 429        | 0                         | 2                |
+  | 429        | 0                         | 2                |
+  | 429        | 0                         | 2                |
+-> done: GetAccessTokenMultipleTimeSpec.ThenHttpHeadersShouldContain(<table>) (0,0s)
+Given a resource owner with username thierry and password loki is defined
+-> done: GlobalGivenInstructions.GivenResourceOwner("thierry", "loki") (0,0s)
+And a mobile application MyHolidays is defined
+-> done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
+And allowed number of requests is 2
+-> done: GetAccessTokenMultipleTimeSpec.GivenAllowedNumberOfRequests(2) (0,0s)
+And sliding time is 0.2
+-> done: GetAccessTokenMultipleTimeSpec.GivenSlidingTime(0,2) (0,0s)
+When requesting access tokens
+  --- table step argument ---
+  | client_id  | username | password |
+  | MyHolidays | thierry  | loki     |
+  | MyHolidays | thierry  | loki     |
+  | MyHolidays | thierry  | loki     |
+TESTTT
+OK
+TESTTT
+OK
+TESTTT
+429
+-> done: GetAccessTokenMultipleTimeSpec.WhenRequestingAccessTokens(<table>) (0,1s)
+Then 2 access tokens are generated
+-> done: GetAccessTokenMultipleTimeSpec.ThenTheResultShouldBe(2) (0,0s)
+And the errors should be returned
+  --- table step argument ---
+  | Message                          |
+  | Allow 2 requests per 0.2 minutes |
+-> done: GetAccessTokenMultipleTimeSpec.ThenErrorsShouldBe(<table>) (0,0s)
+And the http responses should be returned
+  --- table step argument ---
+  | StatusCode | NumberOfRemainingRequests | NumberOfRequests |
+  | 200        | 1                         | 2                |
+  | 200        | 0                         | 2                |
+  | 429        | 0                         | 2                |
+-> done: GetAccessTokenMultipleTimeSpec.ThenHttpHeadersShouldContain(<table>) (0,0s)
+Given a resource owner with username thierry and password loki is defined
+-> done: GlobalGivenInstructions.GivenResourceOwner("thierry", "loki") (0,0s)
+And a mobile application MyHolidays is defined
+-> done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
+And allowed number of requests is 2
+-> done: GetAccessTokenMultipleTimeSpec.GivenAllowedNumberOfRequests(2) (0,0s)
+And sliding time is 0.2
+-> done: GetAccessTokenMultipleTimeSpec.GivenSlidingTime(0,2) (0,0s)
+When requesting access tokens
+  --- table step argument ---
+  | client_id  | username | password |
+  | MyHolidays | thierry  | loki     |
+  | MyHolidays | thierry  | loki     |
+  | MyHolidays | thierry  | loki     |
+TESTTT
+OK
+TESTTT
+OK
+TESTTT
+429
+-> done: GetAccessTokenMultipleTimeSpec.WhenRequestingAccessTokens(<table>) (0,0s)
+And waiting for 3000 seconds
+-> done: GlobalWhenInstructions.WhenWaitingForSeconds(3000) (3,0s)
+And requesting access tokens
+  --- table step argument ---
+  | client_id  | username | password |
+  | MyHolidays | thierry  | loki     |
+  | MyHolidays | thierry  | loki     |
+TESTTT
+OK
+TESTTT
+OK
+-> done: GetAccessTokenMultipleTimeSpec.WhenRequestingAccessTokens(<table>) (0,0s)
+Then 4 access tokens are generated
+-> done: GetAccessTokenMultipleTimeSpec.ThenTheResultShouldBe(4) (0,0s)
+And the errors should be returned
+  --- table step argument ---
+  | Message                          |
+  | Allow 2 requests per 0.2 minutes |
+-> done: GetAccessTokenMultipleTimeSpec.ThenErrorsShouldBe(<table>) (0,0s)
+And the http responses should be returned
+  --- table step argument ---
+  | StatusCode | NumberOfRemainingRequests | NumberOfRequests |
+  | 200        | 1                         | 2                |
+  | 200        | 0                         | 2                |
+  | 429        | 0                         | 2                |
+  | 200        | 1                         | 2                |
+  | 200        | 0                         | 2                |
+-> done: GetAccessTokenMultipleTimeSpec.ThenHttpHeadersShouldContain(<table>) (0,0s)
+  Finished:    SimpleIdentityServer.Api.Tests
+=== TEST EXECUTION SUMMARY ===
+   SimpleIdentityServer.Api.Tests  Total: 3, Errors: 0, Failed: 0, Skipped: 0, Time: 4,246s

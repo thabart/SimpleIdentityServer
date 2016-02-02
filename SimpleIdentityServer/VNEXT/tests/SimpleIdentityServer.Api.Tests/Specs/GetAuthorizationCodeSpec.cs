@@ -3,8 +3,6 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 
-using Microsoft.Practices.Unity;
-
 using SimpleIdentityServer.Host.DTOs.Request;
 using SimpleIdentityServer.Host.DTOs.Response;
 using SimpleIdentityServer.Api.Tests.Common;
@@ -14,18 +12,18 @@ using SimpleIdentityServer.RateLimitation.Configuration;
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
 using Xunit;
-using DOMAINS = SimpleIdentityServer.Core.Models;
 using MODELS = SimpleIdentityServer.DataAccess.Fake.Models;
 using System.Web;
 using SimpleIdentityServer.Api.Tests.Common.Fakes;
 using SimpleIdentityServer.Core.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace SimpleIdentityServer.Api.Tests.Specs
 {
     [Binding, Scope(Feature = "GetAuthorizationCode")]
     public class GetAuthorizationCodeSpec
     {
-        private readonly GlobalContext _context;
+        private readonly GlobalContext _globalContext;
 
         private HttpResponseMessage _responseMessage;
 
@@ -38,9 +36,11 @@ namespace SimpleIdentityServer.Api.Tests.Specs
                 Enabled = false
             };
 
-            _context = context;
-            _context.UnityContainer.RegisterInstance<IGetRateLimitationElementOperation>(fakeGetRateLimitationElementOperation);
-            _context.UnityContainer.RegisterType<ISimpleIdentityServerConfigurator, SimpleIdentityServerConfigurator>();
+            _globalContext = context;
+            _globalContext.CreateServer(services => {                
+                services.AddInstance<IGetRateLimitationElementOperation>(fakeGetRateLimitationElementOperation);
+                services.AddTransient<ISimpleIdentityServerConfigurator, SimpleIdentityServerConfigurator>();
+            });
         }
 
         [Given("create a resource owner")]
@@ -78,10 +78,8 @@ namespace SimpleIdentityServer.Api.Tests.Specs
 
             var responseModeName = Enum.GetName(typeof (ResponseMode), authorizationRequest.response_mode);
 
-            using (var server = _context.CreateServer(httpConfiguration))
-            {
-                var httpClient = server.HttpClient;
-                var url = string.Format(
+            var client = _globalContext.TestServer.CreateClient();
+            var url = string.Format(
                     "/authorization?scope={0}&response_type={1}&client_id={2}&redirect_uri={3}&prompt={4}&state={5}&response_mode={6}",
                     authorizationRequest.scope,
                     authorizationRequest.response_type,
@@ -90,8 +88,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
                     authorizationRequest.prompt,
                     authorizationRequest.state,
                     responseModeName);
-                _responseMessage = httpClient.GetAsync(url).Result;
-            }
+            _responseMessage = client.GetAsync(url).Result;
         }
 
         [Then("HTTP status code is (.*)")]
