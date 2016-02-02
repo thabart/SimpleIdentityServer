@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using Microsoft.AspNet.Authentication.Cookies;
 using Microsoft.AspNet.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Practices.EnterpriseLibrary.Caching;
@@ -16,9 +15,8 @@ using SimpleIdentityServer.DataAccess.Fake.Extensions;
 using SimpleIdentityServer.Host.Parsers;
 using SimpleIdentityServer.Logging;
 using Swashbuckle.SwaggerGen;
-using Microsoft.AspNet.Identity;
 using SimpleIdentityServer.Host.MiddleWare;
-using Microsoft.AspNet.Http;
+using SimpleIdentityServer.RateLimitation;
 
 namespace SimpleIdentityServer.Host 
 {
@@ -122,7 +120,8 @@ namespace SimpleIdentityServer.Host
         {            
             services.AddSimpleIdentityServerCore();
             services.AddSimpleIdentityServerJwt();
-            
+            services.AddRateLimitation();
+
             var logging = SimpleIdentityServerEventSource.Log;
             services.AddTransient<ICacheManager, CacheManager>();
             services.AddTransient<ICertificateStore, CertificateStore>();

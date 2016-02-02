@@ -84,7 +84,7 @@ namespace SimpleIdentityServer.RateLimitation.Attributes
             var responseCacheManager = _cacheManagerProvider.GetCacheManager();
             HttpContext httpContext = actionExecutingContext.HttpContext;
             var connectionFeature = httpContext.Features.Get<IHttpConnectionFeature>();
-            var ipAddress = connectionFeature.RemoteIpAddress.ToString();
+            var ipAddress = connectionFeature == null ? string.Empty : connectionFeature.RemoteIpAddress.ToString();
             var actionName = actionExecutingContext.RouteData.Values["Action"].ToString();
             var controllerName = actionExecutingContext.RouteData.Values["Controller"].ToString();
             var record = new CacheableResponse
@@ -141,7 +141,7 @@ namespace SimpleIdentityServer.RateLimitation.Attributes
             var today = DateTime.UtcNow;
             var responseCacheManager = _cacheManagerProvider.GetCacheManager();
             var connectionFeature = httpActionExecutedContext.HttpContext.Features.Get<IHttpConnectionFeature>();
-            var ipAddress = connectionFeature.RemoteIpAddress.ToString();
+            var ipAddress = connectionFeature == null ? string.Empty : connectionFeature.RemoteIpAddress.ToString();
             var actionName = httpActionExecutedContext.RouteData.Values["Action"].ToString();
             var controllerName = httpActionExecutedContext.RouteData.Values["Controller"].ToString();
 
