@@ -41,6 +41,8 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Core.U
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Host", "src\SimpleIdentityServer.Host\SimpleIdentityServer.Host.xproj", "{6D8192C8-37CC-481E-83CA-6D2E3BCBEE09}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Api.Tests", "tests\SimpleIdentityServer.Api.Tests\SimpleIdentityServer.Api.Tests.xproj", "{AF763E86-D891-4098-A722-69F7FA468395}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -91,6 +93,10 @@ Global
 		{6D8192C8-37CC-481E-83CA-6D2E3BCBEE09}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D8192C8-37CC-481E-83CA-6D2E3BCBEE09}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D8192C8-37CC-481E-83CA-6D2E3BCBEE09}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF763E86-D891-4098-A722-69F7FA468395}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF763E86-D891-4098-A722-69F7FA468395}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF763E86-D891-4098-A722-69F7FA468395}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF763E86-D891-4098-A722-69F7FA468395}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -109,5 +115,6 @@ Global
 		{4D20A2F5-FA59-437D-9321-FE193517588A} = {CAE43B3B-7250-43E3-B4FE-DC28D81805D0}
 		{FCB0F13A-B412-4340-B077-D3E7A60A9DD7} = {CAE43B3B-7250-43E3-B4FE-DC28D81805D0}
 		{6D8192C8-37CC-481E-83CA-6D2E3BCBEE09} = {4E5FA21D-715A-41BB-B215-8A7972362739}
+		{AF763E86-D891-4098-A722-69F7FA468395} = {8B906AE7-E90F-4759-BBB9-6F19C80B3114}
 	EndGlobalSection
 EndGlobal

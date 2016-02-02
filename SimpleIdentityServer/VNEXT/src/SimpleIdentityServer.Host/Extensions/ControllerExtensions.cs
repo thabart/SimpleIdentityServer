@@ -69,7 +69,7 @@ namespace SimpleIdentityServer.Host.Extensions
                     break;
             }
 
-            return controller.Redirect(uri.AbsolutePath);
+            return new RedirectResult(uri.AbsoluteUri);
         }
 
         /// <summary>

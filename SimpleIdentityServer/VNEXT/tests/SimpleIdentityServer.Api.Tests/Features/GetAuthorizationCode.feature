@@ -18,7 +18,7 @@ Scenario: Whether the resource owner is authenticated or not we want to re-authe
 	| openid PlanningApi | code          | MyHolidays | http://localhost | login  |
 
 
-	Then HTTP status code is 301
+	Then HTTP status code is 302
 	And redirect to /Authenticate controller
 
 Scenario: A resource owner is authenticated and we want to display only the consent screen
@@ -38,8 +38,8 @@ Scenario: A resource owner is authenticated and we want to display only the cons
 	| scope              | response_type | client_id  | redirect_uri     | prompt  |
 	| openid PlanningApi | code          | MyHolidays | http://localhost | consent |
 
-
-	Then HTTP status code is 301
+	
+	Then HTTP status code is 302
 	And redirect to /Consent controller
 
 Scenario: A resource owner is not authenticated and we want to display only the consent screen
@@ -56,7 +56,7 @@ Scenario: A resource owner is not authenticated and we want to display only the 
 	| openid PlanningApi | code          | MyHolidays | http://localhost | consent |
 
 
-	Then HTTP status code is 301
+	Then HTTP status code is 302
 	And redirect to /Authenticate controller
 
 Scenario: A resource owner is authenticated and he already has given his consent. We want to retrieve an authorization code for his consent
@@ -78,7 +78,7 @@ Scenario: A resource owner is authenticated and he already has given his consent
 	| openid PlanningApi | code          | MyHolidays | http://localhost | none   | state1 |
 
 
-	Then HTTP status code is 301
+	Then HTTP status code is 302
 	And redirect to callback http://localhost
 	And the query string state with value state1 is returned
 	And the query string code exists
@@ -103,7 +103,7 @@ Scenario: A resource owner is authenticated and he already has given his consent
 	| openid PlanningApi | code          | MyHolidays | http://localhost | none   | state1 | fragment      |
 
 
-	Then HTTP status code is 301
+	Then HTTP status code is 302
 	And redirect to callback http://localhost
 	And the fragment contains the query state with the value state1
 	And the fragment contains the query string code
@@ -127,7 +127,7 @@ Scenario: A resource owner is authenticated and he already has given his consent
 	| openid PlanningApi | code          | MyHolidays | http://localhost | none   | state1 | form_post     |
 
 
-	Then HTTP status code is 301
+	Then HTTP status code is 302
 	And redirect to callback http://localhost/Form
 		
 # THE PROMPT PARAMETER IS NOT SPECIFIED
@@ -146,7 +146,7 @@ Scenario: a resource owner is not authenticated. We want to retrieve an authoriz
 	| openid PlanningApi | code          | MyHolidays | http://localhost | state1 |
 	
 	
-	Then HTTP status code is 301
+	Then HTTP status code is 302
 	And redirect to /Authenticate controller
 
 Scenario: a resource owner is authenticated. We want to retrieve an authorization code and the prompt parameter value is not specified
@@ -167,7 +167,7 @@ Scenario: a resource owner is authenticated. We want to retrieve an authorizatio
 	| openid PlanningApi | code          | MyHolidays | http://localhost | state1 |
 	
 	
-	Then HTTP status code is 301
+	Then HTTP status code is 302
 	And redirect to /Consent controller
 
 # ERRORS

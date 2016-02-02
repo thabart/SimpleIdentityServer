@@ -60,6 +60,8 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         public void GivenAuthenticateTheResourceOwner()
         {
             FakeDataSource.Instance().ResourceOwners.Add(_resourceOwner);
+            _globalContext.AuthenticationMiddleWareOptions.IsEnabled = true;
+            _globalContext.AuthenticationMiddleWareOptions.Subject = _resourceOwner.Id;
         }
 
         [When("requesting an authorization code")]

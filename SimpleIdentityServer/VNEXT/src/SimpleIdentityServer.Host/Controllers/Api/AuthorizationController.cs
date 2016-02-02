@@ -93,7 +93,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
                 var url = GetRedirectionUrl(this.Request, actionResult.RedirectInstruction.Action);
                 var uri = new Uri(url);
                 var redirectionUrl = uri.AddParametersInQuery(_actionResultParser.GetRedirectionParameters(actionResult));
-                return Redirect(redirectionUrl.ToString());
+                return new RedirectResult(redirectionUrl.AbsoluteUri);
             }
 
             return null;

@@ -1,11 +1,9 @@
-﻿using System.Linq;
-using System.Web.Http;
+﻿using System.Web.Http;
 using System.Web.Http.Filters;
 using Microsoft.Practices.EnterpriseLibrary.Caching;
 using Microsoft.Practices.EnterpriseLibrary.Caching.BackingStoreImplementations;
 using Microsoft.Practices.EnterpriseLibrary.Caching.Instrumentation;
 using Microsoft.Practices.EnterpriseLibrary.Common.Instrumentation;
-using Microsoft.Practices.Unity;
 using Moq;
 using SimpleIdentityServer.Api.Configuration;
 using SimpleIdentityServer.Host.Parsers;
@@ -56,6 +54,7 @@ using System.Web.Http.Controllers;
 using Microsoft.AspNet.Mvc.Filters;
 using System.Collections.Generic;
 using Microsoft.AspNet.Http;
+using SimpleIdentityServer.Host.MiddleWare;
 
 namespace SimpleIdentityServer.Api.Tests.Common
 {
@@ -80,24 +79,45 @@ namespace SimpleIdentityServer.Api.Tests.Common
         }
         */
         
+        public class FakeAuthenticationMiddleWareOptions
+        {
+            public bool IsEnabled { get; set; }
+
+            public string Subject { get; set; }
+        }
+
         private class FakeAuthenticationMiddleWare 
         {            
             private readonly RequestDelegate _next;
-            
-            public FakeAuthenticationMiddleWare(RequestDelegate next) 
+
+            private readonly FakeAuthenticationMiddleWareOptions _options;
+
+            public FakeAuthenticationMiddleWare(
+                RequestDelegate next,
+                FakeAuthenticationMiddleWareOptions options) 
             {
                 _next = next;
+                _options = options;
             }
             
             public async Task Invoke(HttpContext context) 
             {
-                var claimsIdentity = new ClaimsIdentity("SimpleIdentityServerAuthentication");
-                var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-                await context.Authentication.SignInAsync("SimpleIdentityServerAuthentication", claimsPrincipal);
+                if (_options.IsEnabled)
+                {
+                    var claims = new List<Claim>
+                    {
+                        new Claim("sub", _options.Subject)
+                    };
+                    var claimsIdentity = new ClaimsIdentity(claims, "default");
+                    var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+                    context.Request.HttpContext.User = claimsPrincipal;
+                }
+
                 await _next(context);
             }
         }
         
+        /*
         private class FakeFilterProvider : Microsoft.AspNet.Mvc.Filters.IFilterProvider, IFilterMetadata
         {
             public int Order
@@ -124,6 +144,7 @@ namespace SimpleIdentityServer.Api.Tests.Common
                 
             }
         }
+        */
 
         private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
         
@@ -162,20 +183,29 @@ namespace SimpleIdentityServer.Api.Tests.Common
         
         public IServiceProvider ServiceProvider { get; private set;}
         
-        
+        public FakeAuthenticationMiddleWareOptions AuthenticationMiddleWareOptions { get; private set; }
+
         #endregion
-        
+
         #region Public methods
-        
-        
+
+
         public void CreateServer(Action<IServiceCollection> callback) 
         {
-            TestServer = TestServer.Create(app => {                
+            AuthenticationMiddleWareOptions = new FakeAuthenticationMiddleWareOptions();
+            TestServer = TestServer.Create(app => {
+                /*             
                 app.UseCookieAuthentication(opts => {
                     opts.AuthenticationScheme = "SimpleIdentityServerAuthentication";
                     opts.AutomaticChallenge = true;
                 });
-                app.UseMiddleware<FakeAuthenticationMiddleWare>();
+                */
+
+                app.UseSimpleIdentityServerExceptionHandler(new ExceptionHandlerMiddlewareOptions
+                {
+                    SimpleIdentityServerEventSource = SimpleIdentityServerEventSource.Log
+                });
+                app.UseMiddleware<FakeAuthenticationMiddleWare>(AuthenticationMiddleWareOptions);
                 app.UseMvc(routes =>
                 {
                     routes.MapRoute(
@@ -273,9 +303,9 @@ namespace SimpleIdentityServer.Api.Tests.Common
             serviceCollection.AddInstance(_simpleIdentityServerEventSource);
             serviceCollection.AddTransient<ITranslationManager, TranslationManager>();
             serviceCollection.AddInstance(_cacheManagerProvider);
-            serviceCollection.AddMvc(opt => {
+            serviceCollection.AddMvc(/*opt => {
                 opt.Filters.Add(typeof(FakeFilterProvider));
-            });
+            }*/);
             serviceCollection.AddLogging();
         }
         

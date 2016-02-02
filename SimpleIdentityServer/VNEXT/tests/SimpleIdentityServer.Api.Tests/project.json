@@ -1,35 +1,40 @@
 {
-    "version": "1.0.0-*",
-    "description": "",
-    "authors": [ "thierry habart" ],
-    "tags": [ "" ],
-    "projectUrl": "",
-    "licenseUrl": "",
-    "tooling": {
-      "defaultNamespace": "SimpleIdentityServer.Api.Tests"
-    },
-    "dependencies": {
-      "Moq": "4.2.1510.2205",
-      "xunit": "2.1.0",
-      "xunit.runner.dnx": "2.1.0-rc1-build204",
-      "SpecFlow.xUnit": "2.0.0",
-      "Microsoft.AspNet.StaticFiles": "1.0.0-rc1-final",
-      "Microsoft.AspNet.TestHost": "1.0.0-rc1-final",
-      "EnterpriseLibrary.Caching": "5.0.505.0",
-      "SimpleIdentityServer.Host": "",
-	  "SimpleIdentityServer.Core.Jwt": "",
-	  "SimpleIdentityServer.Core": "",
-      "SimpleIdentityServer.DataAccess.Fake": "",
-      "SimpleIdentityServer.RateLimitation":  ""
-    },
-    "commands": {
-        "test": "xunit.runner.dnx"
-    },
-    "frameworks": {
-        "dnx451": {			
-			    "frameworkAssemblies": {
-				    "System.Core": "4.0.0.0"
-			    }
-		    }
+  "version": "1.0.0-*",
+  "description": "",
+  "authors": [ "thierry habart" ],
+  "tags": [ "" ],
+  "projectUrl": "",
+  "licenseUrl": "",
+  "tooling": {
+    "defaultNamespace": "SimpleIdentityServer.Api.Tests"
+  },
+  "dependencies": {
+    "Moq": "4.2.1510.2205",
+    "xunit": "2.1.0",
+    "xunit.runner.dnx": "2.1.0-rc1-build204",
+    "SpecFlow.xUnit": "2.0.0",
+    "SpecFlow.Dnx": "1.0.0-*",
+    "Microsoft.AspNet.StaticFiles": "1.0.0-rc1-final",
+    "Microsoft.AspNet.TestHost": "1.0.0-rc1-final",
+    "EnterpriseLibrary.Caching": "5.0.505.0",
+    "SimpleIdentityServer.Host": "",
+    "SimpleIdentityServer.Core.Jwt": "",
+    "SimpleIdentityServer.Core": "",
+    "SimpleIdentityServer.DataAccess.Fake": "",
+    "SimpleIdentityServer.RateLimitation": ""
+  },
+  "commands": {
+    "test": "xunit.runner.dnx",
+    "specflow-dnx": "SpecFlow.Dnx"
+  },
+  "frameworks": {
+    "dnx451": {
+      "frameworkAssemblies": {
+        "System.Core": "4.0.0.0"
+      }
     }
+  },
+  "scripts": {
+    "prebuild": [ "dnx specflow-dnx" ]
+  }
 }

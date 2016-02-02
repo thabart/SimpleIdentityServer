@@ -74,14 +74,18 @@ namespace SimpleIdentityServer.Host.MiddleWare
 
                     PopulateError(errorResponseWithState, identityServerExceptionWithState);
                     context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                    await context.Response.WriteAsync(errorResponseWithState.SerializeWithDataContract());
+                    context.Response.ContentType = "application/json";
+                    var serializedError = errorResponseWithState.SerializeWithDataContract();
+                    await context.Response.WriteAsync(serializedError);
                 }
                 else
                 {
                     var error = new ErrorResponse();
                     PopulateError(error, identityServerException);
                     context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                    await context.Response.WriteAsync(error.SerializeWithDataContract());
+                    context.Response.ContentType = "application/json";
+                    var serializedError = error.SerializeWithDataContract();
+                    await context.Response.WriteAsync(serializedError);
                 }
             }
         }
