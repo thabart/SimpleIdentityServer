@@ -7,9 +7,9 @@ using System.Web.Http;
 
 using Microsoft.Practices.Unity;
 
-using SimpleIdentityServer.Api.DTOs.Request;
-using SimpleIdentityServer.Api.DTOs.Response;
-using SimpleIdentityServer.Api.Extensions;
+using SimpleIdentityServer.Host.DTOs.Request;
+using SimpleIdentityServer.Host.DTOs.Response;
+using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.Api.Tests.Common;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Jwt.Encrypt;

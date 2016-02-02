@@ -5,7 +5,7 @@ using System.Web;
 using System.Web.Http;
 using Microsoft.Owin.Testing;
 using Microsoft.Practices.Unity;
-using SimpleIdentityServer.Api.DTOs.Request;
+using SimpleIdentityServer.Host.DTOs.Request;
 using SimpleIdentityServer.Api.Tests.Common;
 using SimpleIdentityServer.Api.Tests.Common.Fakes;
 using SimpleIdentityServer.Core.Jwt;

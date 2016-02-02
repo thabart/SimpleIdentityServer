@@ -7,8 +7,8 @@ using System.Text;
 using Microsoft.Practices.Unity;
 
 using SimpleIdentityServer.Api.Tests.Common;
-using SimpleIdentityServer.Api.DTOs.Request;
-using SimpleIdentityServer.Api.DTOs.Response;
+using SimpleIdentityServer.Host.DTOs.Request;
+using SimpleIdentityServer.Host.DTOs.Response;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.RateLimitation.Configuration;
 using TechTalk.SpecFlow;

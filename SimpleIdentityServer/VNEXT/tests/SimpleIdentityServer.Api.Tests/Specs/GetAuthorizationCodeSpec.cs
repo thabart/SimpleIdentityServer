@@ -7,7 +7,7 @@ using Microsoft.Practices.Unity;
 
 using SimpleIdentityServer.Host.DTOs.Request;
 using SimpleIdentityServer.Host.DTOs.Response;
-using SimpleIdentityServer.Host.Tests.Common;
+using SimpleIdentityServer.Api.Tests.Common;
 using SimpleIdentityServer.DataAccess.Fake;
 using SimpleIdentityServer.RateLimitation.Configuration;
 
