@@ -55,6 +55,7 @@ using Microsoft.AspNet.Mvc.Filters;
 using System.Collections.Generic;
 using Microsoft.AspNet.Http;
 using SimpleIdentityServer.Host.MiddleWare;
+using SimpleIdentityServer.RateLimitation.Attributes;
 
 namespace SimpleIdentityServer.Api.Tests.Common
 {
@@ -117,9 +118,17 @@ namespace SimpleIdentityServer.Api.Tests.Common
             }
         }
         
-        /*
         private class FakeFilterProvider : Microsoft.AspNet.Mvc.Filters.IFilterProvider, IFilterMetadata
         {
+            private readonly ActionDescriptorFilterProvider _defaultProvider = new ActionDescriptorFilterProvider();
+
+            private readonly IServiceCollection _serviceCollection;
+
+            public FakeFilterProvider(IServiceCollection serviceCollection)
+            {
+                _serviceCollection = serviceCollection;
+            }
+
             public int Order
             {
                 get
@@ -130,8 +139,14 @@ namespace SimpleIdentityServer.Api.Tests.Common
 
             public IEnumerable<FilterInfo> GetFilters(HttpConfiguration configuration, HttpActionDescriptor actionDescriptor)
             {
-                Console.WriteLine("no filter");
-                return new List<FilterInfo>();
+                var attributes = _defaultProvider.GetFilters(configuration, actionDescriptor);
+                foreach (var attr in attributes)
+                {
+                    _serviceCollection.AddInstance(attr.Instance.GetType(), attr.Instance);
+                    // _container.BuildUp(attr.Instance.GetType(), attr.Instance);
+                }
+
+                return attributes;
             }
 
             public void OnProvidersExecuted(FilterProviderContext context)
@@ -144,7 +159,6 @@ namespace SimpleIdentityServer.Api.Tests.Common
                 
             }
         }
-        */
 
         private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
         
@@ -303,9 +317,11 @@ namespace SimpleIdentityServer.Api.Tests.Common
             serviceCollection.AddInstance(_simpleIdentityServerEventSource);
             serviceCollection.AddTransient<ITranslationManager, TranslationManager>();
             serviceCollection.AddInstance(_cacheManagerProvider);
+            // var filter = new FakeFilterProvider(serviceCollection);
             serviceCollection.AddMvc(/*opt => {
-                opt.Filters.Add(typeof(FakeFilterProvider));
+                opt.Filters.Add(filter);
             }*/);
+            serviceCollection.AddScoped<RateLimitationFilter>();
             serviceCollection.AddLogging();
         }
         

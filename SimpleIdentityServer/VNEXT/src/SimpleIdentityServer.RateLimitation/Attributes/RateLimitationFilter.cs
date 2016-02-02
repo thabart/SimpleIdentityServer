@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Globalization;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http.Filters;
 
 using Microsoft.Practices.Unity;
 
-using System.Web.Http.Controllers;
 using SimpleIdentityServer.RateLimitation.Configuration;
 using SimpleIdentityServer.RateLimitation.Constants;
 using SimpleIdentityServer.RateLimitation.Models;
+using Microsoft.AspNet.Mvc.Filters;
+using Microsoft.AspNet.Http.Features;
+using Microsoft.AspNet.Http;
+using Microsoft.AspNet.Mvc;
 
 namespace SimpleIdentityServer.RateLimitation.Attributes
 {
@@ -20,7 +20,7 @@ namespace SimpleIdentityServer.RateLimitation.Attributes
         private ICacheManagerProvider _cacheManagerProvider;
 
         private bool _isEnabled;
-
+        
         [Dependency]
         public IGetRateLimitationElementOperation GetRateLimitationElementOperation
         {
@@ -39,9 +39,15 @@ namespace SimpleIdentityServer.RateLimitation.Attributes
         /// <summary>
         /// Configure the rate limitation via configuration file.
         /// </summary>
-        public RateLimitationFilter()
+        public RateLimitationFilter(
+            IGetRateLimitationElementOperation getRateLimitationElementOperation,
+            ICacheManagerProvider cacheManagerProvider,
+            string rateLimitationElementName)
         {
             _isEnabled = true;
+            _cacheManagerProvider = cacheManagerProvider;
+            _getRateLimitationElementOperation = getRateLimitationElementOperation;
+            RateLimitationElementName = rateLimitationElementName;
         }
 
         /// <summary>
@@ -66,7 +72,7 @@ namespace SimpleIdentityServer.RateLimitation.Attributes
 
         public string RateLimitationElementName { get; set; }
 
-        public override void OnActionExecuting(HttpActionContext httpActionContext)
+        public override void OnActionExecuting(ActionExecutingContext actionExecutingContext)
         {
             LoadConfiguration();
             if (!_isEnabled)
@@ -76,16 +82,16 @@ namespace SimpleIdentityServer.RateLimitation.Attributes
 
             var today = DateTime.UtcNow;
             var responseCacheManager = _cacheManagerProvider.GetCacheManager();
-            var owinContext = httpActionContext.Request.GetOwinContext();
-            var ipAdress = owinContext.Request.RemoteIpAddress;
-            var actionName = httpActionContext.ActionDescriptor.ActionName;
-            var controllerName = httpActionContext.ControllerContext.ControllerDescriptor.ControllerName;
-
+            HttpContext httpContext = actionExecutingContext.HttpContext;
+            var connectionFeature = httpContext.Features.Get<IHttpConnectionFeature>();
+            var ipAddress = connectionFeature.RemoteIpAddress.ToString();
+            var actionName = actionExecutingContext.RouteData.Values["Action"].ToString();
+            var controllerName = actionExecutingContext.RouteData.Values["Controller"].ToString();
             var record = new CacheableResponse
             {
                 ActionName = actionName,
                 ControllerName = controllerName,
-                IpAdress = ipAdress
+                IpAdress = ipAddress    
             };
             var jsonResponse = record.GetIdentifier();
             var cachedData = responseCacheManager.GetData(jsonResponse);
@@ -110,16 +116,21 @@ namespace SimpleIdentityServer.RateLimitation.Attributes
                         NumberOfRequests.ToString(CultureInfo.InvariantCulture),
                         SlidingTime.ToString(CultureInfo.InvariantCulture));
 
-                httpActionContext.Response = httpActionContext.Request.CreateResponse(
-                    (HttpStatusCode)429,
-                    message);
-                httpActionContext.Response.Headers.Add(RateLimitationConstants.XRateLimitLimitName, NumberOfRequests.ToString(CultureInfo.InvariantCulture));
-                httpActionContext.Response.Headers.Add(RateLimitationConstants.XRateLimitRemainingName, numberOfRemainingRequests.ToString(CultureInfo.InvariantCulture));
-                httpActionContext.Response.Headers.Add(RateLimitationConstants.XRateLimitResetName, timeResetTime.ToString(CultureInfo.InvariantCulture));
+                actionExecutingContext.Result = new EmptyResult();
+                var headers = actionExecutingContext.HttpContext.Response.Headers;
+
+                actionExecutingContext.Result = new ContentResult
+                {
+                    StatusCode = 429,
+                    Content = message
+                }; ;
+                headers.Add(RateLimitationConstants.XRateLimitLimitName, NumberOfRequests.ToString(CultureInfo.InvariantCulture));
+                headers.Add(RateLimitationConstants.XRateLimitRemainingName, numberOfRemainingRequests.ToString(CultureInfo.InvariantCulture));
+                headers.Add(RateLimitationConstants.XRateLimitResetName, timeResetTime.ToString(CultureInfo.InvariantCulture));
             }
         }
 
-        public override void OnActionExecuted(HttpActionExecutedContext httpActionExecutedContext)
+        public override void OnActionExecuted(ActionExecutedContext httpActionExecutedContext)
         {
             LoadConfiguration();
             if (!_isEnabled)
@@ -129,17 +140,16 @@ namespace SimpleIdentityServer.RateLimitation.Attributes
 
             var today = DateTime.UtcNow;
             var responseCacheManager = _cacheManagerProvider.GetCacheManager();
-            var owinContext = httpActionExecutedContext.Request.GetOwinContext();
-            var ipAdress = owinContext.Request.RemoteIpAddress;
-            var actionContext = httpActionExecutedContext.ActionContext;
-            var actionName = actionContext.ActionDescriptor.ActionName;
-            var controllerName = actionContext.ControllerContext.ControllerDescriptor.ControllerName;
+            var connectionFeature = httpActionExecutedContext.HttpContext.Features.Get<IHttpConnectionFeature>();
+            var ipAddress = connectionFeature.RemoteIpAddress.ToString();
+            var actionName = httpActionExecutedContext.RouteData.Values["Action"].ToString();
+            var controllerName = httpActionExecutedContext.RouteData.Values["Controller"].ToString();
 
             var record = new CacheableResponse
             {
                 ActionName = actionName,
                 ControllerName = controllerName,
-                IpAdress = ipAdress
+                IpAdress = ipAddress
             };
             var jsonResponse = record.GetIdentifier();
             var cachedData = responseCacheManager.GetData(jsonResponse);
@@ -183,14 +193,15 @@ namespace SimpleIdentityServer.RateLimitation.Attributes
 
             var timeResetTime = (record.UpdateDateTime.AddMinutes(SlidingTime) - today).TotalSeconds;
 
-            if (httpActionExecutedContext.Response == null)
+            var response = httpActionExecutedContext.HttpContext.Response;
+            if (response == null)
             {
                 return;
             }
 
-            httpActionExecutedContext.Response.Headers.Add(RateLimitationConstants.XRateLimitLimitName, NumberOfRequests.ToString(CultureInfo.InvariantCulture));
-            httpActionExecutedContext.Response.Headers.Add(RateLimitationConstants.XRateLimitRemainingName, numberOfRemainingRequests.ToString(CultureInfo.InvariantCulture));
-            httpActionExecutedContext.Response.Headers.Add(RateLimitationConstants.XRateLimitResetName, timeResetTime.ToString(CultureInfo.InvariantCulture));
+            response.Headers.Add(RateLimitationConstants.XRateLimitLimitName, NumberOfRequests.ToString(CultureInfo.InvariantCulture));
+            response.Headers.Add(RateLimitationConstants.XRateLimitRemainingName, numberOfRemainingRequests.ToString(CultureInfo.InvariantCulture));
+            response.Headers.Add(RateLimitationConstants.XRateLimitResetName, timeResetTime.ToString(CultureInfo.InvariantCulture));
         }
 
         private void LoadConfiguration()

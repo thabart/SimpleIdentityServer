@@ -88,34 +88,34 @@ this.ScenarioSetup(scenarioInfo);
 #line 9
  testRunner.And("the redirection uri http://localhost is assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-            TechTalk.SpecFlow.Table table1 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table11 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
                         "IsInternal"});
-            table1.AddRow(new string[] {
+            table11.AddRow(new string[] {
                         "PlanningApi",
                         "true"});
-            table1.AddRow(new string[] {
+            table11.AddRow(new string[] {
                         "openid",
                         "true"});
 #line 10
- testRunner.And("the scopes are defined", ((string)(null)), table1, "And ");
+ testRunner.And("the scopes are defined", ((string)(null)), table11, "And ");
 #line 14
  testRunner.And("the scopes openid,PlanningApi are assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-            TechTalk.SpecFlow.Table table2 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table12 = new TechTalk.SpecFlow.Table(new string[] {
                         "scope",
                         "response_type",
                         "client_id",
                         "redirect_uri",
                         "prompt"});
-            table2.AddRow(new string[] {
+            table12.AddRow(new string[] {
                         "openid PlanningApi",
                         "code",
                         "MyHolidays",
                         "http://localhost",
                         "login"});
 #line 16
- testRunner.When("requesting an authorization code", ((string)(null)), table2, "When ");
+ testRunner.When("requesting an authorization code", ((string)(null)), table12, "When ");
 #line 21
  testRunner.Then("HTTP status code is 302", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 22
@@ -137,45 +137,45 @@ this.ScenarioSetup(scenarioInfo);
 #line 26
  testRunner.And("the redirection uri http://localhost is assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-            TechTalk.SpecFlow.Table table3 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table13 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
                         "IsInternal"});
-            table3.AddRow(new string[] {
+            table13.AddRow(new string[] {
                         "PlanningApi",
                         "true"});
-            table3.AddRow(new string[] {
+            table13.AddRow(new string[] {
                         "openid",
                         "true"});
 #line 27
- testRunner.And("the scopes are defined", ((string)(null)), table3, "And ");
+ testRunner.And("the scopes are defined", ((string)(null)), table13, "And ");
 #line 31
  testRunner.And("the scopes openid,PlanningApi are assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-            TechTalk.SpecFlow.Table table4 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table14 = new TechTalk.SpecFlow.Table(new string[] {
                         "Id",
                         "Name"});
-            table4.AddRow(new string[] {
+            table14.AddRow(new string[] {
                         "habarthierry@loki.be",
                         "thabart"});
 #line 32
- testRunner.And("create a resource owner", ((string)(null)), table4, "And ");
+ testRunner.And("create a resource owner", ((string)(null)), table14, "And ");
 #line 35
  testRunner.And("authenticate the resource owner", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-            TechTalk.SpecFlow.Table table5 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table15 = new TechTalk.SpecFlow.Table(new string[] {
                         "scope",
                         "response_type",
                         "client_id",
                         "redirect_uri",
                         "prompt"});
-            table5.AddRow(new string[] {
+            table15.AddRow(new string[] {
                         "openid PlanningApi",
                         "code",
                         "MyHolidays",
                         "http://localhost",
                         "consent"});
 #line 37
- testRunner.When("requesting an authorization code", ((string)(null)), table5, "When ");
+ testRunner.When("requesting an authorization code", ((string)(null)), table15, "When ");
 #line 42
  testRunner.Then("HTTP status code is 302", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 43
@@ -199,34 +199,34 @@ this.ScenarioSetup(scenarioInfo);
 #line 47
  testRunner.And("the redirection uri http://localhost is assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-            TechTalk.SpecFlow.Table table6 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table16 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
                         "IsInternal"});
-            table6.AddRow(new string[] {
+            table16.AddRow(new string[] {
                         "PlanningApi",
                         "true"});
-            table6.AddRow(new string[] {
+            table16.AddRow(new string[] {
                         "openid",
                         "true"});
 #line 48
- testRunner.And("the scopes are defined", ((string)(null)), table6, "And ");
+ testRunner.And("the scopes are defined", ((string)(null)), table16, "And ");
 #line 52
  testRunner.And("the scopes openid,PlanningApi are assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-            TechTalk.SpecFlow.Table table7 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table17 = new TechTalk.SpecFlow.Table(new string[] {
                         "scope",
                         "response_type",
                         "client_id",
                         "redirect_uri",
                         "prompt"});
-            table7.AddRow(new string[] {
+            table17.AddRow(new string[] {
                         "openid PlanningApi",
                         "code",
                         "MyHolidays",
                         "http://localhost",
                         "consent"});
 #line 54
- testRunner.When("requesting an authorization code", ((string)(null)), table7, "When ");
+ testRunner.When("requesting an authorization code", ((string)(null)), table17, "When ");
 #line 59
  testRunner.Then("HTTP status code is 302", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 60
@@ -250,42 +250,42 @@ this.ScenarioSetup(scenarioInfo);
 #line 64
  testRunner.And("the redirection uri http://localhost is assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-            TechTalk.SpecFlow.Table table8 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table18 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
                         "IsInternal"});
-            table8.AddRow(new string[] {
+            table18.AddRow(new string[] {
                         "PlanningApi",
                         "true"});
-            table8.AddRow(new string[] {
+            table18.AddRow(new string[] {
                         "openid",
                         "true"});
 #line 65
- testRunner.And("the scopes are defined", ((string)(null)), table8, "And ");
+ testRunner.And("the scopes are defined", ((string)(null)), table18, "And ");
 #line 69
  testRunner.And("the scopes openid,PlanningApi are assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-            TechTalk.SpecFlow.Table table9 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table19 = new TechTalk.SpecFlow.Table(new string[] {
                         "Id",
                         "Name"});
-            table9.AddRow(new string[] {
+            table19.AddRow(new string[] {
                         "habarthierry@loki.be",
                         "thabart"});
 #line 70
- testRunner.And("create a resource owner", ((string)(null)), table9, "And ");
+ testRunner.And("create a resource owner", ((string)(null)), table19, "And ");
 #line 73
  testRunner.And("authenticate the resource owner", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 74
  testRunner.And("the consent has been given by the resource owner habarthierry@loki.be for the cli" +
                     "ent MyHolidays and scopes openid,PlanningApi", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-            TechTalk.SpecFlow.Table table10 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table20 = new TechTalk.SpecFlow.Table(new string[] {
                         "scope",
                         "response_type",
                         "client_id",
                         "redirect_uri",
                         "prompt",
                         "state"});
-            table10.AddRow(new string[] {
+            table20.AddRow(new string[] {
                         "openid PlanningApi",
                         "code",
                         "MyHolidays",
@@ -293,7 +293,7 @@ this.ScenarioSetup(scenarioInfo);
                         "none",
                         "state1"});
 #line 76
- testRunner.When("requesting an authorization code", ((string)(null)), table10, "When ");
+ testRunner.When("requesting an authorization code", ((string)(null)), table20, "When ");
 #line 81
  testRunner.Then("HTTP status code is 302", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 82
@@ -321,35 +321,35 @@ this.ScenarioSetup(scenarioInfo);
 #line 89
  testRunner.And("the redirection uri http://localhost is assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-            TechTalk.SpecFlow.Table table11 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table21 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
                         "IsInternal"});
-            table11.AddRow(new string[] {
+            table21.AddRow(new string[] {
                         "PlanningApi",
                         "true"});
-            table11.AddRow(new string[] {
+            table21.AddRow(new string[] {
                         "openid",
                         "true"});
 #line 90
- testRunner.And("the scopes are defined", ((string)(null)), table11, "And ");
+ testRunner.And("the scopes are defined", ((string)(null)), table21, "And ");
 #line 94
  testRunner.And("the scopes openid,PlanningApi are assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-            TechTalk.SpecFlow.Table table12 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table22 = new TechTalk.SpecFlow.Table(new string[] {
                         "Id",
                         "Name"});
-            table12.AddRow(new string[] {
+            table22.AddRow(new string[] {
                         "habarthierry@loki.be",
                         "thabart"});
 #line 95
- testRunner.And("create a resource owner", ((string)(null)), table12, "And ");
+ testRunner.And("create a resource owner", ((string)(null)), table22, "And ");
 #line 98
  testRunner.And("authenticate the resource owner", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 99
  testRunner.And("the consent has been given by the resource owner habarthierry@loki.be for the cli" +
                     "ent MyHolidays and scopes openid,PlanningApi", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-            TechTalk.SpecFlow.Table table13 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table23 = new TechTalk.SpecFlow.Table(new string[] {
                         "scope",
                         "response_type",
                         "client_id",
@@ -357,7 +357,7 @@ this.ScenarioSetup(scenarioInfo);
                         "prompt",
                         "state",
                         "response_mode"});
-            table13.AddRow(new string[] {
+            table23.AddRow(new string[] {
                         "openid PlanningApi",
                         "code",
                         "MyHolidays",
@@ -366,7 +366,7 @@ this.ScenarioSetup(scenarioInfo);
                         "state1",
                         "fragment"});
 #line 101
- testRunner.When("requesting an authorization code", ((string)(null)), table13, "When ");
+ testRunner.When("requesting an authorization code", ((string)(null)), table23, "When ");
 #line 106
  testRunner.Then("HTTP status code is 302", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 107
@@ -394,35 +394,35 @@ this.ScenarioSetup(scenarioInfo);
 #line 113
  testRunner.And("the redirection uri http://localhost is assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-            TechTalk.SpecFlow.Table table14 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table24 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
                         "IsInternal"});
-            table14.AddRow(new string[] {
+            table24.AddRow(new string[] {
                         "PlanningApi",
                         "true"});
-            table14.AddRow(new string[] {
+            table24.AddRow(new string[] {
                         "openid",
                         "true"});
 #line 114
- testRunner.And("the scopes are defined", ((string)(null)), table14, "And ");
+ testRunner.And("the scopes are defined", ((string)(null)), table24, "And ");
 #line 118
  testRunner.And("the scopes openid,PlanningApi are assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-            TechTalk.SpecFlow.Table table15 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table25 = new TechTalk.SpecFlow.Table(new string[] {
                         "Id",
                         "Name"});
-            table15.AddRow(new string[] {
+            table25.AddRow(new string[] {
                         "habarthierry@loki.be",
                         "thabart"});
 #line 119
- testRunner.And("create a resource owner", ((string)(null)), table15, "And ");
+ testRunner.And("create a resource owner", ((string)(null)), table25, "And ");
 #line 122
  testRunner.And("authenticate the resource owner", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 123
  testRunner.And("the consent has been given by the resource owner habarthierry@loki.be for the cli" +
                     "ent MyHolidays and scopes openid,PlanningApi", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-            TechTalk.SpecFlow.Table table16 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table26 = new TechTalk.SpecFlow.Table(new string[] {
                         "scope",
                         "response_type",
                         "client_id",
@@ -430,7 +430,7 @@ this.ScenarioSetup(scenarioInfo);
                         "prompt",
                         "state",
                         "response_mode"});
-            table16.AddRow(new string[] {
+            table26.AddRow(new string[] {
                         "openid PlanningApi",
                         "code",
                         "MyHolidays",
@@ -439,7 +439,7 @@ this.ScenarioSetup(scenarioInfo);
                         "state1",
                         "form_post"});
 #line 125
- testRunner.When("requesting an authorization code", ((string)(null)), table16, "When ");
+ testRunner.When("requesting an authorization code", ((string)(null)), table26, "When ");
 #line 130
  testRunner.Then("HTTP status code is 302", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 131
@@ -463,37 +463,37 @@ this.ScenarioSetup(scenarioInfo);
 #line 136
  testRunner.And("the redirection uri http://localhost is assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-            TechTalk.SpecFlow.Table table17 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table27 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
                         "IsInternal"});
-            table17.AddRow(new string[] {
+            table27.AddRow(new string[] {
                         "PlanningApi",
                         "true"});
-            table17.AddRow(new string[] {
+            table27.AddRow(new string[] {
                         "openid",
                         "true"});
 #line 137
- testRunner.And("the scopes are defined", ((string)(null)), table17, "And ");
+ testRunner.And("the scopes are defined", ((string)(null)), table27, "And ");
 #line 141
  testRunner.And("the scopes openid,PlanningApi are assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 142
  testRunner.And("the consent has been given by the resource owner habarthierry@loki.be for the cli" +
                     "ent MyHolidays and scopes openid,PlanningApi", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-            TechTalk.SpecFlow.Table table18 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table28 = new TechTalk.SpecFlow.Table(new string[] {
                         "scope",
                         "response_type",
                         "client_id",
                         "redirect_uri",
                         "state"});
-            table18.AddRow(new string[] {
+            table28.AddRow(new string[] {
                         "openid PlanningApi",
                         "code",
                         "MyHolidays",
                         "http://localhost",
                         "state1"});
 #line 144
- testRunner.When("requesting an authorization code", ((string)(null)), table18, "When ");
+ testRunner.When("requesting an authorization code", ((string)(null)), table28, "When ");
 #line 149
  testRunner.Then("HTTP status code is 302", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 150
@@ -517,45 +517,45 @@ this.ScenarioSetup(scenarioInfo);
 #line 154
  testRunner.And("the redirection uri http://localhost is assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-            TechTalk.SpecFlow.Table table19 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table29 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
                         "IsInternal"});
-            table19.AddRow(new string[] {
+            table29.AddRow(new string[] {
                         "PlanningApi",
                         "true"});
-            table19.AddRow(new string[] {
+            table29.AddRow(new string[] {
                         "openid",
                         "true"});
 #line 155
- testRunner.And("the scopes are defined", ((string)(null)), table19, "And ");
+ testRunner.And("the scopes are defined", ((string)(null)), table29, "And ");
 #line 159
  testRunner.And("the scopes openid,PlanningApi are assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-            TechTalk.SpecFlow.Table table20 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table30 = new TechTalk.SpecFlow.Table(new string[] {
                         "Id",
                         "Name"});
-            table20.AddRow(new string[] {
+            table30.AddRow(new string[] {
                         "habarthierry@loki.be",
                         "thabart"});
 #line 160
- testRunner.And("create a resource owner", ((string)(null)), table20, "And ");
+ testRunner.And("create a resource owner", ((string)(null)), table30, "And ");
 #line 163
  testRunner.And("authenticate the resource owner", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-            TechTalk.SpecFlow.Table table21 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table31 = new TechTalk.SpecFlow.Table(new string[] {
                         "scope",
                         "response_type",
                         "client_id",
                         "redirect_uri",
                         "state"});
-            table21.AddRow(new string[] {
+            table31.AddRow(new string[] {
                         "openid PlanningApi",
                         "code",
                         "MyHolidays",
                         "http://localhost",
                         "state1"});
 #line 165
- testRunner.When("requesting an authorization code", ((string)(null)), table21, "When ");
+ testRunner.When("requesting an authorization code", ((string)(null)), table31, "When ");
 #line 170
  testRunner.Then("HTTP status code is 302", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 171
@@ -579,28 +579,28 @@ this.ScenarioSetup(scenarioInfo);
 #line 176
  testRunner.And("the redirection uri http://localhost is assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-            TechTalk.SpecFlow.Table table22 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table32 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
                         "IsInternal"});
-            table22.AddRow(new string[] {
+            table32.AddRow(new string[] {
                         "PlanningApi",
                         "true"});
-            table22.AddRow(new string[] {
+            table32.AddRow(new string[] {
                         "openid",
                         "true"});
 #line 177
- testRunner.And("the scopes are defined", ((string)(null)), table22, "And ");
+ testRunner.And("the scopes are defined", ((string)(null)), table32, "And ");
 #line 181
  testRunner.And("the scopes openid,PlanningApi are assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-            TechTalk.SpecFlow.Table table23 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table33 = new TechTalk.SpecFlow.Table(new string[] {
                         "scope",
                         "response_type",
                         "client_id",
                         "redirect_uri",
                         "prompt",
                         "state"});
-            table23.AddRow(new string[] {
+            table33.AddRow(new string[] {
                         "openid PlanningApi",
                         "code",
                         "MyHolidays",
@@ -608,18 +608,18 @@ this.ScenarioSetup(scenarioInfo);
                         "none",
                         "state1"});
 #line 183
- testRunner.When("requesting an authorization code", ((string)(null)), table23, "When ");
+ testRunner.When("requesting an authorization code", ((string)(null)), table33, "When ");
 #line 187
  testRunner.Then("HTTP status code is 400", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
-            TechTalk.SpecFlow.Table table24 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table34 = new TechTalk.SpecFlow.Table(new string[] {
                         "error",
                         "state"});
-            table24.AddRow(new string[] {
+            table34.AddRow(new string[] {
                         "login_required",
                         "state1"});
 #line 188
- testRunner.And("the error returned is", ((string)(null)), table24, "And ");
+ testRunner.And("the error returned is", ((string)(null)), table34, "And ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -639,39 +639,39 @@ this.ScenarioSetup(scenarioInfo);
 #line 194
  testRunner.And("the redirection uri http://localhost is assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-            TechTalk.SpecFlow.Table table25 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table35 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
                         "IsInternal"});
-            table25.AddRow(new string[] {
+            table35.AddRow(new string[] {
                         "PlanningApi",
                         "true"});
-            table25.AddRow(new string[] {
+            table35.AddRow(new string[] {
                         "openid",
                         "true"});
 #line 195
- testRunner.And("the scopes are defined", ((string)(null)), table25, "And ");
+ testRunner.And("the scopes are defined", ((string)(null)), table35, "And ");
 #line 199
  testRunner.And("the scopes openid,PlanningApi are assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-            TechTalk.SpecFlow.Table table26 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table36 = new TechTalk.SpecFlow.Table(new string[] {
                         "Id",
                         "Name"});
-            table26.AddRow(new string[] {
+            table36.AddRow(new string[] {
                         "habarthierry@loki.be",
                         "thabart"});
 #line 200
- testRunner.And("create a resource owner", ((string)(null)), table26, "And ");
+ testRunner.And("create a resource owner", ((string)(null)), table36, "And ");
 #line 203
  testRunner.And("authenticate the resource owner", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-            TechTalk.SpecFlow.Table table27 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table37 = new TechTalk.SpecFlow.Table(new string[] {
                         "scope",
                         "response_type",
                         "client_id",
                         "redirect_uri",
                         "prompt",
                         "state"});
-            table27.AddRow(new string[] {
+            table37.AddRow(new string[] {
                         "openid PlanningApi",
                         "code",
                         "MyHolidays",
@@ -679,18 +679,18 @@ this.ScenarioSetup(scenarioInfo);
                         "none",
                         "state1"});
 #line 205
- testRunner.When("requesting an authorization code", ((string)(null)), table27, "When ");
+ testRunner.When("requesting an authorization code", ((string)(null)), table37, "When ");
 #line 209
  testRunner.Then("HTTP status code is 400", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
-            TechTalk.SpecFlow.Table table28 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table38 = new TechTalk.SpecFlow.Table(new string[] {
                         "error",
                         "state"});
-            table28.AddRow(new string[] {
+            table38.AddRow(new string[] {
                         "interaction_required",
                         "state1"});
 #line 210
- testRunner.And("the error returned is", ((string)(null)), table28, "And ");
+ testRunner.And("the error returned is", ((string)(null)), table38, "And ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -710,28 +710,28 @@ this.ScenarioSetup(scenarioInfo);
 #line 216
  testRunner.And("the redirection uri http://localhost is assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-            TechTalk.SpecFlow.Table table29 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table39 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
                         "IsInternal"});
-            table29.AddRow(new string[] {
+            table39.AddRow(new string[] {
                         "PlanningApi",
                         "true"});
-            table29.AddRow(new string[] {
+            table39.AddRow(new string[] {
                         "openid",
                         "true"});
 #line 217
- testRunner.And("the scopes are defined", ((string)(null)), table29, "And ");
+ testRunner.And("the scopes are defined", ((string)(null)), table39, "And ");
 #line 221
  testRunner.And("the scopes openid,PlanningApi are assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-            TechTalk.SpecFlow.Table table30 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table40 = new TechTalk.SpecFlow.Table(new string[] {
                         "scope",
                         "response_type",
                         "client_id",
                         "redirect_uri",
                         "prompt",
                         "state"});
-            table30.AddRow(new string[] {
+            table40.AddRow(new string[] {
                         "openid PlanningApi",
                         "code",
                         "MyHolidays",
@@ -739,18 +739,18 @@ this.ScenarioSetup(scenarioInfo);
                         "none",
                         "state1"});
 #line 223
- testRunner.When("requesting an authorization code", ((string)(null)), table30, "When ");
+ testRunner.When("requesting an authorization code", ((string)(null)), table40, "When ");
 #line 227
  testRunner.Then("HTTP status code is 400", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
-            TechTalk.SpecFlow.Table table31 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table41 = new TechTalk.SpecFlow.Table(new string[] {
                         "error",
                         "state"});
-            table31.AddRow(new string[] {
+            table41.AddRow(new string[] {
                         "invalid_request",
                         "state1"});
 #line 228
- testRunner.And("the error returned is", ((string)(null)), table31, "And ");
+ testRunner.And("the error returned is", ((string)(null)), table41, "And ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -770,28 +770,28 @@ this.ScenarioSetup(scenarioInfo);
 #line 234
  testRunner.And("the redirection uri http://localhost is assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-            TechTalk.SpecFlow.Table table32 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table42 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
                         "IsInternal"});
-            table32.AddRow(new string[] {
+            table42.AddRow(new string[] {
                         "PlanningApi",
                         "true"});
-            table32.AddRow(new string[] {
+            table42.AddRow(new string[] {
                         "openid",
                         "true"});
 #line 235
- testRunner.And("the scopes are defined", ((string)(null)), table32, "And ");
+ testRunner.And("the scopes are defined", ((string)(null)), table42, "And ");
 #line 239
  testRunner.And("the scopes openid,PlanningApi are assigned to the client MyHolidays", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-            TechTalk.SpecFlow.Table table33 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table43 = new TechTalk.SpecFlow.Table(new string[] {
                         "scope",
                         "response_type",
                         "client_id",
                         "redirect_uri",
                         "prompt",
                         "state"});
-            table33.AddRow(new string[] {
+            table43.AddRow(new string[] {
                         "openid PlanningApi",
                         "code",
                         "MyHolidays",
@@ -799,18 +799,18 @@ this.ScenarioSetup(scenarioInfo);
                         "none login",
                         "state1"});
 #line 241
- testRunner.When("requesting an authorization code", ((string)(null)), table33, "When ");
+ testRunner.When("requesting an authorization code", ((string)(null)), table43, "When ");
 #line 245
  testRunner.Then("HTTP status code is 400", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
-            TechTalk.SpecFlow.Table table34 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table44 = new TechTalk.SpecFlow.Table(new string[] {
                         "error",
                         "state"});
-            table34.AddRow(new string[] {
+            table44.AddRow(new string[] {
                         "invalid_request",
                         "state1"});
 #line 246
- testRunner.And("the error returned is", ((string)(null)), table34, "And ");
+ testRunner.And("the error returned is", ((string)(null)), table44, "And ");
 #line hidden
             this.ScenarioCleanup();
         }

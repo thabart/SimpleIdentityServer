@@ -23,18 +23,19 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             _tokenActions = tokenActions;
         }
         
-        [RateLimitationFilter(RateLimitationElementName = "PostToken")]
+        [TypeFilter(typeof(RateLimitationFilter), Arguments = new object[] { "PostToken" })]
+        // [ServiceFilter(typeof(RateLimitationFilter))]
         [Microsoft.AspNet.Mvc.HttpPost]
         public GrantedToken Post(TokenRequest tokenRequest)
         {
             GrantedToken result = null;
             StringValues authorizationHeader;
-            if (!Request.Headers.TryGetValue("Authorization", out authorizationHeader)) 
+            AuthenticationHeaderValue authenticationHeaderValue = null;
+            if (Request.Headers.TryGetValue("Authorization", out authorizationHeader)) 
             {
-                throw new System.InvalidOperationException("The resource owner cannot be authenticated");
+                authenticationHeaderValue = new AuthenticationHeaderValue("default", authorizationHeader.First());
             }
             
-            var authenticationHeaderValue = new AuthenticationHeaderValue("default", authorizationHeader.First());
             switch (tokenRequest.grant_type)
             {
                 case GrantTypeRequest.password:
