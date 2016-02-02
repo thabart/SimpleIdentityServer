@@ -48,11 +48,83 @@ using SimpleIdentityServer.Core.Jwt.Serializer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNet.TestHost;
 using Microsoft.AspNet.Builder;
+using System.Threading.Tasks;
+using System.Threading;
+using System.Security.Claims;
+using System.Net.Http;
+using System.Web.Http.Controllers;
+using Microsoft.AspNet.Mvc.Filters;
+using System.Collections.Generic;
+using Microsoft.AspNet.Http;
 
 namespace SimpleIdentityServer.Api.Tests.Common
 {
     public class GlobalContext
     {
+        /*
+        private class FakeAuthorizationFilterAttribute : Microsoft.AspNet.Mvc.Filters.IAuthorizationFilter, IFilterMetadata
+        {
+            static FakeAuthorizationFilterAttribute()
+            {
+                TestUserId = "TestDomain\\TestUser";
+            }
+
+            public bool AllowMultiple { get; private set; }
+
+            public static string TestUserId { get; set; }
+
+            public void OnAuthorization(Microsoft.AspNet.Mvc.Filters.AuthorizationContext context)
+            {
+                
+            }
+        }
+        */
+        
+        private class FakeAuthenticationMiddleWare 
+        {            
+            private readonly RequestDelegate _next;
+            
+            public FakeAuthenticationMiddleWare(RequestDelegate next) 
+            {
+                _next = next;
+            }
+            
+            public async Task Invoke(HttpContext context) 
+            {
+                var claimsIdentity = new ClaimsIdentity("SimpleIdentityServerAuthentication");
+                var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+                await context.Authentication.SignInAsync("SimpleIdentityServerAuthentication", claimsPrincipal);
+                await _next(context);
+            }
+        }
+        
+        private class FakeFilterProvider : Microsoft.AspNet.Mvc.Filters.IFilterProvider, IFilterMetadata
+        {
+            public int Order
+            {
+                get
+                {
+                    return 1;
+                }
+            }
+
+            public IEnumerable<FilterInfo> GetFilters(HttpConfiguration configuration, HttpActionDescriptor actionDescriptor)
+            {
+                Console.WriteLine("no filter");
+                return new List<FilterInfo>();
+            }
+
+            public void OnProvidersExecuted(FilterProviderContext context)
+            {
+                
+            }
+
+            public void OnProvidersExecuting(FilterProviderContext context)
+            {
+                
+            }
+        }
+
         private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
         
         private readonly ICacheManagerProvider _cacheManagerProvider;
@@ -98,8 +170,18 @@ namespace SimpleIdentityServer.Api.Tests.Common
         
         public void CreateServer(Action<IServiceCollection> callback) 
         {
-            TestServer = TestServer.Create(app => {
-                app.UseMvc();
+            TestServer = TestServer.Create(app => {                
+                app.UseCookieAuthentication(opts => {
+                    opts.AuthenticationScheme = "SimpleIdentityServerAuthentication";
+                    opts.AutomaticChallenge = true;
+                });
+                app.UseMiddleware<FakeAuthenticationMiddleWare>();
+                app.UseMvc(routes =>
+                {
+                    routes.MapRoute(
+                        name: "default",
+                        template: "{controller}/{action=Index}/{id?}");
+                });
             }, services => {
                 ConfigureServiceCollection(services);
                 if (callback != null) {
@@ -140,7 +222,7 @@ namespace SimpleIdentityServer.Api.Tests.Common
             serviceCollection.AddTransient<ITranslationRepository, FakeTranslationRepository>();
             serviceCollection.AddTransient<IParameterParserHelper, ParameterParserHelper>();
             serviceCollection.AddTransient<IActionResultFactory, ActionResultFactory>();
-            serviceCollection.AddTransient<IHttpClientFactory, HttpClientFactory>();
+            serviceCollection.AddTransient<IHttpClientFactory, Core.Factories.HttpClientFactory>();
             serviceCollection.AddTransient<IAuthorizationActions, AuthorizationActions>();
             serviceCollection.AddTransient<IGetAuthorizationCodeOperation, GetAuthorizationCodeOperation>();
             serviceCollection.AddTransient<IGetTokenViaImplicitWorkflowOperation, GetTokenViaImplicitWorkflowOperation>();
@@ -191,6 +273,10 @@ namespace SimpleIdentityServer.Api.Tests.Common
             serviceCollection.AddInstance(_simpleIdentityServerEventSource);
             serviceCollection.AddTransient<ITranslationManager, TranslationManager>();
             serviceCollection.AddInstance(_cacheManagerProvider);
+            serviceCollection.AddMvc(opt => {
+                opt.Filters.Add(typeof(FakeFilterProvider));
+            });
+            serviceCollection.AddLogging();
         }
         
         #endregion
