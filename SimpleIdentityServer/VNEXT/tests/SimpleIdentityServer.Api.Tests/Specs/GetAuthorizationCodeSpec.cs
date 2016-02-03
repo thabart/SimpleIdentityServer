@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Net;
 using System.Net.Http;
-using System.Web.Http;
 
 using SimpleIdentityServer.Host.DTOs.Request;
 using SimpleIdentityServer.Host.DTOs.Response;
 using SimpleIdentityServer.Api.Tests.Common;
-using SimpleIdentityServer.DataAccess.Fake;
 using SimpleIdentityServer.RateLimitation.Configuration;
 
 using TechTalk.SpecFlow;
@@ -68,18 +66,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         public void WhenRequestingAnAuthorizationCode(Table table)
         {
             var authorizationRequest = table.CreateInstance<AuthorizationRequest>();
-            // Fake the authentication filter.
-            var httpConfiguration = new HttpConfiguration();
-            if (_resourceOwner != null)
-            {
-                httpConfiguration.Filters.Add(new FakeAuthenticationFilter
-                {
-                    ResourceOwner = _resourceOwner
-                });
-            }
-
             var responseModeName = Enum.GetName(typeof (ResponseMode), authorizationRequest.response_mode);
-
             var client = _globalContext.TestServer.CreateClient();
             var url = string.Format(
                     "/authorization?scope={0}&response_type={1}&client_id={2}&redirect_uri={3}&prompt={4}&state={5}&response_mode={6}",

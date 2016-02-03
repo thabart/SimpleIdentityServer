@@ -2,506 +2,725 @@ xUnit.net DNX Runner (32-bit DNX 4.5.1)
   Discovering: SimpleIdentityServer.Api.Tests
   Discovered:  SimpleIdentityServer.Api.Tests
   Starting:    SimpleIdentityServer.Api.Tests
-#13: Given a resource owner with username thierry and password loki is defined
-#12: Given a mobile application MyHolidays is defined
--> #12: done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
--> #13: done: GlobalGivenInstructions.GivenResourceOwner("thierry", "loki") (0,0s)
-#13: And a mobile application MyHolidays is defined
-#12: And the redirection uri http://localhost is assigned to the client MyHolidays
--> #13: done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
-#13: And allowed number of requests is 2
-Number of clients : 2
--> #12: error: Sequence contains more than one matching element
-#12: And the scopes are defined
+Given a mobile application MyHolidays is defined
+-> done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
+And the redirection uri http://localhost is assigned to the client MyHolidays
+-> done: GlobalGivenInstructions.GivenRedirectionUriIsAssignedTo("http://localhost", "MyHolidays") (0,0s)
+And add json web keys
+  --- table step argument ---
+  | Kid | Alg    | Operation | Kty | Use |
+  | 1   | RSA1_5 | Encrypt   | RSA | Enc |
+-> done: GlobalGivenInstructions.AddJsonWebKeys(<table>) (0,1s)
+And the scopes are defined
+  --- table step argument ---
+  | Name    | IsInternal | Claims |
+  | openid  | true       |        |
+  | profile | true       | name   |
+-> done: GlobalGivenInstructions.GivenScope(<table>) (0,0s)
+And the id_token signature algorithm is set to none for the client MyHolidays
+-> done: GlobalGivenInstructions.GivenIdTokenSignatureAlgorithmIsSetForTheClient("none", "MyHolidays") (0,0s)
+And the id_token encrypted response alg is set to RSA1_5 for the client MyHolidays
+-> done: GlobalGivenInstructions.GivenEncryptedResponseAlgToTheClient("RSA1_5", "MyHolidays") (0,0s)
+And the id_token encrypted response enc is set to A128CBC-HS256 for the client MyHolidays
+-> done: GlobalGivenInstructions.GivenEncryptedResponseEncToTheClient("A128CBC-HS256", "MyHolidays") (0,0s)
+And the scopes openid,profile are assigned to the client MyHolidays
+-> done: GlobalGivenInstructions.GivenScopesToTheClients(System.Collection..., "MyHolidays") (0,0s)
+And the grant-type implicit is supported by the client MyHolidays
+-> done: GlobalGivenInstructions.GivenGrantTypesAreSupportedByClient(implicit, "MyHolidays") (0,0s)
+And the response-types id_token are supported by the client MyHolidays
+-> done: GlobalGivenInstructions.GivenResponseIsSupportedByTheClient(System.Collection..., "MyHolidays") (0,0s)
+And create a resource owner
+  --- table step argument ---
+  | Id                   | Name    |
+  | habarthierry@loki.be | thabart |
+-> done: GetIdTokenViaImplicitWorkflowSpec.GivenCreateAResourceOwner(<table>) (0,1s)
+And authenticate the resource owner
+-> done: GetIdTokenViaImplicitWorkflowSpec.GivenAuthenticateTheResourceOwner() (0,0s)
+And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and scopes openid,profile
+-> done: GlobalGivenInstructions.GivenConsentScopes("habarthierry@loki.be", "MyHolidays", System.Collection...) (0,0s)
+And create an authorization request
+  --- table step argument ---
+  | scope          | response_type | client_id  | redirect_uri     | prompt | state  | nonce          |
+  | openid profile | id_token      | MyHolidays | http://localhost | none   | state1 | parameterNonce |
+-> done: GetIdTokenViaImplicitWorkflowSpec.GivenCreateAnAuthorizationRequest(<table>) (0,0s)
+When requesting an authorization
+-> done: GetIdTokenViaImplicitWorkflowSpec.WhenRequestingAnAuthorizationCode() (0,4s)
+Then the http status code is 302
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenHttpStatusCodeIsCorrect(Redirect) (0,0s)
+And decrypt the jwe parameter from the fragment with the following kid 1
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenDecryptTheJweParameterFromTheQueryString("1") (0,0s)
+And the protected JWS header is returned
+  --- table step argument ---
+  | Alg  |
+  | none |
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenProtectedJwsHeaderIsReturned(<table>) (0,0s)
+And the audience parameter with value MyHolidays is returned by the JWS payload
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenAudienceIsReturnedInJwsPayLoad("MyHolidays") (0,0s)
+And the parameter nonce with value parameterNonce is returned by the JWS payload
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenNonceIsReturnedInJwsPayLoad("parameterNonce") (0,0s)
+And the claim sub with value habarthierry@loki.be is returned by the JWS payload
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenTheClaimWithValueIsReturnedByJwsPayLoad("sub", "habarthierry@loki.be") (0,0s)
+And the claim name with value thabart is returned by the JWS payload
+-> error: Assert.NotNull() Failure
+Given a mobile application MyHolidays is defined
+-> done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
+And the redirection uri http://localhost is assigned to the client MyHolidays
+-> done: GlobalGivenInstructions.GivenRedirectionUriIsAssignedTo("http://localhost", "MyHolidays") (0,0s)
+And the scopes are defined
   --- table step argument ---
   | Name        | IsInternal |
-  | PlanningApi | true       |
   | openid      | true       |
--> #12: skipped because of previous errors
-#12: And the scopes openid,PlanningApi are assigned to the client MyHolidays
--> #12: skipped because of previous errors
-#12: When requesting an authorization code
+  | PlanningApi | false      |
+-> done: GlobalGivenInstructions.GivenScope(<table>) (0,0s)
+And the id_token signature algorithm is set to none for the client MyHolidays
+-> done: GlobalGivenInstructions.GivenIdTokenSignatureAlgorithmIsSetForTheClient("none", "MyHolidays") (0,0s)
+And the scopes openid,PlanningApi are assigned to the client MyHolidays
+-> done: GlobalGivenInstructions.GivenScopesToTheClients(System.Collection..., "MyHolidays") (0,0s)
+And the grant-type implicit is supported by the client MyHolidays
+-> done: GlobalGivenInstructions.GivenGrantTypesAreSupportedByClient(implicit, "MyHolidays") (0,0s)
+And the response-types id_token are supported by the client MyHolidays
+-> done: GlobalGivenInstructions.GivenResponseIsSupportedByTheClient(System.Collection..., "MyHolidays") (0,0s)
+And create a resource owner
   --- table step argument ---
-  | scope              | response_type | client_id  | redirect_uri     | prompt     | state  |
-  | openid PlanningApi | code          | MyHolidays | http://localhost | none login | state1 |
--> #12: skipped because of previous errors
-#12: Then HTTP status code is 400
--> #12: skipped because of previous errors
-#12: And the error returned is
+  | Id                   | Name    |
+  | habarthierry@loki.be | thabart |
+-> done: GetIdTokenViaImplicitWorkflowSpec.GivenCreateAResourceOwner(<table>) (0,0s)
+And authenticate the resource owner
+-> done: GetIdTokenViaImplicitWorkflowSpec.GivenAuthenticateTheResourceOwner() (0,0s)
+And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and scopes openid,PlanningApi
+-> done: GlobalGivenInstructions.GivenConsentScopes("habarthierry@loki.be", "MyHolidays", System.Collection...) (0,0s)
+And create an authorization request
   --- table step argument ---
-  | error           | state  |
-  | invalid_request | state1 |
--> #12: skipped because of previous errors
-#12: Given a mobile application MyHolidays is defined
--> #12: done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
-#12: And the redirection uri http://localhost is assigned to the client MyHolidays
-Number of clients : 1
--> #12: done: GlobalGivenInstructions.GivenRedirectionUriIsAssignedTo("http://localhost", "MyHolidays") (0,0s)
-#12: And the scopes are defined
-  --- table step argument ---
-  | Name        | IsInternal |
-  | PlanningApi | true       |
-  | openid      | true       |
-      System.InvalidOperationException : Sequence contains more than one matching element
+  | scope              | response_type | client_id  | redirect_uri     | prompt | state  | nonce          |
+  | openid PlanningApi | id_token      | MyHolidays | http://localhost | none   | state1 | parameterNonce |
+      Assert.NotNull() Failure
       Stack Trace:
-           at System.Linq.Enumerable.SingleOrDefault[TSource](IEnumerable`1 source, Func`2 predicate)
-        c:\Project\OTHERS\SimpleIdentityServer\SimpleIdentityServer\VNEXT\tests\SimpleIdentityServer.Api.Tests\Common\GlobalGivenInstructions.cs(259,0): at SimpleIdentityServer.Api.Tests.Common.GlobalGivenInstructions.GetClient(String clientId)
-        c:\Project\OTHERS\SimpleIdentityServer\SimpleIdentityServer\VNEXT\tests\SimpleIdentityServer.Api.Tests\Common\GlobalGivenInstructions.cs(128,0): at SimpleIdentityServer.Api.Tests.Common.GlobalGivenInstructions.GivenRedirectionUriIsAssignedTo(String redirectionUri, String clientId)
+-> done: GetIdTokenViaImplicitWorkflowSpec.GivenCreateAnAuthorizationRequest(<table>) (0,0s)
+When requesting an authorization
+        c:\Project\OTHERS\SimpleIdentityServer\SimpleIdentityServer\VNEXT\tests\SimpleIdentityServer.Api.Tests\Specs\GetIdTokenViaImplicitWorkflowSpec.cs(271,0): at SimpleIdentityServer.Api.Tests.Specs.GetIdTokenViaImplicitWorkflowSpec.ThenTheClaimWithValueIsReturnedByJwsPayLoad(String claimName, String val)
            at lambda_method(Closure , IContextManager , String , String )
            at TechTalk.SpecFlow.Bindings.BindingInvoker.InvokeBinding(IBinding binding, IContextManager contextManager, Object[] arguments, ITestTracer testTracer, TimeSpan& duration)
            at TechTalk.SpecFlow.Infrastructure.TestExecutionEngine.ExecuteStepMatch(BindingMatch match, Object[] arguments)
            at TechTalk.SpecFlow.Infrastructure.TestExecutionEngine.ExecuteStep(StepInstance stepInstance)
            at TechTalk.SpecFlow.Infrastructure.TestExecutionEngine.OnAfterLastStep()
            at TechTalk.SpecFlow.TestRunner.CollectScenarioErrors()
-        c:\Project\OTHERS\SimpleIdentityServer\SimpleIdentityServer\VNEXT\tests\SimpleIdentityServer.Api.Tests\Features\GetAuthorizationCode.feature.cs(0,0): at SpecFlow.GeneratedTests.GetAuthorizationCodeFeature.ScenarioCleanup()
-        GetAuthorizationCode.feature(246,0): at SpecFlow.GeneratedTests.GetAuthorizationCodeFeature.AResourceOwnerIsNotAuthenticatedAndWeWantToRetrieveAnAuthorizationCodeWithPromptEqualToNoneAndLogin()
--> #12: done: GlobalGivenInstructions.GivenScope(<table>) (0,0s)
-#12: And the scopes openid,PlanningApi are assigned to the client MyHolidays
-Number of clients : 1
--> #12: done: GlobalGivenInstructions.GivenScopesToTheClients(System.Collection..., "MyHolidays") (0,0s)
-#12: And create a resource owner
+        c:\Project\OTHERS\SimpleIdentityServer\SimpleIdentityServer\VNEXT\tests\SimpleIdentityServer.Api.Tests\Features\GetIdTokenViaImplicitFlow.feature.cs(0,0): at SpecFlow.GeneratedTests.GetIdTokenViaImplicitWorkflowFeature.ScenarioCleanup()
+        GetIdTokenViaImplicitFlow.feature(317,0): at SpecFlow.GeneratedTests.GetIdTokenViaImplicitWorkflowFeature.GetAnEncryptedIdTokenAndCheckIfTheClaimsReturnedInTheTokenAreCorrect()
+-> done: GetIdTokenViaImplicitWorkflowSpec.WhenRequestingAnAuthorizationCode() (0,0s)
+Then the http status code is 302
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenHttpStatusCodeIsCorrect(Redirect) (0,0s)
+And decrypt the id_token parameter from the fragment
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenDecryptTheIdTokenFromTheQueryString() (0,0s)
+And the protected JWS header is returned
+  --- table step argument ---
+  | Alg  |
+  | none |
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenProtectedJwsHeaderIsReturned(<table>) (0,0s)
+And the audience parameter with value MyHolidays is returned by the JWS payload
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenAudienceIsReturnedInJwsPayLoad("MyHolidays") (0,0s)
+And the parameter nonce with value parameterNonce is returned by the JWS payload
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenNonceIsReturnedInJwsPayLoad("parameterNonce") (0,0s)
+And the claim sub with value habarthierry@loki.be is returned by the JWS payload
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenTheClaimWithValueIsReturnedByJwsPayLoad("sub", "habarthierry@loki.be") (0,0s)
+Given a mobile application MyHolidays is defined
+-> done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
+And the redirection uri http://localhost is assigned to the client MyHolidays
+-> done: GlobalGivenInstructions.GivenRedirectionUriIsAssignedTo("http://localhost", "MyHolidays") (0,0s)
+And the scopes are defined
+  --- table step argument ---
+  | Name   | IsInternal |
+  | openid | true       |
+-> done: GlobalGivenInstructions.GivenScope(<table>) (0,0s)
+And the id_token signature algorithm is set to none for the client MyHolidays
+-> done: GlobalGivenInstructions.GivenIdTokenSignatureAlgorithmIsSetForTheClient("none", "MyHolidays") (0,0s)
+And the scopes openid are assigned to the client MyHolidays
+-> done: GlobalGivenInstructions.GivenScopesToTheClients(System.Collection..., "MyHolidays") (0,0s)
+And the grant-type implicit is supported by the client MyHolidays
+-> done: GlobalGivenInstructions.GivenGrantTypesAreSupportedByClient(implicit, "MyHolidays") (0,0s)
+And the response-types id_token are supported by the client MyHolidays
+-> done: GlobalGivenInstructions.GivenResponseIsSupportedByTheClient(System.Collection..., "MyHolidays") (0,0s)
+And create a resource owner
   --- table step argument ---
   | Id                   | Name    |
   | habarthierry@loki.be | thabart |
--> #13: done: GetAccessTokenMultipleTimeSpec.GivenAllowedNumberOfRequests(2) (0,5s)
-#13: And sliding time is 0.2
--> #13: done: GetAccessTokenMultipleTimeSpec.GivenSlidingTime(0,2) (0,0s)
-#13: When requesting access tokens
+-> done: GetIdTokenViaImplicitWorkflowSpec.GivenCreateAResourceOwner(<table>) (0,0s)
+And authenticate the resource owner
+-> done: GetIdTokenViaImplicitWorkflowSpec.GivenAuthenticateTheResourceOwner() (0,0s)
+And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and claims name
+-> done: GlobalGivenInstructions.GivenConsentClaims("habarthierry@loki.be", "MyHolidays", System.Collection...) (0,0s)
+And create an authorization request
   --- table step argument ---
-  | client_id  | username | password |
-  | MyHolidays | thierry  | loki     |
-  | MyHolidays | thierry  | loki     |
-  | MyHolidays | thierry  | loki     |
--> #12: done: GetAuthorizationCodeSpec.GivenCreateAResourceOwner(<table>) (0,4s)
-#12: And authenticate the resource owner
--> #12: done: GetAuthorizationCodeSpec.GivenAuthenticateTheResourceOwner() (0,0s)
-#12: When requesting an authorization code
-  --- table step argument ---
-  | scope              | response_type | client_id  | redirect_uri     | prompt | state  |
-  | openid PlanningApi | code          | MyHolidays | http://localhost | none   | state1 |
--> #13: error: The given header was not found.
-#13: Then 2 access tokens are generated
--> #13: skipped because of previous errors
-#13: And the errors should be returned
-  --- table step argument ---
-  | Message                          |
-  | Allow 2 requests per 0.2 minutes |
--> #13: skipped because of previous errors
-#13: And the http responses should be returned
-  --- table step argument ---
-  | StatusCode | NumberOfRemainingRequests | NumberOfRequests |
-  | 200        | 1                         | 2                |
-  | 200        | 0                         | 2                |
-  | 429        | 0                         | 2                |
--> #13: skipped because of previous errors
-      System.InvalidOperationException : The given header was not found.
-      Stack Trace:
-           at System.Net.Http.Headers.HttpHeaders.GetValues(String name)
-        c:\Project\OTHERS\SimpleIdentityServer\SimpleIdentityServer\VNEXT\tests\SimpleIdentityServer.Api.Tests\Specs\GetAccessTokenMultipleTimeSpec.cs(94,0): at SimpleIdentityServer.Api.Tests.Specs.GetAccessTokenMultipleTimeSpec.WhenRequestingAccessTokens(Table table)
-           at lambda_method(Closure , IContextManager , Table )
-           at TechTalk.SpecFlow.Bindings.BindingInvoker.InvokeBinding(IBinding binding, IContextManager contextManager, Object[] arguments, ITestTracer testTracer, TimeSpan& duration)
-#13: Given a resource owner with username thierry and password loki is defined
-           at TechTalk.SpecFlow.Infrastructure.TestExecutionEngine.ExecuteStepMatch(BindingMatch match, Object[] arguments)
-           at TechTalk.SpecFlow.Infrastructure.TestExecutionEngine.ExecuteStep(StepInstance stepInstance)
--> #13: done: GlobalGivenInstructions.GivenResourceOwner("thierry", "loki") (0,0s)
-#13: And a mobile application MyHolidays is defined
-           at TechTalk.SpecFlow.Infrastructure.TestExecutionEngine.OnAfterLastStep()
--> #13: done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
-#13: And allowed number of requests is 2
-           at TechTalk.SpecFlow.TestRunner.CollectScenarioErrors()
-        c:\Project\OTHERS\SimpleIdentityServer\SimpleIdentityServer\VNEXT\tests\SimpleIdentityServer.Api.Tests\Features\GetAccessTokenMultipleTime.feature.cs(0,0): at SpecFlow.GeneratedTests.GetAccessTokenMultipleTimeFeature.ScenarioCleanup()
-        GetAccessTokenMultipleTime.feature(22,0): at SpecFlow.GeneratedTests.GetAccessTokenMultipleTimeFeature.Request3TimesAnAccessToken()
--> #13: done: GetAccessTokenMultipleTimeSpec.GivenAllowedNumberOfRequests(2) (0,0s)
-#13: And sliding time is 0.2
--> #13: done: GetAccessTokenMultipleTimeSpec.GivenSlidingTime(0,2) (0,0s)
-#13: When requesting access tokens
-  --- table step argument ---
-  | client_id  | username | password |
-  | MyHolidays | thierry  | loki     |
-  | MyHolidays | thierry  | loki     |
-  | MyHolidays | thierry  | loki     |
--> #12: done: GetAuthorizationCodeSpec.WhenRequestingAnAuthorizationCode(<table>) (0,4s)
-#12: Then HTTP status code is 400
--> #12: done: GetAuthorizationCodeSpec.ThenHttpStatusCodeIs(BadRequest) (0,0s)
-#12: And the error returned is
-  --- table step argument ---
-  | error                | state  |
-  | interaction_required | state1 |
--> #12: error: Assert.True() Failure
+  | scope  | response_type | client_id  | redirect_uri     | prompt | state  | nonce          | claims                                                                    |
+  | openid | id_token      | MyHolidays | http://localhost | none   | state1 | parameterNonce | %7B%22id_token%22%3A+%7B%22name%22%3A+%7B%22essential%22%3A+true%7D%7D%7D |
+-> done: GetIdTokenViaImplicitWorkflowSpec.GivenCreateAnAuthorizationRequest(<table>) (0,0s)
+When requesting an authorization
+-> done: GetIdTokenViaImplicitWorkflowSpec.WhenRequestingAnAuthorizationCode() (0,1s)
+Then the http status code is 302
+-> error: Assert.True() Failure
 Expected: True
 Actual:   False
+And decrypt the id_token parameter from the fragment
+-> skipped because of previous errors
+And the protected JWS header is returned
+  --- table step argument ---
+  | Alg  |
+  | none |
+-> skipped because of previous errors
+And the claim sub with value habarthierry@loki.be is returned by the JWS payload
+-> skipped because of previous errors
+And the claim name with value thabart is returned by the JWS payload
+-> skipped because of previous errors
+      Assert.True() Failure
+      Expected: True
+      Actual:   False
+Given a mobile application MyHolidays is defined
+      Stack Trace:
+-> done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
+And the redirection uri http://localhost is assigned to the client MyHolidays
+        c:\Project\OTHERS\SimpleIdentityServer\SimpleIdentityServer\VNEXT\tests\SimpleIdentityServer.Api.Tests\Specs\GetIdTokenViaImplicitWorkflowSpec.cs(151,0): at SimpleIdentityServer.Api.Tests.Specs.GetIdTokenViaImplicitWorkflowSpec.ThenHttpStatusCodeIsCorrect(HttpStatusCode code)
+-> done: GlobalGivenInstructions.GivenRedirectionUriIsAssignedTo("http://localhost", "MyHolidays") (0,0s)
+And add json web keys
+  --- table step argument ---
+  | Kid | Alg    | Operation | Kty | Use |
+  | 1   | RSA1_5 | Encrypt   | RSA | Enc |
+  | 2   | RS256  | Sign      | RSA | Sig |
+           at lambda_method(Closure , IContextManager , HttpStatusCode )
+           at TechTalk.SpecFlow.Bindings.BindingInvoker.InvokeBinding(IBinding binding, IContextManager contextManager, Object[] arguments, ITestTracer testTracer, TimeSpan& duration)
+           at TechTalk.SpecFlow.Infrastructure.TestExecutionEngine.ExecuteStepMatch(BindingMatch match, Object[] arguments)
+           at TechTalk.SpecFlow.Infrastructure.TestExecutionEngine.ExecuteStep(StepInstance stepInstance)
+           at TechTalk.SpecFlow.Infrastructure.TestExecutionEngine.OnAfterLastStep()
+           at TechTalk.SpecFlow.TestRunner.CollectScenarioErrors()
+        c:\Project\OTHERS\SimpleIdentityServer\SimpleIdentityServer\VNEXT\tests\SimpleIdentityServer.Api.Tests\Features\GetIdTokenViaImplicitFlow.feature.cs(0,0): at SpecFlow.GeneratedTests.GetIdTokenViaImplicitWorkflowFeature.ScenarioCleanup()
+        GetIdTokenViaImplicitFlow.feature(133,0): at SpecFlow.GeneratedTests.GetIdTokenViaImplicitWorkflowFeature.GetAnIdentityTokenByUsingTheClaimsParameterId_TokenNameEssentialTrue()
+-> done: GlobalGivenInstructions.AddJsonWebKeys(<table>) (0,1s)
+And the scopes are defined
+  --- table step argument ---
+  | Name    | IsInternal | Claims |
+  | openid  | true       |        |
+  | profile | true       | name   |
+-> done: GlobalGivenInstructions.GivenScope(<table>) (0,0s)
+And the id_token signature algorithm is set to RS256 for the client MyHolidays
+-> done: GlobalGivenInstructions.GivenIdTokenSignatureAlgorithmIsSetForTheClient("RS256", "MyHolidays") (0,0s)
+And the id_token encrypted response alg is set to RSA1_5 for the client MyHolidays
+-> done: GlobalGivenInstructions.GivenEncryptedResponseAlgToTheClient("RSA1_5", "MyHolidays") (0,0s)
+And the id_token encrypted response enc is set to A128CBC-HS256 for the client MyHolidays
+-> done: GlobalGivenInstructions.GivenEncryptedResponseEncToTheClient("A128CBC-HS256", "MyHolidays") (0,0s)
+And the scopes openid,profile are assigned to the client MyHolidays
+-> done: GlobalGivenInstructions.GivenScopesToTheClients(System.Collection..., "MyHolidays") (0,0s)
+And the grant-type implicit is supported by the client MyHolidays
+-> done: GlobalGivenInstructions.GivenGrantTypesAreSupportedByClient(implicit, "MyHolidays") (0,0s)
+And the response-types id_token are supported by the client MyHolidays
+-> done: GlobalGivenInstructions.GivenResponseIsSupportedByTheClient(System.Collection..., "MyHolidays") (0,0s)
+And create a resource owner
+  --- table step argument ---
+  | Id                   | Name    |
+  | habarthierry@loki.be | thabart |
+-> done: GetIdTokenViaImplicitWorkflowSpec.GivenCreateAResourceOwner(<table>) (0,0s)
+And authenticate the resource owner
+-> done: GetIdTokenViaImplicitWorkflowSpec.GivenAuthenticateTheResourceOwner() (0,0s)
+And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and scopes openid,profile
+-> done: GlobalGivenInstructions.GivenConsentScopes("habarthierry@loki.be", "MyHolidays", System.Collection...) (0,0s)
+And create an authorization request
+  --- table step argument ---
+  | scope          | response_type | client_id  | redirect_uri     | prompt | state  | nonce          |
+  | openid profile | id_token      | MyHolidays | http://localhost | none   | state1 | parameterNonce |
+-> done: GetIdTokenViaImplicitWorkflowSpec.GivenCreateAnAuthorizationRequest(<table>) (0,0s)
+When requesting an authorization
+-> done: GetIdTokenViaImplicitWorkflowSpec.WhenRequestingAnAuthorizationCode() (0,0s)
+Then the http status code is 302
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenHttpStatusCodeIsCorrect(Redirect) (0,0s)
+And decrypt the jwe parameter from the fragment with the following kid 1
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenDecryptTheJweParameterFromTheQueryString("1") (0,0s)
+And check the signature is correct with the kid 2
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenCheckSignatureIsCorrectWithKid("2") (0,0s)
+And the protected JWS header is returned
+  --- table step argument ---
+  | Alg   |
+  | RS256 |
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenProtectedJwsHeaderIsReturned(<table>) (0,0s)
+And the audience parameter with value MyHolidays is returned by the JWS payload
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenAudienceIsReturnedInJwsPayLoad("MyHolidays") (0,0s)
+And the parameter nonce with value parameterNonce is returned by the JWS payload
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenNonceIsReturnedInJwsPayLoad("parameterNonce") (0,0s)
+And the claim sub with value habarthierry@loki.be is returned by the JWS payload
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenTheClaimWithValueIsReturnedByJwsPayLoad("sub", "habarthierry@loki.be") (0,0s)
+And the claim name with value thabart is returned by the JWS payload
+-> error: Assert.NotNull() Failure
+Given a mobile application MyHolidays is defined
+-> done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
+And the redirection uri http://localhost is assigned to the client MyHolidays
+-> done: GlobalGivenInstructions.GivenRedirectionUriIsAssignedTo("http://localhost", "MyHolidays") (0,0s)
+And the scopes are defined
+  --- table step argument ---
+  | Name   | IsInternal |
+  | openid | true       |
+      Assert.NotNull() Failure
+      Stack Trace:
+-> done: GlobalGivenInstructions.GivenScope(<table>) (0,0s)
+And the id_token signature algorithm is set to none for the client MyHolidays
+-> done: GlobalGivenInstructions.GivenIdTokenSignatureAlgorithmIsSetForTheClient("none", "MyHolidays") (0,0s)
+        c:\Project\OTHERS\SimpleIdentityServer\SimpleIdentityServer\VNEXT\tests\SimpleIdentityServer.Api.Tests\Specs\GetIdTokenViaImplicitWorkflowSpec.cs(271,0): at SimpleIdentityServer.Api.Tests.Specs.GetIdTokenViaImplicitWorkflowSpec.ThenTheClaimWithValueIsReturnedByJwsPayLoad(String claimName, String val)
+And the scopes openid are assigned to the client MyHolidays
+           at lambda_method(Closure , IContextManager , String , String )
+-> done: GlobalGivenInstructions.GivenScopesToTheClients(System.Collection..., "MyHolidays") (0,0s)
+And the grant-type implicit is supported by the client MyHolidays
+           at TechTalk.SpecFlow.Bindings.BindingInvoker.InvokeBinding(IBinding binding, IContextManager contextManager, Object[] arguments, ITestTracer testTracer, TimeSpan& duration)
+-> done: GlobalGivenInstructions.GivenGrantTypesAreSupportedByClient(implicit, "MyHolidays") (0,0s)
+And the response-types id_token are supported by the client MyHolidays
+           at TechTalk.SpecFlow.Infrastructure.TestExecutionEngine.ExecuteStepMatch(BindingMatch match, Object[] arguments)
+-> done: GlobalGivenInstructions.GivenResponseIsSupportedByTheClient(System.Collection..., "MyHolidays") (0,0s)
+           at TechTalk.SpecFlow.Infrastructure.TestExecutionEngine.ExecuteStep(StepInstance stepInstance)
+And create a resource owner
+  --- table step argument ---
+  | Id                   | Name    |
+  | habarthierry@loki.be | thabart |
+           at TechTalk.SpecFlow.Infrastructure.TestExecutionEngine.OnAfterLastStep()
+           at TechTalk.SpecFlow.TestRunner.CollectScenarioErrors()
+        c:\Project\OTHERS\SimpleIdentityServer\SimpleIdentityServer\VNEXT\tests\SimpleIdentityServer.Api.Tests\Features\GetIdTokenViaImplicitFlow.feature.cs(0,0): at SpecFlow.GeneratedTests.GetIdTokenViaImplicitWorkflowFeature.ScenarioCleanup()
+        GetIdTokenViaImplicitFlow.feature(358,0): at SpecFlow.GeneratedTests.GetIdTokenViaImplicitWorkflowFeature.GetASignedAndEncryptedIdTokenAndCheckIfTheClaimsReturnedInTheTokenAreCorrect()
+-> done: GetIdTokenViaImplicitWorkflowSpec.GivenCreateAResourceOwner(<table>) (0,0s)
+And authenticate the resource owner
+-> done: GetIdTokenViaImplicitWorkflowSpec.GivenAuthenticateTheResourceOwner() (0,0s)
+And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and claims name
+-> done: GlobalGivenInstructions.GivenConsentClaims("habarthierry@loki.be", "MyHolidays", System.Collection...) (0,0s)
+And create an authorization request
+  --- table step argument ---
+  | scope  | response_type | client_id  | redirect_uri     | prompt | state  | nonce          | claims                                                                      |
+  | openid | id_token      | MyHolidays | http://localhost | none   | state1 | parameterNonce | %7B%22id_token%22%3A+%7B%22name%22%3A+%7B%22value%22%3A+%22fake%22%7D%7D%7D |
+-> done: GetIdTokenViaImplicitWorkflowSpec.GivenCreateAnAuthorizationRequest(<table>) (0,0s)
+When requesting an authorization
+-> done: GetIdTokenViaImplicitWorkflowSpec.WhenRequestingAnAuthorizationCode() (0,0s)
+Then the http status code is 400
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenHttpStatusCodeIsCorrect(BadRequest) (0,0s)
+And the error code is invalid_grant
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenTheErrorCodeIs("invalid_grant") (0,0s)
+Given a mobile application MyHolidays is defined
+-> done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
+And the redirection uri http://localhost is assigned to the client MyHolidays
+-> done: GlobalGivenInstructions.GivenRedirectionUriIsAssignedTo("http://localhost", "MyHolidays") (0,0s)
+And the scopes are defined
+  --- table step argument ---
+  | Name        | IsInternal |
+  | openid      | true       |
+  | PlanningApi | false      |
+-> done: GlobalGivenInstructions.GivenScope(<table>) (0,0s)
+And the id_token signature algorithm is set to none for the client MyHolidays
+-> done: GlobalGivenInstructions.GivenIdTokenSignatureAlgorithmIsSetForTheClient("none", "MyHolidays") (0,0s)
+And the scopes openid,PlanningApi are assigned to the client MyHolidays
+-> done: GlobalGivenInstructions.GivenScopesToTheClients(System.Collection..., "MyHolidays") (0,0s)
+And the grant-type implicit is supported by the client MyHolidays
+-> done: GlobalGivenInstructions.GivenGrantTypesAreSupportedByClient(implicit, "MyHolidays") (0,0s)
+And the response-types id_token,token are supported by the client MyHolidays
+-> done: GlobalGivenInstructions.GivenResponseIsSupportedByTheClient(System.Collection..., "MyHolidays") (0,0s)
+And create a resource owner
+  --- table step argument ---
+  | Id                   | Name    |
+  | habarthierry@loki.be | thabart |
+-> done: GetIdTokenViaImplicitWorkflowSpec.GivenCreateAResourceOwner(<table>) (0,0s)
+And authenticate the resource owner
+-> done: GetIdTokenViaImplicitWorkflowSpec.GivenAuthenticateTheResourceOwner() (0,0s)
+And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and scopes openid,PlanningApi
+-> done: GlobalGivenInstructions.GivenConsentScopes("habarthierry@loki.be", "MyHolidays", System.Collection...) (0,0s)
+And create an authorization request
+  --- table step argument ---
+  | scope              | response_type  | client_id  | redirect_uri     | prompt | state  | nonce          |
+  | openid PlanningApi | id_token token | MyHolidays | http://localhost | none   | state1 | parameterNonce |
+-> done: GetIdTokenViaImplicitWorkflowSpec.GivenCreateAnAuthorizationRequest(<table>) (0,0s)
+When requesting an authorization
+-> done: GetIdTokenViaImplicitWorkflowSpec.WhenRequestingAnAuthorizationCode() (0,0s)
+Then the http status code is 302
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenHttpStatusCodeIsCorrect(Redirect) (0,0s)
+And decrypt the id_token parameter from the fragment
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenDecryptTheIdTokenFromTheQueryString() (0,0s)
+And the protected JWS header is returned
+  --- table step argument ---
+  | Alg  |
+  | none |
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenProtectedJwsHeaderIsReturned(<table>) (0,0s)
+And the audience parameter with value MyHolidays is returned by the JWS payload
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenAudienceIsReturnedInJwsPayLoad("MyHolidays") (0,0s)
+And the parameter nonce with value parameterNonce is returned by the JWS payload
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenNonceIsReturnedInJwsPayLoad("parameterNonce") (0,0s)
+And the claim sub with value habarthierry@loki.be is returned by the JWS payload
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenTheClaimWithValueIsReturnedByJwsPayLoad("sub", "habarthierry@loki.be") (0,0s)
+And the callback contains the following query name access_token
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenTheCallbackContainsTheQueryName("access_token") (0,0s)
+Given a mobile application MyHolidays is defined
+-> done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
+And the redirection uri http://localhost is assigned to the client MyHolidays
+-> done: GlobalGivenInstructions.GivenRedirectionUriIsAssignedTo("http://localhost", "MyHolidays") (0,0s)
+And add json web keys
+  --- table step argument ---
+  | Kid | Alg    | Operation | Kty | Use |
+  | 1   | RS256  | Sign      | RSA | Sig |
+  | 2   | RSA1_5 | Encrypt   | RSA | Enc |
+-> done: GlobalGivenInstructions.AddJsonWebKeys(<table>) (0,1s)
+And the scopes are defined
+  --- table step argument ---
+  | Name        | IsInternal |
+  | openid      | true       |
+  | PlanningApi | false      |
+-> done: GlobalGivenInstructions.GivenScope(<table>) (0,0s)
+And the id_token signature algorithm is set to none for the client MyHolidays
+-> done: GlobalGivenInstructions.GivenIdTokenSignatureAlgorithmIsSetForTheClient("none", "MyHolidays") (0,0s)
+And the scopes openid,PlanningApi are assigned to the client MyHolidays
+-> done: GlobalGivenInstructions.GivenScopesToTheClients(System.Collection..., "MyHolidays") (0,0s)
+And the grant-type implicit is supported by the client MyHolidays
+-> done: GlobalGivenInstructions.GivenGrantTypesAreSupportedByClient(implicit, "MyHolidays") (0,0s)
+And the response-types id_token are supported by the client MyHolidays
+-> done: GlobalGivenInstructions.GivenResponseIsSupportedByTheClient(System.Collection..., "MyHolidays") (0,0s)
+And create a resource owner
+  --- table step argument ---
+  | Id                   | Name    |
+  | habarthierry@loki.be | thabart |
+-> done: GetIdTokenViaImplicitWorkflowSpec.GivenCreateAResourceOwner(<table>) (0,0s)
+And authenticate the resource owner
+-> done: GetIdTokenViaImplicitWorkflowSpec.GivenAuthenticateTheResourceOwner() (0,0s)
+And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and scopes openid,PlanningApi
+-> done: GlobalGivenInstructions.GivenConsentScopes("habarthierry@loki.be", "MyHolidays", System.Collection...) (0,0s)
+And create an authorization request
+  --- table step argument ---
+  | scope              | response_type | client_id  | redirect_uri     | prompt | state  | nonce          |
+  | openid PlanningApi | id_token      | MyHolidays | http://localhost | none   | state1 | parameterNonce |
+-> done: GetIdTokenViaImplicitWorkflowSpec.GivenCreateAnAuthorizationRequest(<table>) (0,0s)
+And sign the authorization request with 1 kid and algorithm RS256
+-> done: GetIdTokenViaImplicitWorkflowSpec.GivenSignTheAuthorizationRequestWithKid("1", RS256) (0,0s)
+And encrypt the authorization request with 2 kid, JweAlg: RSA1_5 and JweEnc: A128CBC_HS256
+-> done: GetIdTokenViaImplicitWorkflowSpec.GivenSignTheAuthorizationRequestWithKid("2", RSA1_5, A128CBC_HS256) (0,0s)
+And set the request parameter with signed AND/OR encrypted authorization request
+-> done: GetIdTokenViaImplicitWorkflowSpec.GivenSetTheRequestParameterWithEncryptedAndOrSignedAuthorizationRequest() (0,0s)
+When requesting an authorization
+-> done: GetIdTokenViaImplicitWorkflowSpec.WhenRequestingAnAuthorizationCode() (0,0s)
+Then the http status code is 302
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenHttpStatusCodeIsCorrect(Redirect) (0,0s)
+And decrypt the id_token parameter from the fragment
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenDecryptTheIdTokenFromTheQueryString() (0,0s)
+And the protected JWS header is returned
+  --- table step argument ---
+  | Alg  |
+  | none |
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenProtectedJwsHeaderIsReturned(<table>) (0,0s)
+And the audience parameter with value MyHolidays is returned by the JWS payload
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenAudienceIsReturnedInJwsPayLoad("MyHolidays") (0,0s)
+And the parameter nonce with value parameterNonce is returned by the JWS payload
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenNonceIsReturnedInJwsPayLoad("parameterNonce") (0,0s)
+And the claim sub with value habarthierry@loki.be is returned by the JWS payload
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenTheClaimWithValueIsReturnedByJwsPayLoad("sub", "habarthierry@loki.be") (0,0s)
+Given a mobile application MyHolidays is defined
+-> done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
+And the redirection uri http://localhost is assigned to the client MyHolidays
+-> done: GlobalGivenInstructions.GivenRedirectionUriIsAssignedTo("http://localhost", "MyHolidays") (0,0s)
+And the scopes are defined
+  --- table step argument ---
+  | Name    | IsInternal | Claims |
+  | openid  | true       |        |
+  | profile | true       | name   |
+-> done: GlobalGivenInstructions.GivenScope(<table>) (0,0s)
+And the id_token signature algorithm is set to none for the client MyHolidays
+-> done: GlobalGivenInstructions.GivenIdTokenSignatureAlgorithmIsSetForTheClient("none", "MyHolidays") (0,0s)
+And the scopes openid,profile are assigned to the client MyHolidays
+-> done: GlobalGivenInstructions.GivenScopesToTheClients(System.Collection..., "MyHolidays") (0,0s)
+And the grant-type implicit is supported by the client MyHolidays
+-> done: GlobalGivenInstructions.GivenGrantTypesAreSupportedByClient(implicit, "MyHolidays") (0,0s)
+And the response-types id_token are supported by the client MyHolidays
+-> done: GlobalGivenInstructions.GivenResponseIsSupportedByTheClient(System.Collection..., "MyHolidays") (0,0s)
+And create a resource owner
+  --- table step argument ---
+  | Id                   | Name    |
+  | habarthierry@loki.be | thabart |
+-> done: GetIdTokenViaImplicitWorkflowSpec.GivenCreateAResourceOwner(<table>) (0,0s)
+And authenticate the resource owner
+-> done: GetIdTokenViaImplicitWorkflowSpec.GivenAuthenticateTheResourceOwner() (0,0s)
+And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and scopes openid,profile
+-> done: GlobalGivenInstructions.GivenConsentScopes("habarthierry@loki.be", "MyHolidays", System.Collection...) (0,0s)
+And create an authorization request
+  --- table step argument ---
+  | scope          | response_type | client_id  | redirect_uri     | prompt | state  | nonce          |
+  | openid profile | id_token      | MyHolidays | http://localhost | none   | state1 | parameterNonce |
+-> done: GetIdTokenViaImplicitWorkflowSpec.GivenCreateAnAuthorizationRequest(<table>) (0,0s)
+When requesting an authorization
+-> done: GetIdTokenViaImplicitWorkflowSpec.WhenRequestingAnAuthorizationCode() (0,0s)
+Then the http status code is 302
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenHttpStatusCodeIsCorrect(Redirect) (0,0s)
+And decrypt the id_token parameter from the fragment
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenDecryptTheIdTokenFromTheQueryString() (0,0s)
+And the protected JWS header is returned
+  --- table step argument ---
+  | Alg  |
+  | none |
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenProtectedJwsHeaderIsReturned(<table>) (0,0s)
+And the audience parameter with value MyHolidays is returned by the JWS payload
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenAudienceIsReturnedInJwsPayLoad("MyHolidays") (0,0s)
+And the parameter nonce with value parameterNonce is returned by the JWS payload
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenNonceIsReturnedInJwsPayLoad("parameterNonce") (0,0s)
+And the claim sub with value habarthierry@loki.be is returned by the JWS payload
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenTheClaimWithValueIsReturnedByJwsPayLoad("sub", "habarthierry@loki.be") (0,0s)
+And the claim name with value thabart is returned by the JWS payload
+-> error: Assert.NotNull() Failure
+      Assert.NotNull() Failure
+      Stack Trace:
+        c:\Project\OTHERS\SimpleIdentityServer\SimpleIdentityServer\VNEXT\tests\SimpleIdentityServer.Api.Tests\Specs\GetIdTokenViaImplicitWorkflowSpec.cs(271,0): at SimpleIdentityServer.Api.Tests.Specs.GetIdTokenViaImplicitWorkflowSpec.ThenTheClaimWithValueIsReturnedByJwsPayLoad(String claimName, String val)
+           at lambda_method(Closure , IContextManager , String , String )
+           at TechTalk.SpecFlow.Bindings.BindingInvoker.InvokeBinding(IBinding binding, IContextManager contextManager, Object[] arguments, ITestTracer testTracer, TimeSpan& duration)
+           at TechTalk.SpecFlow.Infrastructure.TestExecutionEngine.ExecuteStepMatch(BindingMatch match, Object[] arguments)
+           at TechTalk.SpecFlow.Infrastructure.TestExecutionEngine.ExecuteStep(StepInstance stepInstance)
+           at TechTalk.SpecFlow.Infrastructure.TestExecutionEngine.OnAfterLastStep()
+Given a mobile application MyHolidays is defined
+           at TechTalk.SpecFlow.TestRunner.CollectScenarioErrors()
+-> done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
+And the redirection uri http://localhost is assigned to the client MyHolidays
+        c:\Project\OTHERS\SimpleIdentityServer\SimpleIdentityServer\VNEXT\tests\SimpleIdentityServer.Api.Tests\Features\GetIdTokenViaImplicitFlow.feature.cs(0,0): at SpecFlow.GeneratedTests.GetIdTokenViaImplicitWorkflowFeature.ScenarioCleanup()
+-> done: GlobalGivenInstructions.GivenRedirectionUriIsAssignedTo("http://localhost", "MyHolidays") (0,0s)
+And the scopes are defined
+  --- table step argument ---
+  | Name   | IsInternal |
+  | openid | true       |
+        GetIdTokenViaImplicitFlow.feature(102,0): at SpecFlow.GeneratedTests.GetIdTokenViaImplicitWorkflowFeature.GetAnIdTokenAndCheckIfTheClaimsReturnedInTheTokenAreCorrect()
+-> done: GlobalGivenInstructions.GivenScope(<table>) (0,0s)
+And the id_token signature algorithm is set to none for the client MyHolidays
+-> done: GlobalGivenInstructions.GivenIdTokenSignatureAlgorithmIsSetForTheClient("none", "MyHolidays") (0,0s)
+And the scopes openid are assigned to the client MyHolidays
+-> done: GlobalGivenInstructions.GivenScopesToTheClients(System.Collection..., "MyHolidays") (0,0s)
+And the grant-type implicit is supported by the client MyHolidays
+-> done: GlobalGivenInstructions.GivenGrantTypesAreSupportedByClient(implicit, "MyHolidays") (0,0s)
+And the response-types id_token are supported by the client MyHolidays
+-> done: GlobalGivenInstructions.GivenResponseIsSupportedByTheClient(System.Collection..., "MyHolidays") (0,0s)
+And create a resource owner
+  --- table step argument ---
+  | Id                   | Name    |
+  | habarthierry@loki.be | thabart |
+-> done: GetIdTokenViaImplicitWorkflowSpec.GivenCreateAResourceOwner(<table>) (0,0s)
+And authenticate the resource owner
+-> done: GetIdTokenViaImplicitWorkflowSpec.GivenAuthenticateTheResourceOwner() (0,0s)
+And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and claims name,email
+-> done: GlobalGivenInstructions.GivenConsentClaims("habarthierry@loki.be", "MyHolidays", System.Collection...) (0,0s)
+And create an authorization request
+  --- table step argument ---
+  | scope  | response_type | client_id  | redirect_uri     | prompt | state  | nonce          | claims                                                                                                                            |
+  | openid | id_token      | MyHolidays | http://localhost | none   | state1 | parameterNonce | %7B%22id_token%22%3A+%7B%22name%22%3A+%7B%22value%22%3A+%22thabart%22%7D+%2C+%22email%22%3A+%7B%22value%22%3A+%22fake%22%7D%7D%7D |
+-> done: GetIdTokenViaImplicitWorkflowSpec.GivenCreateAnAuthorizationRequest(<table>) (0,0s)
+When requesting an authorization
+-> done: GetIdTokenViaImplicitWorkflowSpec.WhenRequestingAnAuthorizationCode() (0,0s)
+Then the http status code is 400
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenHttpStatusCodeIsCorrect(BadRequest) (0,0s)
+And the error code is invalid_grant
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenTheErrorCodeIs("invalid_grant") (0,0s)
+Given a mobile application MyHolidays is defined
+-> done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
+And the redirection uri http://localhost is assigned to the client MyHolidays
+-> done: GlobalGivenInstructions.GivenRedirectionUriIsAssignedTo("http://localhost", "MyHolidays") (0,0s)
+And add json web keys
+  --- table step argument ---
+  | Kid | Alg   | Operation | Kty | Use |
+  | 1   | RS256 | Sign      | RSA | Sig |
+-> done: GlobalGivenInstructions.AddJsonWebKeys(<table>) (0,1s)
+And the scopes are defined
+  --- table step argument ---
+  | Name        | IsInternal |
+  | openid      | true       |
+  | PlanningApi | false      |
+-> done: GlobalGivenInstructions.GivenScope(<table>) (0,0s)
+And the id_token signature algorithm is set to RS256 for the client MyHolidays
+-> done: GlobalGivenInstructions.GivenIdTokenSignatureAlgorithmIsSetForTheClient("RS256", "MyHolidays") (0,0s)
+And the scopes openid,PlanningApi are assigned to the client MyHolidays
+-> done: GlobalGivenInstructions.GivenScopesToTheClients(System.Collection..., "MyHolidays") (0,0s)
+And the grant-type implicit is supported by the client MyHolidays
+-> done: GlobalGivenInstructions.GivenGrantTypesAreSupportedByClient(implicit, "MyHolidays") (0,0s)
+And the response-types id_token are supported by the client MyHolidays
+-> done: GlobalGivenInstructions.GivenResponseIsSupportedByTheClient(System.Collection..., "MyHolidays") (0,0s)
+And create a resource owner
+  --- table step argument ---
+  | Id                   | Name    |
+  | habarthierry@loki.be | thabart |
+-> done: GetIdTokenViaImplicitWorkflowSpec.GivenCreateAResourceOwner(<table>) (0,0s)
+And authenticate the resource owner
+-> done: GetIdTokenViaImplicitWorkflowSpec.GivenAuthenticateTheResourceOwner() (0,0s)
+And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and scopes openid,PlanningApi
+-> done: GlobalGivenInstructions.GivenConsentScopes("habarthierry@loki.be", "MyHolidays", System.Collection...) (0,0s)
+And create an authorization request
+  --- table step argument ---
+  | scope              | response_type | client_id  | redirect_uri     | prompt | state  | nonce          |
+  | openid PlanningApi | id_token      | MyHolidays | http://localhost | none   | state1 | parameterNonce |
+-> done: GetIdTokenViaImplicitWorkflowSpec.GivenCreateAnAuthorizationRequest(<table>) (0,0s)
+When requesting an authorization
+-> done: GetIdTokenViaImplicitWorkflowSpec.WhenRequestingAnAuthorizationCode() (0,0s)
+Then the http status code is 302
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenHttpStatusCodeIsCorrect(Redirect) (0,0s)
+And decrypt the id_token parameter from the fragment
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenDecryptTheIdTokenFromTheQueryString() (0,0s)
+And check the signature is correct with the kid 1
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenCheckSignatureIsCorrectWithKid("1") (0,0s)
+And the protected JWS header is returned
+  --- table step argument ---
+  | Alg   |
+  | RS256 |
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenProtectedJwsHeaderIsReturned(<table>) (0,0s)
+And the audience parameter with value MyHolidays is returned by the JWS payload
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenAudienceIsReturnedInJwsPayLoad("MyHolidays") (0,0s)
+And the parameter nonce with value parameterNonce is returned by the JWS payload
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenNonceIsReturnedInJwsPayLoad("parameterNonce") (0,0s)
+And the claim sub with value habarthierry@loki.be is returned by the JWS payload
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenTheClaimWithValueIsReturnedByJwsPayLoad("sub", "habarthierry@loki.be") (0,0s)
+And the signature of the JWS payload is valid
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenTheSignatureIsCorrect() (0,0s)
+Given a mobile application MyHolidays is defined
+-> done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
+And the redirection uri http://localhost is assigned to the client MyHolidays
+-> done: GlobalGivenInstructions.GivenRedirectionUriIsAssignedTo("http://localhost", "MyHolidays") (0,0s)
+And the scopes are defined
+  --- table step argument ---
+  | Name   | IsInternal |
+  | openid | true       |
+-> done: GlobalGivenInstructions.GivenScope(<table>) (0,0s)
+And the id_token signature algorithm is set to none for the client MyHolidays
+-> done: GlobalGivenInstructions.GivenIdTokenSignatureAlgorithmIsSetForTheClient("none", "MyHolidays") (0,0s)
+And the scopes openid are assigned to the client MyHolidays
+-> done: GlobalGivenInstructions.GivenScopesToTheClients(System.Collection..., "MyHolidays") (0,0s)
+And the grant-type implicit is supported by the client MyHolidays
+-> done: GlobalGivenInstructions.GivenGrantTypesAreSupportedByClient(implicit, "MyHolidays") (0,0s)
+And the response-types id_token are supported by the client MyHolidays
+-> done: GlobalGivenInstructions.GivenResponseIsSupportedByTheClient(System.Collection..., "MyHolidays") (0,0s)
+And create a resource owner
+  --- table step argument ---
+  | Id                   | Name    |
+  | habarthierry@loki.be | thabart |
+-> done: GetIdTokenViaImplicitWorkflowSpec.GivenCreateAResourceOwner(<table>) (0,0s)
+And authenticate the resource owner
+-> done: GetIdTokenViaImplicitWorkflowSpec.GivenAuthenticateTheResourceOwner() (0,0s)
+And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and claims name
+-> done: GlobalGivenInstructions.GivenConsentClaims("habarthierry@loki.be", "MyHolidays", System.Collection...) (0,0s)
+And create an authorization request
+  --- table step argument ---
+  | scope  | response_type | client_id  | redirect_uri     | prompt | state  | nonce          | claims                                                                                                                            |
+  | openid | id_token      | MyHolidays | http://localhost | none   | state1 | parameterNonce | %7B%22id_token%22%3A+%7B%22name%22%3A+%7B%22value%22%3A+%22thabart%22%7D+%2C+%22email%22%3A+%7B%22value%22%3A+%22fake%22%7D%7D%7D |
+-> done: GetIdTokenViaImplicitWorkflowSpec.GivenCreateAnAuthorizationRequest(<table>) (0,0s)
+When requesting an authorization
+-> done: GetIdTokenViaImplicitWorkflowSpec.WhenRequestingAnAuthorizationCode() (0,0s)
+Then the http status code is 400
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenHttpStatusCodeIsCorrect(BadRequest) (0,0s)
+And the error code is interaction_required
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenTheErrorCodeIs("interaction_required") (0,0s)
+Given a mobile application MyHolidays is defined
+-> done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
+And the redirection uri http://localhost is assigned to the client MyHolidays
+-> done: GlobalGivenInstructions.GivenRedirectionUriIsAssignedTo("http://localhost", "MyHolidays") (0,0s)
+And the scopes are defined
+  --- table step argument ---
+  | Name   | IsInternal |
+  | openid | true       |
+-> done: GlobalGivenInstructions.GivenScope(<table>) (0,0s)
+And the id_token signature algorithm is set to none for the client MyHolidays
+-> done: GlobalGivenInstructions.GivenIdTokenSignatureAlgorithmIsSetForTheClient("none", "MyHolidays") (0,0s)
+And the scopes openid are assigned to the client MyHolidays
+-> done: GlobalGivenInstructions.GivenScopesToTheClients(System.Collection..., "MyHolidays") (0,0s)
+And the grant-type implicit is supported by the client MyHolidays
+-> done: GlobalGivenInstructions.GivenGrantTypesAreSupportedByClient(implicit, "MyHolidays") (0,0s)
+And the response-types id_token are supported by the client MyHolidays
+-> done: GlobalGivenInstructions.GivenResponseIsSupportedByTheClient(System.Collection..., "MyHolidays") (0,0s)
+And create a resource owner
+  --- table step argument ---
+  | Id                   | Name    | Email                   |
+  | habarthierry@loki.be | thabart | habarthierry@hotmail.fr |
+-> done: GetIdTokenViaImplicitWorkflowSpec.GivenCreateAResourceOwner(<table>) (0,0s)
+And authenticate the resource owner
+-> done: GetIdTokenViaImplicitWorkflowSpec.GivenAuthenticateTheResourceOwner() (0,0s)
+And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and claims name,email
+-> done: GlobalGivenInstructions.GivenConsentClaims("habarthierry@loki.be", "MyHolidays", System.Collection...) (0,0s)
+And create an authorization request
+  --- table step argument ---
+  | scope  | response_type | client_id  | redirect_uri     | prompt | state  | nonce          | claims                                                                                                                     |
+  | openid | id_token      | MyHolidays | http://localhost | none   | state1 | parameterNonce | %7B%22id_token%22%3A+%7B%22name%22%3A+%7B%22essential%22%3A+true%7D+%2C+%22email%22%3A+%7B%22essential%22%3A+true%7D%7D%7D |
+-> done: GetIdTokenViaImplicitWorkflowSpec.GivenCreateAnAuthorizationRequest(<table>) (0,0s)
+When requesting an authorization
+-> done: GetIdTokenViaImplicitWorkflowSpec.WhenRequestingAnAuthorizationCode() (0,0s)
+Then the http status code is 302
+-> error: Assert.True() Failure
+Expected: True
+Actual:   False
+And decrypt the id_token parameter from the fragment
+-> skipped because of previous errors
+And the protected JWS header is returned
+  --- table step argument ---
+  | Alg  |
+  | none |
+-> skipped because of previous errors
+And the claim sub with value habarthierry@loki.be is returned by the JWS payload
+-> skipped because of previous errors
+And the claim name with value thabart is returned by the JWS payload
+-> skipped because of previous errors
+And the claim email with value habarthierry@hotmail.fr is returned by the JWS payload
+-> skipped because of previous errors
       Assert.True() Failure
       Expected: True
       Actual:   False
       Stack Trace:
-        c:\Project\OTHERS\SimpleIdentityServer\SimpleIdentityServer\VNEXT\tests\SimpleIdentityServer.Api.Tests\Specs\GetAuthorizationCodeSpec.cs(122,0): at SimpleIdentityServer.Api.Tests.Specs.GetAuthorizationCodeSpec.ThenTheErrorReturnedIs(Table table)
-           at lambda_method(Closure , IContextManager , Table )
+        c:\Project\OTHERS\SimpleIdentityServer\SimpleIdentityServer\VNEXT\tests\SimpleIdentityServer.Api.Tests\Specs\GetIdTokenViaImplicitWorkflowSpec.cs(151,0): at SimpleIdentityServer.Api.Tests.Specs.GetIdTokenViaImplicitWorkflowSpec.ThenHttpStatusCodeIsCorrect(HttpStatusCode code)
+           at lambda_method(Closure , IContextManager , HttpStatusCode )
            at TechTalk.SpecFlow.Bindings.BindingInvoker.InvokeBinding(IBinding binding, IContextManager contextManager, Object[] arguments, ITestTracer testTracer, TimeSpan& duration)
            at TechTalk.SpecFlow.Infrastructure.TestExecutionEngine.ExecuteStepMatch(BindingMatch match, Object[] arguments)
            at TechTalk.SpecFlow.Infrastructure.TestExecutionEngine.ExecuteStep(StepInstance stepInstance)
            at TechTalk.SpecFlow.Infrastructure.TestExecutionEngine.OnAfterLastStep()
            at TechTalk.SpecFlow.TestRunner.CollectScenarioErrors()
-        c:\Project\OTHERS\SimpleIdentityServer\SimpleIdentityServer\VNEXT\tests\SimpleIdentityServer.Api.Tests\Features\GetAuthorizationCode.feature.cs(0,0): at SpecFlow.GeneratedTests.GetAuthorizationCodeFeature.ScenarioCleanup()
-        GetAuthorizationCode.feature(210,0): at SpecFlow.GeneratedTests.GetAuthorizationCodeFeature.AResourceOwnerIsAuthenticatedAndWeWantToRetrieveTheAuthorizationCodeIntoTheCallbackWithoutHisConsent()
-#12: Given a mobile application MyHolidays is defined
--> #12: done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
-#12: And the redirection uri http://localhost is assigned to the client MyHolidays
-Number of clients : 1
--> #12: done: GlobalGivenInstructions.GivenRedirectionUriIsAssignedTo("http://localhost", "MyHolidays") (0,0s)
-#12: And the scopes are defined
+        c:\Project\OTHERS\SimpleIdentityServer\SimpleIdentityServer\VNEXT\tests\SimpleIdentityServer.Api.Tests\Features\GetIdTokenViaImplicitFlow.feature.cs(0,0): at SpecFlow.GeneratedTests.GetIdTokenViaImplicitWorkflowFeature.ScenarioCleanup()
+        GetIdTokenViaImplicitFlow.feature(164,0): at SpecFlow.GeneratedTests.GetIdTokenViaImplicitWorkflowFeature.GetAnIdentityTokenByUsingTheClaimsParameterId_TokenNameEssentialTrueEmailEssentialTrue()
+Given a mobile application MyHolidays is defined
+-> done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
+And the redirection uri http://localhost is assigned to the client MyHolidays
+-> done: GlobalGivenInstructions.GivenRedirectionUriIsAssignedTo("http://localhost", "MyHolidays") (0,0s)
+And add json web keys
+  --- table step argument ---
+  | Kid | Alg   | Operation | Kty | Use |
+  | 1   | RS256 | Sign      | RSA | Sig |
+-> done: GlobalGivenInstructions.AddJsonWebKeys(<table>) (0,1s)
+And the scopes are defined
   --- table step argument ---
   | Name        | IsInternal |
-  | PlanningApi | true       |
   | openid      | true       |
--> #12: done: GlobalGivenInstructions.GivenScope(<table>) (0,0s)
-#12: And the scopes openid,PlanningApi are assigned to the client MyHolidays
-Number of clients : 1
--> #12: done: GlobalGivenInstructions.GivenScopesToTheClients(System.Collection..., "MyHolidays") (0,0s)
-#12: And create a resource owner
+  | PlanningApi | false      |
+-> done: GlobalGivenInstructions.GivenScope(<table>) (0,0s)
+And the id_token signature algorithm is set to none for the client MyHolidays
+-> done: GlobalGivenInstructions.GivenIdTokenSignatureAlgorithmIsSetForTheClient("none", "MyHolidays") (0,0s)
+And the scopes openid,PlanningApi are assigned to the client MyHolidays
+-> done: GlobalGivenInstructions.GivenScopesToTheClients(System.Collection..., "MyHolidays") (0,0s)
+And the grant-type implicit is supported by the client MyHolidays
+-> done: GlobalGivenInstructions.GivenGrantTypesAreSupportedByClient(implicit, "MyHolidays") (0,0s)
+And the response-types id_token are supported by the client MyHolidays
+-> done: GlobalGivenInstructions.GivenResponseIsSupportedByTheClient(System.Collection..., "MyHolidays") (0,0s)
+And create a resource owner
   --- table step argument ---
   | Id                   | Name    |
   | habarthierry@loki.be | thabart |
--> #13: done: GetAccessTokenMultipleTimeSpec.WhenRequestingAccessTokens(<table>) (0,1s)
-#13: And waiting for 3000 seconds
--> #12: done: GetAuthorizationCodeSpec.GivenCreateAResourceOwner(<table>) (0,0s)
-#12: And authenticate the resource owner
--> #12: done: GetAuthorizationCodeSpec.GivenAuthenticateTheResourceOwner() (0,0s)
-#12: And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and scopes openid,PlanningApi
--> #12: done: GlobalGivenInstructions.GivenConsentScopes("habarthierry@loki.be", "MyHolidays", System.Collection...) (0,0s)
-#12: When requesting an authorization code
+-> done: GetIdTokenViaImplicitWorkflowSpec.GivenCreateAResourceOwner(<table>) (0,0s)
+And authenticate the resource owner
+-> done: GetIdTokenViaImplicitWorkflowSpec.GivenAuthenticateTheResourceOwner() (0,0s)
+And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and scopes openid,PlanningApi
+-> done: GlobalGivenInstructions.GivenConsentScopes("habarthierry@loki.be", "MyHolidays", System.Collection...) (0,0s)
+And create an authorization request
   --- table step argument ---
-  | scope              | response_type | client_id  | redirect_uri     | prompt | state  | response_mode |
-  | openid PlanningApi | code          | MyHolidays | http://localhost | none   | state1 | fragment      |
--> #12: done: GetAuthorizationCodeSpec.WhenRequestingAnAuthorizationCode(<table>) (0,0s)
-#12: Then HTTP status code is 302
--> #12: done: GetAuthorizationCodeSpec.ThenHttpStatusCodeIs(Redirect) (0,0s)
-#12: And redirect to callback http://localhost
--> #12: done: GetAuthorizationCodeSpec.ThenRedirectToCallback("http://localhost") (0,0s)
-#12: And the fragment contains the query state with the value state1
--> #12: done: GetAuthorizationCodeSpec.ThenFragmentContainsTheQueryWithValue("state", "state1") (0,0s)
-#12: And the fragment contains the query string code
--> #12: done: GetAuthorizationCodeSpec.ThenFragmentsContainsTheQueryString("code") (0,0s)
-#12: Given a mobile application MyHolidays is defined
--> #12: done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
-#12: And the redirection uri http://localhost is assigned to the client MyHolidays
-Number of clients : 1
--> #12: done: GlobalGivenInstructions.GivenRedirectionUriIsAssignedTo("http://localhost", "MyHolidays") (0,0s)
-#12: And the scopes are defined
+  | scope              | response_type | client_id  | redirect_uri     | prompt | state  | nonce          |
+  | openid PlanningApi | id_token      | MyHolidays | http://localhost | none   | state1 | parameterNonce |
+-> done: GetIdTokenViaImplicitWorkflowSpec.GivenCreateAnAuthorizationRequest(<table>) (0,0s)
+And sign the authorization request with 1 kid and algorithm RS256
+-> done: GetIdTokenViaImplicitWorkflowSpec.GivenSignTheAuthorizationRequestWithKid("1", RS256) (0,0s)
+And set the request parameter with signed AND/OR encrypted authorization request
+-> done: GetIdTokenViaImplicitWorkflowSpec.GivenSetTheRequestParameterWithEncryptedAndOrSignedAuthorizationRequest() (0,0s)
+When requesting an authorization
+-> done: GetIdTokenViaImplicitWorkflowSpec.WhenRequestingAnAuthorizationCode() (0,0s)
+Then the http status code is 302
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenHttpStatusCodeIsCorrect(Redirect) (0,0s)
+And decrypt the id_token parameter from the fragment
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenDecryptTheIdTokenFromTheQueryString() (0,0s)
+And the protected JWS header is returned
   --- table step argument ---
-  | Name        | IsInternal |
-  | PlanningApi | true       |
-  | openid      | true       |
--> #12: done: GlobalGivenInstructions.GivenScope(<table>) (0,0s)
-#12: And the scopes openid,PlanningApi are assigned to the client MyHolidays
-Number of clients : 1
--> #12: done: GlobalGivenInstructions.GivenScopesToTheClients(System.Collection..., "MyHolidays") (0,0s)
-#12: When requesting an authorization code
-  --- table step argument ---
-  | scope              | response_type | client_id  | redirect_uri     | prompt | state  |
-  | openid PlanningApi | code          | MyHolidays | http://localhost | none   | state1 |
--> #12: done: GetAuthorizationCodeSpec.WhenRequestingAnAuthorizationCode(<table>) (0,0s)
-#12: Then HTTP status code is 400
--> #12: done: GetAuthorizationCodeSpec.ThenHttpStatusCodeIs(BadRequest) (0,0s)
-#12: And the error returned is
-  --- table step argument ---
-  | error          | state  |
-  | login_required | state1 |
--> #12: done: GetAuthorizationCodeSpec.ThenTheErrorReturnedIs(<table>) (0,0s)
-#12: Given a mobile application MyHolidays is defined
--> #12: done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
-#12: And the redirection uri http://localhost is assigned to the client MyHolidays
-Number of clients : 1
--> #12: done: GlobalGivenInstructions.GivenRedirectionUriIsAssignedTo("http://localhost", "MyHolidays") (0,0s)
-#12: And the scopes are defined
-  --- table step argument ---
-  | Name        | IsInternal |
-  | PlanningApi | true       |
-  | openid      | true       |
--> #12: done: GlobalGivenInstructions.GivenScope(<table>) (0,0s)
-#12: And the scopes openid,PlanningApi are assigned to the client MyHolidays
-Number of clients : 1
--> #12: done: GlobalGivenInstructions.GivenScopesToTheClients(System.Collection..., "MyHolidays") (0,0s)
-#12: When requesting an authorization code
-  --- table step argument ---
-  | scope              | response_type | client_id  | redirect_uri        | prompt | state  |
-  | openid PlanningApi | code          | MyHolidays | localhost?invalid+2 | none   | state1 |
--> #12: done: GetAuthorizationCodeSpec.WhenRequestingAnAuthorizationCode(<table>) (0,0s)
-#12: Then HTTP status code is 400
--> #12: done: GetAuthorizationCodeSpec.ThenHttpStatusCodeIs(BadRequest) (0,0s)
-#12: And the error returned is
-  --- table step argument ---
-  | error           | state  |
-  | invalid_request | state1 |
--> #12: done: GetAuthorizationCodeSpec.ThenTheErrorReturnedIs(<table>) (0,0s)
-#12: Given a mobile application MyHolidays is defined
--> #12: done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
-#12: And the redirection uri http://localhost is assigned to the client MyHolidays
-Number of clients : 1
--> #12: done: GlobalGivenInstructions.GivenRedirectionUriIsAssignedTo("http://localhost", "MyHolidays") (0,0s)
-#12: And the scopes are defined
-  --- table step argument ---
-  | Name        | IsInternal |
-  | PlanningApi | true       |
-  | openid      | true       |
--> #12: done: GlobalGivenInstructions.GivenScope(<table>) (0,0s)
-#12: And the scopes openid,PlanningApi are assigned to the client MyHolidays
-Number of clients : 1
--> #12: done: GlobalGivenInstructions.GivenScopesToTheClients(System.Collection..., "MyHolidays") (0,0s)
-#12: And create a resource owner
-  --- table step argument ---
-  | Id                   | Name    |
-  | habarthierry@loki.be | thabart |
--> #12: done: GetAuthorizationCodeSpec.GivenCreateAResourceOwner(<table>) (0,0s)
-#12: And authenticate the resource owner
--> #12: done: GetAuthorizationCodeSpec.GivenAuthenticateTheResourceOwner() (0,0s)
-#12: When requesting an authorization code
-  --- table step argument ---
-  | scope              | response_type | client_id  | redirect_uri     | prompt  |
-  | openid PlanningApi | code          | MyHolidays | http://localhost | consent |
--> #12: done: GetAuthorizationCodeSpec.WhenRequestingAnAuthorizationCode(<table>) (0,0s)
-#12: Then HTTP status code is 302
--> #12: done: GetAuthorizationCodeSpec.ThenHttpStatusCodeIs(Redirect) (0,0s)
-#12: And redirect to /Consent controller
--> #12: done: GetAuthorizationCodeSpec.ThenRedirectToController("/Consent") (0,0s)
-#12: Given a mobile application MyHolidays is defined
--> #12: done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
-#12: And the redirection uri http://localhost is assigned to the client MyHolidays
-Number of clients : 1
--> #12: done: GlobalGivenInstructions.GivenRedirectionUriIsAssignedTo("http://localhost", "MyHolidays") (0,0s)
-#12: And the scopes are defined
-  --- table step argument ---
-  | Name        | IsInternal |
-  | PlanningApi | true       |
-  | openid      | true       |
--> #12: done: GlobalGivenInstructions.GivenScope(<table>) (0,0s)
-#12: And the scopes openid,PlanningApi are assigned to the client MyHolidays
-Number of clients : 1
--> #12: done: GlobalGivenInstructions.GivenScopesToTheClients(System.Collection..., "MyHolidays") (0,0s)
-#12: When requesting an authorization code
-  --- table step argument ---
-  | scope              | response_type | client_id  | redirect_uri     | prompt  |
-  | openid PlanningApi | code          | MyHolidays | http://localhost | consent |
--> #12: done: GetAuthorizationCodeSpec.WhenRequestingAnAuthorizationCode(<table>) (0,0s)
-#12: Then HTTP status code is 302
--> #12: done: GetAuthorizationCodeSpec.ThenHttpStatusCodeIs(Redirect) (0,0s)
-#12: And redirect to /Authenticate controller
--> #12: done: GetAuthorizationCodeSpec.ThenRedirectToController("/Authenticate") (0,0s)
-#12: Given a mobile application MyHolidays is defined
--> #12: done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
-#12: And the redirection uri http://localhost is assigned to the client MyHolidays
-Number of clients : 1
--> #12: done: GlobalGivenInstructions.GivenRedirectionUriIsAssignedTo("http://localhost", "MyHolidays") (0,0s)
-#12: And the scopes are defined
-  --- table step argument ---
-  | Name        | IsInternal |
-  | PlanningApi | true       |
-  | openid      | true       |
--> #12: done: GlobalGivenInstructions.GivenScope(<table>) (0,0s)
-#12: And the scopes openid,PlanningApi are assigned to the client MyHolidays
-Number of clients : 1
--> #12: done: GlobalGivenInstructions.GivenScopesToTheClients(System.Collection..., "MyHolidays") (0,0s)
-#12: And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and scopes openid,PlanningApi
--> #12: done: GlobalGivenInstructions.GivenConsentScopes("habarthierry@loki.be", "MyHolidays", System.Collection...) (0,0s)
-#12: When requesting an authorization code
-  --- table step argument ---
-  | scope              | response_type | client_id  | redirect_uri     | state  |
-  | openid PlanningApi | code          | MyHolidays | http://localhost | state1 |
--> #12: done: GetAuthorizationCodeSpec.WhenRequestingAnAuthorizationCode(<table>) (0,0s)
-#12: Then HTTP status code is 302
--> #12: done: GetAuthorizationCodeSpec.ThenHttpStatusCodeIs(Redirect) (0,0s)
-#12: And redirect to /Authenticate controller
--> #12: done: GetAuthorizationCodeSpec.ThenRedirectToController("/Authenticate") (0,0s)
-#12: Given a mobile application MyHolidays is defined
--> #12: done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
-#12: And the redirection uri http://localhost is assigned to the client MyHolidays
-Number of clients : 1
--> #12: done: GlobalGivenInstructions.GivenRedirectionUriIsAssignedTo("http://localhost", "MyHolidays") (0,0s)
-#12: And the scopes are defined
-  --- table step argument ---
-  | Name        | IsInternal |
-  | PlanningApi | true       |
-  | openid      | true       |
--> #12: done: GlobalGivenInstructions.GivenScope(<table>) (0,0s)
-#12: And the scopes openid,PlanningApi are assigned to the client MyHolidays
-Number of clients : 1
--> #12: done: GlobalGivenInstructions.GivenScopesToTheClients(System.Collection..., "MyHolidays") (0,0s)
-#12: And create a resource owner
-  --- table step argument ---
-  | Id                   | Name    |
-  | habarthierry@loki.be | thabart |
--> #12: done: GetAuthorizationCodeSpec.GivenCreateAResourceOwner(<table>) (0,0s)
-#12: And authenticate the resource owner
--> #12: done: GetAuthorizationCodeSpec.GivenAuthenticateTheResourceOwner() (0,0s)
-#12: And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and scopes openid,PlanningApi
--> #12: done: GlobalGivenInstructions.GivenConsentScopes("habarthierry@loki.be", "MyHolidays", System.Collection...) (0,0s)
-#12: When requesting an authorization code
-  --- table step argument ---
-  | scope              | response_type | client_id  | redirect_uri     | prompt | state  | response_mode |
-  | openid PlanningApi | code          | MyHolidays | http://localhost | none   | state1 | form_post     |
--> #12: done: GetAuthorizationCodeSpec.WhenRequestingAnAuthorizationCode(<table>) (0,0s)
-#12: Then HTTP status code is 302
--> #12: done: GetAuthorizationCodeSpec.ThenHttpStatusCodeIs(Redirect) (0,0s)
-#12: And redirect to callback http://localhost/Form
--> #12: done: GetAuthorizationCodeSpec.ThenRedirectToCallback("http://localhost/...") (0,0s)
-#12: Given a mobile application MyHolidays is defined
--> #12: done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
-#12: And the redirection uri http://localhost is assigned to the client MyHolidays
-Number of clients : 1
--> #12: done: GlobalGivenInstructions.GivenRedirectionUriIsAssignedTo("http://localhost", "MyHolidays") (0,0s)
-#12: And the scopes are defined
-  --- table step argument ---
-  | Name        | IsInternal |
-  | PlanningApi | true       |
-  | openid      | true       |
--> #12: done: GlobalGivenInstructions.GivenScope(<table>) (0,0s)
-#12: And the scopes openid,PlanningApi are assigned to the client MyHolidays
-Number of clients : 1
--> #12: done: GlobalGivenInstructions.GivenScopesToTheClients(System.Collection..., "MyHolidays") (0,0s)
-#12: When requesting an authorization code
-  --- table step argument ---
-  | scope              | response_type | client_id  | redirect_uri     | prompt |
-  | openid PlanningApi | code          | MyHolidays | http://localhost | login  |
--> #12: done: GetAuthorizationCodeSpec.WhenRequestingAnAuthorizationCode(<table>) (0,0s)
-#12: Then HTTP status code is 302
--> #12: done: GetAuthorizationCodeSpec.ThenHttpStatusCodeIs(Redirect) (0,0s)
-#12: And redirect to /Authenticate controller
--> #12: done: GetAuthorizationCodeSpec.ThenRedirectToController("/Authenticate") (0,0s)
-#12: Given a mobile application MyHolidays is defined
--> #12: done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
-#12: And the redirection uri http://localhost is assigned to the client MyHolidays
-Number of clients : 1
--> #12: done: GlobalGivenInstructions.GivenRedirectionUriIsAssignedTo("http://localhost", "MyHolidays") (0,0s)
-#12: And the scopes are defined
-  --- table step argument ---
-  | Name        | IsInternal |
-  | PlanningApi | true       |
-  | openid      | true       |
--> #12: done: GlobalGivenInstructions.GivenScope(<table>) (0,0s)
-#12: And the scopes openid,PlanningApi are assigned to the client MyHolidays
-Number of clients : 1
--> #12: done: GlobalGivenInstructions.GivenScopesToTheClients(System.Collection..., "MyHolidays") (0,0s)
-#12: And create a resource owner
-  --- table step argument ---
-  | Id                   | Name    |
-  | habarthierry@loki.be | thabart |
--> #12: done: GetAuthorizationCodeSpec.GivenCreateAResourceOwner(<table>) (0,0s)
-#12: And authenticate the resource owner
--> #12: done: GetAuthorizationCodeSpec.GivenAuthenticateTheResourceOwner() (0,0s)
-#12: And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and scopes openid,PlanningApi
--> #12: done: GlobalGivenInstructions.GivenConsentScopes("habarthierry@loki.be", "MyHolidays", System.Collection...) (0,0s)
-#12: When requesting an authorization code
-  --- table step argument ---
-  | scope              | response_type | client_id  | redirect_uri     | prompt | state  |
-  | openid PlanningApi | code          | MyHolidays | http://localhost | none   | state1 |
--> #12: done: GetAuthorizationCodeSpec.WhenRequestingAnAuthorizationCode(<table>) (0,0s)
-#12: Then HTTP status code is 302
--> #12: done: GetAuthorizationCodeSpec.ThenHttpStatusCodeIs(Redirect) (0,0s)
-#12: And redirect to callback http://localhost
--> #12: done: GetAuthorizationCodeSpec.ThenRedirectToCallback("http://localhost") (0,0s)
-#12: And the query string state with value state1 is returned
--> #12: done: GetAuthorizationCodeSpec.ThenTheQueryStringIsContained("state", "state1") (0,0s)
-#12: And the query string code exists
--> #12: done: GetAuthorizationCodeSpec.ThenTheQueryStringExists("code") (0,0s)
-#12: Given a mobile application MyHolidays is defined
--> #12: done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
-#12: And the redirection uri http://localhost is assigned to the client MyHolidays
-Number of clients : 1
--> #12: done: GlobalGivenInstructions.GivenRedirectionUriIsAssignedTo("http://localhost", "MyHolidays") (0,0s)
-#12: And the scopes are defined
-  --- table step argument ---
-  | Name        | IsInternal |
-  | PlanningApi | true       |
-  | openid      | true       |
--> #12: done: GlobalGivenInstructions.GivenScope(<table>) (0,0s)
-#12: And the scopes openid,PlanningApi are assigned to the client MyHolidays
-Number of clients : 1
--> #12: done: GlobalGivenInstructions.GivenScopesToTheClients(System.Collection..., "MyHolidays") (0,0s)
-#12: And create a resource owner
-  --- table step argument ---
-  | Id                   | Name    |
-  | habarthierry@loki.be | thabart |
--> #12: done: GetAuthorizationCodeSpec.GivenCreateAResourceOwner(<table>) (0,0s)
-#12: And authenticate the resource owner
--> #12: done: GetAuthorizationCodeSpec.GivenAuthenticateTheResourceOwner() (0,0s)
-#12: When requesting an authorization code
-  --- table step argument ---
-  | scope              | response_type | client_id  | redirect_uri     | state  |
-  | openid PlanningApi | code          | MyHolidays | http://localhost | state1 |
--> #12: done: GetAuthorizationCodeSpec.WhenRequestingAnAuthorizationCode(<table>) (0,0s)
-#12: Then HTTP status code is 302
--> #12: done: GetAuthorizationCodeSpec.ThenHttpStatusCodeIs(Redirect) (0,0s)
-#12: And redirect to /Consent controller
--> #12: done: GetAuthorizationCodeSpec.ThenRedirectToController("/Consent") (0,0s)
--> #13: done: GlobalWhenInstructions.WhenWaitingForSeconds(3000) (3,0s)
-#13: And requesting access tokens
-  --- table step argument ---
-  | client_id  | username | password |
-  | MyHolidays | thierry  | loki     |
-  | MyHolidays | thierry  | loki     |
--> #13: error: The given header was not found.
-#13: Then 4 access tokens are generated
--> #13: skipped because of previous errors
-#13: And the errors should be returned
-  --- table step argument ---
-  | Message                          |
-  | Allow 2 requests per 0.2 minutes |
--> #13: skipped because of previous errors
-#13: And the http responses should be returned
-  --- table step argument ---
-  | StatusCode | NumberOfRemainingRequests | NumberOfRequests |
-  | 200        | 1                         | 2                |
-  | 200        | 0                         | 2                |
-  | 429        | 0                         | 2                |
-  | 200        | 1                         | 2                |
-  | 200        | 0                         | 2                |
--> #13: skipped because of previous errors
-      System.InvalidOperationException : The given header was not found.
-      Stack Trace:
-#13: Given a resource owner with username thierry and password loki is defined
--> #13: done: GlobalGivenInstructions.GivenResourceOwner("thierry", "loki") (0,0s)
-#13: And a mobile application MyHolidays is defined
--> #13: done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
-#13: And allowed number of requests is 2
-           at System.Net.Http.Headers.HttpHeaders.GetValues(String name)
-        c:\Project\OTHERS\SimpleIdentityServer\SimpleIdentityServer\VNEXT\tests\SimpleIdentityServer.Api.Tests\Specs\GetAccessTokenMultipleTimeSpec.cs(94,0): at SimpleIdentityServer.Api.Tests.Specs.GetAccessTokenMultipleTimeSpec.WhenRequestingAccessTokens(Table table)
-           at lambda_method(Closure , IContextManager , Table )
-           at TechTalk.SpecFlow.Bindings.BindingInvoker.InvokeBinding(IBinding binding, IContextManager contextManager, Object[] arguments, ITestTracer testTracer, TimeSpan& duration)
-           at TechTalk.SpecFlow.Infrastructure.TestExecutionEngine.ExecuteStepMatch(BindingMatch match, Object[] arguments)
-           at TechTalk.SpecFlow.Infrastructure.TestExecutionEngine.ExecuteStep(StepInstance stepInstance)
-           at TechTalk.SpecFlow.Infrastructure.TestExecutionEngine.OnAfterLastStep()
-           at TechTalk.SpecFlow.TestRunner.CollectScenarioErrors()
-        c:\Project\OTHERS\SimpleIdentityServer\SimpleIdentityServer\VNEXT\tests\SimpleIdentityServer.Api.Tests\Features\GetAccessTokenMultipleTime.feature.cs(0,0): at SpecFlow.GeneratedTests.GetAccessTokenMultipleTimeFeature.ScenarioCleanup()
-        GetAccessTokenMultipleTime.feature(80,0): at SpecFlow.GeneratedTests.GetAccessTokenMultipleTimeFeature.Request3TimesAnAccessTokenWaitFor3SecondsAndRequest2AccessTokens()
--> #13: done: GetAccessTokenMultipleTimeSpec.GivenAllowedNumberOfRequests(2) (0,0s)
-#13: And sliding time is 0.2
--> #13: done: GetAccessTokenMultipleTimeSpec.GivenSlidingTime(0,2) (0,0s)
-#13: When requesting access tokens
-  --- table step argument ---
-  | client_id  | username | password |
-  | MyHolidays | thierry  | loki     |
-  | MyHolidays | thierry  | loki     |
-  | MyHolidays | thierry  | loki     |
-  | MyHolidays | thierry  | loki     |
-  | MyHolidays | thierry  | loki     |
--> #13: done: GetAccessTokenMultipleTimeSpec.WhenRequestingAccessTokens(<table>) (0,0s)
-#13: Then 2 access tokens are generated
--> #13: done: GetAccessTokenMultipleTimeSpec.ThenTheResultShouldBe(2) (0,0s)
-#13: And the errors should be returned
-  --- table step argument ---
-  | Message                          |
-  | Allow 2 requests per 0.2 minutes |
-  | Allow 2 requests per 0.2 minutes |
-  | Allow 2 requests per 0.2 minutes |
--> #13: done: GetAccessTokenMultipleTimeSpec.ThenErrorsShouldBe(<table>) (0,0s)
-#13: And the http responses should be returned
-  --- table step argument ---
-  | StatusCode | NumberOfRemainingRequests | NumberOfRequests |
-  | 200        | 1                         | 2                |
-  | 200        | 0                         | 2                |
-  | 429        | 0                         | 2                |
-  | 429        | 0                         | 2                |
-  | 429        | 0                         | 2                |
--> #13: done: GetAccessTokenMultipleTimeSpec.ThenHttpHeadersShouldContain(<table>) (0,0s)
+  | Alg  |
+  | none |
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenProtectedJwsHeaderIsReturned(<table>) (0,0s)
+And the audience parameter with value MyHolidays is returned by the JWS payload
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenAudienceIsReturnedInJwsPayLoad("MyHolidays") (0,0s)
+And the parameter nonce with value parameterNonce is returned by the JWS payload
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenNonceIsReturnedInJwsPayLoad("parameterNonce") (0,0s)
+And the claim sub with value habarthierry@loki.be is returned by the JWS payload
+-> done: GetIdTokenViaImplicitWorkflowSpec.ThenTheClaimWithValueIsReturnedByJwsPayLoad("sub", "habarthierry@loki.be") (0,0s)
   Finished:    SimpleIdentityServer.Api.Tests
 === TEST EXECUTION SUMMARY ===
-   SimpleIdentityServer.Api.Tests  Total: 15, Errors: 0, Failed: 4, Skipped: 0, Time: 4,160s
+   SimpleIdentityServer.Api.Tests  Total: 13, Errors: 0, Failed: 5, Skipped: 0, Time: 2,051s
