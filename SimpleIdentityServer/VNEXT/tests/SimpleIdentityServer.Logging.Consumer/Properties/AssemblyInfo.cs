@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SimpleIdentityServer.Client.Test")]
+[assembly: AssemblyTitle("SemanticLogging")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Kapsch")]
-[assembly: AssemblyProduct("SimpleIdentityServer.Client.Test")]
+[assembly: AssemblyProduct("SemanticLogging")]
 [assembly: AssemblyCopyright("Copyright © Kapsch 2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("9941d5fb-a5e5-4ced-9b7d-fa590478215e")]
+[assembly: Guid("5ef1b6ed-cd14-4a89-bfbf-bcf0ef4cfd42")]
 
 // Version information for an assembly consists of the following four values:
 //
