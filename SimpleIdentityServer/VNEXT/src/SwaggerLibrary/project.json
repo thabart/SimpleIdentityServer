@@ -1,0 +1,20 @@
+{
+  "version": "1.0.0-*",
+  "description": "SwaggerLibrary",
+  "authors": [ "" ],
+  "tags": [ "" ],
+  "projectUrl": "",
+  "licenseUrl": "",
+
+  "tooling": {
+    "defaultNamespace": "SwaggerLibrary"
+  },
+
+  "dependencies": {
+        "SimpleIdentityServer.Core": ""
+  },
+
+  "frameworks": {
+    "dnx451": { }
+  }
+}

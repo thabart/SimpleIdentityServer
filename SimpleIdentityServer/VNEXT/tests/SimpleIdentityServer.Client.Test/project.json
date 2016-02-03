@@ -1,0 +1,28 @@
+{
+  "version": "1.0.0-*",
+  "description": "SimpleIdentityServer.Client.Test",
+  "authors": [ "" ],
+  "tags": [ "" ],
+  "projectUrl": "",
+  "licenseUrl": "",
+
+  "compilationOptions": {
+    "emitEntryPoint": true
+  },
+
+  "tooling": {
+    "defaultNamespace": "SimpleIdentityServer.Client.Test"
+  },
+
+  "dependencies": {
+    "SimpleIdentityServer.Client":  ""
+  },
+
+  "commands": {
+    "run": "SimpleIdentityServer.Client.Test"
+  },
+
+  "frameworks": {
+    "dnx451": { }
+  }
+}

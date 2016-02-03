@@ -1,0 +1,21 @@
+{
+  "version": "1.0.0-*",
+  "description": "SimpleIdentityServer.Client",
+  "authors": [ "" ],
+  "tags": [ "" ],
+  "projectUrl": "",
+  "licenseUrl": "",
+
+  "tooling": {
+    "defaultNamespace": "SimpleIdentityServer.Client"
+  },
+
+  "dependencies": {
+    "SwaggerLibrary": "",
+    "SimpleIdentityServer.Core": ""
+  },
+
+  "frameworks": {
+    "dnx451": { }
+  }
+}
