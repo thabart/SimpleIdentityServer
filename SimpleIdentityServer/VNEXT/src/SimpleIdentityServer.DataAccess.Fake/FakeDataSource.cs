@@ -5,135 +5,36 @@ namespace SimpleIdentityServer.DataAccess.Fake
 {
     public class FakeDataSource
     {
-        private static FakeDataSource _instance;
+        public List<Client> Clients { get; set;}
 
-        private List<Client> _clients;
+        public List<RedirectionUrl> RedirectionUrls { get; set;}
+        
+        public List<ResourceOwner> ResourceOwners { get; set;}
 
-        private List<RedirectionUrl> _redirectionUrls;
-
-        private List<ResourceOwner> _resourceOwners;
-
-        private List<Scope> _scopes;
-
-        private List<Consent> _consents;
-
-        private List<AuthorizationCode> _authorizationCodes;
-
-        private List<JsonWebKey> _jsonWebKeys;
-
-        private List<GrantedToken> _grantedTokens;
-
-        private List<Translation> _translations;
-
-        private FakeDataSource()
-        {
-            Init();
-        }
-
-        public static FakeDataSource Instance()
-        {
-            if (_instance == null)
-            {
-                _instance = new FakeDataSource();
-            }
-
-            return _instance;
-        }
-
-        public List<Client> Clients
-        {
-            get
-            {
-                return _clients;
-            }
-            set { _clients = value; }
-        }
-
-        public List<RedirectionUrl> RedirectionUrls
-        {
-            get
-            {
-                return _redirectionUrls;
-            }
-            set { _redirectionUrls = value; }
-        }
-
-        public List<ResourceOwner> ResourceOwners
-        {
-            get
-            {
-                return _resourceOwners;
-            }
-            set { _resourceOwners = value; }
-        }
-
-        public List<Scope> Scopes
-        {
-            get
-            {
-                return _scopes;
-            }
-            set { _scopes = value; }
-        }
+        public List<Scope> Scopes { get; set;}
 
 
-        public List<Consent> Consents
-        {
-            get
-            {
-                return _consents;
-            } set
-            {
-                _consents = value;
-            }
-        }
+        public List<Consent> Consents { get; set;}
 
-        public List<AuthorizationCode> AuthorizationCodes
-        {
-            get
-            {
-                return _authorizationCodes;
-            } 
-            set
-            {
-                _authorizationCodes = value;
-            }
-        }
+        public List<AuthorizationCode> AuthorizationCodes { get; set;}
 
-        public List<Translation> Translations
-        {
-            get
-            {
-                return _translations;
-            } set
-            {
-                _translations = value;
-            }
-        }
+        public List<Translation> Translations { get; set;}
 
-        public List<JsonWebKey> JsonWebKeys
-        {
-            get { return _jsonWebKeys; }
-            set { _jsonWebKeys = value; }
-        }
+        public List<JsonWebKey> JsonWebKeys { get; set;}
 
-        public List<GrantedToken> GrantedTokens
-        {
-            get { return _grantedTokens; }
-            set { _grantedTokens = value; }
-        } 
+        public List<GrantedToken> GrantedTokens { get; set;}
 
         public void Init()
         {
-            _clients = new List<Client>();
-            _redirectionUrls = new List<RedirectionUrl>();
-            _resourceOwners = new List<ResourceOwner>();
-            _scopes = new List<Scope>();
-            _consents = new List<Consent>();
-            _authorizationCodes = new List<AuthorizationCode>();
-            _jsonWebKeys = new List<JsonWebKey>();
-            _grantedTokens = new List<GrantedToken>();
-            _translations = new List<Translation>();
+            Clients = new List<Client>();
+            RedirectionUrls = new List<RedirectionUrl>();
+            ResourceOwners = new List<ResourceOwner>();
+            Scopes = new List<Scope>();
+            Consents = new List<Consent>();
+            AuthorizationCodes = new List<AuthorizationCode>();
+            JsonWebKeys = new List<JsonWebKey>();
+            GrantedTokens = new List<GrantedToken>();
+            Translations = new List<Translation>();
         }
     }
 }

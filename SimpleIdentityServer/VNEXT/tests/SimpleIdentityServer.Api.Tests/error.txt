@@ -2,15 +2,480 @@ xUnit.net DNX Runner (32-bit DNX 4.5.1)
   Discovering: SimpleIdentityServer.Api.Tests
   Discovered:  SimpleIdentityServer.Api.Tests
   Starting:    SimpleIdentityServer.Api.Tests
-Given a resource owner with username thierry and password loki is defined
--> done: GlobalGivenInstructions.GivenResourceOwner("thierry", "loki") (0,0s)
-And a mobile application MyHolidays is defined
--> done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
-And allowed number of requests is 2
--> done: GetAccessTokenMultipleTimeSpec.GivenAllowedNumberOfRequests(2) (0,3s)
-And sliding time is 0.2
--> done: GetAccessTokenMultipleTimeSpec.GivenSlidingTime(0,2) (0,0s)
-When requesting access tokens
+#13: Given a resource owner with username thierry and password loki is defined
+#12: Given a mobile application MyHolidays is defined
+-> #12: done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
+-> #13: done: GlobalGivenInstructions.GivenResourceOwner("thierry", "loki") (0,0s)
+#13: And a mobile application MyHolidays is defined
+#12: And the redirection uri http://localhost is assigned to the client MyHolidays
+-> #13: done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
+#13: And allowed number of requests is 2
+Number of clients : 2
+-> #12: error: Sequence contains more than one matching element
+#12: And the scopes are defined
+  --- table step argument ---
+  | Name        | IsInternal |
+  | PlanningApi | true       |
+  | openid      | true       |
+-> #12: skipped because of previous errors
+#12: And the scopes openid,PlanningApi are assigned to the client MyHolidays
+-> #12: skipped because of previous errors
+#12: When requesting an authorization code
+  --- table step argument ---
+  | scope              | response_type | client_id  | redirect_uri     | prompt     | state  |
+  | openid PlanningApi | code          | MyHolidays | http://localhost | none login | state1 |
+-> #12: skipped because of previous errors
+#12: Then HTTP status code is 400
+-> #12: skipped because of previous errors
+#12: And the error returned is
+  --- table step argument ---
+  | error           | state  |
+  | invalid_request | state1 |
+-> #12: skipped because of previous errors
+#12: Given a mobile application MyHolidays is defined
+-> #12: done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
+#12: And the redirection uri http://localhost is assigned to the client MyHolidays
+Number of clients : 1
+-> #12: done: GlobalGivenInstructions.GivenRedirectionUriIsAssignedTo("http://localhost", "MyHolidays") (0,0s)
+#12: And the scopes are defined
+  --- table step argument ---
+  | Name        | IsInternal |
+  | PlanningApi | true       |
+  | openid      | true       |
+      System.InvalidOperationException : Sequence contains more than one matching element
+      Stack Trace:
+           at System.Linq.Enumerable.SingleOrDefault[TSource](IEnumerable`1 source, Func`2 predicate)
+        c:\Project\OTHERS\SimpleIdentityServer\SimpleIdentityServer\VNEXT\tests\SimpleIdentityServer.Api.Tests\Common\GlobalGivenInstructions.cs(259,0): at SimpleIdentityServer.Api.Tests.Common.GlobalGivenInstructions.GetClient(String clientId)
+        c:\Project\OTHERS\SimpleIdentityServer\SimpleIdentityServer\VNEXT\tests\SimpleIdentityServer.Api.Tests\Common\GlobalGivenInstructions.cs(128,0): at SimpleIdentityServer.Api.Tests.Common.GlobalGivenInstructions.GivenRedirectionUriIsAssignedTo(String redirectionUri, String clientId)
+           at lambda_method(Closure , IContextManager , String , String )
+           at TechTalk.SpecFlow.Bindings.BindingInvoker.InvokeBinding(IBinding binding, IContextManager contextManager, Object[] arguments, ITestTracer testTracer, TimeSpan& duration)
+           at TechTalk.SpecFlow.Infrastructure.TestExecutionEngine.ExecuteStepMatch(BindingMatch match, Object[] arguments)
+           at TechTalk.SpecFlow.Infrastructure.TestExecutionEngine.ExecuteStep(StepInstance stepInstance)
+           at TechTalk.SpecFlow.Infrastructure.TestExecutionEngine.OnAfterLastStep()
+           at TechTalk.SpecFlow.TestRunner.CollectScenarioErrors()
+        c:\Project\OTHERS\SimpleIdentityServer\SimpleIdentityServer\VNEXT\tests\SimpleIdentityServer.Api.Tests\Features\GetAuthorizationCode.feature.cs(0,0): at SpecFlow.GeneratedTests.GetAuthorizationCodeFeature.ScenarioCleanup()
+        GetAuthorizationCode.feature(246,0): at SpecFlow.GeneratedTests.GetAuthorizationCodeFeature.AResourceOwnerIsNotAuthenticatedAndWeWantToRetrieveAnAuthorizationCodeWithPromptEqualToNoneAndLogin()
+-> #12: done: GlobalGivenInstructions.GivenScope(<table>) (0,0s)
+#12: And the scopes openid,PlanningApi are assigned to the client MyHolidays
+Number of clients : 1
+-> #12: done: GlobalGivenInstructions.GivenScopesToTheClients(System.Collection..., "MyHolidays") (0,0s)
+#12: And create a resource owner
+  --- table step argument ---
+  | Id                   | Name    |
+  | habarthierry@loki.be | thabart |
+-> #13: done: GetAccessTokenMultipleTimeSpec.GivenAllowedNumberOfRequests(2) (0,5s)
+#13: And sliding time is 0.2
+-> #13: done: GetAccessTokenMultipleTimeSpec.GivenSlidingTime(0,2) (0,0s)
+#13: When requesting access tokens
+  --- table step argument ---
+  | client_id  | username | password |
+  | MyHolidays | thierry  | loki     |
+  | MyHolidays | thierry  | loki     |
+  | MyHolidays | thierry  | loki     |
+-> #12: done: GetAuthorizationCodeSpec.GivenCreateAResourceOwner(<table>) (0,4s)
+#12: And authenticate the resource owner
+-> #12: done: GetAuthorizationCodeSpec.GivenAuthenticateTheResourceOwner() (0,0s)
+#12: When requesting an authorization code
+  --- table step argument ---
+  | scope              | response_type | client_id  | redirect_uri     | prompt | state  |
+  | openid PlanningApi | code          | MyHolidays | http://localhost | none   | state1 |
+-> #13: error: The given header was not found.
+#13: Then 2 access tokens are generated
+-> #13: skipped because of previous errors
+#13: And the errors should be returned
+  --- table step argument ---
+  | Message                          |
+  | Allow 2 requests per 0.2 minutes |
+-> #13: skipped because of previous errors
+#13: And the http responses should be returned
+  --- table step argument ---
+  | StatusCode | NumberOfRemainingRequests | NumberOfRequests |
+  | 200        | 1                         | 2                |
+  | 200        | 0                         | 2                |
+  | 429        | 0                         | 2                |
+-> #13: skipped because of previous errors
+      System.InvalidOperationException : The given header was not found.
+      Stack Trace:
+           at System.Net.Http.Headers.HttpHeaders.GetValues(String name)
+        c:\Project\OTHERS\SimpleIdentityServer\SimpleIdentityServer\VNEXT\tests\SimpleIdentityServer.Api.Tests\Specs\GetAccessTokenMultipleTimeSpec.cs(94,0): at SimpleIdentityServer.Api.Tests.Specs.GetAccessTokenMultipleTimeSpec.WhenRequestingAccessTokens(Table table)
+           at lambda_method(Closure , IContextManager , Table )
+           at TechTalk.SpecFlow.Bindings.BindingInvoker.InvokeBinding(IBinding binding, IContextManager contextManager, Object[] arguments, ITestTracer testTracer, TimeSpan& duration)
+#13: Given a resource owner with username thierry and password loki is defined
+           at TechTalk.SpecFlow.Infrastructure.TestExecutionEngine.ExecuteStepMatch(BindingMatch match, Object[] arguments)
+           at TechTalk.SpecFlow.Infrastructure.TestExecutionEngine.ExecuteStep(StepInstance stepInstance)
+-> #13: done: GlobalGivenInstructions.GivenResourceOwner("thierry", "loki") (0,0s)
+#13: And a mobile application MyHolidays is defined
+           at TechTalk.SpecFlow.Infrastructure.TestExecutionEngine.OnAfterLastStep()
+-> #13: done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
+#13: And allowed number of requests is 2
+           at TechTalk.SpecFlow.TestRunner.CollectScenarioErrors()
+        c:\Project\OTHERS\SimpleIdentityServer\SimpleIdentityServer\VNEXT\tests\SimpleIdentityServer.Api.Tests\Features\GetAccessTokenMultipleTime.feature.cs(0,0): at SpecFlow.GeneratedTests.GetAccessTokenMultipleTimeFeature.ScenarioCleanup()
+        GetAccessTokenMultipleTime.feature(22,0): at SpecFlow.GeneratedTests.GetAccessTokenMultipleTimeFeature.Request3TimesAnAccessToken()
+-> #13: done: GetAccessTokenMultipleTimeSpec.GivenAllowedNumberOfRequests(2) (0,0s)
+#13: And sliding time is 0.2
+-> #13: done: GetAccessTokenMultipleTimeSpec.GivenSlidingTime(0,2) (0,0s)
+#13: When requesting access tokens
+  --- table step argument ---
+  | client_id  | username | password |
+  | MyHolidays | thierry  | loki     |
+  | MyHolidays | thierry  | loki     |
+  | MyHolidays | thierry  | loki     |
+-> #12: done: GetAuthorizationCodeSpec.WhenRequestingAnAuthorizationCode(<table>) (0,4s)
+#12: Then HTTP status code is 400
+-> #12: done: GetAuthorizationCodeSpec.ThenHttpStatusCodeIs(BadRequest) (0,0s)
+#12: And the error returned is
+  --- table step argument ---
+  | error                | state  |
+  | interaction_required | state1 |
+-> #12: error: Assert.True() Failure
+Expected: True
+Actual:   False
+      Assert.True() Failure
+      Expected: True
+      Actual:   False
+      Stack Trace:
+        c:\Project\OTHERS\SimpleIdentityServer\SimpleIdentityServer\VNEXT\tests\SimpleIdentityServer.Api.Tests\Specs\GetAuthorizationCodeSpec.cs(122,0): at SimpleIdentityServer.Api.Tests.Specs.GetAuthorizationCodeSpec.ThenTheErrorReturnedIs(Table table)
+           at lambda_method(Closure , IContextManager , Table )
+           at TechTalk.SpecFlow.Bindings.BindingInvoker.InvokeBinding(IBinding binding, IContextManager contextManager, Object[] arguments, ITestTracer testTracer, TimeSpan& duration)
+           at TechTalk.SpecFlow.Infrastructure.TestExecutionEngine.ExecuteStepMatch(BindingMatch match, Object[] arguments)
+           at TechTalk.SpecFlow.Infrastructure.TestExecutionEngine.ExecuteStep(StepInstance stepInstance)
+           at TechTalk.SpecFlow.Infrastructure.TestExecutionEngine.OnAfterLastStep()
+           at TechTalk.SpecFlow.TestRunner.CollectScenarioErrors()
+        c:\Project\OTHERS\SimpleIdentityServer\SimpleIdentityServer\VNEXT\tests\SimpleIdentityServer.Api.Tests\Features\GetAuthorizationCode.feature.cs(0,0): at SpecFlow.GeneratedTests.GetAuthorizationCodeFeature.ScenarioCleanup()
+        GetAuthorizationCode.feature(210,0): at SpecFlow.GeneratedTests.GetAuthorizationCodeFeature.AResourceOwnerIsAuthenticatedAndWeWantToRetrieveTheAuthorizationCodeIntoTheCallbackWithoutHisConsent()
+#12: Given a mobile application MyHolidays is defined
+-> #12: done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
+#12: And the redirection uri http://localhost is assigned to the client MyHolidays
+Number of clients : 1
+-> #12: done: GlobalGivenInstructions.GivenRedirectionUriIsAssignedTo("http://localhost", "MyHolidays") (0,0s)
+#12: And the scopes are defined
+  --- table step argument ---
+  | Name        | IsInternal |
+  | PlanningApi | true       |
+  | openid      | true       |
+-> #12: done: GlobalGivenInstructions.GivenScope(<table>) (0,0s)
+#12: And the scopes openid,PlanningApi are assigned to the client MyHolidays
+Number of clients : 1
+-> #12: done: GlobalGivenInstructions.GivenScopesToTheClients(System.Collection..., "MyHolidays") (0,0s)
+#12: And create a resource owner
+  --- table step argument ---
+  | Id                   | Name    |
+  | habarthierry@loki.be | thabart |
+-> #13: done: GetAccessTokenMultipleTimeSpec.WhenRequestingAccessTokens(<table>) (0,1s)
+#13: And waiting for 3000 seconds
+-> #12: done: GetAuthorizationCodeSpec.GivenCreateAResourceOwner(<table>) (0,0s)
+#12: And authenticate the resource owner
+-> #12: done: GetAuthorizationCodeSpec.GivenAuthenticateTheResourceOwner() (0,0s)
+#12: And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and scopes openid,PlanningApi
+-> #12: done: GlobalGivenInstructions.GivenConsentScopes("habarthierry@loki.be", "MyHolidays", System.Collection...) (0,0s)
+#12: When requesting an authorization code
+  --- table step argument ---
+  | scope              | response_type | client_id  | redirect_uri     | prompt | state  | response_mode |
+  | openid PlanningApi | code          | MyHolidays | http://localhost | none   | state1 | fragment      |
+-> #12: done: GetAuthorizationCodeSpec.WhenRequestingAnAuthorizationCode(<table>) (0,0s)
+#12: Then HTTP status code is 302
+-> #12: done: GetAuthorizationCodeSpec.ThenHttpStatusCodeIs(Redirect) (0,0s)
+#12: And redirect to callback http://localhost
+-> #12: done: GetAuthorizationCodeSpec.ThenRedirectToCallback("http://localhost") (0,0s)
+#12: And the fragment contains the query state with the value state1
+-> #12: done: GetAuthorizationCodeSpec.ThenFragmentContainsTheQueryWithValue("state", "state1") (0,0s)
+#12: And the fragment contains the query string code
+-> #12: done: GetAuthorizationCodeSpec.ThenFragmentsContainsTheQueryString("code") (0,0s)
+#12: Given a mobile application MyHolidays is defined
+-> #12: done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
+#12: And the redirection uri http://localhost is assigned to the client MyHolidays
+Number of clients : 1
+-> #12: done: GlobalGivenInstructions.GivenRedirectionUriIsAssignedTo("http://localhost", "MyHolidays") (0,0s)
+#12: And the scopes are defined
+  --- table step argument ---
+  | Name        | IsInternal |
+  | PlanningApi | true       |
+  | openid      | true       |
+-> #12: done: GlobalGivenInstructions.GivenScope(<table>) (0,0s)
+#12: And the scopes openid,PlanningApi are assigned to the client MyHolidays
+Number of clients : 1
+-> #12: done: GlobalGivenInstructions.GivenScopesToTheClients(System.Collection..., "MyHolidays") (0,0s)
+#12: When requesting an authorization code
+  --- table step argument ---
+  | scope              | response_type | client_id  | redirect_uri     | prompt | state  |
+  | openid PlanningApi | code          | MyHolidays | http://localhost | none   | state1 |
+-> #12: done: GetAuthorizationCodeSpec.WhenRequestingAnAuthorizationCode(<table>) (0,0s)
+#12: Then HTTP status code is 400
+-> #12: done: GetAuthorizationCodeSpec.ThenHttpStatusCodeIs(BadRequest) (0,0s)
+#12: And the error returned is
+  --- table step argument ---
+  | error          | state  |
+  | login_required | state1 |
+-> #12: done: GetAuthorizationCodeSpec.ThenTheErrorReturnedIs(<table>) (0,0s)
+#12: Given a mobile application MyHolidays is defined
+-> #12: done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
+#12: And the redirection uri http://localhost is assigned to the client MyHolidays
+Number of clients : 1
+-> #12: done: GlobalGivenInstructions.GivenRedirectionUriIsAssignedTo("http://localhost", "MyHolidays") (0,0s)
+#12: And the scopes are defined
+  --- table step argument ---
+  | Name        | IsInternal |
+  | PlanningApi | true       |
+  | openid      | true       |
+-> #12: done: GlobalGivenInstructions.GivenScope(<table>) (0,0s)
+#12: And the scopes openid,PlanningApi are assigned to the client MyHolidays
+Number of clients : 1
+-> #12: done: GlobalGivenInstructions.GivenScopesToTheClients(System.Collection..., "MyHolidays") (0,0s)
+#12: When requesting an authorization code
+  --- table step argument ---
+  | scope              | response_type | client_id  | redirect_uri        | prompt | state  |
+  | openid PlanningApi | code          | MyHolidays | localhost?invalid+2 | none   | state1 |
+-> #12: done: GetAuthorizationCodeSpec.WhenRequestingAnAuthorizationCode(<table>) (0,0s)
+#12: Then HTTP status code is 400
+-> #12: done: GetAuthorizationCodeSpec.ThenHttpStatusCodeIs(BadRequest) (0,0s)
+#12: And the error returned is
+  --- table step argument ---
+  | error           | state  |
+  | invalid_request | state1 |
+-> #12: done: GetAuthorizationCodeSpec.ThenTheErrorReturnedIs(<table>) (0,0s)
+#12: Given a mobile application MyHolidays is defined
+-> #12: done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
+#12: And the redirection uri http://localhost is assigned to the client MyHolidays
+Number of clients : 1
+-> #12: done: GlobalGivenInstructions.GivenRedirectionUriIsAssignedTo("http://localhost", "MyHolidays") (0,0s)
+#12: And the scopes are defined
+  --- table step argument ---
+  | Name        | IsInternal |
+  | PlanningApi | true       |
+  | openid      | true       |
+-> #12: done: GlobalGivenInstructions.GivenScope(<table>) (0,0s)
+#12: And the scopes openid,PlanningApi are assigned to the client MyHolidays
+Number of clients : 1
+-> #12: done: GlobalGivenInstructions.GivenScopesToTheClients(System.Collection..., "MyHolidays") (0,0s)
+#12: And create a resource owner
+  --- table step argument ---
+  | Id                   | Name    |
+  | habarthierry@loki.be | thabart |
+-> #12: done: GetAuthorizationCodeSpec.GivenCreateAResourceOwner(<table>) (0,0s)
+#12: And authenticate the resource owner
+-> #12: done: GetAuthorizationCodeSpec.GivenAuthenticateTheResourceOwner() (0,0s)
+#12: When requesting an authorization code
+  --- table step argument ---
+  | scope              | response_type | client_id  | redirect_uri     | prompt  |
+  | openid PlanningApi | code          | MyHolidays | http://localhost | consent |
+-> #12: done: GetAuthorizationCodeSpec.WhenRequestingAnAuthorizationCode(<table>) (0,0s)
+#12: Then HTTP status code is 302
+-> #12: done: GetAuthorizationCodeSpec.ThenHttpStatusCodeIs(Redirect) (0,0s)
+#12: And redirect to /Consent controller
+-> #12: done: GetAuthorizationCodeSpec.ThenRedirectToController("/Consent") (0,0s)
+#12: Given a mobile application MyHolidays is defined
+-> #12: done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
+#12: And the redirection uri http://localhost is assigned to the client MyHolidays
+Number of clients : 1
+-> #12: done: GlobalGivenInstructions.GivenRedirectionUriIsAssignedTo("http://localhost", "MyHolidays") (0,0s)
+#12: And the scopes are defined
+  --- table step argument ---
+  | Name        | IsInternal |
+  | PlanningApi | true       |
+  | openid      | true       |
+-> #12: done: GlobalGivenInstructions.GivenScope(<table>) (0,0s)
+#12: And the scopes openid,PlanningApi are assigned to the client MyHolidays
+Number of clients : 1
+-> #12: done: GlobalGivenInstructions.GivenScopesToTheClients(System.Collection..., "MyHolidays") (0,0s)
+#12: When requesting an authorization code
+  --- table step argument ---
+  | scope              | response_type | client_id  | redirect_uri     | prompt  |
+  | openid PlanningApi | code          | MyHolidays | http://localhost | consent |
+-> #12: done: GetAuthorizationCodeSpec.WhenRequestingAnAuthorizationCode(<table>) (0,0s)
+#12: Then HTTP status code is 302
+-> #12: done: GetAuthorizationCodeSpec.ThenHttpStatusCodeIs(Redirect) (0,0s)
+#12: And redirect to /Authenticate controller
+-> #12: done: GetAuthorizationCodeSpec.ThenRedirectToController("/Authenticate") (0,0s)
+#12: Given a mobile application MyHolidays is defined
+-> #12: done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
+#12: And the redirection uri http://localhost is assigned to the client MyHolidays
+Number of clients : 1
+-> #12: done: GlobalGivenInstructions.GivenRedirectionUriIsAssignedTo("http://localhost", "MyHolidays") (0,0s)
+#12: And the scopes are defined
+  --- table step argument ---
+  | Name        | IsInternal |
+  | PlanningApi | true       |
+  | openid      | true       |
+-> #12: done: GlobalGivenInstructions.GivenScope(<table>) (0,0s)
+#12: And the scopes openid,PlanningApi are assigned to the client MyHolidays
+Number of clients : 1
+-> #12: done: GlobalGivenInstructions.GivenScopesToTheClients(System.Collection..., "MyHolidays") (0,0s)
+#12: And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and scopes openid,PlanningApi
+-> #12: done: GlobalGivenInstructions.GivenConsentScopes("habarthierry@loki.be", "MyHolidays", System.Collection...) (0,0s)
+#12: When requesting an authorization code
+  --- table step argument ---
+  | scope              | response_type | client_id  | redirect_uri     | state  |
+  | openid PlanningApi | code          | MyHolidays | http://localhost | state1 |
+-> #12: done: GetAuthorizationCodeSpec.WhenRequestingAnAuthorizationCode(<table>) (0,0s)
+#12: Then HTTP status code is 302
+-> #12: done: GetAuthorizationCodeSpec.ThenHttpStatusCodeIs(Redirect) (0,0s)
+#12: And redirect to /Authenticate controller
+-> #12: done: GetAuthorizationCodeSpec.ThenRedirectToController("/Authenticate") (0,0s)
+#12: Given a mobile application MyHolidays is defined
+-> #12: done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
+#12: And the redirection uri http://localhost is assigned to the client MyHolidays
+Number of clients : 1
+-> #12: done: GlobalGivenInstructions.GivenRedirectionUriIsAssignedTo("http://localhost", "MyHolidays") (0,0s)
+#12: And the scopes are defined
+  --- table step argument ---
+  | Name        | IsInternal |
+  | PlanningApi | true       |
+  | openid      | true       |
+-> #12: done: GlobalGivenInstructions.GivenScope(<table>) (0,0s)
+#12: And the scopes openid,PlanningApi are assigned to the client MyHolidays
+Number of clients : 1
+-> #12: done: GlobalGivenInstructions.GivenScopesToTheClients(System.Collection..., "MyHolidays") (0,0s)
+#12: And create a resource owner
+  --- table step argument ---
+  | Id                   | Name    |
+  | habarthierry@loki.be | thabart |
+-> #12: done: GetAuthorizationCodeSpec.GivenCreateAResourceOwner(<table>) (0,0s)
+#12: And authenticate the resource owner
+-> #12: done: GetAuthorizationCodeSpec.GivenAuthenticateTheResourceOwner() (0,0s)
+#12: And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and scopes openid,PlanningApi
+-> #12: done: GlobalGivenInstructions.GivenConsentScopes("habarthierry@loki.be", "MyHolidays", System.Collection...) (0,0s)
+#12: When requesting an authorization code
+  --- table step argument ---
+  | scope              | response_type | client_id  | redirect_uri     | prompt | state  | response_mode |
+  | openid PlanningApi | code          | MyHolidays | http://localhost | none   | state1 | form_post     |
+-> #12: done: GetAuthorizationCodeSpec.WhenRequestingAnAuthorizationCode(<table>) (0,0s)
+#12: Then HTTP status code is 302
+-> #12: done: GetAuthorizationCodeSpec.ThenHttpStatusCodeIs(Redirect) (0,0s)
+#12: And redirect to callback http://localhost/Form
+-> #12: done: GetAuthorizationCodeSpec.ThenRedirectToCallback("http://localhost/...") (0,0s)
+#12: Given a mobile application MyHolidays is defined
+-> #12: done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
+#12: And the redirection uri http://localhost is assigned to the client MyHolidays
+Number of clients : 1
+-> #12: done: GlobalGivenInstructions.GivenRedirectionUriIsAssignedTo("http://localhost", "MyHolidays") (0,0s)
+#12: And the scopes are defined
+  --- table step argument ---
+  | Name        | IsInternal |
+  | PlanningApi | true       |
+  | openid      | true       |
+-> #12: done: GlobalGivenInstructions.GivenScope(<table>) (0,0s)
+#12: And the scopes openid,PlanningApi are assigned to the client MyHolidays
+Number of clients : 1
+-> #12: done: GlobalGivenInstructions.GivenScopesToTheClients(System.Collection..., "MyHolidays") (0,0s)
+#12: When requesting an authorization code
+  --- table step argument ---
+  | scope              | response_type | client_id  | redirect_uri     | prompt |
+  | openid PlanningApi | code          | MyHolidays | http://localhost | login  |
+-> #12: done: GetAuthorizationCodeSpec.WhenRequestingAnAuthorizationCode(<table>) (0,0s)
+#12: Then HTTP status code is 302
+-> #12: done: GetAuthorizationCodeSpec.ThenHttpStatusCodeIs(Redirect) (0,0s)
+#12: And redirect to /Authenticate controller
+-> #12: done: GetAuthorizationCodeSpec.ThenRedirectToController("/Authenticate") (0,0s)
+#12: Given a mobile application MyHolidays is defined
+-> #12: done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
+#12: And the redirection uri http://localhost is assigned to the client MyHolidays
+Number of clients : 1
+-> #12: done: GlobalGivenInstructions.GivenRedirectionUriIsAssignedTo("http://localhost", "MyHolidays") (0,0s)
+#12: And the scopes are defined
+  --- table step argument ---
+  | Name        | IsInternal |
+  | PlanningApi | true       |
+  | openid      | true       |
+-> #12: done: GlobalGivenInstructions.GivenScope(<table>) (0,0s)
+#12: And the scopes openid,PlanningApi are assigned to the client MyHolidays
+Number of clients : 1
+-> #12: done: GlobalGivenInstructions.GivenScopesToTheClients(System.Collection..., "MyHolidays") (0,0s)
+#12: And create a resource owner
+  --- table step argument ---
+  | Id                   | Name    |
+  | habarthierry@loki.be | thabart |
+-> #12: done: GetAuthorizationCodeSpec.GivenCreateAResourceOwner(<table>) (0,0s)
+#12: And authenticate the resource owner
+-> #12: done: GetAuthorizationCodeSpec.GivenAuthenticateTheResourceOwner() (0,0s)
+#12: And the consent has been given by the resource owner habarthierry@loki.be for the client MyHolidays and scopes openid,PlanningApi
+-> #12: done: GlobalGivenInstructions.GivenConsentScopes("habarthierry@loki.be", "MyHolidays", System.Collection...) (0,0s)
+#12: When requesting an authorization code
+  --- table step argument ---
+  | scope              | response_type | client_id  | redirect_uri     | prompt | state  |
+  | openid PlanningApi | code          | MyHolidays | http://localhost | none   | state1 |
+-> #12: done: GetAuthorizationCodeSpec.WhenRequestingAnAuthorizationCode(<table>) (0,0s)
+#12: Then HTTP status code is 302
+-> #12: done: GetAuthorizationCodeSpec.ThenHttpStatusCodeIs(Redirect) (0,0s)
+#12: And redirect to callback http://localhost
+-> #12: done: GetAuthorizationCodeSpec.ThenRedirectToCallback("http://localhost") (0,0s)
+#12: And the query string state with value state1 is returned
+-> #12: done: GetAuthorizationCodeSpec.ThenTheQueryStringIsContained("state", "state1") (0,0s)
+#12: And the query string code exists
+-> #12: done: GetAuthorizationCodeSpec.ThenTheQueryStringExists("code") (0,0s)
+#12: Given a mobile application MyHolidays is defined
+-> #12: done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
+#12: And the redirection uri http://localhost is assigned to the client MyHolidays
+Number of clients : 1
+-> #12: done: GlobalGivenInstructions.GivenRedirectionUriIsAssignedTo("http://localhost", "MyHolidays") (0,0s)
+#12: And the scopes are defined
+  --- table step argument ---
+  | Name        | IsInternal |
+  | PlanningApi | true       |
+  | openid      | true       |
+-> #12: done: GlobalGivenInstructions.GivenScope(<table>) (0,0s)
+#12: And the scopes openid,PlanningApi are assigned to the client MyHolidays
+Number of clients : 1
+-> #12: done: GlobalGivenInstructions.GivenScopesToTheClients(System.Collection..., "MyHolidays") (0,0s)
+#12: And create a resource owner
+  --- table step argument ---
+  | Id                   | Name    |
+  | habarthierry@loki.be | thabart |
+-> #12: done: GetAuthorizationCodeSpec.GivenCreateAResourceOwner(<table>) (0,0s)
+#12: And authenticate the resource owner
+-> #12: done: GetAuthorizationCodeSpec.GivenAuthenticateTheResourceOwner() (0,0s)
+#12: When requesting an authorization code
+  --- table step argument ---
+  | scope              | response_type | client_id  | redirect_uri     | state  |
+  | openid PlanningApi | code          | MyHolidays | http://localhost | state1 |
+-> #12: done: GetAuthorizationCodeSpec.WhenRequestingAnAuthorizationCode(<table>) (0,0s)
+#12: Then HTTP status code is 302
+-> #12: done: GetAuthorizationCodeSpec.ThenHttpStatusCodeIs(Redirect) (0,0s)
+#12: And redirect to /Consent controller
+-> #12: done: GetAuthorizationCodeSpec.ThenRedirectToController("/Consent") (0,0s)
+-> #13: done: GlobalWhenInstructions.WhenWaitingForSeconds(3000) (3,0s)
+#13: And requesting access tokens
+  --- table step argument ---
+  | client_id  | username | password |
+  | MyHolidays | thierry  | loki     |
+  | MyHolidays | thierry  | loki     |
+-> #13: error: The given header was not found.
+#13: Then 4 access tokens are generated
+-> #13: skipped because of previous errors
+#13: And the errors should be returned
+  --- table step argument ---
+  | Message                          |
+  | Allow 2 requests per 0.2 minutes |
+-> #13: skipped because of previous errors
+#13: And the http responses should be returned
+  --- table step argument ---
+  | StatusCode | NumberOfRemainingRequests | NumberOfRequests |
+  | 200        | 1                         | 2                |
+  | 200        | 0                         | 2                |
+  | 429        | 0                         | 2                |
+  | 200        | 1                         | 2                |
+  | 200        | 0                         | 2                |
+-> #13: skipped because of previous errors
+      System.InvalidOperationException : The given header was not found.
+      Stack Trace:
+#13: Given a resource owner with username thierry and password loki is defined
+-> #13: done: GlobalGivenInstructions.GivenResourceOwner("thierry", "loki") (0,0s)
+#13: And a mobile application MyHolidays is defined
+-> #13: done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
+#13: And allowed number of requests is 2
+           at System.Net.Http.Headers.HttpHeaders.GetValues(String name)
+        c:\Project\OTHERS\SimpleIdentityServer\SimpleIdentityServer\VNEXT\tests\SimpleIdentityServer.Api.Tests\Specs\GetAccessTokenMultipleTimeSpec.cs(94,0): at SimpleIdentityServer.Api.Tests.Specs.GetAccessTokenMultipleTimeSpec.WhenRequestingAccessTokens(Table table)
+           at lambda_method(Closure , IContextManager , Table )
+           at TechTalk.SpecFlow.Bindings.BindingInvoker.InvokeBinding(IBinding binding, IContextManager contextManager, Object[] arguments, ITestTracer testTracer, TimeSpan& duration)
+           at TechTalk.SpecFlow.Infrastructure.TestExecutionEngine.ExecuteStepMatch(BindingMatch match, Object[] arguments)
+           at TechTalk.SpecFlow.Infrastructure.TestExecutionEngine.ExecuteStep(StepInstance stepInstance)
+           at TechTalk.SpecFlow.Infrastructure.TestExecutionEngine.OnAfterLastStep()
+           at TechTalk.SpecFlow.TestRunner.CollectScenarioErrors()
+        c:\Project\OTHERS\SimpleIdentityServer\SimpleIdentityServer\VNEXT\tests\SimpleIdentityServer.Api.Tests\Features\GetAccessTokenMultipleTime.feature.cs(0,0): at SpecFlow.GeneratedTests.GetAccessTokenMultipleTimeFeature.ScenarioCleanup()
+        GetAccessTokenMultipleTime.feature(80,0): at SpecFlow.GeneratedTests.GetAccessTokenMultipleTimeFeature.Request3TimesAnAccessTokenWaitFor3SecondsAndRequest2AccessTokens()
+-> #13: done: GetAccessTokenMultipleTimeSpec.GivenAllowedNumberOfRequests(2) (0,0s)
+#13: And sliding time is 0.2
+-> #13: done: GetAccessTokenMultipleTimeSpec.GivenSlidingTime(0,2) (0,0s)
+#13: When requesting access tokens
   --- table step argument ---
   | client_id  | username | password |
   | MyHolidays | thierry  | loki     |
@@ -18,27 +483,17 @@ When requesting access tokens
   | MyHolidays | thierry  | loki     |
   | MyHolidays | thierry  | loki     |
   | MyHolidays | thierry  | loki     |
-TESTTT
-OK
-TESTTT
-OK
-TESTTT
-429
-TESTTT
-429
-TESTTT
-429
--> done: GetAccessTokenMultipleTimeSpec.WhenRequestingAccessTokens(<table>) (0,6s)
-Then 2 access tokens are generated
--> done: GetAccessTokenMultipleTimeSpec.ThenTheResultShouldBe(2) (0,0s)
-And the errors should be returned
+-> #13: done: GetAccessTokenMultipleTimeSpec.WhenRequestingAccessTokens(<table>) (0,0s)
+#13: Then 2 access tokens are generated
+-> #13: done: GetAccessTokenMultipleTimeSpec.ThenTheResultShouldBe(2) (0,0s)
+#13: And the errors should be returned
   --- table step argument ---
   | Message                          |
   | Allow 2 requests per 0.2 minutes |
   | Allow 2 requests per 0.2 minutes |
   | Allow 2 requests per 0.2 minutes |
--> done: GetAccessTokenMultipleTimeSpec.ThenErrorsShouldBe(<table>) (0,0s)
-And the http responses should be returned
+-> #13: done: GetAccessTokenMultipleTimeSpec.ThenErrorsShouldBe(<table>) (0,0s)
+#13: And the http responses should be returned
   --- table step argument ---
   | StatusCode | NumberOfRemainingRequests | NumberOfRequests |
   | 200        | 1                         | 2                |
@@ -46,91 +501,7 @@ And the http responses should be returned
   | 429        | 0                         | 2                |
   | 429        | 0                         | 2                |
   | 429        | 0                         | 2                |
--> done: GetAccessTokenMultipleTimeSpec.ThenHttpHeadersShouldContain(<table>) (0,0s)
-Given a resource owner with username thierry and password loki is defined
--> done: GlobalGivenInstructions.GivenResourceOwner("thierry", "loki") (0,0s)
-And a mobile application MyHolidays is defined
--> done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
-And allowed number of requests is 2
--> done: GetAccessTokenMultipleTimeSpec.GivenAllowedNumberOfRequests(2) (0,0s)
-And sliding time is 0.2
--> done: GetAccessTokenMultipleTimeSpec.GivenSlidingTime(0,2) (0,0s)
-When requesting access tokens
-  --- table step argument ---
-  | client_id  | username | password |
-  | MyHolidays | thierry  | loki     |
-  | MyHolidays | thierry  | loki     |
-  | MyHolidays | thierry  | loki     |
-TESTTT
-OK
-TESTTT
-OK
-TESTTT
-429
--> done: GetAccessTokenMultipleTimeSpec.WhenRequestingAccessTokens(<table>) (0,1s)
-Then 2 access tokens are generated
--> done: GetAccessTokenMultipleTimeSpec.ThenTheResultShouldBe(2) (0,0s)
-And the errors should be returned
-  --- table step argument ---
-  | Message                          |
-  | Allow 2 requests per 0.2 minutes |
--> done: GetAccessTokenMultipleTimeSpec.ThenErrorsShouldBe(<table>) (0,0s)
-And the http responses should be returned
-  --- table step argument ---
-  | StatusCode | NumberOfRemainingRequests | NumberOfRequests |
-  | 200        | 1                         | 2                |
-  | 200        | 0                         | 2                |
-  | 429        | 0                         | 2                |
--> done: GetAccessTokenMultipleTimeSpec.ThenHttpHeadersShouldContain(<table>) (0,0s)
-Given a resource owner with username thierry and password loki is defined
--> done: GlobalGivenInstructions.GivenResourceOwner("thierry", "loki") (0,0s)
-And a mobile application MyHolidays is defined
--> done: GlobalGivenInstructions.GivenClient("MyHolidays") (0,0s)
-And allowed number of requests is 2
--> done: GetAccessTokenMultipleTimeSpec.GivenAllowedNumberOfRequests(2) (0,0s)
-And sliding time is 0.2
--> done: GetAccessTokenMultipleTimeSpec.GivenSlidingTime(0,2) (0,0s)
-When requesting access tokens
-  --- table step argument ---
-  | client_id  | username | password |
-  | MyHolidays | thierry  | loki     |
-  | MyHolidays | thierry  | loki     |
-  | MyHolidays | thierry  | loki     |
-TESTTT
-OK
-TESTTT
-OK
-TESTTT
-429
--> done: GetAccessTokenMultipleTimeSpec.WhenRequestingAccessTokens(<table>) (0,0s)
-And waiting for 3000 seconds
--> done: GlobalWhenInstructions.WhenWaitingForSeconds(3000) (3,0s)
-And requesting access tokens
-  --- table step argument ---
-  | client_id  | username | password |
-  | MyHolidays | thierry  | loki     |
-  | MyHolidays | thierry  | loki     |
-TESTTT
-OK
-TESTTT
-OK
--> done: GetAccessTokenMultipleTimeSpec.WhenRequestingAccessTokens(<table>) (0,0s)
-Then 4 access tokens are generated
--> done: GetAccessTokenMultipleTimeSpec.ThenTheResultShouldBe(4) (0,0s)
-And the errors should be returned
-  --- table step argument ---
-  | Message                          |
-  | Allow 2 requests per 0.2 minutes |
--> done: GetAccessTokenMultipleTimeSpec.ThenErrorsShouldBe(<table>) (0,0s)
-And the http responses should be returned
-  --- table step argument ---
-  | StatusCode | NumberOfRemainingRequests | NumberOfRequests |
-  | 200        | 1                         | 2                |
-  | 200        | 0                         | 2                |
-  | 429        | 0                         | 2                |
-  | 200        | 1                         | 2                |
-  | 200        | 0                         | 2                |
--> done: GetAccessTokenMultipleTimeSpec.ThenHttpHeadersShouldContain(<table>) (0,0s)
+-> #13: done: GetAccessTokenMultipleTimeSpec.ThenHttpHeadersShouldContain(<table>) (0,0s)
   Finished:    SimpleIdentityServer.Api.Tests
 === TEST EXECUTION SUMMARY ===
-   SimpleIdentityServer.Api.Tests  Total: 3, Errors: 0, Failed: 0, Skipped: 0, Time: 4,246s
+   SimpleIdentityServer.Api.Tests  Total: 15, Errors: 0, Failed: 4, Skipped: 0, Time: 4,160s

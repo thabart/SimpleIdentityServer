@@ -18,15 +18,18 @@ namespace SimpleIdentityServer.Api.Tests.Common
     {
         private readonly ISecurityHelper _securityHelper;
         
-        public GlobalGivenInstructions()
+        private GlobalContext _globalContext;
+        
+        public GlobalGivenInstructions(GlobalContext globalContext)
         {
             _securityHelper = new SecurityHelper();
+            _globalContext = globalContext;
         }
 
         [BeforeScenario]
-        public static void Before()
-        {
-            FakeDataSource.Instance().Init();
+        public void Before()
+        {            
+            _globalContext.Init();
         }
         
         [Given("a mobile application (.*) is defined")]
@@ -38,7 +41,7 @@ namespace SimpleIdentityServer.Api.Tests.Common
                 AllowedScopes = new List<Scope>()
             };
 
-            FakeDataSource.Instance().Clients.Add(client);
+            _globalContext.FakeDataSource.Clients.Add(client);
         }
 
         [Given("a resource owner with username (.*) and password (.*) is defined")]
@@ -50,7 +53,7 @@ namespace SimpleIdentityServer.Api.Tests.Common
                 Password = _securityHelper.ComputeHash(password)
             };
 
-            FakeDataSource.Instance().ResourceOwners.Add(resourceOwner);
+            _globalContext.FakeDataSource.ResourceOwners.Add(resourceOwner);
         }
 
         [Given("add json web keys")]
@@ -62,7 +65,7 @@ namespace SimpleIdentityServer.Api.Tests.Common
                 foreach (var jsonWebKey in jsonWebKeys)
                 {
                     var serializedRsa = provider.ToXmlString(true);
-                    FakeDataSource.Instance().JsonWebKeys.Add(new JsonWebKey
+                    _globalContext.FakeDataSource.JsonWebKeys.Add(new JsonWebKey
                     {
                         Alg = jsonWebKey.Alg,
                         KeyOps = new[]
@@ -84,7 +87,7 @@ namespace SimpleIdentityServer.Api.Tests.Common
             var scopes = table.CreateSet<FakeScope>();
             foreach (var scope in scopes)
             {
-                FakeDataSource.Instance().Scopes.Add(scope.ToFake());
+                _globalContext.FakeDataSource.Scopes.Add(scope.ToFake());
             }
         }
         
@@ -97,7 +100,7 @@ namespace SimpleIdentityServer.Api.Tests.Common
                 return;
             }
 
-            var scopes = FakeDataSource.Instance().Scopes;
+            var scopes = _globalContext.FakeDataSource.Scopes;
             foreach (var scopeName in scopeNames)
             {
                 var storedScope = scopes.SingleOrDefault(s => s.Name == scopeName);
@@ -220,12 +223,12 @@ namespace SimpleIdentityServer.Api.Tests.Common
         [Given("the consent has been given by the resource owner (.*) for the client (.*) and scopes (.*)")]
         public void GivenConsentScopes(string resourceOwnerId, string clientId, List<string> scopeNames)
         {
-            var client = FakeDataSource.Instance().Clients.SingleOrDefault(c => c.ClientId == clientId);
-            var resourceOwner = FakeDataSource.Instance().ResourceOwners.SingleOrDefault(r => r.Id == resourceOwnerId);
+            var client = _globalContext.FakeDataSource.Clients.SingleOrDefault(c => c.ClientId == clientId);
+            var resourceOwner = _globalContext.FakeDataSource.ResourceOwners.SingleOrDefault(r => r.Id == resourceOwnerId);
             var scopes = new List<Scope>();
             foreach (var scopeName in scopeNames)
             {
-                var storedScope = FakeDataSource.Instance().Scopes.SingleOrDefault(s => s.Name == scopeName);
+                var storedScope = _globalContext.FakeDataSource.Scopes.SingleOrDefault(s => s.Name == scopeName);
                 scopes.Add(storedScope);
             }
             var consent = new Consent
@@ -235,14 +238,14 @@ namespace SimpleIdentityServer.Api.Tests.Common
                 ResourceOwner = resourceOwner
             };
 
-            FakeDataSource.Instance().Consents.Add(consent);
+            _globalContext.FakeDataSource.Consents.Add(consent);
         }
 
         [Given("the consent has been given by the resource owner (.*) for the client (.*) and claims (.*)")]
         public void GivenConsentClaims(string resourceOwnerId, string clientId, List<string> claimNames)
         {
-            var client = FakeDataSource.Instance().Clients.SingleOrDefault(c => c.ClientId == clientId);
-            var resourceOwner = FakeDataSource.Instance().ResourceOwners.SingleOrDefault(r => r.Id == resourceOwnerId);
+            var client = _globalContext.FakeDataSource.Clients.SingleOrDefault(c => c.ClientId == clientId);
+            var resourceOwner = _globalContext.FakeDataSource.ResourceOwners.SingleOrDefault(r => r.Id == resourceOwnerId);
             var consent = new Consent
             {
                 Client = client,
@@ -250,12 +253,12 @@ namespace SimpleIdentityServer.Api.Tests.Common
                 ResourceOwner = resourceOwner
             };
 
-            FakeDataSource.Instance().Consents.Add(consent);
+            _globalContext.FakeDataSource.Consents.Add(consent);
         }
 
-        private static Client GetClient(string clientId)
+        private Client GetClient(string clientId)
         {
-            var client = FakeDataSource.Instance().Clients.SingleOrDefault(c => c.ClientId == clientId);
+            var client = _globalContext.FakeDataSource.Clients.SingleOrDefault(c => c.ClientId == clientId);
             return client;
         }
     }

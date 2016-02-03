@@ -10,9 +10,16 @@ namespace SimpleIdentityServer.DataAccess.Fake.Repositories
 {
     public class FakeTranslationRepository : ITranslationRepository
     {
+        private readonly FakeDataSource _fakeDataSource;
+        
+        public FakeTranslationRepository(FakeDataSource fakeDataSource) 
+        {
+            _fakeDataSource = fakeDataSource;
+        }
+        
         public List<string> GetSupportedLanguageTag()
         {
-            var languageTags = FakeDataSource.Instance().Translations
+            var languageTags = _fakeDataSource.Translations
                 .Select(t => t.LanguageTag)
                 .Distinct();
             return languageTags.ToList();
@@ -20,7 +27,7 @@ namespace SimpleIdentityServer.DataAccess.Fake.Repositories
 
         public List<Translation> GetTranslations(string languageTag)
         {
-            return FakeDataSource.Instance().Translations
+            return _fakeDataSource.Translations
                 .Where(t => t.LanguageTag == languageTag)
                 .Select(t => t.ToBusiness())
                 .ToList();
@@ -28,7 +35,7 @@ namespace SimpleIdentityServer.DataAccess.Fake.Repositories
 
         public Translation GetTranslationByCode(string languageTag, string code)
         {
-            var translation = FakeDataSource.Instance().Translations.FirstOrDefault(t => t.LanguageTag == languageTag && t.Code == code);
+            var translation = _fakeDataSource.Translations.FirstOrDefault(t => t.LanguageTag == languageTag && t.Code == code);
             return translation.ToBusiness();
         }
     }

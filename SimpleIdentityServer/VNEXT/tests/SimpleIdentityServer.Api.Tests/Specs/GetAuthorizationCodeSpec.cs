@@ -59,7 +59,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         [Given("authenticate the resource owner")]
         public void GivenAuthenticateTheResourceOwner()
         {
-            FakeDataSource.Instance().ResourceOwners.Add(_resourceOwner);
+            _globalContext.FakeDataSource.ResourceOwners.Add(_resourceOwner);
             _globalContext.AuthenticationMiddleWareOptions.IsEnabled = true;
             _globalContext.AuthenticationMiddleWareOptions.Subject = _resourceOwner.Id;
         }

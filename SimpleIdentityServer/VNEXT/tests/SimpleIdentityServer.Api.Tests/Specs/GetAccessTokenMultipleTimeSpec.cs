@@ -1,12 +1,8 @@
-﻿using Microsoft.Practices.EnterpriseLibrary.Caching;
-using Microsoft.Practices.Unity;
-
-using SimpleIdentityServer.Host.DTOs.Request;
+﻿using SimpleIdentityServer.Host.DTOs.Request;
 using SimpleIdentityServer.Api.Tests.Common;
 using SimpleIdentityServer.Api.Tests.Common.Fakes;
 using SimpleIdentityServer.Api.Tests.Common.Fakes.Models;
 using SimpleIdentityServer.Core.Configuration;
-using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.RateLimitation.Configuration;
 using SimpleIdentityServer.RateLimitation.Constants;
 using System.Collections.Generic;
@@ -14,14 +10,11 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
-using System;
 
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
 using Xunit;
 using DOMAINS = SimpleIdentityServer.Core.Models;
-using HttpClientFactory = System.Net.Http.HttpClientFactory;
-using MODELS = SimpleIdentityServer.DataAccess.Fake.Models;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace SimpleIdentityServer.Api.Tests.Specs

@@ -9,15 +9,23 @@ namespace SimpleIdentityServer.DataAccess.Fake.Repositories
 {
     public class FakeGrantedTokenRepository : IGrantedTokenRepository
     {
+        private readonly FakeDataSource _fakeDataSource;
+        
+        public FakeGrantedTokenRepository(FakeDataSource fakeDataSource) 
+        {
+            _fakeDataSource = fakeDataSource;
+        }
+        
+        
         public bool Insert(GrantedToken grantedToken)
         {
-            FakeDataSource.Instance().GrantedTokens.Add(grantedToken.ToFake());
+            _fakeDataSource.GrantedTokens.Add(grantedToken.ToFake());
             return true;
         }
 
         public GrantedToken GetToken(string accessToken)
         {
-            var result = FakeDataSource.Instance().GrantedTokens.FirstOrDefault(g => g.AccessToken == accessToken);
+            var result = _fakeDataSource.GrantedTokens.FirstOrDefault(g => g.AccessToken == accessToken);
             return result == null ? null : result.ToBusiness();
         }
 
@@ -27,8 +35,7 @@ namespace SimpleIdentityServer.DataAccess.Fake.Repositories
             Core.Jwt.JwsPayload idTokenJwsPayload, 
             Core.Jwt.JwsPayload userInfoJwsPayload)
         {
-            var grantedTokens = FakeDataSource.Instance()
-                .GrantedTokens.Where(g => g.Scope == scopes && g.ClientId == clientId);
+            var grantedTokens = _fakeDataSource.GrantedTokens.Where(g => g.Scope == scopes && g.ClientId == clientId);
             if (grantedTokens == null || !grantedTokens.Any())
             {
                 return null;
@@ -72,19 +79,19 @@ namespace SimpleIdentityServer.DataAccess.Fake.Repositories
 
         public GrantedToken GetTokenByRefreshToken(string refreshToken)
         {
-            var result = FakeDataSource.Instance().GrantedTokens.FirstOrDefault(g => g.RefreshToken == refreshToken);
+            var result = _fakeDataSource.GrantedTokens.FirstOrDefault(g => g.RefreshToken == refreshToken);
             return result == null ? null : result.ToBusiness();
         }
 
         public bool Delete(GrantedToken grantedToken)
         {
-            var grantedTokenToBeRemoved = FakeDataSource.Instance().GrantedTokens.FirstOrDefault(c => c.AccessToken == grantedToken.AccessToken);
+            var grantedTokenToBeRemoved = _fakeDataSource.GrantedTokens.FirstOrDefault(c => c.AccessToken == grantedToken.AccessToken);
             if (grantedTokenToBeRemoved == null)
             {
                 return false;
             }
 
-            FakeDataSource.Instance().GrantedTokens.Remove(grantedTokenToBeRemoved);
+            _fakeDataSource.GrantedTokens.Remove(grantedTokenToBeRemoved);
             return true;
         }
     }

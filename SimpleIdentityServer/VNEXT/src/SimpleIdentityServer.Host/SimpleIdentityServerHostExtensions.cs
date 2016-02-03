@@ -34,17 +34,21 @@ namespace SimpleIdentityServer.Host
             
             if (options.DataSourceType == DataSourceTypes.InMemory) 
             {
+                serviceCollection.AddSimpleIdentityServerFake();
                 var clients = options.Clients.Select(c => c.ToFake()).ToList();
                 var jsonWebKeys = options.JsonWebKeys.Select(j => j.ToFake()).ToList();
                 var resourceOwners = options.ResourceOwners.Select(r => r.ToFake()).ToList();
                 var scopes = options.Scopes.Select(s => s.ToFake()).ToList();
                 var translations = options.Translations.Select(t => t.ToFake()).ToList();
-                FakeDataSource.Instance().Clients = clients;
-                FakeDataSource.Instance().JsonWebKeys = jsonWebKeys;
-                FakeDataSource.Instance().ResourceOwners = resourceOwners;
-                FakeDataSource.Instance().Scopes = scopes;
-                FakeDataSource.Instance().Translations = translations;
-                serviceCollection.AddSimpleIdentityServerFake();
+                var fakeDataSource = new FakeDataSource 
+                {
+                    Clients = clients,
+                    JsonWebKeys = jsonWebKeys,
+                    ResourceOwners = resourceOwners,
+                    Scopes = scopes,
+                    Translations = translations
+                };
+                serviceCollection.AddTransient<FakeDataSource>(a => fakeDataSource);
             }
             else 
             {

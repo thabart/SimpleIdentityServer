@@ -47,39 +47,19 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNet.TestHost;
 using Microsoft.AspNet.Builder;
 using System.Threading.Tasks;
-using System.Threading;
 using System.Security.Claims;
-using System.Net.Http;
 using System.Web.Http.Controllers;
 using Microsoft.AspNet.Mvc.Filters;
 using System.Collections.Generic;
 using Microsoft.AspNet.Http;
 using SimpleIdentityServer.Host.MiddleWare;
 using SimpleIdentityServer.RateLimitation.Attributes;
+using SimpleIdentityServer.DataAccess.Fake;
 
 namespace SimpleIdentityServer.Api.Tests.Common
 {
     public class GlobalContext
-    {
-        /*
-        private class FakeAuthorizationFilterAttribute : Microsoft.AspNet.Mvc.Filters.IAuthorizationFilter, IFilterMetadata
-        {
-            static FakeAuthorizationFilterAttribute()
-            {
-                TestUserId = "TestDomain\\TestUser";
-            }
-
-            public bool AllowMultiple { get; private set; }
-
-            public static string TestUserId { get; set; }
-
-            public void OnAuthorization(Microsoft.AspNet.Mvc.Filters.AuthorizationContext context)
-            {
-                
-            }
-        }
-        */
-        
+    {        
         public class FakeAuthenticationMiddleWareOptions
         {
             public bool IsEnabled { get; set; }
@@ -160,14 +140,33 @@ namespace SimpleIdentityServer.Api.Tests.Common
             }
         }
 
-        private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
+        private ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
         
-        private readonly ICacheManagerProvider _cacheManagerProvider;
+        private ICacheManagerProvider _cacheManagerProvider;
 
         #region Constructor
 
-        public GlobalContext()
+        public GlobalContext() { }
+        
+        #endregion
+        
+        #region Properties
+        
+        public TestServer TestServer { get; private set;}
+        
+        public IServiceProvider ServiceProvider { get; private set;}
+        
+        public FakeDataSource FakeDataSource { get; private set;}
+        
+        public FakeAuthenticationMiddleWareOptions AuthenticationMiddleWareOptions { get; private set; }
+
+        #endregion
+
+        #region Public methods
+        
+        public void Init() 
         {
+            // Initialize the caching & event source & service collection & data source
             var cache = new Cache(new NullBackingStore(),
                 new CachingInstrumentationProvider("apiCache", false, false, "simpleIdServer"));
             var instrumentationProvider = new CachingInstrumentationProvider("apiCache", false, false,
@@ -178,7 +177,6 @@ namespace SimpleIdentityServer.Api.Tests.Common
                 cache, 
                 instrumentationProvider), 
                 instrumentationProvider), new ExpirationPollTimer(1));
-
             _cacheManagerProvider = new FakeCacheManagerProvider
             {
                 CacheManager = cacheManager
@@ -187,34 +185,14 @@ namespace SimpleIdentityServer.Api.Tests.Common
             var serviceCollection = new ServiceCollection();
             ConfigureServiceCollection(serviceCollection);
             ServiceProvider = serviceCollection.BuildServiceProvider();
+            FakeDataSource = new FakeDataSource();
+            FakeDataSource.Init();
         }
         
-        #endregion
-        
-        #region Properties
-        
-        public TestServer TestServer { get; private set;}
-        
-        public IServiceProvider ServiceProvider { get; private set;}
-        
-        public FakeAuthenticationMiddleWareOptions AuthenticationMiddleWareOptions { get; private set; }
-
-        #endregion
-
-        #region Public methods
-
-
         public void CreateServer(Action<IServiceCollection> callback) 
         {
             AuthenticationMiddleWareOptions = new FakeAuthenticationMiddleWareOptions();
             TestServer = TestServer.Create(app => {
-                /*             
-                app.UseCookieAuthentication(opts => {
-                    opts.AuthenticationScheme = "SimpleIdentityServerAuthentication";
-                    opts.AutomaticChallenge = true;
-                });
-                */
-
                 app.UseSimpleIdentityServerExceptionHandler(new ExceptionHandlerMiddlewareOptions
                 {
                     SimpleIdentityServerEventSource = SimpleIdentityServerEventSource.Log
@@ -316,11 +294,9 @@ namespace SimpleIdentityServer.Api.Tests.Common
             serviceCollection.AddTransient<ICngKeySerializer, CngKeySerializer>();
             serviceCollection.AddInstance(_simpleIdentityServerEventSource);
             serviceCollection.AddTransient<ITranslationManager, TranslationManager>();
+            serviceCollection.AddTransient<FakeDataSource>(a => FakeDataSource);
             serviceCollection.AddInstance(_cacheManagerProvider);
-            // var filter = new FakeFilterProvider(serviceCollection);
-            serviceCollection.AddMvc(/*opt => {
-                opt.Filters.Add(filter);
-            }*/);
+            serviceCollection.AddMvc();
             serviceCollection.AddScoped<RateLimitationFilter>();
             serviceCollection.AddLogging();
         }

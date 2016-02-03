@@ -4,16 +4,22 @@ using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
 
 using System.Linq;
-using System;
 using SimpleIdentityServer.DataAccess.Fake.Extensions;
 
 namespace SimpleIdentityServer.DataAccess.Fake.Repositories
 {
     public class FakeConsentRepository : IConsentRepository
-    {
+    {        
+        private readonly FakeDataSource _fakeDataSource;
+        
+        public FakeConsentRepository(FakeDataSource fakeDataSource) 
+        {
+            _fakeDataSource = fakeDataSource;
+        }
+        
         public List<Consent> GetConsentsForGivenUser(string subject)
         {
-            var result = FakeDataSource.Instance().Consents
+            var result = _fakeDataSource.Consents
                 .Where(c => c.ResourceOwner.Id == subject);
             if (!result.Any())
             {
@@ -26,19 +32,19 @@ namespace SimpleIdentityServer.DataAccess.Fake.Repositories
         public Consent InsertConsent(Consent record)
         {
             var newRecord = record.ToFake();
-            FakeDataSource.Instance().Consents.Add(newRecord);
+            _fakeDataSource.Consents.Add(newRecord);
             return null;
         }
         
         public bool DeleteConsent(Consent record)
         {
-            var consentToBeRemoved = FakeDataSource.Instance().Consents.FirstOrDefault(c => c.Id == record.Id);
+            var consentToBeRemoved = _fakeDataSource.Consents.FirstOrDefault(c => c.Id == record.Id);
             if (consentToBeRemoved == null)
             {
                 return false;
             }
 
-            FakeDataSource.Instance().Consents.Remove(consentToBeRemoved);
+            _fakeDataSource.Consents.Remove(consentToBeRemoved);
             return true;
         }
     }
