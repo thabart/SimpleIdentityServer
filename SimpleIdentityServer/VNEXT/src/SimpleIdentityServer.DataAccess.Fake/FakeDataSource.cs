@@ -5,6 +5,11 @@ namespace SimpleIdentityServer.DataAccess.Fake
 {
     public class FakeDataSource
     {
+        public FakeDataSource()
+        {
+            Init();
+        }
+
         public List<Client> Clients { get; set;}
 
         public List<RedirectionUrl> RedirectionUrls { get; set;}
@@ -12,8 +17,7 @@ namespace SimpleIdentityServer.DataAccess.Fake
         public List<ResourceOwner> ResourceOwners { get; set;}
 
         public List<Scope> Scopes { get; set;}
-
-
+        
         public List<Consent> Consents { get; set;}
 
         public List<AuthorizationCode> AuthorizationCodes { get; set;}

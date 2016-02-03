@@ -40,7 +40,7 @@ namespace SimpleIdentityServer.Host
                 var resourceOwners = options.ResourceOwners.Select(r => r.ToFake()).ToList();
                 var scopes = options.Scopes.Select(s => s.ToFake()).ToList();
                 var translations = options.Translations.Select(t => t.ToFake()).ToList();
-                var fakeDataSource = new FakeDataSource 
+                var fakeDataSource = new FakeDataSource()
                 {
                     Clients = clients,
                     JsonWebKeys = jsonWebKeys,

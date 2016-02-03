@@ -1,19 +1,24 @@
 ﻿using System;
-using System.Web;
-using System.Web.Hosting;
 using SimpleIdentityServer.Core.Configuration;
+using Microsoft.AspNet.Http;
+using SimpleIdentityServer.Host.Extensions;
 
 namespace SimpleIdentityServer.Api.Configuration
 {
     public class ConcreteSimpleIdentityServerConfigurator : ISimpleIdentityServerConfigurator
     {
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public ConcreteSimpleIdentityServerConfigurator(IHttpContextAccessor httpContextAccessor)
+        {
+            _httpContextAccessor = httpContextAccessor;
+        }
+
         public string GetIssuerName()
         {
-            var request = HttpContext.Current.Request;
-            var scheme = request.Url.Scheme;
-            var authority = request.Url.Authority;
-            var virtualPathRoot = HostingEnvironment.ApplicationVirtualPath;
-            return scheme + "://" + authority + virtualPathRoot;
+            var request = _httpContextAccessor.HttpContext.Request;
+            var result = request.GetAbsoluteUriWithVirtualPath();
+            return result;
         }
 
         /// <summary>
