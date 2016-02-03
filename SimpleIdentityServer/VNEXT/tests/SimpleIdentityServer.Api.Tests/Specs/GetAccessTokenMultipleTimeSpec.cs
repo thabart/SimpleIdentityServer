@@ -14,6 +14,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System;
 
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
@@ -108,10 +109,10 @@ namespace SimpleIdentityServer.Api.Tests.Specs
                     _tokens.Add(result.Content.ReadAsAsync<DOMAINS.GrantedToken>().Result);
                     continue;
                 }
-            
+                
                 _errors.Add(new FakeTooManyRequestResponse
                 {
-                    Message = result.Content.ReadAsAsync<string>().Result,
+                    Message = result.Content.ReadAsStringAsync().Result,
                 });
             }
         }

@@ -10,6 +10,7 @@ using Microsoft.AspNet.Mvc.Filters;
 using Microsoft.AspNet.Http.Features;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Mvc;
+using Microsoft.Net.Http.Headers;
 
 namespace SimpleIdentityServer.RateLimitation.Attributes
 {
@@ -116,14 +117,14 @@ namespace SimpleIdentityServer.RateLimitation.Attributes
                         NumberOfRequests.ToString(CultureInfo.InvariantCulture),
                         SlidingTime.ToString(CultureInfo.InvariantCulture));
 
-                actionExecutingContext.Result = new EmptyResult();
                 var headers = actionExecutingContext.HttpContext.Response.Headers;
 
                 actionExecutingContext.Result = new ContentResult
                 {
                     StatusCode = 429,
-                    Content = message
-                }; ;
+                    Content = message,
+                    ContentType = new MediaTypeHeaderValue("text/plain")
+                };
                 headers.Add(RateLimitationConstants.XRateLimitLimitName, NumberOfRequests.ToString(CultureInfo.InvariantCulture));
                 headers.Add(RateLimitationConstants.XRateLimitRemainingName, numberOfRemainingRequests.ToString(CultureInfo.InvariantCulture));
                 headers.Add(RateLimitationConstants.XRateLimitResetName, timeResetTime.ToString(CultureInfo.InvariantCulture));
