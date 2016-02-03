@@ -14,12 +14,10 @@
 // limitations under the License.
 #endregion
 
-using System.Net.Http;
-
 namespace SimpleIdentityServer.Core.Results
 {
     public class UserInfoResult
     {
-        public HttpContent Content { get; set; }
+        public Microsoft.AspNet.Mvc.ActionResult Content { get; set; }
     }
 }

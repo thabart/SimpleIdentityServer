@@ -24,8 +24,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
         }
         
         [TypeFilter(typeof(RateLimitationFilter), Arguments = new object[] { "PostToken" })]
-        // [ServiceFilter(typeof(RateLimitationFilter))]
-        [Microsoft.AspNet.Mvc.HttpPost]
+        [HttpPost]
         public GrantedToken Post(TokenRequest tokenRequest)
         {
             GrantedToken result = null;
@@ -33,7 +32,14 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             AuthenticationHeaderValue authenticationHeaderValue = null;
             if (Request.Headers.TryGetValue("Authorization", out authorizationHeader)) 
             {
-                authenticationHeaderValue = new AuthenticationHeaderValue("default", authorizationHeader.First());
+                var authorizationHeaderValue = authorizationHeader.First();
+                var splittedAuthorizationHeaderValue = authorizationHeaderValue.Split(' ');
+                if (splittedAuthorizationHeaderValue.Count() == 2)
+                {
+                    authenticationHeaderValue = new AuthenticationHeaderValue(
+                        splittedAuthorizationHeaderValue[0],
+                        splittedAuthorizationHeaderValue[1]);
+                }
             }
             
             switch (tokenRequest.grant_type)

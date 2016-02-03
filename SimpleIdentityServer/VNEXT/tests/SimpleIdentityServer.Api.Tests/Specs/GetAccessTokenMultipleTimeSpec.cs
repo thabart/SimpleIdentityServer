@@ -56,7 +56,10 @@ namespace SimpleIdentityServer.Api.Tests.Specs
                 services.AddTransient<ISimpleIdentityServerConfigurator, SimpleIdentityServerConfigurator>();
             });
             _globalContext.AuthenticationMiddleWareOptions.IsEnabled = true;
-            _globalContext.AuthenticationMiddleWareOptions.Subject = "subject";
+            _globalContext.AuthenticationMiddleWareOptions.ResourceOwner = new DataAccess.Fake.Models.ResourceOwner
+            {
+                Id = "subject"
+            };
         }
 
         [Given("allowed number of requests is (.*)")]

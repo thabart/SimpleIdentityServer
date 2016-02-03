@@ -16,6 +16,7 @@ using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Common.Extensions;
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
+using SimpleIdentityServer.DataAccess.Fake.Extensions;
 
 namespace SimpleIdentityServer.Api.Tests.Specs
 {
@@ -65,14 +66,14 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         public void GivenAuthenticateTheResourceOwner()
         {
             _globalContext.FakeDataSource.ResourceOwners.Add(_resourceOwner);
+            _globalContext.AuthenticationMiddleWareOptions.IsEnabled = true;
+            _globalContext.AuthenticationMiddleWareOptions.ResourceOwner = _resourceOwner;
         }
 
         [Given("set the name of the issuer (.*)")]
         public void GivenIssuerName(string issuerName)
         {
             _fakeSimpleIdentityServerConfigurator.Issuer = issuerName;
-            _globalContext.AuthenticationMiddleWareOptions.IsEnabled = true;
-            _globalContext.AuthenticationMiddleWareOptions.Subject = _resourceOwner.Id;
         }
 
         [Given("requesting an access token")]

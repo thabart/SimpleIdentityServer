@@ -8,7 +8,6 @@ using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.Authenticate;
-// using Microsoft.AspNet.Security.Cookies;
 using SimpleIdentityServer.Host.DTOs.Request;
 using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.Host.ViewModels;

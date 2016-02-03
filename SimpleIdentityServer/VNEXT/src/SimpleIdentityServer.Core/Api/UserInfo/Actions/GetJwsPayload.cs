@@ -14,9 +14,6 @@
 // limitations under the License.
 #endregion
 
-using System.Net.Http;
-using System.Net.Http.Formatting;
-using System.Text;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Jwt;
@@ -25,6 +22,11 @@ using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Validators;
 using System;
+using Microsoft.AspNet.Mvc;
+using System.Net;
+using Microsoft.AspNet.Mvc.Formatters;
+using System.Collections.Generic;
+using Microsoft.Net.Http.Headers;
 
 namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
 {
@@ -82,7 +84,18 @@ namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
             {
                 return new UserInfoResult
                 {
-                    Content = new ObjectContent(typeof(JwsPayload), grantedToken.UserInfoPayLoad, new JsonMediaTypeFormatter())
+                    Content = new ObjectResult(grantedToken.UserInfoPayLoad)
+                    {
+                        StatusCode = (int)HttpStatusCode.OK,
+                        Formatters = new List<IOutputFormatter>
+                        {
+                            new JsonOutputFormatter()
+                        },
+                        ContentTypes = new List<MediaTypeHeaderValue>
+                        {
+                            new MediaTypeHeaderValue("application/json")
+                        }
+                    }
                 };
             }
 
@@ -102,9 +115,15 @@ namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
                     encryptedResponseEnc.Value);
             }
 
+            // Content = new StringContent(jwt, Encoding.UTF8, "application/jwt")
             return new UserInfoResult
             {
-                Content = new StringContent(jwt, Encoding.UTF8, "application/jwt")
+                Content = new ContentResult
+                {
+                    Content = jwt,
+                    ContentType = new MediaTypeHeaderValue("application/jwt"),
+                    StatusCode = (int)HttpStatusCode.OK
+                }
             };
         }
     }

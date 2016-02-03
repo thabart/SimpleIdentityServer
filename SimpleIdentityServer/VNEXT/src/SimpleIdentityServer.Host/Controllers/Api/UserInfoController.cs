@@ -26,13 +26,13 @@ namespace SimpleIdentityServer.Api.Controllers.Api
         #region Public methods
 
         [HttpGet]
-        public Microsoft.AspNet.Mvc.ActionResult Get()
+        public ActionResult Get()
         {
             return ProcessRequest();
         }
 
         [HttpPost]
-        public Microsoft.AspNet.Mvc.ActionResult Post()
+        public ActionResult Post()
         {
             return ProcessRequest();
         }
@@ -41,7 +41,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
         
         #region Private methods
 
-        private Microsoft.AspNet.Mvc.ActionResult ProcessRequest()
+        private ActionResult ProcessRequest()
         {
             try
             {
@@ -52,8 +52,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
                 }
 
                 var result = _userInfoActions.GetUserInformation(accessToken);
-                
-                return new HttpOkObjectResult(result.Content);
+                return result.Content;
             }
             catch (AuthorizationException)
             {

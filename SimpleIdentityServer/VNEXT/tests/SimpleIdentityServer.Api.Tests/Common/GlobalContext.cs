@@ -55,6 +55,10 @@ using Microsoft.AspNet.Http;
 using SimpleIdentityServer.Host.MiddleWare;
 using SimpleIdentityServer.RateLimitation.Attributes;
 using SimpleIdentityServer.DataAccess.Fake;
+using SimpleIdentityServer.Core.Common.Extensions;
+using System.Globalization;
+using SimpleIdentityServer.Core.Extensions;
+using SimpleIdentityServer.DataAccess.Fake.Models;
 
 namespace SimpleIdentityServer.Api.Tests.Common
 {
@@ -64,7 +68,7 @@ namespace SimpleIdentityServer.Api.Tests.Common
         {
             public bool IsEnabled { get; set; }
 
-            public string Subject { get; set; }
+            public ResourceOwner ResourceOwner { get; set; }
         }
 
         private class FakeAuthenticationMiddleWare 
@@ -85,13 +89,99 @@ namespace SimpleIdentityServer.Api.Tests.Common
             {
                 if (_options.IsEnabled)
                 {
-                    var claims = new List<Claim>
+                    var claims = new List<Claim>();
+
+                    // Add the standard open-id claims.
+                    claims.Add(new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, _options.ResourceOwner.Id));
+                    if (!string.IsNullOrWhiteSpace(_options.ResourceOwner.BirthDate))
                     {
-                        new Claim("sub", _options.Subject)
-                    };
-                    var claimsIdentity = new ClaimsIdentity(claims, "default");
-                    var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-                    context.Request.HttpContext.User = claimsPrincipal;
+                        claims.Add(new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.BirthDate, _options.ResourceOwner.BirthDate));
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(_options.ResourceOwner.Email))
+                    {
+                        claims.Add(new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Email, _options.ResourceOwner.Email));
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(_options.ResourceOwner.FamilyName))
+                    {
+                        claims.Add(new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.FamilyName, _options.ResourceOwner.FamilyName));
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(_options.ResourceOwner.Gender))
+                    {
+                        claims.Add(new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Gender, _options.ResourceOwner.Gender));
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(_options.ResourceOwner.GivenName))
+                    {
+                        claims.Add(new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.GivenName, _options.ResourceOwner.GivenName));
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(_options.ResourceOwner.Locale))
+                    {
+                        claims.Add(new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Locale, _options.ResourceOwner.Locale));
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(_options.ResourceOwner.MiddleName))
+                    {
+                        claims.Add(new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.MiddleName, _options.ResourceOwner.MiddleName));
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(_options.ResourceOwner.Name))
+                    {
+                        claims.Add(new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Name, _options.ResourceOwner.Name));
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(_options.ResourceOwner.NickName))
+                    {
+                        claims.Add(new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.NickName, _options.ResourceOwner.NickName));
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(_options.ResourceOwner.PhoneNumber))
+                    {
+                        claims.Add(new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber, _options.ResourceOwner.PhoneNumber));
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(_options.ResourceOwner.Picture))
+                    {
+                        claims.Add(new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Picture, _options.ResourceOwner.Picture));
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(_options.ResourceOwner.PreferredUserName))
+                    {
+                        claims.Add(new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.PreferredUserName, _options.ResourceOwner.PreferredUserName));
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(_options.ResourceOwner.Profile))
+                    {
+                        claims.Add(new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Profile, _options.ResourceOwner.Profile));
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(_options.ResourceOwner.WebSite))
+                    {
+                        claims.Add(new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.WebSite, _options.ResourceOwner.WebSite));
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(_options.ResourceOwner.ZoneInfo))
+                    {
+                        claims.Add(new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.ZoneInfo, _options.ResourceOwner.ZoneInfo));
+                    }
+
+                    var address = _options.ResourceOwner.Address;
+                    if (address != null)
+                    {
+                        var serializedAddress = address.SerializeWithDataContract();
+                        claims.Add(new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Address, serializedAddress));
+                    }
+
+                    claims.Add(new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.EmailVerified, _options.ResourceOwner.EmailVerified.ToString(CultureInfo.InvariantCulture)));
+                    claims.Add(new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumberVerified, _options.ResourceOwner.PhoneNumberVerified.ToString(CultureInfo.InvariantCulture)));
+                    claims.Add(new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt, _options.ResourceOwner.UpdatedAt.ToString(CultureInfo.InvariantCulture)));
+                    claims.Add(new Claim(ClaimTypes.AuthenticationInstant, DateTime.Now.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture)));
+
+                    var identity = new ClaimsIdentity(claims, "FakeApi");
+                    context.Request.HttpContext.User = new ClaimsPrincipal(identity);
                 }
 
                 await _next(context);

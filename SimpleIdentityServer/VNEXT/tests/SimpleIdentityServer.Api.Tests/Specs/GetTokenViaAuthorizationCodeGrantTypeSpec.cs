@@ -86,7 +86,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         {
             _globalContext.FakeDataSource.ResourceOwners.Add(_resourceOwner);
             _globalContext.AuthenticationMiddleWareOptions.IsEnabled = true;
-            _globalContext.AuthenticationMiddleWareOptions.Subject = _resourceOwner.Id;            
+            _globalContext.AuthenticationMiddleWareOptions.ResourceOwner = _resourceOwner;
         }
         
         [Given("requesting an authorization code")]
@@ -174,7 +174,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         {
             var jsonWebKey = _globalContext.FakeDataSource.JsonWebKeys.FirstOrDefault(j => j.Kid == kid);
             Assert.NotNull(jsonWebKey);
-            var generator = _globalContext.ServiceProvider.GetService<JwsGenerator>();
+            var generator = _globalContext.ServiceProvider.GetService<IJwsGenerator>();
             var enumName = Enum.GetName(typeof(AllAlg), jsonWebKey.Alg);
             var alg = (JwsAlg)Enum.Parse(typeof(JwsAlg), enumName);
             _clientAssertion = generator.Generate(_jwsPayload,
@@ -187,7 +187,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         {
             var jsonWebKey = _globalContext.FakeDataSource.JsonWebKeys.FirstOrDefault(j => j.Kid == kid);
             Assert.NotNull(jsonWebKey);
-            var generator = _globalContext.ServiceProvider.GetService<JweGenerator>();
+            var generator = _globalContext.ServiceProvider.GetService<IJweGenerator>();
             var algEnumName = Enum.GetName(typeof(AllAlg), jsonWebKey.Alg);
             var alg = (JweAlg)Enum.Parse(typeof(JweAlg), algEnumName);
             _clientAssertion = generator.GenerateJweByUsingSymmetricPassword(

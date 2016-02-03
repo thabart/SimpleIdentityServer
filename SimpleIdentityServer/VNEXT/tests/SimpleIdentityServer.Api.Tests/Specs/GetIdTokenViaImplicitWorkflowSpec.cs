@@ -3,7 +3,6 @@ using System.Net;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
-using System.Web.Http;
 
 using SimpleIdentityServer.Host.DTOs.Request;
 using SimpleIdentityServer.Host.DTOs.Response;
@@ -89,7 +88,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         {
             _globalContext.FakeDataSource.ResourceOwners.Add(_resourceOwner);
             _globalContext.AuthenticationMiddleWareOptions.IsEnabled = true;
-            _globalContext.AuthenticationMiddleWareOptions.Subject = _resourceOwner.Id;
+            _globalContext.AuthenticationMiddleWareOptions.ResourceOwner = _resourceOwner;
         }
 
         [Given("create an authorization request")]
