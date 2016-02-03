@@ -8,13 +8,13 @@ namespace SimpleIdentityServer.Core.UnitTests
     {
         public BaseFixture()
         {
-            FakeDataSource.Instance().Init();
-            FakeDataSource.Instance().Clients = FakeOpenIdAssets.GetClients();
-            FakeDataSource.Instance().Scopes = FakeOpenIdAssets.GetScopes();
-            FakeDataSource.Instance().ResourceOwners = FakeOpenIdAssets.GetResourceOwners();
-            FakeDataSource.Instance().Consents = FakeOpenIdAssets.GetConsents();
-            FakeDataSource.Instance().JsonWebKeys = FakeOpenIdAssets.GetJsonWebKeys();
-            FakeDataSource.Instance().Clients.First().JsonWebKeys = FakeDataSource.Instance().JsonWebKeys;
+            FakeFactories.FakeDataSource.Init();
+            FakeFactories.FakeDataSource.Clients = FakeOpenIdAssets.GetClients();
+            FakeFactories.FakeDataSource.Scopes = FakeOpenIdAssets.GetScopes();
+            FakeFactories.FakeDataSource.ResourceOwners = FakeOpenIdAssets.GetResourceOwners();
+            FakeFactories.FakeDataSource.Consents = FakeOpenIdAssets.GetConsents();
+            FakeFactories.FakeDataSource.JsonWebKeys = FakeOpenIdAssets.GetJsonWebKeys();
+            FakeFactories.FakeDataSource.Clients.First().JsonWebKeys = FakeFactories.FakeDataSource.JsonWebKeys;
         }
     }
 }

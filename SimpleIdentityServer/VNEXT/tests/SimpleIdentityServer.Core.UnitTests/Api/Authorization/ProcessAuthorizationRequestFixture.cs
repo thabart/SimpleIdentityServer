@@ -173,7 +173,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             };
 
             // ACT
-            var client = FakeDataSource.Instance().Clients.FirstOrDefault(c => c.ClientId == clientId);
+            var client = FakeFactories.FakeDataSource.Clients.FirstOrDefault(c => c.ClientId == clientId);
             Assert.NotNull(client);
             client.ResponseTypes.Remove(ResponseType.code);
 
@@ -252,7 +252,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             const string clientId = "MyBlog";
             const string subject = "habarthierry@hotmail.fr";
             const string redirectUrl = "http://localhost";
-            FakeDataSource.Instance().Consents.Add(new Consent
+            FakeFactories.FakeDataSource.Consents.Add(new Consent
             {
                 ResourceOwner = new ResourceOwner
                 {
@@ -265,7 +265,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                         Name = "openid"
                     }
                 },
-                Client = FakeDataSource.Instance().Clients.First()
+                Client = FakeFactories.FakeDataSource.Clients.First()
             });
             var authorizationParameter = new AuthorizationParameter
             {
@@ -300,7 +300,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             const string clientId = "MyBlog";
             const string subject = "habarthierry@hotmail.fr";
             const string redirectUrl = "http://localhost";
-            FakeDataSource.Instance().Consents.Add(new Consent
+            FakeFactories.FakeDataSource.Consents.Add(new Consent
             {
                 ResourceOwner = new ResourceOwner
                 {
@@ -313,7 +313,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                         Name = "openid"
                     }
                 },
-                Client = FakeDataSource.Instance().Clients.First()
+                Client = FakeFactories.FakeDataSource.Clients.First()
             });
             var authorizationParameter = new AuthorizationParameter
             {
@@ -357,7 +357,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             const string subject = "habarthierry@hotmail.fr";
             const string issuerName = "audience";
             const string redirectUrl = "http://localhost";
-            FakeDataSource.Instance().Consents.Add(new Consent
+            FakeFactories.FakeDataSource.Consents.Add(new Consent
             {
                 ResourceOwner = new ResourceOwner
                 {
@@ -370,7 +370,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                         Name = "openid"
                     }
                 },
-                Client = FakeDataSource.Instance().Clients.First()
+                Client = FakeFactories.FakeDataSource.Clients.First()
             });
             var authorizationParameter = new AuthorizationParameter
             {
@@ -565,7 +565,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             const string clientId = "MyBlog";
             const string subject = "habarthierry@hotmail.fr";
             const string redirectUrl = "http://localhost";
-            FakeDataSource.Instance().Consents.Add(new Consent
+            FakeFactories.FakeDataSource.Consents.Add(new Consent
             {
                 ResourceOwner = new ResourceOwner
                 {
@@ -578,7 +578,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                         Name = "openid"
                     }
                 },
-                Client = FakeDataSource.Instance().Clients.First()
+                Client = FakeFactories.FakeDataSource.Clients.First()
             });
             var authorizationParameter = new AuthorizationParameter
             {

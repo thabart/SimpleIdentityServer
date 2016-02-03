@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using Microsoft.AspNet.Mvc;
+using Moq;
 using SimpleIdentityServer.Core.Api.UserInfo.Actions;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Jwt;
@@ -141,7 +142,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
             _jwtGeneratorFake.Verify(j => j.Encrypt(It.IsAny<string>(),
                 It.IsAny<JweAlg>(),
                 JweEnc.A128CBC_HS256));
-            var contentType = result.Content.Headers.ContentType;
+            var actionResult = (ContentResult)result.Content;
+            var contentType = actionResult.ContentType;
             Assert.NotNull(contentType);
             Assert.True(contentType.MediaType == "application/jwt");
         }

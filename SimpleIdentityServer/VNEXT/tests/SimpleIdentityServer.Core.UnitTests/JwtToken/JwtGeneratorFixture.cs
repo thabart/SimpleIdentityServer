@@ -82,7 +82,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             // ARRANGE
             InitializeMockObjects();
             const string issuerName = "IssuerName";
-            var clientId = FakeDataSource.Instance().Clients.First().ClientId;
+            var clientId = FakeFactories.FakeDataSource.Clients.First().ClientId;
             const string subject = "habarthierry@hotmail.fr";
             var claims = new List<Claim>
             {
@@ -115,7 +115,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             InitializeMockObjects();
             const string issuerName = "IssuerName";
             const string clientId = "clientId";
-            FakeDataSource.Instance().Clients.Clear();
+            FakeFactories.FakeDataSource.Clients.Clear();
             const string subject = "habarthierry@hotmail.fr";
             var claims = new List<Claim>
             {
@@ -423,7 +423,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                     {
                         {
                             Constants.StandardClaimParameterValueNames.ValuesName,
-                            new [] { FakeDataSource.Instance().Clients.First().ClientId }
+                            new [] { FakeFactories.FakeDataSource.Clients.First().ClientId }
                         }
                     }
                 },
@@ -815,7 +815,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
         {
             // ARRANGE
             InitializeMockObjects();
-            var client = FakeDataSource.Instance().Clients.First();
+            var client = FakeFactories.FakeDataSource.Clients.First();
             client.IdTokenSignedResponseAlg = "none";
             var jwsPayload = new JwsPayload();
             var authorizationParameter = new AuthorizationParameter
@@ -837,7 +837,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
         {
             // ARRANGE
             InitializeMockObjects();
-            var client = FakeDataSource.Instance().Clients.First();
+            var client = FakeFactories.FakeDataSource.Clients.First();
             client.IdTokenSignedResponseAlg = Jwt.Constants.JwsAlgNames.RS256;
             var jwsPayload = new JwsPayload();
             var authorizationParameter = new AuthorizationParameter
@@ -859,7 +859,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
         {
             // ARRANGE
             InitializeMockObjects();
-            var client = FakeDataSource.Instance().Clients.First();
+            var client = FakeFactories.FakeDataSource.Clients.First();
             client.IdTokenSignedResponseAlg = Jwt.Constants.JwsAlgNames.RS384;
             var jwsPayload = new JwsPayload();
             var authorizationParameter = new AuthorizationParameter
@@ -881,7 +881,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
         {
             // ARRANGE
             InitializeMockObjects();
-            var client = FakeDataSource.Instance().Clients.First();
+            var client = FakeFactories.FakeDataSource.Clients.First();
             client.IdTokenSignedResponseAlg = Jwt.Constants.JwsAlgNames.RS512;
             var jwsPayload = new JwsPayload();
             var authorizationParameter = new AuthorizationParameter
@@ -907,7 +907,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
         {
             // ARRANGE
             InitializeMockObjects();
-            var client = FakeDataSource.Instance().Clients.First();
+            var client = FakeFactories.FakeDataSource.Clients.First();
             client.IdTokenEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5;
             var serializedRsa = string.Empty;
             using (var provider = new RSACryptoServiceProvider())
@@ -927,7 +927,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 Use = DataAccess.Fake.Models.Use.Enc,
                 SerializedKey = serializedRsa,
             };
-            FakeDataSource.Instance().JsonWebKeys.Add(jsonWebKey);
+            FakeFactories.FakeDataSource.JsonWebKeys.Add(jsonWebKey);
             var jws = "jws";
 
             // ACT
@@ -948,7 +948,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
         {
             // ARRANGE
             InitializeMockObjects();
-            var client = FakeDataSource.Instance().Clients.First();
+            var client = FakeFactories.FakeDataSource.Clients.First();
             client.IdTokenEncryptedResponseAlg = Jwt.Constants.JwsAlgNames.RS256;
             var serializedRsa = string.Empty;
             using (var provider = new RSACryptoServiceProvider())
@@ -968,7 +968,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 Use = DataAccess.Fake.Models.Use.Sig,
                 SerializedKey = serializedRsa
             };
-            FakeDataSource.Instance().JsonWebKeys.Add(jsonWebKey);
+            FakeFactories.FakeDataSource.JsonWebKeys.Add(jsonWebKey);
             var jwsPayload = new JwsPayload();
 
             // ACT
@@ -996,8 +996,8 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             var jwsGenerator = new JwsGenerator(createJwsSignature);
             var jweGenerator = new JweGenerator(jweHelper);
 
-            FakeDataSource.Instance().Scopes = FakeOpenIdAssets.GetScopes();
-            FakeDataSource.Instance().Clients = FakeOpenIdAssets.GetClients();
+            FakeFactories.FakeDataSource.Scopes = FakeOpenIdAssets.GetScopes();
+            FakeFactories.FakeDataSource.Clients = FakeOpenIdAssets.GetClients();
 
             _jwtGenerator = new JwtGenerator(
                 _simpleIdentityServerConfigurator.Object,
