@@ -8,7 +8,6 @@
     "runtime": "clr",
     "architecture": "x86"
   },
-  "packages": "packages",
   "commands": {
     "test": "dnx -p tests/SimpleIdentityServer.Core.UnitTests test"
   }
