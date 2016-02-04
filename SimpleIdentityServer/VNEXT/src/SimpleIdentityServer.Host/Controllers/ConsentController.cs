@@ -14,7 +14,7 @@ using Microsoft.AspNet.Mvc;
 
 namespace SimpleIdentityServer.Api.Controllers
 {
-    [Authorize]
+    [Authorize(ActiveAuthenticationSchemes = "SimpleIdentityServerAuthentication")]
     public class ConsentController : Controller
     {
         private readonly IConsentActions _consentActions;

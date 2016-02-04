@@ -17,6 +17,7 @@ using SimpleIdentityServer.Logging;
 using Swashbuckle.SwaggerGen;
 using SimpleIdentityServer.Host.MiddleWare;
 using SimpleIdentityServer.RateLimitation;
+using Microsoft.AspNet.Http;
 
 namespace SimpleIdentityServer.Host 
 {
@@ -72,6 +73,9 @@ namespace SimpleIdentityServer.Host
             app.UseCookieAuthentication(opts => {
                 opts.AuthenticationScheme = "SimpleIdentityServerAuthentication";
                 opts.AutomaticAuthenticate = true;
+                opts.AutomaticChallenge = false;
+                opts.LoginPath = new PathString("/Error/401");
+                opts.AccessDeniedPath = new PathString("/Error/401");
             });
 
             app.UseStaticFiles();
@@ -90,6 +94,14 @@ namespace SimpleIdentityServer.Host
 
             app.UseMvc(routes =>
             {
+                routes.MapRoute("Error401Route",
+                    Constants.EndPoints.Get401,
+                    new
+                    {
+                        controller = "Error",
+                        action = "Get401"    
+                    });
+                    
                 routes.MapRoute(
                     name: "default",
                     template: "{controller}/{action=Index}/{id?}");

@@ -15,3 +15,8 @@ h2 {
     margin: auto;
     text-align: center;
 }
+
+h1.errorbox {
+    background-color:rgba(218, 218, 218, 0.63); 
+    padding:10px;
+}

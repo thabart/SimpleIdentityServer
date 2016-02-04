@@ -40,6 +40,8 @@ namespace SimpleIdentityServer.Host
             public const string CheckSession = "check_session";
 
             public const string Revocation = "revocation";
+            
+            public const string Get401 = "Error/401";
         }
     }
 }

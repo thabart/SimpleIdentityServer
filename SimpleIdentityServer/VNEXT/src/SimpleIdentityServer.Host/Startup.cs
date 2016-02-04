@@ -56,7 +56,7 @@ namespace SimpleIdentityServer.Host
             app.UseSimpleIdentityServer(new SimpleIdentityServerHostOptions
             {
                 IsSwaggerEnabled = true,
-                IsDeveloperModeEnabled = false
+                IsDeveloperModeEnabled = true
             });
         }
 
