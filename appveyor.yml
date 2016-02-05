@@ -13,6 +13,7 @@ before_build:
 - cmd: dnu restore
 build_script:
 - cmd: dnu build src\SimpleIdentityServer.Host
+- cmd: dnu build src\SimpleIdentityServer.Core
 - cmd: dnu build tests\SimpleIdentityServer.Api.Tests
 - cmd: dnu build tests\SimpleIdentityServer.Core.Jwt.UnitTests
 - cmd: dnu build tests\SimpleIdentityServer.Core.UnitTests
