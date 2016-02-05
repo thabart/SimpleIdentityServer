@@ -7,6 +7,7 @@ environment:
 install:
 - ps: (new-object Net.WebClient).DownloadString("https://raw.github.com/madskristensen/ExtensionScripts/master/AppVeyor/vsix.ps1") | iex
 - cmd: powershell -NoProfile -ExecutionPolicy unrestricted -Command "&{iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/aspnet/Home/dev/dnvminstall.ps1'))}"
+- cmd: npm install bower -g
 before_build:
 - cd SimpleIdentityServer\VNEXT
 - cmd: dnvm upgrade
