@@ -1,0 +1,1 @@
+dnu publish src\SimpleIdentityServer.Host -o output\

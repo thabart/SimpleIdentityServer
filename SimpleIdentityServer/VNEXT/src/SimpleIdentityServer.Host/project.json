@@ -57,18 +57,21 @@
         "node_modules",
         "bower_components"
     ],
+	
     "publishExclude": [
         "**.user",
         "**.vspscc"
     ],
     
     "scripts": {
-        "prepublish": [
+        "prebuild": [
             "npm install",
             "bower install",
             "gulp clean",
             "gulp min"
-        ]
+        ],
+		"postrestore": [ "npm install", "bower install" ],
+		"prepare": [ "gulp clean", "gulp min" ]
     },
     
     "configurations": {
