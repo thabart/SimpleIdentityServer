@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNet.Identity;
+﻿using System.Threading.Tasks;
+using System.Web;
+using Microsoft.AspNet.Identity;
 using Microsoft.Owin.Security;
 using SimpleIdentityServer.Api.DTOs.Request;
 using SimpleIdentityServer.Api.Extensions;
@@ -26,6 +28,9 @@ namespace SimpleIdentityServer.Api.Controllers
 
         private readonly ITranslationManager _translationManager;
 
+        // Used for XSRF protection when adding external logins
+        private const string XsrfKey = "XsrfId";
+
         public AuthenticateController(
             IAuthenticateActions authenticateActions,
             IProtector protector,
@@ -37,6 +42,8 @@ namespace SimpleIdentityServer.Api.Controllers
             _encoder = encoder;
             _translationManager = translationManager;
         }
+
+        #region Public methods
 
         [HttpGet]
         public ActionResult Index(string code)
@@ -106,6 +113,34 @@ namespace SimpleIdentityServer.Api.Controllers
             return View(authorize);
         }
 
+        [HttpPost]
+        public ActionResult ExternalLogin(string provider, string code)
+        {
+            if (string.IsNullOrWhiteSpace(code))
+            {
+                throw new ArgumentNullException("code");
+            }
+
+            return new ChallengeResult(provider, Url.Action("ExternalLoginCallback", "Authenticate", new {code = code}));
+        }
+
+        public async Task<ActionResult> ExternalLoginCallback(string code)
+        {
+            var authenticationManager = HttpContext.GetOwinContext().Authentication;
+            var loginInformation = await authenticationManager.GetExternalLoginInfoAsync();
+            if (loginInformation == null)
+            {
+                return RedirectToAction("Index", new {code = code});
+            }
+
+            string s = "";
+            return null;
+        }
+
+        #endregion
+
+        #region Private methods
+
         private void TranslateView(string uiLocales)
         {
             var translations = _translationManager.GetTranslations(uiLocales, new List<string>
@@ -120,5 +155,42 @@ namespace SimpleIdentityServer.Api.Controllers
 
             ViewBag.Translations = translations;
         }
+
+        #endregion
+
+        #region Private classes
+
+        private class ChallengeResult : HttpUnauthorizedResult
+        {
+            public ChallengeResult(string provider, string redirectUri)
+                : this(provider, redirectUri, null)
+            {
+            }
+
+            public ChallengeResult(string provider, string redirectUri, string userId)
+            {
+                LoginProvider = provider;
+                RedirectUri = redirectUri;
+                UserId = userId;
+            }
+
+            public string LoginProvider { get; set; }
+
+            public string RedirectUri { get; set; }
+
+            public string UserId { get; set; }
+
+            public override void ExecuteResult(ControllerContext context)
+            {
+                var properties = new AuthenticationProperties { RedirectUri = RedirectUri };
+                if (UserId != null)
+                {
+                    properties.Dictionary[XsrfKey] = UserId;
+                }
+                context.HttpContext.GetOwinContext().Authentication.Challenge(properties, LoginProvider);
+            }
+        }
+
+        #endregion
     }
 }

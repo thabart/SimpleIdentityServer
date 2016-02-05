@@ -64,7 +64,6 @@ namespace SimpleIdentityServer.Api
                 });
 
             config.Filters.Add(new IdentityServerExceptionFilter(simpleIdentityServerEventSource));
-
             appBuilder.UseWebApi(config);
         }
     }

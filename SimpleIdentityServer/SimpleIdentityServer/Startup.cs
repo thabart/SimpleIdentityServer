@@ -1,8 +1,10 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Filters;
 
 using Microsoft.Owin;
+using Microsoft.Owin.Security.MicrosoftAccount;
 using Microsoft.Practices.Unity;
 
 using Owin;
@@ -46,6 +48,23 @@ namespace SimpleIdentityServer.Api
             {
                 AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie
             });
+            app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
+
+
+            var options = new MicrosoftAccountAuthenticationOptions
+            {
+                ClientId = "0000000048185530",
+                ClientSecret = "KN12jxYIAYOr0bCLXFBcXhBrTlZyLNAZ",
+                CallbackPath = new PathString("/Authenticate/ExternalLoginCallback"),
+                Provider = new MicrosoftAccountAuthenticationProvider()
+                {
+                    OnAuthenticated = (context) =>
+                    {
+                        return Task.FromResult(0);
+                    }
+                }
+            };
+            app.UseMicrosoftAccountAuthentication(options);
 
             SwaggerConfig.Configure(httpConfiguration);
             WebApiConfig.Register(httpConfiguration, app, logging);
