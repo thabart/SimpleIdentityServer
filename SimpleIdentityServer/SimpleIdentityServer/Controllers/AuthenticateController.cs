@@ -28,8 +28,7 @@ namespace SimpleIdentityServer.Api.Controllers
 
         private readonly ITranslationManager _translationManager;
 
-        // Used for XSRF protection when adding external logins
-        private const string XsrfKey = "XsrfId";
+        private const string ExternalAuthenticateCookieName = "SimpleIdentityServer-{0}";
 
         public AuthenticateController(
             IAuthenticateActions authenticateActions,
@@ -121,20 +120,53 @@ namespace SimpleIdentityServer.Api.Controllers
                 throw new ArgumentNullException("code");
             }
 
-            return new ChallengeResult(provider, Url.Action("ExternalLoginCallback", "Authenticate", new {code = code}));
-        }
+            // Add information into the COOKIE
+            // Remove the cookie when it's not needed
+            var id = Guid.NewGuid().ToString();
+            var name = string.Format(ExternalAuthenticateCookieName, id);
+            var cookie = new HttpCookie(name)
+            {
+                Value = code,                
+                Expires = DateTime.MaxValue
+            };
+            Response.Cookies.Add(cookie);
 
-        public async Task<ActionResult> ExternalLoginCallback(string code)
+            return new ChallengeResult(provider, 
+                Url.Action("LoginCallback", "Authenticate",
+                new { code = id }));
+        }
+        
+        [AllowAnonymous]
+        public async Task<string> LoginCallback(string code)
         {
+            if (string.IsNullOrWhiteSpace(code))
+            {
+                throw new ArgumentNullException("code");
+            }
+
+            var context = HttpContext.GetOwinContext();
+            var information = context.Request.Cookies[string.Format(ExternalAuthenticateCookieName, code)];
+            if (information == null)
+            {
+                // TODO : throw an exception
+                return null;
+            }
+            
+            var authenticationManager = context.Authentication;
+            var loginInformation = await authenticationManager.GetExternalLoginInfoAsync();
+
+            /*
             var authenticationManager = HttpContext.GetOwinContext().Authentication;
             var loginInformation = await authenticationManager.GetExternalLoginInfoAsync();
             if (loginInformation == null)
             {
-                return RedirectToAction("Index", new {code = code});
+                return RedirectToAction("Index", new {code = code });
             }
 
             string s = "";
             return null;
+            */
+            return "coucou";
         }
 
         #endregion
@@ -163,30 +195,24 @@ namespace SimpleIdentityServer.Api.Controllers
         private class ChallengeResult : HttpUnauthorizedResult
         {
             public ChallengeResult(string provider, string redirectUri)
-                : this(provider, redirectUri, null)
-            {
-            }
-
-            public ChallengeResult(string provider, string redirectUri, string userId)
             {
                 LoginProvider = provider;
                 RedirectUri = redirectUri;
-                UserId = userId;
             }
 
-            public string LoginProvider { get; set; }
+            public string LoginProvider { get; private set; }
 
-            public string RedirectUri { get; set; }
+            public string RedirectUri { get; private set; }
 
-            public string UserId { get; set; }
+            public string CookieName { get; private set; }
 
             public override void ExecuteResult(ControllerContext context)
             {
-                var properties = new AuthenticationProperties { RedirectUri = RedirectUri };
-                if (UserId != null)
+                var properties = new AuthenticationProperties
                 {
-                    properties.Dictionary[XsrfKey] = UserId;
-                }
+                    RedirectUri = RedirectUri
+                };
+                
                 context.HttpContext.GetOwinContext().Authentication.Challenge(properties, LoginProvider);
             }
         }

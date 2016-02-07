@@ -50,19 +50,12 @@ namespace SimpleIdentityServer.Api
             });
             app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
 
-
+            // Create a client under this link : https://account.live.com/developers/applications/
+            // The redirection URL should be something like : http://localhost:50470/signin-microsoft
             var options = new MicrosoftAccountAuthenticationOptions
             {
                 ClientId = "0000000048185530",
-                ClientSecret = "KN12jxYIAYOr0bCLXFBcXhBrTlZyLNAZ",
-                CallbackPath = new PathString("/Authenticate/ExternalLoginCallback"),
-                Provider = new MicrosoftAccountAuthenticationProvider()
-                {
-                    OnAuthenticated = (context) =>
-                    {
-                        return Task.FromResult(0);
-                    }
-                }
+                ClientSecret = "KN12jxYIAYOr0bCLXFBcXhBrTlZyLNAZ"
             };
             app.UseMicrosoftAccountAuthentication(options);
 

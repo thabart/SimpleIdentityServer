@@ -124,6 +124,8 @@
     <Compile Include="JwtToken\JwtParserFixture.cs" />
     <Compile Include="ModuleInitFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Protector\CompressorFixture.cs" />
+    <Compile Include="Protector\ProtectorFixture.cs" />
     <Compile Include="Translation\TranslationManagerFixture.cs" />
     <Compile Include="Validators\AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture.cs" />
     <Compile Include="Validators\AuthorizationCodeGrantTypeParameterTokenEdpValidatorFixture.cs" />
