@@ -1,11 +1,14 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using Microsoft.AspNet.Identity;
 using Microsoft.Owin.Security;
 using SimpleIdentityServer.Api.DTOs.Request;
 using SimpleIdentityServer.Api.Extensions;
 using SimpleIdentityServer.Api.ViewModels;
+using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
+using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.Authenticate;
@@ -44,14 +47,57 @@ namespace SimpleIdentityServer.Api.Controllers
 
         #region Public methods
 
+        #region Normal authentication process
+
         [HttpGet]
-        public ActionResult Index(string code)
+        public ActionResult Index()
         {
-            var authenticatedUser = this.GetAuthenticatedUser();
+            var authenticatedUser = this.GetAuthenticatedUser(); 
+            if (authenticatedUser == null ||
+            !authenticatedUser.IsAuthenticated())
+            {
+                TranslateView("en");
+                return View();
+            }
+
+            // TODO : Redirect to user information page
+            return null;
+        }
+
+        [HttpPost]
+        public ActionResult LocalLogin(AuthorizeViewModel authorizeViewModel)
+        {
+            if (authorizeViewModel == null)
+            {
+                throw new ArgumentNullException("authorizeViewModel");
+            }
+
+            return null;
+        }
+
+        [HttpPost]
+        public ActionResult ExternalLogin(string provider)
+        {
+            return null;
+        }
+
+        #endregion
+
+        #region Authentication process which follows OPENID
+
+        [HttpGet]
+        public ActionResult OpenId(string code)
+        {
+            if (string.IsNullOrWhiteSpace(code))
+            {
+                throw new ArgumentNullException("code");
+            }
+
+            var authenticatedUser = this.GetAuthenticatedUser(); 
             var decodedCode = _encoder.Decode(code);
             var request = _protector.Decrypt<AuthorizationRequest>(decodedCode);
 
-            var actionResult = _authenticateActions.AuthenticateResourceOwner(
+            var actionResult = _authenticateActions.AuthenticateResourceOwnerOpenId(
                 request.ToParameter(),
                 authenticatedUser,
                 code);
@@ -63,7 +109,7 @@ namespace SimpleIdentityServer.Api.Controllers
             }
 
             TranslateView(request.ui_locales);
-            var viewModel = new AuthorizeViewModel
+            var viewModel = new AuthorizeOpenIdViewModel
             {
                 Code = code
             };
@@ -72,17 +118,27 @@ namespace SimpleIdentityServer.Api.Controllers
         }
 
         [HttpPost]
-        public ActionResult Index(AuthorizeViewModel authorize)
+        public ActionResult LocalLoginOpenId(AuthorizeOpenIdViewModel authorizeOpenId)
         {
-            var code = _encoder.Decode(authorize.Code);
+            if (authorizeOpenId == null)
+            {
+                throw new ArgumentNullException("authorizeOpenId");    
+            }
+
+            if (string.IsNullOrWhiteSpace(authorizeOpenId.Code))
+            {
+                throw new ArgumentNullException("Code");
+            }
+
+            var code = _encoder.Decode(authorizeOpenId.Code);
             var request = _protector.Decrypt<AuthorizationRequest>(code);
             try
             {
                 var authenticationManager = this.GetAuthenticationManager();
                 var claims = new List<Claim>();
-                var actionResult = _authenticateActions.LocalUserAuthentication(authorize.ToParameter(),
+                var actionResult = _authenticateActions.LocalOpenIdUserAuthentication(authorizeOpenId.ToParameter(),
                     request.ToParameter(),
-                    authorize.Code,
+                    authorizeOpenId.Code,
                     out claims);
 
                 var claimIdentity = new ClaimsIdentity(claims, DefaultAuthenticationTypes.ApplicationCookie);
@@ -109,65 +165,81 @@ namespace SimpleIdentityServer.Api.Controllers
             }
 
             TranslateView(request.ui_locales);
-            return View(authorize);
+            return View(authorizeOpenId);
         }
 
         [HttpPost]
-        public ActionResult ExternalLogin(string provider, string code)
+        public ActionResult ExternalLoginOpenId(string provider, string code)
         {
             if (string.IsNullOrWhiteSpace(code))
             {
                 throw new ArgumentNullException("code");
             }
 
-            // Add information into the COOKIE
-            // Remove the cookie when it's not needed
+            // Add the information into the cookie
             var id = Guid.NewGuid().ToString();
             var name = string.Format(ExternalAuthenticateCookieName, id);
             var cookie = new HttpCookie(name)
             {
                 Value = code,                
-                Expires = DateTime.MaxValue
+                Expires = DateTime.UtcNow.AddMinutes(5),
+                
             };
             Response.Cookies.Add(cookie);
 
-            return new ChallengeResult(provider, 
-                Url.Action("LoginCallback", "Authenticate",
+            return new ChallengeResult(provider,
+                Url.Action("LoginCallbackOpenId", "Authenticate",
                 new { code = id }));
         }
         
-        [AllowAnonymous]
-        public async Task<string> LoginCallback(string code)
+        public async Task<ActionResult> LoginCallbackOpenId(string code, string error)
         {
             if (string.IsNullOrWhiteSpace(code))
             {
                 throw new ArgumentNullException("code");
             }
 
+            if (!string.IsNullOrWhiteSpace(error))
+            {
+                throw new IdentityServerException(
+                    ErrorCodes.InvalidRequestCode, 
+                    string.Format(ErrorDescriptions.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
+            }
+
+            // Retrieve the request from the cookie.
             var context = HttpContext.GetOwinContext();
             var information = context.Request.Cookies[string.Format(ExternalAuthenticateCookieName, code)];
             if (information == null)
             {
-                // TODO : throw an exception
-                return null;
+                throw new IdentityServerException(ErrorCodes.InvalidRequestCode, ErrorDescriptions.TheRequestCannotBeExtractedFromTheCookie);
             }
             
             var authenticationManager = context.Authentication;
             var loginInformation = await authenticationManager.GetExternalLoginInfoAsync();
-
-            /*
-            var authenticationManager = HttpContext.GetOwinContext().Authentication;
-            var loginInformation = await authenticationManager.GetExternalLoginInfoAsync();
             if (loginInformation == null)
             {
-                return RedirectToAction("Index", new {code = code });
+                throw new IdentityServerException(ErrorCodes.InvalidRequestCode,
+                    ErrorDescriptions.TheLoginInformationCannotBeExtracted);
+            }
+            
+            var decodedRequest = _encoder.Decode(code);
+            var authorizationRequest = _protector.Decrypt<AuthorizationRequest>(decodedRequest);
+            // var provider = loginInformation.Login.LoginProvider;
+            var claims = loginInformation.ExternalIdentity.Claims;
+            var actionResult = _authenticateActions.ExternalOpenIdUserAuthentication(claims.ToList(),
+                authorizationRequest.ToParameter(),
+                code); 
+            var result = this.CreateRedirectionFromActionResult(actionResult,
+                authorizationRequest);
+            if (actionResult != null)
+            {
+                return result;
             }
 
-            string s = "";
-            return null;
-            */
-            return "coucou";
+            return RedirectToAction("Index", "Authenticate", new { code = code });
         }
+
+        #endregion
 
         #endregion
 
@@ -203,8 +275,6 @@ namespace SimpleIdentityServer.Api.Controllers
             public string LoginProvider { get; private set; }
 
             public string RedirectUri { get; private set; }
-
-            public string CookieName { get; private set; }
 
             public override void ExecuteResult(ControllerContext context)
             {

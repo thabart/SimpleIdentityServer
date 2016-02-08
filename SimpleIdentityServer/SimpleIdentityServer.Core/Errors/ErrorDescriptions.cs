@@ -162,5 +162,13 @@ namespace SimpleIdentityServer.Core.Errors
             "one or more sector uri is not a redirect_uri";
 
         public static string TheRefreshTokenIsNotValid = "the refresh token is not valid";
+
+        public static string TheRequestCannotBeExtractedFromTheCookie =
+            "the request cannot be extracted from the cookie";
+
+        public static string AnErrorHasBeenRaisedWhenTryingToAuthenticate =
+            "an error {0} has been raised when trying to authenticate";
+
+        public static string TheLoginInformationCannotBeExtracted = "the login information cannot be extracted";
     }
 }

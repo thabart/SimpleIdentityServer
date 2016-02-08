@@ -18,7 +18,7 @@ using SimpleIdentityServer.Logging;
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 {
     [TestFixture]
-    public sealed class LocalUserAuthenticationActionFixture
+    public sealed class LocalOpenIdUserAuthenticationActionFixture
     {
 
         private Mock<IResourceOwnerService> _resourceOwnerServiceFake;
@@ -29,7 +29,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 
         private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSourceFake;
 
-        private ILocalUserAuthenticationAction _localUserAuthenticationAction;
+        private ILocalOpenIdUserAuthenticationAction _localUserAuthenticationAction;
 
         [Test]
         public void When_Passing_Null_Parameter_Then_Exceptions_Are_Thrown()
@@ -100,7 +100,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             _resourceOwnerRepositoryFake = new Mock<IResourceOwnerRepository>();
             _authenticateHelperFake = new Mock<IAuthenticateHelper>();
             _simpleIdentityServerEventSourceFake = new Mock<ISimpleIdentityServerEventSource>();
-            _localUserAuthenticationAction = new LocalUserAuthenticationAction(
+            _localUserAuthenticationAction = new LocalOpenIdUserAuthenticationAction(
                 _resourceOwnerServiceFake.Object,
                 _resourceOwnerRepositoryFake.Object,
                 _authenticateHelperFake.Object,

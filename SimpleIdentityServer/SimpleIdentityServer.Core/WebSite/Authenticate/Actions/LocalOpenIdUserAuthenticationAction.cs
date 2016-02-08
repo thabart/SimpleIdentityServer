@@ -29,7 +29,7 @@ using SimpleIdentityServer.Logging;
 
 namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 {
-    public interface ILocalUserAuthenticationAction
+    public interface ILocalOpenIdUserAuthenticationAction
     {
         /// <summary>
         /// Authenticate local user account.
@@ -48,7 +48,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
             out List<Claim> claims);
     }
 
-    public class LocalUserAuthenticationAction : ILocalUserAuthenticationAction
+    public class LocalOpenIdUserAuthenticationAction : ILocalOpenIdUserAuthenticationAction
     {
 
         private readonly IResourceOwnerService _resourceOwnerService;
@@ -59,7 +59,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 
         private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
 
-        public LocalUserAuthenticationAction(
+        public LocalOpenIdUserAuthenticationAction(
             IResourceOwnerService resourceOwnerService,
             IResourceOwnerRepository resourceOwnerRepository,
             IAuthenticateHelper authenticateHelper,

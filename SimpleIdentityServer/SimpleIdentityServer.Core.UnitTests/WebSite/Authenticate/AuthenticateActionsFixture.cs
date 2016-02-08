@@ -13,9 +13,11 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
     [TestFixture]
     public sealed class AuthenticateActionsFixture
     {
-        private Mock<IAuthenticateResourceOwnerAction> _authenticateResourceOwnerActionFake;
+        private Mock<IAuthenticateResourceOwnerOpenIdAction> _authenticateResourceOwnerActionFake;
 
-        private Mock<ILocalUserAuthenticationAction> _localUserAuthenticationActionFake;
+        private Mock<ILocalOpenIdUserAuthenticationAction> _localOpenIdUserAuthenticationActionFake;
+
+        private Mock<IExternalOpenIdUserAuthenticationAction> _externalUserAuthenticationFake;
 
         private IAuthenticateActions _authenticateActions;
 
@@ -27,8 +29,8 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             var authorizationParameter = new AuthorizationParameter();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _authenticateActions.AuthenticateResourceOwner(null, null, null));
-            Assert.Throws<ArgumentNullException>(() => _authenticateActions.AuthenticateResourceOwner(authorizationParameter, null, null));
+            Assert.Throws<ArgumentNullException>(() => _authenticateActions.AuthenticateResourceOwnerOpenId(null, null, null));
+            Assert.Throws<ArgumentNullException>(() => _authenticateActions.AuthenticateResourceOwnerOpenId(authorizationParameter, null, null));
         }
 
         [Test]
@@ -40,8 +42,8 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             List<Claim> claims;
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _authenticateActions.LocalUserAuthentication(null, null, null, out claims));
-            Assert.Throws<ArgumentNullException>(() => _authenticateActions.LocalUserAuthentication(localAuthenticationParameter, null, null, out claims));
+            Assert.Throws<ArgumentNullException>(() => _authenticateActions.LocalOpenIdUserAuthentication(null, null, null, out claims));
+            Assert.Throws<ArgumentNullException>(() => _authenticateActions.LocalOpenIdUserAuthentication(localAuthenticationParameter, null, null, out claims));
         }
 
         [Test]
@@ -56,7 +58,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             var claimsPrincipal = new ClaimsPrincipal();
 
             // ACT
-            _authenticateActions.AuthenticateResourceOwner(authorizationParameter, claimsPrincipal, null);
+            _authenticateActions.AuthenticateResourceOwnerOpenId(authorizationParameter, claimsPrincipal, null);
 
             // ASSERT
             _authenticateResourceOwnerActionFake.Verify(a => a.Execute(authorizationParameter, claimsPrincipal, null));
@@ -79,25 +81,66 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 
 
             // ACT
-            _authenticateActions.LocalUserAuthentication(localUserAuthentication,
+            _authenticateActions.LocalOpenIdUserAuthentication(localUserAuthentication,
                 authorizationParameter, 
                 null, 
                 out claims);
 
             // ASSERT
-            _localUserAuthenticationActionFake.Verify(a => a.Execute(localUserAuthentication, 
+            _localOpenIdUserAuthenticationActionFake.Verify(a => a.Execute(localUserAuthentication, 
                 authorizationParameter,
                 null,
                 out claims));
         }
 
+        [Test]
+        public void When_Passing_Null_Parameters_To_The_Action_ExternalUserAuthentication_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var claims = new List<Claim>
+            {
+                new Claim("sub", "subject")
+            };
+            var authorizationParameter = new AuthorizationParameter();
+
+            // ACTS & ASSERTS
+            Assert.Throws<ArgumentNullException>(() => _authenticateActions.ExternalOpenIdUserAuthentication(null, null, null));
+            Assert.Throws<ArgumentNullException>(() => _authenticateActions.ExternalOpenIdUserAuthentication(claims, null, null));
+            Assert.Throws<ArgumentNullException>(() => _authenticateActions.ExternalOpenIdUserAuthentication(claims, authorizationParameter, null));
+        }
+
+        [Test]
+        public void When_Passing_Parameters_Needed_To_The_Action_ExternalUserAuthentication_Then_The_Action_Is_Called()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var claims = new List<Claim>
+            {
+                new Claim("sub", "subject")
+            };
+            var authorizationParameter = new AuthorizationParameter();
+            var code = "code";
+
+            // ACT
+            _authenticateActions.ExternalOpenIdUserAuthentication(claims, authorizationParameter, code);
+
+            // ASSERT
+            _externalUserAuthenticationFake.Verify(a => a.Execute(
+                claims,
+                authorizationParameter,
+                code));
+        }
+
         private void InitializeFakeObjects()
         {
-            _authenticateResourceOwnerActionFake = new Mock<IAuthenticateResourceOwnerAction>();
-            _localUserAuthenticationActionFake = new Mock<ILocalUserAuthenticationAction>();
+            _authenticateResourceOwnerActionFake = new Mock<IAuthenticateResourceOwnerOpenIdAction>();
+            _localOpenIdUserAuthenticationActionFake = new Mock<ILocalOpenIdUserAuthenticationAction>();
+            _externalUserAuthenticationFake = new Mock<IExternalOpenIdUserAuthenticationAction>();
             _authenticateActions = new AuthenticateActions(
                 _authenticateResourceOwnerActionFake.Object,
-                _localUserAuthenticationActionFake.Object);
+                _localOpenIdUserAuthenticationActionFake.Object,
+                _externalUserAuthenticationFake.Object);
         }
     }
 }

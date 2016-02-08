@@ -6,7 +6,7 @@
     var loginProviders = Context.GetOwinContext().Authentication.GetExternalAuthenticationTypes();
 }
 
-@model SimpleIdentityServer.Api.ViewModels.AuthorizeViewModel
+@model SimpleIdentityServer.Api.ViewModels.AuthorizeOpenIdViewModel
 
 @section PageTitle
 {
@@ -29,7 +29,7 @@
             }
             else
             {
-                using (Html.BeginForm("ExternalLogin", "Authenticate"))
+                using (Html.BeginForm("ExternalLoginOpenId", "Authenticate", new { code = Model.Code }))
                  {
                      foreach (var loginProvider in loginProviders)
                      {
@@ -46,8 +46,9 @@
             </h2>
         </div>
         <div>
-            <form name="form" method="POST" action="@Url.Action("LocalLogin")">
+            <form name="form" method="POST" action="@Url.Action("LocalLoginOpenId")">
                 <fieldset>
+                    <input type="hidden" value="@Model.Code" name="Code" />
                     <div class="form-group">
                         <label>@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.UserNameCode]</label>
                         <input maxlength="100" class="form-control" value="@Model.UserName" name="UserName" type="text" />

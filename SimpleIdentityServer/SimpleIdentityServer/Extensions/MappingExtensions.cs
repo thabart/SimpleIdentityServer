@@ -64,12 +64,12 @@ namespace SimpleIdentityServer.Api.Extensions
             return result;
         }
 
-        public static LocalAuthenticationParameter ToParameter(this AuthorizeViewModel viewModel)
+        public static LocalAuthenticationParameter ToParameter(this AuthorizeOpenIdViewModel openIdViewModel)
         {
             return new LocalAuthenticationParameter
             {
-                UserName = viewModel.UserName,
-                Password = viewModel.Password
+                UserName = openIdViewModel.UserName,
+                Password = openIdViewModel.Password
             };
         }
 

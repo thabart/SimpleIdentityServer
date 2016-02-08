@@ -15,6 +15,7 @@
 #endregion
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 
 using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;
@@ -27,33 +28,42 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
 {
     public interface IAuthenticateActions
     {
-        ActionResult AuthenticateResourceOwner(
+        ActionResult AuthenticateResourceOwnerOpenId(
             AuthorizationParameter parameter,
             ClaimsPrincipal claimsPrincipal,
             string code);
 
-        ActionResult LocalUserAuthentication(
+        ActionResult LocalOpenIdUserAuthentication(
             LocalAuthenticationParameter localAuthenticationParameter,
             AuthorizationParameter authorizationParameter,
             string code,
             out List<Claim> claims);
+
+        ActionResult ExternalOpenIdUserAuthentication(
+            List<Claim> claims,
+            AuthorizationParameter authorizationParameter,
+            string code);
     }
 
     public class AuthenticateActions : IAuthenticateActions
     {
-        private readonly IAuthenticateResourceOwnerAction _authenticateResourceOwnerAction;
+        private readonly IAuthenticateResourceOwnerOpenIdAction _authenticateResourceOwnerOpenIdAction;
 
-        private readonly ILocalUserAuthenticationAction _localUserAuthenticationAction;
+        private readonly ILocalOpenIdUserAuthenticationAction _localOpenIdUserAuthenticationAction;
+
+        private readonly IExternalOpenIdUserAuthenticationAction _externalOpenIdUserAuthenticationAction;
 
         public AuthenticateActions(
-            IAuthenticateResourceOwnerAction authenticateResourceOwnerAction,
-            ILocalUserAuthenticationAction localUserAuthenticationAction)
+            IAuthenticateResourceOwnerOpenIdAction authenticateResourceOwnerOpenIdAction,
+            ILocalOpenIdUserAuthenticationAction localOpenIdUserAuthenticationAction,
+            IExternalOpenIdUserAuthenticationAction externalOpenIdUserAuthenticationAction)
         {
-            _authenticateResourceOwnerAction = authenticateResourceOwnerAction;
-            _localUserAuthenticationAction = localUserAuthenticationAction;
+            _authenticateResourceOwnerOpenIdAction = authenticateResourceOwnerOpenIdAction;
+            _localOpenIdUserAuthenticationAction = localOpenIdUserAuthenticationAction;
+            _externalOpenIdUserAuthenticationAction = externalOpenIdUserAuthenticationAction;
         }
 
-        public ActionResult AuthenticateResourceOwner(
+        public ActionResult AuthenticateResourceOwnerOpenId(
             AuthorizationParameter parameter,
             ClaimsPrincipal claimsPrincipal,
             string code)
@@ -68,12 +78,12 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
                 throw new ArgumentNullException("claimsPrincipal");
             }
 
-            return _authenticateResourceOwnerAction.Execute(parameter, 
+            return _authenticateResourceOwnerOpenIdAction.Execute(parameter, 
                 claimsPrincipal, 
                 code);
         }
 
-        public ActionResult LocalUserAuthentication(
+        public ActionResult LocalOpenIdUserAuthentication(
             LocalAuthenticationParameter localAuthenticationParameter,
             AuthorizationParameter authorizationParameter,
             string code,
@@ -89,11 +99,34 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
                 throw new ArgumentNullException("authorizationParameter");
             }
 
-            return _localUserAuthenticationAction.Execute(
+            return _localOpenIdUserAuthenticationAction.Execute(
                 localAuthenticationParameter,
                 authorizationParameter,
                 code,
                 out claims);
+        }
+
+
+        public ActionResult ExternalOpenIdUserAuthentication(List<Claim> claims, AuthorizationParameter authorizationParameter, string code)
+        {
+            if (claims == null || !claims.Any())
+            {
+                throw new ArgumentNullException("claims");
+            }
+
+            if (authorizationParameter == null)
+            {
+                throw new ArgumentNullException("authorizationParameter");
+            }
+
+            if (string.IsNullOrWhiteSpace(code))
+            {
+                throw new ArgumentNullException("code");
+            }
+
+            return _externalOpenIdUserAuthenticationAction.Execute(claims,
+                authorizationParameter,
+                code);
         }
     }
 }

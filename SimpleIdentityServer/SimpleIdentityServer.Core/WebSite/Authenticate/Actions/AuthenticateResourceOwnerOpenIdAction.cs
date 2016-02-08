@@ -27,7 +27,7 @@ using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
 
 namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 {
-    public interface IAuthenticateResourceOwnerAction
+    public interface IAuthenticateResourceOwnerOpenIdAction
     {
         /// <summary>
         /// Returns an action result to the controller's action.
@@ -44,7 +44,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
             string code);
     }
 
-    public class AuthenticateResourceOwnerAction : IAuthenticateResourceOwnerAction
+    public class AuthenticateResourceOwnerOpenIdAction : IAuthenticateResourceOwnerOpenIdAction
     {
         private readonly IParameterParserHelper _parameterParserHelper;
 
@@ -52,7 +52,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 
         private readonly IAuthenticateHelper _authenticateHelper;
 
-        public AuthenticateResourceOwnerAction(
+        public AuthenticateResourceOwnerOpenIdAction(
             IParameterParserHelper parameterParserHelper,
             IActionResultFactory actionResultFactory,
             IAuthenticateHelper authenticateHelper)

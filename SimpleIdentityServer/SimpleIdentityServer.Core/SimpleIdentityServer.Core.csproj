@@ -244,8 +244,9 @@
     <Compile Include="Validators\RefreshTokenGrantTypeParameterValidator.cs" />
     <Compile Include="Validators\RegistrationParameterValidator.cs" />
     <Compile Include="Validators\ResourceOwnerGrantTypeParameterValidator.cs" />
-    <Compile Include="WebSite\Authenticate\Actions\AuthenticateResourceOwnerAction.cs" />
-    <Compile Include="WebSite\Authenticate\Actions\LocalUserAuthenticationAction.cs" />
+    <Compile Include="WebSite\Authenticate\Actions\AuthenticateResourceOwnerOpenIdAction.cs" />
+    <Compile Include="WebSite\Authenticate\Actions\ExternalOpenIdUserAuthenticationAction.cs" />
+    <Compile Include="WebSite\Authenticate\Actions\LocalOpenIdUserAuthenticationAction.cs" />
     <Compile Include="WebSite\Authenticate\AuthenticateActions.cs" />
     <Compile Include="WebSite\Authenticate\Common\ProcessAuthorizationRequestRedirection.cs" />
     <Compile Include="WebSite\Consent\Actions\ConfirmConsentAction.cs" />

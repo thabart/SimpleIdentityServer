@@ -135,8 +135,9 @@
     <Compile Include="Validators\ResourceOwnerGrantTypeParameterValidatorFixture.cs" />
     <Compile Include="WebSite\Authenticate\AuthenticateActionsFixture.cs" />
     <Compile Include="WebSite\Authenticate\AuthenticateHelperFixture.cs" />
-    <Compile Include="WebSite\Authenticate\AuthenticateResourceOwnerActionFixture.cs" />
-    <Compile Include="WebSite\Authenticate\LocalUserAuthenticationActionFixture.cs" />
+    <Compile Include="WebSite\Authenticate\AuthenticateResourceOwnerOpenIdActionFixture.cs" />
+    <Compile Include="WebSite\Authenticate\ExternalOpenIdUserAuthenticationActionFixture.cs" />
+    <Compile Include="WebSite\Authenticate\LocalOpenIdUserAuthenticationActionFixture.cs" />
     <Compile Include="WebSite\Consent\ConfirmConsentFixture.cs" />
     <Compile Include="WebSite\Consent\ConsentActionsFixture.cs" />
     <Compile Include="WebSite\Consent\DisplayConsentActionFixture.cs" />
