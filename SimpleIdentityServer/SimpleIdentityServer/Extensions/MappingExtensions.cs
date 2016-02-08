@@ -73,6 +73,15 @@ namespace SimpleIdentityServer.Api.Extensions
             };
         }
 
+        public static LocalAuthenticationParameter ToParameter(this AuthorizeViewModel authorizeViewModel)
+        {
+            return new LocalAuthenticationParameter
+            {
+                Password = authorizeViewModel.Password,
+                UserName = authorizeViewModel.UserName
+            };
+        }
+
         public static ResourceOwnerGrantTypeParameter ToResourceOwnerGrantTypeParameter(this TokenRequest request)
         {
             return new ResourceOwnerGrantTypeParameter

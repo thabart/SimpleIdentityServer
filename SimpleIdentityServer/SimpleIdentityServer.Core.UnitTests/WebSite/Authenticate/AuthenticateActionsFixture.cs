@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using System.Linq;
+using Moq;
 using NUnit.Framework;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.WebSite.Authenticate;
@@ -18,6 +19,8 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
         private Mock<ILocalOpenIdUserAuthenticationAction> _localOpenIdUserAuthenticationActionFake;
 
         private Mock<IExternalOpenIdUserAuthenticationAction> _externalUserAuthenticationFake;
+
+        private Mock<ILocalUserAuthenticationAction> _localUserAuthenticationActionFake;
 
         private IAuthenticateActions _authenticateActions;
 
@@ -132,15 +135,54 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
                 code));
         }
 
+        [Test]
+        public void When_Passing_Null_Parameter_To_LocalUserAuthentication_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+
+            // ACT & ASSERT
+            Assert.Throws<ArgumentNullException>(() => _authenticateActions.LocalUserAuthentication(null));
+        }
+
+        [Test]
+        public void When_Passing_Needed_Parameter_To_LocalUserAuthentication_Then_Operation_Is_Called()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            const string claimType = "sub";
+            const string claimValue = "subject";
+            var localAuthenticationParameter = new LocalAuthenticationParameter
+            {
+                Password = "password",
+                UserName = "username"
+            };
+            var claims = new List<Claim>
+            {
+                new Claim(claimType, claimValue)
+            };
+            _localUserAuthenticationActionFake.Setup(l => l.Execute(It.IsAny<LocalAuthenticationParameter>()))
+                .Returns(claims);
+
+            // ACT
+            var result = _authenticateActions.LocalUserAuthentication(localAuthenticationParameter);
+
+            // ASSERT
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.First().Type == claimType && result.First().Value == claimValue);
+        }
+
         private void InitializeFakeObjects()
         {
             _authenticateResourceOwnerActionFake = new Mock<IAuthenticateResourceOwnerOpenIdAction>();
             _localOpenIdUserAuthenticationActionFake = new Mock<ILocalOpenIdUserAuthenticationAction>();
             _externalUserAuthenticationFake = new Mock<IExternalOpenIdUserAuthenticationAction>();
+            _localUserAuthenticationActionFake = new Mock<ILocalUserAuthenticationAction>();
             _authenticateActions = new AuthenticateActions(
                 _authenticateResourceOwnerActionFake.Object,
                 _localOpenIdUserAuthenticationActionFake.Object,
-                _externalUserAuthenticationFake.Object);
+                _externalUserAuthenticationFake.Object,
+                _localUserAuthenticationActionFake.Object);
         }
     }
 }

@@ -170,5 +170,7 @@ namespace SimpleIdentityServer.Core.Errors
             "an error {0} has been raised when trying to authenticate";
 
         public static string TheLoginInformationCannotBeExtracted = "the login information cannot be extracted";
+
+        public static string TheResourceOwnerCredentialsAreNotCorrect = "the resource owner credentials are not correct";
     }
 }

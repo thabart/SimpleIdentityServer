@@ -72,6 +72,7 @@ namespace SimpleIdentityServer.Api.Controllers
                 throw new ArgumentNullException("authorizeViewModel");
             }
 
+            
             return null;
         }
 

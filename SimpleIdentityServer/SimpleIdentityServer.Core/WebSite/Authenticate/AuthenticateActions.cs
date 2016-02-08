@@ -33,6 +33,8 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
             ClaimsPrincipal claimsPrincipal,
             string code);
 
+        List<Claim> LocalUserAuthentication(LocalAuthenticationParameter localAuthenticationParameter);
+
         ActionResult LocalOpenIdUserAuthentication(
             LocalAuthenticationParameter localAuthenticationParameter,
             AuthorizationParameter authorizationParameter,
@@ -53,14 +55,18 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
 
         private readonly IExternalOpenIdUserAuthenticationAction _externalOpenIdUserAuthenticationAction;
 
+        private readonly ILocalUserAuthenticationAction _localUserAuthenticationAction;
+
         public AuthenticateActions(
             IAuthenticateResourceOwnerOpenIdAction authenticateResourceOwnerOpenIdAction,
             ILocalOpenIdUserAuthenticationAction localOpenIdUserAuthenticationAction,
-            IExternalOpenIdUserAuthenticationAction externalOpenIdUserAuthenticationAction)
+            IExternalOpenIdUserAuthenticationAction externalOpenIdUserAuthenticationAction,
+            ILocalUserAuthenticationAction localUserAuthenticationAction)
         {
             _authenticateResourceOwnerOpenIdAction = authenticateResourceOwnerOpenIdAction;
             _localOpenIdUserAuthenticationAction = localOpenIdUserAuthenticationAction;
             _externalOpenIdUserAuthenticationAction = externalOpenIdUserAuthenticationAction;
+            _localUserAuthenticationAction = localUserAuthenticationAction;
         }
 
         public ActionResult AuthenticateResourceOwnerOpenId(
@@ -81,6 +87,16 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
             return _authenticateResourceOwnerOpenIdAction.Execute(parameter, 
                 claimsPrincipal, 
                 code);
+        }
+
+        public List<Claim> LocalUserAuthentication(LocalAuthenticationParameter localAuthenticationParameter)
+        {
+            if (localAuthenticationParameter == null)
+            {
+                throw new ArgumentNullException("localAuthenticationParameter");
+            }
+
+            return _localUserAuthenticationAction.Execute(localAuthenticationParameter);
         }
 
         public ActionResult LocalOpenIdUserAuthentication(
