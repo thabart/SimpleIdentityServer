@@ -3,6 +3,7 @@
 @{
     ViewBag.Title = "Index";
     ViewBag.ProductName = "Simple Identity Server";
+    var translations = ViewBag.Translations;
     var loginProviders = Context.GetOwinContext().Authentication.GetExternalAuthenticationTypes();
 }
 

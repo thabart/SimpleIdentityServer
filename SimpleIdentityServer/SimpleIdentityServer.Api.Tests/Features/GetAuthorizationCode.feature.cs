@@ -81,7 +81,7 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table1 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
-                        "IsOpenIdScope"});
+                        "IsInternal"});
             table1.AddRow(new string[] {
                         "PlanningApi",
                         "true"});
@@ -110,7 +110,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 21
  testRunner.Then("HTTP status code is 301", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 22
- testRunner.And("redirect to /Authenticate controller", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("redirect to /Authenticate/OpenId controller", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -129,7 +129,7 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table3 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
-                        "IsOpenIdScope"});
+                        "IsInternal"});
             table3.AddRow(new string[] {
                         "PlanningApi",
                         "true"});
@@ -190,7 +190,7 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table6 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
-                        "IsOpenIdScope"});
+                        "IsInternal"});
             table6.AddRow(new string[] {
                         "PlanningApi",
                         "true"});
@@ -219,7 +219,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 59
  testRunner.Then("HTTP status code is 301", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 60
- testRunner.And("redirect to /Authenticate controller", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("redirect to /Authenticate/OpenId controller", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -240,7 +240,7 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table8 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
-                        "IsOpenIdScope"});
+                        "IsInternal"});
             table8.AddRow(new string[] {
                         "PlanningApi",
                         "true"});
@@ -310,7 +310,7 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table11 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
-                        "IsOpenIdScope"});
+                        "IsInternal"});
             table11.AddRow(new string[] {
                         "PlanningApi",
                         "true"});
@@ -382,7 +382,7 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table14 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
-                        "IsOpenIdScope"});
+                        "IsInternal"});
             table14.AddRow(new string[] {
                         "PlanningApi",
                         "true"});
@@ -450,7 +450,7 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table17 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
-                        "IsOpenIdScope"});
+                        "IsInternal"});
             table17.AddRow(new string[] {
                         "PlanningApi",
                         "true"});
@@ -482,7 +482,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 149
  testRunner.Then("HTTP status code is 301", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 150
- testRunner.And("redirect to /Authenticate controller", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("redirect to /Authenticate/OpenId controller", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -503,7 +503,7 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table19 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
-                        "IsOpenIdScope"});
+                        "IsInternal"});
             table19.AddRow(new string[] {
                         "PlanningApi",
                         "true"});
@@ -564,7 +564,7 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table22 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
-                        "IsOpenIdScope"});
+                        "IsInternal"});
             table22.AddRow(new string[] {
                         "PlanningApi",
                         "true"});
@@ -623,7 +623,7 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table25 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
-                        "IsOpenIdScope"});
+                        "IsInternal"});
             table25.AddRow(new string[] {
                         "PlanningApi",
                         "true"});
@@ -693,7 +693,7 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table29 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
-                        "IsOpenIdScope"});
+                        "IsInternal"});
             table29.AddRow(new string[] {
                         "PlanningApi",
                         "true"});
@@ -752,7 +752,7 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table32 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
-                        "IsOpenIdScope"});
+                        "IsInternal"});
             table32.AddRow(new string[] {
                         "PlanningApi",
                         "true"});

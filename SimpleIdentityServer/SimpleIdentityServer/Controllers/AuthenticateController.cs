@@ -47,21 +47,27 @@ namespace SimpleIdentityServer.Api.Controllers
 
         #region Public methods
 
+        public ActionResult Logout()
+        {
+            var authenticationManager = this.GetAuthenticationManager();
+            authenticationManager.SignOut();
+            return RedirectToAction("Index", "Authenticate");
+        }
+
         #region Normal authentication process
 
         [HttpGet]
         public ActionResult Index()
         {
-            var authenticatedUser = this.GetAuthenticatedUser(); 
+            var authenticatedUser = this.GetAuthenticatedUser();
             if (authenticatedUser == null ||
-            !authenticatedUser.IsAuthenticated())
+                !authenticatedUser.IsAuthenticated())
             {
                 TranslateView("en");
-                return View();
+                return View(new AuthorizeViewModel());
             }
 
-            // TODO : Redirect to user information page
-            return null;
+            return RedirectToAction("Index", "User");
         }
 
         [HttpPost]
@@ -72,8 +78,19 @@ namespace SimpleIdentityServer.Api.Controllers
                 throw new ArgumentNullException("authorizeViewModel");
             }
 
-            
-            return null;
+            var claims = _authenticateActions.LocalUserAuthentication(authorizeViewModel.ToParameter());
+            var authenticationManager = this.GetAuthenticationManager();
+            var claimIdentity = new ClaimsIdentity(claims, DefaultAuthenticationTypes.ApplicationCookie);
+            authenticationManager.SignIn(
+                new AuthenticationProperties
+                {
+                    IsPersistent = false,
+                    ExpiresUtc = DateTime.UtcNow.AddDays(7)
+                },
+                claimIdentity
+            );
+
+            return RedirectToAction("Index", "User");
         }
 
         [HttpPost]

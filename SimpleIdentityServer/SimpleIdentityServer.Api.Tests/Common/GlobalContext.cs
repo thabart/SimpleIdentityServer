@@ -167,7 +167,7 @@ namespace SimpleIdentityServer.Api.Tests.Common
 
             UnityContainer.RegisterType<IAuthenticateActions, AuthenticateActions>();
             UnityContainer.RegisterType<IAuthenticateResourceOwnerOpenIdAction, AuthenticateResourceOwnerOpenIdAction>();
-            UnityContainer.RegisterType<ILocalUserAuthenticationAction, LocalOpenIdUserAuthenticationAction>();
+            UnityContainer.RegisterType<ILocalUserAuthenticationAction, LocalUserAuthenticationAction>();
 
             UnityContainer.RegisterType<IRedirectInstructionParser, RedirectInstructionParser>();
             UnityContainer.RegisterType<IActionResultParser, ActionResultParser>();

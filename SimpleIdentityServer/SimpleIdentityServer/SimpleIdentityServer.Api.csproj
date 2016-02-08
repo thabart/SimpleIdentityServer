@@ -232,6 +232,7 @@
     <Compile Include="Controllers\AuthenticateController.cs" />
     <Compile Include="Controllers\ConsentController.cs" />
     <Compile Include="Controllers\FormController.cs" />
+    <Compile Include="Controllers\UserController.cs" />
     <Compile Include="DTOs\Request\AuthorizationRequest.cs" />
     <Compile Include="DTOs\Response\ClientResponse.cs" />
     <Compile Include="Extensions\ApiControllerExtensions.cs" />
@@ -294,6 +295,7 @@
     <Content Include="Views\Consent\Index.cshtml" />
     <Content Include="Views\Form\Index.cshtml" />
     <Content Include="Views\Authenticate\Index.cshtml" />
+    <Content Include="Views\User\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config">

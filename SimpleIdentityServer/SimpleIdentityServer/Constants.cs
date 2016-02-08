@@ -9,7 +9,7 @@ namespace SimpleIdentityServer.Api
         {
             {
                 IdentityServerEndPoints.AuthenticateIndex,
-                "/Authenticate"
+                "/Authenticate/OpenId"
             },
             {
                 IdentityServerEndPoints.ConsentIndex,

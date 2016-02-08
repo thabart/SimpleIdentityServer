@@ -16,6 +16,15 @@
                         <span class="navbar-brand">@ViewBag.ProductName</span>
                     </a>
                 </div>
+                @if (User != null && User.Identity != null &&
+                        User.Identity.IsAuthenticated)
+                {
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="@Url.Content("~/Authenticate/Logout")">Disconnect</a>
+                        </li>
+                    </ul>
+                }
             </div>
         </div>
 
