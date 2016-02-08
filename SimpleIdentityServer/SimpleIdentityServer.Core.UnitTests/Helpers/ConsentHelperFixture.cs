@@ -148,6 +148,62 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
             Assert.IsTrue(result.GrantedScopes.Count == 1);
             Assert.IsTrue(result.GrantedScopes.First().Name == scope);
         }
+        
+        [Test]
+        public void When_Consent_Has_Been_Assigned_To_OpenId_Profile_And_Request_Consent_For_Scope_OpenId_Profile_Email_Then_Null_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            const string subject = "subject";
+            const string openIdScope = "openid";
+            const string profileScope = "profile";
+            const string emailScope = "email";
+            const string clientId = "clientId";
+            var authorizationParameter = new AuthorizationParameter
+            {
+                ClientId = clientId,
+                Scope = openIdScope + " " + profileScope + " "+ emailScope
+            };
+            var consents = new List<Consent>
+            {
+                new Consent
+                {
+                    Client = new Client
+                    {
+                        ClientId = clientId
+                    },
+                    GrantedScopes = new List<Scope>
+                    {
+                        new Scope
+                        {
+                            Name = profileScope
+                        },
+                        new Scope
+                        {
+                            Name = openIdScope
+                        }
+                    }
+                }
+            };
+            var scopes = new List<string>
+            {
+                openIdScope,
+                profileScope,
+                emailScope
+            };
+
+            _parameterParserHelperFake.Setup(p => p.ParseScopeParameters(It.IsAny<string>()))
+                .Returns(scopes);
+            _consentRepositoryFake.Setup(c => c.GetConsentsForGivenUser(It.IsAny<string>()))
+                .Returns(consents);
+
+            // ACT
+            var result = _consentHelper.GetConsentConfirmedByResourceOwner(subject,
+                authorizationParameter);
+
+            // ASSERT
+            Assert.IsNull(result);
+        }
 
         private void InitializeFakeObjects()
         {

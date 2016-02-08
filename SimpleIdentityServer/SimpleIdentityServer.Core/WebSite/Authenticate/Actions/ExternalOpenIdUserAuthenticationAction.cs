@@ -145,14 +145,19 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                     ErrorDescriptions.NoSubjectCanBeExtracted);
             }
 
-            var resourceOwner = new ResourceOwner
+            var resourceOwner = _resourceOwnerRepository.GetBySubject(subjectClaim.Value);
+            if (resourceOwner == null)
             {
-                Id = subjectClaim.Value,
-                Name = nameClaim == null ? string.Empty : nameClaim.Value,
-                GivenName = givenNameClaim == null ? string.Empty : givenNameClaim.Value,
-                FamilyName = familyNameClaim == null ? string.Empty : familyNameClaim.Value,
-            };
-            _resourceOwnerRepository.Insert(resourceOwner);
+                resourceOwner = new ResourceOwner
+                {
+                    Id = subjectClaim.Value,
+                    Name = nameClaim == null ? string.Empty : nameClaim.Value,
+                    GivenName = givenNameClaim == null ? string.Empty : givenNameClaim.Value,
+                    FamilyName = familyNameClaim == null ? string.Empty : familyNameClaim.Value,
+                };
+
+                _resourceOwnerRepository.Insert(resourceOwner);
+            }
 
             return _authenticateHelper.ProcessRedirection(authorizationParameter,
                 code,

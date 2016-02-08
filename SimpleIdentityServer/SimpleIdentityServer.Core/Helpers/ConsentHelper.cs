@@ -76,7 +76,7 @@ namespace SimpleIdentityServer.Core.Helpers
                         c =>
                             c.Client.ClientId == authorizationParameter.ClientId &&
                             c.GrantedScopes != null && c.GrantedScopes.Any() &&
-                            c.GrantedScopes.All(s => scopeNames.Contains(s.Name)));
+                            scopeNames.All(s => c.GrantedScopes.All(g => g.Name == s)));
                 }
             }
 

@@ -106,6 +106,8 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             {
                 Type = TypeActionResult.None
             };
+            _resourceOwnerRepositoryStub.Setup(r => r.GetBySubject(It.IsAny<string>()))
+                .Returns(() => null);
             _authenticateHelperStub.Setup(a => a.ProcessRedirection(It.IsAny<AuthorizationParameter>(),
                 It.IsAny<string>(),
                 It.IsAny<string>(),
