@@ -226,8 +226,8 @@ namespace SimpleIdentityServer.Api.Controllers
 
             // Retrieve the request from the cookie.
             var context = HttpContext.GetOwinContext();
-            var information = context.Request.Cookies[string.Format(ExternalAuthenticateCookieName, code)];
-            if (information == null)
+            var request = context.Request.Cookies[string.Format(ExternalAuthenticateCookieName, code)];
+            if (request == null)
             {
                 throw new IdentityServerException(ErrorCodes.InvalidRequestCode, ErrorDescriptions.TheRequestCannotBeExtractedFromTheCookie);
             }
@@ -239,19 +239,29 @@ namespace SimpleIdentityServer.Api.Controllers
                 throw new IdentityServerException(ErrorCodes.InvalidRequestCode,
                     ErrorDescriptions.TheLoginInformationCannotBeExtracted);
             }
-            
-            var decodedRequest = _encoder.Decode(code);
+
+
+            var decodedRequest = _encoder.Decode(request);
             var authorizationRequest = _protector.Decrypt<AuthorizationRequest>(decodedRequest);
             // var provider = loginInformation.Login.LoginProvider;
-            var claims = loginInformation.ExternalIdentity.Claims;
-            var actionResult = _authenticateActions.ExternalOpenIdUserAuthentication(claims.ToList(),
+            var claims = loginInformation.ExternalIdentity.Claims.ToList();
+            var actionResult = _authenticateActions.ExternalOpenIdUserAuthentication(claims,
                 authorizationRequest.ToParameter(),
-                code); 
-            var result = this.CreateRedirectionFromActionResult(actionResult,
-                authorizationRequest);
+                request); 
             if (actionResult != null)
             {
-                return result;
+                var claimIdentity = new ClaimsIdentity(claims, DefaultAuthenticationTypes.ApplicationCookie);
+                authenticationManager.SignIn(
+                    new AuthenticationProperties
+                    {
+                        IsPersistent = false,
+                        ExpiresUtc = DateTime.UtcNow.AddDays(7)
+                    },
+                    claimIdentity
+                );
+
+                return this.CreateRedirectionFromActionResult(actionResult,
+                    authorizationRequest);
             }
 
             return RedirectToAction("Index", "Authenticate", new { code = code });
