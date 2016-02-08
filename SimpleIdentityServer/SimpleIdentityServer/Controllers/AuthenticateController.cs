@@ -183,7 +183,7 @@ namespace SimpleIdentityServer.Api.Controllers
             }
 
             TranslateView(request.ui_locales);
-            return View(authorizeOpenId);
+            return View("Index", authorizeOpenId);
         }
 
         [HttpPost]
