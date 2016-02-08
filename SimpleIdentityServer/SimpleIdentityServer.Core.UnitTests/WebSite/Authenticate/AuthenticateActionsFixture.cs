@@ -8,6 +8,8 @@ using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
+using SimpleIdentityServer.Core.Exceptions;
+using SimpleIdentityServer.Core.Errors;
 
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 {
@@ -108,9 +110,30 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             var authorizationParameter = new AuthorizationParameter();
 
             // ACTS & ASSERTS
-            Assert.Throws<ArgumentNullException>(() => _authenticateActions.ExternalOpenIdUserAuthentication(null, null, null));
-            Assert.Throws<ArgumentNullException>(() => _authenticateActions.ExternalOpenIdUserAuthentication(claims, null, null));
-            Assert.Throws<ArgumentNullException>(() => _authenticateActions.ExternalOpenIdUserAuthentication(claims, authorizationParameter, null));
+            Assert.Throws<ArgumentNullException>(() => _authenticateActions.ExternalOpenIdUserAuthentication(null, null, null, null));
+            Assert.Throws<ArgumentNullException>(() => _authenticateActions.ExternalOpenIdUserAuthentication(claims, null, null, null));
+            Assert.Throws<ArgumentNullException>(() => _authenticateActions.ExternalOpenIdUserAuthentication(claims, authorizationParameter, null, null));
+            Assert.Throws<ArgumentNullException>(() => _authenticateActions.ExternalOpenIdUserAuthentication(claims, authorizationParameter, "code", null));
+        }
+
+        [Test]
+        public void When_Passing_Not_Supported_Provider_Type_To_The_Action_ExternalUserAuthentication_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var claims = new List<Claim>
+            {
+                new Claim("sub", "subject")
+            };
+            var authorizationParameter = new AuthorizationParameter();
+            var code = "code";
+            const string providerType = "not_supported_provider_type";
+
+            // ACT & ASSERTS
+            var exception = Assert.Throws<IdentityServerException>(() => 
+                _authenticateActions.ExternalOpenIdUserAuthentication(claims, authorizationParameter, code, providerType));
+            Assert.IsNotNull(exception);
+            Assert.IsTrue(exception.Message == string.Format(ErrorDescriptions.TheExternalProviderIsNotSupported, providerType));
         }
 
         [Test]
@@ -126,13 +149,14 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             var code = "code";
 
             // ACT
-            _authenticateActions.ExternalOpenIdUserAuthentication(claims, authorizationParameter, code);
+            _authenticateActions.ExternalOpenIdUserAuthentication(claims, authorizationParameter, code, Constants.ProviderTypeNames.Microsoft);
 
             // ASSERT
             _externalUserAuthenticationFake.Verify(a => a.Execute(
                 claims,
                 authorizationParameter,
-                code));
+                code, 
+                Constants.ProviderTypeNames.Microsoft));
         }
 
         [Test]

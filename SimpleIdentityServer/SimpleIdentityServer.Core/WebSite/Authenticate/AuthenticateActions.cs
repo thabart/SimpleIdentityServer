@@ -23,6 +23,8 @@ using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 
 using System;
+using SimpleIdentityServer.Core.Exceptions;
+using SimpleIdentityServer.Core.Errors;
 
 namespace SimpleIdentityServer.Core.WebSite.Authenticate
 {
@@ -44,7 +46,8 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
         ActionResult ExternalOpenIdUserAuthentication(
             List<Claim> claims,
             AuthorizationParameter authorizationParameter,
-            string code);
+            string code,
+            string providerType);
     }
 
     public class AuthenticateActions : IAuthenticateActions
@@ -123,7 +126,11 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
         }
 
 
-        public ActionResult ExternalOpenIdUserAuthentication(List<Claim> claims, AuthorizationParameter authorizationParameter, string code)
+        public ActionResult ExternalOpenIdUserAuthentication(
+            List<Claim> claims, 
+            AuthorizationParameter authorizationParameter, 
+            string code,
+            string providerType)
         {
             if (claims == null || !claims.Any())
             {
@@ -140,9 +147,21 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
                 throw new ArgumentNullException("code");
             }
 
+            if (string.IsNullOrWhiteSpace(providerType))
+            {
+                throw new ArgumentNullException("providerType");
+            }
+
+            if (!Constants.SupportedProviderTypes.Contains(providerType))
+            {
+                throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode,
+                    string.Format(ErrorDescriptions.TheExternalProviderIsNotSupported, providerType));
+            }
+
             return _externalOpenIdUserAuthenticationAction.Execute(claims,
                 authorizationParameter,
-                code);
+                code,
+                providerType);
         }
     }
 }

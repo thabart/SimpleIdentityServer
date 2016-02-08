@@ -172,5 +172,9 @@ namespace SimpleIdentityServer.Core.Errors
         public static string TheLoginInformationCannotBeExtracted = "the login information cannot be extracted";
 
         public static string TheResourceOwnerCredentialsAreNotCorrect = "the resource owner credentials are not correct";
+
+        public static string TheExternalProviderIsNotSupported = "the external provider {0} is not supported";
+
+        public static string NoSubjectCanBeExtracted = "no subject can be extracted";
     }
 }

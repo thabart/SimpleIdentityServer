@@ -239,15 +239,16 @@ namespace SimpleIdentityServer.Api.Controllers
                 throw new IdentityServerException(ErrorCodes.InvalidRequestCode,
                     ErrorDescriptions.TheLoginInformationCannotBeExtracted);
             }
-
-
+            
             var decodedRequest = _encoder.Decode(request);
             var authorizationRequest = _protector.Decrypt<AuthorizationRequest>(decodedRequest);
-            // var provider = loginInformation.Login.LoginProvider;
+            var providerType = loginInformation.Login.LoginProvider;
             var claims = loginInformation.ExternalIdentity.Claims.ToList();
-            var actionResult = _authenticateActions.ExternalOpenIdUserAuthentication(claims,
+            var actionResult = _authenticateActions.ExternalOpenIdUserAuthentication(
+                claims,
                 authorizationRequest.ToParameter(),
-                request); 
+                request,
+                providerType); 
             if (actionResult != null)
             {
                 var claimIdentity = new ClaimsIdentity(claims, DefaultAuthenticationTypes.ApplicationCookie);
