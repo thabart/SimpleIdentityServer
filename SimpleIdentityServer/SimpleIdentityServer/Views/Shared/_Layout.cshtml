@@ -44,5 +44,12 @@
         
         @Scripts.Render("~/bundles/js")
         @RenderSection("Scripts", required:false)
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $(function() {
+                    $('[data-toggle="tooltip"]').tooltip();
+                });
+            });
+        </script>
     </body>
 </html>

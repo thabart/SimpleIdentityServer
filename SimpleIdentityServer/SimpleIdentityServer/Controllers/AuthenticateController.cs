@@ -31,6 +31,8 @@ namespace SimpleIdentityServer.Api.Controllers
 
         private readonly ITranslationManager _translationManager;
 
+        private const string DefaultLanguage = "en";
+
         private const string ExternalAuthenticateCookieName = "SimpleIdentityServer-{0}";
 
         public AuthenticateController(
@@ -63,7 +65,7 @@ namespace SimpleIdentityServer.Api.Controllers
             if (authenticatedUser == null ||
                 !authenticatedUser.IsAuthenticated())
             {
-                TranslateView("en");
+                TranslateView(DefaultLanguage);
                 return View(new AuthorizeViewModel());
             }
 
@@ -78,19 +80,34 @@ namespace SimpleIdentityServer.Api.Controllers
                 throw new ArgumentNullException("authorizeViewModel");
             }
 
-            var claims = _authenticateActions.LocalUserAuthentication(authorizeViewModel.ToParameter());
-            var authenticationManager = this.GetAuthenticationManager();
-            var claimIdentity = new ClaimsIdentity(claims, DefaultAuthenticationTypes.ApplicationCookie);
-            authenticationManager.SignIn(
-                new AuthenticationProperties
-                {
-                    IsPersistent = false,
-                    ExpiresUtc = DateTime.UtcNow.AddDays(7)
-                },
-                claimIdentity
-            );
+            if (!ModelState.IsValid)
+            {
+                TranslateView("en");
+                return View("Index", authorizeViewModel);
+            }
 
-            return RedirectToAction("Index", "User");
+            try
+            {
+                var claims = _authenticateActions.LocalUserAuthentication(authorizeViewModel.ToParameter());
+                var authenticationManager = this.GetAuthenticationManager();
+                var claimIdentity = new ClaimsIdentity(claims, DefaultAuthenticationTypes.ApplicationCookie);
+                authenticationManager.SignIn(
+                    new AuthenticationProperties
+                    {
+                        IsPersistent = false,
+                        ExpiresUtc = DateTime.UtcNow.AddDays(7)
+                    },
+                    claimIdentity
+                    );
+
+                return RedirectToAction("Index", "User");
+            }
+            catch (Exception exception)
+            {
+                TranslateView("en");
+                ModelState.AddModelError("invalid_credentials", exception.Message);
+                return View("Index", authorizeViewModel);
+            }
         }
 
         [HttpPost]
