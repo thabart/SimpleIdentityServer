@@ -107,9 +107,12 @@ namespace SimpleIdentityServer.Core
             register.RegisterType<IGetSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction, GetSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction>();
 
             register.RegisterType<IAuthenticateActions, AuthenticateActions>();
-            register.RegisterType<IAuthenticateResourceOwnerAction, AuthenticateResourceOwnerAction>();
+            register.RegisterType<IAuthenticateResourceOwnerOpenIdAction, AuthenticateResourceOwnerOpenIdAction>();
             register.RegisterType<IAuthenticateHelper, AuthenticateHelper>();
             register.RegisterType<ILocalUserAuthenticationAction, LocalUserAuthenticationAction>();
+            register.RegisterType<IExternalUserAuthenticationAction, ExternalUserAuthenticationAction>();
+            register.RegisterType<ILocalOpenIdUserAuthenticationAction, LocalOpenIdUserAuthenticationAction>();
+            register.RegisterType<IExternalOpenIdUserAuthenticationAction, ExternalOpenIdUserAuthenticationAction>();
 
             register.RegisterType<IDiscoveryActions, DiscoveryActions>();
             register.RegisterType<ICreateDiscoveryDocumentationAction, CreateDiscoveryDocumentationAction>();

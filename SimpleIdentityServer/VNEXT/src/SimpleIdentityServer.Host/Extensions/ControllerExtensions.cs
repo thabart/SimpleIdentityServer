@@ -11,6 +11,7 @@ using ResponseMode = SimpleIdentityServer.Core.Parameters.ResponseMode;
 using Microsoft.AspNet.Mvc;
 
 using ActionResult = Microsoft.AspNet.Mvc.ActionResult;
+using Microsoft.AspNet.Http.Authentication;
 
 namespace SimpleIdentityServer.Host.Extensions
 {
@@ -24,6 +25,11 @@ namespace SimpleIdentityServer.Host.Extensions
         public static ClaimsPrincipal GetAuthenticatedUser(this Controller controller)
         {
             return controller.Request.HttpContext.User;
+        }
+
+        public static AuthenticationManager GetAuthenticationManager(this Controller controller) 
+        {
+            return controller.HttpContext.Authentication;
         }
 
         public static ActionResult CreateRedirectionFromActionResult(

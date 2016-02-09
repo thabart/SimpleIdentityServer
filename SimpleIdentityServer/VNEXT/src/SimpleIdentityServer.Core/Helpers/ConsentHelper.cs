@@ -66,6 +66,7 @@ namespace SimpleIdentityServer.Core.Helpers
                         c =>
                             c.Client.ClientId == authorizationParameter.ClientId &&
                             c.Claims != null && c.Claims.Any() &&
+                            expectedClaims.Count() == c.Claims.Count() &&
                             expectedClaims.All(cl => c.Claims.Contains(cl)));
                 }
                 else
@@ -76,7 +77,8 @@ namespace SimpleIdentityServer.Core.Helpers
                         c =>
                             c.Client.ClientId == authorizationParameter.ClientId &&
                             c.GrantedScopes != null && c.GrantedScopes.Any() &&
-                            c.GrantedScopes.All(s => scopeNames.Contains(s.Name)));
+                            scopeNames.Count() == c.GrantedScopes.Count() &&
+                            c.GrantedScopes.All(g => scopeNames.Contains(g.Name)));
                 }
             }
 

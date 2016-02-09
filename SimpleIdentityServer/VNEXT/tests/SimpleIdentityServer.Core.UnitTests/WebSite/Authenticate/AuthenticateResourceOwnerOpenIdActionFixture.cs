@@ -14,7 +14,7 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 {
-    public sealed class AuthenticateResourceOwnerActionFixture
+    public sealed class AuthenticateResourceOwnerOpenIdActionFixture
     {
         private Mock<IParameterParserHelper> _parameterParserHelperFake;
 
@@ -22,7 +22,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 
         private Mock<IAuthenticateHelper> _authenticateHelperFake;
 
-        private IAuthenticateResourceOwnerAction _authenticateResourceOwnerAction;
+        private IAuthenticateResourceOwnerOpenIdAction _authenticateResourceOwnerOpenIdAction;
 
         [Fact]
         public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
@@ -31,7 +31,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _authenticateResourceOwnerAction.Execute(null, null, null));
+            Assert.Throws<ArgumentNullException>(() => _authenticateResourceOwnerOpenIdAction.Execute(null, null, null));
         }
 
         [Fact]
@@ -42,7 +42,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             var authorizationParameter = new AuthorizationParameter();
 
             // ACT
-            _authenticateResourceOwnerAction.Execute(authorizationParameter, null, null);
+            _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter, null, null);
 
             // ASSERT
             _actionResultFactoryFake.Verify(a => a.CreateAnEmptyActionResultWithNoEffect());
@@ -58,7 +58,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
             // ACT
-            _authenticateResourceOwnerAction.Execute(authorizationParameter, 
+            _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter, 
                 claimsPrincipal, 
                 null);
 
@@ -82,7 +82,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
                 .Returns(promptParameters);
 
             // ACT
-            _authenticateResourceOwnerAction.Execute(authorizationParameter,
+            _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter,
                 claimsPrincipal,
                 null);
 
@@ -118,7 +118,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
                 .Returns(actionResult);
 
             // ACT
-            _authenticateResourceOwnerAction.Execute(authorizationParameter,
+            _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter,
                 claimsPrincipal,
                 code);
 
@@ -134,7 +134,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             _parameterParserHelperFake = new Mock<IParameterParserHelper>();
             _actionResultFactoryFake = new Mock<IActionResultFactory>();
             _authenticateHelperFake = new Mock<IAuthenticateHelper>();
-            _authenticateResourceOwnerAction = new AuthenticateResourceOwnerAction(
+            _authenticateResourceOwnerOpenIdAction = new AuthenticateResourceOwnerOpenIdAction(
                 _parameterParserHelperFake.Object,
                 _actionResultFactoryFake.Object,
                 _authenticateHelperFake.Object);

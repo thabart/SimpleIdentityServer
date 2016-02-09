@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using Moq;
-
+using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;
-using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
 using SimpleIdentityServer.Logging;
 using Xunit;
 
@@ -18,91 +15,82 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 {
     public sealed class LocalUserAuthenticationActionFixture
     {
+        private Mock<IResourceOwnerService> _resourceOwnerServiceStub;
 
-        private Mock<IResourceOwnerService> _resourceOwnerServiceFake;
+        private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSourceStub;
 
-        private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryFake;
-
-        private Mock<IAuthenticateHelper> _authenticateHelperFake;
-
-        private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSourceFake;
+        private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
 
         private ILocalUserAuthenticationAction _localUserAuthenticationAction;
 
         [Fact]
-        public void When_Passing_Null_Parameter_Then_Exceptions_Are_Thrown()
+        public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
-            var localAuthenticationParameter = new LocalAuthenticationParameter();
-            List<Claim> claims;
-
-            // ACTS & ASSERTS
-            Assert.Throws<ArgumentNullException>(
-                () => _localUserAuthenticationAction.Execute(null, null, null, out claims));
-            Assert.Throws<ArgumentNullException>(
-                () => _localUserAuthenticationAction.Execute(localAuthenticationParameter, null, null, out claims));
-        }
-
-        [Fact]
-        public void When_Resource_Owner_Cannot_Be_Authenticated_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            var localAuthenticationParameter = new LocalAuthenticationParameter();
-            var authorizationParameter = new AuthorizationParameter();
-            List<Claim> claims;
-            _resourceOwnerServiceFake.Setup(r => r.Authenticate(It.IsAny<string>(),
-                It.IsAny<string>())).Returns(string.Empty);
 
             // ACT & ASSERT
-            Assert.Throws<IdentityServerAuthenticationException>(
-                () => _localUserAuthenticationAction.Execute(localAuthenticationParameter, authorizationParameter, null, out claims));
+            Assert.Throws<ArgumentNullException>(() => _localUserAuthenticationAction.Execute(null));
         }
 
         [Fact]
-        public void When_Resource_Owner_Credentials_Are_Correct_Then_Event_Is_Logged_And_Claims_Are_Returned()
+        public void When_ResourceOwner_Cannot_Be_Authenticated_Then_Exception_Is_Thrown()
         {
             // ARRANGE
-            const string subject = "subject";
             InitializeFakeObjects();
-            var localAuthenticationParameter = new LocalAuthenticationParameter();
-            var authorizationParameter = new AuthorizationParameter();
-            List<Claim> returnedClaims;
+            var parameter = new LocalAuthenticationParameter
+            {
+                UserName = "username",
+                Password = "password"
+            };
+            _resourceOwnerServiceStub.Setup(r => r.Authenticate(It.IsAny<string>(),
+                It.IsAny<string>()))
+                .Returns(() => null);
+
+            // ACT & ASSERT
+            var exception = Assert.Throws<IdentityServerAuthenticationException>(() => _localUserAuthenticationAction.Execute(parameter));
+            Assert.True(exception.Message == ErrorDescriptions.TheResourceOwnerCredentialsAreNotCorrect);
+        }
+
+        [Fact]
+        public void When_Authenticate_ResourceOwner_Then_Claims_Are_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            const string subject = "subject";
+            var parameter = new LocalAuthenticationParameter
+            {
+                UserName = "username",
+                Password = "password"
+            };
             var resourceOwner = new ResourceOwner
             {
                 Id = subject
             };
-            _resourceOwnerServiceFake.Setup(r => r.Authenticate(It.IsAny<string>(),
-                It.IsAny<string>())).Returns(subject);
-            _resourceOwnerRepositoryFake.Setup(r => r.GetBySubject(It.IsAny<string>()))
+            _resourceOwnerServiceStub.Setup(r => r.Authenticate(It.IsAny<string>(),
+                It.IsAny<string>()))
+                .Returns("subject");
+            _resourceOwnerRepositoryStub.Setup(r => r.GetBySubject(It.IsAny<string>()))
                 .Returns(resourceOwner);
 
             // ACT
-            _localUserAuthenticationAction.Execute(localAuthenticationParameter,
-                authorizationParameter, 
-                null, 
-                out returnedClaims);
+            var claims = _localUserAuthenticationAction.Execute(parameter);
 
             // ASSERT
-            _simpleIdentityServerEventSourceFake.Verify(s => s.AuthenticateResourceOwner(subject));
-            
-            // Specify the resource owner authentication date
-            Assert.True(returnedClaims.Any(r => r.Type == ClaimTypes.AuthenticationInstant || 
-                r.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject));
+            Assert.NotNull(claims);
+            Assert.True(claims.Any(c => c.Type == "sub" && c.Value == subject));
         }
 
         private void InitializeFakeObjects()
         {
-            _resourceOwnerServiceFake = new Mock<IResourceOwnerService>();
-            _resourceOwnerRepositoryFake = new Mock<IResourceOwnerRepository>();
-            _authenticateHelperFake = new Mock<IAuthenticateHelper>();
-            _simpleIdentityServerEventSourceFake = new Mock<ISimpleIdentityServerEventSource>();
+            _resourceOwnerServiceStub = new Mock<IResourceOwnerService>();
+            _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
+            _simpleIdentityServerEventSourceStub = new Mock<ISimpleIdentityServerEventSource>();
             _localUserAuthenticationAction = new LocalUserAuthenticationAction(
-                _resourceOwnerServiceFake.Object,
-                _resourceOwnerRepositoryFake.Object,
-                _authenticateHelperFake.Object,
-                _simpleIdentityServerEventSourceFake.Object);
+                _resourceOwnerServiceStub.Object,
+                _simpleIdentityServerEventSourceStub.Object,
+                _resourceOwnerRepositoryStub.Object);
+            
         }
     }
 }

@@ -32,41 +32,46 @@ namespace SimpleIdentityServer.Core.Protector
     {
         public string Compress(string textToCompress)
         {
-            var buffer = Encoding.UTF8.GetBytes(textToCompress);
-            var ms = new MemoryStream();
-            using (var zip = new GZipStream(ms, CompressionMode.Compress, true))
+            if (string.IsNullOrWhiteSpace(textToCompress))
             {
-                zip.Write(buffer, 0, buffer.Length);
+                throw new ArgumentNullException("textToCompress");
             }
-
-            ms.Position = 0;
-
-            var compressed = new byte[ms.Length];
-            ms.Read(compressed, 0, compressed.Length);
-
-            var gzBuffer = new byte[compressed.Length + 4];
-            Buffer.BlockCopy(compressed, 0, gzBuffer, 4, compressed.Length);
-            Buffer.BlockCopy(BitConverter.GetBytes(buffer.Length), 0, gzBuffer, 0, 4);
-            return Convert.ToBase64String(gzBuffer);
+            
+            using (var input = new MemoryStream(Encoding.UTF8.GetBytes(textToCompress)))
+            {
+                using (var compressStream = new MemoryStream())
+                {
+                    using (var compressor = new DeflateStream(compressStream, CompressionMode.Compress))
+                    {
+                        input.CopyTo(compressor);
+                        compressor.Close();
+                        var compressedBytes = compressStream.ToArray();
+                        return Convert.ToBase64String(compressedBytes);
+                    }
+                }
+            }
         }
 
         public string Decompress(string compressedText)
         {
-            var gzBuffer = compressedText.Base64DecodeBytes();
-            using (var ms = new MemoryStream())
+            if (string.IsNullOrWhiteSpace(compressedText))
             {
-                var msgLength = BitConverter.ToInt32(gzBuffer, 0);
-                ms.Write(gzBuffer, 4, gzBuffer.Length - 4);
+                throw new ArgumentNullException("compressedText");
+            }
 
-                var buffer = new byte[msgLength];
-
-                ms.Position = 0;
-                using (var zip = new GZipStream(ms, CompressionMode.Decompress))
+            var compressedBytes = compressedText.Base64DecodeBytes();
+            using (var input = new MemoryStream(compressedBytes))
+            {
+                using (var decompressStream = new MemoryStream())
                 {
-                    zip.Read(buffer, 0, buffer.Length);
+                    using (var decompressor = new DeflateStream(input, CompressionMode.Decompress))
+                    {
+                        decompressor.CopyTo(decompressStream);
+                        decompressor.Close();
+                        var decompressedBytes = decompressStream.ToArray();
+                        return Encoding.UTF8.GetString(decompressedBytes);
+                    }
                 }
-
-                return Encoding.UTF8.GetString(buffer);
             }
         }
     }

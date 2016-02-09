@@ -90,7 +90,10 @@ namespace SimpleIdentityServer.Core
             serviceCollection.AddTransient<IJsonWebKeyEnricher, JsonWebKeyEnricher>();
             serviceCollection.AddTransient<IGetSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction, GetSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction>();
             serviceCollection.AddTransient<IAuthenticateActions, AuthenticateActions>();
-            serviceCollection.AddTransient<IAuthenticateResourceOwnerAction, AuthenticateResourceOwnerAction>();
+            serviceCollection.AddTransient<IAuthenticateResourceOwnerOpenIdAction, AuthenticateResourceOwnerOpenIdAction>();
+            serviceCollection.AddTransient<IExternalUserAuthenticationAction, ExternalUserAuthenticationAction>();
+            serviceCollection.AddTransient<ILocalOpenIdUserAuthenticationAction, LocalOpenIdUserAuthenticationAction>();
+            serviceCollection.AddTransient<IExternalOpenIdUserAuthenticationAction, ExternalOpenIdUserAuthenticationAction>();
             serviceCollection.AddTransient<IAuthenticateHelper, AuthenticateHelper>();
             serviceCollection.AddTransient<ILocalUserAuthenticationAction, LocalUserAuthenticationAction>();
             serviceCollection.AddTransient<IDiscoveryActions, DiscoveryActions>();
