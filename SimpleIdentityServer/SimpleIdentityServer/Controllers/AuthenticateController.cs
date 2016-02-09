@@ -16,7 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Web.Mvc;
-
+using SimpleIdentityServer.Logging;
 using ActionResult = System.Web.Mvc.ActionResult;
 
 namespace SimpleIdentityServer.Api.Controllers
@@ -31,6 +31,8 @@ namespace SimpleIdentityServer.Api.Controllers
 
         private readonly ITranslationManager _translationManager;
 
+        private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
+
         private const string DefaultLanguage = "en";
 
         private const string ExternalAuthenticateCookieName = "SimpleIdentityServer-{0}";
@@ -39,12 +41,14 @@ namespace SimpleIdentityServer.Api.Controllers
             IAuthenticateActions authenticateActions,
             IProtector protector,
             IEncoder encoder,
-            ITranslationManager translationManager)
+            ITranslationManager translationManager,
+            ISimpleIdentityServerEventSource simpleIdentityServerEventSource)
         {
             _authenticateActions = authenticateActions;
             _protector = protector;
             _encoder = encoder;
             _translationManager = translationManager;
+            _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
         }
 
         #region Public methods
@@ -82,7 +86,7 @@ namespace SimpleIdentityServer.Api.Controllers
 
             if (!ModelState.IsValid)
             {
-                TranslateView("en");
+                TranslateView(DefaultLanguage);
                 return View("Index", authorizeViewModel);
             }
 
@@ -104,6 +108,7 @@ namespace SimpleIdentityServer.Api.Controllers
             }
             catch (Exception exception)
             {
+                _simpleIdentityServerEventSource.Failure(exception.Message);
                 TranslateView("en");
                 ModelState.AddModelError("invalid_credentials", exception.Message);
                 return View("Index", authorizeViewModel);
@@ -197,18 +202,26 @@ namespace SimpleIdentityServer.Api.Controllers
         {
             if (authorizeOpenId == null)
             {
-                throw new ArgumentNullException("authorizeOpenId");    
+                throw new ArgumentNullException("authorizeOpenId");
             }
 
             if (string.IsNullOrWhiteSpace(authorizeOpenId.Code))
             {
-                throw new ArgumentNullException("Code");
+                throw new ArgumentNullException("authorizeOpenId.Code");
             }
 
-            var code = _encoder.Decode(authorizeOpenId.Code);
-            var request = _protector.Decrypt<AuthorizationRequest>(code);
+            var uiLocales = DefaultLanguage;
             try
             {
+                var code = _encoder.Decode(authorizeOpenId.Code);
+                var request = _protector.Decrypt<AuthorizationRequest>(code);
+                uiLocales = string.IsNullOrWhiteSpace(request.ui_locales) ? DefaultLanguage : request.ui_locales;
+                if (!ModelState.IsValid)
+                {
+                    TranslateView(uiLocales);
+                    return View("OpenId", authorizeOpenId);
+                }
+
                 var authenticationManager = this.GetAuthenticationManager();
                 var claims = new List<Claim>();
                 var actionResult = _authenticateActions.LocalOpenIdUserAuthentication(authorizeOpenId.ToParameter(),
@@ -232,15 +245,15 @@ namespace SimpleIdentityServer.Api.Controllers
                 {
                     return result;
                 }
-
             }
-            catch (IdentityServerAuthenticationException)
+            catch (Exception ex)
             {
-                // TODO : log the exception
+                _simpleIdentityServerEventSource.Failure(ex.Message);
+                ModelState.AddModelError("invalid_credentials", ex.Message);
             }
 
-            TranslateView(request.ui_locales);
-            return View("Index", authorizeOpenId);
+            TranslateView(uiLocales);
+            return View("OpenId", authorizeOpenId);
         }
 
         [HttpPost]
@@ -274,21 +287,31 @@ namespace SimpleIdentityServer.Api.Controllers
                 throw new ArgumentNullException("code");
             }
 
+            // 1 : retrieve the request from the cookie
+            var context = HttpContext.GetOwinContext();
+            var cookieName = string.Format(ExternalAuthenticateCookieName, code);
+            var request = context.Request.Cookies[string.Format(ExternalAuthenticateCookieName, code)];
+            if (request == null)
+            {
+                throw new IdentityServerException(ErrorCodes.InvalidRequestCode, ErrorDescriptions.TheRequestCannotBeExtractedFromTheCookie);
+            }
+
+            // 2 : remove the cookie
+            var cookie = new HttpCookie(cookieName)
+            {
+                Expires = DateTime.UtcNow.AddDays(-1)
+            };
+            Response.Cookies.Add(cookie);
+
+            // 3 : Raise an exception is there's an authentication error
             if (!string.IsNullOrWhiteSpace(error))
             {
                 throw new IdentityServerException(
                     ErrorCodes.UnhandledExceptionCode, 
                     string.Format(ErrorDescriptions.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
             }
-
-            // Retrieve the request from the cookie.
-            var context = HttpContext.GetOwinContext();
-            var request = context.Request.Cookies[string.Format(ExternalAuthenticateCookieName, code)];
-            if (request == null)
-            {
-                throw new IdentityServerException(ErrorCodes.InvalidRequestCode, ErrorDescriptions.TheRequestCannotBeExtractedFromTheCookie);
-            }
             
+            // 4 : Authenticate the user against the external identity provider
             var authenticationManager = context.Authentication;
             var loginInformation = await authenticationManager.GetExternalLoginInfoAsync();
             if (loginInformation == null)
@@ -297,6 +320,7 @@ namespace SimpleIdentityServer.Api.Controllers
                     ErrorDescriptions.TheLoginInformationCannotBeExtracted);
             }
             
+            // 5 : Retrieve the authorization request and continue the open-id flow
             var decodedRequest = _encoder.Decode(request);
             var authorizationRequest = _protector.Decrypt<AuthorizationRequest>(decodedRequest);
             var providerType = loginInformation.Login.LoginProvider;
@@ -322,7 +346,7 @@ namespace SimpleIdentityServer.Api.Controllers
                     authorizationRequest);
             }
 
-            return RedirectToAction("Index", "Authenticate", new { code = code });
+            return RedirectToAction("OpenId", "Authenticate", new { code = code });
         }
 
         #endregion

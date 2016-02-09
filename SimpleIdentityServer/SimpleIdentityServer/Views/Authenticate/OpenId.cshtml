@@ -3,6 +3,8 @@
 @{
     ViewBag.Title = "Index";
     var loginProviders = Context.GetOwinContext().Authentication.GetExternalAuthenticationTypes();
+    var userNameState = ViewData.ModelState["UserName"];
+    var passwordState = ViewData.ModelState["Password"];
 }
 
 @model SimpleIdentityServer.Api.ViewModels.AuthorizeOpenIdViewModel
@@ -22,7 +24,7 @@
             </h2>
         </div>
         <div>
-            @if (loginProviders.Count() == 0)
+            @if (!loginProviders.Any())
             {
                 <p>There are no external authentication services configured</p>
             }
@@ -45,17 +47,42 @@
             </h2>
         </div>
         <div>
+            @Html.ValidationMessage("invalid_credentials")
             <form name="form" method="POST" action="@Url.Action("LocalLoginOpenId")">
                 <fieldset>
                     <input type="hidden" value="@Model.Code" name="Code" />
-                    <div class="form-group">
-                        <label>@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.UserNameCode]</label>
-                        <input maxlength="100" class="form-control" value="@Model.UserName" name="UserName" type="text" />
-                    </div>
-                    <div class="form-group">
-                        <label>@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.PasswordCode]</label>
-                        <input maxlength="100" class="form-control" value="@Model.Password" name="Password" type="password" />
-                    </div>
+                    @if (userNameState != null && userNameState.Errors.Any())
+                    {
+                        <div class="form-group has-error">
+                            <label class="control-label">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.UserNameCode]</label>
+                            <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" data-placement="right" title="@string.Join(",", userNameState.Errors.Select(e => e.ErrorMessage))"></span>
+                            <input maxlength="100" class="form-control" value="@Model.UserName" name="UserName" type="text" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="form-group">
+                            <label>@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.UserNameCode]</label>
+                            <input maxlength="100" class="form-control" value="@Model.UserName" name="UserName" type="text" />
+                        </div>
+                    }
+
+                    @if (passwordState != null && passwordState.Errors.Any())
+                    {
+                        <div class="form-group has-error">
+                            <label class="control-label">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.PasswordCode]</label>
+                            <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" data-placement="right" title="@string.Join(",", passwordState.Errors.Select(e => e.ErrorMessage))"></span>
+                            <input maxlength="100" class="form-control" value="@Model.Password" name="Password" type="password" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="form-group">
+                            <label>@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.PasswordCode]</label>
+                            <input maxlength="100" class="form-control" value="@Model.Password" name="Password" type="password" />
+                        </div>
+                    }
+
                     <div class="form-group">
                         <label>
                             <input type="checkbox" value="@Model.IsChecked" name="IsChecked" />
