@@ -37,6 +37,8 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
 
         List<Claim> LocalUserAuthentication(LocalAuthenticationParameter localAuthenticationParameter);
 
+        List<Claim> ExternalUserAuthentication(List<Claim> claims, string providerType);
+
         ActionResult LocalOpenIdUserAuthentication(
             LocalAuthenticationParameter localAuthenticationParameter,
             AuthorizationParameter authorizationParameter,
@@ -60,16 +62,20 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
 
         private readonly ILocalUserAuthenticationAction _localUserAuthenticationAction;
 
+        private readonly IExternalUserAuthenticationAction _externalUserAuthenticationAction;
+
         public AuthenticateActions(
             IAuthenticateResourceOwnerOpenIdAction authenticateResourceOwnerOpenIdAction,
             ILocalOpenIdUserAuthenticationAction localOpenIdUserAuthenticationAction,
             IExternalOpenIdUserAuthenticationAction externalOpenIdUserAuthenticationAction,
-            ILocalUserAuthenticationAction localUserAuthenticationAction)
+            ILocalUserAuthenticationAction localUserAuthenticationAction,
+            IExternalUserAuthenticationAction externalUserAuthenticationAction)
         {
             _authenticateResourceOwnerOpenIdAction = authenticateResourceOwnerOpenIdAction;
             _localOpenIdUserAuthenticationAction = localOpenIdUserAuthenticationAction;
             _externalOpenIdUserAuthenticationAction = externalOpenIdUserAuthenticationAction;
             _localUserAuthenticationAction = localUserAuthenticationAction;
+            _externalUserAuthenticationAction = externalUserAuthenticationAction;
         }
 
         public ActionResult AuthenticateResourceOwnerOpenId(
@@ -100,6 +106,21 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
             }
 
             return _localUserAuthenticationAction.Execute(localAuthenticationParameter);
+        }
+
+        public List<Claim> ExternalUserAuthentication(List<Claim> claims, string providerType)
+        {
+            if (claims == null || !claims.Any())
+            {
+                throw new ArgumentNullException("claims");
+            }
+            
+            if (string.IsNullOrWhiteSpace(providerType))
+            {
+                throw new ArgumentNullException("providerType");
+            }
+
+            return _externalUserAuthenticationAction.Execute(claims, providerType);
         }
 
         public ActionResult LocalOpenIdUserAuthentication(

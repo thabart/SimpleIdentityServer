@@ -2,7 +2,6 @@
 
 @{
     ViewBag.Title = "Index";
-    ViewBag.ProductName = "Simple Identity Server";
     var loginProviders = Context.GetOwinContext().Authentication.GetExternalAuthenticationTypes();
     var userNameState = ViewData.ModelState["UserName"];
     var passwordState = ViewData.ModelState["Password"];
@@ -51,7 +50,7 @@
             @Html.ValidationMessage("invalid_credentials")
             <form name="form" method="POST" action="@Url.Action("LocalLogin")">
                 <fieldset>
-                    @if (userNameState.Errors.Any())
+                    @if (userNameState != null && userNameState.Errors.Any())
                     {
                         <div class="form-group has-error">
                             <label class="control-label">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.UserNameCode]</label>
@@ -67,7 +66,7 @@
                     </div>
                     }
 
-                    @if (passwordState.Errors.Any())
+                    @if (passwordState != null && passwordState.Errors.Any())
                     {
                         <div class="form-group has-error">
                             <label class="control-label">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.PasswordCode]</label>

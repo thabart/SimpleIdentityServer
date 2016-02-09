@@ -39,56 +39,22 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 
     public sealed class ExternalOpenIdUserAuthenticationAction : IExternalOpenIdUserAuthenticationAction
     {
-        private class MappingRule
-        {
-            public string Type { get; set; }
-
-            public string OpenIdType { get; set; }
-        }
-
-        private readonly Dictionary<string, List<MappingRule>> _mappingRulesToOpenIdClaims;
-
         private readonly IAuthenticateHelper _authenticateHelper;
 
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
+
+        private readonly IExternalUserAuthenticationAction _externalUserAuthenticationAction;
 
         #region Constructors
 
         public ExternalOpenIdUserAuthenticationAction(
             IAuthenticateHelper authenticateHelper,
-            IResourceOwnerRepository resourceOwnerRepository)
+            IResourceOwnerRepository resourceOwnerRepository,
+            IExternalUserAuthenticationAction externalUserAuthenticationAction)
         {
             _authenticateHelper = authenticateHelper;
             _resourceOwnerRepository = resourceOwnerRepository;
-            _mappingRulesToOpenIdClaims = new Dictionary<string, List<MappingRule>>
-            {
-                {
-                    Constants.ProviderTypeNames.Microsoft,
-                    new List<MappingRule>
-                    {
-                        new MappingRule
-                        {
-                            Type = Constants.MicrosoftClaimNames.Id,
-                            OpenIdType = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject
-                        },
-                        new MappingRule
-                        {
-                            Type = Constants.MicrosoftClaimNames.Name,
-                            OpenIdType = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Name
-                        },
-                        new MappingRule
-                        {
-                            Type = Constants.MicrosoftClaimNames.FirstName,
-                            OpenIdType = Core.Jwt.Constants.StandardResourceOwnerClaimNames.GivenName
-                        },
-                        new MappingRule
-                        {
-                            Type = Constants.MicrosoftClaimNames.LastName,
-                            OpenIdType = Core.Jwt.Constants.StandardResourceOwnerClaimNames.FamilyName
-                        }
-                    }
-                }
-            };
+            _externalUserAuthenticationAction = externalUserAuthenticationAction;
         }
 
         #endregion
@@ -127,18 +93,12 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                     string.Format(ErrorDescriptions.TheExternalProviderIsNotSupported, providerType));
             }
 
-            var result = new List<Claim>();
-            switch(providerType)
-            {
-                case Constants.ProviderTypeNames.Microsoft:
-                    result = ConvertMicrosoftClaims(claims);
-                    break;
-            }
+            var result = _externalUserAuthenticationAction.Execute(claims, providerType);
 
-            var subjectClaim = result.FirstOrDefault(r => r.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject);
-            var nameClaim = result.FirstOrDefault(r => r.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Name);
-            var givenNameClaim = result.FirstOrDefault(r => r.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.GivenName);
-            var familyNameClaim = result.FirstOrDefault(r => r.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.FamilyName);
+            var subjectClaim = result.FirstOrDefault(r => r.Type == Jwt.Constants.StandardResourceOwnerClaimNames.Subject);
+            var nameClaim = result.FirstOrDefault(r => r.Type == Jwt.Constants.StandardResourceOwnerClaimNames.Name);
+            var givenNameClaim = result.FirstOrDefault(r => r.Type == Jwt.Constants.StandardResourceOwnerClaimNames.GivenName);
+            var familyNameClaim = result.FirstOrDefault(r => r.Type == Jwt.Constants.StandardResourceOwnerClaimNames.FamilyName);
             if (subjectClaim == null)
             {
                 throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode,
@@ -163,26 +123,6 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                 code,
                 "subject",
                 result);
-        }
-
-        #endregion
-
-        #region Private methods
-
-        private List<Claim> ConvertMicrosoftClaims(List<Claim> claims)
-        {
-            var result = new List<Claim>();
-            var mappingRules = _mappingRulesToOpenIdClaims[Constants.ProviderTypeNames.Microsoft];
-            claims.ForEach(c =>
-            {
-                var mappingRule = mappingRules.FirstOrDefault(m => m.Type == c.Type);
-                if (mappingRule != null)
-                {
-                    result.Add(new Claim(mappingRule.OpenIdType, c.Value));
-                }
-            });
-
-            return result;
         }
 
         #endregion

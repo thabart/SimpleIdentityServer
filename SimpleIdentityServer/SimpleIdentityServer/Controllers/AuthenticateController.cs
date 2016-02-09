@@ -113,7 +113,47 @@ namespace SimpleIdentityServer.Api.Controllers
         [HttpPost]
         public ActionResult ExternalLogin(string provider)
         {
-            return null;
+            if (string.IsNullOrWhiteSpace(provider))
+            {
+                throw new ArgumentNullException(provider);
+            }
+
+            return new ChallengeResult(provider,
+                Url.Action("LoginCallback", "Authenticate"));
+        }
+
+        public async Task<ActionResult> LoginCallback(string error)
+        {
+            if (!string.IsNullOrWhiteSpace(error))
+            {
+                throw new IdentityServerException(
+                    ErrorCodes.UnhandledExceptionCode,
+                    string.Format(ErrorDescriptions.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
+            }
+
+            var context = HttpContext.GetOwinContext();
+            var authenticationManager = context.Authentication;
+            var loginInformation = await authenticationManager.GetExternalLoginInfoAsync();
+            if (loginInformation == null)
+            {
+                throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode,
+                    ErrorDescriptions.TheLoginInformationCannotBeExtracted);
+            }
+            
+            var providerType = loginInformation.Login.LoginProvider;
+            var claims = loginInformation.ExternalIdentity.Claims.ToList();
+            var openIdClaims = _authenticateActions.ExternalUserAuthentication(claims, providerType);
+            var claimIdentity = new ClaimsIdentity(openIdClaims, DefaultAuthenticationTypes.ApplicationCookie);
+            authenticationManager.SignIn(
+                new AuthenticationProperties
+                {
+                    IsPersistent = false,
+                    ExpiresUtc = DateTime.UtcNow.AddDays(7)
+                },
+                claimIdentity
+            );
+
+            return RedirectToAction("Index", "User");
         }
 
         #endregion
@@ -211,7 +251,7 @@ namespace SimpleIdentityServer.Api.Controllers
                 throw new ArgumentNullException("code");
             }
 
-            // Add the information into the cookie
+            // Add the request into the cookie
             var id = Guid.NewGuid().ToString();
             var name = string.Format(ExternalAuthenticateCookieName, id);
             var cookie = new HttpCookie(name)
@@ -237,7 +277,7 @@ namespace SimpleIdentityServer.Api.Controllers
             if (!string.IsNullOrWhiteSpace(error))
             {
                 throw new IdentityServerException(
-                    ErrorCodes.InvalidRequestCode, 
+                    ErrorCodes.UnhandledExceptionCode, 
                     string.Format(ErrorDescriptions.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
             }
 
@@ -253,7 +293,7 @@ namespace SimpleIdentityServer.Api.Controllers
             var loginInformation = await authenticationManager.GetExternalLoginInfoAsync();
             if (loginInformation == null)
             {
-                throw new IdentityServerException(ErrorCodes.InvalidRequestCode,
+                throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode,
                     ErrorDescriptions.TheLoginInformationCannotBeExtracted);
             }
             

@@ -137,6 +137,7 @@
     <Compile Include="WebSite\Authenticate\AuthenticateHelperFixture.cs" />
     <Compile Include="WebSite\Authenticate\AuthenticateResourceOwnerOpenIdActionFixture.cs" />
     <Compile Include="WebSite\Authenticate\ExternalOpenIdUserAuthenticationActionFixture.cs" />
+    <Compile Include="WebSite\Authenticate\ExternalUserAuthenticationActionFixture.cs" />
     <Compile Include="WebSite\Authenticate\LocalOpenIdUserAuthenticationActionFixture.cs" />
     <Compile Include="WebSite\Authenticate\LocalUserAuthenticationActionFixture.cs" />
     <Compile Include="WebSite\Consent\ConfirmConsentFixture.cs" />

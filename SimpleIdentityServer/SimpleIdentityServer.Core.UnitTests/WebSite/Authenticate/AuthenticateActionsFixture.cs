@@ -24,6 +24,8 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 
         private Mock<ILocalUserAuthenticationAction> _localUserAuthenticationActionFake;
 
+        private Mock<IExternalUserAuthenticationAction> _externalUserAuthenticationActionFake;
+
         private IAuthenticateActions _authenticateActions;
 
         [Test]
@@ -196,17 +198,52 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             Assert.IsTrue(result.First().Type == claimType && result.First().Value == claimValue);
         }
 
+        [Test]
+        public void When_Passing_Null_Parameter_To_ExternalUserAuthentication_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var claims = new List<Claim>
+            {
+                new Claim("sub", "sub")
+            };
+
+            // ACT & ASSERT
+            Assert.Throws<ArgumentNullException>(() => _authenticateActions.ExternalUserAuthentication(null, null));
+            Assert.Throws<ArgumentNullException>(() => _authenticateActions.ExternalUserAuthentication(claims, null));
+        }
+
+        [Test]
+        public void When_Passing_Needed_Parameters_To_ExternalUserAuthentication_Then_Operation_Is_Called()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var claims = new List<Claim>
+            {
+                new Claim("sub", "sub")
+            };
+
+            // ACT
+            _authenticateActions.ExternalUserAuthentication(claims, "provider_type");
+
+            // ASSERT
+            _externalUserAuthenticationActionFake.Verify(e => e.Execute(It.IsAny<List<Claim>>(),
+                It.IsAny<string>()));
+        }
+
         private void InitializeFakeObjects()
         {
             _authenticateResourceOwnerActionFake = new Mock<IAuthenticateResourceOwnerOpenIdAction>();
             _localOpenIdUserAuthenticationActionFake = new Mock<ILocalOpenIdUserAuthenticationAction>();
             _externalUserAuthenticationFake = new Mock<IExternalOpenIdUserAuthenticationAction>();
             _localUserAuthenticationActionFake = new Mock<ILocalUserAuthenticationAction>();
+            _externalUserAuthenticationActionFake = new Mock<IExternalUserAuthenticationAction>();
             _authenticateActions = new AuthenticateActions(
                 _authenticateResourceOwnerActionFake.Object,
                 _localOpenIdUserAuthenticationActionFake.Object,
                 _externalUserAuthenticationFake.Object,
-                _localUserAuthenticationActionFake.Object);
+                _localUserAuthenticationActionFake.Object,
+                _externalUserAuthenticationActionFake.Object);
         }
     }
 }

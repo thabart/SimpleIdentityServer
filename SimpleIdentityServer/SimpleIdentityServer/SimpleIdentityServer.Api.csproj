@@ -231,6 +231,7 @@
     <Compile Include="Controllers\Api\UserInfoController.cs" />
     <Compile Include="Controllers\AuthenticateController.cs" />
     <Compile Include="Controllers\ConsentController.cs" />
+    <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\FormController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="DTOs\Request\AuthorizationRequest.cs" />
@@ -266,6 +267,7 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\img\OAuth2.png" />
+    <Content Include="Content\img\Unknown.png" />
     <Content Include="Content\style.css" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -296,6 +298,7 @@
     <Content Include="Views\Form\Index.cshtml" />
     <Content Include="Views\Authenticate\Index.cshtml" />
     <Content Include="Views\User\Index.cshtml" />
+    <Content Include="Views\Error\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config">
