@@ -62,5 +62,15 @@ namespace SimpleIdentityServer.Host
         /// List of fake translations
         /// </summary>
         public List<Translation> Translations { get; set; }
+
+        /// <summary>
+        /// Gets or sets the microsoft client id
+        /// </summary>
+        public string MicrosoftClientId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the microsoft secret
+        /// </summary>
+        public string MicrosoftSecret { get; set; }
     }
 }

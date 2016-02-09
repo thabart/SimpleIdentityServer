@@ -10,10 +10,9 @@ using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.Authenticate;
-using SimpleIdentityServer.Host.DTOs.Request;
 using SimpleIdentityServer.Host.Extensions;
-using SimpleIdentityServer.Host.ViewModels;
 using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.Api.ViewModels;
 
 namespace SimpleIdentityServer.Host.Controllers
 {
@@ -41,15 +40,14 @@ namespace SimpleIdentityServer.Host.Controllers
             IEncoder encoder,
             ITranslationManager translationManager,
             ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
-            IHttpContextAccessor httpContextAccessor)
+            IUrlHelper urlHelper)
         {
             _authenticateActions = authenticateActions;
             _protector = protector;
             _encoder = encoder;
             _translationManager = translationManager;
-            _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
-            
-            _urlHelper = (IUrlHelper)httpContextAccessor.HttpContext.RequestServices.GetService(typeof(IUrlHelper));;
+            _simpleIdentityServerEventSource = simpleIdentityServerEventSource;            
+            _urlHelper = urlHelper;
         }
         
         #region Public methods
@@ -81,7 +79,7 @@ namespace SimpleIdentityServer.Host.Controllers
         {
             if (authorizeViewModel == null)
             {
-                throw new ArgumentNullException("authorizeViewModel");
+                throw new ArgumentNullException(nameof(authorizeViewModel));
             }
 
             if (!ModelState.IsValid)
@@ -114,23 +112,24 @@ namespace SimpleIdentityServer.Host.Controllers
             }
         }
         
-        [HttpPost]
+        [HttpPost(Name = "ExternalLogin")]
         public async Task ExternalLogin(string provider)
         {
             if (string.IsNullOrWhiteSpace(provider))
             {
-                throw new ArgumentNullException(provider);
+                throw new ArgumentNullException(nameof(provider));
             }
 
-            string url = _urlHelper.RouteUrl("LoginCallback");
+            string url = _urlHelper.RouteUrl("LoginCallback", null);
             await this.HttpContext.Authentication.ChallengeAsync(provider, new AuthenticationProperties() 
             {
-                RedirectUri = url
+                RedirectUri = "http://localhost:5000/Authenticate/LoginCallback"
             });
             return;
         }
         
-        public async Task<ActionResult> LoginCallback(string error)
+        [HttpGet(Name = "LoginCallback")]
+        public ActionResult LoginCallback(string error)
         {
             if (!string.IsNullOrWhiteSpace(error))
             {
@@ -141,9 +140,12 @@ namespace SimpleIdentityServer.Host.Controllers
 
             var authenticationManager = this.GetAuthenticationManager();
             authenticationManager.GetAuthenticationSchemes();
-            var u = this.GetAuthenticatedUser(); // Put a break point to see authenticated user
-            var loginInformation = null;
+            var u = this.GetAuthenticatedUser(); 
+            
+            // Put a break point to see authenticated user
+            // var loginInformation = null;
             // ExternalLoginInfo loginInformation = await authenticationManager.
+            /*
             if (loginInformation == null)
             {
                 throw new IdentityServerException(Core.Errors.ErrorCodes.UnhandledExceptionCode,
@@ -163,12 +165,15 @@ namespace SimpleIdentityServer.Host.Controllers
                     ExpiresUtc = DateTime.UtcNow.AddDays(7)
                 }
             ).Wait();
-
+            */
             return RedirectToAction("Index", "User");
         }
-        
+
         #endregion
 
+        #endregion
+
+        /*
         [HttpGet]
         public ActionResult Index(string code)
         {
@@ -241,6 +246,7 @@ namespace SimpleIdentityServer.Host.Controllers
         }
         
         #endregion
+        */
 
         private void TranslateView(string uiLocales)
         {

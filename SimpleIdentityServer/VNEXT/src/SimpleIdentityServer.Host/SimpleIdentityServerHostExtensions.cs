@@ -18,6 +18,8 @@ using Swashbuckle.SwaggerGen;
 using SimpleIdentityServer.Host.MiddleWare;
 using SimpleIdentityServer.RateLimitation;
 using Microsoft.AspNet.Http;
+using Microsoft.AspNet.Authentication.Cookies;
+using Microsoft.AspNet.Authentication.MicrosoftAccount;
 
 namespace SimpleIdentityServer.Host 
 {
@@ -70,13 +72,6 @@ namespace SimpleIdentityServer.Host
             }
 
             app.UseIISPlatformHandler(opts => opts.AuthenticationDescriptions.Clear());
-            app.UseCookieAuthentication(opts => {
-                opts.AuthenticationScheme = "SimpleIdentityServerAuthentication";
-                opts.AutomaticAuthenticate = true;
-                opts.AutomaticChallenge = false;
-                opts.LoginPath = new PathString("/Error/401");
-                opts.AccessDeniedPath = new PathString("/Error/401");
-            });
 
             app.UseStaticFiles();
 
@@ -92,6 +87,25 @@ namespace SimpleIdentityServer.Host
                 });
             }
 
+            // 1. Enable cookie authentication
+            app.UseCookieAuthentication(new CookieAuthenticationOptions
+            {
+                AutomaticAuthenticate = true,
+                AutomaticChallenge = true,
+                LoginPath = new PathString("/Authenticate")
+            });
+
+            // 2. Enable live connect authentication
+            // Check this implementation : https://github.com/aspnet/Security/blob/dev/samples/SocialSample/Startup.cs
+            // TODO : Create cookie authentication
+            app.UseMicrosoftAccountAuthentication(new MicrosoftAccountOptions
+            {
+                AuthenticationScheme = "Microsoft",
+                DisplayName = "Microsoft",
+                ClientId = "0000000048185530",
+                ClientSecret = "KN12jxYIAYOr0bCLXFBcXhBrTlZyLNAZ"
+            });
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute("Error401Route",
@@ -99,14 +113,14 @@ namespace SimpleIdentityServer.Host
                     new
                     {
                         controller = "Error",
-                        action = "Get401"    
+                        action = "Get401"
                     });
-                    
+
                 routes.MapRoute(
                     name: "default",
                     template: "{controller}/{action=Index}/{id?}");
             });
-            
+
             if (options.IsSwaggerEnabled)
             {
                 app.UseSwaggerGen();
@@ -133,7 +147,7 @@ namespace SimpleIdentityServer.Host
         private static void ConfigureSimpleIdentityServer(
             IServiceCollection services,
             SimpleIdentityServerHostOptions options) 
-        {            
+        {
             services.AddSimpleIdentityServerCore();
             services.AddSimpleIdentityServerJwt();
             services.AddRateLimitation();
@@ -146,7 +160,6 @@ namespace SimpleIdentityServer.Host
             services.AddTransient<IActionResultParser, ActionResultParser>();
             services.AddTransient<ISimpleIdentityServerConfigurator, ConcreteSimpleIdentityServerConfigurator>();
             services.AddInstance<ISimpleIdentityServerEventSource>(logging);
-            
             if (options.IsSwaggerEnabled)
             {
                 services.AddSwaggerGen();
@@ -159,6 +172,8 @@ namespace SimpleIdentityServer.Host
                     });
                 });
             }
+
+            services.AddAuthentication(opts => opts.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme);
         }
         
         #endregion

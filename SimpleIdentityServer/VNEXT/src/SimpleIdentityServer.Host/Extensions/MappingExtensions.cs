@@ -13,6 +13,7 @@ using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using Display = SimpleIdentityServer.Host.DTOs.Request.Display;
 using ResponseMode = SimpleIdentityServer.Host.DTOs.Request.ResponseMode;
+using SimpleIdentityServer.Api.ViewModels;
 
 namespace SimpleIdentityServer.Host.Extensions
 {
@@ -70,6 +71,15 @@ namespace SimpleIdentityServer.Host.Extensions
             {
                 UserName = viewModel.UserName,
                 Password = viewModel.Password
+            };
+        }
+
+        public static LocalAuthenticationParameter ToParameter(this AuthorizeOpenIdViewModel viewModel)
+        {
+            return new LocalAuthenticationParameter
+            {
+                UserName = viewModel.UserName,
+                Password = viewModel.Password                
             };
         }
 

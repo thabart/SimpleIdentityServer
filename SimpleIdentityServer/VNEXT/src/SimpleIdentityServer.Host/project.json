@@ -1,93 +1,93 @@
 {
-    "version": "1.0.0-*",
-    
-    "compilationOptions": {
-        "emitEntryPoint": true
-    },
-    
-    "tooling": {
-        "defaultNamespace": "SimpleIdentityServer.Host"
-    },
+  "version": "1.0.0-*",
 
-    "dependencies": {
-        "Microsoft.AspNet.Identity.Core": "2.2.1",
-        "Microsoft.AspNet.Authentication.Cookies": "1.0.0-rc1-final",
-        "Microsoft.AspNet.IISPlatformHandler": "1.0.0-rc1-final",
-        "Microsoft.AspNet.Mvc": "6.0.0-rc1-final",
-        "Microsoft.AspNet.Mvc.TagHelpers": "6.0.0-rc1-final",
-        "Microsoft.AspNet.Server.Kestrel": "1.0.0-rc1-final",
-        "Microsoft.AspNet.StaticFiles": "1.0.0-rc1-final",
-        "Microsoft.AspNet.Tooling.Razor": "1.0.0-rc1-final",
-        "Microsoft.Dnx.Runtime": "1.0.0-rc1-final",
-        "Microsoft.Extensions.Primitives": "1.0.0-rc1-final",        
-        "Microsoft.AspNet.Security.MicrosoftAccount": "1.0.0-beta3",
-        "Microsoft.Extensions.CodeGenerators.Mvc": "1.0.0-rc1-final",
-        "Microsoft.Extensions.Configuration.FileProviderExtensions": "1.0.0-rc1-final",
-        "Microsoft.Extensions.Configuration.Json": "1.0.0-rc1-final",
-        "Microsoft.Extensions.Configuration.UserSecrets": "1.0.0-rc1-final",
-        "Microsoft.Extensions.Logging": "1.0.0-rc1-final",
-        "Microsoft.Extensions.Logging.Console": "1.0.0-rc1-final",
-        "Microsoft.Extensions.Logging.Debug": "1.0.0-rc1-final",
-        "Microsoft.AspNet.Diagnostics": "1.0.0-rc1-final",
-        "Unity": "2.1.505.0",
-        "Microsoft.AspNet.WebApi.Client": "5.2.3",
-        "Swashbuckle.SwaggerGen": "6.0.0-rc1-final",
-        "Swashbuckle.SwaggerUi": "6.0.0-rc1-final",
-        "WebActivatorEx": "2.0",
-        "SimpleIdentityServer.Core": "",
-        "SimpleIdentityServer.Core.Jwt": "",
-        "SimpleIdentityServer.DataAccess.Fake": "",
-        "SimpleIdentityServer.DataAccess.SqlServer": "",
-        "SimpleIdentityServer.RateLimitation": ""
-    },
+  "compilationOptions": {
+    "emitEntryPoint": true
+  },
 
-    "commands": {
-        "web": "Microsoft.AspNet.Server.Kestrel"
-    },
+  "tooling": {
+    "defaultNamespace": "SimpleIdentityServer.Host"
+  },
 
-    "frameworks": {
-        "dnx451": {                 
-            "frameworkAssemblies": {
-                "System.Web": "4.0.0.0"
-            }
-        }
-    },
+  "dependencies": {
+    "Microsoft.AspNet.Identity.Core": "2.2.1",
+    "Microsoft.AspNet.Authentication.MicrosoftAccount": "1.0.0-*",
+    "Microsoft.AspNet.Authentication.Cookies": "1.0.0-rc1-final",
+    "Microsoft.AspNet.Identity": "3.0.0-beta5",
+    "Microsoft.AspNet.IISPlatformHandler": "1.0.0-rc1-final",
+    "Microsoft.AspNet.Mvc": "6.0.0-rc1-final",
+    "Microsoft.AspNet.Mvc.TagHelpers": "6.0.0-rc1-final",
+    "Microsoft.AspNet.Server.Kestrel": "1.0.0-rc1-final",
+    "Microsoft.AspNet.StaticFiles": "1.0.0-rc1-final",
+    "Microsoft.AspNet.Tooling.Razor": "1.0.0-rc1-final",
+    "Microsoft.Dnx.Runtime": "1.0.0-rc1-final",
+    "Microsoft.Extensions.Primitives": "1.0.0-rc1-final",
+    "Microsoft.Extensions.CodeGenerators.Mvc": "1.0.0-rc1-final",
+    "Microsoft.Extensions.Configuration.FileProviderExtensions": "1.0.0-rc1-final",
+    "Microsoft.Extensions.Configuration.Json": "1.0.0-rc1-final",
+    "Microsoft.Extensions.Configuration.UserSecrets": "1.0.0-rc1-final",
+    "Microsoft.Extensions.Logging": "1.0.0-rc1-final",
+    "Microsoft.Extensions.Logging.Console": "1.0.0-rc1-final",
+    "Microsoft.Extensions.Logging.Debug": "1.0.0-rc1-final",
+    "Microsoft.AspNet.Diagnostics": "1.0.0-rc1-final",
+    "Unity": "2.1.505.0",
+    "Microsoft.AspNet.WebApi.Client": "5.2.3",
+    "Swashbuckle.SwaggerGen": "6.0.0-rc1-final",
+    "Swashbuckle.SwaggerUi": "6.0.0-rc1-final",
+    "WebActivatorEx": "2.0",
+    "SimpleIdentityServer.Core": "",
+    "SimpleIdentityServer.Core.Jwt": "",
+    "SimpleIdentityServer.DataAccess.Fake": "",
+    "SimpleIdentityServer.DataAccess.SqlServer": "",
+    "SimpleIdentityServer.RateLimitation": ""
+  },
 
-    "exclude": [
-        "wwwroot",
-        "node_modules",
-        "bower_components"
+  "commands": {
+    "web": "Microsoft.AspNet.Server.Kestrel"
+  },
+
+  "frameworks": {
+    "dnx451": {
+      "frameworkAssemblies": {
+        "System.Web": "4.0.0.0"
+      }
+    }
+  },
+
+  "exclude": [
+    "wwwroot",
+    "node_modules",
+    "bower_components"
+  ],
+
+  "publishExclude": [
+    "**.user",
+    "**.vspscc"
+  ],
+
+  "scripts": {
+    "prebuild": [
+      "npm install",
+      "bower install",
+      "gulp clean",
+      "gulp min"
     ],
-	
-    "publishExclude": [
-        "**.user",
-        "**.vspscc"
-    ],
-    
-    "scripts": {
-        "prebuild": [
-            "npm install",
-            "bower install",
-            "gulp clean",
-            "gulp min"
-        ],
-		"postrestore": [ "npm install", "bower install" ],
-		"prepare": [ "gulp clean", "gulp min" ]
+    "prepare": [ "gulp clean", "gulp min" ]
+  },
+
+  "configurations": {
+    "Debug": {
+      "compilationOptions": {
+        "define": [ "DEBUG" ]
+      }
     },
-    
-    "configurations": {
-        "Debug": {
-            "compilationOptions": {
-                "define": ["DEBUG"]
-            }          
-        },
-        "Release": {
-            "compilationOptions": {
-                "define": ["RELEASE"],
-                "optimize": true
-            }
-        }
-    },
-    
-    "resource": ["SimpleIdentityServer.pfx"]
+    "Release": {
+      "compilationOptions": {
+        "define": [ "RELEASE" ],
+        "optimize": true
+      }
+    }
+  },
+
+  "resource": [ "SimpleIdentityServer.pfx" ]
 }
