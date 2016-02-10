@@ -15,38 +15,54 @@
 }
 
 <div class="row">
-    <div class="col-md-12">
-        <div class="row">
-            <div class="col-md-5">
-                <label>Name</label>
+    <ul class="nav nav-tabs">
+        <li class="active">
+            <a href="#information" data-toggle="tab">Information</a>
+        </li>
+        <li>            
+            <a href="#consent" data-toggle="tab">Consents</a>
+        </li>
+    </ul>
+    <div class="tab-content container">        
+        <!-- Display the information -->
+        <div class="tab-pane active" id="information">
+            <h1>Information</h1>
+            <div class="row">
+                <div class="col-md-5">
+                    <label>Name</label>
+                </div>
+                <div class="col-md-7">
+                    @name
+                </div>
             </div>
-            <div class="col-md-7">
-                @name
+            <div class="row">
+                <div class="col-md-5">
+                    <label>First name</label>
+                </div>
+                <div class="col-md-7">
+                    @givenName
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-5">
+                    <label>Last name</label>
+                </div>
+                <div class="col-md-7">
+                    @familyName
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-5">
+                    <label>Picture</label>
+                </div>
+                <div class="col-md-7">
+                    <img src="@picture" alt="Picture" class="img-thumbnail" />
+                </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-5">
-                <label>First name</label>
-            </div>
-            <div class="col-md-7">
-                @givenName
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-5">
-                <label>Last name</label>
-            </div>
-            <div class="col-md-7">
-                @familyName
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-5">
-                <label>Picture</label>
-            </div>
-            <div class="col-md-7">
-                <img src="@picture" alt="Picture" class="img-thumbnail" />
-            </div>
+        <!-- Display the consents -->
+        <div class="tab-pane" id="consent">
+            <h1>Consents</h1>
         </div>
     </div>
 </div>
