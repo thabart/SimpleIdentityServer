@@ -72,6 +72,7 @@
       "gulp clean",
       "gulp min"
     ],
+	"postrestore": [ "npm install", "bower install" ],
     "prepare": [ "gulp clean", "gulp min" ]
   },
 
