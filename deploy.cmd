@@ -1,2 +1,2 @@
-CD SimpleIdentityServer\VNEXT
+CD SimpleIdentityServer\VNEXT\src\SimpleIdentityServer.Host
 deploy.cmd
