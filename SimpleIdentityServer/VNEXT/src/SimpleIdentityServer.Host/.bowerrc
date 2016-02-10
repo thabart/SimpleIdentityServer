@@ -1,4 +1,3 @@
 {
-  "directory": "wwwroot/lib",
-  "proxy": "http://proxy.kapsch.co.at:8080"
+  "directory": "wwwroot/lib"
 }
