@@ -7,8 +7,5 @@
     "version": "1.0.0-rc1-update1",
     "runtime": "clr",
     "architecture": "x86"
-  },
-  "commands": {
-    "test": "dnx -p tests/SimpleIdentityServer.Core.UnitTests test"
   }
 }
