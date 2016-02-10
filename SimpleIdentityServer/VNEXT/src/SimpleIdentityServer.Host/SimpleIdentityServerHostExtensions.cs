@@ -190,12 +190,18 @@ namespace SimpleIdentityServer.Host
             string clientId,
             string clientSecret) 
         {            
-            var microsoftAccountOptions = new MicrosoftAccountOptions
+            var microsoftAccountOptions = new OAuthOptions
             {
                 AuthenticationScheme = Constants.IdentityProviderNames.Microsoft,
                 DisplayName = Constants.IdentityProviderNames.Microsoft,
                 ClientId = clientId,
-                ClientSecret = clientSecret
+                ClientSecret = clientSecret,
+                CallbackPath = new PathString("/signin-microsoft"),
+                AuthorizationEndpoint = MicrosoftAccountDefaults.AuthorizationEndpoint,
+                TokenEndpoint = MicrosoftAccountDefaults.TokenEndpoint,
+                UserInformationEndpoint = MicrosoftAccountDefaults.UserInformationEndpoint,
+                Scope = { "wl.basic" },
+                SaveTokensAsClaims = true
             };
             
             microsoftAccountOptions.Events = new OAuthEvents
