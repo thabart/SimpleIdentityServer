@@ -89,11 +89,11 @@ IF !ERRORLEVEL! NEQ 0 goto error
 
 
 :: 3. Run DNU Restore
-call %DNX_RUNTIME%\bin\dnu restore "%DEPLOYMENT_SOURCE%" %SCM_DNU_RESTORE_OPTIONS%
+call %DNX_RUNTIME%\bin\dnu restore
 IF !ERRORLEVEL! NEQ 0 goto error
 
 :: 4. Run DNU Bundle
-call %DNX_RUNTIME%\bin\dnu publish "project.json" --runtime %DNX_RUNTIME% --out "%DEPLOYMENT_TEMP%" %SCM_DNU_PUBLISH_OPTIONS%
+call %DNX_RUNTIME%\bin\dnu publish "src\SimpleIdentityServer.Host\project.json" --runtime %DNX_RUNTIME% --out "%DEPLOYMENT_TEMP%" %SCM_DNU_PUBLISH_OPTIONS%
 IF !ERRORLEVEL! NEQ 0 goto error
 
 :: 5. KuduSync
