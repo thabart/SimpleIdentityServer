@@ -91,8 +91,12 @@ namespace SimpleIdentityServer.Host
                     SimpleIdentityServerEventSource = SimpleIdentityServerEventSource.Log
                 });
             }
+            
+            // 1. Configure the IUrlHelper extension
+            var httpContextAccessor = app.ApplicationServices.GetRequiredService<IHttpContextAccessor>();
+            SimpleIdentityServer.Host.Extensions.UriHelperExtensions.Configure(httpContextAccessor); 
 
-            // 1. Enable cookie authentication
+            // 2. Enable cookie authentication
             app.UseCookieAuthentication(new CookieAuthenticationOptions
             {
                 AutomaticAuthenticate = true,
@@ -102,7 +106,7 @@ namespace SimpleIdentityServer.Host
 
             // Check this implementation : https://github.com/aspnet/Security/blob/dev/samples/SocialSample/Startup.cs
             
-            // 2. Enable live connect authentication
+            // 3. Enable live connect authentication
             if (options.IsMicrosoftAuthenticationEnabled) 
             {                
                 UseMicrosoftAuthentication(app, options.MicrosoftClientId, options.MicrosoftClientSecret);
