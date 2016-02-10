@@ -346,7 +346,6 @@ namespace SimpleIdentityServer.Api.Tests.Common
             serviceCollection.AddTransient<IConfirmConsentAction, ConfirmConsentAction>();
             serviceCollection.AddTransient<IDisplayConsentAction, DisplayConsentAction>();
             serviceCollection.AddTransient<IAuthenticateActions, AuthenticateActions>();
-            serviceCollection.AddTransient<IAuthenticateResourceOwnerAction, AuthenticateResourceOwnerAction>();
             serviceCollection.AddTransient<ILocalUserAuthenticationAction, LocalUserAuthenticationAction>();
             serviceCollection.AddTransient<IRedirectInstructionParser, RedirectInstructionParser>();
             serviceCollection.AddTransient<IActionResultParser, ActionResultParser>();
