@@ -56,7 +56,10 @@ namespace SimpleIdentityServer.Host
             app.UseSimpleIdentityServer(new SimpleIdentityServerHostOptions
             {
                 IsSwaggerEnabled = true,
-                IsDeveloperModeEnabled = true
+                IsDeveloperModeEnabled = false,
+                IsMicrosoftAuthenticationEnabled = true,
+                MicrosoftClientId = Configuration["Microsoft:ClientId"],
+                MicrosoftClientSecret = Configuration["Microsoft:ClientSecret"]
             });
         }
 

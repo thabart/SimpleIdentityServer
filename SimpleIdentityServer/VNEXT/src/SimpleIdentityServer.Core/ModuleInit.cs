@@ -110,7 +110,6 @@ namespace SimpleIdentityServer.Core
             register.RegisterType<IAuthenticateResourceOwnerOpenIdAction, AuthenticateResourceOwnerOpenIdAction>();
             register.RegisterType<IAuthenticateHelper, AuthenticateHelper>();
             register.RegisterType<ILocalUserAuthenticationAction, LocalUserAuthenticationAction>();
-            register.RegisterType<IExternalUserAuthenticationAction, ExternalUserAuthenticationAction>();
             register.RegisterType<ILocalOpenIdUserAuthenticationAction, LocalOpenIdUserAuthenticationAction>();
             register.RegisterType<IExternalOpenIdUserAuthenticationAction, ExternalOpenIdUserAuthenticationAction>();
 

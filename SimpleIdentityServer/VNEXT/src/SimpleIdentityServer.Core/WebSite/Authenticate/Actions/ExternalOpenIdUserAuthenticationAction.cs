@@ -33,8 +33,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
         ActionResult Execute(
             List<Claim> claims,
             AuthorizationParameter authorizationParameter,
-            string code,
-            string providerType);
+            string code);
     }
 
     public sealed class ExternalOpenIdUserAuthenticationAction : IExternalOpenIdUserAuthenticationAction
@@ -43,18 +42,14 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
 
-        private readonly IExternalUserAuthenticationAction _externalUserAuthenticationAction;
-
         #region Constructors
 
         public ExternalOpenIdUserAuthenticationAction(
             IAuthenticateHelper authenticateHelper,
-            IResourceOwnerRepository resourceOwnerRepository,
-            IExternalUserAuthenticationAction externalUserAuthenticationAction)
+            IResourceOwnerRepository resourceOwnerRepository)
         {
             _authenticateHelper = authenticateHelper;
             _resourceOwnerRepository = resourceOwnerRepository;
-            _externalUserAuthenticationAction = externalUserAuthenticationAction;
         }
 
         #endregion
@@ -64,8 +59,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
         public ActionResult Execute(
             List<Claim> claims,
             AuthorizationParameter authorizationParameter,
-            string code,
-            string providerType)
+            string code)
         {
             if (claims == null || !claims.Any())
             {
@@ -82,23 +76,10 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                 throw new ArgumentNullException("code");
             }
 
-            if (string.IsNullOrWhiteSpace(providerType))
-            {
-                throw new ArgumentNullException("providerType");
-            }
-
-            if (!Constants.SupportedProviderTypes.Contains(providerType))
-            {
-                throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode,
-                    string.Format(ErrorDescriptions.TheExternalProviderIsNotSupported, providerType));
-            }
-
-            var result = _externalUserAuthenticationAction.Execute(claims, providerType);
-
-            var subjectClaim = result.FirstOrDefault(r => r.Type == Jwt.Constants.StandardResourceOwnerClaimNames.Subject);
-            var nameClaim = result.FirstOrDefault(r => r.Type == Jwt.Constants.StandardResourceOwnerClaimNames.Name);
-            var givenNameClaim = result.FirstOrDefault(r => r.Type == Jwt.Constants.StandardResourceOwnerClaimNames.GivenName);
-            var familyNameClaim = result.FirstOrDefault(r => r.Type == Jwt.Constants.StandardResourceOwnerClaimNames.FamilyName);
+            var subjectClaim = claims.FirstOrDefault(r => r.Type == Jwt.Constants.StandardResourceOwnerClaimNames.Subject);
+            var nameClaim = claims.FirstOrDefault(r => r.Type == Jwt.Constants.StandardResourceOwnerClaimNames.Name);
+            var givenNameClaim = claims.FirstOrDefault(r => r.Type == Jwt.Constants.StandardResourceOwnerClaimNames.GivenName);
+            var familyNameClaim = claims.FirstOrDefault(r => r.Type == Jwt.Constants.StandardResourceOwnerClaimNames.FamilyName);
             if (subjectClaim == null)
             {
                 throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode,
@@ -122,7 +103,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
             return _authenticateHelper.ProcessRedirection(authorizationParameter,
                 code,
                 "subject",
-                result);
+                claims);
         }
 
         #endregion

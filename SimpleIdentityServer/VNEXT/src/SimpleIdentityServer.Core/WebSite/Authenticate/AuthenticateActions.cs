@@ -23,8 +23,6 @@ using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 
 using System;
-using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Errors;
 
 namespace SimpleIdentityServer.Core.WebSite.Authenticate
 {
@@ -37,8 +35,6 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
 
         List<Claim> LocalUserAuthentication(LocalAuthenticationParameter localAuthenticationParameter);
 
-        List<Claim> ExternalUserAuthentication(List<Claim> claims, string providerType);
-
         ActionResult LocalOpenIdUserAuthentication(
             LocalAuthenticationParameter localAuthenticationParameter,
             AuthorizationParameter authorizationParameter,
@@ -48,8 +44,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
         ActionResult ExternalOpenIdUserAuthentication(
             List<Claim> claims,
             AuthorizationParameter authorizationParameter,
-            string code,
-            string providerType);
+            string code);
     }
 
     public class AuthenticateActions : IAuthenticateActions
@@ -62,20 +57,16 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
 
         private readonly ILocalUserAuthenticationAction _localUserAuthenticationAction;
 
-        private readonly IExternalUserAuthenticationAction _externalUserAuthenticationAction;
-
         public AuthenticateActions(
             IAuthenticateResourceOwnerOpenIdAction authenticateResourceOwnerOpenIdAction,
             ILocalOpenIdUserAuthenticationAction localOpenIdUserAuthenticationAction,
             IExternalOpenIdUserAuthenticationAction externalOpenIdUserAuthenticationAction,
-            ILocalUserAuthenticationAction localUserAuthenticationAction,
-            IExternalUserAuthenticationAction externalUserAuthenticationAction)
+            ILocalUserAuthenticationAction localUserAuthenticationAction)
         {
             _authenticateResourceOwnerOpenIdAction = authenticateResourceOwnerOpenIdAction;
             _localOpenIdUserAuthenticationAction = localOpenIdUserAuthenticationAction;
             _externalOpenIdUserAuthenticationAction = externalOpenIdUserAuthenticationAction;
             _localUserAuthenticationAction = localUserAuthenticationAction;
-            _externalUserAuthenticationAction = externalUserAuthenticationAction;
         }
 
         public ActionResult AuthenticateResourceOwnerOpenId(
@@ -108,21 +99,6 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
             return _localUserAuthenticationAction.Execute(localAuthenticationParameter);
         }
 
-        public List<Claim> ExternalUserAuthentication(List<Claim> claims, string providerType)
-        {
-            if (claims == null || !claims.Any())
-            {
-                throw new ArgumentNullException("claims");
-            }
-            
-            if (string.IsNullOrWhiteSpace(providerType))
-            {
-                throw new ArgumentNullException("providerType");
-            }
-
-            return _externalUserAuthenticationAction.Execute(claims, providerType);
-        }
-
         public ActionResult LocalOpenIdUserAuthentication(
             LocalAuthenticationParameter localAuthenticationParameter,
             AuthorizationParameter authorizationParameter,
@@ -150,8 +126,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
         public ActionResult ExternalOpenIdUserAuthentication(
             List<Claim> claims, 
             AuthorizationParameter authorizationParameter, 
-            string code,
-            string providerType)
+            string code)
         {
             if (claims == null || !claims.Any())
             {
@@ -168,21 +143,9 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
                 throw new ArgumentNullException("code");
             }
 
-            if (string.IsNullOrWhiteSpace(providerType))
-            {
-                throw new ArgumentNullException("providerType");
-            }
-
-            if (!Constants.SupportedProviderTypes.Contains(providerType))
-            {
-                throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode,
-                    string.Format(ErrorDescriptions.TheExternalProviderIsNotSupported, providerType));
-            }
-
             return _externalOpenIdUserAuthenticationAction.Execute(claims,
                 authorizationParameter,
-                code,
-                providerType);
+                code);
         }
     }
 }

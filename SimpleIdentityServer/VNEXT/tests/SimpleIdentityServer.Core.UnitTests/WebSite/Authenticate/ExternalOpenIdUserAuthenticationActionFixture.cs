@@ -18,9 +18,6 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
         private Mock<IAuthenticateHelper> _authenticateHelperStub;
 
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
-
-        private Mock<IExternalUserAuthenticationAction> _externalUserAuthenticationActionStub;
-
         private IExternalOpenIdUserAuthenticationAction _externalOpenIdUserAuthenticationAction;
 
         [Fact]
@@ -35,29 +32,9 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             var authorizationParameter = new AuthorizationParameter();
 
             // ACTS & ASSERTS
-            Assert.Throws<ArgumentNullException>(() => _externalOpenIdUserAuthenticationAction.Execute(null, null, null, null));
-            Assert.Throws<ArgumentNullException>(() => _externalOpenIdUserAuthenticationAction.Execute(claims, null, null, null));
-            Assert.Throws<ArgumentNullException>(() => _externalOpenIdUserAuthenticationAction.Execute(claims, authorizationParameter, null, null));
-            Assert.Throws<ArgumentNullException>(() => _externalOpenIdUserAuthenticationAction.Execute(claims, authorizationParameter, "code", null));
-        }
-
-        [Fact]
-        public void When_Passing_Not_Supported_ProviderType_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            var claims = new List<Claim>
-            {
-                new Claim("sub", "subject")
-            };
-            var authorizationParameter = new AuthorizationParameter();
-            var code = "code";
-            const string providerType = "not_supported_provider_type";
-
-            // ACT & ASSERT
-            var exception = Assert.Throws<IdentityServerException>(() => _externalOpenIdUserAuthenticationAction.Execute(claims, authorizationParameter, code, providerType));
-            Assert.NotNull(exception);
-            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheExternalProviderIsNotSupported, providerType));
+            Assert.Throws<ArgumentNullException>(() => _externalOpenIdUserAuthenticationAction.Execute(null, null, null));
+            Assert.Throws<ArgumentNullException>(() => _externalOpenIdUserAuthenticationAction.Execute(claims, null, null));
+            Assert.Throws<ArgumentNullException>(() => _externalOpenIdUserAuthenticationAction.Execute(claims, authorizationParameter, null));
         }
 
         [Fact]
@@ -80,11 +57,9 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
                 It.IsAny<string>(),
                 It.IsAny<string>(),
                 It.IsAny<List<Claim>>())).Returns(actionResult);
-            _externalUserAuthenticationActionStub.Setup(e => e.Execute(It.IsAny<List<Claim>>(), It.IsAny<string>()))
-                .Returns(claims);
 
             // ACT & ASSERT
-            var exception = Assert.Throws<IdentityServerException>(() => _externalOpenIdUserAuthenticationAction.Execute(claims, authorizationParameter, code, Constants.ProviderTypeNames.Microsoft));
+            var exception = Assert.Throws<IdentityServerException>(() => _externalOpenIdUserAuthenticationAction.Execute(claims, authorizationParameter, code));
             Assert.True(exception.Message == ErrorDescriptions.NoSubjectCanBeExtracted);
         }
 
@@ -110,11 +85,9 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
                 It.IsAny<string>(),
                 It.IsAny<string>(),
                 It.IsAny<List<Claim>>())).Returns(actionResult);
-            _externalUserAuthenticationActionStub.Setup(e => e.Execute(It.IsAny<List<Claim>>(), It.IsAny<string>()))
-                .Returns(claims);
 
             // ACT
-            var result = _externalOpenIdUserAuthenticationAction.Execute(claims, authorizationParameter, code, Constants.ProviderTypeNames.Microsoft);
+            var result = _externalOpenIdUserAuthenticationAction.Execute(claims, authorizationParameter, code);
 
             // ASSERT
             Assert.NotNull(result);
@@ -129,11 +102,9 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
         {
             _authenticateHelperStub = new Mock<IAuthenticateHelper>();
             _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
-            _externalUserAuthenticationActionStub = new Mock<IExternalUserAuthenticationAction>();
             _externalOpenIdUserAuthenticationAction = new ExternalOpenIdUserAuthenticationAction(
                 _authenticateHelperStub.Object,
-                _resourceOwnerRepositoryStub.Object,
-                _externalUserAuthenticationActionStub.Object);
+                _resourceOwnerRepositoryStub.Object);
         }
     }
 }

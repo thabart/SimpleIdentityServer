@@ -9,7 +9,7 @@ namespace SimpleIdentityServer.Host
         {
             {
                 IdentityServerEndPoints.AuthenticateIndex,
-                "/Authenticate"
+                "/Authenticate/OpenId"
             },
             {
                 IdentityServerEndPoints.ConsentIndex,
@@ -43,5 +43,15 @@ namespace SimpleIdentityServer.Host
             
             public const string Get401 = "Error/401";
         }
+        
+        public static class IdentityProviderNames 
+        {
+            public const string Microsoft = "Microsoft";
+        }
+        
+        public static List<string> SupportedIdentityProviders = new List<string> 
+        {
+            IdentityProviderNames.Microsoft
+        };
     }
 }

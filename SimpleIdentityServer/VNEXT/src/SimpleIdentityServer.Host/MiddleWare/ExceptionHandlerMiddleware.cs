@@ -57,7 +57,6 @@ namespace SimpleIdentityServer.Host.MiddleWare
                     identityServerException = new IdentityServerException(ErrorCodes.UnhandledExceptionCode, exception.Message);
                 }
 
-
                 var code = identityServerException.Code;
                 var message = identityServerException.Message;
                 var state = identityServerExceptionWithState == null

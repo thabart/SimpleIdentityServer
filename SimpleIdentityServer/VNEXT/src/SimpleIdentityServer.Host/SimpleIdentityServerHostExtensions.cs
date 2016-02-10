@@ -20,6 +20,11 @@ using SimpleIdentityServer.RateLimitation;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Authentication.Cookies;
 using Microsoft.AspNet.Authentication.MicrosoftAccount;
+using Microsoft.AspNet.Authentication.OAuth;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using Newtonsoft.Json.Linq;
+using System.Security.Claims;
 
 namespace SimpleIdentityServer.Host 
 {
@@ -95,17 +100,14 @@ namespace SimpleIdentityServer.Host
                 LoginPath = new PathString("/Authenticate")
             });
 
-            // 2. Enable live connect authentication
             // Check this implementation : https://github.com/aspnet/Security/blob/dev/samples/SocialSample/Startup.cs
-            // TODO : Create cookie authentication
-            app.UseMicrosoftAccountAuthentication(new MicrosoftAccountOptions
-            {
-                AuthenticationScheme = "Microsoft",
-                DisplayName = "Microsoft",
-                ClientId = "0000000048185530",
-                ClientSecret = "KN12jxYIAYOr0bCLXFBcXhBrTlZyLNAZ"
-            });
-
+            
+            // 2. Enable live connect authentication
+            if (options.IsMicrosoftAuthenticationEnabled) 
+            {                
+                UseMicrosoftAuthentication(app, options.MicrosoftClientId, options.MicrosoftClientSecret);
+            }
+            
             app.UseMvc(routes =>
             {
                 routes.MapRoute("Error401Route",
@@ -136,6 +138,7 @@ namespace SimpleIdentityServer.Host
         }
         
         #endregion
+        
         
         #region Private static methods       
         
@@ -175,6 +178,69 @@ namespace SimpleIdentityServer.Host
 
             services.AddAuthentication(opts => opts.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme);
         }
+        
+        #region Different identity providers
+        
+        private static void UseMicrosoftAuthentication(
+            IApplicationBuilder app,
+            string clientId,
+            string clientSecret) 
+        {            
+            var microsoftAccountOptions = new MicrosoftAccountOptions
+            {
+                AuthenticationScheme = Constants.IdentityProviderNames.Microsoft,
+                DisplayName = Constants.IdentityProviderNames.Microsoft,
+                ClientId = clientId,
+                ClientSecret = clientSecret
+            };
+            
+            microsoftAccountOptions.Events = new OAuthEvents
+            {
+                OnCreatingTicket = async context =>
+                {
+                    // 1. Fetch the user information from the user-information endpoint
+                    var request = new HttpRequestMessage(HttpMethod.Get, microsoftAccountOptions.UserInformationEndpoint);
+                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", context.AccessToken);
+                    request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    var response = await context.Backchannel.SendAsync(request, context.HttpContext.RequestAborted);
+                    response.EnsureSuccessStatusCode();                    
+                    var payload = JObject.Parse(await response.Content.ReadAsStringAsync());
+                    
+                    // 2. Retrieve the subject
+                    var identifier = MicrosoftAccountHelper.GetId(payload);
+                    if (!string.IsNullOrWhiteSpace(identifier)) 
+                    {
+                        context.Identity.AddClaim(new Claim(
+                            Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject,
+                            identifier, ClaimValueTypes.String, context.Options.ClaimsIssuer
+                        ));
+                    }
+                    
+                    // 3. Retrieve the name
+                    var name = MicrosoftAccountHelper.GetName(payload);
+                    if (!string.IsNullOrWhiteSpace(name)) 
+                    {
+                        context.Identity.AddClaim(new Claim(
+                            Core.Jwt.Constants.StandardResourceOwnerClaimNames.Name,
+                            name, ClaimValueTypes.String, context.Options.ClaimsIssuer
+                        ));
+                    }
+                    
+                    // 3. Retrieve the email
+                    var email = MicrosoftAccountHelper.GetEmail(payload);
+                    if (!string.IsNullOrWhiteSpace(email)) {
+                        context.Identity.AddClaim(new Claim(
+                            Core.Jwt.Constants.StandardResourceOwnerClaimNames.Email,
+                            email, ClaimValueTypes.String, context.Options.ClaimsIssuer
+                        ));
+                    }
+                }
+            };
+            
+            app.UseOAuthAuthentication(microsoftAccountOptions);
+        }
+        
+        #endregion
         
         #endregion
     }

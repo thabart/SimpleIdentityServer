@@ -64,13 +64,18 @@ namespace SimpleIdentityServer.Host
         public List<Translation> Translations { get; set; }
 
         /// <summary>
+        /// Gets or sets microsoft authentication enabled
+        /// </summary>
+        public bool IsMicrosoftAuthenticationEnabled { get; set;}
+
+        /// <summary>
         /// Gets or sets the microsoft client id
         /// </summary>
         public string MicrosoftClientId { get; set; }
 
         /// <summary>
-        /// Gets or sets the microsoft secret
+        /// Gets or sets the microsoft client secret
         /// </summary>
-        public string MicrosoftSecret { get; set; }
+        public string MicrosoftClientSecret { get; set; }
     }
 }

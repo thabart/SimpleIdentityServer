@@ -51,27 +51,6 @@ namespace SimpleIdentityServer.Core
             public static string StateName = "state";
         }
 
-        public static class ProviderTypeNames
-        {
-            public const string Microsoft = "Microsoft";
-        }
-
-        public static class MicrosoftClaimNames
-        {
-            public static string Id = "urn:microsoftaccount:id";
-
-            public static string Name = "urn:microsoftaccount:name";
-
-            public static string FirstName = "urn:microsoftaccount:first_name";
-
-            public static string LastName = "urn:microsoftaccount:last_name";
-        }
-
-        public static List<string> SupportedProviderTypes = new List<string>
-        {
-            ProviderTypeNames.Microsoft
-        };
-
         public static class StandardClientAssertionTypes
         {
             public static string JwtBearer = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer";

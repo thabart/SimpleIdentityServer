@@ -23,8 +23,6 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 
         private Mock<ILocalUserAuthenticationAction> _localUserAuthenticationActionFake;
 
-        private Mock<IExternalUserAuthenticationAction> _externalUserAuthenticationActionFake;
-
         private IAuthenticateActions _authenticateActions;
 
         [Fact]
@@ -111,30 +109,9 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             var authorizationParameter = new AuthorizationParameter();
 
             // ACTS & ASSERTS
-            Assert.Throws<ArgumentNullException>(() => _authenticateActions.ExternalOpenIdUserAuthentication(null, null, null, null));
-            Assert.Throws<ArgumentNullException>(() => _authenticateActions.ExternalOpenIdUserAuthentication(claims, null, null, null));
-            Assert.Throws<ArgumentNullException>(() => _authenticateActions.ExternalOpenIdUserAuthentication(claims, authorizationParameter, null, null));
-            Assert.Throws<ArgumentNullException>(() => _authenticateActions.ExternalOpenIdUserAuthentication(claims, authorizationParameter, "code", null));
-        }
-
-        [Fact]
-        public void When_Passing_Not_Supported_Provider_Type_To_The_Action_ExternalUserAuthentication_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            var claims = new List<Claim>
-            {
-                new Claim("sub", "subject")
-            };
-            var authorizationParameter = new AuthorizationParameter();
-            var code = "code";
-            const string providerType = "not_supported_provider_type";
-
-            // ACT & ASSERTS
-            var exception = Assert.Throws<IdentityServerException>(() => 
-                _authenticateActions.ExternalOpenIdUserAuthentication(claims, authorizationParameter, code, providerType));
-            Assert.NotNull(exception);
-            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheExternalProviderIsNotSupported, providerType));
+            Assert.Throws<ArgumentNullException>(() => _authenticateActions.ExternalOpenIdUserAuthentication(null, null, null));
+            Assert.Throws<ArgumentNullException>(() => _authenticateActions.ExternalOpenIdUserAuthentication(claims, null, null));
+            Assert.Throws<ArgumentNullException>(() => _authenticateActions.ExternalOpenIdUserAuthentication(claims, authorizationParameter, null));
         }
 
         [Fact]
@@ -150,14 +127,13 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             var code = "code";
 
             // ACT
-            _authenticateActions.ExternalOpenIdUserAuthentication(claims, authorizationParameter, code, Constants.ProviderTypeNames.Microsoft);
+            _authenticateActions.ExternalOpenIdUserAuthentication(claims, authorizationParameter, code);
 
             // ASSERT
             _externalUserAuthenticationFake.Verify(a => a.Execute(
                 claims,
                 authorizationParameter,
-                code, 
-                Constants.ProviderTypeNames.Microsoft));
+                code));
         }
 
         [Fact]
@@ -197,52 +173,17 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             Assert.True(result.First().Type == claimType && result.First().Value == claimValue);
         }
 
-        [Fact]
-        public void When_Passing_Null_Parameter_To_ExternalUserAuthentication_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            var claims = new List<Claim>
-            {
-                new Claim("sub", "sub")
-            };
-
-            // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _authenticateActions.ExternalUserAuthentication(null, null));
-            Assert.Throws<ArgumentNullException>(() => _authenticateActions.ExternalUserAuthentication(claims, null));
-        }
-
-        [Fact]
-        public void When_Passing_Needed_Parameters_To_ExternalUserAuthentication_Then_Operation_Is_Called()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            var claims = new List<Claim>
-            {
-                new Claim("sub", "sub")
-            };
-
-            // ACT
-            _authenticateActions.ExternalUserAuthentication(claims, "provider_type");
-
-            // ASSERT
-            _externalUserAuthenticationActionFake.Verify(e => e.Execute(It.IsAny<List<Claim>>(),
-                It.IsAny<string>()));
-        }
-
         private void InitializeFakeObjects()
         {
             _authenticateResourceOwnerActionFake = new Mock<IAuthenticateResourceOwnerOpenIdAction>();
             _localOpenIdUserAuthenticationActionFake = new Mock<ILocalOpenIdUserAuthenticationAction>();
             _externalUserAuthenticationFake = new Mock<IExternalOpenIdUserAuthenticationAction>();
             _localUserAuthenticationActionFake = new Mock<ILocalUserAuthenticationAction>();
-            _externalUserAuthenticationActionFake = new Mock<IExternalUserAuthenticationAction>();
             _authenticateActions = new AuthenticateActions(
                 _authenticateResourceOwnerActionFake.Object,
                 _localOpenIdUserAuthenticationActionFake.Object,
                 _externalUserAuthenticationFake.Object,
-                _localUserAuthenticationActionFake.Object,
-                _externalUserAuthenticationActionFake.Object);
+                _localUserAuthenticationActionFake.Object);
         }
     }
 }
