@@ -10,17 +10,42 @@ Deployed on azure : [![Deploy to Azure](http://azuredeploy.net/deploybutton.png)
 
 __Live demo__: http://simpleidentityserver.azurewebsites.net
 
-__Swagger contract__ : http://simpleidentityserver.azurewebsites.net/swagger/ui/index
+## Overview
 
-Testing : https://op.certification.openid.net:60360/
+SimpleIdentityServer is an implementation of the OpenId authentication mechanism. It allows any application to implement Single Sign-On (identity token) and controls access to protected resources such as REST.API.
 
-## Use the semantic logging
+## Quick start
 
-The Semantic Logging Application Block (SLAB) is implemented on the project. The library used to consume the ETW events is "Microsoft.Practices.EntrepriseLibrary.SemanticLogging".
-It's very easy to plugin-in an existing or custom library to consume the events and store them to a data-sources such as : Windows Azure table, Elastic Search or a flat file.
-You can refer to the sample project "SimpleIdentityServer.Logging.Consumer", if you wish to implement an out of process events consumer.
-The screenshot below is coming from "Kibana", a powerful visualization tool from elastic-search. The tool can be downloaded [here](https://www.elastic.co/downloads/kibana).
+The Framework can easily be installed on any ASP.NET 5 project. 
+In your solution add the following snippet code in the 'Configure' procedure :
 
-![alt text](https://github.com/thabart/SimpleIdentityServer/blob/master/images/Kibana-Monitoring.png "Kibana dashboard")
+```csharp
+app.UseSimpleIdentityServer(new HostingOptions
+    {
+    IsDeveloperModeEnabled = false,
+    IsMicrosoftAuthenticationEnabled = true,
+    MicrosoftClientId = Configuration["Microsoft:ClientId"],
+    MicrosoftClientSecret = Configuration["Microsoft:ClientSecret"],
+    IsFacebookAuthenticationEnabled = true,
+    FacebookClientId = Configuration["Facebook:ClientId"],
+	FacebookClientSecret = Configuration["Facebook:ClientSecret"]
+}, _swaggerOptions);
+```
 
-The Kibana configuration files are available under the folder "Kibana-Exports". They can be uploaded to your Kibana instance by following the [tutorial](https://www.elastic.co/guide/en/kibana/3.0/saving-and-loading-dashboards.html).
+Add the dependencies like this :
+
+```csharp
+services.AddSimpleIdentityServer(new DataSourceOptions {
+	DataSourceType = DataSourceTypes.InMemory,
+    ConnectionString = connectionString,
+    Clients = Clients.Get(),
+    JsonWebKeys = JsonWebKeys.Get(),
+    ResourceOwners = ResourceOwners.Get(),
+    Scopes = Scopes.Get(),
+	Translations = Translations.Get()
+    }, _swaggerOptions);
+```
+
+## Contacts
+
+* You can follow me on twitter [#SimpleIdentityServer](https://twitter.com/simpleidserver)
