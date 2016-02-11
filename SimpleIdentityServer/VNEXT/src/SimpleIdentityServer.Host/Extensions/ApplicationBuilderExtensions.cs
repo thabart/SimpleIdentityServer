@@ -13,6 +13,7 @@ using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Host.MiddleWare;
 using SimpleIdentityServer.Logging;
 using Microsoft.AspNet.WebUtilities;
+using SimpleIdentityServer.Host.IdentityProviders.Facebook;
 
 namespace SimpleIdentityServer.Host 
 {      
@@ -53,7 +54,7 @@ namespace SimpleIdentityServer.Host
         /// </summary>        
         public string FacebookClientSecret { get; set; }
     }
-    
+        
     public static class ApplicationBuilderExtensions 
     {
         
@@ -109,9 +110,13 @@ namespace SimpleIdentityServer.Host
             {                
                 UseMicrosoftAuthentication(app, hostingOptions.MicrosoftClientId, hostingOptions.MicrosoftClientSecret);
             }
-            
+
             // 4. Enable facebook authentication
-            
+            if (hostingOptions.IsFacebookAuthenticationEnabled)
+            {
+                UseFacebookAuthentication(app, hostingOptions.FacebookClientId, hostingOptions.FacebookClientSecret);
+            }
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute("Error401Route",
@@ -222,29 +227,57 @@ namespace SimpleIdentityServer.Host
             string clientId,
             string clientSecret) 
         {
-            var facebookAccountOptions = new OAuthOptions
+            var facebookOptions = new FacebookOptions
             {
                 AuthenticationScheme = Constants.IdentityProviderNames.Facebook,
                 DisplayName = Constants.IdentityProviderNames.Facebook,
-                ClientId = clientId,
-                ClientSecret = clientSecret,
-                CallbackPath = new PathString("/signin-facebook"),
-                AuthorizationEndpoint = FacebookDefaults.AuthorizationEndpoint,
-                TokenEndpoint = FacebookDefaults.TokenEndpoint,
-                UserInformationEndpoint = FacebookDefaults.UserInformationEndpoint,
-                Scope = { "public_profile", "email" }
+                AppId = clientId,
+                AppSecret = clientSecret,
+                Scope = { "email" }
             };
-            
-            facebookAccountOptions.Events = new OAuthEvents
+            facebookOptions.Events =  new OAuthEvents
             {
                 OnCreatingTicket = async context =>
                 {
                     // 1. Fetch the user information from the user-information endpoint
-                    var endPoint = QueryHelpers.AddQueryString(facebookAccountOptions.UserInformationEndpoint, "access_token", context.AccessToken);
+                    var endPoint = QueryHelpers.AddQueryString(facebookOptions.UserInformationEndpoint, "access_token", context.AccessToken);
                     var response = await context.Backchannel.GetAsync(endPoint, context.HttpContext.RequestAborted);
                     response.EnsureSuccessStatusCode();
+                    var payload = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+                    // 2. Retrieve the subject
+                    var identifier = FacebookHelper.GetId(payload);
+                    if (!string.IsNullOrEmpty(identifier))
+                    {
+                        context.Identity.AddClaim(new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, 
+                            identifier, 
+                            ClaimValueTypes.String, 
+                            facebookOptions.ClaimsIssuer));
+                    }
+
+                    // 3. Retrieve the email
+                    var email = FacebookHelper.GetEmail(payload);
+                    if (!string.IsNullOrEmpty(email))
+                    {
+                        context.Identity.AddClaim(new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Email,
+                            email, 
+                            ClaimValueTypes.String,
+                            facebookOptions.ClaimsIssuer));
+                    }
+
+                    // 4. Retrieve the name
+                    var name = FacebookHelper.GetName(payload);
+                    if (!string.IsNullOrEmpty(name))
+                    {
+                        context.Identity.AddClaim(new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Name,
+                            name, 
+                            ClaimValueTypes.String,
+                            facebookOptions.ClaimsIssuer));
+                    }
                 }
             };
+
+            app.UseFacebookAuthentication(facebookOptions);
         }
         
         #endregion

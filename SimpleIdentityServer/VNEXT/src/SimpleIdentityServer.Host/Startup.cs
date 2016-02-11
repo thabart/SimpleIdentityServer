@@ -30,7 +30,7 @@ namespace SimpleIdentityServer.Host
             Configuration = builder.Build();
             _swaggerOptions = new SwaggerOptions 
             {
-                IsSwaggerEnabled = false
+                IsSwaggerEnabled = true
             };
         }
 

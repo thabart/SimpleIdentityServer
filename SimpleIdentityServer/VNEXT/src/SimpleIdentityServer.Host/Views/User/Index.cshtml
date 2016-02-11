@@ -11,7 +11,7 @@
     var name = nameClaim == null ? "Unknown" : nameClaim.Value;
     var givenName = givenNameClaim == null ? " - " : givenNameClaim.Value;
     var familyName = familyNameClaim == null ? " - " : familyNameClaim.Value;
-    var picture = pictureClaim == null ? Url.Content("~/Content/img/Unknown.png") : pictureClaim.Value;
+    var picture = pictureClaim == null ? Url.Content("~/img/Unknown.png") : pictureClaim.Value;
 }
 
 <div class="row">
