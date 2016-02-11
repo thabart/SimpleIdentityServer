@@ -13,7 +13,6 @@ using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Host.MiddleWare;
 using SimpleIdentityServer.Logging;
 using Microsoft.AspNet.WebUtilities;
-using SimpleIdentityServer.Host.IdentityProviders.Facebook;
 
 namespace SimpleIdentityServer.Host 
 {      
