@@ -10,6 +10,8 @@ namespace SimpleIdentityServer.Host
 {
     public class Startup
     {
+        private SwaggerOptions _swaggerOptions;
+        
         #region Properties
 
         public IConfigurationRoot Configuration { get; set; }
@@ -26,22 +28,25 @@ namespace SimpleIdentityServer.Host
                 .AddJsonFile("appsettings.json")
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
+            _swaggerOptions = new SwaggerOptions 
+            {
+                IsSwaggerEnabled = false
+            };
         }
 
         public void ConfigureServices(IServiceCollection services)
-        {            
+        {
             var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
             // Configure Simple identity server
-            services.AddSimpleIdentityServer(new SimpleIdentityServerHostOptions {
+            services.AddSimpleIdentityServer(new DataSourceOptions {
                 DataSourceType = DataSourceTypes.InMemory,
-                IsSwaggerEnabled = true,
                 ConnectionString = connectionString,
                 Clients = Clients.Get(),
                 JsonWebKeys = JsonWebKeys.Get(),
                 ResourceOwners = ResourceOwners.Get(),
                 Scopes = Scopes.Get(),
                 Translations = Translations.Get()
-            });
+            }, _swaggerOptions);
             
             services.AddLogging();
             services.AddMvc();
@@ -53,14 +58,13 @@ namespace SimpleIdentityServer.Host
         {
             loggerFactory.AddConsole();
             
-            app.UseSimpleIdentityServer(new SimpleIdentityServerHostOptions
+            app.UseSimpleIdentityServer(new HostingOptions
             {
-                IsSwaggerEnabled = true,
                 IsDeveloperModeEnabled = false,
                 IsMicrosoftAuthenticationEnabled = true,
                 MicrosoftClientId = Configuration["Microsoft:ClientId"],
                 MicrosoftClientSecret = Configuration["Microsoft:ClientSecret"]
-            });
+            }, _swaggerOptions);
         }
 
         #endregion

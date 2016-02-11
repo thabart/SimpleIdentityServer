@@ -1,86 +1,68 @@
 using System;
-using System.Linq;
-using Microsoft.AspNet.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Practices.EnterpriseLibrary.Caching;
-using SimpleIdentityServer.Api.Configuration;
-using SimpleIdentityServer.Core;
-using SimpleIdentityServer.Core.Configuration;
-using SimpleIdentityServer.Core.Jwt;
-using SimpleIdentityServer.Core.Protector;
-using SimpleIdentityServer.Core.Services;
-using SimpleIdentityServer.DataAccess.Fake;
-using SimpleIdentityServer.DataAccess.SqlServer;
-using SimpleIdentityServer.DataAccess.Fake.Extensions;
-using SimpleIdentityServer.Host.Parsers;
-using SimpleIdentityServer.Logging;
-using Swashbuckle.SwaggerGen;
-using SimpleIdentityServer.Host.MiddleWare;
-using SimpleIdentityServer.RateLimitation;
-using Microsoft.AspNet.Http;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Security.Claims;
 using Microsoft.AspNet.Authentication.Cookies;
 using Microsoft.AspNet.Authentication.MicrosoftAccount;
 using Microsoft.AspNet.Authentication.OAuth;
-using System.Net.Http;
-using System.Net.Http.Headers;
+using Microsoft.AspNet.Builder;
+using Microsoft.AspNet.Diagnostics;
+using Microsoft.AspNet.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
-using System.Security.Claims;
+using SimpleIdentityServer.Host.MiddleWare;
+using SimpleIdentityServer.Logging;
 
 namespace SimpleIdentityServer.Host 
-{
-    public static class SimpleIdentityServerHostExtensions 
+{      
+    public class HostingOptions 
     {
-        #region Public static methods
+        /// <summary>
+        /// Enable or disable the developer mode
+        /// </summary>
+        public bool IsDeveloperModeEnabled { get; set; }
         
-        public static void AddSimpleIdentityServer(
-            this IServiceCollection serviceCollection, 
-            SimpleIdentityServerHostOptions options) 
-        {
-            if (options == null) {
-                throw new ArgumentNullException("options");
-            }
-            
-            if (options.DataSourceType == DataSourceTypes.InMemory) 
-            {
-                serviceCollection.AddSimpleIdentityServerFake();
-                var clients = options.Clients.Select(c => c.ToFake()).ToList();
-                var jsonWebKeys = options.JsonWebKeys.Select(j => j.ToFake()).ToList();
-                var resourceOwners = options.ResourceOwners.Select(r => r.ToFake()).ToList();
-                var scopes = options.Scopes.Select(s => s.ToFake()).ToList();
-                var translations = options.Translations.Select(t => t.ToFake()).ToList();
-                var fakeDataSource = new FakeDataSource()
-                {
-                    Clients = clients,
-                    JsonWebKeys = jsonWebKeys,
-                    ResourceOwners = resourceOwners,
-                    Scopes = scopes,
-                    Translations = translations
-                };
-                serviceCollection.AddTransient<FakeDataSource>(a => fakeDataSource);
-            }
-            else 
-            {
-                serviceCollection.AddSimpleIdentityServerSqlServer();
-                serviceCollection.AddTransient<SimpleIdentityServerContext>((a) => new SimpleIdentityServerContext(options.ConnectionString));
-            }
-            
-            ConfigureSimpleIdentityServer(serviceCollection, options);
-        }
+        /// <summary>
+        /// Gets or sets microsoft authentication enabled
+        /// </summary>
+        public bool IsMicrosoftAuthenticationEnabled { get; set;}
+
+        /// <summary>
+        /// Gets or sets the microsoft client id
+        /// </summary>
+        public string MicrosoftClientId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the microsoft client secret
+        /// </summary>
+        public string MicrosoftClientSecret { get; set; }
+    }
+    
+    public static class ApplicationBuilderExtensions 
+    {
+        
+        #region Public static methods
         
         public static void UseSimpleIdentityServer(
             this IApplicationBuilder app,
-            SimpleIdentityServerHostOptions options) 
+            HostingOptions hostingOptions,
+            SwaggerOptions swaggerOptions) 
         {
-            if (options == null)
+            if (hostingOptions == null)
             {
-                throw new ArgumentNullException("options");
+                throw new ArgumentNullException(nameof(hostingOptions));
+            }
+
+            if (swaggerOptions == null) {
+                throw new ArgumentNullException(nameof(swaggerOptions));
             }
 
             app.UseIISPlatformHandler(opts => opts.AuthenticationDescriptions.Clear());
 
-            app.UseStaticFiles();
+            app.UseStaticFiles();            
+            app.UseStatusCodePagesWithRedirects("~/Error/{0}");
 
-            if (options.IsDeveloperModeEnabled)
+            if (hostingOptions.IsDeveloperModeEnabled)
             {
                 app.UseDeveloperExceptionPage();
             }
@@ -107,9 +89,9 @@ namespace SimpleIdentityServer.Host
             // Check this implementation : https://github.com/aspnet/Security/blob/dev/samples/SocialSample/Startup.cs
             
             // 3. Enable live connect authentication
-            if (options.IsMicrosoftAuthenticationEnabled) 
+            if (hostingOptions.IsMicrosoftAuthenticationEnabled) 
             {                
-                UseMicrosoftAuthentication(app, options.MicrosoftClientId, options.MicrosoftClientSecret);
+                UseMicrosoftAuthentication(app, hostingOptions.MicrosoftClientId, hostingOptions.MicrosoftClientSecret);
             }
             
             app.UseMvc(routes =>
@@ -121,18 +103,25 @@ namespace SimpleIdentityServer.Host
                         controller = "Error",
                         action = "Get401"
                     });
+                routes.MapRoute("Error404Route",
+                    Constants.EndPoints.Get404,
+                    new
+                    {
+                        controller = "Error",
+                        action = "Get404"
+                    });
 
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller}/{action=Index}/{id?}");
+                    template: "{controller=Home}/{action=Index}/{id?}");
             });
 
-            if (options.IsSwaggerEnabled)
+            if (swaggerOptions.IsSwaggerEnabled)
             {
                 app.UseSwaggerGen();
-                if (!string.IsNullOrWhiteSpace(options.SwaggerUrl))
+                if (!string.IsNullOrWhiteSpace(swaggerOptions.SwaggerUrl))
                 {
-                    app.UseSwaggerUi(swaggerUrl : options.SwaggerUrl);
+                    app.UseSwaggerUi(swaggerUrl : swaggerOptions.SwaggerUrl);
                 }
                 else
                 {
@@ -143,47 +132,7 @@ namespace SimpleIdentityServer.Host
         
         #endregion
         
-        
-        #region Private static methods       
-        
-        /// <summary>
-        /// Add all the dependencies needed to run Simple Identity Server
-        /// </summary>
-        /// <param name="services"></param>
-        /// <param name="options"></param>
-        private static void ConfigureSimpleIdentityServer(
-            IServiceCollection services,
-            SimpleIdentityServerHostOptions options) 
-        {
-            services.AddSimpleIdentityServerCore();
-            services.AddSimpleIdentityServerJwt();
-            services.AddRateLimitation();
-
-            var logging = SimpleIdentityServerEventSource.Log;
-            services.AddTransient<ICacheManager, CacheManager>();
-            services.AddTransient<ICertificateStore, CertificateStore>();
-            services.AddTransient<IResourceOwnerService, InMemoryUserService>();
-            services.AddTransient<IRedirectInstructionParser, RedirectInstructionParser>();
-            services.AddTransient<IActionResultParser, ActionResultParser>();
-            services.AddTransient<ISimpleIdentityServerConfigurator, ConcreteSimpleIdentityServerConfigurator>();
-            services.AddInstance<ISimpleIdentityServerEventSource>(logging);
-            if (options.IsSwaggerEnabled)
-            {
-                services.AddSwaggerGen();
-                services.ConfigureSwaggerDocument(opts => {
-                    opts.SingleApiVersion(new Info
-                    {
-                        Version = "v1",
-                        Title = "Simple Identity Server",
-                        TermsOfService = "None"
-                    });
-                });
-            }
-
-            services.AddAuthentication(opts => opts.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme);
-        }
-        
-        #region Different identity providers
+        #region Private static methods
         
         private static void UseMicrosoftAuthentication(
             IApplicationBuilder app,
@@ -249,8 +198,6 @@ namespace SimpleIdentityServer.Host
             
             app.UseOAuthAuthentication(microsoftAccountOptions);
         }
-        
-        #endregion
         
         #endregion
     }

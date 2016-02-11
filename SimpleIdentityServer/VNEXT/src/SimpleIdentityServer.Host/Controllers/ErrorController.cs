@@ -8,5 +8,10 @@ namespace SimpleIdentityServer.Api.Controllers
         {
             return View();
         }
+        
+        public ActionResult Get404() 
+        {
+            return View();    
+        }
     }
 }

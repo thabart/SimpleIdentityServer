@@ -42,6 +42,8 @@ namespace SimpleIdentityServer.Host
             public const string Revocation = "revocation";
             
             public const string Get401 = "Error/401";
+            
+            public const string Get404 = "Error/404";
         }
         
         public static class IdentityProviderNames 

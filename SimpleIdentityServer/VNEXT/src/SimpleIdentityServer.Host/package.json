@@ -5,7 +5,10 @@
     "gulp": "^3.9.0",
     "gulp-concat": "2.5.2",
     "gulp-cssmin": "0.1.7",
+    "gulp-dnx": "^0.3.0",
+    "gulp-livereload": "^3.8.1",
     "gulp-uglify": "1.2.0",
-    "rimraf": "2.2.8"
+    "rimraf": "2.2.8",
+    "run-sequence": "^1.1.5"
   }
 }

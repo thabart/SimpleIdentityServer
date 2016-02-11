@@ -2,7 +2,7 @@
 @using SimpleIdentityServer.Host
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Authenticate";
     var loginProviders = Context.Authentication.GetAuthenticationSchemes().Where(a => Constants.SupportedIdentityProviders.Contains(a.AuthenticationScheme));
     var userNameState = ViewData.ModelState["UserName"];
     var passwordState = ViewData.ModelState["Password"];

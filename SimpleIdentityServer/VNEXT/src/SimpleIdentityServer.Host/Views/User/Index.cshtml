@@ -2,7 +2,7 @@
 @using SimpleIdentityServer.Core.Jwt
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Profile";
     var identity = User.Identity as ClaimsIdentity;
     var nameClaim = identity.Claims.FirstOrDefault(c => c.Type == Constants.StandardResourceOwnerClaimNames.Name);
     var givenNameClaim = identity.Claims.FirstOrDefault(c => c.Type == Constants.StandardResourceOwnerClaimNames.GivenName);
