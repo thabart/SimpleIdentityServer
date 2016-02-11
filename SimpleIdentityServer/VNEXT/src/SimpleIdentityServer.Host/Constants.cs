@@ -49,11 +49,14 @@ namespace SimpleIdentityServer.Host
         public static class IdentityProviderNames 
         {
             public const string Microsoft = "Microsoft";
+            
+            public const string Facebook = "Facebook";
         }
         
         public static List<string> SupportedIdentityProviders = new List<string> 
         {
-            IdentityProviderNames.Microsoft
+            IdentityProviderNames.Microsoft,
+            IdentityProviderNames.Facebook
         };
     }
 }

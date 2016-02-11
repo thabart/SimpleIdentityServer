@@ -12,6 +12,7 @@
   "dependencies": {
     "Microsoft.AspNet.Identity.Core": "2.2.1",
     "Microsoft.AspNet.Authentication.MicrosoftAccount": "1.0.0-*",
+    "Microsoft.AspNet.Authentication.Facebook": "1.0.0-*",
     "Microsoft.AspNet.Authentication.Cookies": "1.0.0-rc1-final",
     "Microsoft.AspNet.Identity": "3.0.0-beta5",
     "Microsoft.AspNet.IISPlatformHandler": "1.0.0-rc1-final",

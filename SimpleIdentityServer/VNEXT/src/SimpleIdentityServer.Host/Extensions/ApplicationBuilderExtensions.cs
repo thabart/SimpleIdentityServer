@@ -3,15 +3,16 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using Microsoft.AspNet.Authentication.Cookies;
+using Microsoft.AspNet.Authentication.Facebook;
 using Microsoft.AspNet.Authentication.MicrosoftAccount;
 using Microsoft.AspNet.Authentication.OAuth;
 using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Diagnostics;
 using Microsoft.AspNet.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Host.MiddleWare;
 using SimpleIdentityServer.Logging;
+using Microsoft.AspNet.WebUtilities;
 
 namespace SimpleIdentityServer.Host 
 {      
@@ -36,6 +37,21 @@ namespace SimpleIdentityServer.Host
         /// Gets or sets the microsoft client secret
         /// </summary>
         public string MicrosoftClientSecret { get; set; }
+        
+        /// <summary>
+        /// Gets or sets facebook authentication enabled
+        /// </summary>
+        public bool IsFacebookAuthenticationEnabled { get; set;}
+        
+        /// <summary>
+        /// Gets or sets facebook client id
+        /// </summary>
+        public string FacebookClientId { get; set; }
+        
+        /// <summary>
+        /// Gets or sets facebook client secret
+        /// </summary>        
+        public string FacebookClientSecret { get; set; }
     }
     
     public static class ApplicationBuilderExtensions 
@@ -93,6 +109,8 @@ namespace SimpleIdentityServer.Host
             {                
                 UseMicrosoftAuthentication(app, hostingOptions.MicrosoftClientId, hostingOptions.MicrosoftClientSecret);
             }
+            
+            // 4. Enable facebook authentication
             
             app.UseMvc(routes =>
             {
@@ -197,6 +215,36 @@ namespace SimpleIdentityServer.Host
             };
             
             app.UseOAuthAuthentication(microsoftAccountOptions);
+        }
+        
+        private static void UseFacebookAuthentication(            
+            IApplicationBuilder app,
+            string clientId,
+            string clientSecret) 
+        {
+            var facebookAccountOptions = new OAuthOptions
+            {
+                AuthenticationScheme = Constants.IdentityProviderNames.Facebook,
+                DisplayName = Constants.IdentityProviderNames.Facebook,
+                ClientId = clientId,
+                ClientSecret = clientSecret,
+                CallbackPath = new PathString("/signin-facebook"),
+                AuthorizationEndpoint = FacebookDefaults.AuthorizationEndpoint,
+                TokenEndpoint = FacebookDefaults.TokenEndpoint,
+                UserInformationEndpoint = FacebookDefaults.UserInformationEndpoint,
+                Scope = { "public_profile", "email" }
+            };
+            
+            facebookAccountOptions.Events = new OAuthEvents
+            {
+                OnCreatingTicket = async context =>
+                {
+                    // 1. Fetch the user information from the user-information endpoint
+                    var endPoint = QueryHelpers.AddQueryString(facebookAccountOptions.UserInformationEndpoint, "access_token", context.AccessToken);
+                    var response = await context.Backchannel.GetAsync(endPoint, context.HttpContext.RequestAborted);
+                    response.EnsureSuccessStatusCode();
+                }
+            };
         }
         
         #endregion
