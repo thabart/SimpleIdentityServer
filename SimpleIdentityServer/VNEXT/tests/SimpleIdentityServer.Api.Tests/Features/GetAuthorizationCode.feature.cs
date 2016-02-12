@@ -119,7 +119,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 21
  testRunner.Then("HTTP status code is 302", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 22
- testRunner.And("redirect to /Authenticate controller", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("redirect to /Authenticate/OpenId controller", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -230,7 +230,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 59
  testRunner.Then("HTTP status code is 302", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 60
- testRunner.And("redirect to /Authenticate controller", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("redirect to /Authenticate/OpenId controller", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -497,7 +497,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 149
  testRunner.Then("HTTP status code is 302", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 150
- testRunner.And("redirect to /Authenticate controller", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("redirect to /Authenticate/OpenId controller", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
         }

@@ -19,7 +19,7 @@ Scenario: Whether the resource owner is authenticated or not we want to re-authe
 
 
 	Then HTTP status code is 302
-	And redirect to /Authenticate controller
+	And redirect to /Authenticate/OpenId controller
 
 Scenario: A resource owner is authenticated and we want to display only the consent screen
 	Given a mobile application MyHolidays is defined
@@ -57,7 +57,7 @@ Scenario: A resource owner is not authenticated and we want to display only the 
 
 
 	Then HTTP status code is 302
-	And redirect to /Authenticate controller
+	And redirect to /Authenticate/OpenId controller
 
 Scenario: A resource owner is authenticated and he already has given his consent. We want to retrieve an authorization code for his consent
 	Given a mobile application MyHolidays is defined
@@ -147,7 +147,7 @@ Scenario: a resource owner is not authenticated. We want to retrieve an authoriz
 	
 	
 	Then HTTP status code is 302
-	And redirect to /Authenticate controller
+	And redirect to /Authenticate/OpenId controller
 
 Scenario: a resource owner is authenticated. We want to retrieve an authorization code and the prompt parameter value is not specified
 	Given a mobile application MyHolidays is defined
