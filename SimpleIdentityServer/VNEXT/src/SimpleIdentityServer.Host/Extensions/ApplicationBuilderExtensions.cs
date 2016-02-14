@@ -13,20 +13,30 @@ using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Host.MiddleWare;
 using SimpleIdentityServer.Logging;
 using Microsoft.AspNet.WebUtilities;
+using Microsoft.AspNet.StaticFiles;
+using Microsoft.AspNet.FileProviders;
+using SimpleIdentityServer.Host.Controllers;
+using System.Reflection;
+using Microsoft.Extensions.Primitives;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Collections.Generic;
+using System.Collections;
 
-namespace SimpleIdentityServer.Host 
-{      
-    public class HostingOptions 
+namespace SimpleIdentityServer.Host
+{
+    public class HostingOptions
     {
         /// <summary>
         /// Enable or disable the developer mode
         /// </summary>
         public bool IsDeveloperModeEnabled { get; set; }
-        
+
         /// <summary>
         /// Gets or sets microsoft authentication enabled
         /// </summary>
-        public bool IsMicrosoftAuthenticationEnabled { get; set;}
+        public bool IsMicrosoftAuthenticationEnabled { get; set; }
 
         /// <summary>
         /// Gets or sets the microsoft client id
@@ -37,23 +47,23 @@ namespace SimpleIdentityServer.Host
         /// Gets or sets the microsoft client secret
         /// </summary>
         public string MicrosoftClientSecret { get; set; }
-        
+
         /// <summary>
         /// Gets or sets facebook authentication enabled
         /// </summary>
-        public bool IsFacebookAuthenticationEnabled { get; set;}
-        
+        public bool IsFacebookAuthenticationEnabled { get; set; }
+
         /// <summary>
         /// Gets or sets facebook client id
         /// </summary>
         public string FacebookClientId { get; set; }
-        
+
         /// <summary>
         /// Gets or sets facebook client secret
         /// </summary>        
         public string FacebookClientSecret { get; set; }
     }
-        
+
     public static class ApplicationBuilderExtensions 
     {
         
@@ -75,7 +85,12 @@ namespace SimpleIdentityServer.Host
 
             app.UseIISPlatformHandler(opts => opts.AuthenticationDescriptions.Clear());
 
-            app.UseStaticFiles();            
+            var staticFileOptions = new StaticFileOptions();
+            staticFileOptions.FileProvider = new CompositeFileProvider(
+                    new EmbeddedFileProvider(
+                        typeof(AuthenticateController).GetTypeInfo().Assembly,
+                        "SimpleIdentityServer.Host.wwwroot"));
+            app.UseStaticFiles(staticFileOptions);           
             app.UseStatusCodePagesWithRedirects("~/Error/{0}");
 
             if (hostingOptions.IsDeveloperModeEnabled)

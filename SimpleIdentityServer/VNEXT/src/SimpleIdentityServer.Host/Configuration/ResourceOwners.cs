@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Models;
 
-namespace SimpleIdentityServer.Api.Configuration
+namespace SimpleIdentityServer.Host.Configuration
 {
     public static class ResourceOwners
     {

@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Practices.EnterpriseLibrary.Caching;
-using SimpleIdentityServer.Api.Configuration;
+using SimpleIdentityServer.Host.Configuration;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Jwt;
@@ -18,6 +18,10 @@ using SimpleIdentityServer.RateLimitation;
 using Microsoft.AspNet.Authentication.Cookies;
 using System.Collections.Generic;
 using SimpleIdentityServer.Core.Models;
+using Microsoft.AspNet.Mvc.Razor;
+using Microsoft.AspNet.FileProviders;
+using SimpleIdentityServer.Host.Controllers;
+using System.Reflection;
 
 namespace SimpleIdentityServer.Host 
 {    
@@ -147,9 +151,20 @@ namespace SimpleIdentityServer.Host
                     });
                 });
             }
-            services.AddInstance<SwaggerOptions>(swaggerOptions);
 
+            services.AddInstance<SwaggerOptions>(swaggerOptions);
             services.AddAuthentication(opts => opts.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme);
+            services.AddMvc();
+            services.Configure<RazorViewEngineOptions>(options =>
+            {
+                options.FileProvider = new CompositeFileProvider(
+                    new EmbeddedFileProvider(
+                        typeof(AuthenticateController).GetTypeInfo().Assembly,
+                        "SimpleIdentityServer.Host"
+                    ),
+                    options.FileProvider
+                );
+            });
         }
         
         #endregion

@@ -3,7 +3,7 @@ using SimpleIdentityServer.Core.Configuration;
 using Microsoft.AspNet.Http;
 using SimpleIdentityServer.Host.Extensions;
 
-namespace SimpleIdentityServer.Api.Configuration
+namespace SimpleIdentityServer.Host.Configuration
 {
     public class ConcreteSimpleIdentityServerConfigurator : ISimpleIdentityServerConfigurator
     {

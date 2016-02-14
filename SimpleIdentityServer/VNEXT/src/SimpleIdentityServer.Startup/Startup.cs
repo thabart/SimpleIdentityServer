@@ -1,17 +1,22 @@
 ﻿using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Hosting;
-using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using SimpleIdentityServer.Api.Configuration;
+using Microsoft.Extensions.PlatformAbstractions;
+using SimpleIdentityServer.Host;
+using SimpleIdentityServer.Host.Configuration;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace SimpleIdentityServer.Host
+namespace SimpleIdentityServer.Startup
 {
     public class Startup
     {
         private SwaggerOptions _swaggerOptions;
-        
+
         #region Properties
 
         public IConfigurationRoot Configuration { get; set; }
@@ -28,7 +33,7 @@ namespace SimpleIdentityServer.Host
                 .AddJsonFile("appsettings.json")
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
-            _swaggerOptions = new SwaggerOptions 
+            _swaggerOptions = new SwaggerOptions
             {
                 IsSwaggerEnabled = true
             };
@@ -38,7 +43,8 @@ namespace SimpleIdentityServer.Host
         {
             var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
             // Configure Simple identity server
-            services.AddSimpleIdentityServer(new DataSourceOptions {
+            services.AddSimpleIdentityServer(new DataSourceOptions
+            {
                 DataSourceType = DataSourceTypes.InMemory,
                 ConnectionString = connectionString,
                 Clients = Clients.Get(),
@@ -47,7 +53,7 @@ namespace SimpleIdentityServer.Host
                 Scopes = Scopes.Get(),
                 Translations = Translations.Get()
             }, _swaggerOptions);
-            
+
             services.AddLogging();
             services.AddMvc();
         }
@@ -57,7 +63,7 @@ namespace SimpleIdentityServer.Host
             ILoggerFactory loggerFactory)
         {
             loggerFactory.AddConsole();
-            
+
             app.UseSimpleIdentityServer(new HostingOptions
             {
                 IsDeveloperModeEnabled = false,

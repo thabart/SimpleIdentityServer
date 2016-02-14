@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using SimpleIdentityServer.Core.Jwt;
 
-namespace SimpleIdentityServer.Api.Configuration
+namespace SimpleIdentityServer.Host.Configuration
 {
     public class JsonWebKeys
     {

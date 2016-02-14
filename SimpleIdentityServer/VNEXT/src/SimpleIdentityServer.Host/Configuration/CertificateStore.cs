@@ -2,7 +2,7 @@
 using System.Security.Cryptography.X509Certificates;
 using SimpleIdentityServer.Core.Protector;
 
-namespace SimpleIdentityServer.Api.Configuration
+namespace SimpleIdentityServer.Host.Configuration
 {
     public class CertificateStore : ICertificateStore
     {

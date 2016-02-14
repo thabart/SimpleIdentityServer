@@ -1,18 +1,15 @@
 {
   "version": "1.0.0-*",
 
+  "compilationOptions": {
+    "emitEntryPoint": true
+  },
+
   "tooling": {
-    "defaultNamespace": "SimpleIdentityServer.Host"
+    "defaultNamespace": "SimpleIdentityServer.Startup"
   },
 
   "dependencies": {
-    "Microsoft.AspNet.FileProviders.Composite": "1.0.0-rc1-final",
-    "Microsoft.AspNet.FileProviders.Embedded": "1.0.0-rc1-final",
-    "Microsoft.AspNet.Identity.Core": "2.2.1",
-    "Microsoft.AspNet.Authentication.MicrosoftAccount": "1.0.0-rc1-final",
-    "Microsoft.AspNet.Authentication.Facebook": "1.0.0-rc1-final",
-    "Microsoft.AspNet.Authentication.Cookies": "1.0.0-rc1-final",
-    "Microsoft.AspNet.Identity": "3.0.0-beta5",
     "Microsoft.AspNet.IISPlatformHandler": "1.0.0-rc1-final",
     "Microsoft.AspNet.Mvc": "6.0.0-rc1-final",
     "Microsoft.AspNet.Mvc.TagHelpers": "6.0.0-rc1-final",
@@ -30,16 +27,7 @@
     "Microsoft.Extensions.Logging.Console": "1.0.0-rc1-final",
     "Microsoft.Extensions.Logging.Debug": "1.0.0-rc1-final",
     "Microsoft.AspNet.Diagnostics": "1.0.0-rc1-final",
-    "Unity": "2.1.505.0",
-    "Microsoft.AspNet.WebApi.Client": "5.2.3",
-    "Swashbuckle.SwaggerGen": "6.0.0-rc1-final",
-    "Swashbuckle.SwaggerUi": "6.0.0-rc1-final",
-    "WebActivatorEx": "2.0",
-    "SimpleIdentityServer.Core": "",
-    "SimpleIdentityServer.Core.Jwt": "",
-    "SimpleIdentityServer.DataAccess.Fake": "",
-    "SimpleIdentityServer.DataAccess.SqlServer": "",
-    "SimpleIdentityServer.RateLimitation": ""
+    "SimpleIdentityServer.Host": ""
   },
 
   "commands": {
@@ -56,6 +44,7 @@
   },
 
   "exclude": [
+    "wwwroot",
     "node_modules",
     "bower_components"
   ],
@@ -77,13 +66,5 @@
         "optimize": true
       }
     }
-  },
-
-  "resource": [
-    "SimpleIdentityServer.pfx",
-    "Views/**",
-    "wwwroot/output/**",
-    "wwwroot/img/**",
-    "wwwroot/fonts/**"
-  ]
+  }
 }
