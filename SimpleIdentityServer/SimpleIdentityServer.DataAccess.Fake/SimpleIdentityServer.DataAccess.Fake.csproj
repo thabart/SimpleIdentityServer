@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{7B5C6FF2-994B-4A4C-80F3-09F682E34979}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SimpleIdentityServer.DataAccess.Fake</RootNamespace>
+    <AssemblyName>SimpleIdentityServer.DataAccess.Fake</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Fake|AnyCPU'">
+    <OutputPath>bin\Fake\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Extensions\MappingExtensions.cs" />
+    <Compile Include="FakeDataSource.cs" />
+    <Compile Include="Models\Address.cs" />
+    <Compile Include="Models\AuthorizationCode.cs" />
+    <Compile Include="Models\Client.cs" />
+    <Compile Include="Models\Consent.cs" />
+    <Compile Include="Models\GrantedToken.cs" />
+    <Compile Include="Models\JsonWebKey.cs" />
+    <Compile Include="Models\RedirectionUrl.cs" />
+    <Compile Include="Models\ResourceOwner.cs" />
+    <Compile Include="Models\Scope.cs" />
+    <Compile Include="Models\Translation.cs" />
+    <Compile Include="ModuleInit.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\FakeAuthorizationCodeRepository.cs" />
+    <Compile Include="Repositories\FakeClientRepository.cs" />
+    <Compile Include="Repositories\FakeConsentRepository.cs" />
+    <Compile Include="Repositories\FakeGrantedTokenRepository.cs" />
+    <Compile Include="Repositories\FakeResourceOwnerRepository.cs" />
+    <Compile Include="Repositories\FakeScopeRepository.cs" />
+    <Compile Include="Repositories\FakeJsonWebKeyRepository.cs" />
+    <Compile Include="Repositories\FakeTranslationRepository.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SimpleIdentityServer.Common\SimpleIdentityServer.Common.csproj">
+      <Project>{fc7dc959-c366-473c-a95a-fa16d5c71597}</Project>
+      <Name>SimpleIdentityServer.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SimpleIdentityServer.Core.Jwt\SimpleIdentityServer.Core.Jwt.csproj">
+      <Project>{0b0286dd-acfd-4822-8a9d-2da39b8aec29}</Project>
+      <Name>SimpleIdentityServer.Core.Jwt</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SimpleIdentityServer.Core\SimpleIdentityServer.Core.csproj">
+      <Project>{3d519f94-39f1-45f5-b080-b2d719021a10}</Project>
+      <Name>SimpleIdentityServer.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,39 @@
+﻿@{
+    ViewBag.Title = "Form";
+}
+
+@using SimpleIdentityServer.Core;
+
+@model SimpleIdentityServer.Api.ViewModels.FormViewModel
+
+<form method="post" action="@Model.RedirectUri" id="form">
+    @if (!string.IsNullOrWhiteSpace(Model.State))
+    {
+        <input type="hidden" name="@Constants.StandardAuthorizationResponseNames.StateName" value="@Model.State"/>
+    }
+    @if (!string.IsNullOrWhiteSpace(Model.AccessToken))
+    {
+        <input type="hidden" name="@Constants.StandardAuthorizationResponseNames.AccessTokenName" value="@Model.AccessToken" />
+    }
+    @if (!string.IsNullOrWhiteSpace(Model.AuthorizationCode))
+    {
+        <input type="hidden" name="@Constants.StandardAuthorizationResponseNames.AuthorizationCodeName" value="@Model.AuthorizationCode" />
+    }
+    @if (!string.IsNullOrWhiteSpace(Model.IdToken))
+    {
+        <input type="hidden" name="@Constants.StandardAuthorizationResponseNames.IdTokenName" value="@Model.IdToken" />
+    }
+    @if (!string.IsNullOrWhiteSpace(Model.State))
+    {
+        <input type="hidden" name="state" value="@Model.State" />
+    }
+</form>
+
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $("#form").submit();
+        });
+    </script>
+}
