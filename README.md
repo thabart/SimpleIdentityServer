@@ -1,6 +1,12 @@
 # Simple identity server
 
-Build : [![Build status](https://ci.appveyor.com/api/projects/status/ctvpsd79ovexlsdb?svg=true)](https://ci.appveyor.com/project/thabart/simpleidentityserver) [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/thabart/SimpleIdentityServer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge) [![Coverage Status](https://coveralls.io/repos/thabart/SimpleIdentityServer/badge.svg?branch=master&service=github)](https://coveralls.io/github/thabart/SimpleIdentityServer?branch=master)
+Build : [![Build status](https://ci.appveyor.com/api/projects/status/ctvpsd79ovexlsdb?svg=true)](https://ci.appveyor.com/project/thabart/simpleidentityserver) 
+
+Chat : [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/thabart/SimpleIdentityServer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge) 
+
+Code coverage : [![Coverage Status](https://coveralls.io/repos/thabart/SimpleIdentityServer/badge.svg?branch=master&service=github)](https://coveralls.io/github/thabart/SimpleIdentityServer?branch=master)
+
+MyGet : [![thabart MyGet Build Status](https://www.myget.org/BuildSource/Badge/thabart?identifier=a03dadd0-d105-4bb7-88d6-4cb4271dbb07)](https://www.myget.org/)
 
 ![openid_certified](https://cloud.githubusercontent.com/assets/1454075/7611268/4d19de32-f97b-11e4-895b-31b2455a7ca6.png)
 
@@ -47,5 +53,5 @@ services.AddSimpleIdentityServer(new DataSourceOptions {
 ```
 
 ## Contacts
-
+* [Website](http://thabart.github.io/SimpleIdentityServer)
 * You can follow me on twitter [#SimpleIdentityServer](https://twitter.com/simpleidserver)
