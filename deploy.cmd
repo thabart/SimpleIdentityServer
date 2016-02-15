@@ -1,0 +1,2 @@
+CD SimpleIdentityServer
+deploy.cmd
