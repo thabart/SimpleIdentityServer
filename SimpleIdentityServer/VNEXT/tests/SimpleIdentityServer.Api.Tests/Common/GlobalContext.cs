@@ -5,7 +5,7 @@ using Microsoft.Practices.EnterpriseLibrary.Caching.BackingStoreImplementations;
 using Microsoft.Practices.EnterpriseLibrary.Caching.Instrumentation;
 using Microsoft.Practices.EnterpriseLibrary.Common.Instrumentation;
 using Moq;
-using SimpleIdentityServer.Api.Configuration;
+using SimpleIdentityServer.Host.Configuration;
 using SimpleIdentityServer.Host.Parsers;
 using SimpleIdentityServer.Api.Tests.Common.Fakes;
 using SimpleIdentityServer.Core.Api.Authorization;
