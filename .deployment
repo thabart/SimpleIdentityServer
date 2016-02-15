@@ -1,2 +1,2 @@
 [config]
-project = SimpleIdentityServer/VNEXT/src/SimpleIdentityServer.Startup
+project = SimpleIdentityServer/src/SimpleIdentityServer.Startup

@@ -1,2 +1,2 @@
-packages\OpenCover.4.6.166\tools\OpenCover.Console.exe -register:user -target:"packages\NUnit.Console.3.0.1\tools\nunit3-console.exe" -targetargs:"SimpleIdentityServer.Core.UnitTests\bin\Debug\SimpleIdentityServer.Core.UnitTests.dll" -output:coverage.xml -filter:+[SimpleIdentityServer.Core]*
-packages\ReportGenerator.2.3.5.0\tools\ReportGenerator.exe -reports:"coverage.xml" -targetdir:"Reports\"
+%USERPROFILE%\.dnx\packages\OpenCover\4.6.166\tools\OpenCover.Console.exe -target:"%USERPROFILE%\.dnx\runtimes\dnx-clr-win-x86.1.0.0-rc1-update1\bin\dnx.exe" -targetargs:"--lib %cd%\src\SimpleIdentityServer.Core\bin\Debug\dnx451 -p tests\SimpleIdentityServer.Core.UnitTests test" -output:coverage.xml -register:user -filter:+[SimpleIdentityServer.Core]*
+%USERPROFILE%\.dnx\packages\ReportGenerator\2.3.5\tools\ReportGenerator.exe -reports:"coverage.xml" -targetdir:"reports\"

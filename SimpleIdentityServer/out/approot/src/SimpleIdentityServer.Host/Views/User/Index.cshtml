@@ -1,0 +1,68 @@
+@using System.Security.Claims
+@using SimpleIdentityServer.Core.Jwt
+
+@{
+    ViewBag.Title = "Profile";
+    var identity = User.Identity as ClaimsIdentity;
+    var nameClaim = identity.Claims.FirstOrDefault(c => c.Type == Constants.StandardResourceOwnerClaimNames.Name);
+    var givenNameClaim = identity.Claims.FirstOrDefault(c => c.Type == Constants.StandardResourceOwnerClaimNames.GivenName);
+    var familyNameClaim = identity.Claims.FirstOrDefault(c => c.Type == Constants.StandardResourceOwnerClaimNames.FamilyName);
+    var pictureClaim = identity.Claims.FirstOrDefault(c => c.Type == Constants.StandardResourceOwnerClaimNames.Picture);
+    var name = nameClaim == null ? "Unknown" : nameClaim.Value;
+    var givenName = givenNameClaim == null ? " - " : givenNameClaim.Value;
+    var familyName = familyNameClaim == null ? " - " : familyNameClaim.Value;
+    var picture = pictureClaim == null ? Url.Content("~/img/Unknown.png") : pictureClaim.Value;
+}
+
+<div class="row">
+    <ul class="nav nav-tabs">
+        <li class="active">
+            <a href="#information" data-toggle="tab">Information</a>
+        </li>
+        <li>            
+            <a href="#consent" data-toggle="tab">Consents</a>
+        </li>
+    </ul>
+    <div class="tab-content container">        
+        <!-- Display the information -->
+        <div class="tab-pane active" id="information">
+            <h1>Information</h1>
+            <div class="row">
+                <div class="col-md-5">
+                    <label>Name</label>
+                </div>
+                <div class="col-md-7">
+                    @name
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-5">
+                    <label>First name</label>
+                </div>
+                <div class="col-md-7">
+                    @givenName
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-5">
+                    <label>Last name</label>
+                </div>
+                <div class="col-md-7">
+                    @familyName
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-5">
+                    <label>Picture</label>
+                </div>
+                <div class="col-md-7">
+                    <img src="@picture" alt="Picture" class="img-thumbnail" />
+                </div>
+            </div>
+        </div>
+        <!-- Display the consents -->
+        <div class="tab-pane" id="consent">
+            <h1>Consents</h1>
+        </div>
+    </div>
+</div>

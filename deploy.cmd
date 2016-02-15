@@ -1,2 +1,0 @@
-CD SimpleIdentityServer\VNEXT
-deploy.cmd

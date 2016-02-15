@@ -1,2 +1,0 @@
-%USERPROFILE%\.dnx\packages\OpenCover\4.6.166\tools\OpenCover.Console.exe -target:"%USERPROFILE%\.dnx\runtimes\dnx-clr-win-x86.1.0.0-rc1-update1\bin\dnx.exe" -targetargs:"--lib %cd%\src\SimpleIdentityServer.Core\bin\Debug\dnx451 -p tests\SimpleIdentityServer.Core.UnitTests test" -output:coverage.xml -register:user -filter:+[SimpleIdentityServer.Core]*
-%USERPROFILE%\.dnx\packages\ReportGenerator\2.3.5\tools\ReportGenerator.exe -reports:"coverage.xml" -targetdir:"reports\"
