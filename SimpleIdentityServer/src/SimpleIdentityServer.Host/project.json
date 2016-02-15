@@ -13,7 +13,7 @@
 
   "dependencies": {
     "Microsoft.AspNet.FileProviders.Composite": "1.0.0-*",
-    "Microsoft.AspNet.FileProviders.Embedded": "1.0.0-rc1-final",
+    "Microsoft.AspNet.FileProviders.Embedded": "1.0.0-*",
     "Microsoft.AspNet.Identity.Core": "2.2.1",
     "Microsoft.AspNet.Authentication.MicrosoftAccount": "1.0.0-rc1-final",
     "Microsoft.AspNet.Authentication.Facebook": "1.0.0-rc1-final",

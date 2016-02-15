@@ -61,7 +61,7 @@ namespace SimpleIdentityServer.Startup
 
             app.UseSimpleIdentityServer(new HostingOptions
             {
-                IsDeveloperModeEnabled = false,
+                IsDeveloperModeEnabled = true,
                 IsMicrosoftAuthenticationEnabled = true,
                 MicrosoftClientId = Configuration["Microsoft:ClientId"],
                 MicrosoftClientSecret = Configuration["Microsoft:ClientSecret"],
