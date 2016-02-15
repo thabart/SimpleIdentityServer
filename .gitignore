@@ -206,4 +206,4 @@ FakesAssemblies/
 *.opt
 
 # Ignore the bower files
-SimpleIdentityServer/SimpleIdentityServer.Host/wwwroot/lib/*
+SimpleIdentityServer/VNEXT/src/SimpleIdentityServer.Host/wwwroot/lib/*

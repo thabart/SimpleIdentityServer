@@ -69,6 +69,27 @@ namespace SimpleIdentityServer.Host
         
         #region Public static methods
         
+        public static void UseSimpleIdentityServer(this IApplicationBuilder app,
+            Action<HostingOptions> hostingCallback,
+            Action<SwaggerOptions> swaggerCallback) 
+        {
+            if (hostingCallback == null) 
+            {
+                throw new ArgumentNullException(nameof(hostingCallback));    
+            }
+            
+            if (swaggerCallback == null) 
+            {
+                throw new ArgumentNullException(nameof(swaggerCallback));
+            }
+            
+            var hostingOptions = new HostingOptions();
+            var swaggerOptions = new SwaggerOptions();
+            hostingCallback(hostingOptions);
+            swaggerCallback(swaggerOptions);
+            app.UseSimpleIdentityServer(hostingOptions, swaggerOptions);
+        }
+        
         public static void UseSimpleIdentityServer(
             this IApplicationBuilder app,
             HostingOptions hostingOptions,

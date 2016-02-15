@@ -6,10 +6,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
 using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Host.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Startup
 {
@@ -55,7 +51,6 @@ namespace SimpleIdentityServer.Startup
             }, _swaggerOptions);
 
             services.AddLogging();
-            services.AddMvc();
         }
 
         public void Configure(IApplicationBuilder app,
@@ -81,7 +76,7 @@ namespace SimpleIdentityServer.Startup
         #region Public static methods
 
         // Entry point for the application.
-        public static void Main(string[] args) => Microsoft.AspNet.Hosting.WebApplication.Run<Startup>(args);
+        public static void Main(string[] args) => WebApplication.Run<Startup>(args);
 
         #endregion
     }

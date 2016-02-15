@@ -75,6 +75,30 @@ namespace SimpleIdentityServer.Host
         #region Public static methods
         
         public static void AddSimpleIdentityServer(
+            this IServiceCollection serviceCollection,
+            Action<DataSourceOptions> dataSourceCallback,
+            Action<SwaggerOptions> swaggerCallback) 
+        {
+            if (dataSourceCallback == null)
+            {
+                throw new ArgumentNullException(nameof(dataSourceCallback));
+            }
+            
+            if (swaggerCallback == null) 
+            {
+                throw new ArgumentNullException(nameof(swaggerCallback));
+            }
+            
+            var dataSourceOptions = new DataSourceOptions();
+            var swaggerOptions = new SwaggerOptions();
+            dataSourceCallback(dataSourceOptions);
+            swaggerCallback(swaggerOptions);
+            serviceCollection.AddSimpleIdentityServer(
+                dataSourceOptions,
+                swaggerOptions);
+        }
+        
+        public static void AddSimpleIdentityServer(
             this IServiceCollection serviceCollection, 
             DataSourceOptions dataSourceOptions,
             SwaggerOptions swaggerOptions) 

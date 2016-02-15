@@ -1,12 +1,18 @@
 {
   "version": "1.0.0-*",
-
+  "description": "Simple identity server host",
+  "authors": [ "Thierry Habart" ],
+  "copyright": "Copyrigth Thierry Habart",
+  "projectUrl": "https://github.com/thabart/SimpleIdentityServer",
+  "licenseUrl": "http://www.apache.org/licenses/",
+  "tags": [ "OpenId", "Identity" ],
+  "title": "Simple identity server host",
   "tooling": {
     "defaultNamespace": "SimpleIdentityServer.Host"
   },
 
   "dependencies": {
-    "Microsoft.AspNet.FileProviders.Composite": "1.0.0-rc1-final",
+    "Microsoft.AspNet.FileProviders.Composite": "1.0.0-*",
     "Microsoft.AspNet.FileProviders.Embedded": "1.0.0-rc1-final",
     "Microsoft.AspNet.Identity.Core": "2.2.1",
     "Microsoft.AspNet.Authentication.MicrosoftAccount": "1.0.0-rc1-final",
@@ -16,12 +22,9 @@
     "Microsoft.AspNet.IISPlatformHandler": "1.0.0-rc1-final",
     "Microsoft.AspNet.Mvc": "6.0.0-rc1-final",
     "Microsoft.AspNet.Mvc.TagHelpers": "6.0.0-rc1-final",
-    "Microsoft.AspNet.Server.Kestrel": "1.0.0-rc1-final",
     "Microsoft.AspNet.StaticFiles": "1.0.0-rc1-final",
     "Microsoft.AspNet.Tooling.Razor": "1.0.0-rc1-final",
-    "Microsoft.Dnx.Runtime": "1.0.0-rc1-final",
     "Microsoft.Extensions.Primitives": "1.0.0-rc1-final",
-    "Microsoft.Dnx.Watcher": "1.0.0-rc1-final",
     "Microsoft.Extensions.CodeGenerators.Mvc": "1.0.0-rc1-final",
     "Microsoft.Extensions.Configuration.FileProviderExtensions": "1.0.0-rc1-final",
     "Microsoft.Extensions.Configuration.Json": "1.0.0-rc1-final",
@@ -30,7 +33,6 @@
     "Microsoft.Extensions.Logging.Console": "1.0.0-rc1-final",
     "Microsoft.Extensions.Logging.Debug": "1.0.0-rc1-final",
     "Microsoft.AspNet.Diagnostics": "1.0.0-rc1-final",
-    "Unity": "2.1.505.0",
     "Microsoft.AspNet.WebApi.Client": "5.2.3",
     "Swashbuckle.SwaggerGen": "6.0.0-rc1-final",
     "Swashbuckle.SwaggerUi": "6.0.0-rc1-final",
@@ -42,17 +44,23 @@
     "SimpleIdentityServer.RateLimitation": ""
   },
 
-  "commands": {
-    "web": "Microsoft.AspNet.Server.Kestrel",
-    "watch": "Microsoft.Dnx.Watcher web"
-  },
-
   "frameworks": {
     "dnx451": {
       "frameworkAssemblies": {
         "System.Web": "4.0.0.0"
       }
     }
+  },
+  
+  "scripts": {
+    "prebuild": [
+      "npm install",
+      "bower install",
+      "gulp clean",
+      "gulp min"
+    ],
+	  "postrestore": [ "npm install", "bower install" ],
+    "prepare": [ "gulp clean", "gulp min" ]
   },
 
   "exclude": [
