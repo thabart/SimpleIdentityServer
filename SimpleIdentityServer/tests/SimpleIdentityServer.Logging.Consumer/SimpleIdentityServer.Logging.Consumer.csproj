@@ -36,19 +36,19 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Diagnostics.Tracing.TraceEvent">
-      <HintPath>..\..\..\References\Microsoft.Diagnostics.Tracing.TraceEvent.dll</HintPath>
+      <HintPath>..\..\References\Microsoft.Diagnostics.Tracing.TraceEvent.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Practices.EnterpriseLibrary.SemanticLogging">
-      <HintPath>..\..\..\References\Microsoft.Practices.EnterpriseLibrary.SemanticLogging.dll</HintPath>
+      <HintPath>..\..\References\Microsoft.Practices.EnterpriseLibrary.SemanticLogging.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Elasticsearch">
-      <HintPath>..\..\..\References\Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Elasticsearch.dll</HintPath>
+      <HintPath>..\..\References\Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Elasticsearch.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Etw">
-      <HintPath>..\..\..\References\Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Etw.dll</HintPath>
+      <HintPath>..\..\References\Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Etw.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Practices.EnterpriseLibrary.SemanticLogging.TextFile">
-      <HintPath>..\..\..\References\Microsoft.Practices.EnterpriseLibrary.SemanticLogging.TextFile.dll</HintPath>
+      <HintPath>..\..\References\Microsoft.Practices.EnterpriseLibrary.SemanticLogging.TextFile.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Newtonsoft.Json.5.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
