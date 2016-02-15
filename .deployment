@@ -1,2 +1,2 @@
 [config]
-command = deploy.cmd
+project = SimpleIdentityServer/VNEXT/src/SimpleIdentityServer.Startup
