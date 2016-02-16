@@ -14,36 +14,52 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Common.Extensions;
+using SimpleIdentityServer.Core.Jwt;
+using SimpleIdentityServer.Core.Jwt.Converter;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Manager.Core.Errors;
 using SimpleIdentityServer.Manager.Core.Exceptions;
+using SimpleIdentityServer.Manager.Core.Factories;
 using SimpleIdentityServer.Manager.Core.Parameters;
 using SimpleIdentityServer.Manager.Core.Results;
 using System;
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Manager.Core.Api.Jws.Actions
 {
     public interface IGetJwsInformationAction
     {
-        JwsInformationResult Execute(GetJwsParameter getJwsParameter);
+        Task<JwsInformationResult> Execute(GetJwsParameter getJwsParameter);
     }
 
     public class GetJwsInformationAction : IGetJwsInformationAction
     {
         private readonly IJwsParser _jwsParser;
 
+        private readonly IHttpClientFactory _httpClientFactory;
+
+        private readonly IJsonWebKeyConverter _jsonWebKeyConverter;
+
         #region Constructor
 
-        public GetJwsInformationAction(IJwsParser jwsParser)
+        public GetJwsInformationAction(
+            IJwsParser jwsParser,
+            IHttpClientFactory httpClientFactory,
+            IJsonWebKeyConverter jsonWebKeyConverter)
         {
             _jwsParser = jwsParser;
+            _httpClientFactory = httpClientFactory;
+            _jsonWebKeyConverter = jsonWebKeyConverter;
         }
 
         #endregion
 
         #region Public methods
 
-        public JwsInformationResult Execute(GetJwsParameter getJwsParameter)
+        public async Task<JwsInformationResult> Execute(GetJwsParameter getJwsParameter)
         {
             if (getJwsParameter == null || string.IsNullOrWhiteSpace(getJwsParameter.Jws))
             {
@@ -69,7 +85,40 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jws.Actions
                     ErrorDescriptions.TheTokenIsNotAValidJws);
             }
 
+            if (uri != null)
+            {
+                GetJsonWebKey(jwsHeader.Kid, uri);
+            }
+
             return null;
+        }
+
+        #endregion
+
+        #region Private methods
+
+        private JsonWebKey GetJsonWebKey(string kid, Uri uri)
+        {
+            try
+            {
+                var httpClient = _httpClientFactory.GetHttpClient();
+                httpClient.BaseAddress = uri;
+                var request = httpClient.GetAsync(uri.AbsoluteUri).Result;
+                {
+                    request.EnsureSuccessStatusCode();
+                    var json = request.Content.ReadAsStringAsync().Result;
+                    var jsonWebKeySet = json.DeserializeWithJavascript<JsonWebKeySet>();
+                    var jsonWebKeys = _jsonWebKeyConverter.ExtractSerializedKeys(jsonWebKeySet);
+                    return jsonWebKeys.FirstOrDefault(j => j.Kid == kid);
+                }
+            }
+            catch (Exception)
+            {
+                Console.WriteLine(string.Format(ErrorDescriptions.TheJsonWebKeyCannotBeFound, kid, uri.AbsoluteUri));
+                throw new IdentityServerManagerException(
+                    ErrorCodes.InvalidRequestCode,
+                    string.Format(ErrorDescriptions.TheJsonWebKeyCannotBeFound, kid, uri.AbsoluteUri));
+            }
         }
 
         #endregion

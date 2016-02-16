@@ -18,12 +18,13 @@ using SimpleIdentityServer.Manager.Core.Api.Jws.Actions;
 using SimpleIdentityServer.Manager.Core.Parameters;
 using SimpleIdentityServer.Manager.Core.Results;
 using System;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Manager.Core.Api.Jws
 {
     public interface IJwsActions
     {
-        JwsInformationResult GetJwsInformation(GetJwsParameter getJwsParameter);
+        Task<JwsInformationResult> GetJwsInformation(GetJwsParameter getJwsParameter);
     }
 
     public class JwsActions : IJwsActions
@@ -41,7 +42,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jws
         
         #region Public methods
 
-        public JwsInformationResult GetJwsInformation(GetJwsParameter getJwsParameter)
+        public Task<JwsInformationResult> GetJwsInformation(GetJwsParameter getJwsParameter)
         {
             if (getJwsParameter == null || string.IsNullOrWhiteSpace(getJwsParameter.Jws))
             {
