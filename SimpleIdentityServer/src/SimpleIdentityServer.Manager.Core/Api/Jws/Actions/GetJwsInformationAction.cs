@@ -86,7 +86,20 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jws.Actions
                     ErrorDescriptions.TheTokenIsNotAValidJws);
             }
 
-            if (uri != null)
+            if (jwsHeader.Alg != Constants.JwsAlgNames.NONE && uri == null)
+            {
+                throw new IdentityServerManagerException(
+                    ErrorCodes.InvalidRequestCode,
+                    ErrorDescriptions.TheSignatureCannotBeChecked);
+            }
+
+            var result = new JwsInformationResult
+            {
+                Header = jwsHeader
+            };
+
+            JwsPayload payload = null;
+            if (jwsHeader.Alg != Constants.JwsAlgNames.NONE)
             {
                 var jsonWebKey = await GetJsonWebKey(jwsHeader.Kid, uri).ConfigureAwait(false);
                 if (jsonWebKey == null)
@@ -96,10 +109,23 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jws.Actions
                         string.Format(ErrorDescriptions.TheJsonWebKeyCannotBeFound, jwsHeader.Kid, uri.AbsoluteUri));
                 }
 
-                var jwsPayload = _jwsParser.ValidateSignature(jws, jsonWebKey);
+                payload = _jwsParser.ValidateSignature(jws, jsonWebKey);
+                if (payload == null)
+                {
+                    throw new IdentityServerManagerException(
+                        ErrorCodes.InvalidRequestCode,
+                        ErrorDescriptions.TheSignatureIsNotCorrect);
+                }
+
+                result.JsonWebKey = jsonWebKey;
+            }
+            else
+            {
+                payload = _jwsParser.GetPayload(jws);
             }
 
-            return null;
+            result.Payload = payload;
+            return result;
         }
 
         #endregion

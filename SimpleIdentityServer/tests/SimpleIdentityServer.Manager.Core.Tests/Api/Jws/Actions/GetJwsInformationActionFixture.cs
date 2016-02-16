@@ -28,6 +28,8 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws.Actions
 
         private IGetJwsInformationAction _getJwsInformationAction;
 
+        #region Exceptions
+
         [Fact]
         public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
@@ -36,10 +38,8 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws.Actions
             var getJwsParameter = new GetJwsParameter();
 
             // ACTS & ASSERTS
-            var firstException = Assert.Throws<AggregateException>(() => _getJwsInformationAction.Execute(null).Result);
-            var secondException = Assert.Throws<AggregateException>(() => _getJwsInformationAction.Execute(getJwsParameter).Result);
-            Assert.True(firstException.InnerExceptions.First() is ArgumentNullException);
-            Assert.True(secondException.InnerExceptions.First() is ArgumentNullException);
+            Assert.ThrowsAsync<AggregateException>(() => _getJwsInformationAction.Execute(null));
+            Assert.ThrowsAsync<AggregateException>(() => _getJwsInformationAction.Execute(getJwsParameter));
         }
 
         [Fact]
@@ -55,8 +55,8 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws.Actions
             };
 
             // ACTS & ASSERTS
-            var exception = Assert.Throws<AggregateException>(() => _getJwsInformationAction.Execute(getJwsParameter).Result);
-            var innerException = exception.InnerExceptions.First() as IdentityServerManagerException;
+            var exception = Assert.ThrowsAsync<IdentityServerManagerException>(() => _getJwsInformationAction.Execute(getJwsParameter));
+            var innerException = exception.Result;
             Assert.NotNull(innerException);
             Assert.True(innerException.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(innerException.Message == string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, url));
@@ -76,11 +76,36 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws.Actions
                 .Returns(() => null);
 
             // ACT & ASSERTS
-            var exception = Assert.Throws<AggregateException>(() => _getJwsInformationAction.Execute(getJwsParameter).Result);
-            var innerException = exception.InnerExceptions.First() as IdentityServerManagerException;
+            var exception = Assert.ThrowsAsync<IdentityServerManagerException>(() => _getJwsInformationAction.Execute(getJwsParameter));
+            var innerException = exception.Result;
             Assert.NotNull(innerException);
             Assert.True(innerException.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(innerException.Message == ErrorDescriptions.TheTokenIsNotAValidJws);
+        }
+
+        [Fact]
+        public void When_No_Uri_And_Sign_Alg_Are_Specified_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var getJwsParameter = new GetJwsParameter
+            {
+                Jws = "jws"
+            };
+            var jwsProtectedHeader = new JwsProtectedHeader
+            {
+                Kid = "kid",
+                Alg = Constants.JwsAlgNames.RS256
+            };
+            _jwsParserStub.Setup(j => j.GetHeader(It.IsAny<string>()))
+                .Returns(jwsProtectedHeader);
+
+            // ACT & ASSERTS
+            var exception = Assert.ThrowsAsync<IdentityServerManagerException>(() => _getJwsInformationAction.Execute(getJwsParameter));
+            var innerException = exception.Result;
+            Assert.NotNull(innerException);
+            Assert.True(innerException.Code == ErrorCodes.InvalidRequestCode);
+            Assert.True(innerException.Message == ErrorDescriptions.TheSignatureCannotBeChecked);
         }
 
         [Fact]
@@ -97,7 +122,8 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws.Actions
             };
             var jwsProtectedHeader = new JwsProtectedHeader
             {
-                Kid = kid
+                Kid = kid,
+                Alg = Constants.JwsAlgNames.RS256
             };
             var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.BadRequest)
             {
@@ -111,8 +137,8 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws.Actions
                 .Returns(httpClientFake);
 
             // ACT & ASSERTS
-            var exception = Assert.Throws<AggregateException>(() => _getJwsInformationAction.Execute(getJwsParameter).Result);
-            var innerException = exception.InnerExceptions.First() as IdentityServerManagerException;
+            var exception = Assert.ThrowsAsync<IdentityServerManagerException>(() => _getJwsInformationAction.Execute(getJwsParameter));
+            var innerException = exception.Result;
             Assert.NotNull(innerException);
             Assert.True(innerException.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(innerException.Message == string.Format(ErrorDescriptions.TheJsonWebKeyCannotBeFound, kid, url));
@@ -134,7 +160,8 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws.Actions
             var json = jsonWebKeySet.SerializeWithJavascript();
             var jwsProtectedHeader = new JwsProtectedHeader
             {
-                Kid = kid
+                Kid = kid,
+                Alg = Constants.JwsAlgNames.RS256
             };
             var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.OK)
             {
@@ -150,15 +177,15 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws.Actions
                 .Returns(() => new List<JsonWebKey>());
 
             // ACT & ASSERTS
-            var exception = Assert.Throws<AggregateException>(() => _getJwsInformationAction.Execute(getJwsParameter).Result);
-            var innerException = exception.InnerExceptions.First() as IdentityServerManagerException;
+            var exception = Assert.ThrowsAsync<IdentityServerManagerException>(() => _getJwsInformationAction.Execute(getJwsParameter));
+            var innerException = exception.Result;
             Assert.NotNull(innerException);
             Assert.True(innerException.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(innerException.Message == string.Format(ErrorDescriptions.TheJsonWebKeyCannotBeFound, kid, url));
         }
 
         [Fact]
-        public void When_JsonWebKey_Is_Extracted_And_The_Jws_Is_Unsigned_Then_Information_Are_Returned()
+        public void When_The_Signature_Is_Not_Valid_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -193,10 +220,97 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws.Actions
                         Kid = kid
                     }
                 });
+            _jwsParserStub.Setup(j => j.ValidateSignature(It.IsAny<string>(), It.IsAny<JsonWebKey>()))
+                .Returns(() => null);
+
+            // ACT & ASSERTS
+            var exception = Assert.ThrowsAsync<IdentityServerManagerException>(() => _getJwsInformationAction.Execute(getJwsParameter));
+            var innerException = exception.Result;
+            Assert.NotNull(innerException);
+            Assert.True(innerException.Code == ErrorCodes.InvalidRequestCode);
+            Assert.True(innerException.Message == ErrorDescriptions.TheSignatureIsNotCorrect);
+        }
+
+        #endregion
+
+        #region Happy paths
+
+        [Fact]
+        public void When_JsonWebKey_Is_Extracted_And_The_Jws_Is_Unsigned_Then_Information_Are_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            const string url = "http://google.be/";
+            const string kid = "kid";
+            var getJwsParameter = new GetJwsParameter
+            {
+                Url = url,
+                Jws = "jws"
+            };
+            var jsonWebKeySet = new JsonWebKeySet();
+            var json = jsonWebKeySet.SerializeWithJavascript();
+            var jwsProtectedHeader = new JwsProtectedHeader
+            {
+                Kid = kid
+            };
+            var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(json)
+            };
+            var jwsPayload = new JwsPayload();
+            var handler = new FakeHttpMessageHandler(httpResponseMessage);
+            var httpClientFake = new HttpClient(handler);
+            _jwsParserStub.Setup(j => j.GetHeader(It.IsAny<string>()))
+                .Returns(jwsProtectedHeader);
+            _httpClientFactoryStub.Setup(h => h.GetHttpClient())
+                .Returns(httpClientFake);
+            _jsonWebKeyConverterStub.Setup(j => j.ExtractSerializedKeys(It.IsAny<JsonWebKeySet>()))
+                .Returns(() => new List<JsonWebKey>
+                {
+                    new JsonWebKey
+                    {
+                        Kid = kid
+                    }
+                });
+            _jwsParserStub.Setup(j => j.ValidateSignature(It.IsAny<string>(), It.IsAny<JsonWebKey>()))
+                .Returns(jwsPayload);
 
             // ACT
-            _getJwsInformationAction.Execute(getJwsParameter);
+            var result = _getJwsInformationAction.Execute(getJwsParameter).Result;
+
+            // ASSERTS
+            Assert.NotNull(result);
+            Assert.True(result.JsonWebKey.Kid == kid);
         }
+
+        [Fact]
+        public void When_Extracting_Information_Of_Unsigned_Jws_Then_Information_Are_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var getJwsParameter = new GetJwsParameter
+            {
+                Jws = "jws"
+            };
+            var jwsProtectedHeader = new JwsProtectedHeader
+            {
+                Kid = "kid",
+                Alg = Constants.JwsAlgNames.NONE
+            };
+            var jwsPayload = new JwsPayload();
+            _jwsParserStub.Setup(j => j.GetHeader(It.IsAny<string>()))
+                .Returns(jwsProtectedHeader);
+            _jwsParserStub.Setup(j => j.GetPayload(It.IsAny<string>()))
+                .Returns(jwsPayload);
+
+            // ACT
+            var result = _getJwsInformationAction.Execute(getJwsParameter).Result;
+
+            // ASSERTS
+            Assert.NotNull(result);
+        }
+
+        #endregion
 
         private void InitializeFakeObjects()
         {
