@@ -16,16 +16,16 @@
 
 using System;
 
-namespace SimpleIdentityServer.Core.Exceptions
+namespace SimpleIdentityServer.Manager.Core.Exceptions
 {
-    public class IdentityServerException : Exception
+    public class IdentityServerManagerException : Exception
     {
-        public IdentityServerException(string code, string message) : base(message)
+        public IdentityServerManagerException(string code, string message) : base(message)
         {
             Code = code;
         }
 
-        public IdentityServerException(string code, string message, Exception innerException) : base(message, innerException)
+        public IdentityServerManagerException(string code, string message, Exception innerException) : base(message, innerException)
         {
             Code = code;
         }

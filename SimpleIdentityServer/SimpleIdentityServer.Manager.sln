@@ -1,0 +1,69 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01. Core", "01. Core", "{D3274B2A-7992-412D-A2BC-CD2DDA51F24E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02. Host", "02. Host", "{5DEBCF0A-FE01-425F-BFE2-F1EADDD6D8D2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "03. Test", "03. Test", "{5AD816CA-C393-428F-9F06-98B45120B02C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01. Unit Tests", "01. Unit Tests", "{28801ACE-3A1D-4868-90AB-B30043A20AED}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EAC85787-20F0-4C78-9AC6-C3CB7CD19065}"
+	ProjectSection(SolutionItems) = preProject
+		global.json = global.json
+	EndProjectSection
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Manager.Host", "src\SimpleIdentityServer.Manager.Host\SimpleIdentityServer.Manager.Host.xproj", "{6D8192C8-37CC-481E-83CA-6D2E3BCBEE09}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Core.Jwt", "src\SimpleIdentityServer.Core.Jwt\SimpleIdentityServer.Core.Jwt.xproj", "{7709D106-0AA1-4FE2-BE16-9E997F483311}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Common", "src\SimpleIdentityServer.Common\SimpleIdentityServer.Common.xproj", "{360996A6-5825-4CCD-9AA5-D66626B2F42F}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Core.Common", "src\SimpleIdentityServer.Core.Common\SimpleIdentityServer.Core.Common.xproj", "{8EA9F43D-3B41-40A4-88D7-68AF33F90C55}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Fake|Any CPU = Fake|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6D8192C8-37CC-481E-83CA-6D2E3BCBEE09}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D8192C8-37CC-481E-83CA-6D2E3BCBEE09}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D8192C8-37CC-481E-83CA-6D2E3BCBEE09}.Fake|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D8192C8-37CC-481E-83CA-6D2E3BCBEE09}.Fake|Any CPU.Build.0 = Debug|Any CPU
+		{6D8192C8-37CC-481E-83CA-6D2E3BCBEE09}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D8192C8-37CC-481E-83CA-6D2E3BCBEE09}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7709D106-0AA1-4FE2-BE16-9E997F483311}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7709D106-0AA1-4FE2-BE16-9E997F483311}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7709D106-0AA1-4FE2-BE16-9E997F483311}.Fake|Any CPU.ActiveCfg = Debug|Any CPU
+		{7709D106-0AA1-4FE2-BE16-9E997F483311}.Fake|Any CPU.Build.0 = Debug|Any CPU
+		{7709D106-0AA1-4FE2-BE16-9E997F483311}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7709D106-0AA1-4FE2-BE16-9E997F483311}.Release|Any CPU.Build.0 = Release|Any CPU
+		{360996A6-5825-4CCD-9AA5-D66626B2F42F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{360996A6-5825-4CCD-9AA5-D66626B2F42F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{360996A6-5825-4CCD-9AA5-D66626B2F42F}.Fake|Any CPU.ActiveCfg = Debug|Any CPU
+		{360996A6-5825-4CCD-9AA5-D66626B2F42F}.Fake|Any CPU.Build.0 = Debug|Any CPU
+		{360996A6-5825-4CCD-9AA5-D66626B2F42F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{360996A6-5825-4CCD-9AA5-D66626B2F42F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8EA9F43D-3B41-40A4-88D7-68AF33F90C55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EA9F43D-3B41-40A4-88D7-68AF33F90C55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EA9F43D-3B41-40A4-88D7-68AF33F90C55}.Fake|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EA9F43D-3B41-40A4-88D7-68AF33F90C55}.Fake|Any CPU.Build.0 = Debug|Any CPU
+		{8EA9F43D-3B41-40A4-88D7-68AF33F90C55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8EA9F43D-3B41-40A4-88D7-68AF33F90C55}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{28801ACE-3A1D-4868-90AB-B30043A20AED} = {5AD816CA-C393-428F-9F06-98B45120B02C}
+		{6D8192C8-37CC-481E-83CA-6D2E3BCBEE09} = {5DEBCF0A-FE01-425F-BFE2-F1EADDD6D8D2}
+		{7709D106-0AA1-4FE2-BE16-9E997F483311} = {D3274B2A-7992-412D-A2BC-CD2DDA51F24E}
+		{360996A6-5825-4CCD-9AA5-D66626B2F42F} = {D3274B2A-7992-412D-A2BC-CD2DDA51F24E}
+		{8EA9F43D-3B41-40A4-88D7-68AF33F90C55} = {D3274B2A-7992-412D-A2BC-CD2DDA51F24E}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,26 @@
+{
+    "version": "1.0.0-*",
+    "description": "SimpleIdentityServer.Manager.Core Class Library",
+    "authors": [ "Thierry Habart" ],
+    "tags": [ "" ],
+    "projectUrl": "",
+  "licenseUrl": "",
+
+    "dependencies": {
+      "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc1-final",
+      "SimpleIdentityServer.Core.Jwt": ""
+    },
+  
+	  "tooling": {
+		  "defaultNamespace": "SimpleIdentityServer.Manager.Core"
+	  },
+
+    "frameworks": {
+        "dnx451": {
+            "frameworkAssemblies": {
+                "System.Net.Http": "4.0.0.0",
+                "System.IdentityModel": "4.0.0.0"
+            }
+        }
+    }
+}
