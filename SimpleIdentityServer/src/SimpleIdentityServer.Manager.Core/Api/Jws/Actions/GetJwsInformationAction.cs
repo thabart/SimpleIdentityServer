@@ -77,7 +77,8 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jws.Actions
                 }
             }
 
-            var jwsHeader = _jwsParser.GetHeader(getJwsParameter.Jws);
+            var jws = getJwsParameter.Jws;
+            var jwsHeader = _jwsParser.GetHeader(jws);
             if (jwsHeader == null)
             {
                 throw new IdentityServerManagerException(
@@ -87,7 +88,15 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jws.Actions
 
             if (uri != null)
             {
-                GetJsonWebKey(jwsHeader.Kid, uri);
+                var jsonWebKey = await GetJsonWebKey(jwsHeader.Kid, uri).ConfigureAwait(false);
+                if (jsonWebKey == null)
+                {
+                    throw new IdentityServerManagerException(
+                        ErrorCodes.InvalidRequestCode,
+                        string.Format(ErrorDescriptions.TheJsonWebKeyCannotBeFound, jwsHeader.Kid, uri.AbsoluteUri));
+                }
+
+                var jwsPayload = _jwsParser.ValidateSignature(jws, jsonWebKey);
             }
 
             return null;
@@ -97,24 +106,21 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jws.Actions
 
         #region Private methods
 
-        private JsonWebKey GetJsonWebKey(string kid, Uri uri)
+        private async Task<JsonWebKey> GetJsonWebKey(string kid, Uri uri)
         {
             try
             {
                 var httpClient = _httpClientFactory.GetHttpClient();
                 httpClient.BaseAddress = uri;
-                var request = httpClient.GetAsync(uri.AbsoluteUri).Result;
-                {
-                    request.EnsureSuccessStatusCode();
-                    var json = request.Content.ReadAsStringAsync().Result;
-                    var jsonWebKeySet = json.DeserializeWithJavascript<JsonWebKeySet>();
-                    var jsonWebKeys = _jsonWebKeyConverter.ExtractSerializedKeys(jsonWebKeySet);
-                    return jsonWebKeys.FirstOrDefault(j => j.Kid == kid);
-                }
+                var request = await httpClient.GetAsync(uri.AbsoluteUri).ConfigureAwait(false);
+                request.EnsureSuccessStatusCode();
+                var json = request.Content.ReadAsStringAsync().Result;
+                var jsonWebKeySet = json.DeserializeWithJavascript<JsonWebKeySet>();
+                var jsonWebKeys = _jsonWebKeyConverter.ExtractSerializedKeys(jsonWebKeySet);
+                return jsonWebKeys.FirstOrDefault(j => j.Kid == kid);
             }
             catch (Exception)
             {
-                Console.WriteLine(string.Format(ErrorDescriptions.TheJsonWebKeyCannotBeFound, kid, uri.AbsoluteUri));
                 throw new IdentityServerManagerException(
                     ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.TheJsonWebKeyCannotBeFound, kid, uri.AbsoluteUri));

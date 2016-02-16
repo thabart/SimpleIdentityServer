@@ -1,4 +1,5 @@
 ﻿using Moq;
+using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Converter;
 using SimpleIdentityServer.Core.Jwt.Signature;
@@ -9,6 +10,7 @@ using SimpleIdentityServer.Manager.Core.Factories;
 using SimpleIdentityServer.Manager.Core.Parameters;
 using SimpleIdentityServer.Manager.Core.Tests.Fake;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -114,6 +116,86 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws.Actions
             Assert.NotNull(innerException);
             Assert.True(innerException.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(innerException.Message == string.Format(ErrorDescriptions.TheJsonWebKeyCannotBeFound, kid, url));
+        }
+
+        [Fact]
+        public void When_JsonWebKey_Doesnt_Exist_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            const string url = "http://google.be/";
+            const string kid = "kid";
+            var getJwsParameter = new GetJwsParameter
+            {
+                Url = url,
+                Jws = "jws"
+            };
+            var jsonWebKeySet = new JsonWebKeySet();
+            var json = jsonWebKeySet.SerializeWithJavascript();
+            var jwsProtectedHeader = new JwsProtectedHeader
+            {
+                Kid = kid
+            };
+            var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(json)
+            };
+            var handler = new FakeHttpMessageHandler(httpResponseMessage);
+            var httpClientFake = new HttpClient(handler);
+            _jwsParserStub.Setup(j => j.GetHeader(It.IsAny<string>()))
+                .Returns(jwsProtectedHeader);
+            _httpClientFactoryStub.Setup(h => h.GetHttpClient())
+                .Returns(httpClientFake);
+            _jsonWebKeyConverterStub.Setup(j => j.ExtractSerializedKeys(It.IsAny<JsonWebKeySet>()))
+                .Returns(() => new List<JsonWebKey>());
+
+            // ACT & ASSERTS
+            var exception = Assert.Throws<AggregateException>(() => _getJwsInformationAction.Execute(getJwsParameter).Result);
+            var innerException = exception.InnerExceptions.First() as IdentityServerManagerException;
+            Assert.NotNull(innerException);
+            Assert.True(innerException.Code == ErrorCodes.InvalidRequestCode);
+            Assert.True(innerException.Message == string.Format(ErrorDescriptions.TheJsonWebKeyCannotBeFound, kid, url));
+        }
+
+        [Fact]
+        public void When_JsonWebKey_Is_Extracted_And_The_Jws_Is_Unsigned_Then_Information_Are_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            const string url = "http://google.be/";
+            const string kid = "kid";
+            var getJwsParameter = new GetJwsParameter
+            {
+                Url = url,
+                Jws = "jws"
+            };
+            var jsonWebKeySet = new JsonWebKeySet();
+            var json = jsonWebKeySet.SerializeWithJavascript();
+            var jwsProtectedHeader = new JwsProtectedHeader
+            {
+                Kid = kid
+            };
+            var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(json)
+            };
+            var handler = new FakeHttpMessageHandler(httpResponseMessage);
+            var httpClientFake = new HttpClient(handler);
+            _jwsParserStub.Setup(j => j.GetHeader(It.IsAny<string>()))
+                .Returns(jwsProtectedHeader);
+            _httpClientFactoryStub.Setup(h => h.GetHttpClient())
+                .Returns(httpClientFake);
+            _jsonWebKeyConverterStub.Setup(j => j.ExtractSerializedKeys(It.IsAny<JsonWebKeySet>()))
+                .Returns(() => new List<JsonWebKey>
+                {
+                    new JsonWebKey
+                    {
+                        Kid = kid
+                    }
+                });
+
+            // ACT
+            _getJwsInformationAction.Execute(getJwsParameter);
         }
 
         private void InitializeFakeObjects()
