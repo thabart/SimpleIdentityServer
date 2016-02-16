@@ -15,5 +15,14 @@
 
             public const string Url = "url";
         }
+
+        public static class JwsInformationResponseNames
+        {
+            public const string Header = "header";
+
+            public const string Payload = "payload";
+
+            public const string JsonWebKey = "jsonwebkey";
+        }
     }
 }

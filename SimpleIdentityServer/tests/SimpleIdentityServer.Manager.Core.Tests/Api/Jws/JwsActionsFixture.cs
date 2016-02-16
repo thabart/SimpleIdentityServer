@@ -34,7 +34,6 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws
         [Fact]
         public void When_Executing_GetJwsInformation_Then_Operation_Is_Called()
         {
-
             // ARRANGE
             InitializeFakeObjects();
             var getJwsParameter = new GetJwsParameter
