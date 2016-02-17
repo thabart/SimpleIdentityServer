@@ -23,6 +23,7 @@ using Microsoft.Extensions.Logging;
 using Swashbuckle.SwaggerGen;
 using SimpleIdentityServer.Manager.Core;
 using SimpleIdentityServer.Core.Jwt;
+using SimpleIdentityServer.Manager.Host.Middleware;
 
 namespace SimpleIdentityServer.Manager.Host
 {
@@ -64,6 +65,12 @@ namespace SimpleIdentityServer.Manager.Host
             // Launch swagger
             app.UseSwaggerGen();
             app.UseSwaggerUi();
+
+            // Display status code page
+            app.UseStatusCodePages();
+
+            // Enable custom exception handler
+            app.UseSimpleIdentityServerManagerExceptionHandler();
 
             // Launch ASP.NET MVC
             app.UseMvc(routes =>

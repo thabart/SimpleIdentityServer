@@ -18,6 +18,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Manager.Core.Api.Jws;
 using SimpleIdentityServer.Manager.Core.Api.Jws.Actions;
 using SimpleIdentityServer.Manager.Core.Factories;
+using SimpleIdentityServer.Manager.Core.Helpers;
 
 namespace SimpleIdentityServer.Manager.Core
 {
@@ -27,6 +28,8 @@ namespace SimpleIdentityServer.Manager.Core
         {
             serviceCollection.AddTransient<IJwsActions, JwsActions>();
             serviceCollection.AddTransient<IGetJwsInformationAction, GetJwsInformationAction>();
+            serviceCollection.AddTransient<ICreateJwsAction, CreateJwsAction>();
+            serviceCollection.AddTransient<IJsonWebKeyHelper, JsonWebKeyHelper>();
             serviceCollection.AddTransient<IHttpClientFactory, HttpClientFactory>();
             return serviceCollection;
         }

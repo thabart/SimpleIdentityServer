@@ -1,4 +1,5 @@
 ﻿using Moq;
+using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Manager.Core.Api.Jws;
 using SimpleIdentityServer.Manager.Core.Api.Jws.Actions;
 using SimpleIdentityServer.Manager.Core.Parameters;
@@ -10,6 +11,8 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws
     public class JwsActionsFixture
     {
         private Mock<IGetJwsInformationAction> _getJwsInformationActionStub;
+
+        private Mock<ICreateJwsAction> _createJwsActionStub;
 
         private IJwsActions _jwsActions;
 
@@ -25,6 +28,16 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws
             // ACTS & ASSERTS
             Assert.ThrowsAsync<ArgumentNullException>(() => _jwsActions.GetJwsInformation(null));
             Assert.ThrowsAsync<ArgumentNullException>(() => _jwsActions.GetJwsInformation(getJwsParameter));
+        }
+
+        [Fact]
+        public void When_Passing_Null_Parameter_To_CreateJws_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+
+            // ACTS & ASSERTS
+            Assert.ThrowsAsync<ArgumentNullException>(() => _jwsActions.CreateJws(null));
         }
 
         #endregion
@@ -48,12 +61,32 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws
             _getJwsInformationActionStub.Verify(g => g.Execute(getJwsParameter));
         }
 
+        [Fact]
+        public void When_Executing_CreateJws_Then_Operation_Is_Called()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var createJwsParameter = new CreateJwsParameter
+            {
+                Payload = new JwsPayload()
+            };
+
+            // ACT
+            _jwsActions.CreateJws(createJwsParameter).Wait();
+
+            // ASSERT
+            _createJwsActionStub.Verify(g => g.Execute(createJwsParameter));
+        }
+
         #endregion
 
         private void InitializeFakeObjects()
         {
             _getJwsInformationActionStub = new Mock<IGetJwsInformationAction>();
-            _jwsActions = new JwsActions(_getJwsInformationActionStub.Object);
+            _createJwsActionStub = new Mock<ICreateJwsAction>();
+            _jwsActions = new JwsActions(
+                _getJwsInformationActionStub.Object,
+                _createJwsActionStub.Object);
         }
     }
 }

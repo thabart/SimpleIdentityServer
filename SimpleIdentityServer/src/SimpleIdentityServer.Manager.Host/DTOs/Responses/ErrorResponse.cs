@@ -14,12 +14,17 @@
 // limitations under the License.
 #endregion
 
-namespace SimpleIdentityServer.Manager.Core.Errors
-{
-    public static class ErrorCodes
-    {
-        public const string InvalidRequestCode = "invalid_request";
+using System.Runtime.Serialization;
 
-        public const string UnhandledExceptionCode = "unhandled_exception";
+namespace SimpleIdentityServer.Manager.Host.DTOs.Responses
+{
+    [DataContract]
+    public class ErrorResponse
+    {
+        [DataMember(Name = Constants.ErrorResponseNames.Code)]
+        public string Code { get; set; }
+
+        [DataMember(Name = Constants.ErrorResponseNames.Message)]
+        public string Message { get; set; }
     }
 }

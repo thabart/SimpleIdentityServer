@@ -27,5 +27,7 @@ namespace SimpleIdentityServer.Manager.Core.Errors
         public const string TheSignatureIsNotCorrect = "the signature is not correct";
 
         public const string TheSignatureCannotBeChecked = "the signature cannot be checked if the URI is not specified";
+
+        public const string TheJwsCannotBeGeneratedBecauseMissingParameters = "the jws cannot be generated because either the Url or Kid is not specified";
     }
 }

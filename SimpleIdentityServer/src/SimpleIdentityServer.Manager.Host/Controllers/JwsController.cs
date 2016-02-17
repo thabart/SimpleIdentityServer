@@ -51,7 +51,18 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
             var result = await _jwsActions.GetJwsInformation(getJwsRequest.ToParameter());
             return result.ToDto();
         }
+        
+        [HttpPost]
+        public async Task<string> PostJws([FromBody] CreateJwsRequest createJwsRequest)
+        {
+            if (createJwsRequest == null)
+            {
+                throw new ArgumentNullException(nameof(createJwsRequest));
+            }
 
+            return await _jwsActions.CreateJws(createJwsRequest.ToParameter());
+        }
+            
         #endregion
     }
 }

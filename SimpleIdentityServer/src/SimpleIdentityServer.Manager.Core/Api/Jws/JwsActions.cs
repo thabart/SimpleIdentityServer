@@ -25,17 +25,24 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jws
     public interface IJwsActions
     {
         Task<JwsInformationResult> GetJwsInformation(GetJwsParameter getJwsParameter);
+
+        Task<string> CreateJws(CreateJwsParameter createJwsParameter);
     }
 
     public class JwsActions : IJwsActions
     {
         private readonly IGetJwsInformationAction _getJwsInformationAction;
 
+        private readonly ICreateJwsAction _createJwsAction;
+
         #region Constructor
 
-        public JwsActions(IGetJwsInformationAction getJwsInformationAction)
+        public JwsActions(
+            IGetJwsInformationAction getJwsInformationAction, 
+            ICreateJwsAction createJwsAction)
         {
             _getJwsInformationAction = getJwsInformationAction;
+            _createJwsAction = createJwsAction;
         }
 
         #endregion
@@ -50,6 +57,16 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jws
             }
 
             return _getJwsInformationAction.Execute(getJwsParameter);
+        }
+
+        public Task<string> CreateJws(CreateJwsParameter createJwsParameter)
+        {
+            if (createJwsParameter == null)
+            {
+                throw new ArgumentNullException(nameof(createJwsParameter));
+            }
+
+            return _createJwsAction.Execute(createJwsParameter);
         }
 
         #endregion

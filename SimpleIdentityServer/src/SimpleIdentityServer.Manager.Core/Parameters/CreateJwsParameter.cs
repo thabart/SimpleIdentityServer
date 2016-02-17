@@ -14,12 +14,30 @@
 // limitations under the License.
 #endregion
 
-namespace SimpleIdentityServer.Manager.Core.Errors
-{
-    public static class ErrorCodes
-    {
-        public const string InvalidRequestCode = "invalid_request";
+using SimpleIdentityServer.Core.Jwt;
 
-        public const string UnhandledExceptionCode = "unhandled_exception";
+namespace SimpleIdentityServer.Manager.Core.Parameters
+{
+    public class CreateJwsParameter
+    {
+        /// <summary>
+        /// Gets or sets the JSON WEB KEY KID
+        /// </summary>
+        public string Kid { get; set; }
+
+        /// <summary>
+        /// Gets or sets the sign alg
+        /// </summary>
+        public JwsAlg Alg { get; set; }
+
+        /// <summary>
+        /// Gets or sets the JWKS URL
+        /// </summary>
+        public string Url { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Payload
+        /// </summary>
+        public JwsPayload Payload { get; set; }
     }
 }

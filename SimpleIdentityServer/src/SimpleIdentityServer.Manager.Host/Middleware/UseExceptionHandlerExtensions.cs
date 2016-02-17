@@ -14,12 +14,16 @@
 // limitations under the License.
 #endregion
 
-namespace SimpleIdentityServer.Manager.Core.Errors
-{
-    public static class ErrorCodes
-    {
-        public const string InvalidRequestCode = "invalid_request";
+using Microsoft.AspNet.Builder;
 
-        public const string UnhandledExceptionCode = "unhandled_exception";
+namespace SimpleIdentityServer.Manager.Host.Middleware
+{
+    public static class UseExceptionHandlerExtensions
+    {
+        public static IApplicationBuilder UseSimpleIdentityServerManagerExceptionHandler(
+            this IApplicationBuilder applicationBuilder)
+        {
+            return applicationBuilder.UseMiddleware<ExceptionHandlerMiddleware>();
+        }
     }
 }

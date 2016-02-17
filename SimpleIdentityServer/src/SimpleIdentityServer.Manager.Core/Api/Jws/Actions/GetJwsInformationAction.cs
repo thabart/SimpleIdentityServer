@@ -14,18 +14,14 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Jwt;
-using SimpleIdentityServer.Core.Jwt.Converter;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Manager.Core.Errors;
 using SimpleIdentityServer.Manager.Core.Exceptions;
-using SimpleIdentityServer.Manager.Core.Factories;
+using SimpleIdentityServer.Manager.Core.Helpers;
 using SimpleIdentityServer.Manager.Core.Parameters;
 using SimpleIdentityServer.Manager.Core.Results;
 using System;
-using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Manager.Core.Api.Jws.Actions
@@ -39,20 +35,16 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jws.Actions
     {
         private readonly IJwsParser _jwsParser;
 
-        private readonly IHttpClientFactory _httpClientFactory;
-
-        private readonly IJsonWebKeyConverter _jsonWebKeyConverter;
+        private readonly IJsonWebKeyHelper _jsonWebKeyHelper;
 
         #region Constructor
 
         public GetJwsInformationAction(
             IJwsParser jwsParser,
-            IHttpClientFactory httpClientFactory,
-            IJsonWebKeyConverter jsonWebKeyConverter)
+            IJsonWebKeyHelper jsonWebKeyHelper)
         {
             _jwsParser = jwsParser;
-            _httpClientFactory = httpClientFactory;
-            _jsonWebKeyConverter = jsonWebKeyConverter;
+            _jsonWebKeyHelper = jsonWebKeyHelper;
         }
 
         #endregion
@@ -102,7 +94,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jws.Actions
             JwsPayload payload = null;
             if (!string.Equals(jwsHeader.Alg, Constants.JwsAlgNames.NONE, StringComparison.InvariantCultureIgnoreCase))
             {
-                var jsonWebKey = await GetJsonWebKey(jwsHeader.Kid, uri).ConfigureAwait(false);
+                var jsonWebKey = await _jsonWebKeyHelper.GetJsonWebKey(jwsHeader.Kid, uri).ConfigureAwait(false);
                 if (jsonWebKey == null)
                 {
                     throw new IdentityServerManagerException(
@@ -127,31 +119,6 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jws.Actions
 
             result.Payload = payload;
             return result;
-        }
-
-        #endregion
-
-        #region Private methods
-
-        private async Task<JsonWebKey> GetJsonWebKey(string kid, Uri uri)
-        {
-            try
-            {
-                var httpClient = _httpClientFactory.GetHttpClient();
-                httpClient.BaseAddress = uri;
-                var request = await httpClient.GetAsync(uri.AbsoluteUri).ConfigureAwait(false);
-                request.EnsureSuccessStatusCode();
-                var json = request.Content.ReadAsStringAsync().Result;
-                var jsonWebKeySet = json.DeserializeWithJavascript<JsonWebKeySet>();
-                var jsonWebKeys = _jsonWebKeyConverter.ExtractSerializedKeys(jsonWebKeySet);
-                return jsonWebKeys.FirstOrDefault(j => j.Kid == kid);
-            }
-            catch (Exception)
-            {
-                throw new IdentityServerManagerException(
-                    ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.TheJsonWebKeyCannotBeFound, kid, uri.AbsoluteUri));
-            }
         }
 
         #endregion

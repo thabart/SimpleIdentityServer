@@ -34,6 +34,17 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
             };
         }
 
+        public static CreateJwsParameter ToParameter(this CreateJwsRequest createJwsRequest)
+        {
+            return new CreateJwsParameter
+            {
+                Alg = createJwsRequest.Alg,
+                Kid = createJwsRequest.Kid,
+                Url = createJwsRequest.Url,
+                Payload = createJwsRequest.Payload
+            };
+        }
+
         #endregion
 
         #region To DTOs
