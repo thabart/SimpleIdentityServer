@@ -55,11 +55,11 @@
   "scripts": {
     "prebuild": [
       "npm install",
-      "bower install",
+      "bower --allow-root install",
       "gulp clean",
       "gulp min"
     ],
-	  "postrestore": [ "npm install", "bower install" ],
+	  "postrestore": [ "npm install", "bower --allow-root install" ],
     "prepare": [ "gulp clean", "gulp min" ]
   },
 

@@ -7,3 +7,4 @@ SET DOCKER_MACHINE_NAME=dev
 
 docker-machine start dev
 docker build -t simpleidserver .
+docker run -t -d -p 80:5000 simpleidserver
