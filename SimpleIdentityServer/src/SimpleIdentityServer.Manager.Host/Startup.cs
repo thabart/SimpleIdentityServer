@@ -53,6 +53,9 @@ namespace SimpleIdentityServer.Manager.Host
                 });
             });
             services.AddMvc();
+            services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader()));
             services.AddSimpleIdentityServerManagerCore();
             services.AddSimpleIdentityServerJwt();
         }
@@ -69,6 +72,9 @@ namespace SimpleIdentityServer.Manager.Host
             // Display status code page
             app.UseStatusCodePages();
 
+            // Enable CORS
+            app.UseCors("AllowAll");
+            
             // Enable custom exception handler
             app.UseSimpleIdentityServerManagerExceptionHandler();
 
@@ -79,6 +85,7 @@ namespace SimpleIdentityServer.Manager.Host
                     name: "default",
                     template: "{controller}/{action}/{id?}");
             });
+
         }
 
         // Entry point for the application.
