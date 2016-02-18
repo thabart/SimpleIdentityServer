@@ -67,7 +67,7 @@ namespace SimpleIdentityServer.Manager.Host.Middleware
                     Message = identityServerManagerException.Message
                 };
 
-                context.Response.Clear();
+                // context.Response.Clear();
                 context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 context.Response.ContentType = "application/json";
                 var serializedErrorResponse = errorResponse.SerializeWithDataContract();

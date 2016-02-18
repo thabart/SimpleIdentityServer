@@ -53,11 +53,16 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jws.Actions
 
         public async Task<string> Execute(CreateJwsParameter createJwsParameter)
         {
-            if (createJwsParameter == null 
-                || createJwsParameter.Payload == null
-                || !createJwsParameter.Payload.Any())
+            if (createJwsParameter == null)
             {
                 throw new ArgumentNullException(nameof(createJwsParameter));
+            }
+
+
+            if(createJwsParameter.Payload == null
+                || !createJwsParameter.Payload.Any())
+            {
+                throw new ArgumentNullException(nameof(createJwsParameter.Payload));
             }
 
             if (createJwsParameter.Alg != JwsAlg.none &&
