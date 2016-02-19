@@ -15,6 +15,7 @@
 #endregion
 
 using SimpleIdentityServer.Core.Jwt;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace SimpleIdentityServer.Manager.Host.DTOs.Responses
@@ -29,6 +30,6 @@ namespace SimpleIdentityServer.Manager.Host.DTOs.Responses
         public JwsPayload Payload { get; set; }
 
         [DataMember(Name = Constants.JwsInformationResponseNames.JsonWebKey)]
-        public JsonWebKey JsonWebKey { get; set; }
+        public Dictionary<string, object> JsonWebKey { get; set; }
     }
 }

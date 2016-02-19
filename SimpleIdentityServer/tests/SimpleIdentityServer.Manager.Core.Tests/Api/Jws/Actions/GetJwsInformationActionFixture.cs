@@ -24,6 +24,8 @@ using SimpleIdentityServer.Manager.Core.Exceptions;
 using SimpleIdentityServer.Manager.Core.Helpers;
 using SimpleIdentityServer.Manager.Core.Parameters;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -34,6 +36,8 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws.Actions
         private Mock<IJwsParser> _jwsParserStub;
 
         private Mock<IJsonWebKeyHelper> _jsonWebKeyHelperStub;
+
+        private Mock<IJsonWebKeyEnricher> _jsonWebKeyEnricherStub;
 
         private IGetJwsInformationAction _getJwsInformationAction;
 
@@ -210,6 +214,12 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws.Actions
             {
                 Kid = kid
             };
+            var dic = new Dictionary<string, object>
+            {
+                {
+                    "kid", kid
+                }
+            };
             var jwsPayload = new JwsPayload();
             _jwsParserStub.Setup(j => j.GetHeader(It.IsAny<string>()))
                 .Returns(jwsProtectedHeader);
@@ -217,13 +227,18 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws.Actions
                 .Returns(Task.FromResult(jsonWebKey));
             _jwsParserStub.Setup(j => j.ValidateSignature(It.IsAny<string>(), It.IsAny<JsonWebKey>()))
                 .Returns(jwsPayload);
+            _jsonWebKeyEnricherStub.Setup(j => j.GetJsonWebKeyInformation(It.IsAny<JsonWebKey>()))
+                .Returns(dic);
+            _jsonWebKeyEnricherStub.Setup(j => j.GetPublicKeyInformation(It.IsAny<JsonWebKey>()))
+                .Returns(() => new Dictionary<string, object>());
 
             // ACT
             var result = _getJwsInformationAction.Execute(getJwsParameter).Result;
 
             // ASSERTS
             Assert.NotNull(result);
-            Assert.True(result.JsonWebKey.Kid == kid);
+            Assert.True(result.JsonWebKey.ContainsKey("kid"));
+            Assert.True(result.JsonWebKey.First().Value == kid);
         }
 
         [Fact]
@@ -259,9 +274,11 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws.Actions
         {
             _jwsParserStub = new Mock<IJwsParser>();
             _jsonWebKeyHelperStub = new Mock<IJsonWebKeyHelper>();
+            _jsonWebKeyEnricherStub = new Mock<IJsonWebKeyEnricher>();
             _getJwsInformationAction = new GetJwsInformationAction(
                 _jwsParserStub.Object,
-                _jsonWebKeyHelperStub.Object);
+                _jsonWebKeyHelperStub.Object,
+                _jsonWebKeyEnricherStub.Object);
         }
     }
 }

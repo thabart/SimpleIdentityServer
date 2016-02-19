@@ -14,14 +14,19 @@
 // limitations under the License.
 #endregion
 
-namespace SimpleIdentityServer.Manager.Core.Errors
+using System.Collections.Generic;
+
+namespace SimpleIdentityServer.Manager.Core.Extensions
 {
-    public static class ErrorCodes
+    public static class CollectionExtensions
     {
-        public const string InvalidRequestCode = "invalid_request";
-
-        public const string UnhandledExceptionCode = "unhandled_exception";
-
-        public const string InvalidParameterCode = "invalid_parameter";
+        public static void AddRange<T, TZ>(this Dictionary<T, TZ> firstDictionary,
+            Dictionary<T, TZ> secondDictionary)
+        {
+            foreach (var keyPair in secondDictionary)
+            {
+                firstDictionary.Add(keyPair.Key, keyPair.Value);
+            }
+        }
     }
 }

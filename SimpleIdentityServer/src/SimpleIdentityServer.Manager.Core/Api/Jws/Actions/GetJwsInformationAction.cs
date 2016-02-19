@@ -18,6 +18,7 @@ using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Manager.Core.Errors;
 using SimpleIdentityServer.Manager.Core.Exceptions;
+using SimpleIdentityServer.Manager.Core.Extensions;
 using SimpleIdentityServer.Manager.Core.Helpers;
 using SimpleIdentityServer.Manager.Core.Parameters;
 using SimpleIdentityServer.Manager.Core.Results;
@@ -37,14 +38,18 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jws.Actions
 
         private readonly IJsonWebKeyHelper _jsonWebKeyHelper;
 
+        private readonly IJsonWebKeyEnricher _jsonWebKeyEnricher;
+
         #region Constructor
 
         public GetJwsInformationAction(
             IJwsParser jwsParser,
-            IJsonWebKeyHelper jsonWebKeyHelper)
+            IJsonWebKeyHelper jsonWebKeyHelper,
+            IJsonWebKeyEnricher jsonWebKeyEnricher)
         {
             _jwsParser = jwsParser;
             _jsonWebKeyHelper = jsonWebKeyHelper;
+            _jsonWebKeyEnricher = jsonWebKeyEnricher;
         }
 
         #endregion
@@ -110,12 +115,15 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jws.Actions
                         ErrorDescriptions.TheSignatureIsNotCorrect);
                 }
 
-                result.JsonWebKey = jsonWebKey;
+                var jsonWebKeyDic = _jsonWebKeyEnricher.GetJsonWebKeyInformation(jsonWebKey);
+                jsonWebKeyDic.AddRange(_jsonWebKeyEnricher.GetPublicKeyInformation(jsonWebKey));
+                result.JsonWebKey = jsonWebKeyDic;
             }
             else
             {
                 payload = _jwsParser.GetPayload(jws);
             }
+
 
             result.Payload = payload;
             return result;

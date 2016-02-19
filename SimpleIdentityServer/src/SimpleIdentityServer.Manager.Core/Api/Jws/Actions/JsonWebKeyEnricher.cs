@@ -14,15 +14,16 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Common.Extensions;
+using SimpleIdentityServer.Core.Jwt;
+using SimpleIdentityServer.Manager.Core.Errors;
+using SimpleIdentityServer.Manager.Core.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 
-using SimpleIdentityServer.Core.Common.Extensions;
-using SimpleIdentityServer.Core.Jwt;
-
-namespace SimpleIdentityServer.Core.Api.Jwks.Actions
+namespace SimpleIdentityServer.Manager.Core.Api.Jws.Actions
 {
     public interface IJsonWebKeyEnricher
     {
@@ -44,9 +45,22 @@ namespace SimpleIdentityServer.Core.Api.Jwks.Actions
                 }
             };
         }
-        
+
+        #region Public methods
+
         public Dictionary<string, object> GetPublicKeyInformation(JsonWebKey jsonWebKey)
         {
+            if (jsonWebKey == null)
+            {
+                throw new ArgumentNullException(nameof(jsonWebKey));
+            }
+
+            if (!_mappingKeyTypeAndPublicKeyEnricher.ContainsKey(jsonWebKey.Kty))
+            {
+                throw new IdentityServerManagerException(ErrorCodes.InvalidParameterCode,
+                    string.Format(ErrorDescriptions.TheKtyIsNotSupported, jsonWebKey.Kty));
+            }
+
             var result = new Dictionary<string, object>();
             var enricher = _mappingKeyTypeAndPublicKeyEnricher[jsonWebKey.Kty];
             enricher(result, jsonWebKey);
@@ -55,23 +69,40 @@ namespace SimpleIdentityServer.Core.Api.Jwks.Actions
 
         public Dictionary<string, object> GetJsonWebKeyInformation(JsonWebKey jsonWebKey)
         {
+            if (jsonWebKey == null)
+            {
+                throw new ArgumentNullException(nameof(jsonWebKey));
+            }
+
+            if (!Constants.MappingKeyTypeEnumToName.ContainsKey(jsonWebKey.Kty))
+            {
+                throw new ArgumentException(nameof(jsonWebKey.Kty));
+            }
+
+            if (!Constants.MappingUseEnumerationToName.ContainsKey(jsonWebKey.Use))
+            {
+                throw new ArgumentException(nameof(jsonWebKey.Use));
+            }
+
             return new Dictionary<string, object>
             {
                 {
-                    Jwt.Constants.JsonWebKeyParameterNames.KeyTypeName, Jwt.Constants.MappingKeyTypeEnumToName[jsonWebKey.Kty]
+                    Constants.JsonWebKeyParameterNames.KeyTypeName, Constants.MappingKeyTypeEnumToName[jsonWebKey.Kty]
                 },
                 {
-                    Jwt.Constants.JsonWebKeyParameterNames.UseName, Jwt.Constants.MappingUseEnumerationToName[jsonWebKey.Use]
+                    Constants.JsonWebKeyParameterNames.UseName, Constants.MappingUseEnumerationToName[jsonWebKey.Use]
                 },
                 {
-                    Jwt.Constants.JsonWebKeyParameterNames.AlgorithmName, Jwt.Constants.MappingNameToAllAlgEnum.SingleOrDefault(kp => kp.Value == jsonWebKey.Alg).Key
+                    Constants.JsonWebKeyParameterNames.AlgorithmName, Constants.MappingNameToAllAlgEnum.SingleOrDefault(kp => kp.Value == jsonWebKey.Alg).Key
                 },
                 {
-                    Jwt.Constants.JsonWebKeyParameterNames.KeyIdentifierName, jsonWebKey.Kid
+                    Constants.JsonWebKeyParameterNames.KeyIdentifierName, jsonWebKey.Kid
                 }
                 // TODO : we still need to support the other parameters x5u & x5c & x5t & x5t#S256
             };
         }
+
+        #endregion
 
         public void SetRsaPublicKeyInformation(Dictionary<string, object> result, JsonWebKey jsonWebKey)
         {
@@ -84,9 +115,9 @@ namespace SimpleIdentityServer.Core.Api.Jwks.Actions
                 // Export the exponent
                 var exponent = rsaParameters.Exponent.Base64EncodeBytes();
 
-                result.Add(Jwt.Constants.JsonWebKeyParameterNames.RsaKey.ModulusName, modulus);
-                result.Add(Jwt.Constants.JsonWebKeyParameterNames.RsaKey.ExponentName, exponent);
+                result.Add(Constants.JsonWebKeyParameterNames.RsaKey.ModulusName, modulus);
+                result.Add(Constants.JsonWebKeyParameterNames.RsaKey.ExponentName, exponent);
             }
-        } 
+        }
     }
 }
