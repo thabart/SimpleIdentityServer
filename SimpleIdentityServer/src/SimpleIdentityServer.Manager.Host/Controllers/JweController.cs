@@ -15,24 +15,42 @@
 #endregion
 
 using Microsoft.AspNet.Mvc;
+using SimpleIdentityServer.Manager.Core.Api.Jwe;
+using SimpleIdentityServer.Manager.Host.DTOs.Requests;
+using SimpleIdentityServer.Manager.Host.DTOs.Responses;
+using SimpleIdentityServer.Manager.Host.Extensions;
+using System;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Manager.Host.Controllers
 {
     [Route(Constants.EndPoints.Jwe)]
     public class JweController : Controller
     {
+        private readonly IJweActions _jweActions;
+
         #region Constructor
 
-        public JweController()
+        public JweController(IJweActions jweActions)
         {
-
+            _jweActions = jweActions;
         }
 
         #endregion
 
         #region Public methods
+        
+        [HttpGet]
+        public async Task<JweInformationResponse> GetJwe([FromQuery] GetJweRequest getJweRequest)
+        {
+            if (getJweRequest == null)
+            {
+                throw new ArgumentNullException(nameof(getJweRequest));
+            }
 
-
+            var result = await _jweActions.GetJweInformation(getJweRequest.ToParameter());
+            return result.ToDto();
+        }
 
         #endregion
     }

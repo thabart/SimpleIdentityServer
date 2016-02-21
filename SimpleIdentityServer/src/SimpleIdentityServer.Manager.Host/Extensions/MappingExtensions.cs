@@ -34,6 +34,16 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
             };
         }
 
+        public static GetJweParameter ToParameter(this GetJweRequest getJweRequest)
+        {
+            return new GetJweParameter
+            {
+                Jwe = getJweRequest.Jwe,
+                Password = getJweRequest.Password,
+                Url = getJweRequest.Url
+            };
+        }
+
         public static CreateJwsParameter ToParameter(this CreateJwsRequest createJwsRequest)
         {
             return new CreateJwsParameter
@@ -56,6 +66,15 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
                 Header = jwsInformationResult.Header,
                 JsonWebKey = jwsInformationResult.JsonWebKey,
                 Payload = jwsInformationResult.Payload
+            };
+        }
+
+        public static JweInformationResponse ToDto(this JweInformationResult jweInformationResult)
+        {
+            return new JweInformationResponse
+            {
+                IsContentJws = jweInformationResult.IsContentJws,
+                Content = jweInformationResult.Content
             };
         }
 

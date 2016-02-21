@@ -34,6 +34,15 @@ namespace SimpleIdentityServer.Manager.Host
             public const string Url = "url";
         }
 
+        public static class GetJweRequestNames
+        {
+            public const string Jwe = "jwe";
+
+            public const string Url = "url";
+
+            public const string Password = "password";
+        }
+
         public static class JwsInformationResponseNames
         {
             public const string Header = "header";
@@ -41,6 +50,13 @@ namespace SimpleIdentityServer.Manager.Host
             public const string Payload = "payload";
 
             public const string JsonWebKey = "jsonwebkey";
+        }
+
+        public static class JweInformationResponseNames
+        {
+            public const string Content = "content";
+
+            public const string IsContentJws = "iscontentjws";
         }
 
         public static class ErrorResponseNames
