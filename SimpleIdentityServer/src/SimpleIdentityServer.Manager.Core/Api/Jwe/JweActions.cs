@@ -14,14 +14,44 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Manager.Core.Api.Jwe.Actions;
+using SimpleIdentityServer.Manager.Core.Parameters;
+using SimpleIdentityServer.Manager.Core.Results;
+using System;
+using System.Threading.Tasks;
+
 namespace SimpleIdentityServer.Manager.Core.Api.Jwe
 {
     public interface IJweActions
     {
-
+        Task<JweInformationResult> GetJweInformation(GetJweParameter getJweParameter);
     }
 
-    public class JweActions
+    public class JweActions : IJweActions
     {
+        private readonly IGetJweInformationAction _getJweInformationAction;
+
+        #region Constructor
+
+        public JweActions(IGetJweInformationAction getJweInformationAction)
+        {
+            _getJweInformationAction = getJweInformationAction;
+        }
+
+        #endregion
+
+        #region Public methods
+
+        public Task<JweInformationResult> GetJweInformation(GetJweParameter getJweParameter)
+        {
+            if (getJweParameter == null)
+            {
+                throw new ArgumentNullException(nameof(getJweParameter));
+            }
+
+            return _getJweInformationAction.ExecuteAsync(getJweParameter);
+        }
+
+        #endregion
     }
 }

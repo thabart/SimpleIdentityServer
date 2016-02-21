@@ -15,6 +15,8 @@
 #endregion
 
 using Microsoft.Extensions.DependencyInjection;
+using SimpleIdentityServer.Manager.Core.Api.Jwe;
+using SimpleIdentityServer.Manager.Core.Api.Jwe.Actions;
 using SimpleIdentityServer.Manager.Core.Api.Jws;
 using SimpleIdentityServer.Manager.Core.Api.Jws.Actions;
 using SimpleIdentityServer.Manager.Core.Factories;
@@ -28,6 +30,8 @@ namespace SimpleIdentityServer.Manager.Core
         {
             serviceCollection.AddTransient<IJwsActions, JwsActions>();
             serviceCollection.AddTransient<IGetJwsInformationAction, GetJwsInformationAction>();
+            serviceCollection.AddTransient<IJweActions, JweActions>();
+            serviceCollection.AddTransient<IGetJweInformationAction, GetJweInformationAction>();
             serviceCollection.AddTransient<ICreateJwsAction, CreateJwsAction>();
             serviceCollection.AddTransient<IJsonWebKeyHelper, JsonWebKeyHelper>();
             serviceCollection.AddTransient<IHttpClientFactory, HttpClientFactory>();
