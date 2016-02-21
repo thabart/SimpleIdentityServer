@@ -34,6 +34,6 @@ namespace SimpleIdentityServer.Manager.Core.Errors
 
         public const string TheKtyIsNotSupported = "the kty '{0}' is not supported";
 
-        public const string TheJwsCannotBeExtractedFromJwe = "the jws token cannot be extracted from the jwe";
+        public const string TheContentCannotBeExtractedFromJweToken = "the content cannot be extracted from the jwe token";
     }
 }

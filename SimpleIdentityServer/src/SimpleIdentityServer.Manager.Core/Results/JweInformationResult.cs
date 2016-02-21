@@ -14,14 +14,12 @@
 // limitations under the License.
 #endregion
 
-namespace SimpleIdentityServer.Manager.Core.Api.Jwe
+namespace SimpleIdentityServer.Manager.Core.Results
 {
-    public interface IJweActions
+    public class JweInformationResult
     {
+        public string Content { get; set; }
 
-    }
-
-    public class JweActions
-    {
+        public bool IsContentJws { get; set; }
     }
 }

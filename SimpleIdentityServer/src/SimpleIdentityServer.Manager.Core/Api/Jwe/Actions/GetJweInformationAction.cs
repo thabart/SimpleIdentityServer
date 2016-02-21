@@ -15,6 +15,7 @@
 #endregion
 
 using SimpleIdentityServer.Core.Jwt.Encrypt;
+using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Manager.Core.Errors;
 using SimpleIdentityServer.Manager.Core.Exceptions;
 using SimpleIdentityServer.Manager.Core.Helpers;
@@ -27,12 +28,14 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jwe.Actions
 {
     public interface IGetJweInformationAction
     {
-        Task<string> Execute(GetJweParameter getJweParameter);
+        Task<JweInformationResult> ExecuteAsync(GetJweParameter getJweParameter);
     }
 
     public class GetJweInformationAction : IGetJweInformationAction
     {
         private readonly IJweParser _jweParser;
+
+        private readonly IJwsParser _jwsParser;
 
         private readonly IJsonWebKeyHelper _jsonWebKeyHelper;
 
@@ -40,9 +43,11 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jwe.Actions
 
         public GetJweInformationAction(
             IJweParser jweParser,
+            IJwsParser jwsParser,
             IJsonWebKeyHelper jsonWebKeyHelper)
         {
             _jweParser = jweParser;
+            _jwsParser = jwsParser;
             _jsonWebKeyHelper = jsonWebKeyHelper;
         }
 
@@ -50,7 +55,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jwe.Actions
 
         #region Public methods
 
-        public async Task<string> Execute(GetJweParameter getJweParameter)
+        public async Task<JweInformationResult> ExecuteAsync(GetJweParameter getJweParameter)
         {
             if (getJweParameter == null)
             {
@@ -92,24 +97,36 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jwe.Actions
                     string.Format(ErrorDescriptions.TheJsonWebKeyCannotBeFound, jweHeader.Kid, uri.AbsoluteUri));
             }
 
-            var jws = string.Empty;
+            var content = string.Empty;
             if (!string.IsNullOrWhiteSpace(getJweParameter.Password))
             {
-                jws = _jweParser.ParseByUsingSymmetricPassword(jwe, jsonWebKey, getJweParameter.Password);
+                content = _jweParser.ParseByUsingSymmetricPassword(jwe, jsonWebKey, getJweParameter.Password);
             }
             else
             {
-                jws = _jweParser.Parse(jwe, jsonWebKey);                
+                content = _jweParser.Parse(jwe, jsonWebKey);                
             }
 
-            if (string.IsNullOrWhiteSpace(jws))
+            if (string.IsNullOrWhiteSpace(content))
             {
                 throw new IdentityServerManagerException(
                     ErrorCodes.InvalidRequestCode,
-                    ErrorDescriptions.TheJwsCannotBeExtractedFromJwe);
+                    ErrorDescriptions.TheContentCannotBeExtractedFromJweToken);
             }
 
-            return jws;
+            var result = new JweInformationResult
+            {
+                Content = content,
+                IsContentJws = false
+            };
+
+            var jwsHeader = _jwsParser.GetHeader(content);
+            if (jwsHeader != null)
+            {
+                result.IsContentJws = true;
+            }
+                        
+            return result;
         }
 
         #endregion
