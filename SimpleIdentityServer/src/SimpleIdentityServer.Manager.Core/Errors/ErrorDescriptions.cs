@@ -22,6 +22,8 @@ namespace SimpleIdentityServer.Manager.Core.Errors
 
         public const string TheTokenIsNotAValidJws = "the token is not a valid JWS";
 
+        public const string TheTokenIsNotAValidJwe = "the token is not a valid JWE";
+
         public const string TheJsonWebKeyCannotBeFound = "the json web key {0} cannot be found {1}";
 
         public const string TheSignatureIsNotCorrect = "the signature is not correct";
@@ -31,5 +33,7 @@ namespace SimpleIdentityServer.Manager.Core.Errors
         public const string TheJwsCannotBeGeneratedBecauseMissingParameters = "the jws cannot be generated because either the Url or Kid is not specified";
 
         public const string TheKtyIsNotSupported = "the kty '{0}' is not supported";
+
+        public const string TheJwsCannotBeExtractedFromJwe = "the jws token cannot be extracted from the jwe";
     }
 }

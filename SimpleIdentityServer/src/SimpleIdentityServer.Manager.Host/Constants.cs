@@ -23,6 +23,8 @@ namespace SimpleIdentityServer.Manager.Host
             public const string RootPath = "api";
 
             public const string Jws = RootPath + "/jws";
+
+            public const string Jwe = RootPath + "/jwe";
         }
 
         public static class GetJwsRequestNames
