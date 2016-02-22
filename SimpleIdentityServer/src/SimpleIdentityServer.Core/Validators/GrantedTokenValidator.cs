@@ -13,9 +13,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using System;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Errors;
+using SimpleIdentityServer.Core.Models;
 
 namespace SimpleIdentityServer.Core.Validators
 {
@@ -23,6 +25,11 @@ namespace SimpleIdentityServer.Core.Validators
     {
         bool CheckAccessToken(
             string accessToken, 
+            out string messageErrorCode,
+            out string messageErrorDescription);
+
+        bool CheckRefreshToken(
+            string refreshToken,
             out string messageErrorCode,
             out string messageErrorDescription);
     }
@@ -36,18 +43,55 @@ namespace SimpleIdentityServer.Core.Validators
             _grantedTokenRepository = grantedTokenRepository;
         }
 
+        #region Public methods
+
         public bool CheckAccessToken(
             string accessToken,
             out string messageErrorCode,
             out string messageErrorDescription)
         {
+            if (string.IsNullOrWhiteSpace(accessToken))
+            {
+                throw new ArgumentNullException(nameof(accessToken));
+            }
+
             messageErrorCode = string.Empty;
             messageErrorDescription = string.Empty;
             var grantedToken = _grantedTokenRepository.GetToken(accessToken);
+            return CheckGrantedToken(grantedToken, out messageErrorCode, out messageErrorDescription);
+        }
+
+        public bool CheckRefreshToken(
+            string refreshToken,
+            out string messageErrorCode,
+            out string messageErrorDescription)
+        {
+            if (string.IsNullOrWhiteSpace(refreshToken))
+            {
+                throw new ArgumentNullException(nameof(refreshToken));
+            }
+
+            messageErrorCode = string.Empty;
+            messageErrorDescription = string.Empty;
+            var grantedToken = _grantedTokenRepository.GetTokenByRefreshToken(refreshToken);
+            return CheckGrantedToken(grantedToken, out messageErrorCode, out messageErrorDescription);
+        }
+
+        #endregion
+
+        #region Private methods
+
+        private bool CheckGrantedToken(
+            GrantedToken grantedToken,
+            out string messageErrorCode,
+            out string messageErrorDescription)
+        {
+            messageErrorCode = string.Empty;
+            messageErrorDescription = string.Empty;
             if (grantedToken == null)
             {
                 messageErrorCode = ErrorCodes.InvalidToken;
-                messageErrorDescription = ErrorDescriptions.TheAccessTokenIsNotValid;
+                messageErrorDescription = ErrorDescriptions.TheTokenIsNotValid;
                 return false;
             }
 
@@ -56,11 +100,13 @@ namespace SimpleIdentityServer.Core.Validators
             if (tokenIsExpired)
             {
                 messageErrorCode = ErrorCodes.InvalidToken;
-                messageErrorDescription = ErrorDescriptions.TheAccessTokenIsExpired;
+                messageErrorDescription = ErrorDescriptions.TheTokenIsExpired;
                 return false;
             }
-                                  
+
             return true;
         }
+
+        #endregion
     }
 }

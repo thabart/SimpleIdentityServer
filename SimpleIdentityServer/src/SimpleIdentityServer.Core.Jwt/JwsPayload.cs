@@ -149,7 +149,7 @@ namespace SimpleIdentityServer.Core.Jwt
             return default(double);
         }
 
-        private string[] GetArrayClaim(string claimName)
+        public string[] GetArrayClaim(string claimName)
         {
             if (!ContainsKey(claimName))
             {

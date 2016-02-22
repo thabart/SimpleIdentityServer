@@ -185,6 +185,19 @@ namespace SimpleIdentityServer.Core
             public static string IdTokenName = "id_token";
         }
 
+        public static class StandardTokenTypeHintNames
+        {
+            public const string AccessToken = "access_token";
+
+            public const string RefreshToken = "refresh_token";
+        }
+
+        public static List<string> AllStandardTokenTypeHintNames = new List<string>
+        {
+            StandardTokenTypeHintNames.AccessToken,
+            StandardTokenTypeHintNames.RefreshToken
+        };
+
         public static List<string> AllStandardClaimParameterValueNames = new List<string>
         {
             StandardClaimParameterValueNames.ValueName,
@@ -261,6 +274,14 @@ namespace SimpleIdentityServer.Core
             public const string DefaultAcrValues = "default_acr_values";
             public const string InitiateLoginUri = "initiate_login_uri";
             public const string RequestUris = "request_uris";
+        }
+
+        public static class IntrospectionRequestNames
+        {
+            public const string Token = "token";
+            public const string TokenTypeHint = "token_type_hint";
+            public const string ClientId = "client_id";
+            public const string ClientSecret = "client_secret";
         }
 
         /// <summary>

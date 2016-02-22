@@ -73,6 +73,8 @@ namespace SimpleIdentityServer.Core.Errors
         public static string TheAuthorizationCodeHasNotBeenIssuedForTheGivenClientId =
             "the authorization code has not been issued for the given client id {0}";
 
+        public static string TheTokenHasNotBeenIssuedForTheGivenClientId = "the token has not been issued for the given client id '{0}'";
+
         public static string TheAuthorizationCodeIsObsolete = "the authorization code is obsolete";
 
         public static string TheRedirectionUrlIsNotTheSame =
@@ -84,9 +86,9 @@ namespace SimpleIdentityServer.Core.Errors
 
         public static string TheJwtTokenIsExpired = "the jwt token is expired";
 
-        public static string TheAccessTokenIsExpired = "the access token is expired";
+        public static string TheTokenIsExpired = "the token is expired";
 
-        public static string TheAccessTokenIsNotValid = "the access token is not valid";
+        public static string TheTokenIsNotValid = "the token is not valid";
 
         public static string TheIssuerFromJwtIsNotCorrect = "the issuer from JWT is not correct";
 
