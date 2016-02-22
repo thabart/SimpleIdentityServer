@@ -117,8 +117,8 @@ namespace SimpleIdentityServer.Host.Configuration
                         ResponseType.id_token
                     },
                     IdTokenSignedResponseAlg = "RS256",
-                    // IdTokenEncryptedResponseAlg = "RSA1_5",
-                    // IdTokenEncryptedResponseEnc = "A128CBC-HS256",
+                    IdTokenEncryptedResponseAlg = "RSA1_5",
+                    IdTokenEncryptedResponseEnc = "A128CBC-HS256",
                     RedirectionUrls = new List<string>
                     {
                         "https://op.certification.openid.net:60360/authz_cb",

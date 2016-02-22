@@ -44,6 +44,19 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
             };
         }
 
+        public static CreateJweParameter ToParameter(this CreateJweRequest createJweRequest)
+        {
+            return new CreateJweParameter
+            {
+                Alg = createJweRequest.Alg,
+                Enc = createJweRequest.Enc,
+                Jws = createJweRequest.Jws,
+                Kid = createJweRequest.Kid,
+                Password = createJweRequest.Password,
+                Url = createJweRequest.Url
+            };
+        }
+
         public static CreateJwsParameter ToParameter(this CreateJwsRequest createJwsRequest)
         {
             return new CreateJwsParameter

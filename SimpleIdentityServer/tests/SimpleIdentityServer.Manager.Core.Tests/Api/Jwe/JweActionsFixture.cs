@@ -26,6 +26,8 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jwe
     {
         private Mock<IGetJweInformationAction> _getJweInformationActionStub;
 
+        private Mock<ICreateJweAction> _createJweActionStub;
+
         private IJweActions _jweActions;
 
         #region Exceptions GetJweInformation
@@ -63,7 +65,10 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jwe
         private void InitializeFakeObjects()
         {
             _getJweInformationActionStub = new Mock<IGetJweInformationAction>();
-            _jweActions = new JweActions(_getJweInformationActionStub.Object);
+            _createJweActionStub = new Mock<ICreateJweAction>();
+            _jweActions = new JweActions(
+                _getJweInformationActionStub.Object,
+                _createJweActionStub.Object);
         }
     }
 }

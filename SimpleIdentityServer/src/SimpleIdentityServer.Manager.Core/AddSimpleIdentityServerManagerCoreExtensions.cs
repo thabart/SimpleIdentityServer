@@ -32,6 +32,7 @@ namespace SimpleIdentityServer.Manager.Core
             serviceCollection.AddTransient<IGetJwsInformationAction, GetJwsInformationAction>();
             serviceCollection.AddTransient<IJweActions, JweActions>();
             serviceCollection.AddTransient<IGetJweInformationAction, GetJweInformationAction>();
+            serviceCollection.AddTransient<ICreateJweAction, CreateJweAction>();
             serviceCollection.AddTransient<ICreateJwsAction, CreateJwsAction>();
             serviceCollection.AddTransient<IJsonWebKeyHelper, JsonWebKeyHelper>();
             serviceCollection.AddTransient<IHttpClientFactory, HttpClientFactory>();

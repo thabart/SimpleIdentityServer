@@ -76,5 +76,20 @@ namespace SimpleIdentityServer.Manager.Host
 
             public const string Payload = "payload";
         }
+
+        public static class CreateJweRequestNames
+        {
+            public const string Jws = "jws";
+
+            public const string Url = "url";
+
+            public const string Kid = "kid";
+
+            public const string Alg = "alg";
+
+            public const string Enc = "enc";
+
+            public const string Password = "password";
+        }
     }
 }

@@ -52,6 +52,17 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
             return result.ToDto();
         }
 
+        [HttpPost]
+        public async Task<string> PostJwe([FromBody] CreateJweRequest createJweRequest)
+        {
+            if (createJweRequest == null)
+            {
+                throw new ArgumentNullException(nameof(createJweRequest));
+            }
+
+            return await _jweActions.CreateJwe(createJweRequest.ToParameter());
+        }
+
         #endregion
     }
 }
