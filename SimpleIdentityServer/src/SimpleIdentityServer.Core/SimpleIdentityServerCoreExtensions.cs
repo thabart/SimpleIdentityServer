@@ -113,6 +113,7 @@ namespace SimpleIdentityServer.Core
             serviceCollection.AddTransient<IHttpClientFactory, HttpClientFactory>();
             serviceCollection.AddTransient<IIntrospectionActions, IntrospectionActions>();
             serviceCollection.AddTransient<IPostIntrospectionAction, PostIntrospectionAction>();
+            serviceCollection.AddTransient<IIntrospectionParameterValidator, IntrospectionParameterValidator>();
             return serviceCollection;
         }
     }
