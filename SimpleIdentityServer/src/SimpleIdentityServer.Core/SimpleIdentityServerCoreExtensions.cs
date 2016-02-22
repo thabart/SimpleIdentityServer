@@ -41,6 +41,8 @@ using SimpleIdentityServer.Core.Api.UserInfo;
 using SimpleIdentityServer.Core.Api.UserInfo.Actions;
 using SimpleIdentityServer.Core.Translation;
 using System;
+using SimpleIdentityServer.Core.Api.Introspection;
+using SimpleIdentityServer.Core.Api.Introspection.Actions;
 
 namespace SimpleIdentityServer.Core
 {
@@ -109,6 +111,8 @@ namespace SimpleIdentityServer.Core
             serviceCollection.AddTransient<IRefreshTokenGrantTypeParameterValidator, RefreshTokenGrantTypeParameterValidator>();
             serviceCollection.AddTransient<ITranslationManager, TranslationManager>();
             serviceCollection.AddTransient<IHttpClientFactory, HttpClientFactory>();
+            serviceCollection.AddTransient<IIntrospectionActions, IntrospectionActions>();
+            serviceCollection.AddTransient<IPostIntrospectionAction, PostIntrospectionAction>();
             return serviceCollection;
         }
     }

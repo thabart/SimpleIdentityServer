@@ -32,5 +32,12 @@ namespace SimpleIdentityServer.Host.DTOs.Request
 
         [DataMember(Name = Core.Constants.IntrospectionRequestNames.ClientSecret)]
         public string ClientSecret { get; set; }
+
+
+        [DataMember(Name = Core.Constants.IntrospectionRequestNames.ClientAssertion)]
+        public string ClientAssertion { get; set; }
+
+        [DataMember(Name = Core.Constants.IntrospectionRequestNames.ClientAssertionType)]
+        public string ClientAssertionType { get; set; }
     }
 }

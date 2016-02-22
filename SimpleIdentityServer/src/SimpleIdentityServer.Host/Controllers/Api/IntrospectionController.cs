@@ -16,7 +16,10 @@
 
 using Microsoft.AspNet.Mvc;
 using Microsoft.Extensions.Primitives;
+using SimpleIdentityServer.Core.Api.Introspection;
 using SimpleIdentityServer.Host.DTOs.Request;
+using SimpleIdentityServer.Host.DTOs.Response;
+using SimpleIdentityServer.Host.Extensions;
 using System;
 using System.Linq;
 using System.Net.Http.Headers;
@@ -26,14 +29,21 @@ namespace SimpleIdentityServer.Host.Controllers.Api
     [Route(Constants.EndPoints.Introspection)]
     public class IntrospectionController : Controller
     {
+        private readonly IIntrospectionActions _introspectionActions;
+
         #region Constructor
+
+        public IntrospectionController(IIntrospectionActions introspectionActions)
+        {
+            _introspectionActions = introspectionActions;
+        }
 
         #endregion
 
         #region Public methods
 
         [HttpPost]
-        public void Post(IntrospectionRequest introspectionRequest)
+        public IntrospectionResponse Post(IntrospectionRequest introspectionRequest)
         {
             if (introspectionRequest == null)
             {
@@ -53,6 +63,11 @@ namespace SimpleIdentityServer.Host.Controllers.Api
                         splittedAuthorizationHeaderValue[1]);
                 }
             }
+
+            var result = _introspectionActions.PostIntrospection(
+                introspectionRequest.ToParameter(), 
+                authenticationHeaderValue);
+            return result.ToDto();
         }
 
         #endregion

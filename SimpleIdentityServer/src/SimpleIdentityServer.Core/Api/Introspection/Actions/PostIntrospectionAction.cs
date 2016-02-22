@@ -25,7 +25,6 @@ using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
 

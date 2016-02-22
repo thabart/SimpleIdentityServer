@@ -14,6 +14,7 @@ using SimpleIdentityServer.Core.Parameters;
 using Display = SimpleIdentityServer.Host.DTOs.Request.Display;
 using ResponseMode = SimpleIdentityServer.Host.DTOs.Request.ResponseMode;
 using SimpleIdentityServer.Api.ViewModels;
+using SimpleIdentityServer.Core.Results;
 
 namespace SimpleIdentityServer.Host.Extensions
 {
@@ -71,6 +72,19 @@ namespace SimpleIdentityServer.Host.Extensions
             {
                 UserName = viewModel.UserName,
                 Password = viewModel.Password
+            };
+        }
+
+        public static IntrospectionParameter ToParameter(this IntrospectionRequest viewModel)
+        {
+            return new IntrospectionParameter
+            {
+                ClientAssertion = viewModel.ClientAssertion,
+                ClientAssertionType = viewModel.ClientAssertionType,
+                ClientId = viewModel.ClientId,
+                ClientSecret = viewModel.ClientSecret,
+                Token = viewModel.Token,
+                TokenTypeHint = viewModel.TokenTypeHint
             };
         }
 
@@ -300,6 +314,25 @@ namespace SimpleIdentityServer.Host.Extensions
                 UserInfoEncryptedResponseAlg = clientResponse.UserInfoEncryptedResponseAlg,
                 UserInfoEncryptedResponseEnc = clientResponse.UserInfoEncryptedResponseEnc,
                 UserInfoSignedResponseAlg = clientResponse.UserInfoSignedResponseAlg
+            };
+        }
+
+        public static IntrospectionResponse ToDto(this IntrospectionResult introspectionResult)
+        {
+            return new IntrospectionResponse
+            {
+                Active = introspectionResult.Active,
+                Audience = introspectionResult.Audience,
+                ClientId = introspectionResult.ClientId,
+                Expiration = introspectionResult.Expiration,
+                IssuedAt = introspectionResult.IssuedAt,
+                Issuer = introspectionResult.Issuer,
+                Jti = introspectionResult.Jti,
+                Nbf = introspectionResult.Nbf,
+                Scope = introspectionResult.Scope,
+                Subject = introspectionResult.Subject,
+                TokenType = introspectionResult.TokenType,
+                UserName = introspectionResult.UserName
             };
         }
 
