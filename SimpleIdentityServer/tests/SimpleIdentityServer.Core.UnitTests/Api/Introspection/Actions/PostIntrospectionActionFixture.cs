@@ -17,6 +17,7 @@
 using Moq;
 using SimpleIdentityServer.Core.Api.Introspection.Actions;
 using SimpleIdentityServer.Core.Authenticate;
+using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Models;
@@ -25,6 +26,7 @@ using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
 using System;
+using System.Net.Http.Headers;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
@@ -99,6 +101,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
             // ARRANGE
             InitializeFakeObjects();
             const string fakeClientId = "fake_client_id";
+            var authenticationHeaderValue = new AuthenticationHeaderValue("Basic", "");
             var parameter = new IntrospectionParameter
             {
                 TokenTypeHint = Constants.StandardTokenTypeHintNames.RefreshToken,
@@ -121,7 +124,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
                 .Returns(grantedToken);
 
             // ACT & ASSERTS
-            var exception = Assert.Throws<IdentityServerException>(() => _postIntrospectionAction.Execute(parameter, null));
+            var exception = Assert.Throws<IdentityServerException>(() => _postIntrospectionAction.Execute(parameter, authenticationHeaderValue));
             Assert.True(exception.Code == ErrorCodes.InvalidToken);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheTokenHasNotBeenIssuedForTheGivenClientId, fakeClientId));
         }
@@ -131,13 +134,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
         #region Happy paths
 
         [Fact]
-        public void When_Passing_Valid_AccessToken_Then_Result_Should_Be_Returned()
+        public void When_Passing_Expired_AccessToken_Then_Result_Should_Be_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
             const string clientId = "client_id";
             const string subject = "subject";
             const string audience = "audience";
+            var authenticationHeaderValue = new AuthenticationHeaderValue("Basic", "ClientId:ClientSecret".Base64Encode());
             var audiences = new[]
             {
                 audience
@@ -155,7 +159,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
             var grantedToken = new GrantedToken
             {
                 ClientId = clientId,
-                UserInfoPayLoad = new Jwt.JwsPayload
+                IdTokenPayLoad = new Jwt.JwsPayload
                 {
                     {
                         Jwt.Constants.StandardResourceOwnerClaimNames.Subject,
@@ -177,11 +181,68 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
                 .Returns(grantedToken);
 
             // ACT
-            var result = _postIntrospectionAction.Execute(parameter, null);
+            var result = _postIntrospectionAction.Execute(parameter, authenticationHeaderValue);
 
             // ASSERTS
             Assert.NotNull(result);
             Assert.False(result.Active);
+            Assert.True(result.Audience == audience);
+            Assert.True(result.Subject == subject);
+        }
+
+        [Fact]
+        public void When_Passing_Active_AccessToken_Then_Result_Should_Be_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            const string clientId = "client_id";
+            const string subject = "subject";
+            const string audience = "audience";
+            var authenticationHeaderValue = new AuthenticationHeaderValue("Basic", "ClientId:ClientSecret".Base64Encode());
+            var audiences = new[]
+            {
+                audience
+            };
+            var parameter = new IntrospectionParameter
+            {
+                TokenTypeHint = Constants.StandardTokenTypeHintNames.RefreshToken,
+                Token = "token"
+            };
+            string errorMessage;
+            var client = new Client
+            {
+                ClientId = clientId
+            };
+            var grantedToken = new GrantedToken
+            {
+                ClientId = clientId,
+                IdTokenPayLoad = new Jwt.JwsPayload
+                {
+                    {
+                        Jwt.Constants.StandardResourceOwnerClaimNames.Subject,
+                        subject
+                    },
+                    {
+                        Jwt.Constants.StandardClaimNames.Audiences,
+                        audiences
+                    }
+                },
+                CreateDateTime = DateTime.UtcNow,
+                ExpiresIn = 20000
+            };
+            _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), out errorMessage))
+                .Returns(client);
+            _grantedTokenRepositoryStub.Setup(a => a.GetTokenByRefreshToken(It.IsAny<string>()))
+                .Returns(() => null);
+            _grantedTokenRepositoryStub.Setup(a => a.GetToken(It.IsAny<string>()))
+                .Returns(grantedToken);
+
+            // ACT
+            var result = _postIntrospectionAction.Execute(parameter, authenticationHeaderValue);
+
+            // ASSERTS
+            Assert.NotNull(result);
+            Assert.True(result.Active);
             Assert.True(result.Audience == audience);
             Assert.True(result.Subject == subject);
         }

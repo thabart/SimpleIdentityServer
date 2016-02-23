@@ -131,33 +131,38 @@ namespace SimpleIdentityServer.Core.Api.Introspection.Actions
                     string.Format(ErrorDescriptions.TheTokenHasNotBeenIssuedForTheGivenClientId, client.ClientId));
             }
 
-            // 8. Fill-in the other parameter
-            var audiences = string.Empty;
-            var audiencesArr = grantedToken.UserInfoPayLoad.GetArrayClaim(Jwt.Constants.StandardClaimNames.Audiences);
-            var issuedAt = grantedToken.UserInfoPayLoad.Iat;
-            var issuer = grantedToken.UserInfoPayLoad.Issuer;
-            var subject = grantedToken.UserInfoPayLoad.GetClaimValue(Jwt.Constants.StandardResourceOwnerClaimNames.Subject);
-            var userName = grantedToken.UserInfoPayLoad.GetClaimValue(Jwt.Constants.StandardResourceOwnerClaimNames.Name);
-            if (audiencesArr.Any())
-            {
-                audiences = string.Join(" ", audiencesArr);
-            }
-
-            /// TODO : Specifiy the other parameters : NBF & JTI
+            // 7. Fill-in parameters
+            //// TODO : Specifiy the other parameters : NBF & JTI
             var result = new IntrospectionResult
             {
                 Scope = grantedToken.Scope,
                 ClientId = grantedToken.ClientId,
                 Expiration = grantedToken.ExpiresIn,
-                TokenType = grantedToken.TokenType,
-                Audience = audiences,
-                IssuedAt = issuedAt,
-                Issuer = issuer,
-                Subject = subject,
-                UserName = userName
+                TokenType = grantedToken.TokenType
             };
 
-            // 7. Based on the expiration date disable OR enable the introspection result
+            // 8. Fill-in the other parameters
+            if (grantedToken.IdTokenPayLoad != null)
+            {
+                var audiences = string.Empty;
+                var audiencesArr = grantedToken.IdTokenPayLoad.GetArrayClaim(Jwt.Constants.StandardClaimNames.Audiences);
+                var issuedAt = grantedToken.IdTokenPayLoad.Iat;
+                var issuer = grantedToken.IdTokenPayLoad.Issuer;
+                var subject = grantedToken.IdTokenPayLoad.GetClaimValue(Jwt.Constants.StandardResourceOwnerClaimNames.Subject);
+                var userName = grantedToken.IdTokenPayLoad.GetClaimValue(Jwt.Constants.StandardResourceOwnerClaimNames.Name);
+                if (audiencesArr.Any())
+                {
+                    audiences = string.Join(" ", audiencesArr);
+                }
+
+                result.Audience = audiences;
+                result.IssuedAt = issuedAt;
+                result.Issuer = issuer;
+                result.Subject = subject;
+                result.UserName = userName;
+            }
+
+            // 9. Based on the expiration date disable OR enable the introspection result
             var expirationDateTime = grantedToken.CreateDateTime.AddSeconds(grantedToken.ExpiresIn);
             var tokenIsExpired = DateTime.UtcNow > expirationDateTime;
             if (tokenIsExpired)
@@ -208,11 +213,6 @@ namespace SimpleIdentityServer.Core.Api.Introspection.Actions
 
         private static string[] GetParameters(string authorizationHeaderValue)
         {
-            if (string.IsNullOrWhiteSpace(authorizationHeaderValue))
-            {
-                return new string[0];
-            }
-
             var decodedParameter = authorizationHeaderValue.Base64Decode();
             return decodedParameter.Split(':');
         }
