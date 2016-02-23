@@ -17,9 +17,7 @@
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Http;
 using Microsoft.Extensions.OptionsModel;
-using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Oauth2Instrospection.Authentication.Errors;
 using System;
 using System.Collections.Generic;
@@ -160,10 +158,12 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
         
         private static ClaimsPrincipal CreateClaimPrincipal(IntrospectionResponse introspectionResponse)
         {
-            var claims = new List<Claim>
+            var claims = new List<Claim>();
+            if (!string.IsNullOrWhiteSpace(introspectionResponse.Subject))
             {
-                new Claim(Constants.ClaimNames.Subject, introspectionResponse.Subject)
-            };
+                claims.Add(new Claim(Constants.ClaimNames.Subject, introspectionResponse.Subject));
+            }
+
             if (!string.IsNullOrWhiteSpace(introspectionResponse.Scope))
             {
                 var scopes = introspectionResponse.Scope.Split(' ');

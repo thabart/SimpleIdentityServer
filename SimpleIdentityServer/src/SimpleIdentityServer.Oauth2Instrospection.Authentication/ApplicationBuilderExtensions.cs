@@ -44,7 +44,7 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
             {
                 throw new ArgumentNullException(nameof(oauth2IntrospectionOptions));
             }
-            
+
             return app.UseMiddleware<Oauth2IntrospectionMiddleware<Oauth2IntrospectionOptions>>(Options.Options.Create(oauth2IntrospectionOptions));
         }    
     

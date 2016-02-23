@@ -6,24 +6,25 @@
     "projectUrl": "",
     "licenseUrl": "",
     "tooling": {
-      "defaultNamespace": "SimpleIdentityServer.Oauth2Instrospection.Authentication.Tests"
+        "defaultNamespace": "SimpleIdentityServer.Oauth2Instrospection.Authentication.Tests"
     },
     "dependencies": {
-		  "Moq": "4.2.1510.2205",
-		  "NUnit": "3.0.1",
+        "Moq": "4.2.1510.2205",
+        "NUnit": "3.0.1",
         "xunit": "2.1.0",
-      "xunit.runner.dnx": "2.1.0-rc1-build204",
-    "Microsoft.AspNet.TestHost": "1.0.0-rc1-final",
-		    "SimpleIdentityServer.Oauth2Instrospection.Authentication": ""
+        "xunit.runner.dnx": "2.1.0-rc1-build204",
+        "Microsoft.AspNet.TestHost": "1.0.0-rc1-final",
+        "Microsoft.AspNet.Authorization": "1.0.0-rc1-final",
+        "SimpleIdentityServer.Oauth2Instrospection.Authentication": ""
     },
     "commands": {
         "test": "xunit.runner.dnx"
     },
     "frameworks": {
-        "dnx451": {			
-			"frameworkAssemblies": {
-				"System.Core": "4.0.0.0"
-			}
-		}
+        "dnx451": {
+            "frameworkAssemblies": {
+                "System.Core": "4.0.0.0"
+            }
+        }
     }
 }
