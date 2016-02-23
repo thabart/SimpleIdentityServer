@@ -14,25 +14,37 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Mvc;
+using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Repositories;
+using System.Collections.Generic;
+using System.Linq;
 
-namespace SimpleIdentityServer.Manager.Host.Controllers
+namespace SimpleIdentityServer.Manager.Core.Api.Clients.Actions
 {
-    [Route(Constants.EndPoints.Clients)]
-    public class ClientsController : Controller
+    public interface IGetClientsAction
     {
+        List<Client> Execute();
+    }
+
+    public class GetClientsAction : IGetClientsAction
+    {
+        private readonly IClientRepository _clientRepository;
+
         #region Constructor
 
-        public ClientsController()
+        public GetClientsAction(IClientRepository clientRepository)
         {
-
+            _clientRepository = clientRepository;
         }
 
         #endregion
 
         #region Public methods
 
-
+        public List<Client> Execute()
+        {
+            return _clientRepository.GetAll().ToList();
+        }
 
         #endregion
     }

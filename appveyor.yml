@@ -24,6 +24,8 @@ test_script:
 #- cmd: dnx -p tests\SimpleIdentityServer.Api.Tests test
 - cmd: dnx -p tests\SimpleIdentityServer.Core.Jwt.UnitTests test
 - cmd: dnx -p tests\SimpleIdentityServer.Core.UnitTests test
+- cmd: dnx -p tests\SimpleIdentityServer.Oauth2Instrospection.Authentication.Tests test
+- cmd: dnx -p tests\SimpleIdentityServer.Manager.Core.Tests test
 after_test:
 - cmd: '%USERPROFILE%\.dnx\packages\OpenCover\4.6.166\tools\OpenCover.Console.exe -target:"%USERPROFILE%\.dnx\runtimes\dnx-clr-win-x86.1.0.0-rc1-final\bin\dnx.exe" -targetargs:"--lib %APPVEYOR_BUILD_FOLDER%\SimpleIdentityServer\src\SimpleIdentityServer.Core\bin\Debug\dnx451 -p tests\SimpleIdentityServer.Core.UnitTests test" -output:coverage.xml -register:user -filter:+[SimpleIdentityServer.Core]*'
 - cmd: '%USERPROFILE%\.dnx\packages\coveralls.io\1.3.4\tools\coveralls.net.exe --opencover coverage.xml'

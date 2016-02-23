@@ -24,6 +24,7 @@ using Swashbuckle.SwaggerGen;
 using SimpleIdentityServer.Manager.Core;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Manager.Host.Middleware;
+using SimpleIdentityServer.DataAccess.Fake;
 
 namespace SimpleIdentityServer.Manager.Host
 {
@@ -57,6 +58,7 @@ namespace SimpleIdentityServer.Manager.Host
                 .AllowAnyMethod()
                 .AllowAnyHeader()));
             services.AddSimpleIdentityServerManagerCore();
+            services.AddSimpleIdentityServerFake();
             services.AddSimpleIdentityServerJwt();
         }
 

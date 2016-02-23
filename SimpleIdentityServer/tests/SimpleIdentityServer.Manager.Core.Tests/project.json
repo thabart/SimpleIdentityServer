@@ -17,6 +17,7 @@
         "ReportGenerator": "2.3.5.0",
 		    "coveralls.io": "1.3.4",
       "SimpleIdentityServer.Manager.Core": "",
+      "SimpleIdentityServer.Core": "",
       "SimpleIdentityServer.Core.Jwt": ""
     },
     "commands": {

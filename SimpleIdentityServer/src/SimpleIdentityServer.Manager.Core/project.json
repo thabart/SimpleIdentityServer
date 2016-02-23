@@ -8,7 +8,8 @@
 
     "dependencies": {
       "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc1-final",
-      "SimpleIdentityServer.Core.Jwt": ""
+      "SimpleIdentityServer.Core.Jwt": "",
+      "SimpleIdentityServer.Core": ""
     },
   
 	  "tooling": {
