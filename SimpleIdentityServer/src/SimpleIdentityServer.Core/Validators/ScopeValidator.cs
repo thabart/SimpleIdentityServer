@@ -48,12 +48,6 @@ namespace SimpleIdentityServer.Core.Validators
             var emptyList = new List<string>();
             var result = new List<string>();
             messageDescription = string.Empty;
-            if (!ValidateScope(scope))
-            {
-                messageDescription = string.Format(ErrorDescriptions.ParameterIsNotCorrect, "scope");
-                return emptyList;
-            }
-
             var scopes = _parameterParserHelper.ParseScopeParameters(scope);
             if (scopes.Any())
             {
@@ -83,13 +77,6 @@ namespace SimpleIdentityServer.Core.Validators
             }
 
             return result;
-        }
-        
-        private static bool ValidateScope(string scope)
-        {
-            const string pattern = @"^\w+( +\w+)*$";
-            var regularExpression = new Regex(pattern, RegexOptions.IgnoreCase);
-            return regularExpression.IsMatch(scope);
         }
     }
 }
