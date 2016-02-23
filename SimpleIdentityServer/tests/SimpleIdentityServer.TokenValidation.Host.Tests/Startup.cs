@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
+using SimpleIdentityServer.Oauth2Instrospection.Authentication;
 
 namespace SimpleIdentityServer.TokenValidation.Host.Tests
 {
@@ -39,6 +40,13 @@ namespace SimpleIdentityServer.TokenValidation.Host.Tests
         {
             loggerFactory.AddConsole();
             app.UseStatusCodePages();
+            var options = new Oauth2IntrospectionOptions
+            {
+                InstrospectionEndPoint = "http://localhost:5000/introspect",
+                ClientId = "MyBlog",
+                ClientSecret = "MyBlog"
+            };
+            app.UseAuthenticationWithIntrospection(options);
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

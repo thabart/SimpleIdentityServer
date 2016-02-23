@@ -22,22 +22,21 @@ namespace SimpleIdentityServer.Host.DTOs.Request
     public class IntrospectionRequest
     {
         [DataMember(Name = Core.Constants.IntrospectionRequestNames.Token)]
-        public string Token { get; set; }
+        public string token { get; set; }
 
         [DataMember(Name = Core.Constants.IntrospectionRequestNames.TokenTypeHint)]
-        public string TokenTypeHint { get; set; }
+        public string token_type_hint { get; set; }
 
         [DataMember(Name = Core.Constants.IntrospectionRequestNames.ClientId)]
-        public string ClientId { get; set; }
+        public string client_id { get; set; }
 
         [DataMember(Name = Core.Constants.IntrospectionRequestNames.ClientSecret)]
-        public string ClientSecret { get; set; }
-
-
+        public string client_secret { get; set; }
+        
         [DataMember(Name = Core.Constants.IntrospectionRequestNames.ClientAssertion)]
-        public string ClientAssertion { get; set; }
+        public string client_assertion { get; set; }
 
         [DataMember(Name = Core.Constants.IntrospectionRequestNames.ClientAssertionType)]
-        public string ClientAssertionType { get; set; }
+        public string client_assertion_type { get; set; }
     }
 }

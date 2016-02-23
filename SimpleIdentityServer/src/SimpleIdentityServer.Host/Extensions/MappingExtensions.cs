@@ -79,12 +79,12 @@ namespace SimpleIdentityServer.Host.Extensions
         {
             return new IntrospectionParameter
             {
-                ClientAssertion = viewModel.ClientAssertion,
-                ClientAssertionType = viewModel.ClientAssertionType,
-                ClientId = viewModel.ClientId,
-                ClientSecret = viewModel.ClientSecret,
-                Token = viewModel.Token,
-                TokenTypeHint = viewModel.TokenTypeHint
+                ClientAssertion = viewModel.client_assertion,
+                ClientAssertionType = viewModel.client_assertion_type,
+                ClientId = viewModel.client_id,
+                ClientSecret = viewModel.client_secret,
+                Token = viewModel.token,
+                TokenTypeHint = viewModel.token_type_hint
             };
         }
 

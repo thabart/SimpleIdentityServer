@@ -1,0 +1,28 @@
+{
+  "version": "1.0.0-*",
+  "description": "SimpleIdentityServer.Oauth2Instrospection.Authentication Class Library",
+  "authors": [ "thierry habart" ],
+  "tags": [""],
+  "projectUrl": "",
+  "licenseUrl": "",
+
+  "dependencies": {
+    "Microsoft.AspNet.Http.Abstractions": "1.0.0-rc1-final",
+    "Microsoft.AspNet.Authentication": "1.0.0-rc1-final",
+    "Microsoft.Extensions.OptionsModel": "1.0.0-rc1-final",
+    "Newtonsoft.Json": "8.0.2"
+  },
+  
+  "tooling": {
+    "defaultNamespace": "SimpleIdentityServer.Oauth2Instrospection.Authentication"
+  },
+
+  "frameworks": {
+    "dnx451": {
+      "frameworkAssemblies": {
+        "System.Web": "4.0.0.0",
+        "System.Runtime.Serialization":  "4.0.0.0"
+      }
+    }
+  }
+}
