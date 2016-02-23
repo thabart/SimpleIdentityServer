@@ -30,6 +30,10 @@ namespace SimpleIdentityServer.TokenValidation.Host.Tests
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("getValues", policy => policy.RequireClaim("scope", "Values:Get"));
+            });
             services.AddLogging();
             services.AddMvc();
         }

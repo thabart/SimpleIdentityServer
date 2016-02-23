@@ -31,6 +31,10 @@ namespace SimpleIdentityServer.Host.Configuration
                         },
                         new Scope
                         {
+                            Name = "Values:Get"
+                        },
+                        new Scope
+                        {
                             Name = "openid",
                             IsExposed = true,
                             IsOpenIdScope = true,
