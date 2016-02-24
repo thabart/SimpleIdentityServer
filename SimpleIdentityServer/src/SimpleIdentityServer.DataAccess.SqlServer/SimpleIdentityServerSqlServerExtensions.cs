@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.Data.Entity;
 using Microsoft.Extensions.DependencyInjection;
 
 using SimpleIdentityServer.Core.Repositories;

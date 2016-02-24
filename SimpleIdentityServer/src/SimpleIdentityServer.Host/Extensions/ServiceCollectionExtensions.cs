@@ -132,7 +132,7 @@ namespace SimpleIdentityServer.Host
             else 
             {
                 serviceCollection.AddSimpleIdentityServerSqlServer();
-                serviceCollection.AddTransient<SimpleIdentityServerContext>((a) => new SimpleIdentityServerContext(dataSourceOptions.ConnectionString));
+                // serviceCollection.AddTransient<SimpleIdentityServerContext>((a) => new SimpleIdentityServerContext(dataSourceOptions.ConnectionString));
             }
             
             ConfigureSimpleIdentityServer(serviceCollection, swaggerOptions);

@@ -32,7 +32,8 @@
 
   "commands": {
     "web": "Microsoft.AspNet.Server.Kestrel",
-    "watch": "Microsoft.Dnx.Watcher web"
+    "watch": "Microsoft.Dnx.Watcher web",
+    "ef": "EntityFramework.Commands"
   },
 
   "frameworks": {
