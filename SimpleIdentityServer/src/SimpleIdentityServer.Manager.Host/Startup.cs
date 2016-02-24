@@ -29,6 +29,7 @@ using SimpleIdentityServer.DataAccess.Fake.Models;
 using System.Collections.Generic;
 using Microsoft.AspNet.Mvc;
 using SimpleIdentityServer.Manager.Host.Hal;
+using SimpleIdentityServer.DataAccess.SqlServer;
 
 namespace SimpleIdentityServer.Manager.Host
 {
@@ -47,7 +48,7 @@ namespace SimpleIdentityServer.Manager.Host
         
         public void ConfigureServices(IServiceCollection services)
         {
-            // Add the dependencies needs to run Swagger
+            // Add the dependencies needed to run Swagger
             services.AddSwaggerGen();
             services.ConfigureSwaggerDocument(opts => {
                 opts.SingleApiVersion(new Info
@@ -58,14 +59,19 @@ namespace SimpleIdentityServer.Manager.Host
                 });
             });
 
+            // Add the dependencies needed to run MVC
             services.AddMvc(options =>
             {
                 options.OutputFormatters.Add(new JsonHalMediaTypeFormatter());
             });
+
+            // Add the dependencies needed to enable CORS
             services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader()));
 
+            /*
+            // Enable fake data source
             var fakeDataSource = new FakeDataSource();
             fakeDataSource.Clients = new List<Client>
             {
@@ -77,9 +83,18 @@ namespace SimpleIdentityServer.Manager.Host
                 }
             };
             services.AddInstance(fakeDataSource);
+            */
+
+            // Enable SqlServer
+            var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
+            services.AddSimpleIdentityServerSqlServer();
+            services.AddTransient<SimpleIdentityServerContext>((a) => new SimpleIdentityServerContext(connectionString));
 
             services.AddSimpleIdentityServerManagerCore();
-            services.AddSimpleIdentityServerFake();
+
+            // Enable identity server fake
+            // services.AddSimpleIdentityServerFake();
+
             services.AddSimpleIdentityServerJwt();
         }
 

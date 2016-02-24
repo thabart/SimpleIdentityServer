@@ -31,6 +31,7 @@
     "Swashbuckle.SwaggerUi": "6.0.0-rc1-final",
     "WebApi.Hal":  "2.6.0",
     "SimpleIdentityServer.DataAccess.Fake": "",
+    "SimpleIdentityServer.DataAccess.SqlServer": "",
     "SimpleIdentityServer.Manager.Core": ""
   },
 

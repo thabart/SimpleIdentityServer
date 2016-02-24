@@ -12,7 +12,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
     {
         public Configuration()
         {
-            AutomaticMigrationsEnabled = false;
+            AutomaticMigrationsEnabled = true;
         }
 
         protected override void Seed(SimpleIdentityServerContext context)
@@ -22,6 +22,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
             InsertTranslations(context);
             InsertResourceOwners(context);
             InsertJsonWebKeys(context);
+            InsertClients(context);
         }
 
         private static void InsertClaims(SimpleIdentityServerContext context)
@@ -109,6 +110,13 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                         new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumberVerified }
                     },
                     Type = ScopeType.ResourceOwner
+                },
+                new Scope
+                {
+                    Name = "SimpleIdentityServerManager:GetClients",
+                    Description = "Get all the clients",
+                    IsOpenIdScope = false,
+                    IsDisplayedInConsent = true
                 }
             });
         }
@@ -332,6 +340,38 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                     Kty = KeyType.RSA,
                     Use = Use.Enc,
                     SerializedKey = serializedRsa,
+                }
+            });
+        }
+
+        private static void InsertClients(SimpleIdentityServerContext context)
+        {
+            context.Clients.AddOrUpdate(new[]
+            {
+                new Client
+                {
+                    ClientId = "IdentityServerManager",
+                    ClientName = "Identity server manager",
+                    ClientSecret = "IdentityServerManager",
+                    TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
+                    LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
+                    PolicyUri = "http://openid.net",
+                    TosUri = "http://openid.net",
+                    AllowedScopes = new List<Models.Scope>
+                    {
+                        new Models.Scope
+                        {
+                            Name = "openid"
+                        },
+                        new Scope
+                        {
+                            Name = "SimpleIdentityServerManager:GetClients"
+                        }
+                    },
+                    GrantTypes = "0,1",
+                    ResponseTypes = "0,1,2",
+                    IdTokenSignedResponseAlg = "RS256",
+                    RedirectionUrls = "http://localhost:5002/callback"
                 }
             });
         }
