@@ -1,14 +1,18 @@
-﻿using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.Data.Entity;
 using SimpleIdentityServer.DataAccess.SqlServer.Models;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
 {
-    public sealed class ClaimMapping : EntityTypeConfiguration<Claim>
+    public static class ClaimMapping
     {
-        public ClaimMapping()
+        public static void AddClaimMapping(this ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Claim>()
+                .HasKey(p => p.Code);
+            /*
             ToTable("claims");
             HasKey(p => p.Code);
+            */
         }
     }
 }

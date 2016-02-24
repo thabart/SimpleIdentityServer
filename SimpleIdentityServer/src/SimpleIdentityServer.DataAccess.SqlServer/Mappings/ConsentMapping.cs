@@ -1,12 +1,16 @@
-﻿using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.Data.Entity;
 using SimpleIdentityServer.DataAccess.SqlServer.Models;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
 {
-    public sealed class ConsentMapping : EntityTypeConfiguration<Consent>
+    public static class ConsentMapping
     {
-        public ConsentMapping()
+        public static void AddConsentMapping(this ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Consent>()
+                .ToTable("consents")
+                .HasKey(c => c.Id);
+            /*
             ToTable("consents");
             HasKey(c => c.Id);
             HasRequired(c => c.Client)
@@ -29,6 +33,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
                     c.MapRightKey("ClaimCode");
                     c.ToTable("consentClaims");
                 });
+           */
         }
     }
 }

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Data.Entity.Migrations;
 using System.Security.Cryptography;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.DataAccess.SqlServer.Models;
@@ -8,14 +7,9 @@ using SimpleIdentityServer.DataAccess.SqlServer.Models;
 namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
 {
 
-    internal sealed class Configuration : DbMigrationsConfiguration<SimpleIdentityServerContext>
+    internal sealed class Configuration
     {
-        public Configuration()
-        {
-            AutomaticMigrationsEnabled = true;
-        }
-
-        protected override void Seed(SimpleIdentityServerContext context)
+        protected void Seed(SimpleIdentityServerContext context)
         {
             InsertClaims(context);
             InsertScopes(context);
@@ -27,14 +21,14 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
 
         private static void InsertClaims(SimpleIdentityServerContext context)
         {
-            context.Claims.AddOrUpdate(new [] {
+            context.Claims.AddRange(new [] {
                 new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject }
             });
         }
 
         private static void InsertScopes(SimpleIdentityServerContext context)
         {
-            context.Scopes.AddOrUpdate(new [] {
+            context.Scopes.AddRange(new [] {
                 new Models.Scope
                 {
                     Name = "openid",
@@ -123,7 +117,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
 
         private static void InsertTranslations(SimpleIdentityServerContext context)
         {
-            context.Translations.AddOrUpdate(new [] {
+            context.Translations.AddRange(new [] {
                 new Models.Translation
                 {
                     LanguageTag = "en",
@@ -281,7 +275,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
 
         private static void InsertResourceOwners(SimpleIdentityServerContext context)
         {
-            context.ResourceOwners.AddOrUpdate(new []
+            context.ResourceOwners.AddRange(new []
             {
                 new Models.ResourceOwner
                 {
@@ -321,7 +315,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                 serializedRsa = provider.ToXmlString(true);
             }
 
-            context.JsonWebKeys.AddOrUpdate(new []
+            context.JsonWebKeys.AddRange(new []
             {
                 new Models.JsonWebKey
                 {
@@ -346,7 +340,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
 
         private static void InsertClients(SimpleIdentityServerContext context)
         {
-            context.Clients.AddOrUpdate(new[]
+            context.Clients.AddRange(new[]
             {
                 new Client
                 {

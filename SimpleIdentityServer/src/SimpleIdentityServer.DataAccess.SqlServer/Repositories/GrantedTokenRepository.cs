@@ -5,6 +5,7 @@ using SimpleIdentityServer.Core.Repositories;
 using System.Linq;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
+using Microsoft.Data.Entity;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 {

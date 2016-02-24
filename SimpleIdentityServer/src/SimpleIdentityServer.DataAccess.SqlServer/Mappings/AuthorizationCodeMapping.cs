@@ -1,12 +1,16 @@
-﻿using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.Data.Entity;
 using SimpleIdentityServer.DataAccess.SqlServer.Models;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
 {
-    public sealed class AuthorizationCodeMapping : EntityTypeConfiguration<AuthorizationCode>
+    public static class AuthorizationCodeMapping
     {
-        public AuthorizationCodeMapping()
+        public static void AddAuthorizationCodeMapping(this ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<AuthorizationCode>()
+                .ToTable("authorizationCodes")
+                .HasKey(a => a.Code);
+            /*
             ToTable("authorizationCodes");
             HasKey(a => a.Code);
             Property(a => a.RedirectUri);
@@ -15,6 +19,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
             Property(a => a.IdTokenPayload);
             Property(a => a.UserInfoPayLoad);
             Property(a => a.Scopes);
+            */
         }
     }
 }

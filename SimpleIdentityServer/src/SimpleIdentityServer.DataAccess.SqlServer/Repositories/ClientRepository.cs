@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
 using SimpleIdentityServer.DataAccess.SqlServer.Models;
+using Microsoft.Data.Entity;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 {

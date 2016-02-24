@@ -1,12 +1,16 @@
-﻿using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.Data.Entity;
 using SimpleIdentityServer.DataAccess.SqlServer.Models;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
 {
-    public sealed class ResourceOwnerMapping : EntityTypeConfiguration<ResourceOwner>
+    public static class ResourceOwnerMapping
     {
-        public ResourceOwnerMapping()
+        public static void AddResourceOwnerMapping(this ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<ResourceOwner>()
+                .ToTable("resourceOwners")
+                .HasKey(j => j.Id);
+            /*
             ToTable("resourceOwners");
             HasKey(r => r.Id);
             Property(r => r.Name);
@@ -30,7 +34,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
             Property(r => r.Password);
             HasOptional(r => r.Address)
                 .WithRequired(a => a.ResourceOwner);
-
+            */
         }
     }
 }

@@ -5,6 +5,7 @@ using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
 
 using Jwt = SimpleIdentityServer.Core.Jwt;
+using Microsoft.Data.Entity;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 {

@@ -1,13 +1,16 @@
-﻿using System.Data.Entity.ModelConfiguration;
-
-using SimpleIdentityServer.DataAccess.SqlServer.Models;
+﻿using SimpleIdentityServer.DataAccess.SqlServer.Models;
+using Microsoft.Data.Entity;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
 {
-    public sealed class JsonWebKeyMapping : EntityTypeConfiguration<JsonWebKey>
+    public static class JsonWebKeyMapping
     {
-        public JsonWebKeyMapping()
+        public static void AddJsonWebKeyMapping(this ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<JsonWebKey>()
+                .ToTable("jsonWebKeys")
+                .HasKey(j => j.Kid);
+            /*
             ToTable("jsonWebKeys");
             HasKey(j => j.Kid);
             Property(j => j.Kty);
@@ -18,6 +21,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
             Property(j => j.X5t);
             Property(j => j.X5tS256);
             Property(j => j.SerializedKey);
+            */
         }
     }
 }

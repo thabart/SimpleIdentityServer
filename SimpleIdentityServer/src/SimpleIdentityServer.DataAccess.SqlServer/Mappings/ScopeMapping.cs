@@ -1,12 +1,16 @@
-﻿using System.Data.Entity.ModelConfiguration;
-using SimpleIdentityServer.DataAccess.SqlServer.Models;
+﻿using SimpleIdentityServer.DataAccess.SqlServer.Models;
+using Microsoft.Data.Entity;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
 {
-    public sealed class ScopeMapping : EntityTypeConfiguration<Scope>
+    public static class ScopeMapping
     {
-        public ScopeMapping()
+        public static void AddScopeMapping(this ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Scope>()
+                .ToTable("scopes")
+                .HasKey(p => p.Name);
+            /*
             ToTable("scopes");
             HasKey(p => p.Name);
             Property(p => p.Description)
@@ -23,6 +27,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
                     c.MapRightKey("ClaimCode");
                     c.ToTable("scopeClaims");
                 });
+           */
         }
     }
 }

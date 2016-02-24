@@ -1,12 +1,15 @@
-﻿using SimpleIdentityServer.DataAccess.SqlServer.Models;
-using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.Data.Entity;
+using SimpleIdentityServer.DataAccess.SqlServer.Models;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
 {
-    public sealed class ClientMapping : EntityTypeConfiguration<Client>
+    public static class ClientMapping
     {
-        public ClientMapping()
+        public static void AddClientMapping(this ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Client>()
+                .HasKey(c => c.ClientId);
+            /*
             ToTable("clients");
             HasKey(c => c.ClientId);
             Property(c => c.ClientSecret);
@@ -40,17 +43,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
             Property(c => c.InitiateLoginUri);
             Property(c => c.RequestUris);
             // Set AllowedScopes & JsonWebKeys
-            HasMany(c => c.AllowedScopes)
-                .WithMany(c => c.Clients)
-                .Map(c =>
-                {
-                    c.MapLeftKey("ClientId");
-                    c.MapRightKey("ScopeName");
-                    c.ToTable("clientScopes");
-                });
-            HasMany(c => c.JsonWebKeys)
-                .WithOptional(c => c.Client)
-                .WillCascadeOnDelete(true);
+            */            
         }
     }
 }
