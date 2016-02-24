@@ -14,10 +14,13 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Manager.Core.Parameters;
 using SimpleIdentityServer.Manager.Core.Results;
 using SimpleIdentityServer.Manager.Host.DTOs.Requests;
 using SimpleIdentityServer.Manager.Host.DTOs.Responses;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SimpleIdentityServer.Manager.Host.Extensions
 {
@@ -89,6 +92,25 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
                 IsContentJws = jweInformationResult.IsContentJws,
                 Content = jweInformationResult.Content
             };
+        }
+
+        public static ClientInformationResponse ToDto(this Client client)
+        {
+            return new ClientInformationResponse
+            {
+                ClientId = client.ClientId,
+                ClientName = client.ClientName,
+                LogoUri = client.LogoUri
+            };
+        }
+
+        #endregion
+
+        #region To List of DTOs
+
+        public static List<ClientInformationResponse> ToDtos(this List<Client> clients)
+        {
+            return clients.Select(c => c.ToDto()).ToList();
         }
 
         #endregion

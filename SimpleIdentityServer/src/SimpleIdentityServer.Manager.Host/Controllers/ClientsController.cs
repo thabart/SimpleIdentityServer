@@ -15,24 +15,34 @@
 #endregion
 
 using Microsoft.AspNet.Mvc;
+using SimpleIdentityServer.Manager.Core.Api.Clients;
+using SimpleIdentityServer.Manager.Host.DTOs.Responses;
+using SimpleIdentityServer.Manager.Host.Extensions;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Manager.Host.Controllers
 {
     [Route(Constants.EndPoints.Clients)]
     public class ClientsController : Controller
     {
+        private readonly IClientActions _clientActions;
+
         #region Constructor
 
-        public ClientsController()
+        public ClientsController(IClientActions clientActions)
         {
-
+            _clientActions = clientActions;
         }
 
         #endregion
 
         #region Public methods
 
-
+        [HttpGet]
+        public List<ClientInformationResponse> GetAll()
+        {
+            return _clientActions.GetClients().ToDtos();
+        }
 
         #endregion
     }

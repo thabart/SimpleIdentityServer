@@ -25,6 +25,10 @@ using SimpleIdentityServer.Manager.Core;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Manager.Host.Middleware;
 using SimpleIdentityServer.DataAccess.Fake;
+using SimpleIdentityServer.DataAccess.Fake.Models;
+using System.Collections.Generic;
+using Microsoft.AspNet.Mvc;
+using SimpleIdentityServer.Manager.Host.Hal;
 
 namespace SimpleIdentityServer.Manager.Host
 {
@@ -53,10 +57,27 @@ namespace SimpleIdentityServer.Manager.Host
                     TermsOfService = "None"
                 });
             });
-            services.AddMvc();
+
+            services.AddMvc(options =>
+            {
+                options.OutputFormatters.Add(new JsonHalMediaTypeFormatter());
+            });
             services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader()));
+
+            var fakeDataSource = new FakeDataSource();
+            fakeDataSource.Clients = new List<Client>
+            {
+                new Client
+                {
+                    ClientId = "client_id",
+                    ClientName = "client_name",
+                    LogoUri = "logo_uri"
+                }
+            };
+            services.AddInstance(fakeDataSource);
+
             services.AddSimpleIdentityServerManagerCore();
             services.AddSimpleIdentityServerFake();
             services.AddSimpleIdentityServerJwt();
@@ -87,7 +108,6 @@ namespace SimpleIdentityServer.Manager.Host
                     name: "default",
                     template: "{controller}/{action}/{id?}");
             });
-
         }
 
         // Entry point for the application.

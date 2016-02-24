@@ -17,7 +17,6 @@
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.TestHost;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Oauth2Instrospection.Authentication.Errors;
 using SimpleIdentityServer.Oauth2Instrospection.Authentication.Tests.Fake;
 using System;
@@ -63,7 +62,7 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication.Tests
             httpRequestMessage.RequestUri = new Uri("http://localhost/protectedoperation");
 
             // ACT & ASSERTS
-            var content = Assert.ThrowsAsync<ArgumentException>(() => client.SendAsync(httpRequestMessage));
+            var content = Assert.ThrowsAsync<ArgumentException>(async () => await client.SendAsync(httpRequestMessage).ConfigureAwait(false));
             var exception = content.Result;
             Assert.True(exception.Message == ErrorDescriptions.TheIntrospectionEndPointIsNotAWellFormedUrl);
         }
@@ -95,7 +94,7 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication.Tests
             httpRequestMessage.RequestUri = new Uri("http://localhost/protectedoperation");
 
             // ACT & ASSERTS
-            var content = Assert.ThrowsAsync<ArgumentException>(() => client.SendAsync(httpRequestMessage));
+            var content = Assert.ThrowsAsync<ArgumentException>(async () => await client.SendAsync(httpRequestMessage).ConfigureAwait(false));
             var exception = content.Result;
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterCannotBeEmpty, nameof(options.ClientId)));
         }
@@ -127,7 +126,7 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication.Tests
             httpRequestMessage.RequestUri = new Uri("http://localhost/protectedoperation");
 
             // ACT & ASSERTS
-            var content = Assert.ThrowsAsync<ArgumentException>(() => client.SendAsync(httpRequestMessage));
+            var content = Assert.ThrowsAsync<ArgumentException>(async () => await client.SendAsync(httpRequestMessage).ConfigureAwait(false));
             var exception = content.Result;
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterCannotBeEmpty, nameof(options.ClientSecret)));
         }

@@ -20,7 +20,7 @@ namespace SimpleIdentityServer.Manager.Host
     {
         public static class EndPoints
         {
-            public const string RootPath = "api";
+            public const string RootPath = "/api";
 
             public const string Jws = RootPath + "/jws";
 
