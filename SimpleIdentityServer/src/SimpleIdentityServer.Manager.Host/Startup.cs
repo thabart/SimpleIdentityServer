@@ -27,11 +27,34 @@ using SimpleIdentityServer.Manager.Host.Middleware;
 using SimpleIdentityServer.Manager.Host.Hal;
 using SimpleIdentityServer.DataAccess.SqlServer;
 using SimpleIdentityServer.Oauth2Instrospection.Authentication;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Manager.Host
 {
+
     public class Startup
     {
+        private class AssignOauth2SecurityRequirements : IOperationFilter
+        {
+            public void Apply(Operation operation, OperationFilterContext context)
+            {
+                var assignedScopes = new List<string>
+                {
+                    "SimpleIdentityServerManager:GetClients"
+                };
+
+                var oauthRequirements = new Dictionary<string, IEnumerable<string>>
+                {
+                    {
+                        "oauth2", assignedScopes
+                    }
+                };
+
+                operation.Security = new List<IDictionary<string, IEnumerable<string>>>();
+                operation.Security.Add(oauthRequirements);
+            }
+        }
+
         public Startup(IHostingEnvironment env, IApplicationEnvironment appEnv)
         {
             var builder = new ConfigurationBuilder()
@@ -54,6 +77,22 @@ namespace SimpleIdentityServer.Manager.Host
                     Title = "Simple identity server manager",
                     TermsOfService = "None"
                 });
+                opts.SecurityDefinitions.Add("oauth2", new OAuth2Scheme
+                {
+                    Type = "oauth2",
+                    Flow = "implicit",
+                    AuthorizationUrl = "http://localhost:5000/authorization",
+                    TokenUrl = "http://localhost:5000/token",
+                    Description = "Implicit flow",
+                    Scopes = new Dictionary<string, string>
+                    {
+                        { "SimpleIdentityServerManager:GetClients" , "Get all the clients" }
+                    }                    
+                });
+                opts.OperationFilter<AssignOauth2SecurityRequirements>();
+            });
+            services.ConfigureSwaggerSchema(opts =>
+            {
             });
 
             // Add the dependencies needed to enable CORS
@@ -108,10 +147,6 @@ namespace SimpleIdentityServer.Manager.Host
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
-            // Launch swagger
-            app.UseSwaggerGen();
-            app.UseSwaggerUi();
-
             // Display status code page
             app.UseStatusCodePages();
 
@@ -137,6 +172,10 @@ namespace SimpleIdentityServer.Manager.Host
                     name: "default",
                     template: "{controller}/{action}/{id?}");
             });
+
+            // Launch swagger
+            app.UseSwaggerGen();
+            app.UseSwaggerUi();
         }
 
         // Entry point for the application.
