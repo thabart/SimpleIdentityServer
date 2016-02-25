@@ -44,22 +44,22 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                     IsExposed = true,
                     IsOpenIdScope = true,
                     Description = "Access to the profile",
-                    Claims = new List<Claim>
+                    ScopeClaims = new List<ScopeClaim>
                     {
-                        new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Name },
-                        new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.FamilyName },
-                        new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.GivenName },
-                        new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.MiddleName },
-                        new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.NickName },
-                        new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.PreferredUserName },
-                        new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Profile },
-                        new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Picture },
-                        new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.WebSite },
-                        new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Gender },
-                        new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.BirthDate },
-                        new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.ZoneInfo },
-                        new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Locale },
-                        new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt }
+                        new ScopeClaim { ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Name },
+                        new ScopeClaim { ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.FamilyName },
+                        new ScopeClaim { ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.GivenName },
+                        new ScopeClaim { ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.MiddleName },
+                        new ScopeClaim { ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.NickName },
+                        new ScopeClaim { ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.PreferredUserName },
+                        new ScopeClaim { ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Profile },
+                        new ScopeClaim { ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Picture },
+                        new ScopeClaim { ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.WebSite },
+                        new ScopeClaim { ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Gender },
+                        new ScopeClaim { ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.BirthDate },
+                        new ScopeClaim { ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.ZoneInfo },
+                        new ScopeClaim { ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Locale },
+                        new ScopeClaim { ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt }
                     },
                     Type = ScopeType.ResourceOwner,
                     IsDisplayedInConsent = true
@@ -71,10 +71,10 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                     IsOpenIdScope = true,
                     IsDisplayedInConsent = true,
                     Description = "Access to the email",
-                    Claims = new List<Claim>
+                    ScopeClaims = new List<ScopeClaim>
                     {
-                        new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Email },
-                        new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.EmailVerified }
+                        new ScopeClaim { ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Email },
+                        new ScopeClaim { ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.EmailVerified }
                     },
                     Type = ScopeType.ResourceOwner
                 },
@@ -85,9 +85,9 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                     IsOpenIdScope = true,
                     IsDisplayedInConsent = true,
                     Description = "Access to the address",
-                    Claims = new List<Claim>
+                    ScopeClaims = new List<ScopeClaim>
                     {
-                        new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Address }
+                        new ScopeClaim { ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Address }
                     },
                     Type = ScopeType.ResourceOwner
                 },
@@ -98,10 +98,10 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                     IsOpenIdScope = true,
                     IsDisplayedInConsent = true,
                     Description = "Access to the phone",
-                    Claims = new List<Claim>
+                    ScopeClaims = new List<ScopeClaim>
                     {
-                        new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber },
-                        new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumberVerified }
+                        new ScopeClaim { ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber },
+                        new ScopeClaim { ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumberVerified }
                     },
                     Type = ScopeType.ResourceOwner
                 },
@@ -351,15 +351,15 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                     LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
                     PolicyUri = "http://openid.net",
                     TosUri = "http://openid.net",
-                    AllowedScopes = new List<Models.Scope>
+                    ClientScopes = new List<Models.ClientScope>
                     {
-                        new Models.Scope
+                        new Models.ClientScope
                         {
-                            Name = "openid"
+                            ScopeName = "openid"
                         },
-                        new Scope
+                        new ClientScope
                         {
-                            Name = "SimpleIdentityServerManager:GetClients"
+                            ScopeName = "SimpleIdentityServerManager:GetClients"
                         }
                     },
                     GrantTypes = "0,1",

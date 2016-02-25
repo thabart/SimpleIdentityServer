@@ -18,8 +18,9 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
         
         public List<Core.Models.Consent> GetConsentsForGivenUser(string subject)
         {
-                var consents = _context.Consents.Include(c => c.Claims)
-                    .Include(c => c.GrantedScopes)
+                var consents = _context.Consents
+                    .Include(c => c.ConsentClaims)
+                    .Include(c => c.ConsentScopes)
                     .Include(c => c.Client)
                     .Include(c => c.ResourceOwner)
                     .Where(c => c.ResourceOwner.Id == subject)
@@ -38,26 +39,40 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                         var resourceOwnerId = record.ResourceOwner.Id;
                         var client = _context.Clients.FirstOrDefault(c => c.ClientId == clientId);
                         var resourceOwner = _context.ResourceOwners.FirstOrDefault(r => r.Id == resourceOwnerId);
-                        var assignedClaims = new List<Claim>();
-                        var assignedScopes = new List<Scope>();
+                        var assignedClaims = new List<ConsentClaim>();
+                        var assignedScopes = new List<ConsentScope>();
                         if (record.Claims != null)
                         {
                             var claimCodes = record.Claims;
-                            assignedClaims = _context.Claims.Where(c => claimCodes.Contains(c.Code)).ToList();
+                            var codes = _context.Claims.Where(c => claimCodes.Contains(c.Code)).Select(c => c.Code).ToList();
+                            foreach(var code in codes)
+                            {
+                                assignedClaims.Add(new ConsentClaim
+                                {
+                                    ClaimCode = code
+                                });
+                            }
                         }
 
                         if (record.GrantedScopes != null)
                         {
                             var scopeNames = record.GrantedScopes.Select(g => g.Name);
-                            assignedScopes = _context.Scopes.Where(s => scopeNames.Contains(s.Name)).ToList();
+                            var names = _context.Scopes.Where(s => scopeNames.Contains(s.Name)).Select(s => s.Name).ToList();
+                            foreach(var name in names)
+                            {
+                                assignedScopes.Add(new ConsentScope
+                                {
+                                    ScopeName = name
+                                });
+                            }
                         }
 
                         var newConsent = new Consent
                         {
                             Client = client,
                             ResourceOwner = resourceOwner,
-                            Claims = assignedClaims,
-                            GrantedScopes = assignedScopes
+                            ConsentClaims = assignedClaims,
+                            ConsentScopes = assignedScopes
                         };
 
                         var insertedConsent = _context.Consents.Add(newConsent);

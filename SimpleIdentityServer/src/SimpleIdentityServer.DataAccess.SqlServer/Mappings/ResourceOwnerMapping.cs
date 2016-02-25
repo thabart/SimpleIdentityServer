@@ -10,6 +10,9 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
             modelBuilder.Entity<ResourceOwner>()
                 .ToTable("resourceOwners")
                 .HasKey(j => j.Id);
+            modelBuilder.Entity<ResourceOwner>()
+                .HasOne(r => r.Address)
+                .WithOne(a => a.ResourceOwner);
             /*
             ToTable("resourceOwners");
             HasKey(r => r.Id);

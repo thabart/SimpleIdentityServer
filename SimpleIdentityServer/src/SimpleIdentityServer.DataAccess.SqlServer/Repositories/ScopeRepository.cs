@@ -35,7 +35,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                         if (scope.Claims != null &&
                             scope.Claims.Any())
                         {
-                            record.Claims = scope.Claims.Select(c => new Models.Claim {Code = c}).ToList();
+                            record.ScopeClaims = scope.Claims.Select(c => new Models.ScopeClaim {ClaimCode = c}).ToList();
                         }
 
                         _context.Scopes.Add(record);
@@ -55,7 +55,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
         public Domains.Scope GetScopeByName(string name)
         {
                 var result = _context.Scopes
-                    .Include(s => s.Claims)
+                    .Include(s => s.ScopeClaims)
                     .FirstOrDefault(s => s.Name == name);
                 if (result == null)
                 {

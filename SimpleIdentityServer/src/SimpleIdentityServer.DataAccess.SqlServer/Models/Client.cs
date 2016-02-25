@@ -179,16 +179,16 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Models
         /// <summary>
         /// Gets or sets a list of OAUTH2.0 grant_types.
         /// </summary>
-        public virtual ICollection<Scope> AllowedScopes { get; set; }
+        public List<ClientScope> ClientScopes { get; set; }
 
         /// <summary>
         /// Gets or sets the list of json web keys
         /// </summary>
-        public virtual ICollection<JsonWebKey> JsonWebKeys { get; set; }
+        public List<JsonWebKey> JsonWebKeys { get; set; }
 
         /// <summary>
         /// Gets or sets the list of consents
         /// </summary>
-        public virtual ICollection<Consent> Consents { get; set; } 
+        public List<Consent> Consents { get; set; } 
     }
 }

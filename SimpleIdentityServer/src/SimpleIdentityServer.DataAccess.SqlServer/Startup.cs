@@ -5,10 +5,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer
 {
@@ -40,7 +36,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
             services.AddEntityFramework()
                .AddSqlServer()
                .AddDbContext<SimpleIdentityServerContext>(options =>
-                   options.UseSqlServer("Data Source=DESKTOP-1CNU397\\SQLEXPRESS;Initial Catalog=SimpleIdentityServer;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"));
+                   options.UseSqlServer("Data Source=W262C017\\SQLEXPRESS;Initial Catalog=SimpleIdentityServer;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"));
         }
 
         public void Configure(IApplicationBuilder app,

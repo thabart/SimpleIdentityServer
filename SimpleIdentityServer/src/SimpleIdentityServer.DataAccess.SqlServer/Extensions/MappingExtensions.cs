@@ -35,7 +35,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                 IsExposed = scope.IsExposed,
                 IsOpenIdScope = scope.IsOpenIdScope,
                 Type = (Domain.ScopeType)scope.Type,
-                Claims = scope.Claims == null ? new List<string>() : scope.Claims.Select(c => c.Code).ToList()
+                Claims = scope.ScopeClaims == null ? new List<string>() : scope.ScopeClaims.Select(c => c.ClaimCode).ToList()
             };
         }
 
@@ -139,9 +139,9 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
             var grantTypes = new List<Domain.GrantType>();
             var responseTypes = new List<Domain.ResponseType>();
 
-            if (client.AllowedScopes != null)
+            if (client.ClientScopes != null)
             {
-                client.AllowedScopes.ToList().ForEach(scope => scopes.Add(scope.ToDomain()));
+                client.ClientScopes.ToList().ForEach(clientScope => scopes.Add(clientScope.Scope.ToDomain()));
             }
 
             if (client.JsonWebKeys != null)
@@ -211,9 +211,9 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
             {
                 Id = consent.Id.ToString(CultureInfo.InvariantCulture),
                 Client = consent.Client == null ? null : consent.Client.ToDomain(),
-                Claims = consent.Claims == null ? null : consent.Claims.Select(c => c.Code).ToList(),
+                Claims = consent.ConsentClaims == null ? null : consent.ConsentClaims.Select(c => c.ClaimCode).ToList(),
                 ResourceOwner = consent.ResourceOwner == null ? null : consent.ResourceOwner.ToDomain(),
-                GrantedScopes = consent.GrantedScopes == null ? null : consent.GrantedScopes.Select(s => s.ToDomain()).ToList()
+                GrantedScopes = consent.ConsentScopes == null ? null : consent.ConsentScopes.Select(consentScope => consentScope.Scope.ToDomain()).ToList()
             };
         }
 

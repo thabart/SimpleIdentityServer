@@ -31,13 +31,13 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Models
 
         public ScopeType Type { get; set; }
 
-        public virtual ICollection<Claim> Claims { get; set; }
+        public List<ScopeClaim> ScopeClaims{ get; set; }
 
-        public virtual ICollection<Client> Clients { get; set; }
+        public List<ClientScope> ClientScopes { get; set; }
 
         /// <summary>
         /// Gets or sets the list of consents
         /// </summary>
-        public virtual ICollection<Consent> Consents { get; set; } 
+        public List<ConsentScope> ConsentScopes { get; set; } 
     }
 }

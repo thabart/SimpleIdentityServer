@@ -8,6 +8,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
         public static void AddClaimMapping(this ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Claim>()
+                .ToTable("claims")
                 .HasKey(p => p.Code);
             /*
             ToTable("claims");

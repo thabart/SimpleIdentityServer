@@ -10,6 +10,10 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
             modelBuilder.Entity<JsonWebKey>()
                 .ToTable("jsonWebKeys")
                 .HasKey(j => j.Kid);
+            modelBuilder.Entity<JsonWebKey>()
+                .HasOne(c => c.Client)
+                .WithMany(c => c.JsonWebKeys)
+                .HasForeignKey(c => c.ClientId);
             /*
             ToTable("jsonWebKeys");
             HasKey(j => j.Kid);

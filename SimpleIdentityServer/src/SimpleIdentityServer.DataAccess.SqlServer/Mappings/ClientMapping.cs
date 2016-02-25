@@ -8,6 +8,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
         public static void AddClientMapping(this ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Client>()
+                .ToTable("clients")
                 .HasKey(c => c.ClientId);
             /*
             ToTable("clients");

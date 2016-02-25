@@ -19,24 +19,21 @@ using SimpleIdentityServer.DataAccess.SqlServer.Models;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
 {
-    public static class TranslationMapping
+    public static class ConsentScopeMapping
     {
-        public static void AddTranslationMapping(this ModelBuilder modelBuilder)
+        public static void AddConsentScopeMapping(this ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Translation>()
-                .ToTable("translations")
-                .HasKey(p => new { p.Code, p.LanguageTag });
-            modelBuilder.Entity<Translation>()
-                .Property(p => p.Code)
-                .HasMaxLength(255);
-            /*
-            ToTable("translations");
-            HasKey(p => new {p.Code, p.LanguageTag});
-            Property(p => p.Code)
-                .HasMaxLength(255);
-            Property(p => p.LanguageTag);
-            Property(p => p.Value);
-            */
+            modelBuilder.Entity<ConsentScope>()
+                .ToTable("consentScopes")
+                .HasKey(c => new { c.ConsentId, c.ScopeName });
+            modelBuilder.Entity<ConsentScope>()
+                .HasOne(c => c.Consent)
+                .WithMany(c => c.ConsentScopes)
+                .HasForeignKey(c => c.ConsentId);
+            modelBuilder.Entity<ConsentScope>()
+                .HasOne(c => c.Scope)
+                .WithMany(c => c.ConsentScopes)
+                .HasForeignKey(c => c.ScopeName);
         }
     }
 }

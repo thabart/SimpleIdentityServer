@@ -10,6 +10,14 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
             modelBuilder.Entity<Consent>()
                 .ToTable("consents")
                 .HasKey(c => c.Id);
+            modelBuilder.Entity<Consent>()
+                .HasOne(c => c.Client)
+                .WithMany(c => c.Consents)
+                .HasForeignKey(c => c.ClientId);
+            modelBuilder.Entity<Consent>()
+                .HasOne(c => c.ResourceOwner)
+                .WithMany(c => c.Consents)
+                .HasForeignKey(c => c.ResourceOwnerId);
             /*
             ToTable("consents");
             HasKey(c => c.Id);

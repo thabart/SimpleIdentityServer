@@ -19,24 +19,21 @@ using SimpleIdentityServer.DataAccess.SqlServer.Models;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
 {
-    public static class TranslationMapping
+    public static class ScopeClaimMapping
     {
-        public static void AddTranslationMapping(this ModelBuilder modelBuilder)
+        public static void AddScopeClaimMapping(this ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Translation>()
-                .ToTable("translations")
-                .HasKey(p => new { p.Code, p.LanguageTag });
-            modelBuilder.Entity<Translation>()
-                .Property(p => p.Code)
-                .HasMaxLength(255);
-            /*
-            ToTable("translations");
-            HasKey(p => new {p.Code, p.LanguageTag});
-            Property(p => p.Code)
-                .HasMaxLength(255);
-            Property(p => p.LanguageTag);
-            Property(p => p.Value);
-            */
+            modelBuilder.Entity<ScopeClaim>()
+                .ToTable("scopeClaims")
+                .HasKey(s => new { s.ClaimCode, s.ScopeName });
+            modelBuilder.Entity<ScopeClaim>()
+                .HasOne(s => s.Scope)
+                .WithMany(s => s.ScopeClaims)
+                .HasForeignKey(s => s.ScopeName);
+            modelBuilder.Entity<ScopeClaim>()
+                .HasOne(s => s.Claim)
+                .WithMany(s => s.ScopeClaims)
+                .HasForeignKey(s => s.ClaimCode);
         }
     }
 }

@@ -16,6 +16,6 @@
 
         public string Country { get; set; }
 
-        public virtual ResourceOwner ResourceOwner { get; set; }
+        public ResourceOwner ResourceOwner { get; set; }
     }
 }

@@ -6,12 +6,16 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Models
     {
         public int Id { get; set; }
 
-        public virtual Client Client { get; set; }
+        public string ClientId { get; set; }
 
-        public virtual ResourceOwner ResourceOwner { get; set; }
+        public string ResourceOwnerId { get; set; } 
 
-        public virtual ICollection<Scope> GrantedScopes { get; set; }
+        public Client Client { get; set; }
 
-        public virtual ICollection<Claim> Claims { get; set; }
+        public ResourceOwner ResourceOwner { get; set; }
+
+        public List<ConsentScope> ConsentScopes { get; set; }
+
+        public List<ConsentClaim> ConsentClaims { get; set; }
     }
 }

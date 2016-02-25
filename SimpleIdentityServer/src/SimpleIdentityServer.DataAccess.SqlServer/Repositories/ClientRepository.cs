@@ -21,7 +21,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
         public Core.Models.Client GetClientById(string clientId)
         {
                 var client = _context.Clients
-                            .Include(c => c.AllowedScopes)
+                            .Include(c => c.ClientScopes)
                             .Include(c => c.JsonWebKeys)
                             .FirstOrDefault(c => c.ClientId == clientId);
                 if (client == null)
@@ -38,7 +38,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                 {
                     try
                     {
-                        var scopes = new List<Scope>();
+                        var scopes = new List<ClientScope>();
                         var jsonWebKeys = new List<JsonWebKey>();
                         var grantTypes = client.GrantTypes == null
                             ? string.Empty
@@ -50,6 +50,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                         {
                             var scopeNames = client.AllowedScopes.Select(s => s.Name).ToList();
                             scopes = _context.Scopes.Where(s => scopeNames.Contains(s.Name))
+                                .Select(s => new ClientScope { ScopeName = s.Name })
                                 .ToList();
                         }
 
@@ -105,7 +106,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                             RequestUris = ConcatListOfStrings(client.RequestUris),
                             RedirectionUrls = ConcatListOfStrings(client.RedirectionUrls),
                             Contacts = ConcatListOfStrings(client.Contacts),
-                            AllowedScopes = scopes,
+                            ClientScopes = scopes,
                             JsonWebKeys = jsonWebKeys,
                             GrantTypes = grantTypes,
                             ResponseTypes = responseTypes
@@ -138,7 +139,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                     try
                     {
                         var connectedClient = _context.Clients
-                            .Include(c => c.AllowedScopes)
+                            .Include(c => c.ClientScopes)
                             .Include(c => c.JsonWebKeys)
                             .FirstOrDefault(c => c.ClientId == client.ClientId);
                         if (connectedClient == null)

@@ -28,15 +28,20 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.AddTranslationMapping();
-            modelBuilder.AddScopeMapping();
-            modelBuilder.AddClaimMapping();
             modelBuilder.AddAddressMapping();
-            modelBuilder.AddJsonWebKeyMapping();
-            modelBuilder.AddGrantedTokenMapping();
-            modelBuilder.AddClientMapping();
-            modelBuilder.AddConsentMapping();
             modelBuilder.AddAuthorizationCodeMapping();
+            modelBuilder.AddClaimMapping();
+            modelBuilder.AddClientMapping();
+            modelBuilder.AddConsentClaimMapping();
+            modelBuilder.AddConsentMapping();
+            modelBuilder.AddConsentScopeMapping();
+            modelBuilder.AddGrantedTokenMapping();
+            modelBuilder.AddJsonWebKeyMapping();
+            modelBuilder.AddResourceOwnerMapping();
+            modelBuilder.AddScopeClaimMapping();
+            modelBuilder.AddScopeMapping();
+            modelBuilder.AddTranslationMapping();
+            modelBuilder.AddClientScopeMapping();
             base.OnModelCreating(modelBuilder);
             /*
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
