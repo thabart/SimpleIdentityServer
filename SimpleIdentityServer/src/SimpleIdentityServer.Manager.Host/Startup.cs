@@ -24,12 +24,9 @@ using Swashbuckle.SwaggerGen;
 using SimpleIdentityServer.Manager.Core;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Manager.Host.Middleware;
-using SimpleIdentityServer.DataAccess.Fake;
-using SimpleIdentityServer.DataAccess.Fake.Models;
-using System.Collections.Generic;
-using Microsoft.AspNet.Mvc;
 using SimpleIdentityServer.Manager.Host.Hal;
 using SimpleIdentityServer.DataAccess.SqlServer;
+using SimpleIdentityServer.Oauth2Instrospection.Authentication;
 
 namespace SimpleIdentityServer.Manager.Host
 {
@@ -59,12 +56,6 @@ namespace SimpleIdentityServer.Manager.Host
                 });
             });
 
-            // Add the dependencies needed to run MVC
-            services.AddMvc(options =>
-            {
-                options.OutputFormatters.Add(new JsonHalMediaTypeFormatter());
-            });
-
             // Add the dependencies needed to enable CORS
             services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
                 .AllowAnyMethod()
@@ -87,15 +78,29 @@ namespace SimpleIdentityServer.Manager.Host
 
             // Enable SqlServer
             var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
-            services.AddSimpleIdentityServerSqlServer();
-            services.AddTransient<SimpleIdentityServerContext>((a) => new SimpleIdentityServerContext(connectionString));
+            services.AddSimpleIdentityServerSqlServer(connectionString);
 
             services.AddSimpleIdentityServerManagerCore();
+
+            // Add authentication
+            services.AddAuthentication();
+
+            // Add authorization policy rules
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("getAllClients", policy => policy.RequireClaim("scope", "SimpleIdentityServerManager:GetClients"));
+            });
 
             // Enable identity server fake
             // services.AddSimpleIdentityServerFake();
 
             services.AddSimpleIdentityServerJwt();
+
+            // Add the dependencies needed to run MVC
+            services.AddMvc(options =>
+            {
+                options.OutputFormatters.Add(new JsonHalMediaTypeFormatter());
+            });
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
@@ -112,7 +117,16 @@ namespace SimpleIdentityServer.Manager.Host
 
             // Enable CORS
             app.UseCors("AllowAll");
-            
+
+            // Enable the OAUTH introspection endpoint
+            var options = new Oauth2IntrospectionOptions
+            {
+                InstrospectionEndPoint = "http://localhost:5000/introspect",
+                ClientId = "IdentityServerManager",
+                ClientSecret = "IdentityServerManager"
+            };
+            app.UseAuthenticationWithIntrospection(options);
+
             // Enable custom exception handler
             app.UseSimpleIdentityServerManagerExceptionHandler();
 

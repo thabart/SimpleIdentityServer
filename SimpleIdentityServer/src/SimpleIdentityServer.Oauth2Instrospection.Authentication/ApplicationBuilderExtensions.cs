@@ -30,7 +30,7 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
                 throw new ArgumentNullException(nameof(app));
             }
 
-            return app.UseMiddleware<Oauth2IntrospectionMiddleware<Oauth2IntrospectionOptions>>();
+            return app.UseMiddleware<Oauth2IntrospectionMiddleware<Oauth2IntrospectionOptions>>(app);
         }
 
         public static IApplicationBuilder UseAuthenticationWithIntrospection(this IApplicationBuilder app, Oauth2IntrospectionOptions oauth2IntrospectionOptions)
@@ -45,7 +45,7 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
                 throw new ArgumentNullException(nameof(oauth2IntrospectionOptions));
             }
 
-            return app.UseMiddleware<Oauth2IntrospectionMiddleware<Oauth2IntrospectionOptions>>(Options.Options.Create(oauth2IntrospectionOptions));
+            return app.UseMiddleware<Oauth2IntrospectionMiddleware<Oauth2IntrospectionOptions>>(app, Options.Options.Create(oauth2IntrospectionOptions));
         }    
     
         #endregion

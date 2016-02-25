@@ -25,6 +25,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace SimpleIdentityServer.Oauth2Instrospection.Authentication.Tests
 {
@@ -233,6 +234,9 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication.Tests
                         }
                     });
                 });
+            }, services =>
+            {
+                services.AddMvc();
             });
         }
     }

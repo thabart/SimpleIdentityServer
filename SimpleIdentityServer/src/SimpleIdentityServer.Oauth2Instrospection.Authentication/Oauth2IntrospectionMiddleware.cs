@@ -18,6 +18,7 @@ using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Http;
 using Microsoft.Extensions.OptionsModel;
 using Newtonsoft.Json;
+using SimpleIdentityServer.Oauth2Instrospection.Authentication.Authentication;
 using SimpleIdentityServer.Oauth2Instrospection.Authentication.Errors;
 using System;
 using System.Collections.Generic;
@@ -35,16 +36,19 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
 
         private const string BearerName = "Bearer";
 
-        private readonly RequestDelegate _next;
-
         private readonly Oauth2IntrospectionOptions _options;
 
         private readonly HttpClient _httpClient;
+
+        private readonly RequestDelegate _next;
+
+        private readonly RequestDelegate _nullAuthenticationNext;
 
         #region Constructor
 
         public Oauth2IntrospectionMiddleware(
             RequestDelegate next,
+            IApplicationBuilder app,
             IOptions<TOptions> options)
         {
             if (next == null)
@@ -60,6 +64,16 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
             _next = next;
             _options = options.Value;
             _httpClient = new HttpClient(_options.BackChannelHttpHandler ?? new HttpClientHandler());
+
+            var nullAuthenticationBuilder = app.New();
+            var nullAuthenticationOptions = new NullAuthenticationOptions
+            {
+                AutomaticAuthenticate = true,
+                AutomaticChallenge = true
+            };
+            nullAuthenticationBuilder.UseMiddleware<NullAuthenticationMiddleware>(nullAuthenticationOptions);
+            nullAuthenticationBuilder.Run(ctx => next(ctx));
+            _nullAuthenticationNext = nullAuthenticationBuilder.Build();
         }
 
         #endregion
@@ -68,6 +82,7 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
 
         public async Task Invoke(HttpContext context)
         {
+            // 1. Try to authenticate the user against the introspection endpoint
             var headers = context.Request.Headers;
             if (headers.ContainsKey(AuthorizationName))
             {
@@ -88,6 +103,15 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
                         }
                     }
                 }
+            }
+
+            // 2. If the user is not authenticated then continue to process the queue.
+            if (context.User == null ||
+                context.User.Identity == null ||
+                !context.User.Identity.IsAuthenticated)
+            {
+                await _nullAuthenticationNext(context);
+                return;
             }
 
             await _next.Invoke(context);

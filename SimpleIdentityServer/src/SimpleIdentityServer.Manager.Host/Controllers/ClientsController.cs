@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Mvc;
 using SimpleIdentityServer.Manager.Core.Api.Clients;
 using SimpleIdentityServer.Manager.Host.DTOs.Responses;
@@ -39,6 +40,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
         #region Public methods
 
         [HttpGet]
+        [Authorize("getAllClients")]
         public List<ClientInformationResponse> GetAll()
         {
             return _clientActions.GetClients().ToDtos();
