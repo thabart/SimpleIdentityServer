@@ -86,7 +86,7 @@ namespace SimpleIdentityServer.Manager.Host
                     Description = "Implicit flow",
                     Scopes = new Dictionary<string, string>
                     {
-                        { "SimpleIdentityServerManager:GetClients" , "Get all the clients" }
+                        { "role" , "Get the roles" }
                     }                    
                 });
                 opts.OperationFilter<AssignOauth2SecurityRequirements>();
@@ -124,7 +124,7 @@ namespace SimpleIdentityServer.Manager.Host
             // Add authorization policy rules
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("getAllClients", policy => policy.RequireClaim("scope", "SimpleIdentityServerManager:GetClients"));
+                options.AddPolicy("getAllClients", policy => policy.RequireClaim("role", "administrator"));
             });
 
             // Enable identity server fake

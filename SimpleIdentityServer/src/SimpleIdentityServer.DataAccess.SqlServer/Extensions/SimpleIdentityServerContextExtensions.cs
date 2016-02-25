@@ -465,7 +465,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         GrantTypes = "0,1",
                         ResponseTypes = "0,1,2",
                         IdTokenSignedResponseAlg = "RS256",
-                        RedirectionUrls = "http://localhost:5002/callback"
+                        RedirectionUrls = "http://localhost:5002/callback,http://localhost:5001/swagger/ui/o2c.html"
                     }
                 });
             }
