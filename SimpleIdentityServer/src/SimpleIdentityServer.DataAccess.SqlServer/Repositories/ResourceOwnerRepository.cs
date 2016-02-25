@@ -20,27 +20,41 @@ using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
 using Domains = SimpleIdentityServer.Core.Models;
 using Microsoft.Data.Entity;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 {
     public sealed class ResourceOwnerRepository : IResourceOwnerRepository
     {
-         private readonly SimpleIdentityServerContext _context;
-        
-        public ResourceOwnerRepository(SimpleIdentityServerContext context) {
+        private readonly SimpleIdentityServerContext _context;
+
+        #region Constructor
+
+        public ResourceOwnerRepository(SimpleIdentityServerContext context)
+        {
             _context = context;
         }
+
+        #endregion
+
+        #region Public methods
 
         public Domains.ResourceOwner GetResourceOwnerByCredentials(
             string userName,
             string hashedPassword)
         {
+            // 1. Fetch the user information & returns null if he doesn't exist
             var user = _context.ResourceOwners.FirstOrDefault(r => r.Name == userName && r.Password == hashedPassword);
             if (user == null)
             {
                 return null;
             }
 
+            // 2. Set the resource owner's roles
+            user.ResourceOwnerRoles = _context.ResourceOwnerRoles
+                .Include(r => r.Role)
+                .Where(r => r.ResourceOwnerId == user.Id)
+                .ToList();
             return user.ToDomain();
         }
 
@@ -50,6 +64,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             {
                 try
                 {
+                    // 1. Add all the information
                     var user = new Models.ResourceOwner
                     {
                         Name = resourceOwner.Name,
@@ -71,9 +86,11 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                         UpdatedAt = resourceOwner.UpdatedAt,
                         WebSite = resourceOwner.WebSite,
                         ZoneInfo = resourceOwner.ZoneInfo,
-                        Id = resourceOwner.Id
+                        Id = resourceOwner.Id,
+                        ResourceOwnerRoles = new List<Models.ResourceOwnerRole>()
                     };
 
+                    // 2. Add information about the user's address
                     if (resourceOwner.Address != null)
                     {
                         user.Address = new Models.Address
@@ -85,6 +102,21 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                             Region = user.Address.Region,
                             StreetAddress = user.Address.StreetAddress
                         };
+                    }
+
+                    // 3. Add all the roles
+                    if (resourceOwner.Roles != null &&
+                        resourceOwner.Roles.Any())
+                    {
+                        resourceOwner.Roles.ForEach(r =>
+                        {
+                            var resourceOwnerRole = new Models.ResourceOwnerRole
+                            {
+                                RoleName = r
+                            };
+
+                            user.ResourceOwnerRoles.Add(resourceOwnerRole);
+                        });
                     }
 
                     _context.ResourceOwners.Add(user);
@@ -103,13 +135,21 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 
         public Domains.ResourceOwner GetBySubject(string subject)
         {
+            // 1. Fetch the user information & return null if he doesn't exist
             var user = _context.ResourceOwners.FirstOrDefault(r => r.Id == subject);
             if (user == null)
             {
                 return null;
             }
-
+            
+            // 2. Set the resource owner roles
+            user.ResourceOwnerRoles = _context.ResourceOwnerRoles
+                .Include(r => r.Role)
+                .Where(r => r.ResourceOwnerId == user.Id)
+                .ToList();
             return user.ToDomain();
         }
+
+        #endregion
     }
 }

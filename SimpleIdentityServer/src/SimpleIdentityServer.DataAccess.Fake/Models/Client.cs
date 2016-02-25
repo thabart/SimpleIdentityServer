@@ -198,6 +198,6 @@ namespace SimpleIdentityServer.DataAccess.Fake.Models
         /// <summary>
         /// Gets or sets the list of request uris
         /// </summary>
-        public List<string> RequestUris { get; set; } 
+        public List<string> RequestUris { get; set; }
     }
 }

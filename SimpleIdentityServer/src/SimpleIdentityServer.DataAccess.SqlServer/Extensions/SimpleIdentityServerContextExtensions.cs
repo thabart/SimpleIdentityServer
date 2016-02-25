@@ -31,6 +31,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
         {
             if (context.AllMigrationsApplied())
             {
+                InsertRoles(context);
                 InsertClaims(context);
                 InsertScopes(context);
                 InsertTranslations(context);
@@ -44,6 +45,21 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
         #endregion
 
         #region Private static methods
+
+        private static void InsertRoles(SimpleIdentityServerContext context)
+        {
+            if (!context.Roles.Any())
+            {
+                context.Roles.AddRange(new[]
+                {
+                    new Role
+                    {
+                        Name = "administrator",
+                        Description = "administrator role"
+                    }
+                });
+            }
+        }
 
         private static void InsertClaims(SimpleIdentityServerContext context)
         {
@@ -69,7 +85,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                     new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.EmailVerified },
                     new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Address },
                     new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber },
-                    new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumberVerified }
+                    new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumberVerified },
+                    new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Role }
                 });
             }
         }
@@ -155,12 +172,26 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         },
                         Type = ScopeType.ResourceOwner
                     },
+                    new Models.Scope
+                    {
+                        Name = "role",
+                        IsExposed = true,
+                        IsOpenIdScope = false,
+                        IsDisplayedInConsent = true,
+                        Description = "Access to your roles",
+                        ScopeClaims = new List<ScopeClaim>
+                        {
+                            new ScopeClaim { ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Role }
+                        },
+                        Type = ScopeType.ResourceOwner
+                    },
                     new Scope
                     {
                         Name = "SimpleIdentityServerManager:GetClients",
                         Description = "Get all the clients",
                         IsOpenIdScope = false,
-                        IsDisplayedInConsent = true
+                        IsDisplayedInConsent = true,
+                        Type = ScopeType.ProtectedApi
                     }
                 });
             }
@@ -358,7 +389,14 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         UpdatedAt = DateTime.Now.ConvertToUnixTimestamp(),
                         WebSite = "https://github.com/thabart",
                         ZoneInfo = "Europe/Paris",
-                        Password = "5E884898DA28047151D0E56F8DC6292773603D0D6AABBDD62A11EF721D1542D8"
+                        Password = "5E884898DA28047151D0E56F8DC6292773603D0D6AABBDD62A11EF721D1542D8",
+                        ResourceOwnerRoles = new List<ResourceOwnerRole>
+                        {
+                            new ResourceOwnerRole
+                            {
+                                RoleName = "administrator"
+                            }
+                        }
                     }
                 });
             }
@@ -421,7 +459,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                             },
                             new ClientScope
                             {
-                                ScopeName = "SimpleIdentityServerManager:GetClients"
+                                ScopeName = "role"
                             }
                         },
                         GrantTypes = "0,1",

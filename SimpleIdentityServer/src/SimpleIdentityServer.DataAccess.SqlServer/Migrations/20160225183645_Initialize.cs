@@ -124,6 +124,17 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                     table.PrimaryKey("PK_ResourceOwner", x => x.Id);
                 });
             migrationBuilder.CreateTable(
+                name: "roles",
+                columns: table => new
+                {
+                    Name = table.Column<string>(nullable: false),
+                    Description = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Role", x => x.Name);
+                });
+            migrationBuilder.CreateTable(
                 name: "scopes",
                 columns: table => new
                 {
@@ -223,6 +234,29 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                         principalTable: "resourceOwners",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+            migrationBuilder.CreateTable(
+                name: "resourceOwnerRoles",
+                columns: table => new
+                {
+                    ResourceOwnerId = table.Column<string>(nullable: false),
+                    RoleName = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ResourceOwnerRole", x => new { x.ResourceOwnerId, x.RoleName });
+                    table.ForeignKey(
+                        name: "FK_ResourceOwnerRole_ResourceOwner_ResourceOwnerId",
+                        column: x => x.ResourceOwnerId,
+                        principalTable: "resourceOwners",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ResourceOwnerRole_Role_RoleName",
+                        column: x => x.RoleName,
+                        principalTable: "roles",
+                        principalColumn: "Name",
+                        onDelete: ReferentialAction.Cascade);
                 });
             migrationBuilder.CreateTable(
                 name: "clientScopes",
@@ -327,9 +361,11 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
             migrationBuilder.DropTable("consentScopes");
             migrationBuilder.DropTable("grantedTokens");
             migrationBuilder.DropTable("jsonWebKeys");
+            migrationBuilder.DropTable("resourceOwnerRoles");
             migrationBuilder.DropTable("scopeClaims");
             migrationBuilder.DropTable("translations");
             migrationBuilder.DropTable("consents");
+            migrationBuilder.DropTable("roles");
             migrationBuilder.DropTable("claims");
             migrationBuilder.DropTable("scopes");
             migrationBuilder.DropTable("clients");

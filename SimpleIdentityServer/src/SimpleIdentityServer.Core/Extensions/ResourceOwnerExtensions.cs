@@ -4,6 +4,7 @@ using System.Security.Claims;
 
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Models;
+using System.Linq;
 
 namespace SimpleIdentityServer.Core.Extensions
 {
@@ -102,6 +103,11 @@ namespace SimpleIdentityServer.Core.Extensions
             {
                 var serializedAddress = address.SerializeWithDataContract();
                 claims.Add(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Address, serializedAddress));
+            }
+
+            if (resourceOwner.Roles != null && resourceOwner.Roles.Any())
+            {
+                resourceOwner.Roles.ForEach(r => claims.Add(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Role, r)));
             }
 
             claims.Add(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.EmailVerified, resourceOwner.EmailVerified.ToString(CultureInfo.InvariantCulture)));

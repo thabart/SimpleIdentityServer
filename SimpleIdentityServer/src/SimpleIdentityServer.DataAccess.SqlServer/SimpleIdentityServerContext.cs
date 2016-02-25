@@ -50,6 +50,10 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
 
         public virtual DbSet<ScopeClaim> ScopeClaims { get; set; }
 
+        public virtual DbSet<ResourceOwnerRole> ResourceOwnerRoles { get; set; }
+
+        public virtual DbSet<Role> Roles { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.AddAddressMapping();
@@ -66,6 +70,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
             modelBuilder.AddScopeMapping();
             modelBuilder.AddTranslationMapping();
             modelBuilder.AddClientScopeMapping();
+            modelBuilder.AddRoleMapping();
+            modelBuilder.AddResourceOwnerRoleMapping();
             base.OnModelCreating(modelBuilder);
         }
     }

@@ -124,6 +124,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Models
         /// </summary>
         public Address Address { get; set; }
 
+        public List<ResourceOwnerRole> ResourceOwnerRoles { get; set; }
+
         /// <summary>
         /// Gets or sets the list of consents
         /// </summary>

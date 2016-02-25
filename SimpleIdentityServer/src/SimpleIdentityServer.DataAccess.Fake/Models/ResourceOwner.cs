@@ -1,4 +1,6 @@
-﻿namespace SimpleIdentityServer.DataAccess.Fake.Models
+﻿using System.Collections.Generic;
+
+namespace SimpleIdentityServer.DataAccess.Fake.Models
 {
     public class ResourceOwner
     {        
@@ -105,5 +107,10 @@
         public double UpdatedAt { get; set; }
 
         public string Password { get; set; }
+
+        /// <summary>
+        /// Gets or sets the roles
+        /// </summary>
+        public List<string> RoleNames { get; set; }
     }
 }

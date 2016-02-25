@@ -91,9 +91,6 @@ namespace SimpleIdentityServer.Manager.Host
                 });
                 opts.OperationFilter<AssignOauth2SecurityRequirements>();
             });
-            services.ConfigureSwaggerSchema(opts =>
-            {
-            });
 
             // Add the dependencies needed to enable CORS
             services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()

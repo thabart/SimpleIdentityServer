@@ -50,6 +50,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
             const string profile = "profile";
             const string webSite = "webSite";
             const string zoneInfo = "zoneInfo";
+            const string roleName = "administrator";
             var address = new Address
             {
                 Country = "country"
@@ -57,6 +58,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
             const bool emailVerified = false;
             const bool phoneNumberVerified = false;
             const double updatedAt = 200;
+            var roles = new List<string>
+            {
+                roleName
+            };
             var serializedAddress = address.SerializeWithDataContract();
             // Set all the other properties !!!
             var resourceOwner = new ResourceOwner
@@ -80,7 +85,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
                 Address = address,
                 EmailVerified = emailVerified,
                 PhoneNumberVerified = phoneNumberVerified,
-                UpdatedAt = updatedAt
+                UpdatedAt = updatedAt,
+                Roles = roles
             };
 
             var claimNames = new List<string>
@@ -104,7 +110,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
                 Jwt.Constants.StandardResourceOwnerClaimNames.Address,
                 Jwt.Constants.StandardResourceOwnerClaimNames.EmailVerified,
                 Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumberVerified,
-                Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt
+                Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt,
+                Jwt.Constants.StandardResourceOwnerClaimNames.Role
             };
 
             // ACT
@@ -132,6 +139,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
             Assert.True(claims.First(c => c.Type == Jwt.Constants.StandardResourceOwnerClaimNames.EmailVerified).Value == emailVerified.ToString(CultureInfo.InvariantCulture));
             Assert.True(claims.First(c => c.Type == Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumberVerified).Value == phoneNumberVerified.ToString(CultureInfo.InvariantCulture));
             Assert.True(claims.First(c => c.Type == Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt).Value == updatedAt.ToString(CultureInfo.InvariantCulture));
+            Assert.True(claims.First(c => c.Type == Jwt.Constants.StandardResourceOwnerClaimNames.Role).Value == roleName);
         }
     }
 }

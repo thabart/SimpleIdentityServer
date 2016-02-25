@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 using System;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Core.Models
 {
@@ -122,5 +123,10 @@ namespace SimpleIdentityServer.Core.Models
         public double UpdatedAt { get; set; }
 
         public string Password { get; set; }
+
+        /// <summary>
+        /// Gets or sets the list of roles
+        /// </summary>
+        public List<string> Roles { get; set; }
     }
 }

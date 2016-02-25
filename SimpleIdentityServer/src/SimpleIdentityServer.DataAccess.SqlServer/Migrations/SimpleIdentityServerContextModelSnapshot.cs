@@ -286,6 +286,28 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                     b.HasAnnotation("Relational:TableName", "resourceOwners");
                 });
 
+            modelBuilder.Entity("SimpleIdentityServer.DataAccess.SqlServer.Models.ResourceOwnerRole", b =>
+                {
+                    b.Property<string>("ResourceOwnerId");
+
+                    b.Property<string>("RoleName");
+
+                    b.HasKey("ResourceOwnerId", "RoleName");
+
+                    b.HasAnnotation("Relational:TableName", "resourceOwnerRoles");
+                });
+
+            modelBuilder.Entity("SimpleIdentityServer.DataAccess.SqlServer.Models.Role", b =>
+                {
+                    b.Property<string>("Name");
+
+                    b.Property<string>("Description");
+
+                    b.HasKey("Name");
+
+                    b.HasAnnotation("Relational:TableName", "roles");
+                });
+
             modelBuilder.Entity("SimpleIdentityServer.DataAccess.SqlServer.Models.Scope", b =>
                 {
                     b.Property<string>("Name");
@@ -387,6 +409,17 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                     b.HasOne("SimpleIdentityServer.DataAccess.SqlServer.Models.Client")
                         .WithMany()
                         .HasForeignKey("ClientId");
+                });
+
+            modelBuilder.Entity("SimpleIdentityServer.DataAccess.SqlServer.Models.ResourceOwnerRole", b =>
+                {
+                    b.HasOne("SimpleIdentityServer.DataAccess.SqlServer.Models.ResourceOwner")
+                        .WithMany()
+                        .HasForeignKey("ResourceOwnerId");
+
+                    b.HasOne("SimpleIdentityServer.DataAccess.SqlServer.Models.Role")
+                        .WithMany()
+                        .HasForeignKey("RoleName");
                 });
 
             modelBuilder.Entity("SimpleIdentityServer.DataAccess.SqlServer.Models.ScopeClaim", b =>

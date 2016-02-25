@@ -41,6 +41,13 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
 
         public static Domain.ResourceOwner ToDomain(this Model.ResourceOwner resourceOwner)
         {
+            var roleNames = new List<string>();
+            if (resourceOwner.ResourceOwnerRoles != null 
+                && resourceOwner.ResourceOwnerRoles.Any())
+            {
+                resourceOwner.ResourceOwnerRoles.ForEach(r => roleNames.Add(r.RoleName));
+            }
+
             return new Domain.ResourceOwner
             {
                 BirthDate = resourceOwner.BirthDate,
@@ -63,7 +70,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                 UpdatedAt = resourceOwner.UpdatedAt,
                 WebSite = resourceOwner.WebSite,
                 ZoneInfo = resourceOwner.ZoneInfo,
-                Address = resourceOwner.Address == null ? null : resourceOwner.Address.ToDomain()
+                Address = resourceOwner.Address == null ? null : resourceOwner.Address.ToDomain(),
+                Roles = roleNames
             };
         }
 

@@ -309,7 +309,8 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
                 WebSite = resourceOwner.WebSite,
                 ZoneInfo = resourceOwner.ZoneInfo,
                 Password = resourceOwner.Password,
-                Address = resourceOwner.Address == null ? null : resourceOwner.Address.ToBusiness()
+                Address = resourceOwner.Address == null ? null : resourceOwner.Address.ToBusiness(),
+                Roles = resourceOwner.RoleNames
             };
         }
 
