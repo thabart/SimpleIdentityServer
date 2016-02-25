@@ -24,7 +24,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
 {
     public static class SimpleIdentityServerSqlServerExtensions
     {
-        public static IServiceCollection AddSimpleIdentityServerSqlServer(this IServiceCollection serviceCollection)
+        public static IServiceCollection AddSimpleIdentityServerSqlServer(this IServiceCollection serviceCollection, string connectionString)
         {
             serviceCollection.AddTransient<ITranslationRepository, TranslationRepository>();
             serviceCollection.AddTransient<IResourceOwnerRepository, ResourceOwnerRepository>();
@@ -34,6 +34,10 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
             serviceCollection.AddTransient<IConsentRepository, ConsentRepository>();
             serviceCollection.AddTransient<IGrantedTokenRepository, GrantedTokenRepository>();
             serviceCollection.AddTransient<IJsonWebKeyRepository, JsonWebKeyRepository>();
+            serviceCollection.AddEntityFramework()
+                .AddSqlServer()
+                .AddDbContext<SimpleIdentityServerContext>(options =>
+                    options.UseSqlServer(connectionString));
             return serviceCollection;
         }
     }

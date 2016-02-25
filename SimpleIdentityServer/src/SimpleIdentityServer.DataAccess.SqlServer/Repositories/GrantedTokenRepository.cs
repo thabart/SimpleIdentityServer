@@ -1,4 +1,20 @@
-﻿using System;
+﻿#region copyright
+// Copyright 2015 Habart Thierry
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
+using System;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
@@ -16,107 +32,107 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
         public GrantedTokenRepository(SimpleIdentityServerContext context) {
             _context = context;
         }
-        
+
         #region Public methods
 
         public GrantedToken GetToken(string accessToken)
         {
-                var grantedToken = _context.GrantedTokens.FirstOrDefault(g => g.AccessToken == accessToken);
-                if (grantedToken == null)
-                {
-                    return null;
-                }
+            var grantedToken = _context.GrantedTokens.FirstOrDefault(g => g.AccessToken == accessToken);
+            if (grantedToken == null)
+            {
+                return null;
+            }
 
-                return grantedToken.ToDomain();
+            return grantedToken.ToDomain();
         }
 
         public GrantedToken GetTokenByRefreshToken(string refreshToken)
         {
-                var grantedToken = _context.GrantedTokens.FirstOrDefault(g => g.RefreshToken == refreshToken);
-                if (grantedToken == null)
-                {
-                    return null;
-                }
+            var grantedToken = _context.GrantedTokens.FirstOrDefault(g => g.RefreshToken == refreshToken);
+            if (grantedToken == null)
+            {
+                return null;
+            }
 
-                return grantedToken.ToDomain();
+            return grantedToken.ToDomain();
         }
 
         public GrantedToken GetToken(
-            string scopes, 
-            string clientId, 
-            JwsPayload idTokenJwsPayload, 
+            string scopes,
+            string clientId,
+            JwsPayload idTokenJwsPayload,
             JwsPayload userInfoJwsPayload)
         {
-                var grantedTokens = _context.GrantedTokens.Where(g => g.Scope == scopes && g.ClientId == clientId)
-                    .ToList();
-                if (grantedTokens == null || !grantedTokens.Any())
-                {
-                    return null;
-                }
+            var grantedTokens = _context.GrantedTokens.Where(g => g.Scope == scopes && g.ClientId == clientId)
+                .ToList();
+            if (grantedTokens == null || !grantedTokens.Any())
+            {
+                return null;
+            }
 
-                foreach (var grantedToken in grantedTokens)
+            foreach (var grantedToken in grantedTokens)
+            {
+                var grantedTokenIdTokenJwsPayload = grantedToken.IdTokenPayLoad.DeserializeWithJavascript<JwsPayload>();
+                var grantedTokenUserInfoJwsPayload = grantedToken.UserInfoPayLoad.DeserializeWithJavascript<JwsPayload>();
+                if (CompareJwsPayload(idTokenJwsPayload, grantedTokenIdTokenJwsPayload) &&
+                    CompareJwsPayload(userInfoJwsPayload, grantedTokenUserInfoJwsPayload))
                 {
-                    var grantedTokenIdTokenJwsPayload = grantedToken.IdTokenPayLoad.DeserializeWithJavascript<JwsPayload>();
-                    var grantedTokenUserInfoJwsPayload = grantedToken.UserInfoPayLoad.DeserializeWithJavascript<JwsPayload>();
-                    if (CompareJwsPayload(idTokenJwsPayload, grantedTokenIdTokenJwsPayload) &&
-                        CompareJwsPayload(userInfoJwsPayload, grantedTokenUserInfoJwsPayload))
-                    {
-                        return grantedToken.ToDomain();
-                    }
+                    return grantedToken.ToDomain();
                 }
+            }
 
             return null;
         }
 
         public bool Insert(GrantedToken grantedToken)
         {
-                using (var transaction = _context.Database.BeginTransaction())
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
                 {
-                    try
+                    var record = new Models.GrantedToken
                     {
-                        var record = new Models.GrantedToken
-                        {
-                            AccessToken = grantedToken.AccessToken,
-                            ClientId = grantedToken.ClientId,
-                            CreateDateTime = grantedToken.CreateDateTime,
-                            ExpiresIn = grantedToken.ExpiresIn,
-                            RefreshToken = grantedToken.RefreshToken,
-                            Scope = grantedToken.Scope,
-                            IdTokenPayLoad = grantedToken.IdTokenPayLoad == null ? string.Empty : grantedToken.IdTokenPayLoad.SerializeWithJavascript(),
-                            UserInfoPayLoad = grantedToken.UserInfoPayLoad == null ? string.Empty : grantedToken.UserInfoPayLoad.SerializeWithJavascript()
-                        };
+                        AccessToken = grantedToken.AccessToken,
+                        ClientId = grantedToken.ClientId,
+                        CreateDateTime = grantedToken.CreateDateTime,
+                        ExpiresIn = grantedToken.ExpiresIn,
+                        RefreshToken = grantedToken.RefreshToken,
+                        Scope = grantedToken.Scope,
+                        IdTokenPayLoad = grantedToken.IdTokenPayLoad == null ? string.Empty : grantedToken.IdTokenPayLoad.SerializeWithJavascript(),
+                        UserInfoPayLoad = grantedToken.UserInfoPayLoad == null ? string.Empty : grantedToken.UserInfoPayLoad.SerializeWithJavascript()
+                    };
 
-                        _context.GrantedTokens.Add(record);
-                        _context.SaveChanges();
-                        transaction.Commit();
-                    }
-                    catch (Exception)
-                    {
-                        transaction.Rollback();
-                        return false;
-                    }
+                    _context.GrantedTokens.Add(record);
+                    _context.SaveChanges();
+                    transaction.Commit();
                 }
+                catch (Exception)
+                {
+                    transaction.Rollback();
+                    return false;
+                }
+            }
 
             return true;
         }
 
         public bool Delete(GrantedToken grantedToken)
         {
-                using (var transaction = _context.Database.BeginTransaction())
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
                 {
-                    try
-                    {
-                        var token = _context.GrantedTokens.FirstOrDefault(g => g.AccessToken == grantedToken.AccessToken);
-                        _context.GrantedTokens.Remove(token);
-                        _context.SaveChanges();
-                        transaction.Commit();
-                    }
-                    catch(Exception)
-                    {
-                        transaction.Rollback();
-                        return false;
-                    }
+                    var token = _context.GrantedTokens.FirstOrDefault(g => g.AccessToken == grantedToken.AccessToken);
+                    _context.GrantedTokens.Remove(token);
+                    _context.SaveChanges();
+                    transaction.Commit();
                 }
+                catch (Exception)
+                {
+                    transaction.Rollback();
+                    return false;
+                }
+            }
 
             return true;
         }

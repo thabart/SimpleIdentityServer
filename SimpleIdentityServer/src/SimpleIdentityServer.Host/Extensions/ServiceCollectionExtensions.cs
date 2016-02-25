@@ -127,12 +127,12 @@ namespace SimpleIdentityServer.Host
                     Scopes = scopes,
                     Translations = translations
                 };
-                serviceCollection.AddTransient<FakeDataSource>(a => fakeDataSource);
+
+                serviceCollection.AddTransient(a => fakeDataSource);
             }
             else 
             {
-                serviceCollection.AddSimpleIdentityServerSqlServer();
-                // serviceCollection.AddTransient<SimpleIdentityServerContext>((a) => new SimpleIdentityServerContext(dataSourceOptions.ConnectionString));
+                serviceCollection.AddSimpleIdentityServerSqlServer(dataSourceOptions.ConnectionString);
             }
             
             ConfigureSimpleIdentityServer(serviceCollection, swaggerOptions);

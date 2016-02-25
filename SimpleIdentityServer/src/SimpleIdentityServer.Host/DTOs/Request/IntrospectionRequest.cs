@@ -14,29 +14,20 @@
 // limitations under the License.
 #endregion
 
-using System.Runtime.Serialization;
-
 namespace SimpleIdentityServer.Host.DTOs.Request
 {
-    [DataContract]
     public class IntrospectionRequest
     {
-        [DataMember(Name = Core.Constants.IntrospectionRequestNames.Token)]
         public string token { get; set; }
-
-        [DataMember(Name = Core.Constants.IntrospectionRequestNames.TokenTypeHint)]
+        
         public string token_type_hint { get; set; }
-
-        [DataMember(Name = Core.Constants.IntrospectionRequestNames.ClientId)]
+        
         public string client_id { get; set; }
-
-        [DataMember(Name = Core.Constants.IntrospectionRequestNames.ClientSecret)]
+        
         public string client_secret { get; set; }
         
-        [DataMember(Name = Core.Constants.IntrospectionRequestNames.ClientAssertion)]
         public string client_assertion { get; set; }
-
-        [DataMember(Name = Core.Constants.IntrospectionRequestNames.ClientAssertionType)]
+        
         public string client_assertion_type { get; set; }
     }
 }

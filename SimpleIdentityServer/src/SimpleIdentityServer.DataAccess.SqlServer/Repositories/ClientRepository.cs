@@ -1,4 +1,20 @@
-﻿using System;
+﻿#region copyright
+// Copyright 2015 Habart Thierry
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SimpleIdentityServer.Core.Repositories;
@@ -20,108 +36,112 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 
         public Core.Models.Client GetClientById(string clientId)
         {
-                var client = _context.Clients
-                            .Include(c => c.ClientScopes)
-                            .Include(c => c.JsonWebKeys)
-                            .FirstOrDefault(c => c.ClientId == clientId);
-                if (client == null)
-                {
-                    return null;
-                }
+            var client = _context.Clients
+                .Include(c => c.JsonWebKeys)
+                .FirstOrDefault(c => c.ClientId == clientId);            
+            if (client == null)
+            {
+                return null;
+            }
 
-                return client.ToDomain();
+            var clientScopes = _context.ClientScopes
+                .Include(c => c.Scope)
+                .Where(c => c.ClientId == clientId)
+                .ToList();
+            client.ClientScopes = clientScopes;
+            return client.ToDomain();
         }
 
         public bool InsertClient(Core.Models.Client client)
         {
-                using (var transaction = _context.Database.BeginTransaction())
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
                 {
-                    try
+                    var scopes = new List<ClientScope>();
+                    var jsonWebKeys = new List<JsonWebKey>();
+                    var grantTypes = client.GrantTypes == null
+                        ? string.Empty
+                        : ConcatListOfIntegers(client.GrantTypes.Select(k => (int)k).ToList());
+                    var responseTypes = client.ResponseTypes == null
+                        ? string.Empty
+                        : ConcatListOfIntegers(client.ResponseTypes.Select(r => (int)r).ToList());
+                    if (client.AllowedScopes != null)
                     {
-                        var scopes = new List<ClientScope>();
-                        var jsonWebKeys = new List<JsonWebKey>();
-                        var grantTypes = client.GrantTypes == null
-                            ? string.Empty
-                            : ConcatListOfIntegers(client.GrantTypes.Select(k => (int) k).ToList());
-                        var responseTypes = client.ResponseTypes == null
-                            ? string.Empty
-                            : ConcatListOfIntegers(client.ResponseTypes.Select(r => (int) r).ToList());
-                        if (client.AllowedScopes != null)
-                        {
-                            var scopeNames = client.AllowedScopes.Select(s => s.Name).ToList();
-                            scopes = _context.Scopes.Where(s => scopeNames.Contains(s.Name))
-                                .Select(s => new ClientScope { ScopeName = s.Name })
-                                .ToList();
-                        }
+                        var scopeNames = client.AllowedScopes.Select(s => s.Name).ToList();
+                        scopes = _context.Scopes.Where(s => scopeNames.Contains(s.Name))
+                            .Select(s => new ClientScope { ScopeName = s.Name })
+                            .ToList();
+                    }
 
-                        if (client.JsonWebKeys != null)
+                    if (client.JsonWebKeys != null)
+                    {
+                        client.JsonWebKeys.ForEach(jsonWebKey =>
                         {
-                            client.JsonWebKeys.ForEach(jsonWebKey =>
+                            var jsonWebKeyRecord = new JsonWebKey
                             {
-                                var jsonWebKeyRecord = new JsonWebKey
-                                {
-                                    Kid = jsonWebKey.Kid,
-                                    Use = (Use)jsonWebKey.Use,
-                                    Kty = (KeyType)jsonWebKey.Kty,
-                                    SerializedKey = jsonWebKey.SerializedKey,
-                                    X5t = jsonWebKey.X5t,
-                                    X5tS256 = jsonWebKey.X5tS256,
-                                    X5u = jsonWebKey.X5u == null ? string.Empty : jsonWebKey.X5u.AbsoluteUri,
-                                    Alg = (AllAlg)jsonWebKey.Alg,
-                                    KeyOps = jsonWebKey.KeyOps == null ? string.Empty : ConcatListOfIntegers(jsonWebKey.KeyOps.Select(k => (int)k).ToList())
-                                };
+                                Kid = jsonWebKey.Kid,
+                                Use = (Use)jsonWebKey.Use,
+                                Kty = (KeyType)jsonWebKey.Kty,
+                                SerializedKey = jsonWebKey.SerializedKey,
+                                X5t = jsonWebKey.X5t,
+                                X5tS256 = jsonWebKey.X5tS256,
+                                X5u = jsonWebKey.X5u == null ? string.Empty : jsonWebKey.X5u.AbsoluteUri,
+                                Alg = (AllAlg)jsonWebKey.Alg,
+                                KeyOps = jsonWebKey.KeyOps == null ? string.Empty : ConcatListOfIntegers(jsonWebKey.KeyOps.Select(k => (int)k).ToList())
+                            };
 
-                                jsonWebKeys.Add(jsonWebKeyRecord);
-                            });
-                        }
-
-                        var newClient = new Client
-                        {
-                            ClientId = client.ClientId,
-                            ClientName = client.ClientName,
-                            ClientUri = client.ClientUri,
-                            ClientSecret = client.ClientSecret,
-                            IdTokenEncryptedResponseAlg = client.IdTokenEncryptedResponseAlg,
-                            IdTokenEncryptedResponseEnc = client.IdTokenEncryptedResponseEnc,
-                            JwksUri = client.JwksUri,
-                            TosUri = client.TosUri,
-                            LogoUri = client.LogoUri,
-                            PolicyUri = client.PolicyUri,
-                            RequestObjectEncryptionAlg = client.RequestObjectEncryptionAlg,
-                            RequestObjectEncryptionEnc = client.RequestObjectEncryptionEnc,
-                            IdTokenSignedResponseAlg = client.IdTokenSignedResponseAlg,
-                            RequireAuthTime = client.RequireAuthTime,
-                            SectorIdentifierUri = client.SectorIdentifierUri,
-                            SubjectType = client.SubjectType,
-                            TokenEndPointAuthSigningAlg = client.TokenEndPointAuthSigningAlg,
-                            UserInfoEncryptedResponseAlg = client.UserInfoEncryptedResponseAlg,
-                            UserInfoSignedResponseAlg = client.UserInfoSignedResponseAlg,
-                            UserInfoEncryptedResponseEnc = client.UserInfoEncryptedResponseEnc,
-                            DefaultMaxAge = client.DefaultMaxAge,
-                            DefaultAcrValues = client.DefaultAcrValues,
-                            InitiateLoginUri = client.InitiateLoginUri,
-                            RequestObjectSigningAlg = client.RequestObjectSigningAlg,
-                            TokenEndPointAuthMethod = (TokenEndPointAuthenticationMethods)client.TokenEndPointAuthMethod,
-                            ApplicationType = (ApplicationTypes)client.ApplicationType,
-                            RequestUris = ConcatListOfStrings(client.RequestUris),
-                            RedirectionUrls = ConcatListOfStrings(client.RedirectionUrls),
-                            Contacts = ConcatListOfStrings(client.Contacts),
-                            ClientScopes = scopes,
-                            JsonWebKeys = jsonWebKeys,
-                            GrantTypes = grantTypes,
-                            ResponseTypes = responseTypes
-                        };
-
-                        _context.Clients.Add(newClient);
-                        _context.SaveChanges();
-                        transaction.Commit();
+                            jsonWebKeys.Add(jsonWebKeyRecord);
+                        });
                     }
-                    catch (Exception)
+
+                    var newClient = new Client
                     {
-                        transaction.Rollback();
-                        return false;
-                    }
+                        ClientId = client.ClientId,
+                        ClientName = client.ClientName,
+                        ClientUri = client.ClientUri,
+                        ClientSecret = client.ClientSecret,
+                        IdTokenEncryptedResponseAlg = client.IdTokenEncryptedResponseAlg,
+                        IdTokenEncryptedResponseEnc = client.IdTokenEncryptedResponseEnc,
+                        JwksUri = client.JwksUri,
+                        TosUri = client.TosUri,
+                        LogoUri = client.LogoUri,
+                        PolicyUri = client.PolicyUri,
+                        RequestObjectEncryptionAlg = client.RequestObjectEncryptionAlg,
+                        RequestObjectEncryptionEnc = client.RequestObjectEncryptionEnc,
+                        IdTokenSignedResponseAlg = client.IdTokenSignedResponseAlg,
+                        RequireAuthTime = client.RequireAuthTime,
+                        SectorIdentifierUri = client.SectorIdentifierUri,
+                        SubjectType = client.SubjectType,
+                        TokenEndPointAuthSigningAlg = client.TokenEndPointAuthSigningAlg,
+                        UserInfoEncryptedResponseAlg = client.UserInfoEncryptedResponseAlg,
+                        UserInfoSignedResponseAlg = client.UserInfoSignedResponseAlg,
+                        UserInfoEncryptedResponseEnc = client.UserInfoEncryptedResponseEnc,
+                        DefaultMaxAge = client.DefaultMaxAge,
+                        DefaultAcrValues = client.DefaultAcrValues,
+                        InitiateLoginUri = client.InitiateLoginUri,
+                        RequestObjectSigningAlg = client.RequestObjectSigningAlg,
+                        TokenEndPointAuthMethod = (TokenEndPointAuthenticationMethods)client.TokenEndPointAuthMethod,
+                        ApplicationType = (ApplicationTypes)client.ApplicationType,
+                        RequestUris = ConcatListOfStrings(client.RequestUris),
+                        RedirectionUrls = ConcatListOfStrings(client.RedirectionUrls),
+                        Contacts = ConcatListOfStrings(client.Contacts),
+                        ClientScopes = scopes,
+                        JsonWebKeys = jsonWebKeys,
+                        GrantTypes = grantTypes,
+                        ResponseTypes = responseTypes
+                    };
+
+                    _context.Clients.Add(newClient);
+                    _context.SaveChanges();
+                    transaction.Commit();
                 }
+                catch (Exception)
+                {
+                    transaction.Rollback();
+                    return false;
+                }
+            }
 
             return true;
         }
@@ -134,29 +154,29 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 
         public bool DeleteClient(Core.Models.Client client)
         {
-                using (var transaction = _context.Database.BeginTransaction())
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
                 {
-                    try
+                    var connectedClient = _context.Clients
+                        .Include(c => c.ClientScopes)
+                        .Include(c => c.JsonWebKeys)
+                        .FirstOrDefault(c => c.ClientId == client.ClientId);
+                    if (connectedClient == null)
                     {
-                        var connectedClient = _context.Clients
-                            .Include(c => c.ClientScopes)
-                            .Include(c => c.JsonWebKeys)
-                            .FirstOrDefault(c => c.ClientId == client.ClientId);
-                        if (connectedClient == null)
-                        {
-                            return false;
-                        }
-
-                        _context.Clients.Remove(connectedClient);
-                        _context.SaveChanges();
-                        transaction.Commit();
-                    }
-                    catch (Exception)
-                    {
-                        transaction.Rollback();
                         return false;
                     }
+
+                    _context.Clients.Remove(connectedClient);
+                    _context.SaveChanges();
+                    transaction.Commit();
                 }
+                catch (Exception)
+                {
+                    transaction.Rollback();
+                    return false;
+                }
+            }
 
             return true;
         }

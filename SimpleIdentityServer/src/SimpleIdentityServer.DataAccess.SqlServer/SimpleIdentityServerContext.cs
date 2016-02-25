@@ -1,3 +1,19 @@
+#region copyright
+// Copyright 2015 Habart Thierry
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
 using SimpleIdentityServer.DataAccess.SqlServer.Mappings;
 using SimpleIdentityServer.DataAccess.SqlServer.Models;
 using Microsoft.Data.Entity;
@@ -25,7 +41,15 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
         public virtual DbSet<Consent> Consents { get; set; }
 
         public virtual DbSet<AuthorizationCode> AuthorizationCodes { get; set; } 
+
+        public virtual DbSet<ClientScope> ClientScopes { get; set; }
         
+        public virtual DbSet<ConsentClaim> ConsentClaims { get; set; }
+
+        public virtual DbSet<ConsentScope> ConsentScopes { get; set; }
+
+        public virtual DbSet<ScopeClaim> ScopeClaims { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.AddAddressMapping();
@@ -43,19 +67,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
             modelBuilder.AddTranslationMapping();
             modelBuilder.AddClientScopeMapping();
             base.OnModelCreating(modelBuilder);
-            /*
-            modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
-            modelBuilder.Configurations.Add(new TranslationMapping());
-            modelBuilder.Configurations.Add(new ScopeMapping());
-            modelBuilder.Configurations.Add(new ClaimMapping());
-            modelBuilder.Configurations.Add(new AddressMapping());
-            modelBuilder.Configurations.Add(new ResourceOwnerMapping());
-            modelBuilder.Configurations.Add(new JsonWebKeyMapping());
-            modelBuilder.Configurations.Add(new GrantedTokenMapping());
-            modelBuilder.Configurations.Add(new ClientMapping());
-            modelBuilder.Configurations.Add(new ConsentMapping());
-            modelBuilder.Configurations.Add(new AuthorizationCodeMapping());
-            */
         }
     }
 }

@@ -15,27 +15,25 @@
 #endregion
 
 using Microsoft.Data.Entity;
-using SimpleIdentityServer.DataAccess.SqlServer.Models;
+using Microsoft.Data.Entity.Infrastructure;
+using Microsoft.Data.Entity.Migrations;
+using System.Linq;
 
-namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
+namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
 {
-    public static class AddressMapping
+    public static class DbContextExtensions
     {
-        public static void AddAddressMapping(this ModelBuilder modelBuilder)
+        public static bool AllMigrationsApplied(this DbContext context)
         {
-            modelBuilder.Entity<Address>()
-                .ToTable("addresses")
-                .HasKey(a => a.Id);
-            /*
-            ToTable("addresses");
-            HasKey(a => a.Id);
-            Property(a => a.Formatted);
-            Property(a => a.StreetAddress);
-            Property(a => a.Locality);
-            Property(a => a.Region);
-            Property(a => a.PostalCode);
-            Property(a => a.Country);
-            */
+            var applied = context.GetService<IHistoryRepository>()
+                .GetAppliedMigrations()
+                .Select(m => m.MigrationId);
+
+            var total = context.GetService<IMigrationsAssembly>()
+                .Migrations
+                .Select(m => m.Key);
+
+            return !total.Except(applied).Any();
         }
     }
 }

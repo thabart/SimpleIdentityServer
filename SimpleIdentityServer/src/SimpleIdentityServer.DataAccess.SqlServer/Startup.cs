@@ -1,4 +1,20 @@
-﻿using Microsoft.AspNet.Builder;
+﻿#region copyright
+// Copyright 2015 Habart Thierry
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
+using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Hosting;
 using Microsoft.Data.Entity;
 using Microsoft.Extensions.Configuration;
@@ -21,22 +37,19 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
         public Startup(IHostingEnvironment env,
             IApplicationEnvironment appEnv)
         {
-            /*
-            // Load all the configuration information from the "json" file & the environment variables.
             var builder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
-            */
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
-            // var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
+            var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
             services.AddEntityFramework()
                .AddSqlServer()
                .AddDbContext<SimpleIdentityServerContext>(options =>
-                   options.UseSqlServer("Data Source=W262C017\\SQLEXPRESS;Initial Catalog=SimpleIdentityServer;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"));
+                   options.UseSqlServer(connectionString));
         }
 
         public void Configure(IApplicationBuilder app,
