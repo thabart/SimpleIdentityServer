@@ -24,6 +24,7 @@ test_script:
 #- cmd: dnx -p tests\SimpleIdentityServer.Api.Tests test
 - cmd: dnx -p tests\SimpleIdentityServer.Core.Jwt.UnitTests test
 - cmd: dnx -p tests\SimpleIdentityServer.Core.UnitTests test
+- cmd: dnx -p tests\SimpleIdentityServer.UserInformation.Authentication.Tests test
 #- cmd: dnx -p tests\SimpleIdentityServer.Oauth2Instrospection.Authentication.Tests test
 #- cmd: dnx -p tests\SimpleIdentityServer.Manager.Core.Tests test
 after_test:

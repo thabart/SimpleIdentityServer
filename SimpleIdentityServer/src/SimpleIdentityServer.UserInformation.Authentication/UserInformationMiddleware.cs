@@ -19,7 +19,7 @@ using Microsoft.AspNet.Http;
 using Microsoft.Extensions.OptionsModel;
 using Newtonsoft.Json;
 using SimpleIdentityServer.Authentication.Common.Authentication;
-using SimpleIdentityServer.Oauth2Instrospection.Authentication.Errors;
+using SimpleIdentityServer.UserInformation.Authentication.Errors;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,15 +28,15 @@ using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
+namespace SimpleIdentityServer.UserInformation.Authentication
 {
-    public class Oauth2IntrospectionMiddleware<TOptions> where TOptions : Oauth2IntrospectionOptions, new()
+    public class UserInformationMiddleware<TOptions> where TOptions : UserInformationOptions, new()
     {
         private const string AuthorizationName = "Authorization";
 
         private const string BearerName = "Bearer";
 
-        private readonly Oauth2IntrospectionOptions _options;
+        private readonly UserInformationOptions _options;
 
         private readonly HttpClient _httpClient;
 
@@ -46,7 +46,7 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
 
         #region Constructor
 
-        public Oauth2IntrospectionMiddleware(
+        public UserInformationMiddleware(
             RequestDelegate next,
             IApplicationBuilder app,
             IOptions<TOptions> options)
@@ -93,13 +93,13 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
                     var accessToken = GetAccessToken(authorizationValue);
                     if (!string.IsNullOrWhiteSpace(accessToken))
                     {
-                        var introspectionResponse = await GetIntrospectionResponse(
+                        var userInformationResponse = await GetUserInformationResponse(
                             _options,
                             accessToken);
 
-                        if (introspectionResponse != null)
+                        if (userInformationResponse != null)
                         {
-                            context.User = CreateClaimPrincipal(introspectionResponse);
+                            context.User = CreateClaimPrincipal(userInformationResponse);
                         }
                     }
                 }
@@ -124,7 +124,7 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
         private string GetAccessToken(string authorizationValue)
         {
             var splittedAuthorizationValue = authorizationValue.Split(' ');
-            if (splittedAuthorizationValue.Count() == 2 && 
+            if (splittedAuthorizationValue.Count() == 2 &&
                 splittedAuthorizationValue[0].Equals(BearerName, StringComparison.InvariantCultureIgnoreCase))
             {
                 return splittedAuthorizationValue[1];
@@ -133,39 +133,20 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
             return string.Empty;
         }
 
-        private async Task<IntrospectionResponse> GetIntrospectionResponse(
-            Oauth2IntrospectionOptions oauth2IntrospectionOptions,
+        private async Task<Dictionary<string, string>> GetUserInformationResponse(
+            UserInformationOptions userInformationOptions,
             string token)
         {
             Uri uri = null;
-            var url = oauth2IntrospectionOptions.InstrospectionEndPoint;
+            var url = userInformationOptions.UserInformationEndPoint;
             if (!Uri.TryCreate(url, UriKind.Absolute, out uri))
             {
-                throw new ArgumentException(ErrorDescriptions.TheIntrospectionEndPointIsNotAWellFormedUrl);
+                throw new ArgumentException(ErrorDescriptions.TheUserInfoEndPointIsNotAWellFormedUrl);
             }
-
-            if (string.IsNullOrWhiteSpace(oauth2IntrospectionOptions.ClientId))
-            {
-                throw new ArgumentException(string.Format(ErrorDescriptions.TheParameterCannotBeEmpty, nameof(oauth2IntrospectionOptions.ClientId)));
-            }
-
-            if (string.IsNullOrWhiteSpace(oauth2IntrospectionOptions.ClientSecret))
-            {
-                throw new ArgumentException(string.Format(ErrorDescriptions.TheParameterCannotBeEmpty, nameof(oauth2IntrospectionOptions.ClientSecret)));
-            }
-
-            var introspectionRequestParameters = new Dictionary<string, string>
-            {
-                { Constants.IntrospectionRequestNames.Token, token },
-                { Constants.IntrospectionRequestNames.TokenTypeHint, "access_token" },
-                { Constants.IntrospectionRequestNames.ClientId, oauth2IntrospectionOptions.ClientId },
-                { Constants.IntrospectionRequestNames.ClientSecret, oauth2IntrospectionOptions.ClientSecret }
-            };
-
-            var requestContent = new FormUrlEncodedContent(introspectionRequestParameters);
-            var requestMessage = new HttpRequestMessage(HttpMethod.Post, oauth2IntrospectionOptions.InstrospectionEndPoint);
+            
+            var requestMessage = new HttpRequestMessage(HttpMethod.Get, url);
             requestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            requestMessage.Content = requestContent;
+            requestMessage.Headers.Add(AuthorizationName, string.Format("Bearer {0}", token));
             var response = await _httpClient.SendAsync(requestMessage);
             if (!response.IsSuccessStatusCode)
             {
@@ -173,31 +154,22 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
             }
 
             var content = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<IntrospectionResponse>(content);
+            return JsonConvert.DeserializeObject<Dictionary<string, string>>(content);
         }
 
         #endregion
 
         #region Private static methods
-        
-        private static ClaimsPrincipal CreateClaimPrincipal(IntrospectionResponse introspectionResponse)
+
+        private static ClaimsPrincipal CreateClaimPrincipal(Dictionary<string, string> userInformationResponse)
         {
             var claims = new List<Claim>();
-            if (!string.IsNullOrWhiteSpace(introspectionResponse.Subject))
+            foreach(var claim in userInformationResponse)
             {
-                claims.Add(new Claim(Constants.ClaimNames.Subject, introspectionResponse.Subject));
+                claims.Add(new Claim(claim.Key, claim.Value));
             }
 
-            if (!string.IsNullOrWhiteSpace(introspectionResponse.Scope))
-            {
-                var scopes = introspectionResponse.Scope.Split(' ');
-                foreach(var scope in scopes)
-                {
-                    claims.Add(new Claim(Constants.ClaimNames.Scope, scope));
-                }
-            }
-
-            var claimsIdentity = new ClaimsIdentity(claims, "Introspection");
+            var claimsIdentity = new ClaimsIdentity(claims, "UserInformation");
             return new ClaimsPrincipal(claimsIdentity);
         }
 

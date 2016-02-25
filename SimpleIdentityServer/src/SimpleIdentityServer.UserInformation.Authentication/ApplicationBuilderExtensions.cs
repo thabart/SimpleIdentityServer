@@ -18,37 +18,39 @@ using Microsoft.AspNet.Builder;
 using SimpleIdentityServer.Authentication.Common.Options;
 using System;
 
-namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
+namespace SimpleIdentityServer.UserInformation.Authentication
 {
     public static class ApplicationBuilderExtensions
     {
         #region Public static methods
 
-        public static IApplicationBuilder UseAuthenticationWithIntrospection(this IApplicationBuilder app)
+        public static IApplicationBuilder UseAuthenticationWithUserInformation(this IApplicationBuilder app)
         {
             if (app == null)
             {
                 throw new ArgumentNullException(nameof(app));
             }
 
-            return app.UseMiddleware<Oauth2IntrospectionMiddleware<Oauth2IntrospectionOptions>>(app);
+            return app.UseMiddleware<UserInformationMiddleware<UserInformationOptions>>(app);
         }
 
-        public static IApplicationBuilder UseAuthenticationWithIntrospection(this IApplicationBuilder app, Oauth2IntrospectionOptions oauth2IntrospectionOptions)
+        public static IApplicationBuilder UseAuthenticationWithUserInformation(
+            this IApplicationBuilder app, 
+            UserInformationOptions userInformationOptions)
         {
             if (app == null)
             {
                 throw new ArgumentNullException(nameof(app));
             }
 
-            if (oauth2IntrospectionOptions == null)
+            if (userInformationOptions == null)
             {
-                throw new ArgumentNullException(nameof(oauth2IntrospectionOptions));
+                throw new ArgumentNullException(nameof(userInformationOptions));
             }
 
-            return app.UseMiddleware<Oauth2IntrospectionMiddleware<Oauth2IntrospectionOptions>>(app, Options.Create(oauth2IntrospectionOptions));
-        }    
-    
+            return app.UseMiddleware<UserInformationMiddleware<UserInformationOptions>>(app, Options.Create(userInformationOptions));
+        }
+
         #endregion
     }
 }

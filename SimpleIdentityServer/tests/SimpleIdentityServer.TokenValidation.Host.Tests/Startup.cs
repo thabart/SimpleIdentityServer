@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
 using SimpleIdentityServer.Oauth2Instrospection.Authentication;
+using SimpleIdentityServer.UserInformation.Authentication;
 
 namespace SimpleIdentityServer.TokenValidation.Host.Tests
 {
@@ -32,7 +33,7 @@ namespace SimpleIdentityServer.TokenValidation.Host.Tests
         {
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("getValues", policy => policy.RequireClaim("scope", "Values:Get"));
+                options.AddPolicy("getValues", policy => policy.RequireClaim("role", "administrator"));
             });
             services.AddLogging();
             services.AddMvc();
@@ -44,6 +45,16 @@ namespace SimpleIdentityServer.TokenValidation.Host.Tests
         {
             loggerFactory.AddConsole();
             app.UseStatusCodePages();
+
+            // I. ENABLE USER INFORMATION AUTHENTICATION
+            var options = new UserInformationOptions
+            {
+                UserInformationEndPoint = "http://localhost:5000/userinfo"
+            };
+            app.UseAuthenticationWithUserInformation(options);
+
+            /*
+            // II. ENABLE INTROSPECTION ENDPOINT
             var options = new Oauth2IntrospectionOptions
             {
                 InstrospectionEndPoint = "http://localhost:5000/introspect",
@@ -51,6 +62,7 @@ namespace SimpleIdentityServer.TokenValidation.Host.Tests
                 ClientSecret = "MyBlog"
             };
             app.UseAuthenticationWithIntrospection(options);
+            */
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

@@ -6,7 +6,7 @@
     "projectUrl": "",
     "licenseUrl": "",
     "tooling": {
-        "defaultNamespace": "SimpleIdentityServer.Oauth2Instrospection.Authentication.Tests"
+        "defaultNamespace": "SimpleIdentityServer.UserInformation.Authentication.Tests"
     },
   "dependencies": {
     "Moq": "4.2.1510.2205",
@@ -16,7 +16,7 @@
     "Microsoft.AspNet.TestHost": "1.0.0-rc1-final",
     "Microsoft.AspNet.Authorization": "1.0.0-rc1-final",
     "Microsoft.AspNet.Mvc": "6.0.0-rc1-final",
-    "SimpleIdentityServer.Oauth2Instrospection.Authentication": ""
+    "SimpleIdentityServer.UserInformation.Authentication": ""
   },
     "commands": {
         "test": "xunit.runner.dnx"

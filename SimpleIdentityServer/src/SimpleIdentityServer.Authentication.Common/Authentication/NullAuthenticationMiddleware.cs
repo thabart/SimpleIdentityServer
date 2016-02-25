@@ -20,9 +20,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.WebEncoders;
 using System;
 
-namespace SimpleIdentityServer.Oauth2Instrospection.Authentication.Authentication
+namespace SimpleIdentityServer.Authentication.Common.Authentication
 {
-    internal sealed class NullAuthenticationMiddleware : AuthenticationMiddleware<NullAuthenticationOptions>
+    public sealed class NullAuthenticationMiddleware : AuthenticationMiddleware<NullAuthenticationOptions>
     {
         public NullAuthenticationMiddleware(
             RequestDelegate next,

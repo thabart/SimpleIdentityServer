@@ -17,9 +17,9 @@
 using System.Threading.Tasks;
 using Microsoft.AspNet.Authentication;
 
-namespace SimpleIdentityServer.Oauth2Instrospection.Authentication.Authentication
+namespace SimpleIdentityServer.Authentication.Common.Authentication
 {
-    internal sealed class NullAuthenticationHandler : AuthenticationHandler<NullAuthenticationOptions>
+    public sealed class NullAuthenticationHandler : AuthenticationHandler<NullAuthenticationOptions>
     {
         protected override Task<AuthenticateResult> HandleAuthenticateAsync()
         {

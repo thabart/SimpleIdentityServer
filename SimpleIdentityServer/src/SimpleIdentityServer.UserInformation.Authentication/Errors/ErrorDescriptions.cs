@@ -14,12 +14,12 @@
 // limitations under the License.
 #endregion
 
-
-using Microsoft.AspNet.Authentication;
-
-namespace SimpleIdentityServer.Oauth2Instrospection.Authentication.Authentication
+namespace SimpleIdentityServer.UserInformation.Authentication.Errors
 {
-    internal sealed class NullAuthenticationOptions : AuthenticationOptions
+    public static class ErrorDescriptions
     {
+        public const string TheUserInfoEndPointIsNotAWellFormedUrl = "the user information endpoint is not a well formed url";
+
+
     }
 }

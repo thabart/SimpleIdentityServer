@@ -1,6 +1,6 @@
 {
   "version": "1.0.0-*",
-  "description": "SimpleIdentityServer.Oauth2Instrospection.Authentication Class Library",
+  "description": "SimpleIdentityServer.UserInformation.Authentication Class Library",
   "authors": [ "thierry habart" ],
   "tags": [""],
   "projectUrl": "",
@@ -15,7 +15,7 @@
   },
   
   "tooling": {
-    "defaultNamespace": "SimpleIdentityServer.Oauth2Instrospection.Authentication"
+    "defaultNamespace": "SimpleIdentityServer.UserInformation.Authentication"
   },
 
   "frameworks": {

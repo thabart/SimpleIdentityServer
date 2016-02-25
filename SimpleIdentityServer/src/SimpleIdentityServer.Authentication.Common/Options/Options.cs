@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.OptionsModel;
 
-namespace SimpleIdentityServer.Oauth2Instrospection.Authentication.Options
+namespace SimpleIdentityServer.Authentication.Common.Options
 {
     public static class Options
     {
