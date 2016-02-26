@@ -40,6 +40,7 @@ namespace SimpleIdentityServer.Manager.Host
             {
                 var assignedScopes = new List<string>
                 {
+                    "openid",
                     "SimpleIdentityServerManager:GetClients"
                 };
 
@@ -86,8 +87,9 @@ namespace SimpleIdentityServer.Manager.Host
                     Description = "Implicit flow",
                     Scopes = new Dictionary<string, string>
                     {
+                        { "openid", "OpenId" },
                         { "role" , "Get the roles" }
-                    }                    
+                    }             
                 });
                 opts.OperationFilter<AssignOauth2SecurityRequirements>();
             });
