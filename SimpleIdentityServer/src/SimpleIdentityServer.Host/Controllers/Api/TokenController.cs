@@ -23,7 +23,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             _tokenActions = tokenActions;
         }
         
-        [TypeFilter(typeof(RateLimitationFilter), Arguments = new object[] { "PostToken" })]
+        // [TypeFilter(typeof(RateLimitationFilter), Arguments = new object[] { "PostToken" })]
         [HttpPost]
         public GrantedToken Post(TokenRequest tokenRequest)
         {
