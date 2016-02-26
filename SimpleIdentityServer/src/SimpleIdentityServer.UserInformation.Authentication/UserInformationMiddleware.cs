@@ -105,16 +105,7 @@ namespace SimpleIdentityServer.UserInformation.Authentication
                 }
             }
 
-            // 2. If the user is not authenticated then continue to process the queue.
-            if (context.User == null ||
-                context.User.Identity == null ||
-                !context.User.Identity.IsAuthenticated)
-            {
-                await _nullAuthenticationNext(context);
-                return;
-            }
-
-            await _next.Invoke(context);
+            await _nullAuthenticationNext(context);
         }
 
         #endregion

@@ -28,6 +28,7 @@ using SimpleIdentityServer.Manager.Host.Hal;
 using SimpleIdentityServer.DataAccess.SqlServer;
 using SimpleIdentityServer.Oauth2Instrospection.Authentication;
 using System.Collections.Generic;
+using SimpleIdentityServer.UserInformation.Authentication;
 
 namespace SimpleIdentityServer.Manager.Host
 {
@@ -153,6 +154,7 @@ namespace SimpleIdentityServer.Manager.Host
             app.UseCors("AllowAll");
 
             // Enable the OAUTH introspection endpoint
+            /*
             var options = new Oauth2IntrospectionOptions
             {
                 InstrospectionEndPoint = "http://localhost:5000/introspect",
@@ -160,9 +162,14 @@ namespace SimpleIdentityServer.Manager.Host
                 ClientSecret = "IdentityServerManager"
             };
             app.UseAuthenticationWithIntrospection(options);
+            */
 
             // Enable custom exception handler
-            app.UseSimpleIdentityServerManagerExceptionHandler();
+            var userInformationOptions = new UserInformationOptions
+            {
+                UserInformationEndPoint = "http://localhost:5000/userinfo"
+            };
+            app.UseAuthenticationWithUserInformation(userInformationOptions);
 
             // Launch ASP.NET MVC
             app.UseMvc(routes =>
