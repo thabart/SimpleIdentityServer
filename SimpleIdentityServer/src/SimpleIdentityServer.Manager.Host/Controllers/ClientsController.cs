@@ -46,7 +46,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
             return _clientActions.GetClients().ToDtos();
         }
 
-        [HttpGet]
+        [HttpGet("{id}")]
         [Authorize("getClient")]
         public ClientResponse Get(string id)
         {
