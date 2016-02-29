@@ -1,0 +1,12 @@
+site_name: SimpleIdentityServer
+repo_url: https://github.com/thabart/SimpleIdentityServer
+theme: readthedocs
+site_description: Simple Identity Server
+site_author: Habart Thierry
+site_favicon: TODO
+copyright: Thierry Habart
+markdown_extensions:
+    - smarty
+pages:
+	- 'Home': 'index.md'
+	- 'Quick Start': 'quick-start.md' 
