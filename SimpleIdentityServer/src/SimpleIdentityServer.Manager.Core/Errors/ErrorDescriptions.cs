@@ -35,5 +35,7 @@ namespace SimpleIdentityServer.Manager.Core.Errors
         public const string TheKtyIsNotSupported = "the kty '{0}' is not supported";
 
         public const string TheContentCannotBeExtractedFromJweToken = "the content cannot be extracted from the jwe token";
+
+        public const string TheClientDoesntExist = "the client '{0}' doesn't exist";
     }
 }

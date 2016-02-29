@@ -46,6 +46,13 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
             return _clientActions.GetClients().ToDtos();
         }
 
+        [HttpGet]
+        [Authorize("getClient")]
+        public ClientResponse Get(string id)
+        {
+            return _clientActions.GetClient(id).ToClientResponseDto();
+        }
+
         #endregion
     }
 }

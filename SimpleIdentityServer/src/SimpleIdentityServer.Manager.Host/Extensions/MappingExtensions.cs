@@ -19,6 +19,7 @@ using SimpleIdentityServer.Manager.Core.Parameters;
 using SimpleIdentityServer.Manager.Core.Results;
 using SimpleIdentityServer.Manager.Host.DTOs.Requests;
 using SimpleIdentityServer.Manager.Host.DTOs.Responses;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -101,6 +102,46 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
                 ClientId = client.ClientId,
                 ClientName = client.ClientName,
                 LogoUri = client.LogoUri
+            };
+        }
+
+        public static ClientResponse ToClientResponseDto(this Client client)
+        {
+            return new ClientResponse
+            {
+                AllowedScopes = client.AllowedScopes == null ? new List<string>() : client.AllowedScopes.Select(c => c.Name).ToList(),
+                ApplicationType = Enum.GetName(typeof(ApplicationTypes), client.ApplicationType),
+                ClientId = client.ClientId,
+                ClientName = client.ClientName,
+                ClientSecret = client.ClientSecret,
+                ClientUri = client.ClientUri,
+                Contacts = client.Contacts,
+                DefaultAcrValues = client.DefaultAcrValues,
+                DefaultMaxAge = client.DefaultMaxAge,
+                GrantTypes = client.GrantTypes == null ? new List<string>() : client.GrantTypes.Select(g => Enum.GetName(typeof(GrantType), g)).ToList(),
+                IdTokenEncryptedResponseAlg = client.IdTokenEncryptedResponseAlg,
+                IdTokenEncryptedResponseEnc = client.IdTokenEncryptedResponseEnc,
+                IdTokenSignedResponseAlg = client.IdTokenSignedResponseAlg,
+                InitiateLoginUri = client.InitiateLoginUri,
+                JsonWebKeys = client.JsonWebKeys,
+                JwksUri = client.JwksUri,
+                LogoUri = client.LogoUri,
+                PolicyUri = client.PolicyUri,
+                RedirectionUrls = client.RedirectionUrls,
+                RequestObjectEncryptionAlg = client.RequestObjectEncryptionAlg,
+                RequestObjectEncryptionEnc = client.RequestObjectEncryptionEnc,
+                RequestObjectSigningAlg = client.RequestObjectSigningAlg,
+                RequestUris = client.RequestUris,
+                RequireAuthTime = client.RequireAuthTime,
+                ResponseTypes = client.ResponseTypes == null ? new List<string>() : client.ResponseTypes.Select(g => Enum.GetName(typeof(ResponseType), g)).ToList(),
+                SectorIdentifierUri = client.SectorIdentifierUri,
+                SubjectType = client.SubjectType,
+                TokenEndPointAuthMethod = Enum.GetName(typeof(TokenEndPointAuthenticationMethods), client.TokenEndPointAuthMethod),
+                TokenEndPointAuthSigningAlg = client.TokenEndPointAuthSigningAlg,
+                UserInfoEncryptedResponseAlg = client.UserInfoEncryptedResponseAlg,
+                UserInfoEncryptedResponseEnc = client.UserInfoEncryptedResponseEnc,
+                UserInfoSignedResponseAlg = client.UserInfoSignedResponseAlg,
+                TosUri = client.TosUri
             };
         }
 

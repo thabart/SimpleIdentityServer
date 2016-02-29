@@ -41,6 +41,7 @@ namespace SimpleIdentityServer.Manager.Core
             serviceCollection.AddTransient<IJsonWebKeyEnricher, JsonWebKeyEnricher>();
             serviceCollection.AddTransient<IClientActions, ClientActions>();
             serviceCollection.AddTransient<IGetClientsAction, GetClientsAction>();
+            serviceCollection.AddTransient<IGetClientAction, GetClientAction>();
             return serviceCollection;
         }
     }

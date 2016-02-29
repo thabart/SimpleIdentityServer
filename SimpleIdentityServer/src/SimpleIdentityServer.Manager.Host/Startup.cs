@@ -128,6 +128,7 @@ namespace SimpleIdentityServer.Manager.Host
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("getAllClients", policy => policy.RequireClaim("role", "administrator"));
+                options.AddPolicy("getClient", policy => policy.RequireClaim("role", "administrator"));
             });
 
             // Enable identity server fake

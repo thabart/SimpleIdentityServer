@@ -23,17 +23,24 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients
     public interface IClientActions
     {
         List<Client> GetClients();
+
+        Client GetClient(string clientId);
     }
 
     public class ClientActions : IClientActions
     {
         private readonly IGetClientsAction _getClientsAction;
 
+        private readonly IGetClientAction _getClientAction;
+
         #region Constructor
 
-        public ClientActions(IGetClientsAction getClientsAction)
+        public ClientActions(
+            IGetClientsAction getClientsAction,
+            IGetClientAction getClientAction)
         {
             _getClientsAction = getClientsAction;
+            _getClientAction = getClientAction;
         }
 
         #endregion
@@ -43,6 +50,11 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients
         public List<Client> GetClients()
         {
             return _getClientsAction.Execute();
+        }
+
+        public Client GetClient(string clientId)
+        {
+            return _getClientAction.Execute(clientId);
         }
 
         #endregion
