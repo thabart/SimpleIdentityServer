@@ -166,6 +166,8 @@ namespace SimpleIdentityServer.Manager.Host
             */
 
             // Enable custom exception handler
+            app.UseSimpleIdentityServerManagerExceptionHandler();
+
             var userInformationOptions = new UserInformationOptions
             {
                 UserInformationEndPoint = "http://localhost:5000/userinfo"
