@@ -8,5 +8,5 @@ copyright: Thierry Habart
 markdown_extensions:
     - smarty
 pages:
-	- 'Home': 'index.md'
-	- 'Quick Start': 'quick-start.md' 
+- Home: index.md
+- Quick Start: quick-start.md 
