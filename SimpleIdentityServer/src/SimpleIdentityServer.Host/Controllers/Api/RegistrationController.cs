@@ -20,7 +20,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
         }
 
         [HttpPost]
-        public RegistrationResponse Post(ClientResponse client)
+        public RegistrationResponse Post([FromBody] ClientResponse client)
         {
             if (client == null)
             {

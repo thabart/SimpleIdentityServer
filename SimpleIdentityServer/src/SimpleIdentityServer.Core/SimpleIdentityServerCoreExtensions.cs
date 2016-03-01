@@ -43,6 +43,8 @@ using SimpleIdentityServer.Core.Translation;
 using System;
 using SimpleIdentityServer.Core.Api.Introspection;
 using SimpleIdentityServer.Core.Api.Introspection.Actions;
+using SimpleIdentityServer.Core.Api.Registration.Actions;
+using SimpleIdentityServer.Core.Jwt.Converter;
 
 namespace SimpleIdentityServer.Core
 {
@@ -114,6 +116,8 @@ namespace SimpleIdentityServer.Core
             serviceCollection.AddTransient<IIntrospectionActions, IntrospectionActions>();
             serviceCollection.AddTransient<IPostIntrospectionAction, PostIntrospectionAction>();
             serviceCollection.AddTransient<IIntrospectionParameterValidator, IntrospectionParameterValidator>();
+            serviceCollection.AddTransient<IRegisterClientAction, RegisterClientAction>();
+            serviceCollection.AddTransient<IJsonWebKeyConverter, JsonWebKeyConverter>();
             return serviceCollection;
         }
     }

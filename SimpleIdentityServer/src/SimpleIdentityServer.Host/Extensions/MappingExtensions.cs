@@ -240,15 +240,15 @@ namespace SimpleIdentityServer.Host.Extensions
         public static RegistrationParameter ToParameter(this ClientResponse clientResponse)
         {
             var responseTypes = new List<Core.Models.ResponseType>();
-            var redirectUris = clientResponse.RedirectUris == null
+            var redirectUris = clientResponse.redirect_uris == null
                 ? new List<string>()
-                : clientResponse.RedirectUris.ToList();
+                : clientResponse.redirect_uris.ToList();
             var grantTypes = new List<GrantType>();
             ApplicationTypes? applicationType = null;
-            if (clientResponse.ResponseTypes != null &&
-                clientResponse.ResponseTypes.Any())
+            if (clientResponse.response_types != null &&
+                clientResponse.response_types.Any())
             {
-                foreach (var responseType in clientResponse.ResponseTypes)
+                foreach (var responseType in clientResponse.response_types)
                 {
                     var responseTypeSplitted = responseType.Split(' ');
                     foreach (var response in responseTypeSplitted)
@@ -263,10 +263,10 @@ namespace SimpleIdentityServer.Host.Extensions
                 }
             }
 
-            if(clientResponse.GrantTypes != null &&
-                clientResponse.GrantTypes.Any())
+            if(clientResponse.grant_types != null &&
+                clientResponse.grant_types.Any())
             {
-                foreach (var grantType in clientResponse.GrantTypes)
+                foreach (var grantType in clientResponse.grant_types)
                 {
                     GrantType grantTypeEnum;
                     if (Enum.TryParse(grantType, out grantTypeEnum))
@@ -277,7 +277,7 @@ namespace SimpleIdentityServer.Host.Extensions
             }
 
             ApplicationTypes appTypeEnum;
-            if (Enum.TryParse(clientResponse.ApplicationType, out appTypeEnum))
+            if (Enum.TryParse(clientResponse.application_type, out appTypeEnum))
             {
                 applicationType = appTypeEnum;
             }
@@ -285,35 +285,35 @@ namespace SimpleIdentityServer.Host.Extensions
             return new RegistrationParameter
             {
                 ApplicationType = applicationType,
-                ClientName = clientResponse.ClientName,
-                ClientUri = clientResponse.ClientUri,
-                Contacts = clientResponse.Contacts == null ? new List<string>() : clientResponse.Contacts.ToList(),
-                DefaultAcrValues = clientResponse.DefaultAcrValues,
-                DefaultMaxAge = clientResponse.DefaultMaxAge,
+                ClientName = clientResponse.client_name,
+                ClientUri = clientResponse.client_uri,
+                Contacts = clientResponse.contacts == null ? new List<string>() : clientResponse.contacts.ToList(),
+                DefaultAcrValues = clientResponse.default_acr_values,
+                DefaultMaxAge = clientResponse.default_max_age,
                 GrantTypes = grantTypes,
-                IdTokenEncryptedResponseAlg = clientResponse.IdTokenEncryptedResponseAlg,
-                IdTokenEncryptedResponseEnc = clientResponse.IdTokenEncryptedResponseEnc,
-                IdTokenSignedResponseAlg = clientResponse.IdTokenSignedResponseAlg,
-                InitiateLoginUri = clientResponse.InitiateLoginUri,
-                Jwks = clientResponse.Jwks,
-                JwksUri = clientResponse.JwksUri,
-                LogoUri = clientResponse.LogoUri,
-                PolicyUri = clientResponse.PolicyUri,
+                IdTokenEncryptedResponseAlg = clientResponse.id_token_encrypted_response_alg,
+                IdTokenEncryptedResponseEnc = clientResponse.id_token_encrypted_response_enc,
+                IdTokenSignedResponseAlg = clientResponse.id_token_signed_response_alg,
+                InitiateLoginUri = clientResponse.initiate_login_uri,
+                Jwks = clientResponse.jwks,
+                JwksUri = clientResponse.jwks_uri,
+                LogoUri = clientResponse.logo_uri,
+                PolicyUri = clientResponse.policy_uri,
                 RedirectUris = redirectUris,
-                RequestObjectEncryptionAlg = clientResponse.RequestObjectEncryptionAlg,
-                RequestObjectEncryptionEnc = clientResponse.RequestObjectEncryptionEnc,
-                RequestObjectSigningAlg = clientResponse.RequestObjectSigningAlg,
-                RequestUris = clientResponse.RequestUris,
-                RequireAuthTime = clientResponse.RequireAuthTime,
+                RequestObjectEncryptionAlg = clientResponse.request_object_encryption_alg,
+                RequestObjectEncryptionEnc = clientResponse.request_object_encryption_enc,
+                RequestObjectSigningAlg = clientResponse.request_object_signing_alg,
+                RequestUris = clientResponse.request_uris,
+                RequireAuthTime = clientResponse.require_auth_time,
                 ResponseTypes = responseTypes,
-                SectorIdentifierUri = clientResponse.SectorIdentifierUri,
-                SubjectType = clientResponse.SubjectType,
-                TokenEndPointAuthMethod = clientResponse.TokenEndPointAuthMethod,
-                TokenEndPointAuthSigningAlg = clientResponse.TokenEndPointAuthSigningAlg,
-                TosUri = clientResponse.TosUri,
-                UserInfoEncryptedResponseAlg = clientResponse.UserInfoEncryptedResponseAlg,
-                UserInfoEncryptedResponseEnc = clientResponse.UserInfoEncryptedResponseEnc,
-                UserInfoSignedResponseAlg = clientResponse.UserInfoSignedResponseAlg
+                SectorIdentifierUri = clientResponse.sector_identifier_uri,
+                SubjectType = clientResponse.subject_type,
+                TokenEndPointAuthMethod = clientResponse.token_endpoint_auth_method,
+                TokenEndPointAuthSigningAlg = clientResponse.token_endpoint_auth_signing_alg,
+                TosUri = clientResponse.tos_uri,
+                UserInfoEncryptedResponseAlg = clientResponse.userinfo_encrypted_response_alg,
+                UserInfoEncryptedResponseEnc = clientResponse.userinfo_encrypted_response_enc,
+                UserInfoSignedResponseAlg = clientResponse.userinfo_signed_response_alg
             };
         }
 
