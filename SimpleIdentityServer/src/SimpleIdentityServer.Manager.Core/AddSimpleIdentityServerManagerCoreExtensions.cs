@@ -42,6 +42,7 @@ namespace SimpleIdentityServer.Manager.Core
             serviceCollection.AddTransient<IClientActions, ClientActions>();
             serviceCollection.AddTransient<IGetClientsAction, GetClientsAction>();
             serviceCollection.AddTransient<IGetClientAction, GetClientAction>();
+            serviceCollection.AddTransient<IRemoveClientAction, RemoveClientAction>();
             return serviceCollection;
         }
     }

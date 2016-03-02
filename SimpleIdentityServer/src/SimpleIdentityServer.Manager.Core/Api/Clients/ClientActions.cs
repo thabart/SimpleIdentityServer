@@ -25,6 +25,8 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients
         List<Client> GetClients();
 
         Client GetClient(string clientId);
+
+        bool DeleteClient(string clientId);
     }
 
     public class ClientActions : IClientActions
@@ -33,14 +35,18 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients
 
         private readonly IGetClientAction _getClientAction;
 
+        private readonly IRemoveClientAction _removeClientAction;
+
         #region Constructor
 
         public ClientActions(
             IGetClientsAction getClientsAction,
-            IGetClientAction getClientAction)
+            IGetClientAction getClientAction,
+            IRemoveClientAction removeClientAction)
         {
             _getClientsAction = getClientsAction;
             _getClientAction = getClientAction;
+            _removeClientAction = removeClientAction;
         }
 
         #endregion
@@ -55,6 +61,11 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients
         public Client GetClient(string clientId)
         {
             return _getClientAction.Execute(clientId);
+        }
+
+        public bool DeleteClient(string clientId)
+        {
+            return _removeClientAction.Execute(clientId);
         }
 
         #endregion

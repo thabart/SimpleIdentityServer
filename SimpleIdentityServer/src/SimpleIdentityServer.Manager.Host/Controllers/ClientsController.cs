@@ -53,6 +53,13 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
             return _clientActions.GetClient(id).ToClientResponseDto();
         }
 
+        [HttpDelete("{id}")]
+        [Authorize("deleteClient")]
+        public bool Delete(string id)
+        {
+            return _clientActions.DeleteClient(id);
+        }
+
         #endregion
     }
 }

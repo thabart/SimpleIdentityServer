@@ -37,6 +37,14 @@ namespace SimpleIdentityServer.Manager.Host
                     return new Link("getClients", Constants.EndPoints.Clients);
                 }
             }
+
+            public static Link DeleteClient
+            {
+                get
+                {
+                    return new Link("deleteClient", Constants.EndPoints.Clients + "/{id}");
+                }
+            }
         }
     }
 }

@@ -27,6 +27,8 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Clients
 
         private Mock<IGetClientAction> _getClientActionStub;
 
+        private Mock<IRemoveClientAction> _removeClientActionStub;
+
         private IClientActions _clientActions;
 
         #region Happy path
@@ -58,14 +60,30 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Clients
             _getClientActionStub.Verify(g => g.Execute(clientId));
         }
 
+        [Fact]
+        public void When_Executing_DeleteClient_Then_Operation_Is_Called()
+        {
+            // ARRANGE
+            const string clientId = "clientId";
+            InitializeFakeObjects();
+
+            // ACT
+            _clientActions.DeleteClient(clientId);
+
+            // ASSERT
+            _removeClientActionStub.Verify(g => g.Execute(clientId));
+        }
+
         #endregion
 
         private void InitializeFakeObjects()
         {
             _getClientsActionStub = new Mock<IGetClientsAction>();
             _getClientActionStub = new Mock<IGetClientAction>();
+            _removeClientActionStub = new Mock<IRemoveClientAction>();
             _clientActions = new ClientActions(_getClientsActionStub.Object,
-                _getClientActionStub.Object);
+                _getClientActionStub.Object,
+                _removeClientActionStub.Object);
         }
     }
 }

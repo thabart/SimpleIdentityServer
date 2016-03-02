@@ -212,7 +212,7 @@ namespace SimpleIdentityServer.Manager.Host.DTOs.Responses
 
         protected override void CreateHypermedia()
         {
-            // ADD DELETE & UPDATE OPERATIONS
+            Links.Add(LinkTemplates.Clients.DeleteClient.CreateLink(new { id = ClientId }));
         }
     }
 }
