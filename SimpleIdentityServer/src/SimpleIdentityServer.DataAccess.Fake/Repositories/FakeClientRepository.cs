@@ -4,6 +4,7 @@ using System.Linq;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.DataAccess.Fake.Extensions;
+using System;
 
 namespace SimpleIdentityServer.DataAccess.Fake.Repositories
 {
@@ -48,6 +49,13 @@ namespace SimpleIdentityServer.DataAccess.Fake.Repositories
             }
 
             _fakeDataSource.Clients.Remove(clientToBeRemoved);
+            return true;
+        }
+
+        public bool UpdateClient(Core.Models.Client client)
+        {
+            var updateClient = _fakeDataSource.Clients.FirstOrDefault(c => c.ClientId == client.ClientId);
+            updateClient = client.ToFake();
             return true;
         }
     }

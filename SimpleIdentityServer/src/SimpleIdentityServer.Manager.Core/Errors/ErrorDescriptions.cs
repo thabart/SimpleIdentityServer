@@ -37,5 +37,32 @@ namespace SimpleIdentityServer.Manager.Core.Errors
         public const string TheContentCannotBeExtractedFromJweToken = "the content cannot be extracted from the jwe token";
 
         public const string TheClientDoesntExist = "the client '{0}' doesn't exist";
+
+        public static string MissingParameter = "the parameter {0} is missing";
+
+        public static string TheRedirectUriParameterIsNotValid = "one or more redirect_uri values are invalid";
+
+        public static string TheRedirectUriContainsAFragment = "one or more redirect_uri contains a fragment";
+
+        public static string ParameterIsNotCorrect = "the paramater {0} is not correct";
+
+        public static string TheJwksParameterCannotBeSetBecauseJwksUrlIsUsed =
+            "the jwks parameter cannot be set because the Jwks Url has already been set";
+
+        public static string OneOrMoreSectorIdentifierUriIsNotARedirectUri =
+            "one or more sector uri is not a redirect_uri";
+
+        public static string TheParameterIsTokenEncryptedResponseAlgMustBeSpecified =
+            "the parameter id_token_encrypted_response_alg must be specified";
+
+        public static string OneOfTheRequestUriIsNotValid = "one of the request_uri is not valid";
+
+        public static string TheParameterRequestObjectEncryptionAlgMustBeSpecified =
+            "the parameter request_object_encryption_alg must be specified";
+                
+        public static string TheParameterUserInfoEncryptedResponseAlgMustBeSpecified =
+            "the parameter userinfo_encrypted_response_alg must be specified";
+
+        public static string TheSectorIdentifierUrisCannotBeRetrieved = "the sector identifier uris cannot be retrieved";
     }
 }

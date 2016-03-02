@@ -28,5 +28,7 @@ namespace SimpleIdentityServer.Core.Repositories
         bool DeleteClient(Client client);
 
         IList<Client> GetAll();
+
+        bool UpdateClient(Client client);
     }
 }

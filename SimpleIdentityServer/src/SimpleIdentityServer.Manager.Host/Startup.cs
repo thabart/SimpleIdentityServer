@@ -26,9 +26,9 @@ using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Manager.Host.Middleware;
 using SimpleIdentityServer.Manager.Host.Hal;
 using SimpleIdentityServer.DataAccess.SqlServer;
-using SimpleIdentityServer.Oauth2Instrospection.Authentication;
 using System.Collections.Generic;
 using SimpleIdentityServer.UserInformation.Authentication;
+using SimpleIdentityServer.Core;
 
 namespace SimpleIdentityServer.Manager.Host
 {
@@ -118,7 +118,7 @@ namespace SimpleIdentityServer.Manager.Host
             // Enable SqlServer
             var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
             services.AddSimpleIdentityServerSqlServer(connectionString);
-
+            services.AddSimpleIdentityServerCore();
             services.AddSimpleIdentityServerManagerCore();
 
             // Add authentication

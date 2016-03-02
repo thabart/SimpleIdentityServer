@@ -17,6 +17,7 @@
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Mvc;
 using SimpleIdentityServer.Manager.Core.Api.Clients;
+using SimpleIdentityServer.Manager.Host.DTOs.Requests;
 using SimpleIdentityServer.Manager.Host.DTOs.Responses;
 using SimpleIdentityServer.Manager.Host.Extensions;
 using System.Collections.Generic;
@@ -58,6 +59,13 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
         public bool Delete(string id)
         {
             return _clientActions.DeleteClient(id);
+        }
+
+        [HttpPut]
+        [Authorize("updateClient")]
+        public ClientResponse Put(UpdateClientRequest updateClientRequest)
+        {
+            return null;
         }
 
         #endregion

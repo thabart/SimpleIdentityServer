@@ -72,6 +72,44 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
             };
         }
 
+        public static UpdateClientParameter ToParameter(this UpdateClientRequest updateClientRequest)
+        {
+            return new UpdateClientParameter
+            {
+                ApplicationType = updateClientRequest.ApplicationType,
+                ClientId = updateClientRequest.ClientId,
+                ClientName = updateClientRequest.ClientName,
+                ClientUri = updateClientRequest.ClientUri,
+                Contacts = updateClientRequest.Contacts,
+                DefaultAcrValues = updateClientRequest.DefaultAcrValues,
+                DefaultMaxAge = updateClientRequest.DefaultMaxAge,
+                GrantTypes = updateClientRequest.GrantTypes,
+                IdTokenEncryptedResponseAlg = updateClientRequest.IdTokenEncryptedResponseAlg,
+                IdTokenEncryptedResponseEnc = updateClientRequest.IdTokenEncryptedResponseEnc,
+                IdTokenSignedResponseAlg = updateClientRequest.IdTokenSignedResponseAlg,
+                InitiateLoginUri = updateClientRequest.InitiateLoginUri,
+                Jwks = updateClientRequest.Jwks,
+                JwksUri = updateClientRequest.JwksUri,
+                LogoUri = updateClientRequest.LogoUri,
+                PolicyUri = updateClientRequest.PolicyUri,
+                RedirectUris = updateClientRequest.RedirectUris,
+                RequestObjectEncryptionAlg = updateClientRequest.RequestObjectEncryptionAlg,
+                RequestObjectEncryptionEnc = updateClientRequest.RequestObjectEncryptionEnc,
+                RequestObjectSigningAlg = updateClientRequest.RequestObjectSigningAlg,
+                RequestUris = updateClientRequest.RequestUris,
+                RequireAuthTime = updateClientRequest.RequireAuthTime,
+                ResponseTypes = updateClientRequest.ResponseTypes,
+                SectorIdentifierUri = updateClientRequest.SectorIdentifierUri,
+                SubjectType = updateClientRequest.SubjectType,
+                TokenEndPointAuthMethod = updateClientRequest.TokenEndPointAuthMethod,
+                TokenEndPointAuthSigningAlg = updateClientRequest.TokenEndPointAuthSigningAlg,
+                TosUri = updateClientRequest.TosUri,
+                UserInfoEncryptedResponseAlg = updateClientRequest.UserInfoEncryptedResponseAlg,
+                UserInfoEncryptedResponseEnc = updateClientRequest.UserInfoEncryptedResponseEnc,
+                UserInfoSignedResponseAlg = updateClientRequest.UserInfoSignedResponseAlg
+            };
+        }
+
         #endregion
 
         #region To DTOs

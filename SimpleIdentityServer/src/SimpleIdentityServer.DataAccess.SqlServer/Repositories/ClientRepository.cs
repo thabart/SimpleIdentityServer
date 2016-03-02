@@ -27,11 +27,16 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
     public sealed class ClientRepository : IClientRepository
     {
         private readonly SimpleIdentityServerContext _context;
-        
-        public ClientRepository(SimpleIdentityServerContext context) {
+
+        #region Constructor
+
+        public ClientRepository(SimpleIdentityServerContext context)
+        {
             _context = context;
         }
-        
+
+        #endregion
+
         #region Public methods
 
         public Core.Models.Client GetClientById(string clientId)
@@ -95,7 +100,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                         });
                     }
 
-                    var newClient = new Client
+                    var newClient = new Models.Client
                     {
                         ClientId = client.ClientId,
                         ClientName = client.ClientName,
@@ -121,8 +126,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                         DefaultAcrValues = client.DefaultAcrValues,
                         InitiateLoginUri = client.InitiateLoginUri,
                         RequestObjectSigningAlg = client.RequestObjectSigningAlg,
-                        TokenEndPointAuthMethod = (TokenEndPointAuthenticationMethods)client.TokenEndPointAuthMethod,
-                        ApplicationType = (ApplicationTypes)client.ApplicationType,
+                        TokenEndPointAuthMethod = (Models.TokenEndPointAuthenticationMethods)client.TokenEndPointAuthMethod,
+                        ApplicationType = (Models.ApplicationTypes)client.ApplicationType,
                         RequestUris = ConcatListOfStrings(client.RequestUris),
                         RedirectionUrls = ConcatListOfStrings(client.RedirectionUrls),
                         Contacts = ConcatListOfStrings(client.Contacts),
@@ -174,6 +179,62 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                 catch (Exception)
                 {
                     transaction.Rollback();
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public bool UpdateClient(Core.Models.Client client)
+        {
+            using (var translation = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    var grantTypes = client.GrantTypes == null
+                        ? string.Empty
+                        : ConcatListOfIntegers(client.GrantTypes.Select(k => (int)k).ToList());
+                    var responseTypes = client.ResponseTypes == null
+                        ? string.Empty
+                        : ConcatListOfIntegers(client.ResponseTypes.Select(r => (int)r).ToList());
+                    var connectedClient = _context.Clients
+                        .FirstOrDefault(c => c.ClientId == client.ClientId);
+                    connectedClient.ClientName = client.ClientName;
+                    connectedClient.ClientUri = client.ClientUri;
+                    connectedClient.Contacts = ConcatListOfStrings(client.Contacts);
+                    connectedClient.DefaultAcrValues = client.DefaultAcrValues;
+                    connectedClient.DefaultMaxAge = client.DefaultMaxAge;
+                    connectedClient.GrantTypes = grantTypes;
+                    connectedClient.IdTokenEncryptedResponseAlg = client.IdTokenEncryptedResponseAlg;
+                    connectedClient.IdTokenEncryptedResponseEnc = client.IdTokenEncryptedResponseEnc;
+                    connectedClient.IdTokenSignedResponseAlg = client.IdTokenSignedResponseAlg;
+                    connectedClient.InitiateLoginUri = client.InitiateLoginUri;
+                    // connectedClient.JsonWebKeys
+                    connectedClient.JwksUri = client.JwksUri;
+                    connectedClient.LogoUri = client.LogoUri;
+                    connectedClient.PolicyUri = client.PolicyUri;
+                    connectedClient.RedirectionUrls = ConcatListOfStrings(client.RedirectionUrls);
+                    connectedClient.RequestObjectEncryptionAlg = client.RequestObjectEncryptionAlg;
+                    connectedClient.RequestObjectEncryptionEnc = client.RequestObjectEncryptionEnc;
+                    connectedClient.RequestObjectSigningAlg = client.RequestObjectSigningAlg;
+                    connectedClient.RequestUris = ConcatListOfStrings(client.RequestUris);
+                    connectedClient.RequireAuthTime = client.RequireAuthTime;
+                    connectedClient.ResponseTypes = responseTypes;
+                    connectedClient.SectorIdentifierUri = client.SectorIdentifierUri;
+                    connectedClient.SubjectType = client.SubjectType;
+                    connectedClient.TokenEndPointAuthMethod = (Models.TokenEndPointAuthenticationMethods)client.TokenEndPointAuthMethod;
+                    connectedClient.TokenEndPointAuthSigningAlg = client.TokenEndPointAuthSigningAlg;
+                    connectedClient.TosUri = client.TosUri;
+                    connectedClient.UserInfoEncryptedResponseAlg = client.UserInfoEncryptedResponseAlg;
+                    connectedClient.UserInfoEncryptedResponseEnc = client.UserInfoEncryptedResponseEnc;
+                    connectedClient.UserInfoSignedResponseAlg = client.UserInfoSignedResponseAlg;
+                    _context.SaveChanges();
+                    translation.Commit();
+                }
+                catch(Exception)
+                {
+                    translation.Rollback();
                     return false;
                 }
             }

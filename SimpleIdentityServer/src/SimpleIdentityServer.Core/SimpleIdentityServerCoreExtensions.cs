@@ -118,6 +118,7 @@ namespace SimpleIdentityServer.Core
             serviceCollection.AddTransient<IIntrospectionParameterValidator, IntrospectionParameterValidator>();
             serviceCollection.AddTransient<IRegisterClientAction, RegisterClientAction>();
             serviceCollection.AddTransient<IJsonWebKeyConverter, JsonWebKeyConverter>();
+            serviceCollection.AddTransient<IGenerateClientFromRegistrationRequest, GenerateClientFromRegistrationRequest>();
             return serviceCollection;
         }
     }
