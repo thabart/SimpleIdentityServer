@@ -3,18 +3,18 @@ Terminologies
 =============
 
 The open-id architecture is organized around several components_ :
-* *Client* : An application which wants to execute an operation on a protected API
-* *Protected API* : A REST.API service which protects operations and / or personal information
-* *Resource Owner* : A user of the client. A protected API can contains personal information, a client which wants to access to the resource owner's information needs his consent.
-* *Simple Identity Server* : An application which grants a client access to a protected API
+* **Client** : An application which wants to execute an operation on a protected API
+* **Protected API** : A REST.API service which protects operations and / or personal information
+* **Resource Owner** : A user of the client. A protected API can contains personal information, a client which wants to access to the resource owner's information needs his consent.
+* **Simple Identity Server** : An application which grants a client access to a protected API
 
 Two different kinds of token can be requested from Simple Identity Server:
-* *Access token* : An access token has a lifetime and is valid for certain scopes. It's used by the client to access to certain protected operation or to fetch resource owner's information from the "userinfo" endpoint.
-* *Identity token* : Signed (Json Web Signature_) and / or encrypted (Json Web Encryption_) Javascript Web Token. It contains all the resource owner's claims.
+* **Access token** : An access token has a lifetime and is valid for certain scopes. It's used by the client to access to certain protected operation or to fetch resource owner's information from the "userinfo" endpoint.
+* **Identity token** : Signed (Json Web Signature_) and / or encrypted (Json Web Encryption_) Javascript Web Token. It contains all the resource owner's claims.
 
 We identified two different kinds of scopes :
-* *Resource owner scope* : Used to retrieve a set of resource owner's claims. For example by using the scope *email* you can access to the claims "email" & "email_verified".
-* *Protected Api Scope* : Used to protect API operation(s). For example an API operation can be protected against malicious HTTP request(s) which doesn't contain an access token valid for the scope "executeOperation".
+* **Resource owner scope**: Used to retrieve a set of resource owner's claims. For example by using the scope *email* you can access to the claims "email" & "email_verified".
+* **Protected Api Scope** : Used to protect API operation(s). For example an API operation can be protected against malicious HTTP request(s) which doesn't contain an access token valid for the scope "executeOperation".
 
 The following schema shows the interactions between components. 
 (1) The client which wants to access to certain API operations requests an access token from Simple Identity Server.
