@@ -5,6 +5,9 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
-   :glob:
-
-   *
+   
+   terminologies
+   openid
+   endpoints
+   quick_start
+   docker
