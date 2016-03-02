@@ -15,6 +15,7 @@
 #endregion
 
 using SimpleIdentityServer.Core.Jwt.Signature;
+using SimpleIdentityServer.Core.Models;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
@@ -27,19 +28,19 @@ namespace SimpleIdentityServer.Manager.Host.DTOs.Requests
         public string ClientId { get; set; }
 
         [DataMember(Name = Constants.UpdateClientRequestNames.RedirectUris)]
-        public string[] RedirectUris { get; set; }
+        public List<string> RedirectUris { get; set; }
 
         [DataMember(Name = Constants.UpdateClientRequestNames.ResponseTypes)]
-        public string[] ResponseTypes { get; set; }
+        public List<ResponseType> ResponseTypes { get; set; }
 
         [DataMember(Name = Constants.UpdateClientRequestNames.GrantTypes)]
-        public string[] GrantTypes { get; set; }
+        public List<GrantType> GrantTypes { get; set; }
 
         [DataMember(Name = Constants.UpdateClientRequestNames.ApplicationType)]
-        public string ApplicationType { get; set; }
+        public ApplicationTypes? ApplicationType { get; set; }
 
         [DataMember(Name = Constants.UpdateClientRequestNames.Contacts)]
-        public string[] Contacts { get; set; }
+        public List<string> Contacts { get; set; }
 
         [DataMember(Name = Constants.UpdateClientRequestNames.ClientName)]
         public string ClientName { get; set; }

@@ -16,6 +16,8 @@
 
 using Moq;
 using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Exceptions;
+using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Manager.Core.Api.Clients.Actions;
 using SimpleIdentityServer.Manager.Core.Errors;
@@ -63,6 +65,68 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Clients.Actions
             var exception = Assert.Throws<IdentityServerManagerException>(() => _updateClientAction.Execute(parameter));
             Assert.True(exception.Code == ErrorCodes.InvalidParameterCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheClientDoesntExist, clientId));
+        }
+
+        [Fact]
+        public void When_An_Exception_Is_Raised_While_Attempting_To_Create_A_Client_Then_Exception_Is_Thrown()  
+        {
+            // ARRANGE
+            const string clientId = "client_id";
+            const string code = "code";
+            const string message = "message";
+            var client = new Client
+            {
+                ClientId = clientId
+            };
+            var parameter = new UpdateClientParameter
+            {
+                ClientId = clientId
+            };
+            InitializeFakeObjects();
+            _clientRepositoryStub.Setup(c => c.GetClientById(It.IsAny<string>()))
+                .Returns(client);
+            _generateClientFromRegistrationRequestStub.Setup(g => g.Execute(It.IsAny<UpdateClientParameter>()))
+                .Callback(() =>
+                {
+                    throw new IdentityServerException(code, message);
+                });
+
+            // ACT & ASSERT
+            var exception = Assert.Throws<IdentityServerManagerException>(() => _updateClientAction.Execute(parameter));
+            Assert.True(exception.Code == code);
+            Assert.True(exception.Message == message);
+        }
+
+        #endregion
+
+        #region Happy path
+
+        [Fact]
+        public void When_Passing_Correct_Parameter_Then_Update_Operation_Is_Called()
+        {
+            // ARRANGE
+            const string clientId = "client_id";
+            const string code = "code";
+            const string message = "message";
+            var client = new Client
+            {
+                ClientId = clientId
+            };
+            var parameter = new UpdateClientParameter
+            {
+                ClientId = clientId
+            };
+            InitializeFakeObjects();
+            _clientRepositoryStub.Setup(c => c.GetClientById(It.IsAny<string>()))
+                .Returns(client);
+            _generateClientFromRegistrationRequestStub.Setup(g => g.Execute(It.IsAny<UpdateClientParameter>()))
+                .Returns(client);
+
+            // ACT
+            _updateClientAction.Execute(parameter);
+
+            // ASSERTS
+            _clientRepositoryStub.Verify(c => c.UpdateClient(client));
         }
 
         #endregion

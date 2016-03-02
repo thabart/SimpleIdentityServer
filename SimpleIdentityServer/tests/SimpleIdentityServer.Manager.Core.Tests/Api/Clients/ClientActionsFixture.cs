@@ -17,6 +17,7 @@
 using Moq;
 using SimpleIdentityServer.Manager.Core.Api.Clients;
 using SimpleIdentityServer.Manager.Core.Api.Clients.Actions;
+using SimpleIdentityServer.Manager.Core.Parameters;
 using Xunit;
 
 namespace SimpleIdentityServer.Manager.Core.Tests.Api.Clients
@@ -28,6 +29,8 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Clients
         private Mock<IGetClientAction> _getClientActionStub;
 
         private Mock<IRemoveClientAction> _removeClientActionStub;
+
+        private Mock<IUpdateClientAction> _updateClientActionStub;
 
         private IClientActions _clientActions;
 
@@ -74,6 +77,23 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Clients
             _removeClientActionStub.Verify(g => g.Execute(clientId));
         }
 
+        [Fact]
+        public void When_Executing_UpdateClient_Then_Operation_Is_Called()
+        {
+            // ARRANGE
+            var parameter = new UpdateClientParameter
+            {
+                ClientId = "client_id"
+            };
+            InitializeFakeObjects();
+
+            // ACT
+            _clientActions.UpdateClient(parameter);
+
+            // ASSERT
+            _updateClientActionStub.Verify(g => g.Execute(parameter));
+        }
+
         #endregion
 
         private void InitializeFakeObjects()
@@ -81,9 +101,11 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Clients
             _getClientsActionStub = new Mock<IGetClientsAction>();
             _getClientActionStub = new Mock<IGetClientAction>();
             _removeClientActionStub = new Mock<IRemoveClientAction>();
+            _updateClientActionStub = new Mock<IUpdateClientAction>();
             _clientActions = new ClientActions(_getClientsActionStub.Object,
                 _getClientActionStub.Object,
-                _removeClientActionStub.Object);
+                _removeClientActionStub.Object,
+                _updateClientActionStub.Object);
         }
     }
 }

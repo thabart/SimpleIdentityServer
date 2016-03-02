@@ -17,6 +17,8 @@
 using SimpleIdentityServer.Core.Models;
 using System.Collections.Generic;
 using SimpleIdentityServer.Manager.Core.Api.Clients.Actions;
+using SimpleIdentityServer.Manager.Core.Parameters;
+using System;
 
 namespace SimpleIdentityServer.Manager.Core.Api.Clients
 {
@@ -27,6 +29,8 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients
         Client GetClient(string clientId);
 
         bool DeleteClient(string clientId);
+
+        bool UpdateClient(UpdateClientParameter updateClientParameter);
     }
 
     public class ClientActions : IClientActions
@@ -37,16 +41,20 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients
 
         private readonly IRemoveClientAction _removeClientAction;
 
+        private readonly IUpdateClientAction _updateClientAction;
+
         #region Constructor
 
         public ClientActions(
             IGetClientsAction getClientsAction,
             IGetClientAction getClientAction,
-            IRemoveClientAction removeClientAction)
+            IRemoveClientAction removeClientAction,
+            IUpdateClientAction updateClientAction)
         {
             _getClientsAction = getClientsAction;
             _getClientAction = getClientAction;
             _removeClientAction = removeClientAction;
+            _updateClientAction = updateClientAction;
         }
 
         #endregion
@@ -66,6 +74,11 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients
         public bool DeleteClient(string clientId)
         {
             return _removeClientAction.Execute(clientId);
+        }
+
+        public bool UpdateClient(UpdateClientParameter updateClientParameter)
+        {
+            return _updateClientAction.Execute(updateClientParameter);
         }
 
         #endregion

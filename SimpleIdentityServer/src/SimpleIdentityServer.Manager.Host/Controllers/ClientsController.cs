@@ -63,9 +63,9 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
 
         [HttpPut]
         [Authorize("updateClient")]
-        public ClientResponse Put(UpdateClientRequest updateClientRequest)
+        public bool Put([FromBody] UpdateClientRequest updateClientRequest)
         {
-            return null;
+            return _clientActions.UpdateClient(updateClientRequest.ToParameter());
         }
 
         #endregion
