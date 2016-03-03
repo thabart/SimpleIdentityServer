@@ -34,7 +34,7 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication.Tests
         #region Exceptions
 
         [Fact]
-        public void When_Passing_NotWellFormed_TokenIntrospectionEndPoint_Then_Exception_Is_Thrown()
+        public async Task When_Passing_NotWellFormed_TokenIntrospectionEndPoint_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             var introspectionResponse = new IntrospectionResponse
@@ -63,13 +63,12 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication.Tests
             httpRequestMessage.RequestUri = new Uri("http://localhost/protectedoperation");
 
             // ACT & ASSERTS
-            var content = Assert.ThrowsAsync<ArgumentException>(async () => await client.SendAsync(httpRequestMessage).ConfigureAwait(false));
-            var exception = content.Result;
+            var exception = await Assert.ThrowsAsync<ArgumentException>(async () => await client.SendAsync(httpRequestMessage)).ConfigureAwait(false);
             Assert.True(exception.Message == ErrorDescriptions.TheIntrospectionEndPointIsNotAWellFormedUrl);
         }
 
         [Fact]
-        public void When_No_Client_Id_Is_Passed_Then_Exception_Is_Thrown()
+        public async Task When_No_Client_Id_Is_Passed_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             var introspectionResponse = new IntrospectionResponse
@@ -95,12 +94,12 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication.Tests
             httpRequestMessage.RequestUri = new Uri("http://localhost/protectedoperation");
 
             // ACT & ASSERTS
-            var content = Assert.ThrowsAsync<ArgumentException>(async () => await client.SendAsync(httpRequestMessage).ConfigureAwait(false));
-            var exception = content.Result;
+            var exception = await Assert.ThrowsAsync<ArgumentException>(async () => await client.SendAsync(httpRequestMessage)).ConfigureAwait(false);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterCannotBeEmpty, nameof(options.ClientId)));
         }
+
         [Fact]
-        public void When_No_Client_Secret_Is_Passed_Then_Exception_Is_Thrown()
+        public async Task When_No_Client_Secret_Is_Passed_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             var introspectionResponse = new IntrospectionResponse
@@ -127,8 +126,7 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication.Tests
             httpRequestMessage.RequestUri = new Uri("http://localhost/protectedoperation");
 
             // ACT & ASSERTS
-            var content = Assert.ThrowsAsync<ArgumentException>(async () => await client.SendAsync(httpRequestMessage).ConfigureAwait(false));
-            var exception = content.Result;
+            var exception = await Assert.ThrowsAsync<ArgumentException>(async () => await client.SendAsync(httpRequestMessage)).ConfigureAwait(false);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterCannotBeEmpty, nameof(options.ClientSecret)));
         }
 
