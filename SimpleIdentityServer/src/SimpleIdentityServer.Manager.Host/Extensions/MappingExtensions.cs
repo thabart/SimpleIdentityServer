@@ -165,7 +165,7 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
                 JwksUri = client.JwksUri,
                 LogoUri = client.LogoUri,
                 PolicyUri = client.PolicyUri,
-                RedirectionUrls = client.RedirectionUrls,
+                RedirectUris = client.RedirectionUrls,
                 RequestObjectEncryptionAlg = client.RequestObjectEncryptionAlg,
                 RequestObjectEncryptionEnc = client.RequestObjectEncryptionEnc,
                 RequestObjectSigningAlg = client.RequestObjectSigningAlg,

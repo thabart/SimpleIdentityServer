@@ -118,8 +118,8 @@ namespace SimpleIdentityServer.Manager.Host.DTOs.Responses
         /// <summary>
         /// Gets or sets an array of Redirection URI values used by the client.
         /// </summary>
-        [DataMember(Name = Constants.ClientNames.RedirectionUrls)]
-        public List<string> RedirectionUrls { get; set; }
+        [DataMember(Name = Constants.ClientNames.RedirectUris)]
+        public List<string> RedirectUris { get; set; }
 
         /// <summary>
         /// Gets or sets the type of application

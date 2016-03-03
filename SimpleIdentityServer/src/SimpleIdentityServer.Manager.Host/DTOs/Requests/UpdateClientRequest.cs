@@ -24,100 +24,100 @@ namespace SimpleIdentityServer.Manager.Host.DTOs.Requests
     [DataContract]
     public class UpdateClientRequest
     {
-        [DataMember(Name = Constants.UpdateClientRequestNames.ClientId)]
+        [DataMember(Name = Constants.ClientNames.ClientId)]
         public string ClientId { get; set; }
 
-        [DataMember(Name = Constants.UpdateClientRequestNames.RedirectUris)]
+        [DataMember(Name = Constants.ClientNames.RedirectUris)]
         public List<string> RedirectUris { get; set; }
 
-        [DataMember(Name = Constants.UpdateClientRequestNames.ResponseTypes)]
+        [DataMember(Name = Constants.ClientNames.ResponseTypes)]
         public List<ResponseType> ResponseTypes { get; set; }
 
-        [DataMember(Name = Constants.UpdateClientRequestNames.GrantTypes)]
+        [DataMember(Name = Constants.ClientNames.GrantTypes)]
         public List<GrantType> GrantTypes { get; set; }
 
-        [DataMember(Name = Constants.UpdateClientRequestNames.ApplicationType)]
+        [DataMember(Name = Constants.ClientNames.ApplicationType)]
         public ApplicationTypes? ApplicationType { get; set; }
 
-        [DataMember(Name = Constants.UpdateClientRequestNames.Contacts)]
+        [DataMember(Name = Constants.ClientNames.Contacts)]
         public List<string> Contacts { get; set; }
 
-        [DataMember(Name = Constants.UpdateClientRequestNames.ClientName)]
+        [DataMember(Name = Constants.ClientNames.ClientName)]
         public string ClientName { get; set; }
 
-        [DataMember(Name = Constants.UpdateClientRequestNames.LogoUri)]
+        [DataMember(Name = Constants.ClientNames.LogoUri)]
         public string LogoUri { get; set; }
 
-        [DataMember(Name = Constants.UpdateClientRequestNames.ClientUri)]
+        [DataMember(Name = Constants.ClientNames.ClientUri)]
         public string ClientUri { get; set; }
 
-        [DataMember(Name = Constants.UpdateClientRequestNames.PolicyUri)]
+        [DataMember(Name = Constants.ClientNames.PolicyUri)]
         public string PolicyUri { get; set; }
 
-        [DataMember(Name = Constants.UpdateClientRequestNames.TosUri)]
+        [DataMember(Name = Constants.ClientNames.TosUri)]
         public string TosUri { get; set; }
 
-        [DataMember(Name = Constants.UpdateClientRequestNames.JwksUri)]
+        [DataMember(Name = Constants.ClientNames.JwksUri)]
         public string JwksUri { get; set; }
 
         /// <summary>
         /// The Client Json Web Key set are passed by value
         /// </summary>
-        [DataMember(Name = Constants.UpdateClientRequestNames.Jwks)]
+        [DataMember(Name = Constants.ClientNames.Jwks)]
         public JsonWebKeySet Jwks { get; set; }
 
-        [DataMember(Name = Constants.UpdateClientRequestNames.SectoreIdentifierUri)]
+        [DataMember(Name = Constants.ClientNames.SectoreIdentifierUri)]
         public string SectorIdentifierUri { get; set; }
 
-        [DataMember(Name = Constants.UpdateClientRequestNames.SubjectType)]
+        [DataMember(Name = Constants.ClientNames.SubjectType)]
         public string SubjectType { get; set; }
 
-        [DataMember(Name = Constants.UpdateClientRequestNames.IdTokenSignedResponseAlg)]
+        [DataMember(Name = Constants.ClientNames.IdTokenSignedResponseAlg)]
         public string IdTokenSignedResponseAlg { get; set; }
 
-        [DataMember(Name = Constants.UpdateClientRequestNames.IdTokenEncryptedResponseAlg)]
+        [DataMember(Name = Constants.ClientNames.IdTokenEncryptedResponseAlg)]
         public string IdTokenEncryptedResponseAlg { get; set; }
 
-        [DataMember(Name = Constants.UpdateClientRequestNames.IdTokenEncryptedResponseEnc)]
+        [DataMember(Name = Constants.ClientNames.IdTokenEncryptedResponseEnc)]
         public string IdTokenEncryptedResponseEnc { get; set; }
 
-        [DataMember(Name = Constants.UpdateClientRequestNames.UserInfoSignedResponseAlg)]
+        [DataMember(Name = Constants.ClientNames.UserInfoSignedResponseAlg)]
         public string UserInfoSignedResponseAlg { get; set; }
 
-        [DataMember(Name = Constants.UpdateClientRequestNames.UserInfoEncryptedResponseAlg)]
+        [DataMember(Name = Constants.ClientNames.UserInfoEncryptedResponseAlg)]
         public string UserInfoEncryptedResponseAlg { get; set; }
 
-        [DataMember(Name = Constants.UpdateClientRequestNames.UserInfoEncryptedResponseEnc)]
+        [DataMember(Name = Constants.ClientNames.UserInfoEncryptedResponseEnc)]
         public string UserInfoEncryptedResponseEnc { get; set; }
 
-        [DataMember(Name = Constants.UpdateClientRequestNames.RequestObjectSigningAlg)]
+        [DataMember(Name = Constants.ClientNames.RequestObjectSigningAlg)]
         public string RequestObjectSigningAlg { get; set; }
 
-        [DataMember(Name = Constants.UpdateClientRequestNames.RequestObjectEncryptionAlg)]
+        [DataMember(Name = Constants.ClientNames.RequestObjectEncryptionAlg)]
         public string RequestObjectEncryptionAlg { get; set; }
 
-        [DataMember(Name = Constants.UpdateClientRequestNames.RequestObjectEncryptionEnc)]
+        [DataMember(Name = Constants.ClientNames.RequestObjectEncryptionEnc)]
         public string RequestObjectEncryptionEnc { get; set; }
 
-        [DataMember(Name = Constants.UpdateClientRequestNames.TokenEndPointAuthMethod)]
+        [DataMember(Name = Constants.ClientNames.TokenEndPointAuthMethod)]
         public string TokenEndPointAuthMethod { get; set; }
 
-        [DataMember(Name = Constants.UpdateClientRequestNames.TokenEndPointAuthSigningAlg)]
+        [DataMember(Name = Constants.ClientNames.TokenEndPointAuthSigningAlg)]
         public string TokenEndPointAuthSigningAlg { get; set; }
 
-        [DataMember(Name = Constants.UpdateClientRequestNames.DefaultMaxAge)]
+        [DataMember(Name = Constants.ClientNames.DefaultMaxAge)]
         public int DefaultMaxAge { get; set; }
 
-        [DataMember(Name = Constants.UpdateClientRequestNames.RequireAuthTime)]
+        [DataMember(Name = Constants.ClientNames.RequireAuthTime)]
         public bool RequireAuthTime { get; set; }
 
-        [DataMember(Name = Constants.UpdateClientRequestNames.DefaultAcrValues)]
+        [DataMember(Name = Constants.ClientNames.DefaultAcrValues)]
         public string DefaultAcrValues { get; set; }
 
-        [DataMember(Name = Constants.UpdateClientRequestNames.InitiateLoginUri)]
+        [DataMember(Name = Constants.ClientNames.InitiateLoginUri)]
         public string InitiateLoginUri { get; set; }
 
-        [DataMember(Name = Constants.UpdateClientRequestNames.RequestUris)]
+        [DataMember(Name = Constants.ClientNames.RequestUris)]
         public List<string> RequestUris { get; set; }
     }
 }
