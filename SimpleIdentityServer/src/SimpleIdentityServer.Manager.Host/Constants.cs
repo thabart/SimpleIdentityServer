@@ -94,9 +94,10 @@ namespace SimpleIdentityServer.Manager.Host
             public const string Password = "password";
         }
         
-        public static class UpdateClientRequestNames
+        public static class ClientNames
         {
             public const string ClientId = "client_id";
+            public const string ClientSecret = "client_secret";
             public const string RedirectUris = "redirect_uris";
             public const string ResponseTypes = "response_types";
             public const string GrantTypes = "grant_types";
@@ -127,6 +128,10 @@ namespace SimpleIdentityServer.Manager.Host
             public const string DefaultAcrValues = "default_acr_values";
             public const string InitiateLoginUri = "initiate_login_uri";
             public const string RequestUris = "request_uris";
+            public const string AllowedScopes = "allowed_scopes";
+            public const string JsonWebKeys = "json_web_keys";
+            public const string RedirectionUrls = "redirection_urls";
+            public const string SectorIdentifierUri = "sector_identifier_uri";
         }
     }
 }
