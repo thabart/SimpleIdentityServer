@@ -10,31 +10,31 @@ Authorization code
 
 * Applicable to a web application profile
 * Main steps
-** Resource owner grants access to the protected resource
-** Authorization server returns an authorization code to the client (redirecting to the callback URI with authoriztion code in query)
-** Client exchanges this authorization code for an acces token with the authorization server
+    * Resource owner grants access to the protected resource
+    * Authorization server returns an authorization code to the client (redirecting to the callback URI with authoriztion code in query)
+    * Client exchanges this authorization code for an acces token with the authorization server
 
 Implicit workflow
 -----------------
 
 * Applicable to user-agent based application such as javascript (under the context of a webrowser)
 * Main steps
-** Resource owner grants access to the protected resource
-** Access token is immediately returned to the client application in a hash fragment of the callback URL
+    * Resource owner grants access to the protected resource
+    * Access token is immediately returned to the client application in a hash fragment of the callback URL
 
 Resource owner credentials workflow
 -----------------------------------
 
 * Application for nativate application
 * Main steps
-** The resource owner enters his credentials
-** Client exhcanges the credentials with authorization server to get an access token
+    * The resource owner enters his credentials
+    * Client exhcanges the credentials with authorization server to get an access token
 
 Client credentials workflow
 ---------------------------
 
 * Main steps :
-** Client application exchanges its own credentials for an access token. Protected resources is not owned by a specific user.
+    * Client application exchanges its own credentials for an access token. Protected resources is not owned by a specific user.
 
 Hybrid workflow
 ---------------
