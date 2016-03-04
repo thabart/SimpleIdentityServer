@@ -89,7 +89,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jwe.Actions
                     ErrorDescriptions.TheTokenIsNotAValidJwe);
             }
 
-            var jsonWebKey = await _jsonWebKeyHelper.GetJsonWebKey(jweHeader.Kid, uri);
+            var jsonWebKey = await _jsonWebKeyHelper.GetJsonWebKey(jweHeader.Kid, uri).ConfigureAwait(false);
             if (jsonWebKey == null)
             {
                 throw new IdentityServerManagerException(

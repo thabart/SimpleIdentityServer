@@ -58,7 +58,6 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jws.Actions
                 throw new ArgumentNullException(nameof(createJwsParameter));
             }
 
-
             if(createJwsParameter.Payload == null
                 || !createJwsParameter.Payload.Any())
             {

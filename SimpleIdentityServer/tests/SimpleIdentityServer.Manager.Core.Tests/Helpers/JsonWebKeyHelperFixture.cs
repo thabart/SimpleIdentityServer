@@ -29,6 +29,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Manager.Core.Tests.Helpers
@@ -50,7 +51,7 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Helpers
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.ThrowsAsync<ArgumentNullException>(() => _jsonWebKeyHelper.GetJsonWebKey(null, null));
+            Assert.ThrowsAsync<ArgumentNullException>(() => _jsonWebKeyHelper.GetJsonWebKey(null, null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -60,11 +61,11 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Helpers
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.ThrowsAsync<ArgumentNullException>(() => _jsonWebKeyHelper.GetJsonWebKey("kid", null));
+            Assert.ThrowsAsync<ArgumentNullException>(() => _jsonWebKeyHelper.GetJsonWebKey("kid", null)).ConfigureAwait(false);
         }
 
         [Fact]
-        public void When_The_JsonWebKey_Cannot_Be_Extracted_Then_Exception_Is_Thrown()
+        public async Task When_The_JsonWebKey_Cannot_Be_Extracted_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -81,8 +82,7 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Helpers
                 .Returns(httpClientFake);
 
             // ACT & ASSERTS
-            var content = Assert.ThrowsAsync<IdentityServerManagerException>(() => _jsonWebKeyHelper.GetJsonWebKey(kid, uri));
-            var exception = content.Result;
+            var exception = await Assert.ThrowsAsync<IdentityServerManagerException>(async () => await _jsonWebKeyHelper.GetJsonWebKey(kid, uri)).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheJsonWebKeyCannotBeFound, kid, url));
@@ -93,7 +93,7 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Helpers
         #region Happy paths
 
         [Fact]
-        public void When_Requesting_JsonWeb_Key_Then_Its_Information_Are_Returned()
+        public async Task When_Requesting_JsonWeb_Key_Then_Its_Information_Are_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -121,7 +121,7 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Helpers
                 .Returns(jsonWebKeys);
 
             // ACT
-            var result = _jsonWebKeyHelper.GetJsonWebKey(kid, uri).Result;
+            var result = await _jsonWebKeyHelper.GetJsonWebKey(kid, uri).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(result);

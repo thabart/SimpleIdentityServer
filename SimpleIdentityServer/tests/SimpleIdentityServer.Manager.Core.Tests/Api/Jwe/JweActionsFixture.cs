@@ -18,6 +18,7 @@ using Moq;
 using SimpleIdentityServer.Manager.Core.Api.Jwe;
 using SimpleIdentityServer.Manager.Core.Api.Jwe.Actions;
 using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jwe
@@ -47,14 +48,14 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jwe
         #region Happy path GetJweInformation 
 
         [Fact]
-        public void When_Execute_GetJweInformation_Then_Operation_Is_Called()
+        public async Task When_Execute_GetJweInformation_Then_Operation_Is_Called()
         {
             // ARRANGE
             InitializeFakeObjects();
             var parameter = new Parameters.GetJweParameter();
 
             // ACT 
-            _jweActions.GetJweInformation(parameter).Wait();
+            await _jweActions.GetJweInformation(parameter).ConfigureAwait(false);
 
             // ASSERT
             _getJweInformationActionStub.Verify(g => g.ExecuteAsync(parameter));

@@ -53,13 +53,13 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jwe.Actions
             };
 
             // ACT & ASSERTS
-            Assert.ThrowsAsync<ArgumentNullException>(() => _getJweInformationAction.ExecuteAsync(null));
-            Assert.ThrowsAsync<ArgumentNullException>(() => _getJweInformationAction.ExecuteAsync(getJweParameter));
-            Assert.ThrowsAsync<ArgumentNullException>(() => _getJweInformationAction.ExecuteAsync(getJweParameterWithJwe));
+            Assert.ThrowsAsync<ArgumentNullException>(() => _getJweInformationAction.ExecuteAsync(null)).ConfigureAwait(false);
+            Assert.ThrowsAsync<ArgumentNullException>(() => _getJweInformationAction.ExecuteAsync(getJweParameter)).ConfigureAwait(false);
+            Assert.ThrowsAsync<ArgumentNullException>(() => _getJweInformationAction.ExecuteAsync(getJweParameterWithJwe)).ConfigureAwait(false);
         }
 
         [Fact]
-        public void When_Url_Is_Not_Well_Formed_Then_Exception_Is_Thrown()
+        public async Task When_Url_Is_Not_Well_Formed_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -71,14 +71,13 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jwe.Actions
             };
 
             // ACT & ASSERTS
-            var content = Assert.ThrowsAsync<IdentityServerManagerException>(() => _getJweInformationAction.ExecuteAsync(getJweParameter));
-            var exception = content.Result;
+            var exception = await Assert.ThrowsAsync<IdentityServerManagerException>(async () => await _getJweInformationAction.ExecuteAsync(getJweParameter)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, url));
         }
 
         [Fact]
-        public void When_Header_Is_Not_Correct_Then_Exception_Is_Thrown()
+        public async Task When_Header_Is_Not_Correct_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -91,14 +90,13 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jwe.Actions
                 .Returns(() => null);
 
             // ACT & ASSERTS
-            var content = Assert.ThrowsAsync<IdentityServerManagerException>(() => _getJweInformationAction.ExecuteAsync(getJweParameter));
-            var exception = content.Result;
+            var exception = await Assert.ThrowsAsync<IdentityServerManagerException>(async () => await _getJweInformationAction.ExecuteAsync(getJweParameter)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == ErrorDescriptions.TheTokenIsNotAValidJwe);
         }
 
         [Fact]
-        public void When_JsonWebKey_Cannot_Be_Extracted_Then_Exception_Is_Thrown()
+        public async Task When_JsonWebKey_Cannot_Be_Extracted_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -117,14 +115,13 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jwe.Actions
                 .Returns(Task.FromResult<JsonWebKey>(null));
 
             // ACT & ASSERTS
-            var content = Assert.ThrowsAsync<IdentityServerManagerException>(() => _getJweInformationAction.ExecuteAsync(getJweParameter));
-            var exception = content.Result;
+            var exception = await Assert.ThrowsAsync<IdentityServerManagerException>(async () => await _getJweInformationAction.ExecuteAsync(getJweParameter)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheJsonWebKeyCannotBeFound, jweProtectedHeader.Kid, getJweParameter.Url));
         }
 
         [Fact]
-        public void When_No_Content_Can_Be_Extracted_Then_Exception_Is_Thrown()
+        public async Task When_No_Content_Can_Be_Extracted_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -146,8 +143,7 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jwe.Actions
                 .Returns(string.Empty);
 
             // ACT & ASSERTS
-            var content = Assert.ThrowsAsync<IdentityServerManagerException>(() => _getJweInformationAction.ExecuteAsync(getJweParameter));
-            var exception = content.Result;
+            var exception = await Assert.ThrowsAsync<IdentityServerManagerException>(async () => await _getJweInformationAction.ExecuteAsync(getJweParameter)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == ErrorDescriptions.TheContentCannotBeExtractedFromJweToken);
         }
@@ -157,7 +153,7 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jwe.Actions
         #region Happys paths
 
         [Fact]
-        public void When_Decrypting_Jwe_With_Symmetric_Key_Then_Result_Is_Returned()
+        public async Task When_Decrypting_Jwe_With_Symmetric_Key_Then_Result_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -184,7 +180,7 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jwe.Actions
                 .Returns(jwsProtectedHeader);
 
             // ACT & ASSERTS
-            var result = _getJweInformationAction.ExecuteAsync(getJweParameter).Result;
+            var result = await _getJweInformationAction.ExecuteAsync(getJweParameter);
             Assert.True(result.IsContentJws);
             Assert.True(result.Content == content);
         }

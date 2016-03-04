@@ -79,7 +79,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jwe.Actions
                     string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, createJweParameter.Url));
             }
 
-            var jsonWebKey = await _jsonWebKeyHelper.GetJsonWebKey(createJweParameter.Kid, uri);
+            var jsonWebKey = await _jsonWebKeyHelper.GetJsonWebKey(createJweParameter.Kid, uri).ConfigureAwait(false);
             if (jsonWebKey == null)
             {
                 throw new IdentityServerManagerException(

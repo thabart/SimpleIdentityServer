@@ -50,13 +50,13 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws.Actions
             };
 
             // ACT & ASSERTS
-            Assert.ThrowsAsync<ArgumentNullException>(() => _createJwsAction.Execute(null));
-            Assert.ThrowsAsync<ArgumentNullException>(() => _createJwsAction.Execute(createJwsParameter));
-            Assert.ThrowsAsync<ArgumentNullException>(() => _createJwsAction.Execute(emptyCreateJwsParameter));
+            Assert.ThrowsAsync<ArgumentNullException>(() => _createJwsAction.Execute(null)).ConfigureAwait(false);
+            Assert.ThrowsAsync<ArgumentNullException>(() => _createJwsAction.Execute(createJwsParameter)).ConfigureAwait(false);
+            Assert.ThrowsAsync<ArgumentNullException>(() => _createJwsAction.Execute(emptyCreateJwsParameter)).ConfigureAwait(false);
         }
 
         [Fact]
-        public void When_Passing_RS256Alg_But_No_Uri_And_Kid_Then_Exception_Is_Thrown()
+        public async Task When_Passing_RS256Alg_But_No_Uri_And_Kid_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -68,15 +68,14 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws.Actions
             createJwsParameter.Payload.Add("sub", "sub");
 
             // ACT & ASSERTS
-            var content = Assert.ThrowsAsync<IdentityServerManagerException>(() => _createJwsAction.Execute(createJwsParameter));
-            var exception = content.Result;
+            var exception = await Assert.ThrowsAsync<IdentityServerManagerException>(async () => await _createJwsAction.Execute(createJwsParameter)).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == ErrorDescriptions.TheJwsCannotBeGeneratedBecauseMissingParameters);
         }
 
         [Fact]
-        public void When_Url_Is_Not_Well_Formed_Then_Exception_Is_Thrown()
+        public async Task When_Url_Is_Not_Well_Formed_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -91,15 +90,14 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws.Actions
             createJwsParameter.Payload.Add("sub", "sub");
 
             // ACT & ASSERTS
-            var content = Assert.ThrowsAsync<IdentityServerManagerException>(() => _createJwsAction.Execute(createJwsParameter));
-            var exception = content.Result;
+            var exception = await Assert.ThrowsAsync<IdentityServerManagerException>(async () => await _createJwsAction.Execute(createJwsParameter)).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == ErrorDescriptions.TheUrlIsNotWellFormed);
         }
 
         [Fact]
-        public void When_There_Is_No_JsonWebKey_Then_Exception_Is_Thrown()
+        public async Task When_There_Is_No_JsonWebKey_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -117,8 +115,7 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws.Actions
                 .Returns(Task.FromResult<JsonWebKey>(null));
 
             // ACT & ASSERTS
-            var content = Assert.ThrowsAsync<IdentityServerManagerException>(() => _createJwsAction.Execute(createJwsParameter));
-            var exception = content.Result;
+            var exception = await Assert.ThrowsAsync<IdentityServerManagerException>(async () => await _createJwsAction.Execute(createJwsParameter)).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheJsonWebKeyCannotBeFound, kid, url));
@@ -129,7 +126,7 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws.Actions
         #region Happy paths
 
         [Fact]
-        public void When_Generating_Unsigned_Jws_Then_Operation_Is_Called()
+        public async Task When_Generating_Unsigned_Jws_Then_Operation_Is_Called()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -141,14 +138,14 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws.Actions
             createJwsParameter.Payload.Add("sub", "sub");
 
             // ACT
-            _createJwsAction.Execute(createJwsParameter).Wait();
+            await _createJwsAction.Execute(createJwsParameter);
 
             // ASSERT
             _jwsGeneratorStub.Verify(j => j.Generate(createJwsParameter.Payload, JwsAlg.none, null));
         }
 
         [Fact]
-        public void When_Generating_Signed_Jws_Then_Operation_Is_Called()
+        public async Task When_Generating_Signed_Jws_Then_Operation_Is_Called()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -167,7 +164,7 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws.Actions
                 .Returns(Task.FromResult<JsonWebKey>(jsonWebKey));
 
             // ACT
-            _createJwsAction.Execute(createJwsParameter).Wait();
+            await _createJwsAction.Execute(createJwsParameter);
 
             // ASSERT
             _jwsGeneratorStub.Verify(j => j.Generate(createJwsParameter.Payload, JwsAlg.RS256, jsonWebKey));

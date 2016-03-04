@@ -14,7 +14,6 @@
 // limitations under the License.
 #endregion
 
-
 using Moq;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Encrypt;
@@ -56,14 +55,14 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jwe.Actions
             };
 
             // ACT & ASSERT
-            Assert.ThrowsAsync<ArgumentNullException>(() => _createJweAction.ExecuteAsync(null));
-            Assert.ThrowsAsync<ArgumentNullException>(() => _createJweAction.ExecuteAsync(createJweParameterWithoutUrl));
-            Assert.ThrowsAsync<ArgumentNullException>(() => _createJweAction.ExecuteAsync(createJweParameterWithoutJws));
-            Assert.ThrowsAsync<ArgumentNullException>(() => _createJweAction.ExecuteAsync(createJweParameterWithoutKid));
+            Assert.ThrowsAsync<ArgumentNullException>(() => _createJweAction.ExecuteAsync(null)).ConfigureAwait(false);
+            Assert.ThrowsAsync<ArgumentNullException>(() => _createJweAction.ExecuteAsync(createJweParameterWithoutUrl)).ConfigureAwait(false);
+            Assert.ThrowsAsync<ArgumentNullException>(() => _createJweAction.ExecuteAsync(createJweParameterWithoutJws)).ConfigureAwait(false);
+            Assert.ThrowsAsync<ArgumentNullException>(() => _createJweAction.ExecuteAsync(createJweParameterWithoutKid)).ConfigureAwait(false);
         }
 
         [Fact]
-        public void When_Passing_Not_Well_Formed_Uri_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Not_Well_Formed_Uri_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -76,15 +75,14 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jwe.Actions
             };
 
             // ACT & ASSERT
-            var content = Assert.ThrowsAsync<IdentityServerManagerException>(() => _createJweAction.ExecuteAsync(createJweParameter));
-            var exception = content.Result;
+            var exception = await Assert.ThrowsAsync<IdentityServerManagerException>(async () => await _createJweAction.ExecuteAsync(createJweParameter)).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, url));
         }
 
         [Fact]
-        public void When_JsonWebKey_Doesnt_Exist_Then_Exception_Is_Thrown()
+        public async Task When_JsonWebKey_Doesnt_Exist_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -100,8 +98,7 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jwe.Actions
                 .Returns(Task.FromResult<JsonWebKey>(null));
 
             // ACT & ASSERT
-            var content = Assert.ThrowsAsync<IdentityServerManagerException>(() => _createJweAction.ExecuteAsync(createJweParameter));
-            var exception = content.Result;
+            var exception = await Assert.ThrowsAsync<IdentityServerManagerException>(async () => await _createJweAction.ExecuteAsync(createJweParameter)).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheJsonWebKeyCannotBeFound, kid, url));
@@ -112,7 +109,7 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jwe.Actions
         #region Happy paths
 
         [Fact]
-        public void When_Encrypting_Jws_With_Password_Then_Operation_Is_Called()
+        public async Task When_Encrypting_Jws_With_Password_Then_Operation_Is_Called()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -130,7 +127,7 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jwe.Actions
                 .Returns(Task.FromResult(jsonWebKey));
 
             // ACT
-            _createJweAction.ExecuteAsync(createJweParameter).Wait();
+            await _createJweAction.ExecuteAsync(createJweParameter).ConfigureAwait(false);
 
             // ASSERT
             _jweGeneratorStub.Verify(j => j.GenerateJweByUsingSymmetricPassword(It.IsAny<string>(),
@@ -141,7 +138,7 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jwe.Actions
         }
 
         [Fact]
-        public void When_Encrypting_Jws_Then_Operation_Is_Called()
+        public async Task When_Encrypting_Jws_Then_Operation_Is_Called()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -158,7 +155,7 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jwe.Actions
                 .Returns(Task.FromResult(jsonWebKey));
 
             // ACT
-            _createJweAction.ExecuteAsync(createJweParameter).Wait();
+            await _createJweAction.ExecuteAsync(createJweParameter).ConfigureAwait(false);
 
             // ASSERT
             _jweGeneratorStub.Verify(j => j.GenerateJwe(It.IsAny<string>(),
