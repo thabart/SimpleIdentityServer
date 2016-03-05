@@ -1,6 +1,6 @@
-======
-OpenId
-======
+=================
+OpenId / OAUTH2.0
+=================
 
 A client uses the authorization grant to obtain an access token, which is a string representing an authorization granted to the client by the resource owner.
 There're four grant-types (RFC-6749_):

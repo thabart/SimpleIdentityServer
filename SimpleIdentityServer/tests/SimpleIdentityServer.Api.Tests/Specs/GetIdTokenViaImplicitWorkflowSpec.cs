@@ -1,58 +1,80 @@
-﻿using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Security.Cryptography;
-using System.Text;
+﻿#region copyright
+// Copyright 2015 Habart Thierry
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
 
-using SimpleIdentityServer.Host.DTOs.Request;
-using SimpleIdentityServer.Host.DTOs.Response;
-using SimpleIdentityServer.Host.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Api.Tests.Common;
+using SimpleIdentityServer.Api.Tests.Common.Fakes;
+using SimpleIdentityServer.Api.Tests.Common.Fakes.Models;
+using SimpleIdentityServer.Api.Tests.Extensions;
 using SimpleIdentityServer.Core.Common.Extensions;
+using SimpleIdentityServer.Core.Configuration;
+using SimpleIdentityServer.Core.Helpers;
+using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Encrypt;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.DataAccess.Fake.Extensions;
+using SimpleIdentityServer.Host.DTOs.Request;
+using SimpleIdentityServer.Host.DTOs.Response;
+using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.RateLimitation.Configuration;
-
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Script.Serialization;
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
 using Xunit;
 using MODELS = SimpleIdentityServer.DataAccess.Fake.Models;
-
-using System.Web;
-using System.Web.Script.Serialization;
-using SimpleIdentityServer.Core.Jwt;
-using SimpleIdentityServer.Api.Tests.Common.Fakes;
-using SimpleIdentityServer.Core.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using System.Collections.Generic;
-using System;
-using SimpleIdentityServer.Api.Tests.Common.Fakes.Models;
-using SimpleIdentityServer.Api.Tests.Extensions;
-using SimpleIdentityServer.Core.Helpers;
 
 namespace SimpleIdentityServer.Api.Tests.Specs
 {
     [Binding, Scope(Feature = "GetIdTokenViaImplicitWorkflow")]
     public sealed class GetIdTokenViaImplicitWorkflowSpec
     {
+        private class JwsInformation
+        {
+            public JwsProtectedHeader Header { get; set; }
+
+            public JwsPayload Payload { get; set; }
+
+            public string CombinedHeaderAndPayload { get; set; }
+
+            public string SignedPayload { get; set; }
+
+            public string Jws { get; set; }
+        }
+
         private GlobalContext _globalContext;
         
         private ISecurityHelper _securityHelper;
 
         private FakeHttpClientFactory _fakeHttpClientFactory;
 
-        private HttpResponseMessage _httpResponseMessage;
+        private ConfiguredTaskAwaitable<HttpResponseMessage> _httpResponseMessage;
+
+        private Func<Task<JwsInformation>> _getJwsInformationCallback;
 
         private MODELS.ResourceOwner _resourceOwner;
-
-        private JwsProtectedHeader _jwsProtectedHeader;
-
-        private string _jws;
-
-        private JwsPayload _jwsPayLoad;
-
-        private string _signedPayLoad;
 
         private string _combinedHeaderAndPayload;
 
@@ -80,7 +102,9 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             });
         }
 
-        
+        #region Given
+
+
         [Given("a mobile application (.*) is defined")]
         public void GivenClient(string clientId)
         {
@@ -359,6 +383,10 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             _authorizationRequest.request = _request;
         }
 
+        #endregion
+
+        #region When
+
         [When("requesting an authorization")]
         public void WhenRequestingAnAuthorizationCode()
         {            
@@ -376,102 +404,126 @@ namespace SimpleIdentityServer.Api.Tests.Specs
                 _authorizationRequest.claims,
                 _authorizationRequest.request,
                 _authorizationRequest.request_uri);
-            Console.WriteLine("requesting ..." + url);
-            _httpResponseMessage = httpClient.GetAsync(url).Result;
+            _httpResponseMessage = httpClient.GetAsync(url).ConfigureAwait(false);
         }
-        
+
+        #endregion
+
+        #region Then
+
         [Then("the http status code is (.*)")]
-        public void ThenHttpStatusCodeIsCorrect(HttpStatusCode code)
+        public async Task ThenHttpStatusCodeIsCorrect(HttpStatusCode code)
         {
-            Assert.True(code.Equals(_httpResponseMessage.StatusCode));
+            var httpResponseMessage = await _httpResponseMessage;
+            Assert.True(code.Equals(httpResponseMessage.StatusCode));
         }
 
         [Then("the error code is (.*)")]
-        public void ThenTheErrorCodeIs(string errorCode)
+        public async Task ThenTheErrorCodeIs(string errorCode)
         {
-            var errorResponse = _httpResponseMessage.Content.ReadAsAsync<ErrorResponse>().Result;
+            var httpResponseMessage = await _httpResponseMessage;
+            var errorResponse = await httpResponseMessage.Content.ReadAsAsync<ErrorResponse>().ConfigureAwait(false);
             Assert.NotNull(errorResponse);
             Assert.True(errorResponse.error.Equals(errorCode));
         }
 
         [Then("redirect to (.*) controller")]
-        public void ThenRedirectToController(string controller)
+        public async Task ThenRedirectToController(string controller)
         {
-            var location = _httpResponseMessage.Headers.Location;
+            var httpResponseMessage = await _httpResponseMessage;
+            var location = httpResponseMessage.Headers.Location;
             Assert.True(location.AbsolutePath.Equals(controller));
         }
 
         [Then("decrypt the id_token parameter from the fragment")]
-        public void ThenDecryptTheIdTokenFromTheQueryString()
+        public void ThenDecryptTheIdTokenFromTheFragment()
         {
-            var location = _httpResponseMessage.Headers.Location;
-            var query = HttpUtility.ParseQueryString(location.Fragment.TrimStart('#'));
-            var idToken = query["id_token"];
+            _getJwsInformationCallback = async() =>
+            {
+                var httpResponseMessage = await _httpResponseMessage;
+                var location = httpResponseMessage.Headers.Location;
+                var query = HttpUtility.ParseQueryString(location.Fragment.TrimStart('#'));
+                var idToken = query["id_token"];
 
-            Assert.NotNull(idToken);
+                Assert.NotNull(idToken);
 
-            var parts = idToken.Split('.');
+                var parts = idToken.Split('.');
 
-            Assert.True(parts.Count() >= 3);
-            _jws = idToken;
+                Assert.True(parts.Count() >= 3);
 
-            var secondPart = parts[1].Base64Decode();
+                var secondPart = parts[1].Base64Decode();
 
-            var javascriptSerializer = new JavaScriptSerializer();
-            _jwsProtectedHeader = javascriptSerializer.Deserialize<JwsProtectedHeader>(parts[0].Base64Decode());
-            _jwsPayLoad = javascriptSerializer.Deserialize<JwsPayload>(secondPart);
-            _combinedHeaderAndPayload = parts[0] + "." + parts[1];
-            _signedPayLoad = parts[2];
+                var javascriptSerializer = new JavaScriptSerializer();
+                var jwsProtectedHeader = javascriptSerializer.Deserialize<JwsProtectedHeader>(parts[0].Base64Decode());
+                return new JwsInformation
+                {
+                    Header = jwsProtectedHeader,
+                    Payload = javascriptSerializer.Deserialize<JwsPayload>(secondPart),
+                    CombinedHeaderAndPayload = parts[0] + "." + parts[1],
+                    SignedPayload = parts[2],
+                    Jws = idToken
+                };
+            };
         }
-
+        
         [Then("decrypt the jwe parameter from the fragment with the following kid (.*)")]
-        public void ThenDecryptTheJweParameterFromTheQueryString(string kid)
+        public void ThenDecryptTheJweParameterFromTheFragment(string kid)
         {
-            var location = _httpResponseMessage.Headers.Location;
-            var query = HttpUtility.ParseQueryString(location.Fragment.TrimStart('#'));
-            var idToken = query["id_token"];
+            _getJwsInformationCallback = async () =>
+            {
+                var httpResponseMessage = await _httpResponseMessage;
+                var location = httpResponseMessage.Headers.Location;
+                var query = HttpUtility.ParseQueryString(location.Fragment.TrimStart('#'));
+                var idToken = query["id_token"];
 
-            Assert.NotNull(idToken);
+                Assert.NotNull(idToken);
 
-            var jsonWebKey = _globalContext.FakeDataSource.JsonWebKeys.FirstOrDefault(j => j.Kid == kid);
-            Assert.NotNull(jsonWebKey);
+                var jsonWebKey = _globalContext.FakeDataSource.JsonWebKeys.FirstOrDefault(j => j.Kid == kid);
+                Assert.NotNull(jsonWebKey);
 
-            var jweParser = _globalContext.ServiceProvider.GetService<IJweParser>();
-            var result = jweParser.Parse(idToken, jsonWebKey.ToBusiness());
-            _jws = result;
-            var parts = result.Split('.');
+                var jweParser = _globalContext.ServiceProvider.GetService<IJweParser>();
+                var result = jweParser.Parse(idToken, jsonWebKey.ToBusiness());
+                var parts = result.Split('.');
 
-            Assert.True(parts.Count() >= 3);
+                Assert.True(parts.Count() >= 3);
 
-            var secondPart = parts[1].Base64Decode();
+                var secondPart = parts[1].Base64Decode();
 
-            var javascriptSerializer = new JavaScriptSerializer();
-            _jwsProtectedHeader = javascriptSerializer.Deserialize<JwsProtectedHeader>(parts[0].Base64Decode());
-            _jwsPayLoad = javascriptSerializer.Deserialize<JwsPayload>(secondPart);
-            _combinedHeaderAndPayload = parts[0] + "." + parts[1];
-            _signedPayLoad = parts[2];
+                var javascriptSerializer = new JavaScriptSerializer();
+                var jwsProtectedHeader = javascriptSerializer.Deserialize<JwsProtectedHeader>(parts[0].Base64Decode());
+                return new JwsInformation
+                {
+                    Header = jwsProtectedHeader,
+                    Payload = javascriptSerializer.Deserialize<JwsPayload>(secondPart),
+                    CombinedHeaderAndPayload = parts[0] + "." + parts[1],
+                    SignedPayload = parts[2],
+                    Jws = result
+                };
+            };
         }
 
         [Then("check the signature is correct with the kid (.*)")]
-        public void ThenCheckSignatureIsCorrectWithKid(string kid)
+        public async Task ThenCheckSignatureIsCorrectWithKid(string kid)
         {
+            var jwsInformation = await _getJwsInformationCallback().ConfigureAwait(false);
             var jsonWebKey = _globalContext.FakeDataSource.JsonWebKeys.FirstOrDefault(j => j.Kid == kid);
             Assert.NotNull(jsonWebKey);
 
             var jwsParser = _globalContext.ServiceProvider.GetService<IJwsParser>();
-            var result = jwsParser.ValidateSignature(_jws, jsonWebKey.ToBusiness());
+            var result = jwsParser.ValidateSignature(jwsInformation.Jws, jsonWebKey.ToBusiness());
 
             Assert.NotNull(result);
         }
 
         [Then("the signature of the JWS payload is valid")]
-        public void ThenTheSignatureIsCorrect()
+        public async Task ThenTheSignatureIsCorrect()
         {
+            var jwsInformation = await _getJwsInformationCallback().ConfigureAwait(false);
             using (var provider = new RSACryptoServiceProvider())
             {
                 var serializedRsa = _globalContext.FakeDataSource.JsonWebKeys.First().SerializedKey;
                 provider.FromXmlString(serializedRsa);
-                var signature = _signedPayLoad.Base64DecodeBytes();
+                var signature = jwsInformation.SignedPayload.Base64DecodeBytes();
                 var payLoad = ASCIIEncoding.ASCII.GetBytes(_combinedHeaderAndPayload);
                 var signatureIsCorrect = provider.VerifyData(payLoad, "SHA256", signature);
                 Assert.True(signatureIsCorrect);
@@ -479,48 +531,56 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         }
 
         [Then("the protected JWS header is returned")]
-        public void ThenProtectedJwsHeaderIsReturned(Table table)
+        public async Task ThenProtectedJwsHeaderIsReturned(Table table)
         {
+            var jwsInformation = await _getJwsInformationCallback().ConfigureAwait(false);
             var record = table.CreateInstance<JwsProtectedHeader>();
 
-            Assert.True(record.Alg.Equals(_jwsProtectedHeader.Alg));
+            Assert.True(record.Alg.Equals(jwsInformation.Header.Alg));
         }
 
         [Then("the audience parameter with value (.*) is returned by the JWS payload")]
-        public void ThenAudienceIsReturnedInJwsPayLoad(string audience)
+        public async Task ThenAudienceIsReturnedInJwsPayLoad(string audience)
         {
-            Assert.True(_jwsPayLoad.Audiences.Contains(audience));
+            var jwsInformation = await _getJwsInformationCallback().ConfigureAwait(false);
+            Assert.True(jwsInformation.Payload.Audiences.Contains(audience));
         }
 
         [Then("the parameter nonce with value (.*) is returned by the JWS payload")]
-        public void ThenNonceIsReturnedInJwsPayLoad(string nonce)
+        public async Task ThenNonceIsReturnedInJwsPayLoad(string nonce)
         {
-            Assert.True(_jwsPayLoad.Nonce.Equals(nonce));
+            var jwsInformation = await _getJwsInformationCallback().ConfigureAwait(false);
+            Assert.True(jwsInformation.Payload.Nonce.Equals(nonce));
         }
 
         [Then("the claim (.*) with value (.*) is returned by the JWS payload")]
-        public void ThenTheClaimWithValueIsReturnedByJwsPayLoad(string claimName, string val)
+        public async Task ThenTheClaimWithValueIsReturnedByJwsPayLoad(string claimName, string val)
         {
-            var claimValue = _jwsPayLoad.GetClaimValue(claimName);
+            var jwsInformation = await _getJwsInformationCallback().ConfigureAwait(false);
+            var claimValue = jwsInformation.Payload.GetClaimValue(claimName);
 
             Assert.NotNull(claimValue);
             Assert.True(claimValue.Equals(val));
         }
 
         [Then("the JWS payload contains (.*) claims")]
-        public void ThenTheJwsPayloadContainsNumberOfClaims(int numberOfClaims)
+        public async Task ThenTheJwsPayloadContainsNumberOfClaims(int numberOfClaims)
         {
-            Assert.True(_jwsPayLoad.Count.Equals(numberOfClaims));
+            var jwsInformation = await _getJwsInformationCallback().ConfigureAwait(false);
+            Assert.True(jwsInformation.Payload.Count.Equals(numberOfClaims));
         }
 
         [Then("the callback contains the following query name (.*)")]
-        public void ThenTheCallbackContainsTheQueryName(string queryName)
+        public async Task ThenTheCallbackContainsTheQueryName(string queryName)
         {
-            var location = _httpResponseMessage.Headers.Location;
+            var httpResponseMessage = await _httpResponseMessage;
+            var location = httpResponseMessage.Headers.Location;
             var query = HttpUtility.ParseQueryString(location.Fragment.TrimStart('#'));
             var queryValue = query[queryName];
             Assert.NotEmpty(queryValue);
         }
+
+        #endregion
 
         private MODELS.Client GetClient(string clientId)
         {
