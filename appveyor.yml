@@ -21,7 +21,7 @@ build_script:
 - cmd: dnu build tests\SimpleIdentityServer.Core.Jwt.UnitTests
 - cmd: dnu build tests\SimpleIdentityServer.Core.UnitTests
 test_script:
-#- cmd: dnx -p tests\SimpleIdentityServer.Api.Tests test
+- cmd: dnx -p tests\SimpleIdentityServer.Api.Tests test
 - cmd: dnx -p tests\SimpleIdentityServer.Core.Jwt.UnitTests test
 - cmd: dnx -p tests\SimpleIdentityServer.Core.UnitTests test
 - cmd: dnx -p tests\SimpleIdentityServer.UserInformation.Authentication.Tests test
