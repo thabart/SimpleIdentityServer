@@ -35,9 +35,4 @@
       }
     }
   }
-  /*
-  "scripts": {
-    "prebuild": [ "dnx specflow-dnx" ]
-  }
-  */
 }
