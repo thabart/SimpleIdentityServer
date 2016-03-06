@@ -15,6 +15,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <DevelopmentServerPort>51662</DevelopmentServerPort>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'" />
   <ItemGroup>
     <ProjectReference Include="..\SimpleIdentityServer.Core\SimpleIdentityServer.Core.csproj" />
   </ItemGroup>
