@@ -1,26 +1,42 @@
-﻿using System;
-using System.Net;
-using System.Net.Http;
+﻿#region copyright
+// Copyright 2015 Habart Thierry
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
 
+using Microsoft.Extensions.DependencyInjection;
+using SimpleIdentityServer.Api.Tests.Common;
+using SimpleIdentityServer.Api.Tests.Common.Fakes;
+using SimpleIdentityServer.Api.Tests.Common.Fakes.Models;
+using SimpleIdentityServer.Api.Tests.Extensions;
+using SimpleIdentityServer.Core.Configuration;
+using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Host.DTOs.Request;
 using SimpleIdentityServer.Host.DTOs.Response;
-using SimpleIdentityServer.Api.Tests.Common;
 using SimpleIdentityServer.RateLimitation.Configuration;
-
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
+using System.Threading.Tasks;
+using System.Web;
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
 using Xunit;
 using MODELS = SimpleIdentityServer.DataAccess.Fake.Models;
-using System.Web;
-using SimpleIdentityServer.Api.Tests.Common.Fakes;
-using SimpleIdentityServer.Core.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using System.Collections.Generic;
-using SimpleIdentityServer.Core.Helpers;
-using System.Security.Cryptography;
-using SimpleIdentityServer.Api.Tests.Common.Fakes.Models;
-using SimpleIdentityServer.Api.Tests.Extensions;
-using System.Linq;
 
 namespace SimpleIdentityServer.Api.Tests.Specs
 {
@@ -31,7 +47,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         
         private GlobalContext _globalContext;
 
-        private HttpResponseMessage _responseMessage;
+        private ConfiguredTaskAwaitable<HttpResponseMessage> _authorizationResponse;
 
         private MODELS.ResourceOwner _resourceOwner;
         
@@ -51,8 +67,9 @@ namespace SimpleIdentityServer.Api.Tests.Specs
                 services.AddTransient<ISimpleIdentityServerConfigurator, SimpleIdentityServerConfigurator>();
             });
         }
-        
-        
+
+        #region Given
+
         [Given("a mobile application (.*) is defined")]
         public void GivenClient(string clientId)
         {
@@ -276,13 +293,7 @@ namespace SimpleIdentityServer.Api.Tests.Specs
 
             _globalContext.FakeDataSource.Consents.Add(consent);
         }
-
-        private MODELS.Client GetClient(string clientId)
-        {
-            var client = _globalContext.FakeDataSource.Clients.SingleOrDefault(c => c.ClientId == clientId);
-            return client;
-        }
-
+        
         [Given("create a resource owner")]
         public void GivenCreateAResourceOwner(Table table)
         {
@@ -304,6 +315,10 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             _globalContext.AuthenticationMiddleWareOptions.ResourceOwner = _resourceOwner;
         }
 
+        #endregion
+
+        #region When
+
         [When("requesting an authorization code")]
         public void WhenRequestingAnAuthorizationCode(Table table)
         {
@@ -319,43 +334,52 @@ namespace SimpleIdentityServer.Api.Tests.Specs
                     authorizationRequest.prompt,
                     authorizationRequest.state,
                     responseModeName);
-            _responseMessage = client.GetAsync(url).Result;
+            _authorizationResponse = client.GetAsync(url).ConfigureAwait(false);
         }
 
+        #endregion
+
+        #region Then
+
         [Then("HTTP status code is (.*)")]
-        public void ThenHttpStatusCodeIs(HttpStatusCode httpStatusCode)
+        public async Task ThenHttpStatusCodeIs(HttpStatusCode httpStatusCode)
         {
-            Assert.True(_responseMessage.StatusCode.Equals(httpStatusCode));
+            var responseMessage = await _authorizationResponse;
+            Assert.True(responseMessage.StatusCode.Equals(httpStatusCode));
         }
 
         [Then("redirect to (.*) controller")]
-        public void ThenRedirectToController(string controller)
+        public async Task ThenRedirectToController(string controller)
         {
-            var location = _responseMessage.Headers.Location;
+            var responseMessage = await _authorizationResponse;
+            var location = responseMessage.Headers.Location;
             Assert.True(location.AbsolutePath.Equals(controller));
         }
 
         [Then("redirect to callback (.*)")]
-        public void ThenRedirectToCallback(string callback)
+        public async Task ThenRedirectToCallback(string callback)
         {
-            var location = _responseMessage.Headers.Location;
+            var responseMessage = await _authorizationResponse;
+            var location = responseMessage.Headers.Location;
             Assert.True(location.AbsoluteUri.StartsWith(callback));
         }
 
         [Then("the error returned is")]
-        public void ThenTheErrorReturnedIs(Table table)
+        public async Task ThenTheErrorReturnedIs(Table table)
         {
+            var responseMessage = await _authorizationResponse;
             var errorResponseWithState = table.CreateInstance<ErrorResponseWithState>();
-            var result = _responseMessage.Content.ReadAsAsync<ErrorResponseWithState>().Result;
+            var result = await responseMessage.Content.ReadAsAsync<ErrorResponseWithState>().ConfigureAwait(false);
 
             Assert.True(errorResponseWithState.error.Equals(result.error));
             Assert.True(errorResponseWithState.state.Equals(result.state));
         }
 
         [Then("the query string (.*) with value (.*) is returned")]
-        public void ThenTheQueryStringIsContained(string queryName, string queryValue)
+        public async Task ThenTheQueryStringIsContained(string queryName, string queryValue)
         {
-            var location = _responseMessage.Headers.Location;
+            var responseMessage = await _authorizationResponse;
+            var location = responseMessage.Headers.Location;
             var queries = HttpUtility.ParseQueryString(location.Query);
 
             var value = queries[queryName];
@@ -364,18 +388,20 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         }
 
         [Then("the query string (.*) exists")]
-        public void ThenTheQueryStringExists(string queryName)
+        public async Task ThenTheQueryStringExists(string queryName)
         {
-            var location = _responseMessage.Headers.Location;
+            var responseMessage = await _authorizationResponse;
+            var location = responseMessage.Headers.Location;
             var queries = HttpUtility.ParseQueryString(location.Query);
             var value = queries[queryName];
             Assert.NotNull(value);
         }
 
         [Then("the fragment contains the query (.*) with the value (.*)")]
-        public void ThenFragmentContainsTheQueryWithValue(string queryName, string queryValue)
+        public async Task ThenFragmentContainsTheQueryWithValue(string queryName, string queryValue)
         {
-            var fragment = _responseMessage.Headers.Location.Fragment;
+            var responseMessage = await _authorizationResponse;
+            var fragment = responseMessage.Headers.Location.Fragment;
             Assert.NotEmpty(fragment);
             fragment = fragment.TrimStart('#');
             var queries = HttpUtility.ParseQueryString(fragment);
@@ -385,16 +411,25 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         }
 
         [Then("the fragment contains the query string (.*)")]
-        public void ThenFragmentsContainsTheQueryString(string queryName)
+        public async Task ThenFragmentsContainsTheQueryString(string queryName)
         {
-            var fragment = _responseMessage.Headers.Location.Fragment;
+            var responseMessage = await _authorizationResponse;
+            var fragment = responseMessage.Headers.Location.Fragment;
             Assert.NotEmpty(fragment);
             fragment = fragment.TrimStart('#');
             var queries = HttpUtility.ParseQueryString(fragment);
             var value = queries[queryName];
             Assert.NotNull(value);
         }
-        
+
+        #endregion
+
+        private MODELS.Client GetClient(string clientId)
+        {
+            var client = _globalContext.FakeDataSource.Clients.SingleOrDefault(c => c.ClientId == clientId);
+            return client;
+        }
+
         [AfterScenario]
         public void After() 
         {

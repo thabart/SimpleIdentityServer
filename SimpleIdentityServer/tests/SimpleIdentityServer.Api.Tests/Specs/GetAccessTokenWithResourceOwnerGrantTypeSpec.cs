@@ -1,25 +1,43 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Text;
+﻿#region copyright
+// Copyright 2015 Habart Thierry
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
+using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Api.Tests.Common;
+using SimpleIdentityServer.Api.Tests.Common.Fakes;
+using SimpleIdentityServer.Api.Tests.Common.Fakes.Models;
+using SimpleIdentityServer.Api.Tests.Extensions;
+using SimpleIdentityServer.Core.Configuration;
+using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Host.DTOs.Request;
 using SimpleIdentityServer.Host.DTOs.Response;
 using SimpleIdentityServer.RateLimitation.Configuration;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading.Tasks;
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
 using Xunit;
 using DOMAINS = SimpleIdentityServer.Core.Models;
 using MODELS = SimpleIdentityServer.DataAccess.Fake.Models;
-using SimpleIdentityServer.Api.Tests.Common.Fakes;
-using SimpleIdentityServer.Core.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using SimpleIdentityServer.Api.Tests.Common.Fakes.Models;
-using SimpleIdentityServer.Api.Tests.Extensions;
-using System.Security.Cryptography;
-using SimpleIdentityServer.Core.Helpers;
 
 namespace SimpleIdentityServer.Api.Tests.Specs
 {
@@ -30,11 +48,9 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         
         private ISecurityHelper _securityHelper;
 
-        private DOMAINS.GrantedToken _token;
-
-        private ErrorResponse _errorResponse;
-
         private HttpStatusCode _httpStatusCode;
+
+        private ConfiguredTaskAwaitable<HttpResponseMessage> _tokenResponse;
 
         [BeforeScenario]
         public void Before()
@@ -52,7 +68,9 @@ namespace SimpleIdentityServer.Api.Tests.Specs
                 services.AddTransient<ISimpleIdentityServerConfigurator, SimpleIdentityServerConfigurator>();
             });
         }
-        
+
+        #region Given
+
         [Given("a mobile application (.*) is defined")]
         public void GivenClient(string clientId)
         {
@@ -277,14 +295,12 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             _globalContext.FakeDataSource.Consents.Add(consent);
         }
 
-        private MODELS.Client GetClient(string clientId)
-        {
-            var client = _globalContext.FakeDataSource.Clients.SingleOrDefault(c => c.ClientId == clientId);
-            return client;
-        }
+        #endregion
+
+        #region When
 
         [When("requesting an access token via resource owner grant-type")]
-        public void WhenRequestingAnAccessToken(Table table)
+        public async Task WhenRequestingAnAccessToken(Table table)
         {
             var tokenRequest = table.CreateInstance<TokenRequest>();
             var httpClient = _globalContext.TestServer.CreateClient();
@@ -295,34 +311,34 @@ namespace SimpleIdentityServer.Api.Tests.Specs
                 tokenRequest.client_id,
                 tokenRequest.scope);
             var content = new StringContent(parameter, Encoding.UTF8, "application/x-www-form-urlencoded");
-
-            var result = httpClient.PostAsync("/token", content).Result;
-            _httpStatusCode = result.StatusCode;
-            if (_httpStatusCode == HttpStatusCode.OK)
-            {
-                _token = result.Content.ReadAsAsync<DOMAINS.GrantedToken>().Result;
-                return;
-            }
-
-            _errorResponse = result.Content.ReadAsAsync<ErrorResponse>().Result;
+            _tokenResponse = httpClient.PostAsync("/token", content).ConfigureAwait(false);
         }
 
+        #endregion
+
+        #region Then
+
         [Then("http result is (.*)")]
-        public void ThenHttpResultIsCorrect(HttpStatusCode code)
+        public async Task ThenHttpResultIsCorrect(HttpStatusCode code)
         {
-            Assert.True(_httpStatusCode.Equals(code));
+            var tokenResponse = await _tokenResponse;
+            Assert.True(tokenResponse.StatusCode.Equals(code));
         }
 
         [Then("access token is generated")]
-        public void ThenAccessTokenIsGenerated()
+        public async Task ThenAccessTokenIsGenerated()
         {
-            Assert.NotEmpty(_token.AccessToken);
+            var tokenResponse = await _tokenResponse;
+            var token = await tokenResponse.Content.ReadAsAsync<DOMAINS.GrantedToken>().ConfigureAwait(false);
+            Assert.NotEmpty(token.AccessToken);
         }
 
         [Then("access token have the correct scopes : (.*)")]
-        public void ThenAccessTokenContainsCorrectScopes(List<string> scopes)
+        public async Task ThenAccessTokenContainsCorrectScopes(List<string> scopes)
         {
-            var accessTokenScopes = _token.Scope.Split(' ');
+            var tokenResponse = await _tokenResponse;
+            var token = await tokenResponse.Content.ReadAsAsync<DOMAINS.GrantedToken>().ConfigureAwait(false);
+            var accessTokenScopes = token.Scope.Split(' ');
             var atLeastOneScopeIsNotTheSame =
                 scopes.Where(a => !string.IsNullOrEmpty(a) && !accessTokenScopes.Contains(a))
                 .Count() > 0;
@@ -331,16 +347,26 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         }
 
         [Then("the error is (.*)")]
-        public void ThenErrorCodeIsCorrect(string errorCode)
+        public async Task ThenErrorCodeIsCorrect(string errorCode)
         {
-            Assert.True(_errorResponse.error.Equals(errorCode));
+            var tokenResponse = await _tokenResponse;
+            var errorResponse = await tokenResponse.Content.ReadAsAsync<ErrorResponse>().ConfigureAwait(false);
+            Assert.True(errorResponse.error.Equals(errorCode));
         }
-        
+
+        #endregion
+
         [AfterScenario]
         public void After() 
         {
             Console.WriteLine("dispose");
             _globalContext.TestServer.Dispose();
+        }
+
+        private MODELS.Client GetClient(string clientId)
+        {
+            var client = _globalContext.FakeDataSource.Clients.SingleOrDefault(c => c.ClientId == clientId);
+            return client;
         }
     }
 }
