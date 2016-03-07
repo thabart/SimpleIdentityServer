@@ -1,5 +1,4 @@
-﻿using System.Configuration;
-#region copyright
+﻿#region copyright
 // Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,14 +14,12 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.Extensions.Caching.Memory;
+
 namespace SimpleIdentityServer.RateLimitation.Configuration
 {
-    public class RateLimitationElement
+    public sealed class InMemoryRateLimitationOptions : RateLimitationOptions
     {
-        public string Name { get; set; }
-        
-        public int NumberOfRequests { get; set; }
-        
-        public double SlidingTime { get; set; }
+        public IMemoryCache MemoryCache { get; set; }
     }
 }

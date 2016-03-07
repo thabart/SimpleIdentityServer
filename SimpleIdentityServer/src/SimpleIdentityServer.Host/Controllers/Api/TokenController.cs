@@ -1,18 +1,34 @@
-﻿using SimpleIdentityServer.Host.DTOs.Request;
-using SimpleIdentityServer.Host.Extensions;
-using SimpleIdentityServer.Core.Api.Token;
+﻿#region copyright
+// Copyright 2015 Habart Thierry
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
 
-using SimpleIdentityServer.RateLimitation.Attributes;
-using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Host;
 using Microsoft.AspNet.Mvc;
 using Microsoft.Extensions.Primitives;
+using SimpleIdentityServer.Core.Api.Token;
+using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Host;
+using SimpleIdentityServer.Host.DTOs.Request;
+using SimpleIdentityServer.Host.Extensions;
+using SimpleIdentityServer.RateLimitation;
+using SimpleIdentityServer.RateLimitation.Attributes;
 using System.Linq;
 using System.Net.Http.Headers;
 
 namespace SimpleIdentityServer.Api.Controllers.Api
 {
-    [Microsoft.AspNet.Mvc.Route(Constants.EndPoints.Token)]
+    [Route(Constants.EndPoints.Token)]
     public class TokenController : Controller
     {
         private readonly ITokenActions _tokenActions;
@@ -23,7 +39,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             _tokenActions = tokenActions;
         }
         
-        // [TypeFilter(typeof(RateLimitationFilter), Arguments = new object[] { "PostToken" })]
+        [SimpleTypeFilterAttribute(typeof(RateLimitationFilter), Arguments = new object[] { "PostToken" })]
         [HttpPost]
         public GrantedToken Post(TokenRequest tokenRequest)
         {

@@ -1,28 +1,75 @@
-﻿using System;
-using System.Globalization;
+﻿#region copyright
+// Copyright 2015 Habart Thierry
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
 
-using Microsoft.Practices.Unity;
-
+using Microsoft.AspNet.Http;
+using Microsoft.AspNet.Http.Features;
+using Microsoft.AspNet.Mvc;
+using Microsoft.AspNet.Mvc.Filters;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.OptionsModel;
+using Microsoft.Net.Http.Headers;
 using SimpleIdentityServer.RateLimitation.Configuration;
 using SimpleIdentityServer.RateLimitation.Constants;
 using SimpleIdentityServer.RateLimitation.Models;
-using Microsoft.AspNet.Mvc.Filters;
-using Microsoft.AspNet.Http.Features;
-using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Mvc;
-using Microsoft.Net.Http.Headers;
+using System;
+using System.Globalization;
+using System.Text;
 
 namespace SimpleIdentityServer.RateLimitation.Attributes
 {
-    public class RateLimitationFilter : ActionFilterAttribute
+    public class RateLimitationFilter : ActionFilterAttribute, IFilterMetadata
     {
         private IGetRateLimitationElementOperation _getRateLimitationElementOperation;
 
-        private ICacheManagerProvider _cacheManagerProvider;
+        private RateLimitationOptions _rateLimitationOptions;
 
         private bool _isEnabled;
-        
-        [Dependency]
+
+        #region Constructor
+
+        /// <summary>
+        /// Configure the rate limitation via configuration file.
+        /// </summary>
+        public RateLimitationFilter(
+            IGetRateLimitationElementOperation getRateLimitationElementOperation,
+            IOptions<RateLimitationOptions> rateLimitationOptions,
+            string rateLimitationElementName)
+        {
+            if (getRateLimitationElementOperation == null)
+            {
+                throw new ArgumentNullException(nameof(getRateLimitationElementOperation));
+            }
+
+            if (rateLimitationOptions == null || rateLimitationOptions.Value == null)
+            {
+                throw new ArgumentNullException(nameof(rateLimitationOptions));
+            }
+
+            _isEnabled = true;
+            _getRateLimitationElementOperation = getRateLimitationElementOperation;
+            _rateLimitationOptions = rateLimitationOptions.Value;
+            RateLimitationElementName = rateLimitationElementName;
+        }
+
+        #endregion
+
+        #region Properties
+
+        // [Dependency]
         public IGetRateLimitationElementOperation GetRateLimitationElementOperation
         {
             set
@@ -31,37 +78,10 @@ namespace SimpleIdentityServer.RateLimitation.Attributes
             }
         }
 
-        [Dependency]
-        public ICacheManagerProvider CacheManagerProvider
+        // [Dependency]
+        public RateLimitationOptions RateLimitationOptions
         {
-            set { _cacheManagerProvider = value; }
-        }
-        
-        /// <summary>
-        /// Configure the rate limitation via configuration file.
-        /// </summary>
-        public RateLimitationFilter(
-            IGetRateLimitationElementOperation getRateLimitationElementOperation,
-            ICacheManagerProvider cacheManagerProvider,
-            string rateLimitationElementName)
-        {
-            _isEnabled = true;
-            _cacheManagerProvider = cacheManagerProvider;
-            _getRateLimitationElementOperation = getRateLimitationElementOperation;
-            RateLimitationElementName = rateLimitationElementName;
-        }
-
-        /// <summary>
-        /// Configure the filter
-        /// </summary>
-        /// <param name="numberOfRequests"></param>
-        /// <param name="slidingTime"></param>
-        public RateLimitationFilter(
-            int numberOfRequests,
-            double slidingTime)
-        {
-            NumberOfRequests = numberOfRequests;
-            SlidingTime = slidingTime;
+            set { _rateLimitationOptions = value; }
         }
 
         public int NumberOfRequests { get; set; }
@@ -73,6 +93,10 @@ namespace SimpleIdentityServer.RateLimitation.Attributes
 
         public string RateLimitationElementName { get; set; }
 
+        #endregion
+
+        #region Public methods
+
         public override void OnActionExecuting(ActionExecutingContext actionExecutingContext)
         {
             LoadConfiguration();
@@ -82,7 +106,6 @@ namespace SimpleIdentityServer.RateLimitation.Attributes
             }
 
             var today = DateTime.UtcNow;
-            var responseCacheManager = _cacheManagerProvider.GetCacheManager();
             HttpContext httpContext = actionExecutingContext.HttpContext;
             var connectionFeature = httpContext.Features.Get<IHttpConnectionFeature>();
             var ipAddress = connectionFeature == null ? string.Empty : connectionFeature.RemoteIpAddress.ToString();
@@ -95,7 +118,7 @@ namespace SimpleIdentityServer.RateLimitation.Attributes
                 IpAdress = ipAddress    
             };
             var jsonResponse = record.GetIdentifier();
-            var cachedData = responseCacheManager.GetData(jsonResponse);
+            var cachedData = GetValue(jsonResponse);
             if (cachedData == null)
             {
                 return;
@@ -140,7 +163,6 @@ namespace SimpleIdentityServer.RateLimitation.Attributes
             }
 
             var today = DateTime.UtcNow;
-            var responseCacheManager = _cacheManagerProvider.GetCacheManager();
             var connectionFeature = httpActionExecutedContext.HttpContext.Features.Get<IHttpConnectionFeature>();
             var ipAddress = connectionFeature == null ? string.Empty : connectionFeature.RemoteIpAddress.ToString();
             var actionName = httpActionExecutedContext.RouteData.Values["Action"].ToString();
@@ -153,13 +175,13 @@ namespace SimpleIdentityServer.RateLimitation.Attributes
                 IpAdress = ipAddress
             };
             var jsonResponse = record.GetIdentifier();
-            var cachedData = responseCacheManager.GetData(jsonResponse);
+            var cachedData = GetValue(jsonResponse);
             // Add into the cache
             if (cachedData == null)
             {
                 record.UpdateDateTime = today;
                 record.NumberOfRequests = 1;
-                responseCacheManager.Add(jsonResponse, record);
+                SetValue(jsonResponse, record);
             }
             else
             {
@@ -170,7 +192,7 @@ namespace SimpleIdentityServer.RateLimitation.Attributes
                     return;
                 }
 
-                responseCacheManager.Remove(jsonResponse);
+                Remove(jsonResponse);
                 var needToRefresh = record.UpdateDateTime.AddMinutes(SlidingTime) <= today;
                 if (needToRefresh)
                 {
@@ -182,7 +204,7 @@ namespace SimpleIdentityServer.RateLimitation.Attributes
                     record.NumberOfRequests++;
                 }
 
-                responseCacheManager.Add(jsonResponse, record);
+                SetValue(jsonResponse, record);
             }            
 
             // Return the HTTP-HEADERS
@@ -205,6 +227,10 @@ namespace SimpleIdentityServer.RateLimitation.Attributes
             response.Headers.Add(RateLimitationConstants.XRateLimitResetName, timeResetTime.ToString(CultureInfo.InvariantCulture));
         }
 
+        #endregion
+
+        #region Private methods
+
         private void LoadConfiguration()
         {
             _isEnabled = _getRateLimitationElementOperation.IsEnabled();
@@ -222,5 +248,65 @@ namespace SimpleIdentityServer.RateLimitation.Attributes
             NumberOfRequests = limitationElement.NumberOfRequests;
             SlidingTime = limitationElement.SlidingTime;
         }
+
+        private object GetValue(string key)
+        {
+            var inMemoryRateLimitationOptions = _rateLimitationOptions as InMemoryRateLimitationOptions;
+            if (inMemoryRateLimitationOptions != null)
+            {
+                object result = null;
+                inMemoryRateLimitationOptions.MemoryCache.TryGetValue(key, out result);
+                return result;
+            }
+
+            var distributedRateLimitationOptions = _rateLimitationOptions as DistributedRateLimitationOptions;
+            if (distributedRateLimitationOptions != null)
+            {
+                var bytes = distributedRateLimitationOptions.DistributedCache.Get(key);
+                return Encoding.UTF8.GetString(bytes);
+            }
+
+            return null;
+        }
+
+        private void SetValue(string key, object value)
+        {
+            var inMemoryRateLimitationOptions = _rateLimitationOptions as InMemoryRateLimitationOptions;
+            if (inMemoryRateLimitationOptions != null)
+            {
+                inMemoryRateLimitationOptions.MemoryCache.Set(key, 
+                    value,
+                    new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(SlidingTime)));
+                return;
+            }
+
+            var distributedRateLimitationOptions = _rateLimitationOptions as DistributedRateLimitationOptions;
+            if (distributedRateLimitationOptions != null)
+            {
+                /*
+                distributedRateLimitationOptions.DistributedCache.Set(key,
+                    Encoding.UTF8.GetBytes(value),
+                    new DistributedCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(SlidingTime)));
+                */
+            }
+        }
+
+        private void Remove(string key)
+        {
+            var inMemoryRateLimitationOptions = _rateLimitationOptions as InMemoryRateLimitationOptions;
+            if (inMemoryRateLimitationOptions != null)
+            {
+                inMemoryRateLimitationOptions.MemoryCache.Remove(key);
+                return;
+            }
+
+            var distributedRateLimitationOptions = _rateLimitationOptions as DistributedRateLimitationOptions;
+            if (distributedRateLimitationOptions != null)
+            {
+                distributedRateLimitationOptions.DistributedCache.Remove(key);
+            }
+        }
+
+        #endregion
     }
 }

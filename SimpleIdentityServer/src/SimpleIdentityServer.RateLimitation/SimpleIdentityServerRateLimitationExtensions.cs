@@ -17,6 +17,7 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.RateLimitation.Configuration;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.RateLimitation
 {
@@ -30,7 +31,23 @@ namespace SimpleIdentityServer.RateLimitation
             }
 
             serviceCollection.AddTransient<IGetRateLimitationElementOperation, GetRateLimitationElementOperation>();
-            serviceCollection.AddTransient<ICacheManagerProvider, CacheManagerProvider>();
+            
+            /*
+            serviceCollection.Configure<RateLimitationOptions>(options =>
+            {
+                options.IsEnabled = true;
+                options.RateLimitationElements = new List<RateLimitationElement>
+                {
+                    new RateLimitationElement
+                    {
+                        Name = "PostToken",
+                        NumberOfRequests = 20,
+                        SlidingTime = 2000
+                    }
+                };
+            });
+            */
+
             return serviceCollection;
         }
     }

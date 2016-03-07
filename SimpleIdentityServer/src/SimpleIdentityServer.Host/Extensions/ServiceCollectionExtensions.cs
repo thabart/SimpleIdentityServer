@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Practices.EnterpriseLibrary.Caching;
 using SimpleIdentityServer.Host.Configuration;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Configuration;
@@ -156,7 +155,6 @@ namespace SimpleIdentityServer.Host
             services.AddRateLimitation();
 
             var logging = SimpleIdentityServerEventSource.Log;
-            services.AddTransient<ICacheManager, CacheManager>();
             services.AddTransient<ICertificateStore, CertificateStore>();
             services.AddTransient<IResourceOwnerService, InMemoryUserService>();
             services.AddTransient<IRedirectInstructionParser, RedirectInstructionParser>();
