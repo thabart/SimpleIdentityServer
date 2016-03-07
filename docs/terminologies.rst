@@ -1,4 +1,4 @@
-=============
+﻿=============
 Terminologies
 =============
 
@@ -17,9 +17,9 @@ We identified two different kinds of scopes :
  * **Protected Api Scope** : Used to protect API operation(s). For example an API operation can be protected against malicious HTTP request(s) which doesn't contain an access token valid for the scope "executeOperation".
 
 The following schema shows the interactions between components. 
-(1) The client which wants to access to certain API operations requests an access token from Simple Identity Server.
-(2) An HTTP request with the access token passed in the Authorization header (Authorization : Bearer <access token>) is sent to the protected API.
-(3) When the request is received a validation procedure is triggered, it sends a request to Simple Identity Server to check the access token validity and retrieve the scopes and / or resource owner's claims such as : name, email.
+ 1. The client which wants to access to certain API operations requests an access token from Simple Identity Server.
+ 2. An HTTP request with the access token passed in the Authorization header (Authorization : Bearer <access token>) is sent to the protected API.
+ 3. When the request is received a validation procedure is triggered, it sends a request to Simple Identity Server to check the access token validity and retrieve the scopes and / or resource owner's claims such as : name, email.
 
 .. image:: 1-Interaction.png
 

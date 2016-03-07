@@ -20,16 +20,17 @@ The flow is explained in the following schema :
 .. image:: 2-AuthorizationCode_GrantType.png
 
 **Steps** :
+
 Assumptions : We assumed that the resource owner is already authenticated & the consent has already been confirmed by him.
-(1) The user-agent is redirected to the authorization endpoint to get a code.
-(2) Parameters are checked by Simple Identity Server.
-(3) The authorization code is passed to the callback as a fragment and returned to the client.
-(4) When the authorization code has been received, the client is using it to retrieve an access token.
-(5) The access token is generated and returned to the client.
-(6) The client is using the access token to access to protected operations.
-(7) The protected API passed the access token to the userinfo request & gets the claims (role) back.
-(8) Claims are returned by Simple Identity Server. They are used to limit the access to protected operations based on the roles.
-(9) Claims are checked during the authorization phase.
+ 1. The user-agent is redirected to the authorization endpoint to get a code.
+ 2. Parameters are checked by Simple Identity Server.
+ 3. The authorization code is passed to the callback as a fragment and returned to the client.
+ 4. When the authorization code has been received, the client is using it to retrieve an access token.
+ 5. The access token is generated and returned to the client.
+ 6. The client is using the access token to access to protected operations.
+ 7. The protected API passed the access token to the userinfo request & gets the claims (role) back.
+ 8. Claims are returned by Simple Identity Server. They are used to limit the access to protected operations based on the roles.
+ 9. Claims are checked during the authorization phase.
 
 
 Implicit flow
@@ -42,14 +43,15 @@ The flow is explained in the following schema :
 .. image:: 3-ImplicitFlow.png
 
 **Steps**:
+
 Assumptions : We assumed that the resource owner is already authenticated & the consent has already been confirmed by him.
-(1) The user-agent is redirected to the authorization endpoint to get an identity token & token
-(2) Parameters are checked by Simple Identity Server.
-(3) The identity token & token are passed to the callback as fragments and returned to the client.
-(4) The client is using the access token to access to protected operations.
-(5) The protected API passed the access token to the userinfo request & gets the claims (role) back.
-(6) Claims are returned by Simple Identity Server.
-(7) Claims are checked during the authorization phase.
+ 1. The user-agent is redirected to the authorization endpoint to get an identity token & token
+ 2. Parameters are checked by Simple Identity Server.
+ 3. The identity token & token are passed to the callback as fragments and returned to the client.
+ 4. The client is using the access token to access to protected operations.
+ 5. The protected API passed the access token to the userinfo request & gets the claims (role) back.
+ 6. Claims are returned by Simple Identity Server.
+ 7. Claims are checked during the authorization phase.
 
 Resource owner credentials flow
 -------------------------------
@@ -61,11 +63,12 @@ The flow is explained in the following schema :
 .. image:: 4-ResourceOwnerFlow.png
 
 **Steps** :
-(1) Post the resource owner & client's credentials to the token endpoint.
-(2) An access token valid for the scopes : profile & roles is returned to the client.
-(3) Token is passed into the API request.
-(4) The API is using the token to retrieve resource owner's claims from Simple Identity Server.
-(5) Claims are returned.
+
+ 1. Post the resource owner & client's credentials to the token endpoint.
+ 2. An access token valid for the scopes : profile & roles is returned to the client.
+ 3. Token is passed into the API request.
+ 4. The API is using the token to retrieve resource owner's claims from Simple Identity Server.
+ 5. Claims are returned.
 
 Client credentials flow
 -----------------------
@@ -78,11 +81,12 @@ the flow is explained in the following schema :
 .. image:: 5-ClientCredentials.png
 
 **Steps** :
-(1) Post client credentials to token endpoint.
-(2) An access token valid for getoperation is generated and returned to the client.
-(3) Token is passed into the API request.
-(4) The API is using the token to retrieve the token's claims from Simple Identity Server
-(5) The valid scopes are returned to the client.
+
+ 1. Post client credentials to token endpoint.
+ 2. An access token valid for getoperation is generated and returned to the client.
+ 3. Token is passed into the API request.
+ 4. The API is using the token to retrieve the token's claims from Simple Identity Server
+ 5. The valid scopes are returned to the client.
 
 
 Hybrid flow
