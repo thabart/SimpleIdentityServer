@@ -27,12 +27,16 @@ Before you can start using the framework. Be-sure that all the pre-requisistes a
 
     powershell -NoProfile -ExecutionPolicy unrestricted -Command "&{iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/aspnet/Home/dev/dnvminstall.ps1'))}"
 
+ 
+ 
  * Upgrade the DNX tool to the latest version (current one is : 1.0.0-rc1-update1) :
 
 .. code-block:: guess
 
     dnvm upgrade
 
+ 
+ 
  * ASP.NET 5 project can be developed with Visual Studio 2015 or an open-source IDE on which you can install OmniSharp for example Visual Studio Code, ATOM, Brackets etc...
 
 Installation
