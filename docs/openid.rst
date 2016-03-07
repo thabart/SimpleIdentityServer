@@ -17,7 +17,7 @@ The difference between an access-token & the authorization code is their litetim
 An authorization code has a very short-litetime and can only be used one time, however an access token can be used until its expiration date.
 The flow is explained in the following schema :
 
-.. image:: 2-AuthorizationCode_GrantType;png
+.. image:: 2-AuthorizationCode_GrantType.png
 
 **Steps** :
 Assumptions : We assumed that the resource owner is already authenticated & the consent has already been confirmed by him.
