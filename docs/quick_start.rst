@@ -120,7 +120,7 @@ Open a command prompt, navigate to your project and execute the following comman
 
 At the end you should be able to navigate to the home screen :
 
-TODO : Add GIF file of the home screen
+.. image:: 7-Launch-Application.gif
 
 The sample project can be found here : https://github.com/thabart/SimpleIdentityServer/tree/master/SimpleIdentityServer/src/SimpleIdentityServer.Startup
 
