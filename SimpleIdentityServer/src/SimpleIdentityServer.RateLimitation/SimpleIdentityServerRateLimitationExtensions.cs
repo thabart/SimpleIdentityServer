@@ -31,23 +31,6 @@ namespace SimpleIdentityServer.RateLimitation
             }
 
             serviceCollection.AddTransient<IGetRateLimitationElementOperation, GetRateLimitationElementOperation>();
-            
-            /*
-            serviceCollection.Configure<RateLimitationOptions>(options =>
-            {
-                options.IsEnabled = true;
-                options.RateLimitationElements = new List<RateLimitationElement>
-                {
-                    new RateLimitationElement
-                    {
-                        Name = "PostToken",
-                        NumberOfRequests = 20,
-                        SlidingTime = 2000
-                    }
-                };
-            });
-            */
-
             return serviceCollection;
         }
     }

@@ -14,15 +14,22 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using System.Collections.Generic;
 
 namespace SimpleIdentityServer.RateLimitation.Configuration
 {
-    public class RateLimitationOptions
+    public sealed class RateLimitationOptions
     {
         public List<RateLimitationElement> RateLimitationElements { get; set; }
 
         public bool IsEnabled { get; set; }
+
+        public IMemoryCache MemoryCache { get; set; }
+
+        public IDistributedCache DistributedCache { get; set; }
+
+        public bool IsDistributedCacheEnabled { get; set; }
     }
 }

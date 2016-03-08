@@ -15,11 +15,16 @@
 #endregion
 
 using Microsoft.Extensions.Caching.Distributed;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.RateLimitation.Configuration
 {
-    public class DistributedRateLimitationOptions : RateLimitationOptions
+    public class DistributedRateLimitationOptions
     {
+        public List<RateLimitationElement> RateLimitationElements { get; set; }
+
+        public bool IsEnabled { get; set; }
+
         public IDistributedCache DistributedCache { get; set; }
     }
 }

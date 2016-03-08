@@ -1,12 +1,30 @@
-﻿using System.Web.Http;
-using System.Web.Http.Filters;
+﻿#region copyright
+// Copyright 2015 Habart Thierry
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
+using Microsoft.AspNet.Builder;
+using Microsoft.AspNet.Http;
+using Microsoft.AspNet.Mvc.Filters;
+using Microsoft.AspNet.TestHost;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Practices.EnterpriseLibrary.Caching;
 using Microsoft.Practices.EnterpriseLibrary.Caching.BackingStoreImplementations;
 using Microsoft.Practices.EnterpriseLibrary.Caching.Instrumentation;
 using Microsoft.Practices.EnterpriseLibrary.Common.Instrumentation;
 using Moq;
-using SimpleIdentityServer.Host.Configuration;
-using SimpleIdentityServer.Host.Parsers;
 using SimpleIdentityServer.Api.Tests.Common.Fakes;
 using SimpleIdentityServer.Core.Api.Authorization;
 using SimpleIdentityServer.Core.Api.Authorization.Actions;
@@ -17,48 +35,47 @@ using SimpleIdentityServer.Core.Api.Jwks;
 using SimpleIdentityServer.Core.Api.Jwks.Actions;
 using SimpleIdentityServer.Core.Api.Token;
 using SimpleIdentityServer.Core.Api.Token.Actions;
+using SimpleIdentityServer.Core.Api.UserInfo;
+using SimpleIdentityServer.Core.Api.UserInfo.Actions;
 using SimpleIdentityServer.Core.Authenticate;
 using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Common.Extensions;
+using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Jwt.Converter;
 using SimpleIdentityServer.Core.Jwt.Encrypt;
+using SimpleIdentityServer.Core.Jwt.Encrypt.Encryption;
 using SimpleIdentityServer.Core.Jwt.Mapping;
+using SimpleIdentityServer.Core.Jwt.Serializer;
 using SimpleIdentityServer.Core.Jwt.Signature;
+using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Core.WebSite.Authenticate;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
 using SimpleIdentityServer.Core.WebSite.Consent;
 using SimpleIdentityServer.Core.WebSite.Consent.Actions;
+using SimpleIdentityServer.DataAccess.Fake;
+using SimpleIdentityServer.DataAccess.Fake.Models;
 using SimpleIdentityServer.DataAccess.Fake.Repositories;
+using SimpleIdentityServer.Host.Configuration;
+using SimpleIdentityServer.Host.MiddleWare;
+using SimpleIdentityServer.Host.Parsers;
 using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.RateLimitation.Configuration;
-using SimpleIdentityServer.Core.JwtToken;
 using System;
-using SimpleIdentityServer.Core.Jwt.Encrypt.Encryption;
-using SimpleIdentityServer.Core.Api.UserInfo;
-using SimpleIdentityServer.Core.Api.UserInfo.Actions;
-using SimpleIdentityServer.Core.Translation;
-using SimpleIdentityServer.Core.Jwt.Serializer;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNet.TestHost;
-using Microsoft.AspNet.Builder;
-using System.Threading.Tasks;
-using System.Security.Claims;
-using System.Web.Http.Controllers;
-using Microsoft.AspNet.Mvc.Filters;
 using System.Collections.Generic;
-using Microsoft.AspNet.Http;
-using SimpleIdentityServer.Host.MiddleWare;
-using SimpleIdentityServer.RateLimitation.Attributes;
-using SimpleIdentityServer.DataAccess.Fake;
-using SimpleIdentityServer.Core.Common.Extensions;
 using System.Globalization;
-using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.DataAccess.Fake.Models;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using System.Web.Http;
+using System.Web.Http.Controllers;
+using System.Web.Http.Filters;
+
 
 namespace SimpleIdentityServer.Api.Tests.Common
 {
@@ -231,8 +248,20 @@ namespace SimpleIdentityServer.Api.Tests.Common
         }
 
         private ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
+
+        private IMemoryCache _memoryCache;
         
-        private ICacheManagerProvider _cacheManagerProvider;
+        public IMemoryCache MemoryCache
+        {
+            get
+            {
+                return _memoryCache;
+            }
+            set
+            {
+                _memoryCache = value;
+            }
+        }
 
         #region Constructor
 
@@ -261,16 +290,7 @@ namespace SimpleIdentityServer.Api.Tests.Common
                 new CachingInstrumentationProvider("apiCache", false, false, "simpleIdServer"));
             var instrumentationProvider = new CachingInstrumentationProvider("apiCache", false, false,
                 new NoPrefixNameFormatter());
-            var cacheManager = new CacheManager(cache, new BackgroundScheduler(new ExpirationTask(cache, instrumentationProvider), new ScavengerTask(
-                10, 
-                1000, 
-                cache, 
-                instrumentationProvider), 
-                instrumentationProvider), new ExpirationPollTimer(1));
-            _cacheManagerProvider = new FakeCacheManagerProvider
-            {
-                CacheManager = cacheManager
-            };
+            _memoryCache = new MemoryCache(new MemoryCacheOptions());
             _simpleIdentityServerEventSource = new Mock<ISimpleIdentityServerEventSource>().Object;
             var serviceCollection = new ServiceCollection();
             ConfigureServiceCollection(serviceCollection);
@@ -384,9 +404,11 @@ namespace SimpleIdentityServer.Api.Tests.Common
             serviceCollection.AddInstance(_simpleIdentityServerEventSource);
             serviceCollection.AddTransient<ITranslationManager, TranslationManager>();
             serviceCollection.AddTransient<FakeDataSource>(a => FakeDataSource);
-            serviceCollection.AddInstance(_cacheManagerProvider);
+            serviceCollection.Configure<RateLimitationOptions>(opt =>
+            {
+                opt.MemoryCache = _memoryCache;
+            });
             serviceCollection.AddMvc();
-            serviceCollection.AddScoped<RateLimitationFilter>();
             serviceCollection.AddLogging();
         }
         

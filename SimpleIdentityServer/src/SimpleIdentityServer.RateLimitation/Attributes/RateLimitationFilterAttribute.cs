@@ -31,7 +31,7 @@ using System.Text;
 
 namespace SimpleIdentityServer.RateLimitation.Attributes
 {
-    public class RateLimitationFilter : ActionFilterAttribute, IFilterMetadata
+    public class RateLimitationFilterAttribute : ActionFilterAttribute, IFilterMetadata
     {
         private IGetRateLimitationElementOperation _getRateLimitationElementOperation;
 
@@ -40,11 +40,8 @@ namespace SimpleIdentityServer.RateLimitation.Attributes
         private bool _isEnabled;
 
         #region Constructor
-
-        /// <summary>
-        /// Configure the rate limitation via configuration file.
-        /// </summary>
-        public RateLimitationFilter(
+        
+        public RateLimitationFilterAttribute(
             IGetRateLimitationElementOperation getRateLimitationElementOperation,
             IOptions<RateLimitationOptions> rateLimitationOptions,
             string rateLimitationElementName)
@@ -57,6 +54,18 @@ namespace SimpleIdentityServer.RateLimitation.Attributes
             if (rateLimitationOptions == null || rateLimitationOptions.Value == null)
             {
                 throw new ArgumentNullException(nameof(rateLimitationOptions));
+            }
+
+            if (rateLimitationOptions.Value.IsDistributedCacheEnabled 
+                && rateLimitationOptions.Value.DistributedCache == null)
+            {
+                throw new ArgumentException("the distributed cache parameter must be set");
+            }
+
+            if (!rateLimitationOptions.Value.IsDistributedCacheEnabled 
+                && rateLimitationOptions.Value.MemoryCache == null)
+            {
+                throw new ArgumentException("the memory cache parameter must be set");
             }
 
             _isEnabled = true;
@@ -231,6 +240,9 @@ namespace SimpleIdentityServer.RateLimitation.Attributes
 
         #region Private methods
 
+        /// <summary>
+        /// Load the configuration
+        /// </summary>
         private void LoadConfiguration()
         {
             _isEnabled = _getRateLimitationElementOperation.IsEnabled();
@@ -249,62 +261,61 @@ namespace SimpleIdentityServer.RateLimitation.Attributes
             SlidingTime = limitationElement.SlidingTime;
         }
 
+
+        /// <summary>
+        /// Get the value from the cache
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         private object GetValue(string key)
         {
-            var inMemoryRateLimitationOptions = _rateLimitationOptions as InMemoryRateLimitationOptions;
-            if (inMemoryRateLimitationOptions != null)
+            if (_rateLimitationOptions.IsDistributedCacheEnabled)
             {
-                object result = null;
-                inMemoryRateLimitationOptions.MemoryCache.TryGetValue(key, out result);
-                return result;
-            }
-
-            var distributedRateLimitationOptions = _rateLimitationOptions as DistributedRateLimitationOptions;
-            if (distributedRateLimitationOptions != null)
-            {
-                var bytes = distributedRateLimitationOptions.DistributedCache.Get(key);
+                var bytes = _rateLimitationOptions.DistributedCache.Get(key);
                 return Encoding.UTF8.GetString(bytes);
             }
 
-            return null;
+            object result = null;
+            _rateLimitationOptions.MemoryCache.TryGetValue(key, out result);
+            return result;
         }
 
+        /// <summary>
+        /// Set the value into the cache
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
         private void SetValue(string key, object value)
         {
-            var inMemoryRateLimitationOptions = _rateLimitationOptions as InMemoryRateLimitationOptions;
-            if (inMemoryRateLimitationOptions != null)
+            if (_rateLimitationOptions.IsDistributedCacheEnabled)
             {
-                inMemoryRateLimitationOptions.MemoryCache.Set(key, 
-                    value,
-                    new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(SlidingTime)));
-                return;
-            }
-
-            var distributedRateLimitationOptions = _rateLimitationOptions as DistributedRateLimitationOptions;
-            if (distributedRateLimitationOptions != null)
-            {
+                var distributedCache = _rateLimitationOptions.DistributedCache;
                 /*
                 distributedRateLimitationOptions.DistributedCache.Set(key,
                     Encoding.UTF8.GetBytes(value),
                     new DistributedCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(SlidingTime)));
                 */
+                return;
             }
+            
+            _rateLimitationOptions.MemoryCache.Set(key,
+                    value,
+                    new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(SlidingTime)));
         }
 
+        /// <summary>
+        /// Remove the value from the cache
+        /// </summary>
+        /// <param name="key"></param>
         private void Remove(string key)
         {
-            var inMemoryRateLimitationOptions = _rateLimitationOptions as InMemoryRateLimitationOptions;
-            if (inMemoryRateLimitationOptions != null)
+            if (_rateLimitationOptions.IsDistributedCacheEnabled)
             {
-                inMemoryRateLimitationOptions.MemoryCache.Remove(key);
+                _rateLimitationOptions.DistributedCache.Remove(key);
                 return;
             }
 
-            var distributedRateLimitationOptions = _rateLimitationOptions as DistributedRateLimitationOptions;
-            if (distributedRateLimitationOptions != null)
-            {
-                distributedRateLimitationOptions.DistributedCache.Remove(key);
-            }
+            _rateLimitationOptions.MemoryCache.Remove(key);
         }
 
         #endregion

@@ -39,9 +39,9 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             _tokenActions = tokenActions;
         }
         
-        [SimpleTypeFilterAttribute(typeof(RateLimitationFilter), Arguments = new object[] { "PostToken" })]
+        [SimpleTypeFilterAttribute(typeof(RateLimitationFilterAttribute), Arguments = new object[] { "PostToken" })]
         [HttpPost]
-        public GrantedToken Post(TokenRequest tokenRequest)
+        public GrantedToken Post([FromBody] TokenRequest tokenRequest)
         {
             GrantedToken result = null;
             StringValues authorizationHeader;
