@@ -60,7 +60,8 @@ namespace SimpleIdentityServer.Manager.Host
         public Startup(IHostingEnvironment env, IApplicationEnvironment appEnv)
         {
             var builder = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json");
+                .AddJsonFile("appsettings.json")
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
 
             builder.AddEnvironmentVariables();
             Configuration = builder.Build();
@@ -70,6 +71,10 @@ namespace SimpleIdentityServer.Manager.Host
         
         public void ConfigureServices(IServiceCollection services)
         {
+            var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
+            var authorizationUrl = Configuration["AuthorizationUrl"];
+            var tokenUrl = Configuration["TokenUrl"];
+
             // Add the dependencies needed to run Swagger
             services.AddSwaggerGen();
             services.ConfigureSwaggerDocument(opts => {
@@ -83,8 +88,8 @@ namespace SimpleIdentityServer.Manager.Host
                 {
                     Type = "oauth2",
                     Flow = "implicit",
-                    AuthorizationUrl = "http://localhost:5000/authorization",
-                    TokenUrl = "http://localhost:5000/token",
+                    AuthorizationUrl = authorizationUrl,
+                    TokenUrl = tokenUrl,
                     Description = "Implicit flow",
                     Scopes = new Dictionary<string, string>
                     {
@@ -100,23 +105,7 @@ namespace SimpleIdentityServer.Manager.Host
                 .AllowAnyMethod()
                 .AllowAnyHeader()));
 
-            /*
-            // Enable fake data source
-            var fakeDataSource = new FakeDataSource();
-            fakeDataSource.Clients = new List<Client>
-            {
-                new Client
-                {
-                    ClientId = "client_id",
-                    ClientName = "client_name",
-                    LogoUri = "logo_uri"
-                }
-            };
-            services.AddInstance(fakeDataSource);
-            */
-
             // Enable SqlServer
-            var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
             services.AddSimpleIdentityServerSqlServer(connectionString);
             services.AddSimpleIdentityServerCore();
             services.AddSimpleIdentityServerManagerCore();
@@ -132,9 +121,6 @@ namespace SimpleIdentityServer.Manager.Host
                 options.AddPolicy("deleteClient", policy => policy.RequireClaim("role", "administrator"));
                 options.AddPolicy("updateClient", policy => policy.RequireClaim("role", "administrator"));
             });
-
-            // Enable identity server fake
-            // services.AddSimpleIdentityServerFake();
 
             services.AddSimpleIdentityServerJwt();
 
@@ -155,17 +141,6 @@ namespace SimpleIdentityServer.Manager.Host
 
             // Enable CORS
             app.UseCors("AllowAll");
-
-            // Enable the OAUTH introspection endpoint
-            /*
-            var options = new Oauth2IntrospectionOptions
-            {
-                InstrospectionEndPoint = "http://localhost:5000/introspect",
-                ClientId = "IdentityServerManager",
-                ClientSecret = "IdentityServerManager"
-            };
-            app.UseAuthenticationWithIntrospection(options);
-            */
 
             // Enable custom exception handler
             app.UseSimpleIdentityServerManagerExceptionHandler();

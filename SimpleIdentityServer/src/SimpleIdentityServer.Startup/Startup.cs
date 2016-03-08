@@ -46,6 +46,7 @@ namespace SimpleIdentityServer.Startup
             // Load all the configuration information from the "json" file & the environment variables.
             var builder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
             _swaggerOptions = new SwaggerOptions
