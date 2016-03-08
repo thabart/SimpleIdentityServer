@@ -57,6 +57,11 @@ IF DEFINED CLEAN_LOCAL_DEPLOYMENT_TEMP (
   mkdir "%DEPLOYMENT_TEMP%"
 )
 
+IF NOT DEFINED PROJECT_PATH (
+  echo Missing PROJECT_PATH app setting. Please configure in Azure portal and redeploy.
+  goto error
+)
+
 IF DEFINED MSBUILD_PATH goto MsbuildPathDefined
 SET MSBUILD_PATH=%ProgramFiles(x86)%\MSBuild\14.0\Bin\MSBuild.exe
 :MsbuildPathDefined
@@ -93,7 +98,7 @@ call %DNX_RUNTIME%\bin\dnu restore
 IF !ERRORLEVEL! NEQ 0 goto error
 
 :: 4. Run DNU Bundle
-call %DNX_RUNTIME%\bin\dnu publish "src\SimpleIdentityServer.Startup" --runtime %DNX_RUNTIME% --out "%DEPLOYMENT_TEMP%" %SCM_DNU_PUBLISH_OPTIONS%
+call %DNX_RUNTIME%\bin\dnu publish "%PROJECT_PATH%" --runtime %DNX_RUNTIME% --out "%DEPLOYMENT_TEMP%" %SCM_DNU_PUBLISH_OPTIONS%
 IF !ERRORLEVEL! NEQ 0 goto error
 
 :: 5. KuduSync

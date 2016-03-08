@@ -81,7 +81,7 @@ namespace SimpleIdentityServer.Startup
             // Configure Simple identity server
             services.AddSimpleIdentityServer(new DataSourceOptions
             {
-                DataSourceType = DataSourceTypes.InMemory,
+                DataSourceType = DataSourceTypes.SqlServer,
                 ConnectionString = connectionString,
                 Clients = Clients.Get(),
                 JsonWebKeys = JsonWebKeys.Get(),
@@ -104,7 +104,7 @@ namespace SimpleIdentityServer.Startup
 
             app.UseSimpleIdentityServer(new HostingOptions
             {
-                // IsDataMigrated = true,
+                IsDataMigrated = true,
                 IsDeveloperModeEnabled = false,
                 IsMicrosoftAuthenticationEnabled = true,
                 MicrosoftClientId = Configuration["Microsoft:ClientId"],
