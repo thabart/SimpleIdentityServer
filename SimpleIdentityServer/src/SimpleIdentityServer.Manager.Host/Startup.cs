@@ -133,6 +133,7 @@ namespace SimpleIdentityServer.Manager.Host
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            var userInfoUrl = Configuration["UserInfoUrl"];
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
@@ -143,11 +144,11 @@ namespace SimpleIdentityServer.Manager.Host
             app.UseCors("AllowAll");
 
             // Enable custom exception handler
-            // app.UseSimpleIdentityServerManagerExceptionHandler();
+            app.UseSimpleIdentityServerManagerExceptionHandler();
 
             var userInformationOptions = new UserInformationOptions
             {
-                UserInformationEndPoint = "http://localhost:5000/userinfo"
+                UserInformationEndPoint = userInfoUrl
             };
             app.UseAuthenticationWithUserInformation(userInformationOptions);
 
