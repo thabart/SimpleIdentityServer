@@ -143,7 +143,7 @@ namespace SimpleIdentityServer.Manager.Host
             app.UseCors("AllowAll");
 
             // Enable custom exception handler
-            app.UseSimpleIdentityServerManagerExceptionHandler();
+            // app.UseSimpleIdentityServerManagerExceptionHandler();
 
             var userInformationOptions = new UserInformationOptions
             {
