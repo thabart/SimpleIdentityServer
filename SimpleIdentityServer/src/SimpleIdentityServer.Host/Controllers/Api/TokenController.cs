@@ -41,7 +41,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
         
         [SimpleTypeFilterAttribute(typeof(RateLimitationFilterAttribute), Arguments = new object[] { "PostToken" })]
         [HttpPost]
-        public GrantedToken Post([FromBody] TokenRequest tokenRequest)
+        public GrantedToken Post([FromForm] TokenRequest tokenRequest)
         {
             GrantedToken result = null;
             StringValues authorizationHeader;
