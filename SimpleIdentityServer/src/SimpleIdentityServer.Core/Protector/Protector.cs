@@ -13,12 +13,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using System;
-using System.IdentityModel;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Web.Script.Serialization;
 using SimpleIdentityServer.Core.Common.Extensions;
+using Microsoft.IdentityModel.Web;
 
 namespace SimpleIdentityServer.Core.Protector
 {
