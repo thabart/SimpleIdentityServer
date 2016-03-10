@@ -57,6 +57,8 @@ namespace SimpleIdentityServer.Startup
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var isSqlServer = bool.Parse(Configuration["isSqlServer"]);
+            var isSqlLite = bool.Parse(Configuration["isSqlLite"]);
             // Add the dependencies needed to enable CORS
             services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
                 .AllowAnyMethod()
@@ -79,10 +81,20 @@ namespace SimpleIdentityServer.Startup
                 opt.MemoryCache = new MemoryCache(new MemoryCacheOptions());
             });
 
+            var dataSourceType = DataSourceTypes.InMemory;
+            if (isSqlServer)
+            {
+                dataSourceType = DataSourceTypes.SqlServer;
+            }
+            else if (isSqlLite)
+            {
+                dataSourceType = DataSourceTypes.SqlLite;
+            }
+
             // Configure Simple identity server
             services.AddSimpleIdentityServer(new DataSourceOptions
             {
-                DataSourceType = DataSourceTypes.SqlServer,
+                DataSourceType = dataSourceType,
                 ConnectionString = connectionString,
                 Clients = Clients.Get(),
                 JsonWebKeys = JsonWebKeys.Get(),

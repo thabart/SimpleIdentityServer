@@ -21,6 +21,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
+using System;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer
 {
@@ -37,8 +38,10 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
         public Startup(IHostingEnvironment env,
             IApplicationEnvironment appEnv)
         {
+            Console.WriteLine(env.EnvironmentName);
             var builder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
         }
@@ -46,10 +49,24 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
         public void ConfigureServices(IServiceCollection services)
         {
             var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
-            services.AddEntityFramework()
-               .AddSqlServer()
-               .AddDbContext<SimpleIdentityServerContext>(options =>
-                   options.UseSqlServer(connectionString));
+            var isSqlServer = bool.Parse(Configuration["isSqlServer"]);
+            var isSqlLite = bool.Parse(Configuration["isSqlLite"]);
+            Console.WriteLine(isSqlServer);
+            Console.WriteLine(connectionString);
+            if (isSqlServer)
+            {
+                services.AddEntityFramework()
+                   .AddSqlServer()
+                   .AddDbContext<SimpleIdentityServerContext>(options =>
+                       options.UseSqlServer(connectionString));
+            }
+            else if (isSqlLite)
+            {
+                services.AddEntityFramework()
+                   .AddSqlite()
+                   .AddDbContext<SimpleIdentityServerContext>(options =>
+                       options.UseSqlite(connectionString));
+            }
         }
 
         public void Configure(IApplicationBuilder app,

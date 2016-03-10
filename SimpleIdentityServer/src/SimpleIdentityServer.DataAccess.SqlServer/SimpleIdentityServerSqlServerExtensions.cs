@@ -24,7 +24,37 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
 {
     public static class SimpleIdentityServerSqlServerExtensions
     {
-        public static IServiceCollection AddSimpleIdentityServerSqlServer(this IServiceCollection serviceCollection, string connectionString)
+        #region Public methods
+
+        public static IServiceCollection AddSimpleIdentityServerSqlServer(
+            this IServiceCollection serviceCollection, 
+            string connectionString)
+        {
+            RegisterServices(serviceCollection);
+            serviceCollection.AddEntityFramework()
+                .AddSqlServer()
+                .AddDbContext<SimpleIdentityServerContext>(options =>
+                    options.UseSqlServer(connectionString));
+            return serviceCollection;
+        }
+
+        public static IServiceCollection AddSimpleIdentityServerSqlLite(
+            this IServiceCollection serviceCollection,
+            string connectionString)
+        {
+            RegisterServices(serviceCollection);
+            serviceCollection.AddEntityFramework()
+                .AddSqlite()
+                .AddDbContext<SimpleIdentityServerContext>(options =>
+                    options.UseSqlite(connectionString));
+            return serviceCollection;
+        }
+
+        #endregion
+
+        #region Private method
+
+        private static void RegisterServices(IServiceCollection serviceCollection)
         {
             serviceCollection.AddTransient<ITranslationRepository, TranslationRepository>();
             serviceCollection.AddTransient<IResourceOwnerRepository, ResourceOwnerRepository>();
@@ -34,11 +64,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
             serviceCollection.AddTransient<IConsentRepository, ConsentRepository>();
             serviceCollection.AddTransient<IGrantedTokenRepository, GrantedTokenRepository>();
             serviceCollection.AddTransient<IJsonWebKeyRepository, JsonWebKeyRepository>();
-            serviceCollection.AddEntityFramework()
-                .AddSqlServer()
-                .AddDbContext<SimpleIdentityServerContext>(options =>
-                    options.UseSqlServer(connectionString));
-            return serviceCollection;
         }
+
+        #endregion
     }
 }

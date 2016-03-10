@@ -27,7 +27,8 @@ namespace SimpleIdentityServer.Host
     public enum DataSourceTypes 
     {
         InMemory,
-        SqlServer
+        SqlServer,
+        SqlLite
     }
     
     public sealed class DataSourceOptions
@@ -129,9 +130,15 @@ namespace SimpleIdentityServer.Host
 
                 serviceCollection.AddTransient(a => fakeDataSource);
             }
-            else 
+
+            if (dataSourceOptions.DataSourceType == DataSourceTypes.SqlServer)
             {
                 serviceCollection.AddSimpleIdentityServerSqlServer(dataSourceOptions.ConnectionString);
+            }
+
+            if (dataSourceOptions.DataSourceType == DataSourceTypes.SqlLite)
+            {
+                serviceCollection.AddSimpleIdentityServerSqlLite(dataSourceOptions.ConnectionString);
             }
             
             ConfigureSimpleIdentityServer(serviceCollection, swaggerOptions);
