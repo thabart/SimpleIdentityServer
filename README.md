@@ -7,6 +7,9 @@
 | MyGet         | [![thabart MyGet Build Status](https://www.myget.org/BuildSource/Badge/thabart?identifier=a03dadd0-d105-4bb7-88d6-4cb4271dbb07)](https://www.myget.org/)                                     |
 | Documentation | [![Documentation Status](https://readthedocs.org/projects/simpleidentityserver/badge/?version=latest)](http://simpleidentityserver.readthedocs.org/en/latest/?badge=latest)                  |
 | Chat          | [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/thabart/SimpleIdentityServer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)                                |
+| Docker stars  | [![Stars on docker hub](https://img.shields.io/docker/stars/identitycontrib/identityserver.svg)](https://hub.docker.com/r/identitycontrib/identityserver/)                                   |
+| Docker pulls  | [![Downloads from docker hub](https://img.shields.io/docker/pulls/identitycontrib/identityserver.svg)](https://hub.docker.com/r/identitycontrib/identityserver/)                             |
+
 
 ![openid_certified](https://cloud.githubusercontent.com/assets/1454075/7611268/4d19de32-f97b-11e4-895b-31b2455a7ca6.png)
 
