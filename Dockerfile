@@ -4,6 +4,8 @@ COPY SimpleIdentityServer/src /app
 
 WORKDIR /app
 
+ENV ASPNET_ENV docker
+
 RUN curl -sL https://deb.nodesource.com/setup_5.x | bash -
 RUN apt-get install -y nodejs git sqlite3 libsqlite3-dev
 RUN npm install -g bower
