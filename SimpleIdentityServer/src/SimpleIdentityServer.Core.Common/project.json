@@ -2,20 +2,31 @@
   "version": "1.0.0-*",
   "description": "SimpleIdentityServer.Core.Common Class Library",
   "authors": [ "thierry habart" ],
-  "tags": [""],
+  "tags": [ "" ],
   "projectUrl": "",
   "licenseUrl": "",
   "tooling": {
     "defaultNamespace": "SimpleIdentityServer.Core.Common"
   },
-  
+
+  "dependencies": {
+    "Newtonsoft.Json": "8.0.2"
+  },
+
   "frameworks": {
-    "dnx451": {		
-        "frameworkAssemblies": {
-            "System.Runtime.Serialization": "4.0.0.0",
-			"System.Web.Extensions": "4.0.0.0",
-			"System.Xml": "4.0.0.0"
-        } 
-	}
+    "dnx451": {
+      "frameworkAssemblies": {
+        "System.Runtime.Serialization": "4.0.0.0",
+        "System.Web.Extensions": "4.0.0.0",
+        "System.Xml": "4.0.0.0"
+      }
+    },
+    "dnxcore50": {
+      "dependencies": {
+        "System.IO": "4.1.0-rc2-23826",
+        "System.Runtime.Serialization.Json": "4.0.1-rc2-23826",
+        "System.Runtime.Extensions": "4.1.0-rc2-23826"
+      }
+    }
   }
 }
