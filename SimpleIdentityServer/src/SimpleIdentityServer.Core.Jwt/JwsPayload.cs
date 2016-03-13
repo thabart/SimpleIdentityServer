@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -158,12 +159,19 @@ namespace SimpleIdentityServer.Core.Jwt
 
             var claim = this[claimName];
             var type = claim.GetType();
-            if (!type.IsArray)
+            var arr = claim as object[];
+            var jArr = claim as JArray;
+            if (arr != null)
             {
-                return new string[0];
+                return arr.Select(c => c.ToString()).ToArray();
             }
 
-            return ((object[]) claim).Select(c => c.ToString()).ToArray();
+            if (jArr != null)
+            {
+                return jArr.Select(c => c.ToString()).ToArray();
+            }
+
+            return new string[0];
         }
     }
 }
