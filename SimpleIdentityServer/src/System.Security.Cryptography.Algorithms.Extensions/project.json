@@ -1,0 +1,28 @@
+{
+  "version": "1.0.0-*",
+  "description": "System.Security.Cryptography.Algorithms.Extensions Class Library",
+  "authors": [ "thierry habart" ],
+  "tags": [ "" ],
+  "projectUrl": "",
+  "licenseUrl": "",
+
+  "dependencies": {
+  },
+
+  "tooling": {
+    "defaultNamespace": "System.Security.Cryptography"
+  },
+
+  "frameworks": {
+    "dnxcore50": {
+      "dependencies": {
+        "System.Collections": "4.0.11-rc2-23826",
+        "System.Collections.NonGeneric":  "4.0.1-rc2-23826",
+        "System.Diagnostics.Contracts": "4.0.1-rc2-23826",
+        "System.Security.Cryptography.Algorithms": "4.0.0-rc2-23826",
+        "System.Runtime.Extensions": "4.1.0-rc2-23826",
+        "Newtonsoft.Json": "8.0.2"
+      }
+    }
+  }
+}
