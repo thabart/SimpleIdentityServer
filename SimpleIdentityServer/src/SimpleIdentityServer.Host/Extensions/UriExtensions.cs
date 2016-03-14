@@ -15,12 +15,16 @@
 #endregion
 
 using Microsoft.AspNet.Routing;
+using Microsoft.Extensions.Primitives;
 using System;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Host.Extensions
 {
     public static class UriExtensions
     {
+        #region Public static methods
+
         public static Uri AddParameter(this Uri uri, string parameterName, string parameterValue)
         {
             var uriBuilder = new UriBuilder(uri);
@@ -44,8 +48,8 @@ namespace SimpleIdentityServer.Host.Extensions
             {
                 query[keyPair.Key] = keyPair.Value.ToString();
             }
-
-            uriBuilder.Query = query.ToString();
+            
+            uriBuilder.Query = ConcatQueryStrings(query);
             return new Uri(uriBuilder.ToString());
         }
 
@@ -64,8 +68,25 @@ namespace SimpleIdentityServer.Host.Extensions
                 query[keyPair.Key] = keyPair.Value.ToString();
             }
 
-            uriBuilder.Fragment = query.ToString();
+            uriBuilder.Fragment = ConcatQueryStrings(query);
             return new Uri(uriBuilder.ToString());
         }
+
+        #endregion
+
+        #region Private static methods
+
+        private static string ConcatQueryStrings(IDictionary<string, StringValues> queryStrings)
+        {
+            var lst = new List<string>();
+            foreach(var keyValuePair in queryStrings)
+            {
+                lst.Add(string.Format("{0}={1}", keyValuePair.Key, keyValuePair.Value.ToString()));
+            }
+
+            return string.Join("&", lst);
+        }
+
+        #endregion
     }
 }
