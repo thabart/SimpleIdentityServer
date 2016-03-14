@@ -45,7 +45,7 @@ namespace SimpleIdentityServer.Core.Protector
                     using (var compressor = new DeflateStream(compressStream, CompressionMode.Compress))
                     {
                         input.CopyTo(compressor);
-                        // compressor.Close();
+                        compressor.Dispose();
                         var compressedBytes = compressStream.ToArray();
                         return Convert.ToBase64String(compressedBytes);
                     }
@@ -68,7 +68,7 @@ namespace SimpleIdentityServer.Core.Protector
                     using (var decompressor = new DeflateStream(input, CompressionMode.Decompress))
                     {
                         decompressor.CopyTo(decompressStream);
-                        // decompressor.Close();
+                        decompressor.Dispose();
                         var decompressedBytes = decompressStream.ToArray();
                         return Encoding.UTF8.GetString(decompressedBytes);
                     }

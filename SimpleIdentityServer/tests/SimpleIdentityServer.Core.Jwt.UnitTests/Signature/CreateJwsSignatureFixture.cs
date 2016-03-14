@@ -19,6 +19,7 @@ using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Jwt.Serializer;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using System;
+using System.Security;
 using System.Security.Cryptography;
 using Xunit;
 

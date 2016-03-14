@@ -136,8 +136,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Extensions
             Assert.True(claims.First(c => c.Type == Jwt.Constants.StandardResourceOwnerClaimNames.WebSite).Value == webSite);
             Assert.True(claims.First(c => c.Type == Jwt.Constants.StandardResourceOwnerClaimNames.ZoneInfo).Value == zoneInfo);
             Assert.True(claims.First(c => c.Type == Jwt.Constants.StandardResourceOwnerClaimNames.Address).Value == serializedAddress);
-            Assert.True(claims.First(c => c.Type == Jwt.Constants.StandardResourceOwnerClaimNames.EmailVerified).Value == emailVerified.ToString(CultureInfo.InvariantCulture));
-            Assert.True(claims.First(c => c.Type == Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumberVerified).Value == phoneNumberVerified.ToString(CultureInfo.InvariantCulture));
+            Assert.True(claims.First(c => c.Type == Jwt.Constants.StandardResourceOwnerClaimNames.EmailVerified).Value == emailVerified.ToString());
+            Assert.True(claims.First(c => c.Type == Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumberVerified).Value == phoneNumberVerified.ToString());
             Assert.True(claims.First(c => c.Type == Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt).Value == updatedAt.ToString(CultureInfo.InvariantCulture));
             Assert.True(claims.First(c => c.Type == Jwt.Constants.StandardResourceOwnerClaimNames.Role).Value == roleName);
         }
