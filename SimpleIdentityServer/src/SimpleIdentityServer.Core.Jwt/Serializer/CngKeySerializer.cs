@@ -73,7 +73,7 @@ namespace SimpleIdentityServer.Core.Jwt.Serializer
             {
                 throw new ArgumentNullException("toBeSerialized");
             }
-            
+
             var privateBlob = toBeSerialized.Export(CngKeyBlobFormat.EccPrivateBlob);
             var lengthBytes = new[]
             {

@@ -1,7 +1,21 @@
-﻿using SimpleIdentityServer.Core.Jwt.Serializer;
+﻿#region copyright
+// Copyright 2015 Habart Thierry
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
 
+using SimpleIdentityServer.Core.Jwt.Serializer;
 using System;
-
 using System.Security.Cryptography;
 using Xunit;
 
@@ -35,8 +49,19 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Serializer
 
             var cnk = CngKey.Create(CngAlgorithm.ECDsaP256, null, keyCreationParameter);
 
-            // ACT & ASSERT
-            Assert.Throws<CryptographicException>(() => _cngKeySerializer.SerializeCngKeyWithPrivateKey(cnk));
+            var isExceptionRaised = false;
+            try
+            {
+                // ACT
+                _cngKeySerializer.SerializeCngKeyWithPrivateKey(cnk);
+            }
+            catch (CryptographicException ex)
+            {
+                isExceptionRaised = true;
+            }
+
+            // ASSERT
+            Assert.True(isExceptionRaised);
         }
 
         [Fact]

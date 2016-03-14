@@ -19,7 +19,7 @@ using Newtonsoft.Json;
 namespace System.Security.Cryptography
 {
     [JsonObject]
-    internal sealed class XmlSyntaxException : Exception
+    public sealed class XmlSyntaxException : Exception
     {
         public XmlSyntaxException()
         {

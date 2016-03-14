@@ -114,6 +114,7 @@ namespace System.Security.Cryptography
             _inNestedSize = 0;
             _inNestedIndex = 0;
             _inTokenSource = TokenSource.Other;
+            _maker = SharedStatics.GetSharedStringMaker();
         }
 
         internal Tokenizer(String input)

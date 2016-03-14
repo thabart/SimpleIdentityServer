@@ -22,7 +22,7 @@ namespace System.Security.Cryptography
 {
     internal sealed class SharedStatics
     {
-        internal static SharedStatics _sharedStatics;
+        internal static SharedStatics _sharedStatics = new SharedStatics();
         
         SharedStatics()
         {
@@ -40,7 +40,8 @@ namespace System.Security.Cryptography
             StringMaker maker = null;
 
             bool tookLock = false;
-            try {
+            try
+            {
                 Monitor.Enter(_sharedStatics, ref tookLock); 
  
                 if (_sharedStatics._maker != null)

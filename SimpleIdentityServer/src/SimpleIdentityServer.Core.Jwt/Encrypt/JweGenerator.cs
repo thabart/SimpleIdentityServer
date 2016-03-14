@@ -14,12 +14,11 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Linq;
-
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Jwt.Encrypt.Encryption;
 using SimpleIdentityServer.Core.Jwt.Extensions;
+using System;
+using System.Linq;
 
 namespace SimpleIdentityServer.Core.Jwt.Encrypt
 {

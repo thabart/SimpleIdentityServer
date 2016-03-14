@@ -140,7 +140,10 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
             var plainTextBytes = Encoding.UTF8.GetBytes(combinedJwsNotSigned);
             using (var ec = new ECDsaCng(cngKey))
             {
-                return ec.SignData(plainTextBytes).Base64EncodeBytes();
+                return ec
+                    .SignData(plainTextBytes, 0, plainTextBytes.Count())
+                    .Base64EncodeBytes();
+                // return ec.SignData(plainTextBytes).Base64EncodeBytes();
             }
         }
 
@@ -168,7 +171,11 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
             using (var ecsdaSignature = new ECDsaCng(cngKey))
             {
                 return ecsdaSignature.VerifyData(messageBytes,
+                    0,
+                    messageBytes.Length,
                     signature);
+                // return ecsdaSignature.VerifyData(messageBytes,
+                //    signature);
             }
         }
 

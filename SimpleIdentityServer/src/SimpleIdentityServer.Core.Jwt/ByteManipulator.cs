@@ -13,6 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using System;
 using System.Linq;
 using System.Security.Cryptography;
@@ -24,7 +25,7 @@ namespace SimpleIdentityServer.Core.Jwt
         public static byte[] GenerateRandomBytes(int size)
         {
             var data = new byte[size / 8];
-            using (var rng = new RNGCryptoServiceProvider())
+            using (var rng = RandomNumberGenerator.Create())
             {
                 rng.GetBytes(data);
                 return data;

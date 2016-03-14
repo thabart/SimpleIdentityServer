@@ -20,7 +20,7 @@
         "System.Collections.NonGeneric":  "4.0.1-rc2-23826",
         "System.Diagnostics.Contracts": "4.0.1-rc2-23826",
         "System.Security.Cryptography.Algorithms": "4.0.0-rc2-23826",
-        "System.Runtime.Extensions": "4.1.0-rc2-23826",
+        "System.Runtime.Extensions": "4.0.11-beta-23516",
         "System.Security.Cryptography.Csp": "4.0.0-rc2-23826",
         "System.Security.Cryptography.Cng": "4.0.0-rc2-23826",
         "Newtonsoft.Json": "8.0.2"

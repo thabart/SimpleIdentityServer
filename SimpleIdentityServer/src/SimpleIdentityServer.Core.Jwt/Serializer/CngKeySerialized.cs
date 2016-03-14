@@ -14,12 +14,11 @@
 // limitations under the License.
 #endregion
 
-using System;
 using System.Xml.Serialization;
 
 namespace SimpleIdentityServer.Core.Jwt.Serializer
 {
-    [Serializable]
+    [XmlRoot]
     public class CngKeySerialized
     {
         [XmlElement("X")]

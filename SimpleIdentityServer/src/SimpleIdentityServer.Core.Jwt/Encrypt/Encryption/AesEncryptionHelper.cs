@@ -13,6 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
@@ -91,7 +92,7 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt.Encryption
             byte[] iv)
         {
             byte[] result;
-            using (var aes = new AesManaged())
+            using (var aes = Aes.Create())
             {
                 aes.Key = key;
                 aes.IV = iv;
@@ -119,7 +120,7 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt.Encryption
         public string DecryptWithAesAlgorithm(byte[] cipherText, byte[] key, byte[] iv)
         {
             string result;
-            using (var aes = new AesManaged())
+            using (var aes = Aes.Create())
             {
                 aes.Key = key;
                 aes.IV = iv;
