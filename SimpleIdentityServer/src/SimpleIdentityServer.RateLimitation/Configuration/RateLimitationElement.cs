@@ -1,5 +1,4 @@
-﻿using System.Configuration;
-#region copyright
+﻿#region copyright
 // Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");

@@ -1,31 +1,23 @@
 {
-    "version": "1.0.0-*",
-    "description": "SimpleIdentityServer.RateLimitation Class Library",
-    "authors": [ "thierry habart" ],
-    "tags": [ "" ],
-    "projectUrl": "",
-    "licenseUrl": "",
-    "tooling": {
-        "defaultNamespace": "SimpleIdentityServer.RateLimitation"
-    },
+  "version": "1.0.0-*",
+  "description": "SimpleIdentityServer.RateLimitation Class Library",
+  "authors": [ "thierry habart" ],
+  "tags": [ "" ],
+  "projectUrl": "",
+  "licenseUrl": "",
+  "tooling": {
+    "defaultNamespace": "SimpleIdentityServer.RateLimitation"
+  },
 
-    "dependencies": {
-      "Microsoft.AspNet.WebApi.Client": "5.2.3",
-      "Microsoft.AspNet.WebApi.Core": "5.2.3",
-      "Microsoft.AspNet.WebApi.Owin": "5.2.3",
-      "CommonServiceLocator": "1.0",
-      "Microsoft.AspNet.Mvc.Core": "6.0.0-rc1-final",
-      "Microsoft.AspNet.Http.Features": "1.0.0-rc1-final",
-      "Microsoft.Extensions.Caching.Abstractions": "1.0.0-rc1-final",
-      "SimpleIdentityServer.Common": ""
-    },
+  "dependencies": {
+    "Microsoft.AspNet.WebApi.Client": "5.2.3",
+    "Microsoft.AspNet.Mvc.Core": "6.0.0-rc1-final",
+    "Microsoft.AspNet.Http.Features": "1.0.0-rc1-final",
+    "Microsoft.Extensions.Caching.Abstractions": "1.0.0-rc1-final"
+  },
 
-    "frameworks": {
-        "dnx451": {
-            "frameworkAssemblies": {
-                "System.Configuration": "4.0.0.0",
-                "System.ComponentModel.Composition": "4.0.0.0"
-            }
-        }
-    }
+  "frameworks": {
+    "dnx451": { },
+    "dnxcore50": { }
+  }
 }
