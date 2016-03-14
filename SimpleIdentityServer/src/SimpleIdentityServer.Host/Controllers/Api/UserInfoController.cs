@@ -1,7 +1,22 @@
-﻿using System;
+﻿#region copyright
+// Copyright 2015 Habart Thierry
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
+using System;
 using System.Linq;
 using System.Net.Http.Headers;
-using System.Web;
 using SimpleIdentityServer.Core.Api.UserInfo;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
@@ -96,7 +111,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             var authenticationHeader = values.First();
             var authorization = AuthenticationHeaderValue.Parse(authenticationHeader);
             var scheme = authorization.Scheme;
-            if (string.Compare(scheme, "Bearer", StringComparison.InvariantCultureIgnoreCase) != 0)
+            if (string.Compare(scheme, "Bearer", StringComparison.CurrentCultureIgnoreCase) != 0)
             {
                 return string.Empty;
             }
@@ -128,13 +143,15 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             }
 
             var content = Request.ReadAsStringAsync().Result;
-            var queryString = HttpUtility.ParseQueryString(content);
-            if (!queryString.AllKeys.Contains(accessTokenName))
+            var queryString = Microsoft.AspNet.WebUtilities.QueryHelpers.ParseQuery(content);
+            if (!queryString.Keys.Contains(accessTokenName))
             {
                 return emptyResult;
             }
 
-            return queryString.GetValues(accessTokenName).First();
+            var result = default(StringValues);
+            queryString.TryGetValue(accessTokenName, out result);
+            return result.First();
         }
 
         /// <summary>

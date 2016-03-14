@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Web.Routing;
 using SimpleIdentityServer.Core.Results;
+using Microsoft.AspNet.Routing;
 
 namespace SimpleIdentityServer.Host.Parsers
 {

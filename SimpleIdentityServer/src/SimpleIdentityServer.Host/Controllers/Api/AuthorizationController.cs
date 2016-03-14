@@ -14,23 +14,22 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Threading.Tasks;
-
+using Microsoft.AspNet.DataProtection;
+using Microsoft.AspNet.Mvc;
+using SimpleIdentityServer.Core.Api.Authorization;
+using SimpleIdentityServer.Core.Errors;
+using SimpleIdentityServer.Core.Exceptions;
+using SimpleIdentityServer.Core.JwtToken;
+using SimpleIdentityServer.Core.Parameters;
+using SimpleIdentityServer.Core.Protector;
+using SimpleIdentityServer.Core.Results;
+using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Host.DTOs.Request;
 using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.Host.Parsers;
-using SimpleIdentityServer.Core.Api.Authorization;
-using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Core.Protector;
-using SimpleIdentityServer.Core.Results;
-
+using System;
 using System.Net.Http;
-using SimpleIdentityServer.Core.Parameters;
-using Microsoft.AspNet.Mvc;
-using SimpleIdentityServer.Host;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Api.Controllers.Api
 {
@@ -39,7 +38,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
     {
         private readonly IAuthorizationActions _authorizationActions;
 
-        private readonly IProtector _protector;
+        private readonly IDataProtector _dataProtector;
 
         private readonly IEncoder _encoder;
 
@@ -49,13 +48,13 @@ namespace SimpleIdentityServer.Api.Controllers.Api
 
         public AuthorizationController(
             IAuthorizationActions authorizationActions,
-            IProtector protector,
+            IDataProtectionProvider dataProtectionProvider,
             IEncoder encoder,
             IActionResultParser actionResultParser,
             IJwtParser jwtParser)
         {
             _authorizationActions = authorizationActions;
-            _protector = protector;
+            _dataProtector = dataProtectionProvider.CreateProtector("Request");
             _encoder = encoder;
             _actionResultParser = actionResultParser;
             _jwtParser = jwtParser;
@@ -100,7 +99,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
                     }
 
                     // Add the encoded request into the query string
-                    var encryptedRequest = _protector.Encrypt(authorizationRequest);
+                    var encryptedRequest = _dataProtector.Protect(authorizationRequest);
                     var encodedRequest = _encoder.Encode(encryptedRequest);
                     actionResult.RedirectInstruction.AddParameter(Core.Constants.StandardAuthorizationResponseNames.AuthorizationCodeName,
                         encodedRequest);

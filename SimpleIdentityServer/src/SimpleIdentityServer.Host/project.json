@@ -14,7 +14,6 @@
   "dependencies": {
     "Microsoft.AspNet.FileProviders.Composite": "1.0.0-*",
     "Microsoft.AspNet.FileProviders.Embedded": "1.0.0-*",
-    "Microsoft.AspNet.Identity.Core": "2.2.1",
     "Microsoft.AspNet.Authentication.MicrosoftAccount": "1.0.0-rc1-final",
     "Microsoft.AspNet.Authentication.Facebook": "1.0.0-rc1-final",
     "Microsoft.AspNet.Authentication.Cookies": "1.0.0-rc1-final",
@@ -36,20 +35,12 @@
     "Microsoft.AspNet.WebApi.Client": "5.2.3",
     "Swashbuckle.SwaggerGen": "6.0.0-rc1-final",
     "Swashbuckle.SwaggerUi": "6.0.0-rc1-final",
-    "WebActivatorEx": "2.0",
+    "Newtonsoft.Json": "8.0.3",
     "SimpleIdentityServer.Core": "",
     "SimpleIdentityServer.Core.Jwt": "",
     "SimpleIdentityServer.DataAccess.Fake": "",
     "SimpleIdentityServer.DataAccess.SqlServer": "",
     "SimpleIdentityServer.RateLimitation": ""
-  },
-
-  "frameworks": {
-    "dnx451": {
-      "frameworkAssemblies": {
-        "System.Web": "4.0.0.0"
-      }
-    }
   },
   
   "scripts": {
@@ -63,35 +54,49 @@
     "prepare": [ "gulp clean", "gulp min" ]
   },
 
-  "exclude": [
-    "node_modules",
-    "bower_components"
-  ],
-
-  "publishExclude": [
-    "**.user",
-    "**.vspscc"
-  ],
-
-  "configurations": {
-    "Debug": {
-      "compilationOptions": {
-        "define": [ "DEBUG" ]
+  "frameworks": {
+    "dnx451": {
+      "frameworkAssemblies": {
+        "System.Web": "4.0.0.0"
       }
     },
-    "Release": {
-      "compilationOptions": {
-        "define": [ "RELEASE" ],
-        "optimize": true
+    "dnxcore50": {
+      "dependencies": {
+        "Microsoft.AspNet.WebUtilities": "1.0.0-rc2-16106",
+        "System.Reflection": "4.1.0-rc2-23826"
       }
     }
   },
 
-  "resource": [
-    "SimpleIdentityServer.pfx",
-    "Views/**",
-    "wwwroot/output/**",
-    "wwwroot/img/**",
-    "wwwroot/fonts/**"
-  ]
-}
+    "exclude": [
+      "node_modules",
+      "bower_components"
+    ],
+
+    "publishExclude": [
+      "**.user",
+      "**.vspscc"
+    ],
+
+    "configurations": {
+      "Debug": {
+        "compilationOptions": {
+          "define": [ "DEBUG" ]
+        }
+      },
+      "Release": {
+        "compilationOptions": {
+          "define": [ "RELEASE" ],
+          "optimize": true
+        }
+      }
+    },
+
+    "resource": [
+      "SimpleIdentityServer.pfx",
+      "Views/**",
+      "wwwroot/output/**",
+      "wwwroot/img/**",
+      "wwwroot/fonts/**"
+    ]
+  }

@@ -1,16 +1,31 @@
-﻿using SimpleIdentityServer.Host.DTOs.Request;
-using SimpleIdentityServer.Host.Extensions;
-using SimpleIdentityServer.Host.ViewModels;
-using SimpleIdentityServer.Core.WebSite.Consent;
+﻿#region copyright
+// Copyright 2015 Habart Thierry
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
+using Microsoft.AspNet.Authorization;
+using Microsoft.AspNet.DataProtection;
+using Microsoft.AspNet.Mvc;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Protector;
-
+using SimpleIdentityServer.Core.Translation;
+using SimpleIdentityServer.Core.WebSite.Consent;
+using SimpleIdentityServer.Host.DTOs.Request;
+using SimpleIdentityServer.Host.Extensions;
+using SimpleIdentityServer.Host.ViewModels;
 using System.Collections.Generic;
 using System.Linq;
-
-using SimpleIdentityServer.Core.Translation;
-using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Mvc;
 
 namespace SimpleIdentityServer.Api.Controllers
 {
@@ -19,8 +34,7 @@ namespace SimpleIdentityServer.Api.Controllers
     {
         private readonly IConsentActions _consentActions;
 
-        private readonly IProtector _protector;
-
+        private readonly IDataProtector _dataProtector;
 
         private readonly IEncoder _encoder;
 
@@ -28,12 +42,12 @@ namespace SimpleIdentityServer.Api.Controllers
 
         public ConsentController(
             IConsentActions consentActions,
-            IProtector protector,
+            IDataProtectionProvider dataProtectionProvider,
             IEncoder encoder,
             ITranslationManager translationManager)
         {
             _consentActions = consentActions;
-            _protector = protector;
+            _dataProtector = dataProtectionProvider.CreateProtector("Request");
             _encoder = encoder;
             _translationManager = translationManager;
         }
@@ -42,7 +56,7 @@ namespace SimpleIdentityServer.Api.Controllers
         {
             var user = Request.HttpContext.User;
             code = _encoder.Decode(code);
-            var request = _protector.Decrypt<AuthorizationRequest>(code);
+            var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
             var client = new Client();
             var scopes = new List<Scope>();
             var claims = new List<string>();
@@ -75,7 +89,7 @@ namespace SimpleIdentityServer.Api.Controllers
         
         public ActionResult Confirm(string code)
         {
-            var request = _protector.Decrypt<AuthorizationRequest>(code);
+            var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
             var parameter = request.ToParameter();
             var authenticatedUser = this.GetAuthenticatedUser();
             var actionResult =_consentActions.ConfirmConsent(parameter,
@@ -93,7 +107,7 @@ namespace SimpleIdentityServer.Api.Controllers
         /// <returns>Redirect to the callback url.</returns>
         public ActionResult Cancel(string code)
         {
-            var request = _protector.Decrypt<AuthorizationRequest>(code);
+            var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
             return Redirect(request.redirect_uri);
         }
 

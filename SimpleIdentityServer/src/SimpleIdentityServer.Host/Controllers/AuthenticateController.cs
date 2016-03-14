@@ -1,22 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Threading.Tasks;
+﻿#region copyright
+// Copyright 2015 Habart Thierry
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
+using Microsoft.AspNet.Authentication.Cookies;
+using Microsoft.AspNet.DataProtection;
+using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Http.Authentication;
-using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Mvc;
+using SimpleIdentityServer.Api.ViewModels;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.Authenticate;
-using SimpleIdentityServer.Host.Extensions;
-using SimpleIdentityServer.Logging;
-using SimpleIdentityServer.Api.ViewModels;
-using Microsoft.AspNet.Authentication.Cookies;
 using SimpleIdentityServer.Host.DTOs.Request;
+using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.Host.ViewModels;
-using Microsoft.AspNet.Http;
+using SimpleIdentityServer.Logging;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Host.Controllers
 {
@@ -28,7 +44,7 @@ namespace SimpleIdentityServer.Host.Controllers
         
         private readonly IAuthenticateActions _authenticateActions;
 
-        private readonly IProtector _protector;
+        private readonly IDataProtector _dataProtector;
 
         private readonly IEncoder _encoder;
 
@@ -40,14 +56,14 @@ namespace SimpleIdentityServer.Host.Controllers
 
         public AuthenticateController(
             IAuthenticateActions authenticateActions,
-            IProtector protector,
+            IDataProtectionProvider dataProtectionProvider,
             IEncoder encoder,
             ITranslationManager translationManager,
             ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
             IUrlHelper urlHelper)
         {
             _authenticateActions = authenticateActions;
-            _protector = protector;
+            _dataProtector = dataProtectionProvider.CreateProtector("Request");
             _encoder = encoder;
             _translationManager = translationManager;
             _simpleIdentityServerEventSource = simpleIdentityServerEventSource;            
@@ -96,7 +112,7 @@ namespace SimpleIdentityServer.Host.Controllers
             {
                 var claims = _authenticateActions.LocalUserAuthentication(authorizeViewModel.ToParameter());
                 var authenticationManager = this.GetAuthenticationManager();
-                var claimsIdentity = new ClaimsIdentity(claims, DefaultAuthenticationTypes.ApplicationCookie);
+                var claimsIdentity = new ClaimsIdentity(claims);
                 var principal = new ClaimsPrincipal(claimsIdentity);
                 authenticationManager.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
                     principal,
@@ -167,9 +183,8 @@ namespace SimpleIdentityServer.Host.Controllers
                 throw new ArgumentNullException(nameof(code));
             }
 
-            var authenticatedUser = this.GetAuthenticatedUser(); 
-            var decodedCode = _encoder.Decode(code);
-            var request = _protector.Decrypt<AuthorizationRequest>(decodedCode);
+            var authenticatedUser = this.GetAuthenticatedUser();
+            var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
 
             var actionResult = _authenticateActions.AuthenticateResourceOwnerOpenId(
                 request.ToParameter(),
@@ -209,7 +224,7 @@ namespace SimpleIdentityServer.Host.Controllers
             {
                 // 1. Decrypt the request
                 var code = _encoder.Decode(authorizeOpenId.Code);
-                var request = _protector.Decrypt<AuthorizationRequest>(code);
+                var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
                 
                 // 2. Retrieve the default language
                 uiLocales = string.IsNullOrWhiteSpace(request.ui_locales) ? DefaultLanguage : request.ui_locales;
@@ -230,7 +245,7 @@ namespace SimpleIdentityServer.Host.Controllers
 
                 // 5. Authenticate the user by adding a cookie
                 var authenticationManager = this.GetAuthenticationManager();
-                var claimsIdentity = new ClaimsIdentity(claims, DefaultAuthenticationTypes.ApplicationCookie);
+                var claimsIdentity = new ClaimsIdentity(claims);
                 var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
                 authenticationManager.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
                     claimsPrincipal,
@@ -331,7 +346,7 @@ namespace SimpleIdentityServer.Host.Controllers
             
             // 6. Continue the open-id flow
             var decodedRequest = _encoder.Decode(request);
-            var authorizationRequest = _protector.Decrypt<AuthorizationRequest>(decodedRequest);
+            var authorizationRequest = _dataProtector.Unprotect<AuthorizationRequest>(decodedRequest);
             var actionResult = _authenticateActions.ExternalOpenIdUserAuthentication(
                 claims,
                 authorizationRequest.ToParameter(),

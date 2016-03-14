@@ -14,27 +14,27 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Security.Claims;
 using Microsoft.AspNet.Authentication.Cookies;
 using Microsoft.AspNet.Authentication.Facebook;
 using Microsoft.AspNet.Authentication.MicrosoftAccount;
 using Microsoft.AspNet.Authentication.OAuth;
 using Microsoft.AspNet.Builder;
+using Microsoft.AspNet.FileProviders;
 using Microsoft.AspNet.Http;
+using Microsoft.AspNet.StaticFiles;
+using Microsoft.AspNet.WebUtilities;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Host.MiddleWare;
-using SimpleIdentityServer.Logging;
-using Microsoft.AspNet.WebUtilities;
-using Microsoft.AspNet.StaticFiles;
-using Microsoft.AspNet.FileProviders;
-using SimpleIdentityServer.Host.Controllers;
-using System.Reflection;
 using SimpleIdentityServer.DataAccess.SqlServer;
 using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
+using SimpleIdentityServer.Host.Controllers;
+using SimpleIdentityServer.Host.MiddleWare;
+using SimpleIdentityServer.Logging;
+using System;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Reflection;
+using System.Security.Claims;
 
 namespace SimpleIdentityServer.Host
 {
