@@ -14,7 +14,6 @@
 // limitations under the License.
 #endregion
 
-
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Parameters;

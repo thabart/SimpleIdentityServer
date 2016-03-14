@@ -70,7 +70,6 @@ namespace SimpleIdentityServer.Core
             serviceCollection.AddTransient<IResourceOwnerGrantTypeParameterValidator, ResourceOwnerGrantTypeParameterValidator>();
             serviceCollection.AddTransient<IAuthorizationCodeGrantTypeParameterTokenEdpValidator, AuthorizationCodeGrantTypeParameterTokenEdpValidator>();
             serviceCollection.AddTransient<IRegistrationParameterValidator, RegistrationParameterValidator>();
-            serviceCollection.AddTransient<IProtector, Protector.Protector>();
             serviceCollection.AddTransient<ICompressor, Compressor>();
             serviceCollection.AddTransient<IEncoder, Encoder>();
             serviceCollection.AddTransient<IParameterParserHelper, ParameterParserHelper>();

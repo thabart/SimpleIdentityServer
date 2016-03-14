@@ -37,7 +37,7 @@ namespace SimpleIdentityServer.Core.Authenticate
 
             var sameSecret = string.Compare(client.ClientSecret,
                         instruction.ClientSecretFromHttpRequestBody,
-                        StringComparison.InvariantCultureIgnoreCase) == 0;
+                        StringComparison.CurrentCultureIgnoreCase) == 0;
             return sameSecret ? client : null;
         }
         

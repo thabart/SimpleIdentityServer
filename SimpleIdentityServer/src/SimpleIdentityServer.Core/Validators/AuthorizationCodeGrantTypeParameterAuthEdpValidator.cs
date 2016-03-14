@@ -13,14 +13,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-using System;
-using System.Linq;
 
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Parameters;
+using System;
+using System.Linq;
 
 namespace SimpleIdentityServer.Core.Validators
 {

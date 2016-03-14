@@ -14,30 +14,27 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-
-using System.Security.Claims;
-using Microsoft.Practices.ObjectBuilder2;
-
+using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Errors;
+using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Helpers;
+using SimpleIdentityServer.Core.Jwt;
+using SimpleIdentityServer.Core.Jwt.Encrypt;
 using SimpleIdentityServer.Core.Jwt.Mapping;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.Core.Jwt;
-using SimpleIdentityServer.Core.Jwt.Encrypt;
-using SimpleIdentityServer.Core.Exceptions;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using SimpleIdentityServer.Core.Common.Extensions;
 
 namespace SimpleIdentityServer.Core.JwtToken
 {
@@ -450,7 +447,7 @@ namespace SimpleIdentityServer.Core.JwtToken
             var azp = string.Empty;
 
             var clients = _clientRepository.GetAll();
-            clients.ForEach(client =>
+            foreach(var client in clients)
             {
                 var isClientSupportIdTokenResponseType =
                     _clientValidator.ValidateResponseType(ResponseType.id_token, client);
@@ -459,7 +456,7 @@ namespace SimpleIdentityServer.Core.JwtToken
                 {
                     audiences.Add(client.ClientId);
                 }
-            });
+            }
 
             // The identity token can be reused by the simple identity server.
             if (!string.IsNullOrWhiteSpace(issuerName))
@@ -683,9 +680,13 @@ namespace SimpleIdentityServer.Core.JwtToken
         {
             var result = new Dictionary<string, string>();
             var openIdClaims = _claimsMapping.MapToOpenIdClaims(claimsPrincipal.Claims);
-            openIdClaims.Where(oc => claims.Contains(oc.Key))
-                .Select(oc => new { key = oc.Key, val = oc.Value })
-                .ForEach(r => result.Add(r.key, r.val));
+            var tmp = openIdClaims.Where(oc => claims.Contains(oc.Key))
+                .Select(oc => new { key = oc.Key, val = oc.Value });
+            foreach(var r in tmp)
+            {
+                result.Add(r.key, r.val);
+            }
+
             return result;
         }
 
@@ -722,7 +723,7 @@ namespace SimpleIdentityServer.Core.JwtToken
 
         private static string HashWithSha256(string parameter)
         {
-            var sha256 = SHA256Managed.Create();
+            var sha256 = SHA256.Create();
             return GetFirstPart(parameter,
                 sha256);
         }

@@ -13,6 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using System;
 using System.IO;
 using System.IO.Compression;
@@ -44,7 +45,7 @@ namespace SimpleIdentityServer.Core.Protector
                     using (var compressor = new DeflateStream(compressStream, CompressionMode.Compress))
                     {
                         input.CopyTo(compressor);
-                        compressor.Close();
+                        // compressor.Close();
                         var compressedBytes = compressStream.ToArray();
                         return Convert.ToBase64String(compressedBytes);
                     }
@@ -67,7 +68,7 @@ namespace SimpleIdentityServer.Core.Protector
                     using (var decompressor = new DeflateStream(input, CompressionMode.Decompress))
                     {
                         decompressor.CopyTo(decompressStream);
-                        decompressor.Close();
+                        // decompressor.Close();
                         var decompressedBytes = decompressStream.ToArray();
                         return Encoding.UTF8.GetString(decompressedBytes);
                     }

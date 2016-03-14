@@ -108,8 +108,8 @@ namespace SimpleIdentityServer.Core.Validators
                 foreach(var redirectUri in parameter.RedirectUris)
                 {
                     var uri = new Uri(redirectUri);
-                    if (uri.Scheme != Uri.UriSchemeHttps ||
-                        string.Compare(uri.Host, localhost, StringComparison.InvariantCultureIgnoreCase) == 0)
+                    if (uri.Scheme != "https" ||
+                        string.Compare(uri.Host, localhost, StringComparison.CurrentCultureIgnoreCase) == 0)
                     {
                         throw new IdentityServerException(
                             ErrorCodes.InvalidRedirectUri,
@@ -124,7 +124,7 @@ namespace SimpleIdentityServer.Core.Validators
                 foreach(var redirectUri in parameter.RedirectUris)
                 {
                     var uri = new Uri(redirectUri);
-                    if (string.Compare(uri.Host, localhost, StringComparison.InvariantCultureIgnoreCase) != 0)
+                    if (string.Compare(uri.Host, localhost, StringComparison.CurrentCultureIgnoreCase) != 0)
                     {
                         throw new IdentityServerException(
                             ErrorCodes.InvalidRedirectUri,
@@ -255,7 +255,7 @@ namespace SimpleIdentityServer.Core.Validators
                 if (checkSchemeIsHttps)
                 {
                     var u = new Uri(uri);
-                    if (u.Scheme != Uri.UriSchemeHttps)
+                    if (u.Scheme != "https")
                     {
                         throw new IdentityServerException(
                             ErrorCodes.InvalidClientMetaData,

@@ -13,6 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using System;
 using System.Security.Cryptography;
 using System.Text;
@@ -28,7 +29,7 @@ namespace SimpleIdentityServer.Core.Helpers
     {
         public string ComputeHash(string entry)
         {
-            using (var sha256 = SHA256Managed.Create())
+            using (var sha256 = SHA256.Create())
             {
                 var entryBytes = Encoding.UTF8.GetBytes(entry);
                 var hash = sha256.ComputeHash(entryBytes);
