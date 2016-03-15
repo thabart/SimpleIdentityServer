@@ -333,11 +333,6 @@ namespace SimpleIdentityServer.Api.Tests.Specs
         public void GivenRequestingAnAuthorizationCode(Table table)
         {
             var authorizationRequest = table.CreateInstance<AuthorizationRequest>();
-            var httpConfiguration = new HttpConfiguration();
-            httpConfiguration.Filters.Add(new FakeAuthenticationFilter
-            {
-                ResourceOwner = _resourceOwner
-            });
             var httpClient = _globalContext.TestServer.CreateClient();
             var url = string.Format(
                 "/authorization?scope={0}&response_type={1}&client_id={2}&redirect_uri={3}&prompt={4}&state={5}&nonce={6}&claims={7}",
@@ -362,7 +357,6 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             var authorizationResponseMessage = await _authorizationResponseMessage;
             var query = HttpUtility.ParseQueryString(authorizationResponseMessage.Headers.Location.Fragment.TrimStart('#'));
             var accessToken = query["access_token"];
-            var httpConfiguration = new HttpConfiguration();
             var httpClient = _globalContext.TestServer.CreateClient();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             _userInfoResponseMessage = httpClient.GetAsync("/userinfo").ConfigureAwait(false);
@@ -374,7 +368,6 @@ namespace SimpleIdentityServer.Api.Tests.Specs
             var authorizationResponseMessage = await _authorizationResponseMessage;
             var query = HttpUtility.ParseQueryString(authorizationResponseMessage.Headers.Location.Fragment.TrimStart('#'));
             var accessToken = query["access_token"];
-            var httpConfiguration = new HttpConfiguration();
             var httpClient = _globalContext.TestServer.CreateClient();
             var parameter = new Dictionary<string, string>
             {
