@@ -12,8 +12,8 @@
   },
 
   "dependencies": {
-    "Microsoft.AspNet.FileProviders.Composite": "1.0.0-*",
-    "Microsoft.AspNet.FileProviders.Embedded": "1.0.0-*",
+    "Microsoft.AspNet.FileProviders.Composite": "1.0.0-beta4",
+    "Microsoft.AspNet.FileProviders.Embedded": "1.0.0-rc1-final",
     "Microsoft.AspNet.Authentication.MicrosoftAccount": "1.0.0-rc1-final",
     "Microsoft.AspNet.Authentication.Facebook": "1.0.0-rc1-final",
     "Microsoft.AspNet.Authentication.Cookies": "1.0.0-rc1-final",
@@ -42,17 +42,6 @@
     "SimpleIdentityServer.DataAccess.SqlServer": "",
     "SimpleIdentityServer.RateLimitation": ""
   },
-  
-  "scripts": {
-    "prebuild": [
-      "npm install",
-      "bower --allow-root install",
-      "gulp clean",
-      "gulp min"
-    ],
-	  "postrestore": [ "npm install", "bower --allow-root install" ],
-    "prepare": [ "gulp clean", "gulp min" ]
-  },
 
   "frameworks": {
     "dnx451": {
@@ -62,8 +51,9 @@
     },
     "dnxcore50": {
       "dependencies": {
-        "Microsoft.AspNet.WebUtilities": "1.0.0-rc2-16106",
-        "System.Reflection": "4.1.0-rc2-23826"
+        "Microsoft.AspNet.WebUtilities": "1.0.0-rc1-final",
+        "System.Reflection": "4.1.0-rc2-23826",
+        "System.IO": "4.0.11-beta-23516"
       }
     }
   },

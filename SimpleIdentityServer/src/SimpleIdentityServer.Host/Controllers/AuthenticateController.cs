@@ -112,7 +112,7 @@ namespace SimpleIdentityServer.Host.Controllers
             {
                 var claims = _authenticateActions.LocalUserAuthentication(authorizeViewModel.ToParameter());
                 var authenticationManager = this.GetAuthenticationManager();
-                var claimsIdentity = new ClaimsIdentity(claims);
+                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                 var principal = new ClaimsPrincipal(claimsIdentity);
                 authenticationManager.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
                     principal,
@@ -223,8 +223,7 @@ namespace SimpleIdentityServer.Host.Controllers
             try
             {
                 // 1. Decrypt the request
-                var code = _encoder.Decode(authorizeOpenId.Code);
-                var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
+                var request = _dataProtector.Unprotect<AuthorizationRequest>(authorizeOpenId.Code);
                 
                 // 2. Retrieve the default language
                 uiLocales = string.IsNullOrWhiteSpace(request.ui_locales) ? DefaultLanguage : request.ui_locales;
@@ -245,7 +244,7 @@ namespace SimpleIdentityServer.Host.Controllers
 
                 // 5. Authenticate the user by adding a cookie
                 var authenticationManager = this.GetAuthenticationManager();
-                var claimsIdentity = new ClaimsIdentity(claims);
+                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                 var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
                 authenticationManager.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
                     claimsPrincipal,

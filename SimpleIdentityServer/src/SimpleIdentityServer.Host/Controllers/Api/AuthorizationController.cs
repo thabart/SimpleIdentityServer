@@ -100,9 +100,8 @@ namespace SimpleIdentityServer.Api.Controllers.Api
 
                     // Add the encoded request into the query string
                     var encryptedRequest = _dataProtector.Protect(authorizationRequest);
-                    var encodedRequest = _encoder.Encode(encryptedRequest);
                     actionResult.RedirectInstruction.AddParameter(Core.Constants.StandardAuthorizationResponseNames.AuthorizationCodeName,
-                        encodedRequest);
+                        encryptedRequest);
                 }
 
                 var url = GetRedirectionUrl(this.Request, actionResult.RedirectInstruction.Action);
