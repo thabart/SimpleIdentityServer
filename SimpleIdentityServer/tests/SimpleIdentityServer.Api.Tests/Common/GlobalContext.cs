@@ -72,9 +72,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using System.Web.Http;
-using System.Web.Http.Controllers;
-using System.Web.Http.Filters;
 
 
 namespace SimpleIdentityServer.Api.Tests.Common
@@ -205,10 +202,8 @@ namespace SimpleIdentityServer.Api.Tests.Common
             }
         }
         
-        private class FakeFilterProvider : Microsoft.AspNet.Mvc.Filters.IFilterProvider, IFilterMetadata
+        private class FakeFilterProvider : IFilterProvider, IFilterMetadata
         {
-            private readonly ActionDescriptorFilterProvider _defaultProvider = new ActionDescriptorFilterProvider();
-
             private readonly IServiceCollection _serviceCollection;
 
             public FakeFilterProvider(IServiceCollection serviceCollection)
@@ -222,18 +217,6 @@ namespace SimpleIdentityServer.Api.Tests.Common
                 {
                     return 1;
                 }
-            }
-
-            public IEnumerable<FilterInfo> GetFilters(HttpConfiguration configuration, HttpActionDescriptor actionDescriptor)
-            {
-                var attributes = _defaultProvider.GetFilters(configuration, actionDescriptor);
-                foreach (var attr in attributes)
-                {
-                    _serviceCollection.AddInstance(attr.Instance.GetType(), attr.Instance);
-                    // _container.BuildUp(attr.Instance.GetType(), attr.Instance);
-                }
-
-                return attributes;
             }
 
             public void OnProvidersExecuted(FilterProviderContext context)
@@ -376,7 +359,6 @@ namespace SimpleIdentityServer.Api.Tests.Common
             serviceCollection.AddTransient<IGetSetOfPublicKeysUsedToValidateJwsAction, GetSetOfPublicKeysUsedToValidateJwsAction>();
             serviceCollection.AddTransient<IJsonWebKeyEnricher, JsonWebKeyEnricher>();
             serviceCollection.AddTransient<IGetSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction, GetSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction>();
-            serviceCollection.AddTransient<IProtector, FakeProtector>();
             serviceCollection.AddTransient<IEncoder, Encoder>();
             serviceCollection.AddTransient<ICertificateStore, CertificateStore>();
             serviceCollection.AddTransient<ICompressor, Compressor>();
