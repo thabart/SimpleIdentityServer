@@ -20,12 +20,7 @@ using Microsoft.AspNet.Mvc.Filters;
 using Microsoft.AspNet.TestHost;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Practices.EnterpriseLibrary.Caching;
-using Microsoft.Practices.EnterpriseLibrary.Caching.BackingStoreImplementations;
-using Microsoft.Practices.EnterpriseLibrary.Caching.Instrumentation;
-using Microsoft.Practices.EnterpriseLibrary.Common.Instrumentation;
 using Moq;
-using SimpleIdentityServer.Api.Tests.Common.Fakes;
 using SimpleIdentityServer.Core.Api.Authorization;
 using SimpleIdentityServer.Core.Api.Authorization.Actions;
 using SimpleIdentityServer.Core.Api.Authorization.Common;
@@ -269,10 +264,6 @@ namespace SimpleIdentityServer.Api.Tests.Common
         public void Init() 
         {
             // Initialize the caching & event source & service collection & data source
-            var cache = new Cache(new NullBackingStore(),
-                new CachingInstrumentationProvider("apiCache", false, false, "simpleIdServer"));
-            var instrumentationProvider = new CachingInstrumentationProvider("apiCache", false, false,
-                new NoPrefixNameFormatter());
             _memoryCache = new MemoryCache(new MemoryCacheOptions());
             _simpleIdentityServerEventSource = new Mock<ISimpleIdentityServerEventSource>().Object;
             var serviceCollection = new ServiceCollection();
@@ -311,7 +302,6 @@ namespace SimpleIdentityServer.Api.Tests.Common
 
         private void ConfigureServiceCollection(IServiceCollection serviceCollection)
         {
-            serviceCollection.AddTransient<ICacheManager, CacheManager>();
             serviceCollection.AddTransient<ISecurityHelper, SecurityHelper>();
             serviceCollection.AddTransient<IClientHelper, ClientHelper>();
             serviceCollection.AddTransient<IConsentHelper, ConsentHelper>();

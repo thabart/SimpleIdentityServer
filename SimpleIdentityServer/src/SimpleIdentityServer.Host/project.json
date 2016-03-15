@@ -42,6 +42,17 @@
     "SimpleIdentityServer.DataAccess.SqlServer": "",
     "SimpleIdentityServer.RateLimitation": ""
   },
+  
+  "scripts": {
+    "prebuild": [
+      "npm install",
+      "bower --allow-root install",
+      "gulp clean",
+      "gulp min"
+    ],
+	  "postrestore": [ "npm install", "bower --allow-root install" ],
+    "prepare": [ "gulp clean", "gulp min" ]
+  },
 
   "frameworks": {
     "dnx451": {
