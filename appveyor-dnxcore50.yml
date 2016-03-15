@@ -18,7 +18,7 @@ before_build:
 build_script:
 - cmd: dnu build src\SimpleIdentityServer.Host --framework dnxcore50
 - cmd: dnu build src\SimpleIdentityServer.Core --framework dnxcore50
-- cmd: dnu build tests\SimpleIdentityServer.Api.Tests --framework dnxcore50
+#- cmd: dnu build tests\SimpleIdentityServer.Api.Tests --framework dnxcore50
 - cmd: dnu build tests\SimpleIdentityServer.Core.Jwt.UnitTests --framework dnxcore50
 - cmd: dnu build tests\SimpleIdentityServer.Core.UnitTests --framework dnxcore50
 test_script:
