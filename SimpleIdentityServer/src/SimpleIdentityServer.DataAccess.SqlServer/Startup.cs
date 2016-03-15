@@ -22,6 +22,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
 using System;
+using System.Linq;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer
 {
@@ -38,11 +39,12 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
         public Startup(IHostingEnvironment env,
             IApplicationEnvironment appEnv)
         {
-            Console.WriteLine(env.EnvironmentName);
+            var environment = GetEnvironment();
             var builder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddJsonFile($"appsettings.{environment}.json", optional: true)
                 .AddEnvironmentVariables();
+            
             Configuration = builder.Build();
         }
 
@@ -75,6 +77,19 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
         {
         }
 
+        #endregion
+
+        #region Private methods
+
+        private static string GetEnvironment()
+        {
+            var configuration = new ConfigurationBuilder()
+                .AddEnvironmentVariables();
+            var environmentVariables = configuration.Build();
+            var environmentVariable = environmentVariables.GetChildren().FirstOrDefault(e => e.Key == "ASPNET_ENV");
+            return environmentVariable == null ? string.Empty : environmentVariable.Value;
+        }
+       
         #endregion
     }
 }
