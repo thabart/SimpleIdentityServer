@@ -16,4 +16,13 @@ install:
  - dnvm install 1.0.0-rc1-update1 -alias default -r coreclr
  - dnvm use 1.0.0-rc1-update1 -r coreclr
  - dnu restore SimpleIdentityServer
- 
+script:
+ - dnu build --framework dnxcore50 SimpleIdentityServer\src\SimpleIdentityServer.Core.Common
+ - dnu build --framework dnxcore50 SimpleIdentityServer\src\SimpleIdentityServer.Logging
+ - dnu build --framework dnxcore50 SimpleIdentityServer\src\System.Security.Cryptography.Algorithms.Extensions
+ - dnu build --framework dnxcore50 SimpleIdentityServer\src\SimpleIdentityServer.Core.Jwt
+ - dnu build --framework dnxcore50 SimpleIdentityServer\src\SimpleIdentityServer.Core
+ - dnu restore SimpleIdentityServer\tests\SimpleIdentityServer.Core.Jwt.UnitTests
+ - dnu restore SimpleIdentityServer\tests\SimpleIdentityServer.Core.UnitTests
+ - dnx -p SimpleIdentityServer\tests\SimpleIdentityServer.Core.Jwt.UnitTests test
+ - dnx -p SimpleIdentityServer\tests\SimpleIdentityServer.Core.UnitTests test 
