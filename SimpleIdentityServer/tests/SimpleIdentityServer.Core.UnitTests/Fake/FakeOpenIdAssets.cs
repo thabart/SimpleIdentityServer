@@ -280,10 +280,18 @@ namespace SimpleIdentityServer.Core.UnitTests.Fake
         public static List<JsonWebKey> GetJsonWebKeys()
         {
             var serializedRsa = string.Empty;
+#if DNXCORE50
+            using (var provider = new RSAOpenSsl())
+            {
+                serializedRsa = provider.ToXmlString(true);
+            }
+#endif
+#if DNX451
             using (var provider = new RSACryptoServiceProvider())
             {
                 serializedRsa = provider.ToXmlString(true);
             }
+#endif
 
             return new List<JsonWebKey>
             {

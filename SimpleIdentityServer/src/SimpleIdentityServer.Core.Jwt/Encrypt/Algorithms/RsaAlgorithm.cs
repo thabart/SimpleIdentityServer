@@ -14,7 +14,6 @@
 // limitations under the License.
 #endregion
 
-using System;
 using System.Security.Cryptography;
 
 namespace SimpleIdentityServer.Core.Jwt.Encrypt.Algorithms
@@ -32,21 +31,39 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt.Algorithms
             byte[] toBeEncrypted,
             JsonWebKey jsonWebKey)
         {
+#if DNXCORE50
+            using (var rsa = new RSAOpenSsl())
+            {
+                rsa.FromXmlString(jsonWebKey.SerializedKey);
+                return rsa.Encrypt(toBeEncrypted, RSAEncryptionPadding.Pkcs1);
+            }
+#endif
+#if DNX451
             using (var rsa = new RSACryptoServiceProvider())
             {
                 rsa.FromXmlString(jsonWebKey.SerializedKey);
                 return rsa.Encrypt(toBeEncrypted, _oaep);
             }
+#endif
         }
         public byte[] Decrypt(
             byte[] toBeDecrypted, 
             JsonWebKey jsonWebKey)
         {
+#if DNXCORE50
+            using (var rsa = new RSAOpenSsl())
+            {
+                rsa.FromXmlString(jsonWebKey.SerializedKey);
+                return rsa.Decrypt(toBeDecrypted, RSAEncryptionPadding.Pkcs1);
+            }
+#endif
+#if DNX451
             using (var rsa = new RSACryptoServiceProvider())
             {
                 rsa.FromXmlString(jsonWebKey.SerializedKey);
                 return rsa.Decrypt(toBeDecrypted, _oaep);
             }
+#endif
         }
     }
 }

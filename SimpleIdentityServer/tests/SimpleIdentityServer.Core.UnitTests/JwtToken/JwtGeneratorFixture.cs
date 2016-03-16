@@ -951,10 +951,18 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             var client = FakeFactories.FakeDataSource.Clients.First();
             client.IdTokenEncryptedResponseAlg = Jwt.Constants.JwsAlgNames.RS256;
             var serializedRsa = string.Empty;
+#if DNXCORE50
+            using (var provider = new RSAOpenSsl())
+            {
+                serializedRsa = provider.ToXmlString(true);
+            };
+#endif
+#if DNX451
             using (var provider = new RSACryptoServiceProvider())
             {
                 serializedRsa = provider.ToXmlString(true);
             };
+#endif
             var jsonWebKey = new DataAccess.Fake.Models.JsonWebKey
             {
                 Alg = DataAccess.Fake.Models.AllAlg.RS256,
@@ -979,7 +987,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             Assert.NotEmpty(jws);
         }
 
-        #endregion
+#endregion
 
         private void InitializeMockObjects()
         {

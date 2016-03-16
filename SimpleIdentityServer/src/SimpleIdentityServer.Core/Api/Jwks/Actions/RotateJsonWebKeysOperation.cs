@@ -36,18 +36,26 @@ namespace SimpleIdentityServer.Core.Api.Jwks.Actions
             foreach(var jsonWebKey in jsonWebKeys)
             {
                 var serializedRsa = string.Empty;
+#if DNXCORE50
+                using (var rsa = new RSAOpenSsl())
+                {
+                    serializedRsa = rsa.ToXmlString(true);
+                }
+#endif
+#if DNX451
                 using (var provider = new RSACryptoServiceProvider())
                 {
                     serializedRsa = provider.ToXmlString(true);
                 }
+#endif
 
-                jsonWebKey.SerializedKey = serializedRsa;
+                    jsonWebKey.SerializedKey = serializedRsa;
                 _jsonWebKeyRepository.Update(jsonWebKey);
             }
 
             return true;
         }
 
-        #endregion
+#endregion
     }
 }

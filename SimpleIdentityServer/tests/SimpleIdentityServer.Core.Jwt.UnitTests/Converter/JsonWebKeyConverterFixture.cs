@@ -270,7 +270,24 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
                     jsonWebKey
                 }
             };
-            
+#if DNXCORE50
+            using (var rsa = new RSAOpenSsl())
+            {
+                var parameters = rsa.ExportParameters(false);
+
+                jsonWebKey.Add(Constants.JsonWebKeyParameterNames.RsaKey.ModulusName, parameters.Modulus.Base64EncodeBytes());
+                jsonWebKey.Add(Constants.JsonWebKeyParameterNames.RsaKey.ExponentName, parameters.Exponent.Base64EncodeBytes());
+
+                var expectedXml = rsa.ToXmlString(false);
+
+                // ACT & ASSERTS
+                var result = _jsonWebKeyConverter.ExtractSerializedKeys(jsonWebKeySet);
+                Assert.NotNull(result);
+                Assert.True(result.Count() == 1);
+                Assert.True(result.First().SerializedKey == expectedXml);
+            }
+#endif
+#if DNX451
             using (var rsa = new RSACryptoServiceProvider())
             {
                 var parameters = rsa.ExportParameters(false);
@@ -286,7 +303,8 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Converter
                 Assert.True(result.Count() == 1);
                 Assert.True(result.First().SerializedKey == expectedXml);
             }
-        }
+#endif
+            }
 
         [Fact]
         public void When_Passing_JsonWeb_Key_Used_For_The_Signature_With_Ec_Key_Then_JsonWeb_Key_Is_Returned()

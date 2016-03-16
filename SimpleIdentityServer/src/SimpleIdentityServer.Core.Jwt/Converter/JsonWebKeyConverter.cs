@@ -111,11 +111,20 @@ namespace SimpleIdentityServer.Core.Jwt.Converter
                 Exponent = exponentKeyPair.Value.ToString().Base64DecodeBytes()
             };
             
+#if DNXCORE50
+            using (var rsaCryptoServiceProvider = new RSAOpenSsl())
+            {
+                rsaCryptoServiceProvider.ImportParameters(rsaParameters);
+                return rsaCryptoServiceProvider.ToXmlString(false);
+            }
+#endif
+#if DNX451
             using (var rsaCryptoServiceProvider = new RSACryptoServiceProvider())
             {
                 rsaCryptoServiceProvider.ImportParameters(rsaParameters);
                 return rsaCryptoServiceProvider.ToXmlString(false);
             }
+#endif
         }
 
         private string ExtractEcKeyInformation(Dictionary<string, object> information)

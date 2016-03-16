@@ -2,6 +2,7 @@ FROM microsoft/aspnet
 
 ENV ASPNET_ENV docker
 ENV DNX_USER_HOME /opt/dnx
+ENV PATH $PATH:$DNX_USER_HOME/runtimes/default/bin
 
 COPY SimpleIdentityServer/src /app
 
@@ -18,8 +19,9 @@ RUN sqlite3 simpleidserver.db ".databases"
 RUN bash -c "source $DNX_USER_HOME/dnvm/dnvm.sh \
 		&& dnvm install 1.0.0-rc1-update1 -alias default -r coreclr \
 		&& dnvm alias default | xargs -i ln -s $DNX_USER_HOME/runtimes/{} $DNX_USER_HOME/runtimes/default \
+		&& dnvm use 1.0.0-rc1-update1 -r coreclr \
 		&& dnx -p SimpleIdentityServer.DataAccess.SqlServer ef database update"
 
 EXPOSE 5000
 
-ENTRYPOINT ["dnx", "-p", "SimpleIdentityServer.Startup", "--framework", "dnxcore50", "web"]
+ENTRYPOINT ["/opt/dnx/runtimes/dnx-coreclr-linux-x64.1.0.0-rc1-update1/bin/dnx", "-p", "SimpleIdentityServer.Startup", "web"]
