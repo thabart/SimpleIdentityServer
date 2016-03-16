@@ -1,8 +1,12 @@
 # Simple identity server
 
+|               | Badges                                                                                                                                                       |
++ ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ +
+| DNXCORE50     | [![Build status](https://ci.appveyor.com/api/projects/status/ctvpsd79ovexlsdb?svg=true)](https://ci.appveyor.com/project/thabart/simpleidentityserver)       |
+| DNX451        | [![Build status](https://ci.appveyor.com/api/projects/status/5s8llake103d74s3?svg=true)](https://ci.appveyor.com/project/thabart/simpleidentityserver-scfab) |
+
 | Description   | Badges                                                                                                                                                                                       |
 | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Build         | [![Build status](https://ci.appveyor.com/api/projects/status/ctvpsd79ovexlsdb?svg=true)](https://ci.appveyor.com/project/thabart/simpleidentityserver)                                       |
 | Code coverage | [![Coverage Status](https://coveralls.io/repos/thabart/SimpleIdentityServer/badge.svg?branch=master&service=github)](https://coveralls.io/github/thabart/SimpleIdentityServer?branch=master) |
 | MyGet         | [![thabart MyGet Build Status](https://www.myget.org/BuildSource/Badge/thabart?identifier=a03dadd0-d105-4bb7-88d6-4cb4271dbb07)](https://www.myget.org/)                                     |
 | Documentation | [![Documentation Status](https://readthedocs.org/projects/simpleidentityserver/badge/?version=latest)](http://simpleidentityserver.readthedocs.org/en/latest/?badge=latest)                  |
