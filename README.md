@@ -1,7 +1,7 @@
 # Simple identity server
 
 |               | Badges                                                                                                                                                       |
-+ ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ +
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | DNXCORE50     | [![Build status](https://ci.appveyor.com/api/projects/status/ctvpsd79ovexlsdb?svg=true)](https://ci.appveyor.com/project/thabart/simpleidentityserver)       |
 | DNX451        | [![Build status](https://ci.appveyor.com/api/projects/status/5s8llake103d74s3?svg=true)](https://ci.appveyor.com/project/thabart/simpleidentityserver-scfab) |
 
