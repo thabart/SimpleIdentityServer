@@ -79,10 +79,18 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
             const string messageToBeSigned = "message_to_be_signed";
             InitializeFakeObjects();
             string serializedKeysXml;
+#if DNXCORE50
+            using (var rsa = new RSAOpenSsl())
+            {
+                serializedKeysXml = rsa.ToXmlString(true);
+            };
+#endif
+#if DNX451
             using (var rsa = new RSACryptoServiceProvider())
             {
                 serializedKeysXml = rsa.ToXmlString(true);
-            }
+            };
+#endif
 
             // ACT
             var signedMessage = _createJwsSignature.SignWithRsa(
@@ -132,11 +140,18 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
             const string messageToBeSigned = "message_to_be_signed";
             InitializeFakeObjects();
             string serializedKeysXml;
+#if DNXCORE50
+            using (var provider = new RSAOpenSsl())
+            {
+                serializedKeysXml = provider.ToXmlString(true);
+            };
+#endif
+#if DNX451
             using (var rsa = new RSACryptoServiceProvider())
             {
                 serializedKeysXml = rsa.ToXmlString(true);
             }
-
+#endif
             var signedMessage = _createJwsSignature.SignWithRsa(JwsAlg.RS256,
                 serializedKeysXml,
                 messageToBeSigned);
@@ -152,13 +167,13 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
             Assert.True(isSignatureCorrect);
         }
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
 
-        #region Elliptic curve algorithm
+#region Elliptic curve algorithm
 
-        #region Generate Signature
+#region Generate Signature
 
         [Fact]
         public void When_Passing_EmptyString_To_The_Method_Sign_With_EC_Then_Exception_Is_Thrown()
@@ -171,9 +186,9 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
             Assert.Throws<ArgumentNullException>(() => _createJwsSignature.SignWithEllipseCurve("serialized", null));
         }
 
-        #endregion
+#endregion
 
-        #region Check signature
+#region Check signature
 
         [Fact]
         public void When_Passing_Empty_String_To_The_Method_Check_EC_Signature_Then_Exception_Is_Thrown()
@@ -187,9 +202,9 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
             Assert.Throws<ArgumentNullException>(() => _createJwsSignature.VerifyWithEllipticCurve("serialized", "message", null));
         }
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
 
         private void InitializeFakeObjects()
         {

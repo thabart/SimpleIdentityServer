@@ -24,5 +24,4 @@ script:
  - dnu build --framework dnxcore50 ./SimpleIdentityServer/src/SimpleIdentityServer.Core
  - dnu restore ./SimpleIdentityServer/tests/SimpleIdentityServer.Core.Jwt.UnitTests
  - dnu restore ./SimpleIdentityServer/tests/SimpleIdentityServer.Core.UnitTests
- - dnx -p ./SimpleIdentityServer/tests/SimpleIdentityServer.Core.Jwt.UnitTests test
  - dnx -p ./SimpleIdentityServer/tests/SimpleIdentityServer.Core.UnitTests test 
