@@ -11,3 +11,4 @@ call dnu restore tests\SimpleIdentityServer.Core.UnitTests
 
 call dnx -p tests\SimpleIdentityServer.Core.Jwt.UnitTests test
 call dnx -p tests\SimpleIdentityServer.Core.UnitTests test
+call dnx -p tests\SimpleIdentityServer.Manager.Core.Tests test

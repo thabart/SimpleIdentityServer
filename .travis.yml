@@ -26,3 +26,4 @@ script:
  - dnu restore ./SimpleIdentityServer/tests/SimpleIdentityServer.Core.UnitTests
  - dnx -p ./SimpleIdentityServer/tests/SimpleIdentityServer.Core.Jwt.UnitTests test
  - dnx -p ./SimpleIdentityServer/tests/SimpleIdentityServer.Core.UnitTests test
+ - dnx -p ./SimpleIdentityServer/tests/SimpleIdentityServer.Manager.Core.Tests test
