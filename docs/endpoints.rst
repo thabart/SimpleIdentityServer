@@ -17,7 +17,7 @@ User information
 
 User information endpoint returns a set of claims about the authenticated user. 
 The list is represented by a JSON object that contains a collection of name and value pairs for the Claims.
-An HTTP GET / POST request is sent by the client to the user information endpoint. An access-token obtained from Open-Id provider needs to be specified as a BearerToken_ othewise an unauthorized error is returned.
+An HTTP GET / POST request is sent by the client to the user information endpoint. An access-token obtained from Open-Id provider needs to be specified as a BearerToken_ otherwise an unauthorized error is returned.
 
 There're three different ways to pass an access token :
 
