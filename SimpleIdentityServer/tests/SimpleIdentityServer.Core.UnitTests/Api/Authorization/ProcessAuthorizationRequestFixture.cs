@@ -669,7 +669,12 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             var aesEncryptionHelper = new AesEncryptionHelper();
             var jweHelper = new JweHelper(aesEncryptionHelper);
             var jweParser = new JweParser(jweHelper);
+#if DNXCORE50
+            var createJwsSignature = new CreateJwsSignature();
+#endif
+#if DNX451
             var createJwsSignature = new CreateJwsSignature(new CngKeySerializer());
+#endif
             var jwsParser = new JwsParser(createJwsSignature);
             var jsonWebKeyConverter = new JsonWebKeyConverter();
             var httpClientFactory = new HttpClientFactory();

@@ -1006,7 +1006,12 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             var scopeRepository = FakeFactories.GetScopeRepository();
             var claimsMapping = new ClaimsMapping();
             var parameterParserHelper = new ParameterParserHelper(scopeRepository);
+#if DNXCORE50
+            var createJwsSignature = new CreateJwsSignature();
+#endif
+#if DNX451
             var createJwsSignature = new CreateJwsSignature(new CngKeySerializer());
+#endif
             var aesEncryptionHelper = new AesEncryptionHelper();
             var jweHelper = new JweHelper(aesEncryptionHelper);
             var jwsGenerator = new JwsGenerator(createJwsSignature);
