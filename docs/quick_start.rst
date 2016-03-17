@@ -12,7 +12,9 @@ Nuget feeds
 
 Add two new feeds into your Nuget's configuration file
 
-	https://www.myget.org/F/aspnetvnext/api/v3/index.json & https://www.myget.org/F/thabart/api/v3/index.json
+	https://www.myget.org/F/aspnetcidev/api/v3/index.json &
+	https://www.myget.org/F/aspnetvnext/api/v3/index.json & 
+	https://www.myget.org/F/thabart/api/v3/index.json 
 
 
 **Note** : The default file location is : *%APPDATA%\Nuget\Nuget.config*
