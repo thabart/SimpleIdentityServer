@@ -15,7 +15,8 @@ Armen Shirmoon explains in a very well written blog post, how to easily run Dock
 I invit you to read this article_.
 
 .. code-block:: guess
-docker run -t -d -p 5000:5000 identitycontrib/identityserver
+
+	docker run -t -d -p 5000:5000 identitycontrib/identityserver
 
 Once the docker container has been started, browse the URL : http://localhost:5000 to access to SimpleIdentityServer.
 
