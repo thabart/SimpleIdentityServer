@@ -15,7 +15,18 @@ TO COMPLETE
 User information
 ----------------
 
-TO COMPLETE
+User information endpoint returns a set of claims about the authenticated user. 
+The list is represented by a JSON object that contains a collection of name and value pairs for the Claims.
+An HTTP GET / POST request is sent by the client to the user information endpoint. An access-token obtained from Open-Id provider needs to be specified as a BearerToken_ othewise an unauthorized error is returned.
+
+There're three different ways to pass an access token :
+
+ 1. Normal way is by using the Authorization header.
+ 2. Sending the access token in the HTTP request entity-body.
+ 3. Passing it in the HTTP request URI.
+
+Depending on the client configuration, claims can be returned either in a clear JSON object or a JWT (JWS / JWE).
+More information can be found in ClientRegistration_ documentation.
 
 Discovery
 ---------
@@ -90,3 +101,6 @@ Introspection
 TO COMPLETE
 
 .. _OpenIdConnectDiscovery: http://openid.net/specs/openid-connect-discovery-1_0.html
+.. _UserInformation: http://openid.net/specs/openid-connect-core-1_0.html#UserInfo
+.. _BearerToken: http://tools.ietf.org/html/rfc6750
+.. _ClientRegistration: http://openid.net/specs/openid-connect-registration-1_0.html#ClientMetadata
