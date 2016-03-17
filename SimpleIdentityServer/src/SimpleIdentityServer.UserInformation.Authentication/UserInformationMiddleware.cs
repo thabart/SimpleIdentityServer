@@ -116,7 +116,7 @@ namespace SimpleIdentityServer.UserInformation.Authentication
         {
             var splittedAuthorizationValue = authorizationValue.Split(' ');
             if (splittedAuthorizationValue.Count() == 2 &&
-                splittedAuthorizationValue[0].Equals(BearerName, StringComparison.InvariantCultureIgnoreCase))
+                splittedAuthorizationValue[0].Equals(BearerName, StringComparison.CurrentCultureIgnoreCase))
             {
                 return splittedAuthorizationValue[1];
             }

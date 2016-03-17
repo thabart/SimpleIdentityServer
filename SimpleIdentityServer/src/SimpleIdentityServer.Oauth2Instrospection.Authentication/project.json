@@ -22,8 +22,9 @@
     "dnx451": {
       "frameworkAssemblies": {
         "System.Web": "4.0.0.0",
-        "System.Runtime.Serialization":  "4.0.0.0"
+        "System.Runtime.Serialization": "4.0.0.0"
       }
-    }
+    },
+    "dnxcore50": { }
   }
 }

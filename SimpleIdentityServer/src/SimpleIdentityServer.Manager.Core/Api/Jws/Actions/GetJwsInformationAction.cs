@@ -83,7 +83,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jws.Actions
                     ErrorDescriptions.TheTokenIsNotAValidJws);
             }
 
-            if (!string.Equals(jwsHeader.Alg, Constants.JwsAlgNames.NONE, StringComparison.InvariantCultureIgnoreCase)
+            if (!string.Equals(jwsHeader.Alg, Constants.JwsAlgNames.NONE, StringComparison.CurrentCultureIgnoreCase)
                 && uri == null)
             {
                 throw new IdentityServerManagerException(
@@ -97,7 +97,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jws.Actions
             };
 
             JwsPayload payload = null;
-            if (!string.Equals(jwsHeader.Alg, Constants.JwsAlgNames.NONE, StringComparison.InvariantCultureIgnoreCase))
+            if (!string.Equals(jwsHeader.Alg, Constants.JwsAlgNames.NONE, StringComparison.CurrentCultureIgnoreCase))
             {
                 var jsonWebKey = await _jsonWebKeyHelper.GetJsonWebKey(jwsHeader.Kid, uri).ConfigureAwait(false);
                 if (jsonWebKey == null)
