@@ -37,12 +37,14 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
             string input,
             byte[] signature);
 
+#if DNX451
         string SignWithEllipseCurve(string serializedKeys,
            string combinedJwsNotSigned);
 
          bool VerifyWithEllipticCurve(string serializedKeys,
             string message,
             byte[] signature);
+#endif
     }
 
     public class CreateJwsSignature : ICreateJwsSignature
@@ -78,12 +80,22 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
         };
 #endif
 
-        private readonly ICngKeySerializer _cngKeySerializer;
+#if DNXCORE50
+        public CreateJwsSignature()
+        {
+        }
+#endif
 
+#if DNX451
+        private readonly ICngKeySerializer _cngKeySerializer;
+#endif
+
+#if DNX451
         public CreateJwsSignature(ICngKeySerializer cngKeySerializer)
         {
             _cngKeySerializer = cngKeySerializer;
         }
+#endif
 
 #region Rsa agorithm
 
@@ -162,6 +174,8 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
 
 #region Elliptic Curve algorithm
 
+#if DNX451
+
         public string SignWithEllipseCurve(string serializedKeys,
             string combinedJwsNotSigned)
         {
@@ -217,6 +231,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
                 //    signature);
             }
         }
+#endif
 
 #endregion
     }

@@ -14,9 +14,12 @@
 // limitations under the License.
 #endregion
 
+#if DNX451
+
 using SimpleIdentityServer.Core.Jwt.Serializer;
 using System;
 using System.Security.Cryptography;
+using System.Runtime.InteropServices;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.Jwt.UnitTests.Serializer
@@ -48,7 +51,6 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Serializer
             };
 
             var cnk = CngKey.Create(CngAlgorithm.ECDsaP256, null, keyCreationParameter);
-
             var isExceptionRaised = false;
             try
             {
@@ -83,9 +85,9 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Serializer
             Assert.NotNull(result);
         }
 
-        #endregion
+#endregion
 
-        #region Deserialize with private key
+#region Deserialize with private key
 
         [Fact]
         public void When_Passing_Null_To_Deserialize_Function_With_Private_Key_Then_Exception_Is_Thrown()
@@ -117,9 +119,9 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Serializer
             Assert.NotNull(result);
         }
 
-        #endregion
+#endregion
 
-        #region Serialize with public key
+#region Serialize with public key
 
         [Fact]
         public void When_Passing_Null_To_Serialize_With_Public_Key_Then_Exception_Is_Thrown()
@@ -150,9 +152,9 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Serializer
             Assert.NotNull(result);
         }
 
-        #endregion
+#endregion
 
-        #region Deserialize with public key
+#region Deserialize with public key
 
         [Fact]
         public void When_Passing_Null_Parameter_To_Deserialize_With_Public_Key_Then_Exception_Is_Thrown()
@@ -186,7 +188,7 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Serializer
             Assert.NotNull(result);
         }
 
-        #endregion
+#endregion
 
         private void InitializeFakeObjects()
         {
@@ -194,3 +196,4 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Serializer
         }
     }
 }
+#endif

@@ -27,13 +27,15 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
 {
     public sealed class CreateJwsSignatureFixture
     {
+#if DNX451
         private Mock<ICngKeySerializer> _cngKeySerializer;
+#endif
 
         private ICreateJwsSignature _createJwsSignature;
 
-        #region Rsa algorithm
+#region Rsa algorithm
 
-        #region Create the signature
+#region Create the signature
 
         [Fact]
         public void When_Trying_To_Rsa_Sign_With_A_Not_Supported_Algorithm_Then_Null_Is_Returned()
@@ -102,9 +104,9 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
             Assert.NotNull(signedMessage);
         }
 
-        #endregion
+#endregion
 
-        #region Check the signature
+#region Check the signature
 
         [Fact]
         public void When_Trying_To_Check_The_Signature_With_A_Not_Supported_Algorithm_Then_False_Is_Returned()
@@ -171,6 +173,8 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
 
 #endregion
 
+#if DNX451
+
 #region Elliptic curve algorithm
 
 #region Generate Signature
@@ -206,10 +210,20 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
 
 #endregion
 
+#endif
+
+#if DNXCORE50
+        private void InitializeFakeObjects()
+        {
+            _createJwsSignature = new CreateJwsSignature();
+        }
+#endif
+#if DNX451
         private void InitializeFakeObjects()
         {
             _cngKeySerializer = new Mock<ICngKeySerializer>();
             _createJwsSignature = new CreateJwsSignature(_cngKeySerializer.Object);   
         }
+#endif
     }
 }

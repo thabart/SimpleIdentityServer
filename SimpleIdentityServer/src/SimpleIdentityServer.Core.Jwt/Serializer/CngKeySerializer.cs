@@ -14,14 +14,17 @@
 // limitations under the License.
 #endregion
 
+#if DNX451
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Xml.Serialization;
+#endif
 
 namespace SimpleIdentityServer.Core.Jwt.Serializer
 {
+#if DNX451
     public interface ICngKeySerializer
     {
         string SerializeCngKeyWithPrivateKey(CngKey toBeSerialized);
@@ -35,7 +38,7 @@ namespace SimpleIdentityServer.Core.Jwt.Serializer
 
     public class CngKeySerializer : ICngKeySerializer
     {
-        #region Fields
+#region Fields
 
         private readonly Dictionary<int, int> MappingSizeAndMagicNumberForPrivateKey = new Dictionary<int, int>
         {
@@ -63,9 +66,9 @@ namespace SimpleIdentityServer.Core.Jwt.Serializer
             }
         };
 
-        #endregion
+#endregion
 
-        #region Public methods
+#region Public methods
 
         public string SerializeCngKeyWithPrivateKey(CngKey toBeSerialized)
         {
@@ -217,6 +220,7 @@ namespace SimpleIdentityServer.Core.Jwt.Serializer
             }
         }
 
-        #endregion
+#endregion
     }
+#endif
 }
