@@ -5,7 +5,22 @@ Endpoints
 Authorization
 -------------
 
-TO COMPLETE
+The interaction with the Authorization endpoint is needed, when the client is trying to fetch a token via one of the three grant-types : authorization code, implicit or hybrid flow.
+Depending on certain conditions, the endpoint can returns to a callback URL used by the client : an access token, authorization code or identity token.
+ 
+ . An access token is returned when :
+	. The **response_type** is **id_token token** and the registered client supports the **implicit grant type**.
+	. The **response_type** is **code token** and the registered client supports the **authorization_code & implicit grant types**.
+ . An identity token is returned when :
+	. The **response_type** is **id_token** and the registered client supports the **implicit grant type**
+	. The **response_type** is **token id_token** and the registered client supports the **implicit & authorization_code grant types**.
+ . An authorization code is returned when :
+    . The **response_type** is **code** and the registered client supports the **authorization_code grant type**
+	. etc ...
+
+The parameters passed to the authorization flow are :
+
+
 
 Token
 -----
