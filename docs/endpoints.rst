@@ -5,7 +5,58 @@ Endpoints
 Authorization
 -------------
 
-TO COMPLETE
+The interaction with the Authorization endpoint is needed, when the client is trying to fetch a token via one of the three grant-types : authorization code, implicit or hybrid flow.
+Depending on certain conditions, the endpoint can returns to a callback URL used by the client : an access token, authorization code or identity token.
+ 
+ . An access token is returned when :
+	. The **response_type** is **id_token token** and the registered client supports the **implicit grant type**.
+	. The **response_type** is **code token** and the registered client supports the **authorization_code & implicit grant types**.
+ . An identity token is returned when :
+	. The **response_type** is **id_token** and the registered client supports the **implicit grant type**
+	. The **response_type** is **token id_token** and the registered client supports the **implicit & authorization_code grant types**.
+ . An authorization code is returned when :
+    . The **response_type** is **code** and the registered client supports the **authorization_code grant type**
+	. etc ...
+
+Parameters are passed in the query-string :
+
++----------------------+-------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------+
+| Parameter            | Description                                                                                           | Possible values                                                                    |
++======================+=======================================================================================================+====================================================================================+
+| scope                | Must contain the OpenId scope value                                                                   |                                                                                    |
++----------------------+-------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------+
+| response_type        | Authorization processing flow to be used                                                              |  [code, id_token, id_token token, code id_token, code token, code id_token token   |
++----------------------+-------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------+
+| client_id            | Client identifier                                                                                     |                                                                                    |
++----------------------+-------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------+
+| redirect_uri         | Redirection URI to which the response will be sent                                                    |                                                                                    |
++----------------------+-------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------+
+| state                | Maintain state between the request and the callback                                                   |                                                                                    |
++----------------------+-------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------+
+| response_mode        | Mechanism to be used for returning parameters                                                         | [query, fragment, form_post]                                                       |
++----------------------+-------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------+
+| display              | Specifies how the authorization server displays the authentication and consent UI                     | [page]                                                                             |
++----------------------+-------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------+
+| prompt               | Specifies whether the authorization server prompts the end-user for reauthentication and consent      | [none, login, consent, select_account]                                             |
++----------------------+-------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------+
+| max_age              | Maximum authentication age                                                                            |                                                                                    |
++----------------------+-------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------+
+| ui_locales           | End-User's preferred languages for the UI                                                             |                                                                                    |
++----------------------+-------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------+
+| id_token_hint        | ID token previously issued by the authorization server                                                |                                                                                    |
++----------------------+-------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------+
+| login_hint           | Hint to the authorization server about the login identifier                                           |                                                                                    |
++----------------------+-------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------+
+| claims               | Used to request that specific claims be returned                                                      |                                                                                    |
++----------------------+-------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------+
+| acr_values           | Requested authentication context class reference                                                      | **NOT SUPPORTED**                                                                  |
++----------------------+-------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------+
+| request              | Enables OpenID connect requests to be passed in a single, self-contained parameter                    |                                                                                    |
++----------------------+-------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------+
+| request_uri          | Enables OpenID connect requests to be passed by reference                                             |                                                                                    |
++----------------------+-------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------+
+| nonce                | String value used to associate session with an ID token                                               |                                                                                    |
++----------------------+-------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------+
 
 Token
 -----
