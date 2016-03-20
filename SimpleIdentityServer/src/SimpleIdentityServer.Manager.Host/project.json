@@ -30,7 +30,7 @@
     "Swashbuckle.SwaggerGen": "6.0.0-rc1-final",
     "Swashbuckle.SwaggerUi": "6.0.0-rc1-final",
     "Microsoft.AspNet.Authentication.Cookies": "1.0.0-rc1-final",
-    "WebApi.Hal": "2.6.0",
+    "WebApi.Hal": "",
     "SimpleIdentityServer.DataAccess.Fake": "",
     "SimpleIdentityServer.DataAccess.SqlServer": "",
     "SimpleIdentityServer.Manager.Core": "",
@@ -49,7 +49,8 @@
         "System.Web": "4.0.0.0",
         "System.Runtime.Serialization": "4.0.0.0"
       }
-    }
+    },
+    "dnxcore50": { }
   },
 
   "exclude": [
