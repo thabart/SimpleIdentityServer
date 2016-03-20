@@ -1,12 +1,8 @@
 {
   "version": "1.0.0-*",
 
-  "compilationOptions": {
-    "emitEntryPoint": true
-  },
-
   "tooling": {
-    "defaultNamespace": "SimpleIdentityServer.Startup"
+    "defaultNamespace": "SimpleIdentityServer.Manager.Host"
   },
 
   "dependencies": {
@@ -38,11 +34,6 @@
     "SimpleIdentityServer.UserInformation.Authentication": ""
   },
 
-  "commands": {
-    "web": "Microsoft.AspNet.Server.Kestrel",
-    "watch": "Microsoft.Dnx.Watcher web"
-  },
-
   "frameworks": {
     "dnx451": {
       "frameworkAssemblies": {
@@ -52,17 +43,6 @@
     },
     "dnxcore50": { }
   },
-
-  "exclude": [
-    "wwwroot",
-    "node_modules",
-    "bower_components"
-  ],
-
-  "publishExclude": [
-    "**.user",
-    "**.vspscc"
-  ],
 
   "configurations": {
     "Debug": {
