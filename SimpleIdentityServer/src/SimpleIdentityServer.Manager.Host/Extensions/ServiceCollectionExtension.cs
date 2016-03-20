@@ -14,15 +14,19 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.AspNet.FileProviders;
+using Microsoft.AspNet.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.DataAccess.SqlServer;
 using SimpleIdentityServer.Manager.Core;
 using SimpleIdentityServer.Manager.Host.Hal;
+using SimpleIdentityServer.Manager.Host.Swagger;
 using Swashbuckle.SwaggerGen;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace SimpleIdentityServer.Manager.Host.Extensions
 {
@@ -90,6 +94,7 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
                 .AllowAnyMethod()
                 .AllowAnyHeader()));
 
+
             // Enable SqlServer
             serviceCollection.AddSimpleIdentityServerSqlServer(databaseOptions.ConnectionString);
             serviceCollection.AddSimpleIdentityServerCore();
@@ -113,6 +118,17 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
             serviceCollection.AddMvc(options =>
             {
                 options.OutputFormatters.Add(new JsonHalMediaTypeFormatter());
+            });
+
+            serviceCollection.Configure<RazorViewEngineOptions>(options =>
+            {
+                options.FileProvider = new CompositeFileProvider(
+                    new EmbeddedFileProvider(
+                        typeof(SwaggerUiController).GetTypeInfo().Assembly,
+                        "SimpleIdentityServer.Manager.Host"
+                    ),
+                    options.FileProvider
+                );
             });
         }
     }

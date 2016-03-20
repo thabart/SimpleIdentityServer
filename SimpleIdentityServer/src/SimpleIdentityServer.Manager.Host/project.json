@@ -6,6 +6,8 @@
   },
 
   "dependencies": {
+    "Microsoft.AspNet.FileProviders.Composite": "1.0.0-beta4",
+    "Microsoft.AspNet.FileProviders.Embedded": "1.0.0-rc1-final",
     "Microsoft.AspNet.IISPlatformHandler": "1.0.0-rc1-final",
     "Microsoft.AspNet.Mvc": "6.0.0-rc1-final",
     "Microsoft.AspNet.Mvc.TagHelpers": "6.0.0-rc1-final",
@@ -43,6 +45,10 @@
     },
     "dnxcore50": { }
   },
+     
+  "resource": [
+      "Swagger/index.cshtml"
+  ],
 
   "configurations": {
     "Debug": {
