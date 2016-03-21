@@ -21,8 +21,8 @@ RUN bash -c "source $DNX_USER_HOME/dnvm/dnvm.sh \
 		&& dnvm alias default | xargs -i ln -s $DNX_USER_HOME/runtimes/{} $DNX_USER_HOME/runtimes/default \
 		&& dnvm use 1.0.0-rc1-update1 -r coreclr \
 		&& dnx -p SimpleIdentityServer.DataAccess.SqlServer ef database update"
-RUN npm install SimpleIdentityServer.Global.Startup\wwwroot
-RUN grunt --gruntfile SimpleIdentityServer.Global.Startup\wwwroot\Gruntfile.js build:prod
+# RUN npm install SimpleIdentityServer.Global.Startup\wwwroot
+# RUN grunt --gruntfile SimpleIdentityServer.Global.Startup\wwwroot\Gruntfile.js build:prod
 
 EXPOSE 5000
 
