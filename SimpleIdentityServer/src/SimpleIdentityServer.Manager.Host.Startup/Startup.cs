@@ -29,6 +29,8 @@ namespace SimpleIdentityServer.Manager.Host
 
     public class Startup
     {
+        private SwaggerOptions _swaggerOptions;
+
         private class AssignOauth2SecurityRequirements : IOperationFilter
         {
             public void Apply(Operation operation, OperationFilterContext context)
@@ -59,6 +61,10 @@ namespace SimpleIdentityServer.Manager.Host
 
             builder.AddEnvironmentVariables();
             Configuration = builder.Build();
+            _swaggerOptions = new SwaggerOptions
+            {
+                IsEnabled = true
+            };
         }
 
         public IConfigurationRoot Configuration { get; set; }
@@ -76,7 +82,7 @@ namespace SimpleIdentityServer.Manager.Host
             new DatabaseOptions
             {
                 ConnectionString = connectionString
-            });
+            }, _swaggerOptions);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
@@ -88,7 +94,7 @@ namespace SimpleIdentityServer.Manager.Host
             app.UseSimpleIdentityServerManager(new AuthorizationServerOptions
             {
                 UserInformationUrl = userInfoUrl
-            });
+            }, _swaggerOptions);
         }
 
         // Entry point for the application.

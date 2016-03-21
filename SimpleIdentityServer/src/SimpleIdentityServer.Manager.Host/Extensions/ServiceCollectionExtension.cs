@@ -57,11 +57,22 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
         public static void AddSimpleIdentityServerManager(
             this IServiceCollection serviceCollection,
             AuthorizationServerOptions authorizationServerOptions,
-            DatabaseOptions databaseOptions)
+            DatabaseOptions databaseOptions,
+            SwaggerOptions swaggerOptions)
         {
             if (authorizationServerOptions == null)
             {
                 throw new ArgumentNullException(nameof(authorizationServerOptions));
+            }
+
+            if (databaseOptions == null)
+            {
+                throw new ArgumentNullException(nameof(databaseOptions));
+            }
+
+            if (swaggerOptions == null)
+            {
+                throw new ArgumentNullException(nameof(swaggerOptions));
             }
 
             // Add the dependencies needed to run Swagger
@@ -120,16 +131,19 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
                 options.OutputFormatters.Add(new JsonHalMediaTypeFormatter());
             });
 
-            serviceCollection.Configure<RazorViewEngineOptions>(options =>
+            if (swaggerOptions.IsEnabled)
             {
-                options.FileProvider = new CompositeFileProvider(
-                    new EmbeddedFileProvider(
-                        typeof(SwaggerUiController).GetTypeInfo().Assembly,
-                        "SimpleIdentityServer.Manager.Host"
-                    ),
-                    options.FileProvider
-                );
-            });
+                serviceCollection.Configure<RazorViewEngineOptions>(options =>
+                {
+                    options.FileProvider = new CompositeFileProvider(
+                        new EmbeddedFileProvider(
+                            typeof(SwaggerUiController).GetTypeInfo().Assembly,
+                            "SimpleIdentityServer.Manager.Host"
+                        ),
+                        options.FileProvider
+                    );
+                });
+            }
         }
     }
 }

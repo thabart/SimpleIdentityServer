@@ -28,11 +28,16 @@ using SimpleIdentityServer.RateLimitation.Configuration;
 using Swashbuckle.SwaggerGen;
 using System.Collections.Generic;
 
+using AuthorizationServer = SimpleIdentityServer.Host;
+using SimpleIdentityServerManagerApi = SimpleIdentityServer.Manager.Host.Extensions;
+
 namespace SimpleIdentityServer.Global.Startup
 {
     public class Startup
     {
-        private SwaggerOptions _swaggerOptions;
+        private AuthorizationServer.SwaggerOptions _authorizationServerSwaggerOptions;
+
+        private SimpleIdentityServerManagerApi.SwaggerOptions _simpleIdentityServerManagerApiSwaggerOptions;
 
         private class AssignOauth2SecurityRequirements : IOperationFilter
         {
@@ -73,9 +78,13 @@ namespace SimpleIdentityServer.Global.Startup
                 // .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
-            _swaggerOptions = new SwaggerOptions
+            _authorizationServerSwaggerOptions = new AuthorizationServer.SwaggerOptions
             {
-                IsSwaggerEnabled = true
+                IsSwaggerEnabled = false
+            };
+            _simpleIdentityServerManagerApiSwaggerOptions = new SimpleIdentityServerManagerApi.SwaggerOptions
+            {
+                IsEnabled = false
             };
         }
 
@@ -100,7 +109,15 @@ namespace SimpleIdentityServer.Global.Startup
             // Enable CORS
             app.UseCors("AllowAll");
 
-            ConfigureSimpleIdentityServerApplicationBuilder(app);
+            app.Map("/authorization", auth =>
+            {
+                ConfigureSimpleIdentityServerApplicationBuilder(auth);
+            });
+
+            app.Map("/managerapi", managerApi =>
+            {
+                ConfigureSimpleIdentityServerManagerApplicationBuilder(managerApi);
+            });  
         }
 
         #endregion
@@ -142,20 +159,7 @@ namespace SimpleIdentityServer.Global.Startup
                 ResourceOwners = ResourceOwners.Get(),
                 Scopes = Scopes.Get(),
                 Translations = Translations.Get()
-            }, _swaggerOptions);
-        }
-
-        private void ConfigureSimpleIdentityServerManagerServiceCollection(IServiceCollection services)
-        {
-            services.AddSimpleIdentityServerManager(new AuthorizationServerOptions
-            {
-                AuthorizationUrl = GetAuthorizationUrl(),
-                TokenUrl = GetTokenUrl()
-            },
-            new DatabaseOptions
-            {
-                ConnectionString = GetConnectionString()
-            });
+            }, _authorizationServerSwaggerOptions);
         }
 
         private void ConfigureSimpleIdentityServerApplicationBuilder(IApplicationBuilder app)
@@ -170,7 +174,30 @@ namespace SimpleIdentityServer.Global.Startup
                 IsFacebookAuthenticationEnabled = true,
                 FacebookClientId = GetFacebookClientId(),
                 FacebookClientSecret = GetFacebookClientSecret()
-            }, _swaggerOptions);
+            }, _authorizationServerSwaggerOptions);
+        }
+
+        private void ConfigureSimpleIdentityServerManagerServiceCollection(IServiceCollection services)
+        {
+            services.AddSimpleIdentityServerManager(new AuthorizationServerOptions
+            {
+                AuthorizationUrl = GetAuthorizationUrl(),
+                TokenUrl = GetTokenUrl()
+            },
+            new DatabaseOptions
+            {
+                ConnectionString = GetConnectionString()
+            },
+            _simpleIdentityServerManagerApiSwaggerOptions);
+        }
+
+        private void ConfigureSimpleIdentityServerManagerApplicationBuilder(IApplicationBuilder app)
+        {
+            app.UseSimpleIdentityServerManager(new AuthorizationServerOptions
+            {
+                UserInformationUrl = GetUserInformationUrl()
+            },
+            _simpleIdentityServerManagerApiSwaggerOptions);
         }
 
         private DataSourceTypes GetDataSourceType()
@@ -203,6 +230,11 @@ namespace SimpleIdentityServer.Global.Startup
         private string GetTokenUrl()
         {
             return Configuration[Constants.TokenUrlName];
+        }
+
+        private string GetUserInformationUrl()
+        {
+            return Configuration[Constants.UserInformationUrlName];
         }
 
         private string GetMicrosoftClientId()

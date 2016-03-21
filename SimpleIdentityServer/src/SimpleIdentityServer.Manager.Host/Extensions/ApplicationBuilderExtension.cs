@@ -25,12 +25,19 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
     {
         public static void UseSimpleIdentityServerManager(
             this IApplicationBuilder applicationBuilder,
-            AuthorizationServerOptions authorizationServerOptions)
+            AuthorizationServerOptions authorizationServerOptions,
+            SwaggerOptions swaggerOptions)
         {
             if (authorizationServerOptions == null)
             {
                 throw new ArgumentNullException(nameof(authorizationServerOptions));
             }
+
+            if (swaggerOptions == null)
+            {
+                throw new ArgumentNullException(nameof(swaggerOptions));
+            }
+
             // Display status code page
             applicationBuilder.UseStatusCodePages();
 
@@ -54,8 +61,11 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
             });
 
             // Launch swagger
-            applicationBuilder.UseSwaggerGen();
-            applicationBuilder.UseSwaggerUi();
+            if (swaggerOptions.IsEnabled)
+            {
+                applicationBuilder.UseSwaggerGen();
+                applicationBuilder.UseSwaggerUi();
+            }
         }
     }
 }
