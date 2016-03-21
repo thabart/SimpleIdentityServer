@@ -16,6 +16,7 @@
 
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Hosting;
+using Microsoft.AspNet.StaticFiles;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -75,7 +76,7 @@ namespace SimpleIdentityServer.Global.Startup
             // Load all the configuration information from the "json" file & the environment variables.
             var builder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
-                // .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
             _authorizationServerSwaggerOptions = new AuthorizationServer.SwaggerOptions
@@ -108,6 +109,14 @@ namespace SimpleIdentityServer.Global.Startup
 
             // Enable CORS
             app.UseCors("AllowAll");
+
+            // Configure static files
+            var defaultFilesOptions = new DefaultFilesOptions();
+            defaultFilesOptions.DefaultFileNames.Clear();
+            defaultFilesOptions.DefaultFileNames.Add("index.html");
+            app.UseDefaultFiles(defaultFilesOptions);
+
+            app.UseStaticFiles();
 
             app.Map("/authorization", auth =>
             {

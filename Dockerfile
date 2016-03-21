@@ -24,4 +24,4 @@ RUN bash -c "source $DNX_USER_HOME/dnvm/dnvm.sh \
 
 EXPOSE 5000
 
-ENTRYPOINT ["/opt/dnx/runtimes/dnx-coreclr-linux-x64.1.0.0-rc1-update1/bin/dnx", "-p", "SimpleIdentityServer.Startup", "web"]
+ENTRYPOINT ["/opt/dnx/runtimes/dnx-coreclr-linux-x64.1.0.0-rc1-update1/bin/dnx", "-p", "SimpleIdentityServer.Global.Startup", "web"]

@@ -1,0 +1,6 @@
+[submodule "SimpleIdentityServer/src/SimpleIdentityServer.Global.Startup/SimpleIdentityServerManager"]
+	path = SimpleIdentityServer/src/SimpleIdentityServer.Global.Startup/SimpleIdentityServerManager
+	url = https://github.com/thabart/SimpleIdentityServerManager.git
+[submodule "SimpleIdentityServer/src/SimpleIdentityServer.Global.Startup/wwwroot"]
+	path = SimpleIdentityServer/src/SimpleIdentityServer.Global.Startup/wwwroot
+	url = https://github.com/thabart/SimpleIdentityServerManager.git
