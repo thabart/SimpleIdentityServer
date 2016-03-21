@@ -6,14 +6,13 @@
   </PropertyGroup>
   <Import Project="$(VSToolsPath)\DNX\Microsoft.DNX.Props" Condition="'$(VSToolsPath)' != ''" />
   <PropertyGroup Label="Globals">
-    <ProjectGuid>1c2770f8-c146-4f38-89c0-5d1505c44242</ProjectGuid>
-    <RootNamespace>SimpleIdentityServer.Host</RootNamespace>
+    <ProjectGuid>6d8192c8-37cc-481e-83ca-6d2e3bcbee09</ProjectGuid>
+    <RootNamespace>SimpleIdentityServer.Global.Startup</RootNamespace>
     <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">..\artifacts\obj\$(MSBuildProjectName)</BaseIntermediateOutputPath>
     <OutputPath Condition="'$(OutputPath)'=='' ">..\artifacts\bin\$(MSBuildProjectName)\</OutputPath>
   </PropertyGroup>
   <PropertyGroup>
     <SchemaVersion>2.0</SchemaVersion>
-    <DevelopmentServerPort>51662</DevelopmentServerPort>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\SimpleIdentityServer.Core\SimpleIdentityServer.Core.csproj" />

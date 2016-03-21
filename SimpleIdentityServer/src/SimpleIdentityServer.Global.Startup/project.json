@@ -1,0 +1,50 @@
+{
+  "version": "1.0.0-*",
+
+  "compilationOptions": {
+    "emitEntryPoint": true
+  },
+
+  "tooling": {
+    "defaultNamespace": "SimpleIdentityServer.Global.Startup"
+  },
+
+  "dependencies": {
+    "SimpleIdentityServer.Manager.Host": "",
+    "SimpleIdentityServer.Host": ""
+  },
+
+  "frameworks": {
+    "dnx451": {
+    },
+    "dnxcore50": {
+      "dependencies": {
+      }
+    }
+  },
+  
+  "commands": {
+    "web": "Microsoft.AspNet.Server.Kestrel --server.urls http://0.0.0.0:5000",
+    "watch": "Microsoft.Dnx.Watcher web",
+    "ef": "EntityFramework.Commands"
+  },
+
+  "publishExclude": [
+    "**.user",
+    "**.vspscc"
+  ],
+
+  "configurations": {
+    "Debug": {
+      "compilationOptions": {
+        "define": [ "DEBUG" ]
+      }
+    },
+    "Release": {
+      "compilationOptions": {
+        "define": [ "RELEASE" ],
+        "optimize": true
+      }
+    }
+  }
+}
