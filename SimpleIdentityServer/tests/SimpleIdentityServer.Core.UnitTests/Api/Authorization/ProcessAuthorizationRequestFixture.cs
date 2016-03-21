@@ -29,6 +29,7 @@ using SimpleIdentityServer.Core.Jwt.Serializer;
 using Xunit;
 using JwsAlg = SimpleIdentityServer.Core.Jwt.JwsAlg;
 
+#if DNX451
 namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 {
     public sealed class ProcessAuthorizationRequestFixture : BaseFixture
@@ -710,3 +711,4 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
         }
     }
 }
+#endif
