@@ -1,4 +1,4 @@
-﻿#region copyright
+#region copyright
 // Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,27 +14,30 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Mvc;
-using SimpleIdentityServer.Uma.Host.DTOs.Responses;
+using System;
 
-namespace SimpleIdentityServer.Uma.Host.Controllers
+namespace SimpleIdentityServer.Uma.Core.Exceptions
 {
-    [Route(Constants.RouteValues.Configuration)]
-    public class ConfigurationController
+    public class BaseUmaException : Exception
     {
-        #region Constructor
-        
-        public ConfigurationController()
+        #region Constructors
+    
+        public BaseUmaException(string code, string message) : base(message)
         {
-            
+            Code = code;
+        }
+
+        public BaseUmaException(string code, string message, Exception innerException) : base(message, innerException)
+        {
+            Code = code;
         }
         
         #endregion
         
-        [HttpGet]
-        public ConfigurationResponse GetConfiguration()
-        {
-            return null;
-        }
+        #region Properties
+
+        public string Code { get; private set; }
+        
+        #endregion
     }
 }

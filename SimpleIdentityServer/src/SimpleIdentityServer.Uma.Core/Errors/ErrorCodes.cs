@@ -1,4 +1,4 @@
-﻿#region copyright
+#region copyright
 // Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,27 +14,10 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Mvc;
-using SimpleIdentityServer.Uma.Host.DTOs.Responses;
-
-namespace SimpleIdentityServer.Uma.Host.Controllers
+namespace SimpleIdentityServer.Uma.Core.Errors
 {
-    [Route(Constants.RouteValues.Configuration)]
-    public class ConfigurationController
+    public static class ErrorCodes
     {
-        #region Constructor
-        
-        public ConfigurationController()
-        {
-            
-        }
-        
-        #endregion
-        
-        [HttpGet]
-        public ConfigurationResponse GetConfiguration()
-        {
-            return null;
-        }
+        public const string InvalidRequestCode = "invalid_request";   
     }
 }

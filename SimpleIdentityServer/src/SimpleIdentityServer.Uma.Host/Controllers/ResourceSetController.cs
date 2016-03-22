@@ -14,9 +14,11 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Mvc;
-using SimpleIdentityServer.Uma.Host.DTOs.Responses;
+using System;
 using System.Collections.Generic;
+using Microsoft.AspNet.Mvc;
+using SimpleIdentityServer.Uma.Host.DTOs.Requests;
+using SimpleIdentityServer.Uma.Host.DTOs.Responses;
 
 namespace SimpleIdentityServer.Uma.Host.Controllers
 {
@@ -38,8 +40,13 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         }
 
         [HttpPost]
-        public AddResourceSetResponse AddResourceSet()
+        public AddResourceSetResponse AddResourceSet([FromBody] PostResourceSet postResourceSet)
         {
+            if (postResourceSet == null)
+            {
+                throw new ArgumentNullException(nameof(postResourceSet));
+            }
+            
             return null;
         }
 

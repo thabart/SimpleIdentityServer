@@ -1,4 +1,4 @@
-﻿#region copyright
+#region copyright
 // Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,27 +14,36 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Mvc;
-using SimpleIdentityServer.Uma.Host.DTOs.Responses;
+using SimpleIdentityServer.Uma.Core.Api.ConfigurationController.Actions;
+using SimpleIdentityServer.Uma.Core.Responses;
 
-namespace SimpleIdentityServer.Uma.Host.Controllers
+namespace SimpleIdentityServer.Uma.Core.Api.ConfigurationController
 {
-    [Route(Constants.RouteValues.Configuration)]
-    public class ConfigurationController
+    public interface IConfigurationActions
     {
+        ConfigurationResponse GetConfiguration();
+    }
+
+    public class ConfigurationActions : IConfigurationActions
+    {
+        private readonly IGetConfigurationAction _getConfigurationAction;
+    
         #region Constructor
         
-        public ConfigurationController()
+        public ConfigurationActions(IGetConfigurationAction getConfigurationAction)
         {
-            
+            _getConfigurationAction = getConfigurationAction;
         }
         
         #endregion
         
-        [HttpGet]
+        #region Public methods
+        
         public ConfigurationResponse GetConfiguration()
         {
             return null;
         }
+        
+        #endregion
     }
-}
+} 
