@@ -16,8 +16,17 @@
 
 namespace SimpleIdentityServer.Manager.Host.Extensions
 {
+    public enum DataSourceTypes
+    {
+        InMemory,
+        SqlServer,
+        SqlLite
+    }
+
     public class DatabaseOptions
     {
         public string ConnectionString { get; set; }
+
+        public DataSourceTypes DataSourceType { get; set; }
     }
 }

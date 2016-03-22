@@ -106,8 +106,18 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
                 .AllowAnyHeader()));
 
 
-            // Enable SqlServer
-            serviceCollection.AddSimpleIdentityServerSqlServer(databaseOptions.ConnectionString);
+            // Enable SQLServer
+            if (databaseOptions.DataSourceType == DataSourceTypes.SqlServer)
+            {
+                serviceCollection.AddSimpleIdentityServerSqlServer(databaseOptions.ConnectionString);
+            }
+
+            // Enable SQLite
+            if (databaseOptions.DataSourceType == DataSourceTypes.SqlLite)
+            {
+                serviceCollection.AddSimpleIdentityServerSqlLite(databaseOptions.ConnectionString);
+            }
+
             serviceCollection.AddSimpleIdentityServerCore();
             serviceCollection.AddSimpleIdentityServerManagerCore();
 

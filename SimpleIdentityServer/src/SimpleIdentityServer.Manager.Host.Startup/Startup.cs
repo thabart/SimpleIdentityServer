@@ -81,7 +81,8 @@ namespace SimpleIdentityServer.Manager.Host
             },
             new DatabaseOptions
             {
-                ConnectionString = connectionString
+                ConnectionString = connectionString,
+                DataSourceType = DataSourceTypes.SqlServer
             }, _swaggerOptions);
         }
 

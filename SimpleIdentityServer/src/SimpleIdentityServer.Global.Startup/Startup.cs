@@ -27,6 +27,7 @@ using SimpleIdentityServer.Host.Configuration;
 using SimpleIdentityServer.Manager.Host.Extensions;
 using SimpleIdentityServer.RateLimitation.Configuration;
 using Swashbuckle.SwaggerGen;
+using System;
 using System.Collections.Generic;
 
 using AuthorizationServer = SimpleIdentityServer.Host;
@@ -157,11 +158,11 @@ namespace SimpleIdentityServer.Global.Startup
                 };
                 opt.MemoryCache = new MemoryCache(new MemoryCacheOptions());
             });
-            
+
             // Configure Simple identity server
             services.AddSimpleIdentityServer(new DataSourceOptions
             {
-                DataSourceType = GetDataSourceType(),
+                DataSourceType = GetAuthorizationDataSourceType(),
                 ConnectionString = GetConnectionString(),
                 Clients = Clients.Get(),
                 JsonWebKeys = JsonWebKeys.Get(),
@@ -195,7 +196,8 @@ namespace SimpleIdentityServer.Global.Startup
             },
             new DatabaseOptions
             {
-                ConnectionString = GetConnectionString()
+                ConnectionString = GetConnectionString(),
+                DataSourceType = GetSimpleIdentityServerManagerApiDataSourceType()
             },
             _simpleIdentityServerManagerApiSwaggerOptions);
         }
@@ -209,18 +211,35 @@ namespace SimpleIdentityServer.Global.Startup
             _simpleIdentityServerManagerApiSwaggerOptions);
         }
 
-        private DataSourceTypes GetDataSourceType()
+        private AuthorizationServer.DataSourceTypes GetAuthorizationDataSourceType()
         {
             var isSqlServer = bool.Parse(Configuration["isSqlServer"]);
             var isSqlLite = bool.Parse(Configuration["isSqlLite"]);
-            var dataSourceType = DataSourceTypes.InMemory;
+            var dataSourceType = AuthorizationServer.DataSourceTypes.InMemory;
             if (isSqlServer)
             {
-                dataSourceType = DataSourceTypes.SqlServer;
+                dataSourceType = AuthorizationServer.DataSourceTypes.SqlServer;
             }
             else if (isSqlLite)
             {
-                dataSourceType = DataSourceTypes.SqlLite;
+                dataSourceType = AuthorizationServer.DataSourceTypes.SqlLite;
+            }
+
+            return dataSourceType;
+        }
+
+        private SimpleIdentityServerManagerApi.DataSourceTypes GetSimpleIdentityServerManagerApiDataSourceType()
+        {
+            var isSqlServer = bool.Parse(Configuration["isSqlServer"]);
+            var isSqlLite = bool.Parse(Configuration["isSqlLite"]);
+            var dataSourceType = SimpleIdentityServerManagerApi.DataSourceTypes.InMemory;
+            if (isSqlServer)
+            {
+                dataSourceType = SimpleIdentityServerManagerApi.DataSourceTypes.SqlServer;
+            }
+            else if (isSqlLite)
+            {
+                dataSourceType = SimpleIdentityServerManagerApi.DataSourceTypes.SqlLite;
             }
 
             return dataSourceType;
