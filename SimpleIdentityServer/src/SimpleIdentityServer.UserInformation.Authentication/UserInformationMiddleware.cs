@@ -24,9 +24,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Threading.Tasks;
+#if DNXCORE50
+using curl_sharp;
+#endif
 
 namespace SimpleIdentityServer.UserInformation.Authentication
 {
@@ -134,7 +136,8 @@ namespace SimpleIdentityServer.UserInformation.Authentication
             {
                 throw new ArgumentException(ErrorDescriptions.TheUserInfoEndPointIsNotAWellFormedUrl);
             }
-            
+
+#if DNX451
             var requestMessage = new HttpRequestMessage(HttpMethod.Get, url);
             requestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             requestMessage.Headers.Add(AuthorizationName, string.Format("Bearer {0}", token));
@@ -146,11 +149,25 @@ namespace SimpleIdentityServer.UserInformation.Authentication
 
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<Dictionary<string, string>>(content);
+#endif
+#if DNXCORE50
+            var argument = string.Format("-H \"Accept: application/json\" -H \"Authorization: Bearer {0}\" -X GET {1}",
+                token, url);
+            try
+            {
+                var content = await CurlClient.Curl(argument);
+                return JsonConvert.DeserializeObject<Dictionary<string, string>>(content);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+#endif
         }
 
-        #endregion
+#endregion
 
-        #region Private static methods
+#region Private static methods
 
         private static ClaimsPrincipal CreateClaimPrincipal(Dictionary<string, string> userInformationResponse)
         {
@@ -164,6 +181,6 @@ namespace SimpleIdentityServer.UserInformation.Authentication
             return new ClaimsPrincipal(claimsIdentity);
         }
 
-        #endregion
+#endregion
     }
 }

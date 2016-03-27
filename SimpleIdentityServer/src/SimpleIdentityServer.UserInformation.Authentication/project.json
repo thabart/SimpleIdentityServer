@@ -2,7 +2,7 @@
   "version": "1.0.0-*",
   "description": "SimpleIdentityServer.UserInformation.Authentication Class Library",
   "authors": [ "thierry habart" ],
-  "tags": [""],
+  "tags": [ "" ],
   "projectUrl": "",
   "licenseUrl": "",
 
@@ -13,7 +13,7 @@
     "Newtonsoft.Json": "8.0.2",
     "SimpleIdentityServer.Authentication.Common": ""
   },
-  
+
   "tooling": {
     "defaultNamespace": "SimpleIdentityServer.UserInformation.Authentication"
   },
@@ -25,6 +25,10 @@
         "System.Runtime.Serialization": "4.0.0.0"
       }
     },
-    "dnxcore50": { }
+    "dnxcore50": {
+      "dependencies": {        
+        "CurlSharp": "0.6.2"
+      }
+    }
   }
 }
