@@ -14,7 +14,7 @@ call dnu build src\SimpleIdentityServer.Logging
 call dnu build src\SimpleIdentityServer.DataAccess.Fake
 call dnu build src\SimpleIdentityServer.DataAccess.SqlServer
 call dnu build src\SimpleIdentityServer.Core.Jwt
-call dnu build src\SimpleIdentityServer.Common
+call dnu build src\SimpleIdentityServer.Core.Common
 
 call dnu pack src\System.Security.Cryptography.Algorithms.Extensions --out nuget\
 call dnu pack src\SimpleIdentityServer.UserInformation.Authentication --out nuget\
@@ -26,4 +26,4 @@ call dnu pack src\SimpleIdentityServer.Logging --out nuget\
 call dnu pack src\SimpleIdentityServer.DataAccess.Fake --out nuget\
 call dnu pack src\SimpleIdentityServer.DataAccess.SqlServer --out nuget\
 call dnu pack src\SimpleIdentityServer.Core.Jwt --out nuget\
-call dnu pack src\SimpleIdentityServer.Common --out nuget\
+call dnu pack src\SimpleIdentityServer.Core.Common --out nuget\
