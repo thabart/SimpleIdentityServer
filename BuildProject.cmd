@@ -15,8 +15,10 @@ call dnu build src\SimpleIdentityServer.DataAccess.Fake
 call dnu build src\SimpleIdentityServer.DataAccess.SqlServer
 call dnu build src\SimpleIdentityServer.Core.Jwt
 call dnu build src\SimpleIdentityServer.Core.Common
+call dnu build src\SimpleIdentityServer.Authentication.Common
 
 call dnu pack src\System.Security.Cryptography.Algorithms.Extensions --out nuget\
+call dnu pack src\SimpleIdentityServer.Authentication.Common --out nuget\
 call dnu pack src\SimpleIdentityServer.UserInformation.Authentication --out nuget\
 call dnu pack src\SimpleIdentityServer.RateLimitation --out nuget\
 call dnu pack src\SimpleIdentityServer.Oauth2Instrospection.Authentication --out nuget\
