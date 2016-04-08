@@ -19,12 +19,12 @@ using System.Runtime.Serialization;
 namespace SimpleIdentityServer.Uma.Host.DTOs.Responses
 {
     [DataContract]
-    public class AddResourceSetResponse
+    public class ErrorResponse
     {
-        [DataMember(Name = Constants.AddResourceSetResponseNames.Id)]
-        public string Id { get; set; }
+        [DataMember(Name = Constants.ErrorResponseNames.Error)]
+        public string Error { get; set; }
 
-        [DataMember(Name = Constants.AddResourceSetResponseNames.UserAccessPolicyUri)]
-        public string UserAccessPolicyUri { get; set; }
+        [DataMember(Name = Constants.ErrorResponseNames.ErrorDescription)]
+        public string ErrorDescription { get; set; }
     }
 }

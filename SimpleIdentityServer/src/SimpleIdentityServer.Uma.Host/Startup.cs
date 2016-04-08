@@ -16,10 +16,13 @@
 
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Hosting;
-using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.PlatformAbstractions;
+using SimpleIdentityServer.Uma.Core;
+using SimpleIdentityServer.Uma.EF;
+using SimpleIdentityServer.Uma.Host.Middlewares;
 using Swashbuckle.SwaggerGen;
 
 namespace SimpleIdentityServer.Uma.Host
@@ -41,11 +44,8 @@ namespace SimpleIdentityServer.Uma.Host
         
         public void ConfigureServices(IServiceCollection services)
         {
-            var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
-            var authorizationUrl = Configuration["AuthorizationUrl"];
-            var tokenUrl = Configuration["TokenUrl"];
-
             // Add the dependencies needed to run Swagger
+            RegisterServices(services);
             services.AddSwaggerGen();
             services.ConfigureSwaggerDocument(opts => {
                 opts.SingleApiVersion(new Info
@@ -79,6 +79,9 @@ namespace SimpleIdentityServer.Uma.Host
             // Enable CORS
             app.UseCors("AllowAll");
 
+            // Display exception
+            app.UseExceptionHandler();
+
             // Launch ASP.NET MVC
             app.UseMvc(routes =>
             {
@@ -94,5 +97,16 @@ namespace SimpleIdentityServer.Uma.Host
 
         // Entry point for the application.
         public static void Main(string[] args) => WebApplication.Run<Startup>(args);
+
+        #region Private methods
+
+        public void RegisterServices(IServiceCollection services)
+        {
+            var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
+            services.AddSimpleIdServerUmaCore();
+            services.AddSimpleIdServerUmaSqlServer(connectionString);
+        }
+
+        #endregion
     }
 }

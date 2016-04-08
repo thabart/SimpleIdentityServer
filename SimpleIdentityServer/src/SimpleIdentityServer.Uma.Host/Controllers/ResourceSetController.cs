@@ -14,17 +14,30 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Collections.Generic;
 using Microsoft.AspNet.Mvc;
+using SimpleIdentityServer.Uma.Core.Api.ResourceSetController;
 using SimpleIdentityServer.Uma.Host.DTOs.Requests;
 using SimpleIdentityServer.Uma.Host.DTOs.Responses;
+using SimpleIdentityServer.Uma.Host.Extensions;
+using System;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Uma.Host.Controllers
 {
     [Route(Constants.RouteValues.ResourceSet)]
     public class ResourceSetController
     {
+        private readonly IResourceSetActions _resourceSetActions;
+
+        #region Constructor
+
+        public ResourceSetController(IResourceSetActions resourceSetActions)
+        {
+            _resourceSetActions = resourceSetActions;
+        }
+
+        #endregion
+
         #region Public methods
 
         [HttpGet]
@@ -46,8 +59,13 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             {
                 throw new ArgumentNullException(nameof(postResourceSet));
             }
-            
-            return null;
+
+            var parameter = postResourceSet.ToParameter();
+            var result = _resourceSetActions.AddResourceSet(parameter);
+            return new AddResourceSetResponse
+            {
+                Id = result
+            };
         }
 
         [HttpPut]

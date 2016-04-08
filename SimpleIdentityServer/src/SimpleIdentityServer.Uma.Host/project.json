@@ -30,7 +30,9 @@
     "Swashbuckle.SwaggerGen": "6.0.0-rc1-final",
     "Swashbuckle.SwaggerUi": "6.0.0-rc1-final",
     "Microsoft.AspNet.Authentication.Cookies": "1.0.0-rc1-final",
-    "WebApi.Hal": "2.6.0"
+    "WebApi.Hal": "2.6.0",
+    "SimpleIdentityServer.Uma.Core": "",
+    "SimpleIdentityServer.Uma.EF": ""
   },
 
   "commands": {
@@ -43,6 +45,11 @@
       "frameworkAssemblies": {
         "System.Web": "4.0.0.0",
         "System.Runtime.Serialization": "4.0.0.0"
+      }
+    },
+    "dnxcore50": {
+      "dependencies": {        
+        "System.Runtime.Serialization.Json": "4.0.1-rc2-23826"
       }
     }
   },

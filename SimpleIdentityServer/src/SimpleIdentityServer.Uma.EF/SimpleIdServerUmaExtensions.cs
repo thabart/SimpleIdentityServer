@@ -27,7 +27,7 @@ namespace SimpleIdentityServer.Uma.EF
         #region Public static methods
 
         public static IServiceCollection AddSimpleIdServerUmaSqlServer(
-            this ServiceCollection serviceCollection,
+            this IServiceCollection serviceCollection,
             string connectionString)
         {
             if (string.IsNullOrWhiteSpace(connectionString))

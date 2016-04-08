@@ -14,27 +14,24 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Mvc;
-using SimpleIdentityServer.Uma.Host.DTOs.Responses;
+using Microsoft.Extensions.DependencyInjection;
+using SimpleIdentityServer.Uma.Core.Api.ResourceSetController;
+using SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions;
 
-namespace SimpleIdentityServer.Uma.Host.Controllers
+namespace SimpleIdentityServer.Uma.Core
 {
-    [Route(Constants.RouteValues.Configuration)]
-    public class ConfigurationController
+    public static class SimpleIdServerUmaCoreExtensions
     {
-        #region Constructor
-        
-        public ConfigurationController()
+        #region Public static methods
+
+        public static IServiceCollection AddSimpleIdServerUmaCore(
+            this IServiceCollection serviceCollection)
         {
-            
+            serviceCollection.AddTransient<IResourceSetActions, ResourceSetActions>();
+            serviceCollection.AddTransient<IAddResourceSetAction, AddResourceSetAction>();
+            return serviceCollection;
         }
-        
+
         #endregion
-        
-        [HttpGet]
-        public ConfigurationResponse GetConfiguration()
-        {
-            return null;
-        }
     }
 }

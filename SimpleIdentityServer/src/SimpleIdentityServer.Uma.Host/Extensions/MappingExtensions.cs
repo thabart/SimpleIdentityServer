@@ -14,27 +14,27 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Mvc;
-using SimpleIdentityServer.Uma.Host.DTOs.Responses;
+using SimpleIdentityServer.Uma.Core.Api.Parameters;
+using SimpleIdentityServer.Uma.Host.DTOs.Requests;
 
-namespace SimpleIdentityServer.Uma.Host.Controllers
+namespace SimpleIdentityServer.Uma.Host.Extensions
 {
-    [Route(Constants.RouteValues.Configuration)]
-    public class ConfigurationController
+    internal static class MappingExtensions
     {
-        #region Constructor
-        
-        public ConfigurationController()
+        #region To parameters
+
+        public static AddResouceSetParameter ToParameter(this PostResourceSet postResourceSet)
         {
-            
+            return new AddResouceSetParameter
+            {
+                IconUri = postResourceSet.IconUri,
+                Name = postResourceSet.Name,
+                Scopes = postResourceSet.Scopes,
+                Type = postResourceSet.Type,
+                Uri = postResourceSet.Uri
+            };
         }
-        
+
         #endregion
-        
-        [HttpGet]
-        public ConfigurationResponse GetConfiguration()
-        {
-            return null;
-        }
     }
 }

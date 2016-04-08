@@ -14,17 +14,27 @@
 // limitations under the License.
 #endregion
 
-using System.Runtime.Serialization;
+using System.IO;
+using System.Runtime.Serialization.Json;
 
-namespace SimpleIdentityServer.Uma.Host.DTOs.Responses
+namespace SimpleIdentityServer.Uma.Host.Extensions
 {
-    [DataContract]
-    public class AddResourceSetResponse
+    internal static class ObjectExtensions
     {
-        [DataMember(Name = Constants.AddResourceSetResponseNames.Id)]
-        public string Id { get; set; }
+        #region Public static methods
 
-        [DataMember(Name = Constants.AddResourceSetResponseNames.UserAccessPolicyUri)]
-        public string UserAccessPolicyUri { get; set; }
+        public static string SerializeWithDataContract(this object parameter)
+        {
+            var serializer = new DataContractJsonSerializer(parameter.GetType());
+            using (var ms = new MemoryStream())
+            {
+                serializer.WriteObject(ms, parameter);
+                ms.Position = 0;
+                var reader = new StreamReader(ms);
+                return reader.ReadToEnd();
+            }
+        }
+
+        #endregion
     }
 }

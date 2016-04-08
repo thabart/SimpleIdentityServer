@@ -14,17 +14,21 @@
 // limitations under the License.
 #endregion
 
-using System.Runtime.Serialization;
+using Microsoft.AspNet.Builder;
+using Microsoft.AspNet.Diagnostics;
 
-namespace SimpleIdentityServer.Uma.Host.DTOs.Responses
+namespace SimpleIdentityServer.Uma.Host.Middlewares
 {
-    [DataContract]
-    public class AddResourceSetResponse
+    internal static class ExceptionHandlerExtension
     {
-        [DataMember(Name = Constants.AddResourceSetResponseNames.Id)]
-        public string Id { get; set; }
+        #region Public static methods
 
-        [DataMember(Name = Constants.AddResourceSetResponseNames.UserAccessPolicyUri)]
-        public string UserAccessPolicyUri { get; set; }
+        public static IApplicationBuilder UseExceptionHandler(
+            this IApplicationBuilder applicationBuilder)
+        {
+            return applicationBuilder.UseMiddleware<ExceptionHandlerMiddleware>();
+        }
+
+        #endregion
     }
 }
