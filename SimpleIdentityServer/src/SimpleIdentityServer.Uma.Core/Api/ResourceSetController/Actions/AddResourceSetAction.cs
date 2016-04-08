@@ -88,6 +88,12 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
             };
             
             var result = _resourceSetRepository.Insert(resourceSet);
+            if (result == null)
+            {
+                throw new BaseUmaException(ErrorCodes.InternalError,
+                    ErrorDescriptions.TheResourceSetCannotBeInserted);
+            }
+
             return result.Id;
         }
     }

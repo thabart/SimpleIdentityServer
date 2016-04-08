@@ -18,6 +18,8 @@ namespace SimpleIdentityServer.Uma.Core.Errors
 {
     public static class ErrorCodes
     {
-        public const string InvalidRequestCode = "invalid_request";   
+        public const string InvalidRequestCode = "invalid_request";
+
+        public const string InternalError = "internal_error";
     }
 }
