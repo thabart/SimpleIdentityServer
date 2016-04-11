@@ -55,32 +55,47 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
 
         public ResourceSet GetResourceSetById(string id)
         {
-            var resourceSet = _simpeIdServerUmaContext.ResourceSets.FirstOrDefault(r => r.Id == id);
-            if (resourceSet == null)
+            try
+            {
+
+                var resourceSet = _simpeIdServerUmaContext.ResourceSets.FirstOrDefault(r => r.Id == id);
+                if (resourceSet == null)
+                {
+                    return null;
+                }
+
+                return resourceSet.ToDomain();
+            }
+            catch (Exception)
             {
                 return null;
             }
-
-            return resourceSet.ToDomain();
         }
 
         public ResourceSet UpdateResource(ResourceSet resourceSet)
         {
-            var record = _simpeIdServerUmaContext.ResourceSets.FirstOrDefault(r => r.Id == resourceSet.Id);
-            if (record == null)
+            try
+            {
+                var record = _simpeIdServerUmaContext.ResourceSets.FirstOrDefault(r => r.Id == resourceSet.Id);
+                if (record == null)
+                {
+                    return null;
+                }
+
+                var rs = resourceSet.ToModel();
+                record.Name = rs.Name;
+                record.Scopes = rs.Scopes;
+                record.Type = rs.Type;
+                record.Uri = rs.Uri;
+                record.IconUri = rs.IconUri;
+
+                _simpeIdServerUmaContext.SaveChanges();
+                return record.ToDomain();
+            }
+            catch (Exception)
             {
                 return null;
             }
-
-            var rs = resourceSet.ToModel();
-            record.Name = rs.Name;
-            record.Scopes = rs.Scopes;
-            record.Type = rs.Type;
-            record.Uri = rs.Uri;
-            record.IconUri = rs.IconUri;
-
-            _simpeIdServerUmaContext.SaveChanges();
-            return record.ToDomain();
         }
 
         public bool DeleteResource(string id)

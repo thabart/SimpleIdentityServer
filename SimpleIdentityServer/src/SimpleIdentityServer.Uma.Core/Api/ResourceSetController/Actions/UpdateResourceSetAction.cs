@@ -21,12 +21,13 @@ using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.Core.Validators;
 using System;
+using System.Net;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
 {
     internal interface IUpdateResourceSetAction
     {
-        string Execute(UpdateResourceSetParameter udpateResourceSetParameter);
+        HttpStatusCode Execute(UpdateResourceSetParameter udpateResourceSetParameter);
     }
 
     internal class UpdateResourceSetAction : IUpdateResourceSetAction
@@ -49,11 +50,16 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
 
         #region Public methods
 
-        public string Execute(UpdateResourceSetParameter udpateResourceSetParameter)
+        public HttpStatusCode Execute(UpdateResourceSetParameter udpateResourceSetParameter)
         {
             if (udpateResourceSetParameter == null)
             {
                 throw new ArgumentNullException(nameof(udpateResourceSetParameter));
+            }
+
+            if (_resourceSetRepository.GetResourceSetById(udpateResourceSetParameter.Id) == null)
+            {
+                return HttpStatusCode.NotFound;
             }
 
             var resourceSet = new ResourceSet
@@ -75,7 +81,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
                     string.Format(ErrorDescriptions.TheResourceSetCannotBeUpdated, resourceSet.Id));
             }
 
-            return resourceSet.Id;
+            return HttpStatusCode.OK;
         }
 
         #endregion

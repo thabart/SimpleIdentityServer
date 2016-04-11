@@ -20,6 +20,7 @@ using SimpleIdentityServer.Uma.Host.DTOs.Requests;
 using SimpleIdentityServer.Uma.Host.DTOs.Responses;
 using SimpleIdentityServer.Uma.Host.Extensions;
 using System;
+using System.Net;
 
 namespace SimpleIdentityServer.Uma.Host.Controllers
 {
@@ -40,7 +41,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         #region Public methods
 
         [HttpGet("{id}")]
-        public ResourceSetResponse GetResourceSet(string id)
+        public ActionResult GetResourceSet(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -48,11 +49,16 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             }
 
             var result = _resourceSetActions.GetResourceSet(id);
-            return result.ToResponse();
+            if (result == null)
+            {
+                return new HttpNotFoundResult();
+            }
+
+            return new HttpOkObjectResult(result);
         }
 
         [HttpPost]
-        public AddResourceSetResponse AddResourceSet([FromBody] PostResourceSet postResourceSet)
+        public ActionResult AddResourceSet([FromBody] PostResourceSet postResourceSet)
         {
             if (postResourceSet == null)
             {
@@ -61,14 +67,18 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
 
             var parameter = postResourceSet.ToParameter();
             var result = _resourceSetActions.AddResourceSet(parameter);
-            return new AddResourceSetResponse
+            var response = new AddResourceSetResponse
             {
                 Id = result
+            };
+            return new ObjectResult(response)
+            {
+                StatusCode = (int)HttpStatusCode.Created
             };
         }
 
         [HttpPut]
-        public UpdateSetResponse UpdateResourceSet([FromBody] PutResourceSet putResourceSet)
+        public ActionResult UpdateResourceSet([FromBody] PutResourceSet putResourceSet)
         {
             if (putResourceSet == null)
             {
@@ -76,11 +86,21 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             }
 
             var parameter = putResourceSet.ToParameter();
-            var resourceId = _resourceSetActions.UpdateResourceSet(parameter);
-            return new UpdateSetResponse
+            var result = _resourceSetActions.UpdateResourceSet(parameter);
+            if (result == HttpStatusCode.OK)
             {
-                Id = resourceId
-            };
+                var response = new UpdateSetResponse
+                {
+                    Id = putResourceSet.Id
+                };
+
+                return new ObjectResult(response)
+                {
+                    StatusCode = (int)result
+                };
+            }
+
+            return new HttpStatusCodeResult((int)result);
         }
 
         [HttpDelete("{id}")]

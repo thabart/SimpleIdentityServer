@@ -49,15 +49,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
                 throw new ArgumentNullException(nameof(id));
             }
 
-            var resourceSet = _resourceSetRepository.GetResourceSetById(id);
-            if (resourceSet == null)
-            {
-                throw new BaseUmaException(
-                    ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.TheResourceSetDoesntExist, id));
-            }
-
-            return resourceSet;
+            return _resourceSetRepository.GetResourceSetById(id);
         }
 
         #endregion

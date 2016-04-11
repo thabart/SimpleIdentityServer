@@ -27,7 +27,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController
 
         ResourceSet GetResourceSet(string id);
 
-        string UpdateResourceSet(UpdateResourceSetParameter updateResourceSetParameter);
+        HttpStatusCode UpdateResourceSet(UpdateResourceSetParameter updateResourceSetParameter);
 
         HttpStatusCode RemoveResourceSet(string resourceSetId);
     }
@@ -70,7 +70,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController
             return _getResourceSetAction.Execute(id);
         }
 
-        public string UpdateResourceSet(UpdateResourceSetParameter updateResourceSetParameter)
+        public HttpStatusCode UpdateResourceSet(UpdateResourceSetParameter updateResourceSetParameter)
         {
             return _updateResourceSetAction.Execute(updateResourceSetParameter);
         }

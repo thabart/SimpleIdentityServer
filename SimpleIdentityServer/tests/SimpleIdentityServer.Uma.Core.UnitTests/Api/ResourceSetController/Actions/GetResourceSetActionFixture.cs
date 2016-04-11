@@ -43,22 +43,6 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
             Assert.Throws<ArgumentNullException>(() => _getResourceSetAction.Execute(null));
         }
 
-        [Fact]
-        public void When_Resource_Set_Doesnt_Exist_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            const string resourceSetId = "id";
-            InitializeFakeObjects();
-            _resourceSetRepositoryStub.Setup(r => r.GetResourceSetById(It.IsAny<string>()))
-                .Returns(() => null);
-
-            // ACT && ASSERT
-            var exception = Assert.Throws<BaseUmaException>(() => _getResourceSetAction.Execute(resourceSetId));
-            Assert.NotNull(exception);
-            Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
-            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheResourceSetDoesntExist, resourceSetId));
-        }
-
         #endregion
 
         #region Happy path
