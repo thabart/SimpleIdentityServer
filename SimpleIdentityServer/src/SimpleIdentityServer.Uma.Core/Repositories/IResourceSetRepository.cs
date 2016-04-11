@@ -25,5 +25,7 @@ namespace SimpleIdentityServer.Uma.Core.Repositories
         ResourceSet GetResourceSetById(string id);
 
         ResourceSet UpdateResource(ResourceSet resourceSet);
+
+        bool DeleteResource(string id);
     }
 }

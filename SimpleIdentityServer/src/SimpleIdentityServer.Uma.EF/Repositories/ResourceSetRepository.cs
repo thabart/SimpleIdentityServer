@@ -83,6 +83,26 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
             return record.ToDomain();
         }
 
+        public bool DeleteResource(string id)
+        {
+            try
+            {
+                var record = _simpeIdServerUmaContext.ResourceSets.FirstOrDefault(r => r.Id == id);
+                if (record == null)
+                {
+                    return false;
+                }
+
+                _simpeIdServerUmaContext.ResourceSets.Remove(record);
+                _simpeIdServerUmaContext.SaveChanges();
+                return true;
+            }
+            catch(Exception)
+            {
+                return false;
+            }
+        }
+
         #endregion
     }
 }

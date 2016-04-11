@@ -32,6 +32,7 @@ namespace SimpleIdentityServer.Uma.Core
             serviceCollection.AddTransient<IAddResourceSetAction, AddResourceSetAction>();
             serviceCollection.AddTransient<IGetResourceSetAction, GetResourceSetAction>();
             serviceCollection.AddTransient<IUpdateResourceSetAction, UpdateResourceSetAction>();
+            serviceCollection.AddTransient<IDeleteResourceSetAction, DeleteResourceSetAction>();
             serviceCollection.AddTransient<IResourceSetParameterValidator, ResourceSetParameterValidator>();
             return serviceCollection;
         }

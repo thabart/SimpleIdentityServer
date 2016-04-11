@@ -84,7 +84,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             };
         }
 
-        [HttpGet]
+        [HttpDelete]
         public List<string> GetResourceSets()
         {
             return null;

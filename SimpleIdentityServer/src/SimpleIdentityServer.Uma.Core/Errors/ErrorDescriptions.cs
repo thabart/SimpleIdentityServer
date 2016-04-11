@@ -27,5 +27,7 @@ namespace SimpleIdentityServer.Uma.Core.Errors
         public const string TheResourceSetDoesntExist = "resource set {0} doesn't exist";
 
         public const string TheResourceSetCannotBeUpdated = "resource set {0} cannot be udpated";
+
+        public const string TheResourceSetCannotBeRemoved = "resource set {0} cannot be removed";
     }
 }

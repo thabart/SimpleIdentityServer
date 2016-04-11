@@ -17,6 +17,7 @@
 using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions;
 using SimpleIdentityServer.Uma.Core.Models;
+using System.Net;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController
 {
@@ -37,16 +38,20 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController
 
         private readonly IUpdateResourceSetAction _updateResourceSetAction;
 
+        private readonly IDeleteResourceSetAction _deleteResourceSetAction;
+
         #region Constructor
 
         public ResourceSetActions(
             IAddResourceSetAction addResourceSetAction,
             IGetResourceSetAction getResourceSetAction,
-            IUpdateResourceSetAction updateResourceSetAction)
+            IUpdateResourceSetAction updateResourceSetAction,
+            IDeleteResourceSetAction deleteResourceSetAction)
         {
             _addResourceSetAction = addResourceSetAction;
             _getResourceSetAction = getResourceSetAction;
             _updateResourceSetAction = updateResourceSetAction;
+            _deleteResourceSetAction = deleteResourceSetAction;
         }
         
         #endregion
@@ -66,6 +71,11 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController
         public string UpdateResourceSet(UpdateResourceSetParameter updateResourceSetParameter)
         {
             return _updateResourceSetAction.Execute(updateResourceSetParameter);
+        }
+
+        public HttpStatusCode RemoveResourceSet(string resourceSetId)
+        {
+            return _deleteResourceSetAction.Execute(resourceSetId);
         }
 
         #endregion
