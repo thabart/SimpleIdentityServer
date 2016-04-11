@@ -15,59 +15,55 @@
 #endregion
 
 using Moq;
-using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions;
 using SimpleIdentityServer.Uma.Core.Errors;
 using SimpleIdentityServer.Uma.Core.Exceptions;
 using SimpleIdentityServer.Uma.Core.Models;
+using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.Core.Validators;
 using System;
-using System.Collections.Generic;
 using Xunit;
 
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Actions
 {
-    public class AddResourceSetActionFixture
+    public class UpdateResourceSetActionFixture
     {
         private Mock<IResourceSetRepository> _resourceSetRepositoryStub;
 
-        private Mock<IResourceSetParameterValidator> _resourceSetParameterValidatorStub;
+        private Mock<IResourceSetParameterValidator> _resourceSetParameterValidator;
 
-        private IAddResourceSetAction _addResourceSetAction;
+        private IUpdateResourceSetAction _updateResourceSetAction;
 
         #region Exceptions
 
         [Fact]
-        public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
+        public void When_Passing_No_Parameter_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _addResourceSetAction.Execute(null));
+            Assert.Throws<ArgumentNullException>(() => _updateResourceSetAction.Execute(null));
         }
 
         [Fact]
-        public void When_Resource_Set_Cannot_Be_Inserted_Then_Exception_Is_Thrown()
+        public void When_ResourceSet_Cannot_Be_Updated_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
-            var addResourceParameter = new AddResouceSetParameter
+            var udpateResourceSetParameter = new UpdateResourceSetParameter
             {
-                Name = "name",
-                Scopes = new List<string> { "scope" },
-                IconUri = "http://localhost",
-                Uri = "http://localhost"
+                Id = "id"
             };
-            _resourceSetRepositoryStub.Setup(r => r.Insert(It.IsAny<ResourceSet>()))
+            _resourceSetRepositoryStub.Setup(r => r.UpdateResource(It.IsAny<ResourceSet>()))
                 .Returns(() => null);
 
             // ACT & ASSERTS
-            var exception = Assert.Throws<BaseUmaException>(() => _addResourceSetAction.Execute(addResourceParameter));
+            var exception = Assert.Throws<BaseUmaException>(() => _updateResourceSetAction.Execute(udpateResourceSetParameter));
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InternalError);
-            Assert.True(exception.Message == ErrorDescriptions.TheResourceSetCannotBeInserted);
+            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheResourceSetCannotBeUpdated, udpateResourceSetParameter.Id));
         }
 
         #endregion
@@ -75,27 +71,29 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
         #region Happy path
 
         [Fact]
-        public void When_ResourceSet_Is_Inserted_Then_Id_Is_Returned()
+        public void When_A_ResourceSet_Is_Updated_Then_Its_Id_Is_Returned()
         {
             // ARRANGE
-            InitializeFakeObjects();
             const string id = "id";
-            var addResourceParameter = new AddResouceSetParameter
+            InitializeFakeObjects();
+            var udpateResourceSetParameter = new UpdateResourceSetParameter
             {
-                Name = "name",
-                Scopes = new List<string> { "scope" },
-                IconUri = "http://localhost",
-                Uri = "http://localhost"
+                Id = id
             };
-            _resourceSetRepositoryStub.Setup(r => r.Insert(It.IsAny<ResourceSet>()))
-                .Returns(new ResourceSet { Id = id });
+            var resourceSet = new ResourceSet
+            {
+                Id = id
+            };
+            _resourceSetRepositoryStub.Setup(r => r.UpdateResource(It.IsAny<ResourceSet>()))
+                .Returns(resourceSet);
 
             // ACT
-            var result = _addResourceSetAction.Execute(addResourceParameter);
+            var result = _updateResourceSetAction.Execute(udpateResourceSetParameter);
 
             // ASSERTS
             Assert.NotNull(result);
             Assert.True(result == id);
+
         }
 
         #endregion
@@ -103,10 +101,10 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
         private void InitializeFakeObjects()
         {
             _resourceSetRepositoryStub = new Mock<IResourceSetRepository>();
-            _resourceSetParameterValidatorStub = new Mock<IResourceSetParameterValidator>();
-            _addResourceSetAction = new AddResourceSetAction(
+            _resourceSetParameterValidator = new Mock<IResourceSetParameterValidator>();
+            _updateResourceSetAction = new UpdateResourceSetAction(
                 _resourceSetRepositoryStub.Object,
-                _resourceSetParameterValidatorStub.Object);
+                _resourceSetParameterValidator.Object);
         }
     }
 }
