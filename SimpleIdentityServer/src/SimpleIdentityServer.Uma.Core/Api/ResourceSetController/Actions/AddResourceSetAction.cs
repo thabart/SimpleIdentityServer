@@ -24,12 +24,12 @@ using SimpleIdentityServer.Uma.Core.Repositories;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
 {
-    public interface IAddResourceSetAction
+    internal interface IAddResourceSetAction
     {
         string Execute(AddResouceSetParameter addResourceSetParameter);
     }
-    
-    public class AddResourceSetAction : IAddResourceSetAction
+
+    internal class AddResourceSetAction : IAddResourceSetAction
     {
         private readonly IResourceSetRepository _resourceSetRepository;
     

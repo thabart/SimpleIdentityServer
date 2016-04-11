@@ -20,6 +20,8 @@ namespace SimpleIdentityServer.Uma.Core.Repositories
 {
     public interface IResourceSetRepository
     {
-        ResourceSet Insert(ResourceSet resourceSet);   
+        ResourceSet Insert(ResourceSet resourceSet);
+
+        ResourceSet GetResourceSetById(string id);
     }
 }

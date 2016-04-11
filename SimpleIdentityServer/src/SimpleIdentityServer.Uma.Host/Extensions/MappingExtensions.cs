@@ -15,7 +15,9 @@
 #endregion
 
 using SimpleIdentityServer.Uma.Core.Api.Parameters;
+using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Host.DTOs.Requests;
+using SimpleIdentityServer.Uma.Host.DTOs.Responses;
 
 namespace SimpleIdentityServer.Uma.Host.Extensions
 {
@@ -32,6 +34,23 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
                 Scopes = postResourceSet.Scopes,
                 Type = postResourceSet.Type,
                 Uri = postResourceSet.Uri
+            };
+        }
+
+        #endregion
+
+        #region To responses
+
+        public static ResourceSetResponse ToResponse(this ResourceSet resourceSet)
+        {
+            return new ResourceSetResponse
+            {
+                Id = resourceSet.Id,
+                IconUri = resourceSet.IconUri,
+                Name = resourceSet.Name,
+                Scopes = resourceSet.Scopes,
+                Type = resourceSet.Type,
+                Uri = resourceSet.Uri 
             };
         }
 

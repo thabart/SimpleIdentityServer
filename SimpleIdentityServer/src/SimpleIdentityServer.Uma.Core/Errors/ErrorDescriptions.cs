@@ -23,5 +23,7 @@ namespace SimpleIdentityServer.Uma.Core.Errors
         public const string TheUrlIsNotWellFormed = "the url {0} is not well formed";
 
         public const string TheResourceSetCannotBeInserted = "an error occured while trying to insert the resource set";
+
+        public const string TheResourceSetDoesntExist = "resource set {0} doesn't exist";
     }
 }

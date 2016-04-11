@@ -47,9 +47,15 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         }
 
         [HttpGet("{id}")]
-        public ResourceSetResponse GetResourceSet()
+        public ResourceSetResponse GetResourceSet(string id)
         {
-            return null;
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            var result = _resourceSetActions.GetResourceSet(id);
+            return result.ToResponse();
         }
 
         [HttpPost]

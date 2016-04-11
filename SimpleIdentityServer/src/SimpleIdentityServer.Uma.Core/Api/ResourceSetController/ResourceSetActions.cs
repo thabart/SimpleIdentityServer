@@ -16,23 +16,31 @@
 
 using SimpleIdentityServer.Uma.Core.Api.Parameters;
 using SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions;
+using SimpleIdentityServer.Uma.Core.Models;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController
 {
     public interface IResourceSetActions
     {
-        string AddResourceSet(AddResouceSetParameter addResouceSetParameter); 
+        string AddResourceSet(AddResouceSetParameter addResouceSetParameter);
+
+        ResourceSet GetResourceSet(string id);
     }
 
-    public class ResourceSetActions : IResourceSetActions
+    internal class ResourceSetActions : IResourceSetActions
     {
         private readonly IAddResourceSetAction _addResourceSetAction;
-    
+
+        private readonly IGetResourceSetAction _getResourceSetAction;
+
         #region Constructor
-        
-        public ResourceSetActions(IAddResourceSetAction addResourceSetAction)
+
+        public ResourceSetActions(
+            IAddResourceSetAction addResourceSetAction,
+            IGetResourceSetAction getResourceSetAction)
         {
             _addResourceSetAction = addResourceSetAction;
+            _getResourceSetAction = getResourceSetAction;
         }
         
         #endregion
@@ -42,6 +50,11 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController
         public string AddResourceSet(AddResouceSetParameter addResouceSetParameter)
         {
             return _addResourceSetAction.Execute(addResouceSetParameter);
+        }
+
+        public ResourceSet GetResourceSet(string id)
+        {
+            return _getResourceSetAction.Execute(id);
         }
         
         #endregion

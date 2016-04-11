@@ -18,6 +18,7 @@ using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.EF.Extensions;
 using System;
+using System.Linq;
 
 namespace SimpleIdentityServer.Uma.EF.Repositories
 {
@@ -50,6 +51,17 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
             {
                 return null;
             }
+        }
+
+        public ResourceSet GetResourceSetById(string id)
+        {
+            var resourceSet = _simpeIdServerUmaContext.ResourceSets.FirstOrDefault(r => r.Id == id);
+            if (resourceSet == null)
+            {
+                return null;
+            }
+
+            return resourceSet.ToDomain();
         }
 
         #endregion
