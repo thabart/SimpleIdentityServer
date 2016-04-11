@@ -14,7 +14,7 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Uma.Core.Api.Parameters;
+using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions;
 using SimpleIdentityServer.Uma.Core.Models;
 
@@ -25,6 +25,8 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController
         string AddResourceSet(AddResouceSetParameter addResouceSetParameter);
 
         ResourceSet GetResourceSet(string id);
+
+        string UpdateResourceSet(UpdateResourceSetParameter updateResourceSetParameter);
     }
 
     internal class ResourceSetActions : IResourceSetActions
@@ -33,14 +35,18 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController
 
         private readonly IGetResourceSetAction _getResourceSetAction;
 
+        private readonly IUpdateResourceSetAction _updateResourceSetAction;
+
         #region Constructor
 
         public ResourceSetActions(
             IAddResourceSetAction addResourceSetAction,
-            IGetResourceSetAction getResourceSetAction)
+            IGetResourceSetAction getResourceSetAction,
+            IUpdateResourceSetAction updateResourceSetAction)
         {
             _addResourceSetAction = addResourceSetAction;
             _getResourceSetAction = getResourceSetAction;
+            _updateResourceSetAction = updateResourceSetAction;
         }
         
         #endregion
@@ -56,7 +62,12 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController
         {
             return _getResourceSetAction.Execute(id);
         }
-        
+
+        public string UpdateResourceSet(UpdateResourceSetParameter updateResourceSetParameter)
+        {
+            return _updateResourceSetAction.Execute(updateResourceSetParameter);
+        }
+
         #endregion
     }
 }

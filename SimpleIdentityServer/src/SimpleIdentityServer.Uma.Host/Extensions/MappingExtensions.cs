@@ -14,7 +14,7 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Uma.Core.Api.Parameters;
+using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Host.DTOs.Requests;
 using SimpleIdentityServer.Uma.Host.DTOs.Responses;
@@ -34,6 +34,19 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
                 Scopes = postResourceSet.Scopes,
                 Type = postResourceSet.Type,
                 Uri = postResourceSet.Uri
+            };
+        }
+
+        public static UpdateResourceSetParameter ToParameter(this PutResourceSet putResourceSet)
+        {
+            return new UpdateResourceSetParameter
+            {
+                Id = putResourceSet.Id,
+                Name = putResourceSet.Name,
+                IconUri = putResourceSet.IconUri,
+                Scopes = putResourceSet.Scopes,
+                Type = putResourceSet.Type,
+                Uri = putResourceSet.Uri
             };
         }
 

@@ -40,12 +40,6 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
 
         #region Public methods
 
-        [HttpGet]
-        public List<string> GetResourceSets()
-        {
-            return null;
-        }
-
         [HttpGet("{id}")]
         public ResourceSetResponse GetResourceSet(string id)
         {
@@ -75,7 +69,23 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         }
 
         [HttpPut]
-        public UpdateSetResponse UpdateResourceSet()
+        public UpdateSetResponse UpdateResourceSet([FromBody] PutResourceSet putResourceSet)
+        {
+            if (putResourceSet == null)
+            {
+                throw new ArgumentNullException(nameof(putResourceSet));
+            }
+
+            var parameter = putResourceSet.ToParameter();
+            var resourceId = _resourceSetActions.UpdateResourceSet(parameter);
+            return new UpdateSetResponse
+            {
+                Id = resourceId
+            };
+        }
+
+        [HttpGet]
+        public List<string> GetResourceSets()
         {
             return null;
         }

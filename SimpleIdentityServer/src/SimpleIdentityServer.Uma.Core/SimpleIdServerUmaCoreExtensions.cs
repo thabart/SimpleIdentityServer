@@ -17,6 +17,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Uma.Core.Api.ResourceSetController;
 using SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions;
+using SimpleIdentityServer.Uma.Core.Validators;
 
 namespace SimpleIdentityServer.Uma.Core
 {
@@ -30,6 +31,8 @@ namespace SimpleIdentityServer.Uma.Core
             serviceCollection.AddTransient<IResourceSetActions, ResourceSetActions>();
             serviceCollection.AddTransient<IAddResourceSetAction, AddResourceSetAction>();
             serviceCollection.AddTransient<IGetResourceSetAction, GetResourceSetAction>();
+            serviceCollection.AddTransient<IUpdateResourceSetAction, UpdateResourceSetAction>();
+            serviceCollection.AddTransient<IResourceSetParameterValidator, ResourceSetParameterValidator>();
             return serviceCollection;
         }
 

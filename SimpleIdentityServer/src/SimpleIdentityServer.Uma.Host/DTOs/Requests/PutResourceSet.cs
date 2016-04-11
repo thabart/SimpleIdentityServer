@@ -1,4 +1,4 @@
-#region copyright
+﻿#region copyright
 // Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,32 +20,35 @@ using System.Runtime.Serialization;
 namespace SimpleIdentityServer.Uma.Host.DTOs.Requests
 {
     [DataContract]
-    public class PostResourceSet
+    public class PutResourceSet
     {
+        [DataMember(Name = Constants.ResourceSetResponseNames.Id)]
+        public string Id { get; set; }
+
         /// <summary>
         /// Human-readable string describing a set of one or more resources.
         /// </summary>
         [DataMember(Name = Constants.ResourceSetResponseNames.Name)]
         public string Name { get; set; }
-                
+
         /// <summary>
         /// Network location for the resource set being registered.
         /// </summary>
         [DataMember(Name = Constants.ResourceSetResponseNames.Uri)]
         public string Uri { get; set; }
-               
+
         /// <summary>
         /// String uniquely identifying the semantics of the resource set.
         /// </summary>
         [DataMember(Name = Constants.ResourceSetResponseNames.Type)]
         public string Type { get; set; }
-        
+
         /// <summary>
         /// Available scopes for this resource set.
         /// </summary>
         [DataMember(Name = Constants.ResourceSetResponseNames.Scopes)]
         public List<string> Scopes { get; set; }
-        
+
         /// <summary>
         /// URI for a graphic icon representing the resource set.
         /// </summary>

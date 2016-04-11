@@ -23,5 +23,7 @@ namespace SimpleIdentityServer.Uma.Core.Repositories
         ResourceSet Insert(ResourceSet resourceSet);
 
         ResourceSet GetResourceSetById(string id);
+
+        ResourceSet UpdateResource(ResourceSet resourceSet);
     }
 }

@@ -1,4 +1,4 @@
-#region copyright
+﻿#region copyright
 // Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,22 +14,22 @@
 // limitations under the License.
 #endregion
 
-using System;
-using SimpleIdentityServer.Uma.Core.Parameters;
-using SimpleIdentityServer.Uma.Core.Exceptions;
 using SimpleIdentityServer.Uma.Core.Errors;
+using SimpleIdentityServer.Uma.Core.Exceptions;
 using SimpleIdentityServer.Uma.Core.Models;
+using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.Core.Validators;
+using System;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
 {
-    internal interface IAddResourceSetAction
+    internal interface IUpdateResourceSetAction
     {
-        string Execute(AddResouceSetParameter addResourceSetParameter);
+        string Execute(UpdateResourceSetParameter udpateResourceSetParameter);
     }
 
-    internal class AddResourceSetAction : IAddResourceSetAction
+    internal class UpdateResourceSetAction : IUpdateResourceSetAction
     {
         private readonly IResourceSetRepository _resourceSetRepository;
 
@@ -37,41 +37,47 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
 
         #region Constructor
 
-        public AddResourceSetAction(
+        public UpdateResourceSetAction(
             IResourceSetRepository resourceSetRepository,
             IResourceSetParameterValidator resourceSetParameterValidator)
         {
             _resourceSetRepository = resourceSetRepository;
             _resourceSetParameterValidator = resourceSetParameterValidator;
         }
-        
+
         #endregion
-    
-        public string Execute(AddResouceSetParameter addResourceSetParameter)
+
+        #region Public methods
+
+        public string Execute(UpdateResourceSetParameter udpateResourceSetParameter)
         {
-            if (addResourceSetParameter == null)
+            if (udpateResourceSetParameter == null)
             {
-                throw new ArgumentNullException(nameof(addResourceSetParameter));
+                throw new ArgumentNullException(nameof(udpateResourceSetParameter));
             }
-            
+
             var resourceSet = new ResourceSet
             {
-                Name = addResourceSetParameter.Name,
-                Uri = addResourceSetParameter.Uri,
-                Type = addResourceSetParameter.Type,
-                Scopes = addResourceSetParameter.Scopes,
-                IconUri = addResourceSetParameter.IconUri
+                Id = udpateResourceSetParameter.Id,
+                Name = udpateResourceSetParameter.Name,
+                Uri = udpateResourceSetParameter.Uri,
+                Type = udpateResourceSetParameter.Type,
+                Scopes = udpateResourceSetParameter.Scopes,
+                IconUri = udpateResourceSetParameter.IconUri
             };
 
             _resourceSetParameterValidator.CheckResourceSetParameter(resourceSet);
-            var result = _resourceSetRepository.Insert(resourceSet);
+            var result = _resourceSetRepository.UpdateResource(resourceSet);
             if (result == null)
             {
-                throw new BaseUmaException(ErrorCodes.InternalError,
-                    ErrorDescriptions.TheResourceSetCannotBeInserted);
+                throw new BaseUmaException(
+                    ErrorCodes.InternalError,
+                    string.Format(ErrorDescriptions.TheResourceSetCannotBeUpdated, resourceSet.Id));
             }
 
-            return result.Id;
+            return resourceSet.Id;
         }
+
+        #endregion
     }
 }

@@ -16,7 +16,7 @@
 
 using System.Collections.Generic;
 
-namespace SimpleIdentityServer.Uma.Core.Api.Parameters
+namespace SimpleIdentityServer.Uma.Core.Parameters
 {
     public class AddResouceSetParameter
     {

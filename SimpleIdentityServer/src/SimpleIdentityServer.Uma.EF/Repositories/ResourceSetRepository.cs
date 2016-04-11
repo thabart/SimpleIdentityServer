@@ -64,6 +64,25 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
             return resourceSet.ToDomain();
         }
 
+        public ResourceSet UpdateResource(ResourceSet resourceSet)
+        {
+            var record = _simpeIdServerUmaContext.ResourceSets.FirstOrDefault(r => r.Id == resourceSet.Id);
+            if (record == null)
+            {
+                return null;
+            }
+
+            var rs = resourceSet.ToModel();
+            record.Name = rs.Name;
+            record.Scopes = rs.Scopes;
+            record.Type = rs.Type;
+            record.Uri = rs.Uri;
+            record.IconUri = rs.IconUri;
+
+            _simpeIdServerUmaContext.SaveChanges();
+            return record.ToDomain();
+        }
+
         #endregion
     }
 }

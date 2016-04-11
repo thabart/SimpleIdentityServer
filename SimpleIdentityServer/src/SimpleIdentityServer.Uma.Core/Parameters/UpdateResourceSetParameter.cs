@@ -1,4 +1,4 @@
-#region copyright
+﻿#region copyright
 // Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,18 +14,22 @@
 // limitations under the License.
 #endregion
 
-namespace SimpleIdentityServer.Uma.Core.Errors
-{
-    public static class ErrorDescriptions
+using System.Collections.Generic;
+
+namespace SimpleIdentityServer.Uma.Core.Parameters
+{    
+    public class UpdateResourceSetParameter
     {
-        public const string TheParameterNeedsToBeSpecified = "the parameter {0} needs to be specified";   
-        
-        public const string TheUrlIsNotWellFormed = "the url {0} is not well formed";
+        public string Id { get; set; }
 
-        public const string TheResourceSetCannotBeInserted = "an error occured while trying to insert the resource set";
+        public string Name { get; set; }
 
-        public const string TheResourceSetDoesntExist = "resource set {0} doesn't exist";
+        public string Uri { get; set; }
 
-        public const string TheResourceSetCannotBeUpdated = "resource set {0} cannot be udpated";
+        public string Type { get; set; }
+
+        public List<string> Scopes { get; set; }
+
+        public string IconUri { get; set; }
     }
 }
