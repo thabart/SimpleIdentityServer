@@ -28,6 +28,8 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController
         ResourceSet GetResourceSet(string id);
 
         string UpdateResourceSet(UpdateResourceSetParameter updateResourceSetParameter);
+
+        HttpStatusCode RemoveResourceSet(string resourceSetId);
     }
 
     internal class ResourceSetActions : IResourceSetActions

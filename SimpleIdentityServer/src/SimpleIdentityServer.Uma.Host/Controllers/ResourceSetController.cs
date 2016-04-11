@@ -20,7 +20,6 @@ using SimpleIdentityServer.Uma.Host.DTOs.Requests;
 using SimpleIdentityServer.Uma.Host.DTOs.Responses;
 using SimpleIdentityServer.Uma.Host.Extensions;
 using System;
-using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Uma.Host.Controllers
 {
@@ -84,10 +83,16 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             };
         }
 
-        [HttpDelete]
-        public List<string> GetResourceSets()
+        [HttpDelete("{id}")]
+        public ActionResult DeleleteResourceSet(string id)
         {
-            return null;
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            var code = _resourceSetActions.RemoveResourceSet(id);
+            return new HttpStatusCodeResult((int)code);
         }
 
         #endregion
