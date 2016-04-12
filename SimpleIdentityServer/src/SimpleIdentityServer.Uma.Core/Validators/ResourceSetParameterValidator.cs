@@ -37,8 +37,8 @@ namespace SimpleIdentityServer.Uma.Core.Validators
             {
                 throw new ArgumentNullException(nameof(resourceSet));
             }
-            // 1. Check parameters
-            if (String.IsNullOrWhiteSpace(resourceSet.Name))
+
+            if (string.IsNullOrWhiteSpace(resourceSet.Name))
             {
                 throw new BaseUmaException(ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "name"));
@@ -51,14 +51,14 @@ namespace SimpleIdentityServer.Uma.Core.Validators
                     string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "scopes"));
             }
 
-            if (!String.IsNullOrWhiteSpace(resourceSet.IconUri) &&
+            if (!string.IsNullOrWhiteSpace(resourceSet.IconUri) &&
                 !Uri.IsWellFormedUriString(resourceSet.IconUri, UriKind.Absolute))
             {
                 throw new BaseUmaException(ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, resourceSet.IconUri));
             }
 
-            if (!String.IsNullOrWhiteSpace(resourceSet.Uri) &&
+            if (!string.IsNullOrWhiteSpace(resourceSet.Uri) &&
                 !Uri.IsWellFormedUriString(resourceSet.Uri, UriKind.Absolute))
             {
                 throw new BaseUmaException(ErrorCodes.InvalidRequestCode,

@@ -24,9 +24,12 @@ namespace SimpleIdentityServer.Uma.EF
     {
         public virtual DbSet<ResourceSet> ResourceSets { get; set; }
 
+        public virtual DbSet<Scope> Scopes { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.AddResourceSetMappings();
+            modelBuilder.AddScopeMappings();
         }
     }
 }

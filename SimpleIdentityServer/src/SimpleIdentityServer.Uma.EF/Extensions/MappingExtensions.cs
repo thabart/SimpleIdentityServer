@@ -44,6 +44,16 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
             };
         }
 
+        public static Domain.Scope ToDomain(this Model.Scope scope)
+        {
+            return new Domain.Scope
+            {
+                Id = scope.Id,
+                Name = scope.Name,
+                IconUri = scope.IconUri
+            };
+        }
+
         #endregion
 
         #region To Models
@@ -65,6 +75,16 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
                 Id = resourceSet.Id,
                 Type = resourceSet.Type,
                 Uri = resourceSet.Uri
+            };
+        }
+
+        public static Model.Scope ToModel(this Domain.Scope scope)
+        {
+            return new Model.Scope
+            {
+                Id = scope.Id,
+                Name = scope.Name,
+                IconUri = scope.IconUri
             };
         }
 

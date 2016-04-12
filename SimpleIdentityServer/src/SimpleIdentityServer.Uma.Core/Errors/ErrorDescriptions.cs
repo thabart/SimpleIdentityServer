@@ -31,5 +31,11 @@ namespace SimpleIdentityServer.Uma.Core.Errors
         public const string TheResourceSetCannotBeRemoved = "resource set {0} cannot be removed";
 
         public const string TheResourceSetsCannotBeRetrieved = "resource sets cannot be retrieved";
+
+        public const string TheScopeCannotBeRetrieved = "scope cannot be retrieved";
+
+        public const string TheScopeCannotBeInserted = "scope cannot be inserted";
+
+        public const string TheScopeAlreadyExists = "scope {0} already exists";
     }
 }

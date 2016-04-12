@@ -17,6 +17,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Uma.Core.Api.ResourceSetController;
 using SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions;
+using SimpleIdentityServer.Uma.Core.Api.ScopeController;
+using SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions;
 using SimpleIdentityServer.Uma.Core.Validators;
 
 namespace SimpleIdentityServer.Uma.Core
@@ -35,6 +37,11 @@ namespace SimpleIdentityServer.Uma.Core
             serviceCollection.AddTransient<IDeleteResourceSetAction, DeleteResourceSetAction>();
             serviceCollection.AddTransient<IGetAllResourceSetAction, GetAllResourceSetAction>();
             serviceCollection.AddTransient<IResourceSetParameterValidator, ResourceSetParameterValidator>();
+            serviceCollection.AddTransient<IGetScopeAction, GetScopeAction>();
+            serviceCollection.AddTransient<IScopeActions, ScopeActions>();
+            serviceCollection.AddTransient<IAddScopeParameterValidator, AddScopeParameterValidator>();
+            serviceCollection.AddTransient<IInsertScopeAction, InsertScopeAction>();
+            serviceCollection.AddTransient<IScopeActions, ScopeActions>();
             return serviceCollection;
         }
 
