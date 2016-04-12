@@ -67,6 +67,26 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ScopeController.Actions
         }
 
         [Fact]
+        public void When_Scope_Already_Exists_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            const string scopeId = "scope_id";
+            var addScopeParameter = new AddScopeParameter
+            {
+                Id = scopeId
+            };
+            _scopeRepositoryStub.Setup(s => s.GetScope(It.IsAny<string>()))
+                .Returns(new Scope());
+
+            // ACT & ASSERTS
+            var exception = Assert.Throws<BaseUmaException>(() => _insertScopeAction.Execute(addScopeParameter));
+            Assert.NotNull(exception);
+            Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
+            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheScopeAlreadyExists, scopeId));
+        }
+
+        [Fact]
         public void When_An_Error_Occured_While_Inserted_Scope_Then_Exception_Is_Thrown()
         {
             // ARRANGE
