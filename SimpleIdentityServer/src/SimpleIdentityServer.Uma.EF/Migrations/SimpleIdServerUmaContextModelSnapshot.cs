@@ -34,6 +34,19 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
 
                     b.HasAnnotation("Relational:TableName", "ResourceSets");
                 });
+
+            modelBuilder.Entity("SimpleIdentityServer.Uma.EF.Models.Scope", b =>
+                {
+                    b.Property<string>("Id");
+
+                    b.Property<string>("IconUri");
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("Id");
+
+                    b.HasAnnotation("Relational:TableName", "Scopes");
+                });
         }
     }
 }

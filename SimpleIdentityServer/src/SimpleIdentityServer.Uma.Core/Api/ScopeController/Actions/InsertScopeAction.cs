@@ -68,7 +68,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions
                     ex);
             }
 
-            if (scope == null)
+            if (scope != null)
             {
                 throw new BaseUmaException(ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.TheScopeAlreadyExists, addScopeParameter.Id));

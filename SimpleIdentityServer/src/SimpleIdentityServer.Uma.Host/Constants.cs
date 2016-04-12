@@ -23,6 +23,8 @@ namespace SimpleIdentityServer.Uma.Host
             public const string Configuration = ".well-known/uma-configuration";
 
             public const string ResourceSet = "rs/resource_set";
+
+            public const string Scope = "scopes";
         }
 
         public static class ConfigurationResponseNames
@@ -84,6 +86,15 @@ namespace SimpleIdentityServer.Uma.Host
             public const string IconUri = "icon_uri";
         }
 
+        public static class ScopeResponseNames
+        {
+            public const string Id = "id";
+
+            public const string Name = "name";
+
+            public const string IconUri = "icon_uri";
+        }
+
         public static class AddResourceSetResponseNames
         {
             public const string Id = "_id";
@@ -106,6 +117,8 @@ namespace SimpleIdentityServer.Uma.Host
         public static class ErrorDescriptions
         {
             public const string ResourceSetNotFound = "resource cannot be found";
+
+            public const string ScopeNotFound = "scope cannot be found";
         }
     }
 }

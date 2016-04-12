@@ -50,6 +50,26 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
             };
         }
 
+        public static AddScopeParameter ToParameter(this PostScope postScope)
+        {
+            return new AddScopeParameter
+            {
+                Id = postScope.Id,
+                Name = postScope.Name,
+                IconUri = postScope.IconUri
+            };
+        }
+
+        public static UpdateScopeParameter ToParameter(this PutScope putScope)
+        {
+            return new UpdateScopeParameter
+            {
+                Id = putScope.Id,
+                Name = putScope.Name,
+                IconUri = putScope.IconUri
+            };
+        }
+
         #endregion
 
         #region To responses
@@ -64,6 +84,15 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
                 Scopes = resourceSet.Scopes,
                 Type = resourceSet.Type,
                 Uri = resourceSet.Uri 
+            };
+        }
+
+        public static ScopeResponse ToResponse(this Scope scope)
+        {
+            return new ScopeResponse
+            {
+                IconUri = scope.IconUri,
+                Name = scope.Name
             };
         }
 

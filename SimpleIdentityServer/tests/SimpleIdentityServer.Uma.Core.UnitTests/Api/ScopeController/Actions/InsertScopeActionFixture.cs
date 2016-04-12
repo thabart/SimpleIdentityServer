@@ -73,7 +73,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ScopeController.Actions
             InitializeFakeObjects();
             var addScopeParameter = new AddScopeParameter();
             _scopeRepositoryStub.Setup(s => s.GetScope(It.IsAny<string>()))
-                .Returns(new Scope());
+                .Returns(() => null);
             _scopeRepositoryStub.Setup(s => s.InsertScope(It.IsAny<Scope>()))
                 .Callback(() =>
                 {
@@ -98,7 +98,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ScopeController.Actions
             InitializeFakeObjects();
             var addScopeParameter = new AddScopeParameter();
             _scopeRepositoryStub.Setup(s => s.GetScope(It.IsAny<string>()))
-                .Returns(new Scope());
+                .Returns(() => null);
             _scopeRepositoryStub.Setup(s => s.InsertScope(It.IsAny<Scope>()))
                 .Returns(new Scope());
 

@@ -44,6 +44,7 @@ namespace SimpleIdentityServer.Uma.Core
             serviceCollection.AddTransient<IScopeActions, ScopeActions>();
             serviceCollection.AddTransient<IUpdateScopeAction, UpdateScopeAction>();
             serviceCollection.AddTransient<IDeleteScopeAction, DeleteScopeAction>();
+            serviceCollection.AddTransient<IGetScopesAction, GetScopesAction>();
             return serviceCollection;
         }
 
