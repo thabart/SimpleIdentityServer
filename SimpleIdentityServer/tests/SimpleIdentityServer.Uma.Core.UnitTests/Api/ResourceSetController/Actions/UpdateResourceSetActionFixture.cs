@@ -52,10 +52,17 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
         {
             // ARRANGE
             InitializeFakeObjects();
+            const string id = "id";
             var udpateResourceSetParameter = new UpdateResourceSetParameter
             {
-                Id = "id"
+                Id = id
             };
+            var resourceSet = new ResourceSet
+            {
+                Id = id
+            };
+            _resourceSetRepositoryStub.Setup(r => r.GetResourceSetById(It.IsAny<string>()))
+                .Returns(resourceSet);
             _resourceSetRepositoryStub.Setup(r => r.UpdateResource(It.IsAny<ResourceSet>()))
                 .Returns(() => null);
 
@@ -71,7 +78,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
         #region Happy path
 
         [Fact]
-        public void When_A_ResourceSet_Is_Updated_Then_Its_Id_Is_Returned()
+        public void When_A_ResourceSet_Is_Updated_Then_Http_Ok_Is_Returned()
         {
             // ARRANGE
             const string id = "id";
@@ -84,6 +91,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
             {
                 Id = id
             };
+            _resourceSetRepositoryStub.Setup(r => r.GetResourceSetById(It.IsAny<string>()))
+                .Returns(resourceSet);
             _resourceSetRepositoryStub.Setup(r => r.UpdateResource(It.IsAny<ResourceSet>()))
                 .Returns(resourceSet);
 
@@ -92,7 +101,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
 
             // ASSERTS
             Assert.NotNull(result);
-            Assert.True(result == id);
+            Assert.True(result);
 
         }
 

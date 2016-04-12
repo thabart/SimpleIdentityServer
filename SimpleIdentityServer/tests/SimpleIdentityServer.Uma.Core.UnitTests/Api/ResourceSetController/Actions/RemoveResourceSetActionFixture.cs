@@ -31,7 +31,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
         }
 
         [Fact]
-        public void When_ResourceSet_Doesnt_Exist_Then_Not_Found_Is_Returned()
+        public void When_ResourceSet_Doesnt_Exist_Then_False_Is_Returned()
         {
             // ARRANGE
             const string resourceSetId = "resourceSetId";
@@ -43,7 +43,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
             var result = _deleteResourceSetAction.Execute(resourceSetId);
 
             // ASSERT
-            Assert.True(result == HttpStatusCode.NotFound);
+            Assert.False(result);
         }
 
         [Fact]
@@ -69,7 +69,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
         #region Happy path
 
         [Fact]
-        public void When_ResourceSet_Is_Removed_Then_No_Content_Is_Returned()
+        public void When_ResourceSet_Is_Removed_Then_True_Is_Returned()
         {
             // ARRANGE
             const string resourceSetId = "resourceSetId";
@@ -83,7 +83,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
             var result = _deleteResourceSetAction.Execute(resourceSetId);
 
             // ASSERT
-            Assert.True(result == HttpStatusCode.NoContent);
+            Assert.True(result);
         }
 
         #endregion
