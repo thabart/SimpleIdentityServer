@@ -23,9 +23,9 @@ using Xunit;
 
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Validators
 {
-    public class AddScopeParameterValidatorFixture
+    public class ScopeParameterValidatorFixture
     {
-        private IAddScopeParameterValidator _addScopeParameterValidator;
+        private IScopeParameterValidator _scopeParameterValidator;
 
         #region Exceptions
 
@@ -36,7 +36,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Validators
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _addScopeParameterValidator.CheckScopeParameter(null));
+            Assert.Throws<ArgumentNullException>(() => _scopeParameterValidator.CheckScopeParameter(null));
         }
 
         [Fact]
@@ -47,7 +47,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Validators
             var scope = new Scope();
 
             // ACT & ASSERTS
-            var exception = Assert.Throws<BaseUmaException>(() => _addScopeParameterValidator.CheckScopeParameter(scope));
+            var exception = Assert.Throws<BaseUmaException>(() => _scopeParameterValidator.CheckScopeParameter(scope));
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "id"));
@@ -64,7 +64,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Validators
             };
 
             // ACT & ASSERTS
-            var exception = Assert.Throws<BaseUmaException>(() => _addScopeParameterValidator.CheckScopeParameter(scope));
+            var exception = Assert.Throws<BaseUmaException>(() => _scopeParameterValidator.CheckScopeParameter(scope));
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "name"));
@@ -84,7 +84,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Validators
             };
 
             // ACT & ASSERTS
-            var exception = Assert.Throws<BaseUmaException>(() => _addScopeParameterValidator.CheckScopeParameter(scope));
+            var exception = Assert.Throws<BaseUmaException>(() => _scopeParameterValidator.CheckScopeParameter(scope));
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, iconUri));
@@ -95,7 +95,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Validators
 
         private void InitializeFakeObjects()
         {
-            _addScopeParameterValidator = new AddScopeParameterValidator();
+            _scopeParameterValidator = new ScopeParameterValidator();
         }
     }
 }

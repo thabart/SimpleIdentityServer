@@ -24,12 +24,12 @@ using System;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions
 {
-    internal interface IInsertScopeAction
+    internal interface IUpdateScopeAction
     {
-        bool Execute(AddScopeParameter addScopeParameter);
+        bool Execute(UpdateScopeParameter updateScopeParameter);
     }
 
-    internal class InsertScopeAction : IInsertScopeAction
+    internal class UpdateScopeAction : IUpdateScopeAction
     {
         private readonly IScopeRepository _scopeRepository;
 
@@ -37,7 +37,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions
 
         #region Constructor
 
-        public InsertScopeAction(
+        public UpdateScopeAction(
             IScopeRepository scopeRepository,
             IScopeParameterValidator scopeParameterValidator)
         {
@@ -49,17 +49,18 @@ namespace SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions
 
         #region Public methods
 
-        public bool Execute(AddScopeParameter addScopeParameter)
+
+        public bool Execute(UpdateScopeParameter updateScopeParameter)
         {
-            if (addScopeParameter == null)
+            if (updateScopeParameter == null)
             {
-                throw new ArgumentNullException(nameof(addScopeParameter));
+                throw new ArgumentNullException(nameof(updateScopeParameter));
             }
 
             Scope scope = null;
             try
             {
-                scope = _scopeRepository.GetScope(addScopeParameter.Id);
+                scope = _scopeRepository.GetScope(updateScopeParameter.Id);
             }
             catch (Exception ex)
             {
@@ -70,27 +71,26 @@ namespace SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions
 
             if (scope == null)
             {
-                throw new BaseUmaException(ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.TheScopeAlreadyExists, addScopeParameter.Id));
+                return false;
             }
 
             scope = new Scope
             {
-                Id = addScopeParameter.Id,
-                IconUri = addScopeParameter.IconUri,
-                Name = addScopeParameter.Name
+                Id = updateScopeParameter.Id,
+                IconUri = updateScopeParameter.IconUri,
+                Name = updateScopeParameter.Name
             };
             _scopeParameterValidator.CheckScopeParameter(scope);
-            
+
             try
             {
-                _scopeRepository.InsertScope(scope);
+                _scopeRepository.UpdateScope(scope);
                 return true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new BaseUmaException(ErrorCodes.InternalError,
-                    ErrorDescriptions.TheScopeCannotBeInserted,
+                    ErrorDescriptions.TheScopeCannotBeUpdated,
                     ex);
             }
         }

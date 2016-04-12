@@ -21,12 +21,12 @@ using System;
 
 namespace SimpleIdentityServer.Uma.Core.Validators
 {
-    public interface IAddScopeParameterValidator
+    public interface IScopeParameterValidator
     {
         void CheckScopeParameter(Scope scope);
     }
 
-    internal class AddScopeParameterValidator : IAddScopeParameterValidator
+    internal class ScopeParameterValidator : IScopeParameterValidator
     {
         #region Public methods
 

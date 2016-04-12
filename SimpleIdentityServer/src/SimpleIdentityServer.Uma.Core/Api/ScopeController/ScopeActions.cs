@@ -17,6 +17,7 @@
 using SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Parameters;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ScopeController
 {
@@ -25,6 +26,12 @@ namespace SimpleIdentityServer.Uma.Core.Api.ScopeController
         bool InsertScope(AddScopeParameter addScopeParameter);
 
         Scope GetScope(string scopeId);
+
+        List<string> GetScopes();
+
+        bool UpdateScope(UpdateScopeParameter updateScopeParameter);
+
+        bool DeleteScope(string scopeId);
     }
 
     internal class ScopeActions : IScopeActions
@@ -33,14 +40,26 @@ namespace SimpleIdentityServer.Uma.Core.Api.ScopeController
 
         private readonly IInsertScopeAction _insertScopeAction;
 
+        private readonly IDeleteScopeAction _deleteScopeAction;
+
+        private readonly IGetScopesAction _getScopesAction;
+
+        private readonly IUpdateScopeAction _updateScopeAction;
+
         #region Constructor
 
         public ScopeActions(
             IGetScopeAction getScopeAction,
-            IInsertScopeAction insertScopeAction)
+            IInsertScopeAction insertScopeAction,
+            IUpdateScopeAction updateScopeAction,
+            IGetScopesAction getScopesAction,
+            IDeleteScopeAction deleteScopeAction)
         {
             _getScopeAction = getScopeAction;
             _insertScopeAction = insertScopeAction;
+            _getScopesAction = getScopesAction;
+            _updateScopeAction = updateScopeAction;
+            _deleteScopeAction = deleteScopeAction;
         }
 
         #endregion
@@ -56,6 +75,22 @@ namespace SimpleIdentityServer.Uma.Core.Api.ScopeController
         {
             return _getScopeAction.Execute(scopeId);
         }
+
+        public List<string> GetScopes()
+        {
+            return _getScopesAction.Execute();
+        } 
+
+        public bool UpdateScope(UpdateScopeParameter updateScopeParameter)
+        {
+            return _updateScopeAction.Execute(updateScopeParameter);
+        }
+
+        public bool DeleteScope(string scopeId)
+        {
+            return _deleteScopeAction.Execute(scopeId);
+        }
+
 
         #endregion
     }

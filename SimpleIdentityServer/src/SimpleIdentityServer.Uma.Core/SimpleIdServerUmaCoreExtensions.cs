@@ -39,9 +39,11 @@ namespace SimpleIdentityServer.Uma.Core
             serviceCollection.AddTransient<IResourceSetParameterValidator, ResourceSetParameterValidator>();
             serviceCollection.AddTransient<IGetScopeAction, GetScopeAction>();
             serviceCollection.AddTransient<IScopeActions, ScopeActions>();
-            serviceCollection.AddTransient<IAddScopeParameterValidator, AddScopeParameterValidator>();
+            serviceCollection.AddTransient<IScopeParameterValidator, ScopeParameterValidator>();
             serviceCollection.AddTransient<IInsertScopeAction, InsertScopeAction>();
             serviceCollection.AddTransient<IScopeActions, ScopeActions>();
+            serviceCollection.AddTransient<IUpdateScopeAction, UpdateScopeAction>();
+            serviceCollection.AddTransient<IDeleteScopeAction, DeleteScopeAction>();
             return serviceCollection;
         }
 

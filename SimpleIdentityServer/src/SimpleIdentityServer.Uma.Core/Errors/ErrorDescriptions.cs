@@ -36,6 +36,12 @@ namespace SimpleIdentityServer.Uma.Core.Errors
 
         public const string TheScopeCannotBeInserted = "scope cannot be inserted";
 
+        public const string TheScopeCannotBeUpdated = "scope cannot be updated";
+
+        public const string TheScopeCannotBeRemoved = "scope cannot be removed";
+
+        public const string TheScopesCannotBeRetrieved = "scopes cannot be retrieved";
+
         public const string TheScopeAlreadyExists = "scope {0} already exists";
     }
 }

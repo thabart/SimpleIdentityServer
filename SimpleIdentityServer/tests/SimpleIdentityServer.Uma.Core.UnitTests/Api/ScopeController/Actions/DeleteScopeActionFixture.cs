@@ -19,21 +19,17 @@ using SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions;
 using SimpleIdentityServer.Uma.Core.Errors;
 using SimpleIdentityServer.Uma.Core.Exceptions;
 using SimpleIdentityServer.Uma.Core.Models;
-using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Repositories;
-using SimpleIdentityServer.Uma.Core.Validators;
 using System;
 using Xunit;
 
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ScopeController.Actions
 {
-    public class InsertScopeActionFixture
+    public class DeleteScopeActionFixture
     {
         private Mock<IScopeRepository> _scopeRepositoryStub;
 
-        private Mock<IScopeParameterValidator> _scopeParameterValidator;
-
-        private IInsertScopeAction _insertScopeAction;
+        private IDeleteScopeAction _deleteScopeAction;
 
         #region Exceptions
 
@@ -44,15 +40,14 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ScopeController.Actions
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _insertScopeAction.Execute(null));
+            Assert.Throws<ArgumentNullException>(() => _deleteScopeAction.Execute(null));
         }
 
         [Fact]
-        public void When_An_Error_Occured_While_Retrieving_Scope_Then_Exception_Is_Thrown()
+        public void When_UnexpectedException_Occured_In_GetScope_Then_BaseUmaException_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
-            var addScopeParameter = new AddScopeParameter();
             _scopeRepositoryStub.Setup(s => s.GetScope(It.IsAny<string>()))
                 .Callback(() =>
                 {
@@ -60,63 +55,89 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ScopeController.Actions
                 });
 
             // ACT & ASSERTS
-            var exception = Assert.Throws<BaseUmaException>(() => _insertScopeAction.Execute(addScopeParameter));
+            var exception = Assert.Throws<BaseUmaException>(() => _deleteScopeAction.Execute("id"));
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InternalError);
             Assert.True(exception.Message == ErrorDescriptions.TheScopeCannotBeRetrieved);
         }
 
         [Fact]
-        public void When_An_Error_Occured_While_Inserted_Scope_Then_Exception_Is_Thrown()
+        public void When_UnexpectedException_Occured_In_DeleteScope_ThenBaseUmaException_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
-            var addScopeParameter = new AddScopeParameter();
             _scopeRepositoryStub.Setup(s => s.GetScope(It.IsAny<string>()))
                 .Returns(new Scope());
-            _scopeRepositoryStub.Setup(s => s.InsertScope(It.IsAny<Scope>()))
+            _scopeRepositoryStub.Setup(s => s.DeleteScope(It.IsAny<string>()))
                 .Callback(() =>
                 {
                     throw new Exception();
                 });
 
             // ACT & ASSERTS
-            var exception = Assert.Throws<BaseUmaException>(() => _insertScopeAction.Execute(addScopeParameter));
+            var exception = Assert.Throws<BaseUmaException>(() => _deleteScopeAction.Execute("id"));
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InternalError);
-            Assert.True(exception.Message == ErrorDescriptions.TheScopeCannotBeInserted);
+            Assert.True(exception.Message == ErrorDescriptions.TheScopeCannotBeRemoved);
+
         }
 
         #endregion
 
         #region Happy paths
-        
+
         [Fact]
-        public void When_A_Scope_Is_Inserted_Then_True_Is_Returned()
+        public void When_Deleting_Scope_Then_True_Is_Returned()
         {
             // ARRANGE
+            const string scopeId = "scope_id";
+            var scope = new Scope
+            {
+                Id = scopeId
+            };
             InitializeFakeObjects();
-            var addScopeParameter = new AddScopeParameter();
             _scopeRepositoryStub.Setup(s => s.GetScope(It.IsAny<string>()))
-                .Returns(new Scope());
-            _scopeRepositoryStub.Setup(s => s.InsertScope(It.IsAny<Scope>()))
-                .Returns(new Scope());
+                .Returns(scope);
+            _scopeRepositoryStub.Setup(s => s.DeleteScope(It.IsAny<string>()))
+                .Returns(true);
 
             // ACT
-            var result = _insertScopeAction.Execute(addScopeParameter);
+            var result = _deleteScopeAction.Execute(scopeId);
 
-            // ASSERT
+            // ASSERTS
             Assert.True(result);
+        }
+
+        [Fact]
+        public void When_Deleting_Not_Existing_Scope_Then_False_Is_Returned()
+        {
+            // ARRANGE
+            const string scopeId = "scope_id";
+            var scope = new Scope
+            {
+                Id = scopeId
+            };
+            InitializeFakeObjects();
+            _scopeRepositoryStub.Setup(s => s.GetScope(It.IsAny<string>()))
+                .Returns(() => null);
+
+            // ACT
+            var result = _deleteScopeAction.Execute(scopeId);
+
+            // ASSERTS
+            Assert.False(result);
         }
 
         #endregion
 
+        #region Private methods
+
         private void InitializeFakeObjects()
         {
             _scopeRepositoryStub = new Mock<IScopeRepository>();
-            _scopeParameterValidator = new Mock<IScopeParameterValidator>();
-            _insertScopeAction = new InsertScopeAction(_scopeRepositoryStub.Object,
-                _scopeParameterValidator.Object);
+            _deleteScopeAction = new DeleteScopeAction(_scopeRepositoryStub.Object);
         }
+
+        #endregion
     }
 }
