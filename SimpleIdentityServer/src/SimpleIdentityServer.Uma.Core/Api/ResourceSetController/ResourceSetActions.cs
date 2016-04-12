@@ -18,6 +18,7 @@ using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions;
 using SimpleIdentityServer.Uma.Core.Models;
 using System.Net;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController
 {
@@ -27,9 +28,11 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController
 
         ResourceSet GetResourceSet(string id);
 
-        HttpStatusCode UpdateResourceSet(UpdateResourceSetParameter updateResourceSetParameter);
+        bool UpdateResourceSet(UpdateResourceSetParameter updateResourceSetParameter);
 
-        HttpStatusCode RemoveResourceSet(string resourceSetId);
+        bool RemoveResourceSet(string resourceSetId);
+
+        List<string> GetAllResourceSet();
     }
 
     internal class ResourceSetActions : IResourceSetActions
@@ -42,18 +45,22 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController
 
         private readonly IDeleteResourceSetAction _deleteResourceSetAction;
 
+        private readonly IGetAllResourceSetAction _getAllResourceSetAction;
+
         #region Constructor
 
         public ResourceSetActions(
             IAddResourceSetAction addResourceSetAction,
             IGetResourceSetAction getResourceSetAction,
             IUpdateResourceSetAction updateResourceSetAction,
-            IDeleteResourceSetAction deleteResourceSetAction)
+            IDeleteResourceSetAction deleteResourceSetAction,
+            IGetAllResourceSetAction getAllResourceSetAction)
         {
             _addResourceSetAction = addResourceSetAction;
             _getResourceSetAction = getResourceSetAction;
             _updateResourceSetAction = updateResourceSetAction;
             _deleteResourceSetAction = deleteResourceSetAction;
+            _getAllResourceSetAction = getAllResourceSetAction;
         }
         
         #endregion
@@ -70,14 +77,19 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController
             return _getResourceSetAction.Execute(id);
         }
 
-        public HttpStatusCode UpdateResourceSet(UpdateResourceSetParameter updateResourceSetParameter)
+        public bool UpdateResourceSet(UpdateResourceSetParameter updateResourceSetParameter)
         {
             return _updateResourceSetAction.Execute(updateResourceSetParameter);
         }
 
-        public HttpStatusCode RemoveResourceSet(string resourceSetId)
+        public bool RemoveResourceSet(string resourceSetId)
         {
             return _deleteResourceSetAction.Execute(resourceSetId);
+        }
+
+        public List<string> GetAllResourceSet()
+        {
+            return _getAllResourceSetAction.Execute();
         }
 
         #endregion

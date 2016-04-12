@@ -18,6 +18,7 @@ using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.EF.Extensions;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SimpleIdentityServer.Uma.EF.Repositories
@@ -96,6 +97,19 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
             {
                 return null;
             }
+        }
+
+        public List<ResourceSet> GetAll()
+        {
+            try
+            {
+                var resourceSets = _simpeIdServerUmaContext.ResourceSets.Select(r => r.ToDomain());
+                return resourceSets.ToList();
+            }
+            catch (Exception)
+            {
+                return null;
+            }            
         }
 
         public bool DeleteResource(string id)

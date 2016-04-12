@@ -27,7 +27,14 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
 {
     internal interface IUpdateResourceSetAction
     {
-        HttpStatusCode Execute(UpdateResourceSetParameter udpateResourceSetParameter);
+        /// <summary>
+        /// throw an <see cref="ArgumentNullException"/> exception when the parameter is null.
+        /// throw an <see cref="BaseUmaException"/> exception when an exception occured while trying to update the resource set.
+        /// if the resource set doesn't exist then false is returned
+        /// </summary>
+        /// <param name="udpateResourceSetParameter"></param>
+        /// <returns></returns>
+        bool Execute(UpdateResourceSetParameter udpateResourceSetParameter);
     }
 
     internal class UpdateResourceSetAction : IUpdateResourceSetAction
@@ -50,7 +57,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
 
         #region Public methods
 
-        public HttpStatusCode Execute(UpdateResourceSetParameter udpateResourceSetParameter)
+        public bool Execute(UpdateResourceSetParameter udpateResourceSetParameter)
         {
             if (udpateResourceSetParameter == null)
             {
@@ -59,7 +66,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
 
             if (_resourceSetRepository.GetResourceSetById(udpateResourceSetParameter.Id) == null)
             {
-                return HttpStatusCode.NotFound;
+                return false;
             }
 
             var resourceSet = new ResourceSet
@@ -81,7 +88,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
                     string.Format(ErrorDescriptions.TheResourceSetCannotBeUpdated, resourceSet.Id));
             }
 
-            return HttpStatusCode.OK;
+            return true;
         }
 
         #endregion

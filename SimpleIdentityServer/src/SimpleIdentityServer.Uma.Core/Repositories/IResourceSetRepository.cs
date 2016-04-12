@@ -15,6 +15,7 @@
 #endregion
 
 using SimpleIdentityServer.Uma.Core.Models;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Uma.Core.Repositories
 {
@@ -25,6 +26,8 @@ namespace SimpleIdentityServer.Uma.Core.Repositories
         ResourceSet GetResourceSetById(string id);
 
         ResourceSet UpdateResource(ResourceSet resourceSet);
+
+        List<ResourceSet> GetAll();
 
         bool DeleteResource(string id);
     }

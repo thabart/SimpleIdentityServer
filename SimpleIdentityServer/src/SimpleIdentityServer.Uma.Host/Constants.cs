@@ -95,5 +95,17 @@ namespace SimpleIdentityServer.Uma.Host
         {
             public const string Id = "_id";
         }
+
+        public static class ErrorCodes
+        {
+            public const string NotFound = "not_found";
+
+            public const string UnSupportedMethodType = "unsupported_method_type";
+        }
+
+        public static class ErrorDescriptions
+        {
+            public const string ResourceSetNotFound = "resource cannot be found";
+        }
     }
 }

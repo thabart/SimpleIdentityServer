@@ -17,30 +17,24 @@
 using SimpleIdentityServer.Uma.Core.Errors;
 using SimpleIdentityServer.Uma.Core.Exceptions;
 using SimpleIdentityServer.Uma.Core.Repositories;
-using System;
-using System.Net;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
 {
-    internal interface IDeleteResourceSetAction
+    internal interface IGetAllResourceSetAction
     {
-        /// <summary>
-        /// throw an <see cref="ArgumentNullException"/> exception when the parameter is null
-        /// throw an <see cref="BaseUmaException"/> exception when an error occured while trying to delete the resource set.
-        /// false is returned if the resource set doesn't exist
-        /// </summary>
-        /// <param name="resourceSetId"></param>
-        /// <returns></returns>
-        bool Execute(string resourceSetId);
+        List<string> Execute();
     }
 
-    internal class DeleteResourceSetAction : IDeleteResourceSetAction
+    internal class GetAllResourceSetAction : IGetAllResourceSetAction
     {
         private readonly IResourceSetRepository _resourceSetRepository;
 
         #region Constructor
 
-        public DeleteResourceSetAction(IResourceSetRepository resourceSetRepository)
+        public GetAllResourceSetAction(
+            IResourceSetRepository resourceSetRepository)
         {
             _resourceSetRepository = resourceSetRepository;
         }
@@ -49,27 +43,17 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
 
         #region Public methods
 
-        public bool Execute(string resourceSetId)
+        public List<string> Execute()
         {
-            if (string.IsNullOrWhiteSpace(resourceSetId))
-            {
-                throw new ArgumentNullException(nameof(resourceSetId));
-            }
-
-            var result = _resourceSetRepository.GetResourceSetById(resourceSetId);
-            if (result == null)
-            {
-                return false;
-            }
-
-            if (!_resourceSetRepository.DeleteResource(resourceSetId))
+            var resourceSets = _resourceSetRepository.GetAll();
+            if (resourceSets == null)
             {
                 throw new BaseUmaException(
                     ErrorCodes.InternalError,
-                    string.Format(ErrorDescriptions.TheResourceSetCannotBeRemoved, resourceSetId));
+                    ErrorDescriptions.TheResourceSetsCannotBeRetrieved);
             }
 
-            return true;
+            return resourceSets.Select(r => r.Id).ToList();
         }
 
         #endregion

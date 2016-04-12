@@ -29,5 +29,7 @@ namespace SimpleIdentityServer.Uma.Core.Errors
         public const string TheResourceSetCannotBeUpdated = "resource set {0} cannot be udpated";
 
         public const string TheResourceSetCannotBeRemoved = "resource set {0} cannot be removed";
+
+        public const string TheResourceSetsCannotBeRetrieved = "resource sets cannot be retrieved";
     }
 }

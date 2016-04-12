@@ -40,6 +40,13 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
 
         #region Public methods
 
+        [HttpGet]
+        public ActionResult GetResourceSets()
+        {
+            var resourceSetIds = _resourceSetActions.GetAllResourceSet();
+            return new HttpOkObjectResult(resourceSetIds);
+        }
+
         [HttpGet("{id}")]
         public ActionResult GetResourceSet(string id)
         {
@@ -51,7 +58,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             var result = _resourceSetActions.GetResourceSet(id);
             if (result == null)
             {
-                return new HttpNotFoundResult();
+                return GetNotFoundResourceSet();
             }
 
             return new HttpOkObjectResult(result);
@@ -86,21 +93,21 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             }
 
             var parameter = putResourceSet.ToParameter();
-            var result = _resourceSetActions.UpdateResourceSet(parameter);
-            if (result == HttpStatusCode.OK)
+            var resourceSetExists = _resourceSetActions.UpdateResourceSet(parameter);
+            if (!resourceSetExists)
             {
-                var response = new UpdateSetResponse
-                {
-                    Id = putResourceSet.Id
-                };
-
-                return new ObjectResult(response)
-                {
-                    StatusCode = (int)result
-                };
+                return GetNotFoundResourceSet();
             }
 
-            return new HttpStatusCodeResult((int)result);
+            var response = new UpdateSetResponse
+            {
+                Id = putResourceSet.Id
+            };
+
+            return new ObjectResult(response)
+            {
+                StatusCode = (int)HttpStatusCode.OK
+            };
         }
 
         [HttpDelete("{id}")]
@@ -111,8 +118,31 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 throw new ArgumentNullException(nameof(id));
             }
 
-            var code = _resourceSetActions.RemoveResourceSet(id);
-            return new HttpStatusCodeResult((int)code);
+            var resourceSetExists = _resourceSetActions.RemoveResourceSet(id);
+            if (!resourceSetExists)
+            {
+                return GetNotFoundResourceSet();
+            }
+
+            return new HttpStatusCodeResult((int)HttpStatusCode.NoContent);
+        }
+
+        #endregion
+
+        #region Private methods
+
+        private static ActionResult GetNotFoundResourceSet()
+        {
+            var errorResponse = new ErrorResponse
+            {
+                Error = Constants.ErrorCodes.NotFound,
+                ErrorDescription = Constants.ErrorDescriptions.ResourceSetNotFound
+            };
+
+            return new ObjectResult(errorResponse)
+            {
+                StatusCode = (int)HttpStatusCode.NotFound
+            };
         }
 
         #endregion
