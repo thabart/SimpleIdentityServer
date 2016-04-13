@@ -96,7 +96,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
             if (!context.Scopes.Any())
             {
                 context.Scopes.AddRange(new[] {
-                    new Models.Scope
+                    new Scope
                     {
                         Name = "openid",
                         IsExposed = true,
@@ -105,7 +105,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         Description = "access to the openid scope",
                         Type = ScopeType.ProtectedApi
                     },
-                    new Models.Scope
+                    new Scope
                     {
                         Name = "profile",
                         IsExposed = true,
@@ -131,7 +131,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         Type = ScopeType.ResourceOwner,
                         IsDisplayedInConsent = true
                     },
-                    new Models.Scope
+                    new Scope
                     {
                         Name = "email",
                         IsExposed = true,
@@ -145,7 +145,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         },
                         Type = ScopeType.ResourceOwner
                     },
-                    new Models.Scope
+                    new Scope
                     {
                         Name = "address",
                         IsExposed = true,
@@ -158,7 +158,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         },
                         Type = ScopeType.ResourceOwner
                     },
-                    new Models.Scope
+                    new Scope
                     {
                         Name = "phone",
                         IsExposed = true,
@@ -172,7 +172,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         },
                         Type = ScopeType.ResourceOwner
                     },
-                    new Models.Scope
+                    new Scope
                     {
                         Name = "role",
                         IsExposed = true,
@@ -189,6 +189,23 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                     {
                         Name = "SimpleIdentityServerManager:GetClients",
                         Description = "Get all the clients",
+                        IsOpenIdScope = false,
+                        IsDisplayedInConsent = true,
+                        Type = ScopeType.ProtectedApi
+                    },
+                    // Scopes needed by UMA solution
+                    new Scope
+                    {
+                        Name = "uma_protection",
+                        Description = "Access to UMA permission, resource set & token introspection endpoints",
+                        IsOpenIdScope = false,
+                        IsDisplayedInConsent = true,
+                        Type = ScopeType.ProtectedApi
+                    },
+                    new Scope
+                    {
+                        Name = "uma_authorization",
+                        Description = "Access to the UMA authorization endpoint",
                         IsOpenIdScope = false,
                         IsDisplayedInConsent = true,
                         Type = ScopeType.ProtectedApi
@@ -474,6 +491,31 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         ResponseTypes = "0,1,2",
                         IdTokenSignedResponseAlg = "RS256",
                         RedirectionUrls = "http://localhost:5002/callback,http://localhost:5001/swagger/ui/o2c.html"
+                    },
+                    new Client
+                    {
+                        ClientId = "UmaResourceServer",
+                        ClientName = "Resource server sample",
+                        ClientSecret = "UmaResourceServer",
+                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
+                        LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
+                        PolicyUri = "http://openid.net",
+                        TosUri = "http://openid.net",
+                        ClientScopes = new List<ClientScope>
+                        {
+                            new ClientScope
+                            {
+                                ScopeName = "openid"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "uma_protection"
+                            }
+                        },
+                        GrantTypes = "0,1",
+                        ResponseTypes = "0,1,2",
+                        IdTokenSignedResponseAlg = "RS256",
+                        RedirectionUrls = "http://localhost:5007/swagger/ui/o2c.html"
                     }
                 });
             }
