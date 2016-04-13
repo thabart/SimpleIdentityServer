@@ -32,11 +32,12 @@
     "Microsoft.AspNet.Authentication.Cookies": "1.0.0-rc1-final",
     "WebApi.Hal": "2.6.0",
     "SimpleIdentityServer.Uma.Core": "",
-    "SimpleIdentityServer.Uma.EF": ""
+    "SimpleIdentityServer.Uma.EF": "",
+    "SimpleIdentityServer.Oauth2Instrospection.Authentication": ""
   },
 
   "commands": {
-    "web": "Microsoft.AspNet.Server.Kestrel",
+    "web": "Microsoft.AspNet.Server.Kestrel --server-urls http://0.0.0.0:5002",
     "watch": "Microsoft.Dnx.Watcher web"
   },
 

@@ -14,20 +14,38 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions;
+using SimpleIdentityServer.Uma.Core.Parameters;
+
 namespace SimpleIdentityServer.Uma.Core.Api.PermissionController
 {
     public interface IPermissionControllerActions
     {
-
+        string AddPermission(
+               AddPermissionParameter addPermissionParameter,
+               string clientId);
     }
 
     internal class PermissionControllerActions : IPermissionControllerActions
     {
+        private readonly IAddPermissionAction _addPermissionAction;
+
         #region Constructor
 
-        public PermissionControllerActions()
+        public PermissionControllerActions(IAddPermissionAction addPermissionAction)
         {
+            _addPermissionAction = addPermissionAction;
+        }
 
+        #endregion
+
+        #region Public methods
+
+        public string AddPermission(
+            AddPermissionParameter addPermissionParameter,
+            string clientId)
+        {
+            return _addPermissionAction.Execute(addPermissionParameter, clientId);
         }
 
         #endregion

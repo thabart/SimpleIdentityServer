@@ -48,6 +48,7 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
         {
             public const string Scope = "scope";
             public const string Subject = "sub";
+            public const string ClientId = "client_id";
         }
     }
 }

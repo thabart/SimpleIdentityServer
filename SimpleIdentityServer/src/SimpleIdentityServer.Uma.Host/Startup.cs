@@ -20,6 +20,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
+using SimpleIdentityServer.Oauth2Instrospection.Authentication;
 using SimpleIdentityServer.Uma.Core;
 using SimpleIdentityServer.Uma.EF;
 using SimpleIdentityServer.Uma.Host.Middlewares;
@@ -70,11 +71,24 @@ namespace SimpleIdentityServer.Uma.Host
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            var introspectionUrl = Configuration["IntrospectionUrl"];
+            var clientId = Configuration["ClientId"];
+            var clientSecret = Configuration["ClientSecret"];
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
             // Display status code page
             app.UseStatusCodePages();
+
+            // Enable OAUTH authentication
+            var introspectionOptions = new Oauth2IntrospectionOptions
+            {
+                InstrospectionEndPoint = introspectionUrl,
+                ClientId = clientId,
+                ClientSecret = clientSecret
+            };
+            app.UseAuthenticationWithIntrospection(introspectionOptions);
+
 
             // Enable CORS
             app.UseCors("AllowAll");

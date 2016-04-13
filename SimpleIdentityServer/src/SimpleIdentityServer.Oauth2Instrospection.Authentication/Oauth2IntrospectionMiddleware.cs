@@ -179,6 +179,11 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
                 claims.Add(new Claim(Constants.ClaimNames.Subject, introspectionResponse.Subject));
             }
 
+            if (!string.IsNullOrWhiteSpace(introspectionResponse.ClientId))
+            {
+                claims.Add(new Claim(Constants.ClaimNames.ClientId, introspectionResponse.ClientId));
+            }
+
             if (!string.IsNullOrWhiteSpace(introspectionResponse.Scope))
             {
                 var scopes = introspectionResponse.Scope.Split(' ');
