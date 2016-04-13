@@ -16,47 +16,39 @@
 
 using SimpleIdentityServer.Uma.Core.Errors;
 using SimpleIdentityServer.Uma.Core.Exceptions;
-using SimpleIdentityServer.Uma.Core.Models;
-using SimpleIdentityServer.Uma.Core.Repositories;
 using System;
 
-namespace SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions
+namespace SimpleIdentityServer.Uma.Core.Helpers
 {
-    internal interface IGetScopeAction
+    public interface IRepositoryExceptionHelper
     {
-        Scope Execute(string scopeId);
+        T HandleException<T>(string message, Func<T> callback);
     }
 
-    internal class GetScopeAction : IGetScopeAction
+    internal class RepositoryExceptionHelper : IRepositoryExceptionHelper
     {
-        private readonly IScopeRepository _scopeRepository;
-
-        #region Constructor
-
-        public GetScopeAction(IScopeRepository scopeRepository)
-        {
-            _scopeRepository = scopeRepository;
-        }
-
-        #endregion
-
         #region Public methods
 
-        public Scope Execute(string scopeId)
+        public T HandleException<T>(string message, Func<T> callback)
         {
-            if (string.IsNullOrWhiteSpace(scopeId))
+            if (string.IsNullOrWhiteSpace(message))
             {
-                throw new ArgumentNullException(nameof(scopeId));
+                throw new ArgumentNullException(nameof(message));
+            }
+
+            if (callback == null)
+            {
+                throw new ArgumentNullException(nameof(callback));
             }
 
             try
             {
-                return _scopeRepository.GetScope(scopeId);
+                return callback();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new BaseUmaException(ErrorCodes.InternalError,
-                    ErrorDescriptions.TheScopeCannotBeRetrieved,
+                    message,
                     ex);
             }
         }

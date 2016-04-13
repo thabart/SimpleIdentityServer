@@ -30,6 +30,8 @@ namespace SimpleIdentityServer.Uma.Core.Errors
 
         public const string TheResourceSetCannotBeRemoved = "resource set {0} cannot be removed";
 
+        public const string TheResourceSetCannotBeRetrieved = "resource set {0} cannot be retrieved";
+
         public const string TheResourceSetsCannotBeRetrieved = "resource sets cannot be retrieved";
 
         public const string TheScopeCannotBeRetrieved = "scope cannot be retrieved";
@@ -43,5 +45,11 @@ namespace SimpleIdentityServer.Uma.Core.Errors
         public const string TheScopesCannotBeRetrieved = "scopes cannot be retrieved";
 
         public const string TheScopeAlreadyExists = "scope {0} already exists";
+
+        public const string TheScopeAreNotValid = "one or more scopes are not valid";
+
+        public const string TheSchemeIsNotCorrect = "authorization scheme is not correct";
+
+        public const string TheTicketCannotBeInserted = "ticket cannot be inserted";
     }
 }

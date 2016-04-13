@@ -14,20 +14,14 @@
 // limitations under the License.
 #endregion
 
-using System.Runtime.Serialization;
+using System.Collections.Generic;
 
-namespace SimpleIdentityServer.Uma.Host.DTOs.Requests
+namespace SimpleIdentityServer.Uma.Core.Parameters
 {
-    [DataContract]
-    public class PutScope
+    public class AddPermissionParameter
     {
-        [DataMember(Name = Constants.ScopeResponseNames.Id)]
-        public string Id { get; set; }
+        public string ResourceSetId { get; set; }
 
-        [DataMember(Name = Constants.ScopeResponseNames.Name)]
-        public string Name { get; set; }
-
-        [DataMember(Name = Constants.ScopeResponseNames.IconUri)]
-        public string IconUri { get; set; }
+        public List<string> Scopes { get; set; }
     }
 }

@@ -14,20 +14,14 @@
 // limitations under the License.
 #endregion
 
-using System.Runtime.Serialization;
-
-namespace SimpleIdentityServer.Uma.Host.DTOs.Requests
+namespace SimpleIdentityServer.Uma.Core.Configuration
 {
-    [DataContract]
-    public class PutScope
+    public interface IUmaServerConfigurationProvider
     {
-        [DataMember(Name = Constants.ScopeResponseNames.Id)]
-        public string Id { get; set; }
-
-        [DataMember(Name = Constants.ScopeResponseNames.Name)]
-        public string Name { get; set; }
-
-        [DataMember(Name = Constants.ScopeResponseNames.IconUri)]
-        public string IconUri { get; set; }
+        /// <summary>
+        /// Get ticket litetime in seconds
+        /// </summary>
+        /// <returns></returns>
+        int GetTicketLifetime();
     }
 }

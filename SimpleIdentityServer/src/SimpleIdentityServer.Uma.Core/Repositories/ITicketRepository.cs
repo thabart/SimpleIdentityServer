@@ -14,20 +14,14 @@
 // limitations under the License.
 #endregion
 
-using System.Runtime.Serialization;
+using SimpleIdentityServer.Uma.Core.Models;
 
-namespace SimpleIdentityServer.Uma.Host.DTOs.Requests
+namespace SimpleIdentityServer.Uma.Core.Repositories
 {
-    [DataContract]
-    public class PutScope
+    public interface ITicketRepository
     {
-        [DataMember(Name = Constants.ScopeResponseNames.Id)]
-        public string Id { get; set; }
+        Ticket GetTicketById(string id);
 
-        [DataMember(Name = Constants.ScopeResponseNames.Name)]
-        public string Name { get; set; }
-
-        [DataMember(Name = Constants.ScopeResponseNames.IconUri)]
-        public string IconUri { get; set; }
+        Ticket InsertTicket(Ticket ticket);
     }
 }

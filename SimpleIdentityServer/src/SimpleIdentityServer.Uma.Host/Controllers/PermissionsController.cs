@@ -14,20 +14,30 @@
 // limitations under the License.
 #endregion
 
-using System.Runtime.Serialization;
+using Microsoft.AspNet.Mvc;
 
-namespace SimpleIdentityServer.Uma.Host.DTOs.Requests
+namespace SimpleIdentityServer.Uma.Host.Controllers
 {
-    [DataContract]
-    public class PutScope
+    [Route(Constants.RouteValues.Permission)]
+    public class PermissionsController : Controller
     {
-        [DataMember(Name = Constants.ScopeResponseNames.Id)]
-        public string Id { get; set; }
+        #region Constructor
 
-        [DataMember(Name = Constants.ScopeResponseNames.Name)]
-        public string Name { get; set; }
+        public PermissionsController()
+        {
 
-        [DataMember(Name = Constants.ScopeResponseNames.IconUri)]
-        public string IconUri { get; set; }
+        }
+
+        #endregion
+
+        #region Public methods
+
+        [HttpPost]
+        public void PostPermission()
+        {
+
+        }
+
+        #endregion
     }
 }

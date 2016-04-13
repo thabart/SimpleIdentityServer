@@ -25,6 +25,8 @@ namespace SimpleIdentityServer.Uma.Host
             public const string ResourceSet = "rs/resource_set";
 
             public const string Scope = "scopes";
+
+            public const string Permission = "/perm";
         }
 
         public static class ConfigurationResponseNames

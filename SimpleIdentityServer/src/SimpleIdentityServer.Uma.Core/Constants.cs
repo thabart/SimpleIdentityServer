@@ -14,20 +14,19 @@
 // limitations under the License.
 #endregion
 
-using System.Runtime.Serialization;
-
-namespace SimpleIdentityServer.Uma.Host.DTOs.Requests
+namespace SimpleIdentityServer.Uma.Core
 {
-    [DataContract]
-    public class PutScope
+    public static class Constants
     {
-        [DataMember(Name = Constants.ScopeResponseNames.Id)]
-        public string Id { get; set; }
+        #region DTOs
 
-        [DataMember(Name = Constants.ScopeResponseNames.Name)]
-        public string Name { get; set; }
+        public static class AddPermissionNames
+        {
+            public const string ResourceSetId = "resource_set_id";
 
-        [DataMember(Name = Constants.ScopeResponseNames.IconUri)]
-        public string IconUri { get; set; }
+            public const string Scopes = "scopes";
+        }
+
+        #endregion
     }
 }
