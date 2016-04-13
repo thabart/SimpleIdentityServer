@@ -16,7 +16,7 @@
 
 namespace SimpleIdentityServer.Uma.EF.Models
 {
-    public class Scope
+    internal class Scope
     {
         public string Id { get; set; }
 

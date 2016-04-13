@@ -27,17 +27,11 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
 
         public static Domain.ResourceSet ToDomain(this Model.ResourceSet resourceSet)
         {
-            var scopes = new List<string>();
-            if (!string.IsNullOrEmpty(resourceSet.Scopes))
-            {
-                scopes = resourceSet.Scopes.Split(',').ToList();
-            }
-
             return new Domain.ResourceSet
             {
                 IconUri = resourceSet.IconUri,
                 Name = resourceSet.Name,
-                Scopes = scopes,
+                Scopes = GetScopes(resourceSet.Scopes),
                 Id = resourceSet.Id,
                 Type = resourceSet.Type,
                 Uri = resourceSet.Uri
@@ -54,24 +48,29 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
             };
         }
 
+        public static Domain.Ticket ToDomain(this Model.Ticket ticket)
+        {
+            return new Domain.Ticket
+            {
+                Id = ticket.Id,
+                Scopes = GetScopes(ticket.Scopes),
+                ClientId = ticket.ClientId,
+                ExpirationDateTime = ticket.ExpirationDateTime,
+                ResourceSet = ticket.ResourceSet.ToDomain()
+            };
+        }
+
         #endregion
 
         #region To Models
 
         public static Model.ResourceSet ToModel(this Domain.ResourceSet resourceSet)
         {
-            var scopes = string.Empty;
-            if (resourceSet.Scopes != null &&
-                resourceSet.Scopes.Any())
-            {
-                scopes = string.Join(",", resourceSet.Scopes);
-            }
-
             return new Model.ResourceSet
             {
                 IconUri = resourceSet.IconUri,
                 Name = resourceSet.Name,
-                Scopes = scopes,
+                Scopes = GetConcatenatedScopes(resourceSet.Scopes),
                 Id = resourceSet.Id,
                 Type = resourceSet.Type,
                 Uri = resourceSet.Uri
@@ -86,6 +85,46 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
                 Name = scope.Name,
                 IconUri = scope.IconUri
             };
+        }
+
+        public static Model.Ticket ToModel(this Domain.Ticket ticket)
+        {
+            return new Model.Ticket
+            {
+                Id = ticket.Id,
+                ResourceSet = ticket.ResourceSet.ToModel(),
+                Scopes = GetConcatenatedScopes(ticket.Scopes),
+                ExpirationDateTime = ticket.ExpirationDateTime,
+                ClientId = ticket.ClientId
+            };
+        }
+
+        #endregion
+
+        #region Private methods
+
+        private static List<string> GetScopes(string cpncatenatedScopes)
+        {
+
+            var scopes = new List<string>();
+            if (!string.IsNullOrEmpty(cpncatenatedScopes))
+            {
+                scopes = cpncatenatedScopes.Split(',').ToList();
+            }
+
+            return scopes;
+        }
+
+        private static string GetConcatenatedScopes(List<string> scopes)
+        {
+            var concatenatedScopes = string.Empty;
+            if (scopes != null &&
+                scopes.Any())
+            {
+                concatenatedScopes = string.Join(",", scopes);
+            }
+
+            return concatenatedScopes;
         }
 
         #endregion

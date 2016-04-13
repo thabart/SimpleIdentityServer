@@ -47,6 +47,30 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
 
                     b.HasAnnotation("Relational:TableName", "Scopes");
                 });
+
+            modelBuilder.Entity("SimpleIdentityServer.Uma.EF.Models.Ticket", b =>
+                {
+                    b.Property<string>("Id");
+
+                    b.Property<string>("ClientId");
+
+                    b.Property<DateTime>("ExpirationDateTime");
+
+                    b.Property<string>("ResourceSetId");
+
+                    b.Property<string>("Scopes");
+
+                    b.HasKey("Id");
+
+                    b.HasAnnotation("Relational:TableName", "Tickets");
+                });
+
+            modelBuilder.Entity("SimpleIdentityServer.Uma.EF.Models.Ticket", b =>
+                {
+                    b.HasOne("SimpleIdentityServer.Uma.EF.Models.ResourceSet")
+                        .WithMany()
+                        .HasForeignKey("ResourceSetId");
+                });
         }
     }
 }

@@ -26,10 +26,13 @@ namespace SimpleIdentityServer.Uma.EF
 
         public virtual DbSet<Scope> Scopes { get; set; }
 
+        public virtual DbSet<Ticket> Tickets { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.AddResourceSetMappings();
             modelBuilder.AddScopeMappings();
+            modelBuilder.AddTicketMappings();
         }
     }
 }

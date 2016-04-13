@@ -14,9 +14,11 @@
 // limitations under the License.
 #endregion
 
+using System.Collections.Generic;
+
 namespace SimpleIdentityServer.Uma.EF.Models
 {
-    public class ResourceSet
+    internal class ResourceSet
     {
         public string Id { get; set; }
 
@@ -29,5 +31,7 @@ namespace SimpleIdentityServer.Uma.EF.Models
         public string Scopes { get; set; }
         
         public string IconUri { get; set; }
+
+        public virtual ICollection<Ticket> Tickets { get; set; }
     }
 }
