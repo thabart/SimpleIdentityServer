@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01. Core Layer", "01. Core Layer", "{A70EBAB2-FCB5-491F-822F-76AB632B4F0C}"
 EndProject
@@ -18,6 +18,10 @@ EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "WebApi.Hal", "src\WebApi.Hal\WebApi.Hal.xproj", "{DC421485-ADFD-44FF-BEBC-BD4A43FDAB79}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Uma.EF", "src\SimpleIdentityServer.Uma.EF\SimpleIdentityServer.Uma.EF.xproj", "{86F685FB-24B6-4ADA-88A5-422733E7B031}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Authentication.Common", "src\SimpleIdentityServer.Authentication.Common\SimpleIdentityServer.Authentication.Common.xproj", "{6049147A-DB45-4A3F-AD9C-E67D5F1F8145}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Oauth2Instrospection.Authentication", "src\SimpleIdentityServer.Oauth2Instrospection.Authentication\SimpleIdentityServer.Oauth2Instrospection.Authentication.xproj", "{59687538-4A64-46DD-9E55-C312CC052C9A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +49,14 @@ Global
 		{86F685FB-24B6-4ADA-88A5-422733E7B031}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{86F685FB-24B6-4ADA-88A5-422733E7B031}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{86F685FB-24B6-4ADA-88A5-422733E7B031}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6049147A-DB45-4A3F-AD9C-E67D5F1F8145}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6049147A-DB45-4A3F-AD9C-E67D5F1F8145}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6049147A-DB45-4A3F-AD9C-E67D5F1F8145}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6049147A-DB45-4A3F-AD9C-E67D5F1F8145}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59687538-4A64-46DD-9E55-C312CC052C9A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59687538-4A64-46DD-9E55-C312CC052C9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59687538-4A64-46DD-9E55-C312CC052C9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59687538-4A64-46DD-9E55-C312CC052C9A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -55,5 +67,7 @@ Global
 		{0DC8E1D9-8B85-460A-B51C-67056446CA85} = {BF09DAC3-424A-4EAA-AD60-564DE7F16D31}
 		{DC421485-ADFD-44FF-BEBC-BD4A43FDAB79} = {A70EBAB2-FCB5-491F-822F-76AB632B4F0C}
 		{86F685FB-24B6-4ADA-88A5-422733E7B031} = {A70EBAB2-FCB5-491F-822F-76AB632B4F0C}
+		{6049147A-DB45-4A3F-AD9C-E67D5F1F8145} = {A70EBAB2-FCB5-491F-822F-76AB632B4F0C}
+		{59687538-4A64-46DD-9E55-C312CC052C9A} = {A70EBAB2-FCB5-491F-822F-76AB632B4F0C}
 	EndGlobalSection
 EndGlobal
