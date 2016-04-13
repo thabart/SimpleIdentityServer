@@ -83,6 +83,7 @@ namespace SimpleIdentityServer.Core
             serviceCollection.AddTransient<IGetTokenByResourceOwnerCredentialsGrantTypeAction, GetTokenByResourceOwnerCredentialsGrantTypeAction>();
             serviceCollection.AddTransient<IGetTokenByAuthorizationCodeGrantTypeAction, GetTokenByAuthorizationCodeGrantTypeAction>();
             serviceCollection.AddTransient<IGetAuthorizationCodeAndTokenViaHybridWorkflowOperation, GetAuthorizationCodeAndTokenViaHybridWorkflowOperation>();
+            serviceCollection.AddTransient<IGetTokenByClientCredentialsGrantTypeAction, GetTokenByClientCredentialsGrantTypeAction>();
             serviceCollection.AddTransient<IConsentActions, ConsentActions>();
             serviceCollection.AddTransient<IConfirmConsentAction, ConfirmConsentAction>();
             serviceCollection.AddTransient<IDisplayConsentAction, DisplayConsentAction>();

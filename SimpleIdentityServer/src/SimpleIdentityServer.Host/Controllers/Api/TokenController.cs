@@ -75,6 +75,9 @@ namespace SimpleIdentityServer.Api.Controllers.Api
                     result = _tokenActions.GetTokenByRefreshTokenGrantType(refreshTokenParameter,
                         authenticationHeaderValue);
                     break;
+                case GrantTypeRequest.client_credentials:
+
+                    break;
             }
 
             return result;
