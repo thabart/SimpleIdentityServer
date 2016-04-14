@@ -312,6 +312,7 @@ namespace SimpleIdentityServer.Core
             public static string PasswordName = "password";
             public static string AuthorizationCodeName = "code";
             public static string RefreshToken = "refresh_token";
+            public static string ScopeName = "scope";
         }
 
         #endregion

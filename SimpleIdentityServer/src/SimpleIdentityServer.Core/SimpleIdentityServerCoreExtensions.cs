@@ -106,6 +106,7 @@ namespace SimpleIdentityServer.Core
             serviceCollection.AddTransient<IJwtParser, JwtParser>();
             serviceCollection.AddTransient<IGenerateAuthorizationResponse, GenerateAuthorizationResponse>();
             serviceCollection.AddTransient<IAuthenticateClient, AuthenticateClient>();
+            serviceCollection.AddTransient<IAuthenticateInstructionGenerator, AuthenticateInstructionGenerator>();
             serviceCollection.AddTransient<IClientSecretBasicAuthentication, ClientSecretBasicAuthentication>();
             serviceCollection.AddTransient<IClientSecretPostAuthentication, ClientSecretPostAuthentication>();
             serviceCollection.AddTransient<IClientAssertionAuthentication, ClientAssertionAuthentication>();

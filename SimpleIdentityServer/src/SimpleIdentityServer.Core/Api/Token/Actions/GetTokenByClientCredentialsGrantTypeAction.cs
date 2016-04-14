@@ -14,20 +14,151 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Authenticate;
+using SimpleIdentityServer.Core.Errors;
+using SimpleIdentityServer.Core.Exceptions;
+using SimpleIdentityServer.Core.Helpers;
+using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Parameters;
+using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Validators;
+using SimpleIdentityServer.Logging;
+using System;
+using System.Linq;
+using System.Net.Http.Headers;
+
 namespace SimpleIdentityServer.Core.Api.Token.Actions
 {
     internal interface IGetTokenByClientCredentialsGrantTypeAction
     {
-
+        GrantedToken Execute(
+               ClientCredentialsGrantTypeParameter clientCredentialsGrantTypeParameter,
+               AuthenticationHeaderValue authenticationHeaderValue);
     }
 
     internal class GetTokenByClientCredentialsGrantTypeAction : IGetTokenByClientCredentialsGrantTypeAction
     {
+        private readonly IAuthenticateInstructionGenerator _authenticateInstructionGenerator;
+
+        private readonly IAuthenticateClient _authenticateClient;
+
+        private readonly IClientValidator _clientValidator;
+
+        private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
+
+        private readonly IScopeValidator _scopeValidator;
+
+        private readonly IGrantedTokenRepository _grantedTokenRepository;
+
+        private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
+
         #region Constructor
 
-        public GetTokenByClientCredentialsGrantTypeAction()
+        public GetTokenByClientCredentialsGrantTypeAction(
+            IAuthenticateInstructionGenerator authenticateInstructionGenerator,
+            IAuthenticateClient authenticateClient,
+            IClientValidator clientValidator,
+            IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
+            IScopeValidator scopeValidator,
+            IGrantedTokenRepository grantedTokenRepository,
+            ISimpleIdentityServerEventSource simpleIdentityServerEventSource)
         {
+            _authenticateInstructionGenerator = authenticateInstructionGenerator;
+            _authenticateClient = authenticateClient;
+            _clientValidator = clientValidator;
+            _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
+            _scopeValidator = scopeValidator;
+            _grantedTokenRepository = grantedTokenRepository;
+            _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
+        }
 
+        #endregion
+
+        #region Public methods
+
+        public GrantedToken Execute(
+            ClientCredentialsGrantTypeParameter clientCredentialsGrantTypeParameter,
+            AuthenticationHeaderValue authenticationHeaderValue)
+        {
+            if (clientCredentialsGrantTypeParameter == null)
+            {
+                throw new ArgumentNullException(nameof(clientCredentialsGrantTypeParameter));
+            }
+            
+            if (string.IsNullOrWhiteSpace(clientCredentialsGrantTypeParameter.Scope))
+            {
+                throw new IdentityServerException(
+                    ErrorCodes.InvalidRequestCode,
+                    string.Format(ErrorDescriptions.MissingParameter, Constants.StandardTokenRequestParameterNames.ScopeName));
+            }
+
+            // Authenticate the client
+            var errorMessage = string.Empty;
+            var instruction = CreateAuthenticateInstruction(clientCredentialsGrantTypeParameter,
+                authenticationHeaderValue);
+            var client = _authenticateClient.Authenticate(instruction, out errorMessage);
+            if (client == null)
+            {
+                throw new IdentityServerException(ErrorCodes.InvalidClient,
+                    errorMessage);
+            }
+
+            // Check client
+            if (client.GrantTypes == null ||
+                !client.GrantTypes.Contains(GrantType.client_credentials))
+            {
+                throw new IdentityServerException(ErrorCodes.InvalidGrant,
+                    string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, client.ClientId, GrantType.client_credentials));
+            }
+
+            if (client.ResponseTypes == null ||
+                !client.ResponseTypes.Contains(ResponseType.token))
+            {
+                throw new IdentityServerException(ErrorCodes.InvalidClient,
+                    string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType, client.ClientId, ResponseType.token));
+            }
+
+            // Check scopes
+            var allowedTokenScopes = string.Empty;
+            if (!string.IsNullOrWhiteSpace(clientCredentialsGrantTypeParameter.Scope))
+            {
+                string messageErrorDescription;
+                allowedTokenScopes = string.Join(" ", _scopeValidator.IsScopesValid(clientCredentialsGrantTypeParameter.Scope, client, out messageErrorDescription));
+                if (!allowedTokenScopes.Any())
+                {
+                    throw new IdentityServerException(
+                        ErrorCodes.InvalidScope,
+                        messageErrorDescription);
+                }
+            }
+
+            // Generate token
+            var generatedToken = _grantedTokenGeneratorHelper.GenerateToken(
+                client.ClientId,
+                allowedTokenScopes);
+            _grantedTokenRepository.Insert(generatedToken);
+
+            _simpleIdentityServerEventSource.GrantAccessToClient(client.ClientId,
+                generatedToken.AccessToken,
+                allowedTokenScopes);
+
+            return generatedToken;
+        }
+
+        #endregion
+
+        #region Private methods
+
+        private AuthenticateInstruction CreateAuthenticateInstruction(
+            ClientCredentialsGrantTypeParameter clientCredentialsGrantTypeParameter,
+            AuthenticationHeaderValue authenticationHeaderValue)
+        {
+            var result = _authenticateInstructionGenerator.GetAuthenticateInstruction(authenticationHeaderValue);
+            result.ClientAssertion = clientCredentialsGrantTypeParameter.ClientAssertion;
+            result.ClientAssertionType = clientCredentialsGrantTypeParameter.ClientAssertionType;
+            result.ClientIdFromHttpRequestBody = clientCredentialsGrantTypeParameter.ClientId;
+            result.ClientSecretFromHttpRequestBody = clientCredentialsGrantTypeParameter.ClientSecret;
+            return result;
         }
 
         #endregion

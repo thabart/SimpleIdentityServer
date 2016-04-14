@@ -81,7 +81,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
         {
             if (authorizationCodeGrantTypeParameter == null)
             {
-                throw new ArgumentNullException("authorizationCodeGrantTypeParameter");
+                throw new ArgumentNullException(nameof(authorizationCodeGrantTypeParameter));
             }
 
             var authorizationCode = ValidateParameter(
