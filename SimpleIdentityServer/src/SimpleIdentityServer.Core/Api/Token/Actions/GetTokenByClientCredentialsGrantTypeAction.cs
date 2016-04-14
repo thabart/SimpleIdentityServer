@@ -123,13 +123,16 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             if (!string.IsNullOrWhiteSpace(clientCredentialsGrantTypeParameter.Scope))
             {
                 string messageErrorDescription;
-                allowedTokenScopes = string.Join(" ", _scopeValidator.IsScopesValid(clientCredentialsGrantTypeParameter.Scope, client, out messageErrorDescription));
-                if (!allowedTokenScopes.Any())
+                var scopes = _scopeValidator.IsScopesValid(clientCredentialsGrantTypeParameter.Scope, client, out messageErrorDescription);
+                if (scopes == null ||
+                    !scopes.Any())
                 {
                     throw new IdentityServerException(
                         ErrorCodes.InvalidScope,
                         messageErrorDescription);
                 }
+
+                allowedTokenScopes = string.Join(" ", scopes);
             }
 
             // Generate token
