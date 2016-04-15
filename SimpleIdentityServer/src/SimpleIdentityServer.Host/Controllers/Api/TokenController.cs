@@ -41,7 +41,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
         
         [SimpleTypeFilterAttribute(typeof(RateLimitationFilterAttribute), Arguments = new object[] { "PostToken" })]
         [HttpPost]
-        public GrantedToken Post([FromForm] TokenRequest tokenRequest)
+        public GrantedToken Post([FromBody] TokenRequest tokenRequest)
         {
             GrantedToken result = null;
             StringValues authorizationHeader;
@@ -76,7 +76,9 @@ namespace SimpleIdentityServer.Api.Controllers.Api
                         authenticationHeaderValue);
                     break;
                 case GrantTypeRequest.client_credentials:
-
+                    var clientCredentialsParameter = tokenRequest.ToClientCredentialsGrantTypeParameter();
+                    result = _tokenActions.GetTokenByClientCredentialsGrantType(clientCredentialsParameter,
+                        authenticationHeaderValue);
                     break;
             }
 
