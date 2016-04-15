@@ -127,6 +127,13 @@ namespace SimpleIdentityServer.Logging
             string accessToken,
             string identityToken);
 
+        void StartGetTokenByClientCredentials(
+            string scope);
+
+        void EndGetTokenByClientCredentials(
+            string clientId,
+            string scope);
+
         #endregion
 
         void AuthenticateResourceOwner(string subject);
@@ -525,7 +532,6 @@ namespace SimpleIdentityServer.Logging
                 refreshToken);
         }
 
-
         [Event(Constants.EventIds.EndRefreshTokenGrantType,
             Level = EventLevel.Informational,
             Message = "end refresh token grant-type",
@@ -543,10 +549,43 @@ namespace SimpleIdentityServer.Logging
                 identityToken);
         }
 
+        [Event(Constants.EventIds.StartGetTokenByClientCredentials,
+            Level = EventLevel.Informational,
+            Message = "start get token by client credentials",
+            Opcode = EventOpcode.Start,
+            Task = Constants.Tasks.Token)]
+        public void StartGetTokenByClientCredentials(string scope)
+        {
+            if (!IsEnabled())
+            {
+                return;
+            }
+
+            WriteEvent(Constants.EventIds.StartGetTokenByClientCredentials,
+                scope);
+        }
+
+        [Event(Constants.EventIds.EndGetTokenByClientCredentials,
+            Level = EventLevel.Informational,
+            Message = "end get token by client credentials",
+            Opcode = EventOpcode.Stop,
+            Task = Constants.Tasks.Token)]
+        public void EndGetTokenByClientCredentials(string clientId, string scope)
+        {
+            if (!IsEnabled())
+            {
+                return;
+            }
+
+            WriteEvent(Constants.EventIds.EndGetTokenByClientCredentials,
+                clientId,
+                scope);
+        }
+
         #endregion
 
         #region Failing events
-        
+
         [Event(Constants.EventIds.OpenIdFailure,
             Level = EventLevel.Error,
             Message = "something goes wrong in the open-id process")]

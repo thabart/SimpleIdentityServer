@@ -50,6 +50,8 @@ namespace SimpleIdentityServer.Logging
             public const int EndRegistration = 26;
             public const int StartRefreshTokenGrantType = 27;
             public const int EndRefreshTokenGrantType = 28;
+            public const int StartGetTokenByClientCredentials = 29;
+            public const int EndGetTokenByClientCredentials = 30;
         }
 
         public static class Tasks
