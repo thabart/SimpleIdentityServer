@@ -512,8 +512,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                                 ScopeName = "uma_protection"
                             }
                         },
-                        GrantTypes = "0,1",
-                        ResponseTypes = "0,1,2",
+                        GrantTypes = "3",
+                        ResponseTypes = "1",
                         IdTokenSignedResponseAlg = "RS256",
                         RedirectionUrls = "http://localhost:5007/swagger/ui/o2c.html"
                     }
