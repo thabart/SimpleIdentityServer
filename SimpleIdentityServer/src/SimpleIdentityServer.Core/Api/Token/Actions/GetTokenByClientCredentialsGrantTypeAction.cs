@@ -29,7 +29,7 @@ using System.Net.Http.Headers;
 
 namespace SimpleIdentityServer.Core.Api.Token.Actions
 {
-    internal interface IGetTokenByClientCredentialsGrantTypeAction
+    public interface IGetTokenByClientCredentialsGrantTypeAction
     {
         GrantedToken Execute(
                ClientCredentialsGrantTypeParameter clientCredentialsGrantTypeParameter,
@@ -52,6 +52,8 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
         private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
 
+        private readonly IClientCredentialsGrantTypeParameterValidator _clientCredentialsGrantTypeParameterValidator;
+
         #region Constructor
 
         public GetTokenByClientCredentialsGrantTypeAction(
@@ -61,7 +63,8 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
             IScopeValidator scopeValidator,
             IGrantedTokenRepository grantedTokenRepository,
-            ISimpleIdentityServerEventSource simpleIdentityServerEventSource)
+            ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
+            IClientCredentialsGrantTypeParameterValidator clientCredentialsGrantTypeParameterValidator)
         {
             _authenticateInstructionGenerator = authenticateInstructionGenerator;
             _authenticateClient = authenticateClient;
@@ -70,6 +73,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             _scopeValidator = scopeValidator;
             _grantedTokenRepository = grantedTokenRepository;
             _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
+            _clientCredentialsGrantTypeParameterValidator = clientCredentialsGrantTypeParameterValidator;
         }
 
         #endregion
@@ -84,13 +88,8 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             {
                 throw new ArgumentNullException(nameof(clientCredentialsGrantTypeParameter));
             }
-            
-            if (string.IsNullOrWhiteSpace(clientCredentialsGrantTypeParameter.Scope))
-            {
-                throw new IdentityServerException(
-                    ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.MissingParameter, Constants.StandardTokenRequestParameterNames.ScopeName));
-            }
+
+            _clientCredentialsGrantTypeParameterValidator.Validate(clientCredentialsGrantTypeParameter);
 
             // Authenticate the client
             var errorMessage = string.Empty;

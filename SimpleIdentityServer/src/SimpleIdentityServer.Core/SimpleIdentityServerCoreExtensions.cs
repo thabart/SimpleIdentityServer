@@ -62,6 +62,7 @@ namespace SimpleIdentityServer.Core
             serviceCollection.AddTransient<IConsentHelper, ConsentHelper>();
             serviceCollection.AddTransient<IClientHelper, ClientHelper>();
             serviceCollection.AddTransient<IAuthorizationFlowHelper, AuthorizationFlowHelper>();
+            serviceCollection.AddTransient<IClientCredentialsGrantTypeParameterValidator, ClientCredentialsGrantTypeParameterValidator>();
             serviceCollection.AddTransient<IClientValidator, ClientValidator>();
             serviceCollection.AddTransient<IResourceOwnerValidator, ResourceOwnerValidator>();
             serviceCollection.AddTransient<IScopeValidator, ScopeValidator>();

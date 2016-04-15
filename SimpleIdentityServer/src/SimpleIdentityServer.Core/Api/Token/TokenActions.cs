@@ -37,6 +37,10 @@ namespace SimpleIdentityServer.Core.Api.Token
         GrantedToken GetTokenByRefreshTokenGrantType(
             RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter,
             AuthenticationHeaderValue authenticationHeaderValue);
+
+        GrantedToken GetTokenByClientCredentialsGrantType(
+            ClientCredentialsGrantTypeParameter clientCredentialsGrantTypeParameter,
+            AuthenticationHeaderValue authenticationHeaderValue);
     }
 
     public class TokenActions : ITokenActions
@@ -53,6 +57,10 @@ namespace SimpleIdentityServer.Core.Api.Token
 
         private readonly IGetTokenByRefreshTokenGrantTypeAction _getTokenByRefreshTokenGrantTypeAction;
 
+        private readonly IGetTokenByClientCredentialsGrantTypeAction _getTokenByClientCredentialsGrantTypeAction;
+
+        private readonly IClientCredentialsGrantTypeParameterValidator _clientCredentialsGrantTypeParameterValidator;
+
         private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
 
         public TokenActions(
@@ -62,6 +70,8 @@ namespace SimpleIdentityServer.Core.Api.Token
             IAuthorizationCodeGrantTypeParameterTokenEdpValidator authorizationCodeGrantTypeParameterTokenEdpValidator,
             IRefreshTokenGrantTypeParameterValidator refreshTokenGrantTypeParameterValidator,
             IGetTokenByRefreshTokenGrantTypeAction getTokenByRefreshTokenGrantTypeAction,
+            IGetTokenByClientCredentialsGrantTypeAction getTokenByClientCredentialsGrantTypeAction,
+            IClientCredentialsGrantTypeParameterValidator clientCredentialsGrantTypeParameterValidator,
             ISimpleIdentityServerEventSource simpleIdentityServerEventSource)
         {
             _getTokenByResourceOwnerCredentialsGrantType = getTokenByResourceOwnerCredentialsGrantType;
@@ -71,6 +81,8 @@ namespace SimpleIdentityServer.Core.Api.Token
             _refreshTokenGrantTypeParameterValidator = refreshTokenGrantTypeParameterValidator;
             _getTokenByRefreshTokenGrantTypeAction = getTokenByRefreshTokenGrantTypeAction;
             _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
+            _getTokenByClientCredentialsGrantTypeAction = getTokenByClientCredentialsGrantTypeAction;
+            _clientCredentialsGrantTypeParameterValidator = clientCredentialsGrantTypeParameterValidator;
         }
 
         public GrantedToken GetTokenByResourceOwnerCredentialsGrantType(
@@ -79,7 +91,7 @@ namespace SimpleIdentityServer.Core.Api.Token
         {
             if (resourceOwnerGrantTypeParameter == null)
             {
-                throw new ArgumentNullException("resourceOwnerGrantTypeParameter");
+                throw new ArgumentNullException(nameof(resourceOwnerGrantTypeParameter));
             }
 
             _simpleIdentityServerEventSource.StartGetTokenByResourceOwnerCredentials(resourceOwnerGrantTypeParameter.ClientId,
@@ -100,7 +112,7 @@ namespace SimpleIdentityServer.Core.Api.Token
         {
             if (authorizationCodeGrantTypeParameter == null)
             {
-                throw new ArgumentNullException("authorizationCodeGrantTypeParameter");
+                throw new ArgumentNullException(nameof(authorizationCodeGrantTypeParameter));
             }
 
             _simpleIdentityServerEventSource.StartGetTokenByAuthorizationCode(
@@ -120,7 +132,7 @@ namespace SimpleIdentityServer.Core.Api.Token
         {
             if (refreshTokenGrantTypeParameter == null)
             {
-                throw new ArgumentNullException("refreshTokenGrantTypeParameter");
+                throw new ArgumentNullException(nameof(refreshTokenGrantTypeParameter));
             }
 
             _simpleIdentityServerEventSource.StartGetTokenByRefreshToken(
@@ -131,6 +143,24 @@ namespace SimpleIdentityServer.Core.Api.Token
             _simpleIdentityServerEventSource.EndGetTokenByRefreshToken(
                 result.AccessToken,
                 result.IdToken);
+            return result;
+        }
+
+        public GrantedToken GetTokenByClientCredentialsGrantType(
+            ClientCredentialsGrantTypeParameter clientCredentialsGrantTypeParameter,
+            AuthenticationHeaderValue authenticationHeaderValue)
+        {
+            if (clientCredentialsGrantTypeParameter == null)
+            {
+                throw new ArgumentNullException(nameof(clientCredentialsGrantTypeParameter));
+            }
+
+            _simpleIdentityServerEventSource.StartGetTokenByClientCredentials(clientCredentialsGrantTypeParameter.Scope);
+            _clientCredentialsGrantTypeParameterValidator.Validate(clientCredentialsGrantTypeParameter);
+            var result = _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, authenticationHeaderValue);
+            _simpleIdentityServerEventSource.EndGetTokenByClientCredentials(
+                result.ClientId,
+                clientCredentialsGrantTypeParameter.Scope);
             return result;
         }
     }
