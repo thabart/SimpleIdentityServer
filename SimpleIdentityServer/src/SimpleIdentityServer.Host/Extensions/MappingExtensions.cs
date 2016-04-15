@@ -137,6 +137,18 @@ namespace SimpleIdentityServer.Host.Extensions
             };
         }
 
+        public static ClientCredentialsGrantTypeParameter ToClientCredentialsGrantTypeParameter(this TokenRequest request)
+        {
+            return new ClientCredentialsGrantTypeParameter
+            {
+                ClientAssertion = request.client_assertion,
+                ClientAssertionType = request.client_assertion_type,
+                ClientId = request.client_id,
+                ClientSecret = request.client_secret,
+                Scope = request.scope
+            };
+        }
+
         public static AuthorizationRequest ToAuthorizationRequest(this JwsPayload jwsPayload)
         {
             Display displayEnum;
