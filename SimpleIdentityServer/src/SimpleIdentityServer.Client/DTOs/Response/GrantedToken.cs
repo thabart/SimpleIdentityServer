@@ -14,18 +14,26 @@
 // limitations under the License.
 #endregion
 
+using System.Runtime.Serialization;
+
 namespace SimpleIdentityServer.Client.DTOs.Response
 {
+    [DataContract]
     public class GrantedToken
     {
+        [DataMember(Name = Constants.GrantedTokenNames.AccessToken)]
         public string AccessToken { get; set; }
 
+        [DataMember(Name = Constants.GrantedTokenNames.TokenType)]
         public string TokenType { get; set; }
 
-        public int ExpiredIn { get; set; }
+        [DataMember(Name = Constants.GrantedTokenNames.ExpiresIn)]
+        public int ExpiresIn { get; set; }
 
+        [DataMember(Name = Constants.GrantedTokenNames.RefreshToken)]
         public string RefreshToken { get; set; }
 
+        [DataMember(Name = Constants.GrantedTokenNames.Scope)]
         public string Scope { get; set; }
     }
 }

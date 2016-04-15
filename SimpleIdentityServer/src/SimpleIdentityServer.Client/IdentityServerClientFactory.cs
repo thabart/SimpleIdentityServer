@@ -15,8 +15,10 @@
 #endregion
 
 using Microsoft.Extensions.DependencyInjection;
+using SimpleIdentityServer.Client.Builders;
 using SimpleIdentityServer.Client.Factories;
 using SimpleIdentityServer.Client.Operations;
+using SimpleIdentityServer.Client.Selectors;
 using System;
 
 namespace SimpleIdentityServer.Client
@@ -24,6 +26,8 @@ namespace SimpleIdentityServer.Client
     public interface IIdentityServerClientFactory
     {
         IDiscoveryClient CreateDiscoveryClient();
+
+        IClientAuthSelector CreateTokenClient();
     }
 
     public class IdentityServerClientFactory : IIdentityServerClientFactory
@@ -51,6 +55,16 @@ namespace SimpleIdentityServer.Client
             return result;
         }
 
+        /// <summary>
+        /// Create token client
+        /// </summary>
+        /// <returns>Choose your client authentication method</returns>
+        public IClientAuthSelector CreateTokenClient()
+        {
+            var result = (IClientAuthSelector)_serviceProvider.GetService(typeof(IClientAuthSelector));
+            return result;
+        }
+
         #region Private static methods
 
         private static void RegisterDependencies(IServiceCollection serviceCollection)
@@ -63,6 +77,13 @@ namespace SimpleIdentityServer.Client
 
             // Register operations
             serviceCollection.AddTransient<IGetDiscoveryOperation, GetDiscoveryOperation>();
+
+            // Register request builders
+            serviceCollection.AddScoped<ITokenRequestBuilder, TokenRequestBuilder>();
+
+            // Register selectors
+            serviceCollection.AddTransient<IClientAuthSelector, ClientAuthSelector>();
+            serviceCollection.AddTransient<ITokenGrantTypeSelector, TokenGrantTypeSelector>();
         }
 
         #endregion

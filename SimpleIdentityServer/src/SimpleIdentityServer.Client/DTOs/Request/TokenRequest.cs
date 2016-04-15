@@ -14,18 +14,54 @@
 // limitations under the License.
 #endregion
 
+using System.Runtime.Serialization;
+
 namespace SimpleIdentityServer.Client.DTOs.Request
 {
+    public enum GrantTypeRequest
+    {
+        None,
+        password,
+        client_credentials,
+        authorization_code,
+        validate_bearer,
+        refresh_token
+    }
+
+    [DataContract]
     public class TokenRequest
     {
-        public GrantTypeRequest grant_type { get; set; }
+        [DataMember(Name = Constants.TokenRequestNames.GrantType)]
+        public GrantTypeRequest GrantType { get; set; }
 
-        public string username { get; set; }
+        [DataMember(Name = Constants.TokenRequestNames.Username)]
+        public string Username { get; set; }
 
-        public string password { get; set; }
+        [DataMember(Name = Constants.TokenRequestNames.Password)]
+        public string Password { get; set; }
 
-        public string scope { get; set; }
+        [DataMember(Name = Constants.TokenRequestNames.Scope)]
+        public string Scope { get; set; }
 
-        public string client_id { get; set; }
+        [DataMember(Name = Constants.TokenRequestNames.ClientId)]
+        public string ClientId { get; set; }
+
+        [DataMember(Name = Constants.TokenRequestNames.ClientSecret)]
+        public string ClientSecret { get; set; }
+
+        [DataMember(Name = Constants.TokenRequestNames.Code)]
+        public string Code { get; set; }
+
+        [DataMember(Name = Constants.TokenRequestNames.RedirectUri)]
+        public string RedirectUri { get; set; }
+
+        [DataMember(Name = Constants.TokenRequestNames.ClientAssertionType)]
+        public string ClientAssertionType { get; set; }
+
+        [DataMember(Name = Constants.TokenRequestNames.ClientAssertion)]
+        public string ClientAssertion { get; set; }
+
+        [DataMember(Name = Constants.TokenRequestNames.RefreshToken)]
+        public string RefreshToken { get; set; }
     }
 }

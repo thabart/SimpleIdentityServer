@@ -14,38 +14,36 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Client.Builders;
 
-using System;
-
-namespace SimpleIdentityServer.Client
+namespace SimpleIdentityServer.Client.Selectors
 {
-    public interface ITokenClient
+    public interface ITokenGrantTypeSelector
     {
-
+        ITokenClient UseClientCredentials(); 
     }
 
-    internal class TokenClient : ITokenClient
+    internal class TokenGrantTypeSelector : ITokenGrantTypeSelector
     {
+        private readonly ITokenRequestBuilder _tokenRequestBuilder;
+
         #region Constructor
 
-        public TokenClient()
+        public TokenGrantTypeSelector(ITokenRequestBuilder tokenRequestBuilder)
         {
-
+            _tokenRequestBuilder = tokenRequestBuilder;
         }
 
         #endregion
 
         #region Public methods
-        
-        #endregion
 
-        #region Private static methods
-
-        private static string ConstructAuthorizationValue(string clientId, string clientSecret)
+        public ITokenClient UseClientCredentials()
         {
-            var concat = clientId + ":" + clientSecret;
+            var s = _tokenRequestBuilder.GetAuthorizationHeaderValue();
             return null;
         }
+
         #endregion
     }
 }
