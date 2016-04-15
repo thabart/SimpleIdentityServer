@@ -19,7 +19,6 @@ using System.Linq;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using SimpleIdentityServer.Core.Authenticate;
-using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
@@ -56,6 +55,8 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
         private readonly IJwtGenerator _jwtGenerator;
 
+        private readonly IAuthenticateInstructionGenerator _authenticateInstructionGenerator;
+
         public GetTokenByResourceOwnerCredentialsGrantTypeAction(
             IGrantedTokenRepository grantedTokenRepository,
             IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
@@ -63,7 +64,8 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             IResourceOwnerValidator resourceOwnerValidator,
             ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
             IAuthenticateClient authenticateClient,
-            IJwtGenerator jwtGenerator)
+            IJwtGenerator jwtGenerator,
+            IAuthenticateInstructionGenerator authenticateInstructionGenerator)
         {
             _grantedTokenRepository = grantedTokenRepository;
             _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
@@ -72,6 +74,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
             _authenticateClient = authenticateClient;
             _jwtGenerator = jwtGenerator;
+            _authenticateInstructionGenerator = authenticateInstructionGenerator;
         }
 
         public GrantedToken Execute(
@@ -147,37 +150,12 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             ResourceOwnerGrantTypeParameter resourceOwnerGrantTypeParameter,
             AuthenticationHeaderValue authenticationHeaderValue)
         {
-            var result = new AuthenticateInstruction
-            {
-                ClientAssertion = resourceOwnerGrantTypeParameter.ClientAssertion,
-                ClientAssertionType = resourceOwnerGrantTypeParameter.ClientAssertionType,
-                ClientIdFromHttpRequestBody = resourceOwnerGrantTypeParameter.ClientId,
-                ClientSecretFromHttpRequestBody = resourceOwnerGrantTypeParameter.ClientSecret
-            };
-
-            if (authenticationHeaderValue != null
-                && !string.IsNullOrWhiteSpace(authenticationHeaderValue.Parameter))
-            {
-                var parameters = GetParameters(authenticationHeaderValue.Parameter);
-                if (parameters != null && parameters.Count() == 2)
-                {
-                    result.ClientIdFromAuthorizationHeader = parameters[0];
-                    result.ClientSecretFromAuthorizationHeader = parameters[1];
-                }
-            }
-
+            var result = _authenticateInstructionGenerator.GetAuthenticateInstruction(authenticationHeaderValue);
+            result.ClientAssertion = resourceOwnerGrantTypeParameter.ClientAssertion;
+            result.ClientAssertionType = resourceOwnerGrantTypeParameter.ClientAssertionType;
+            result.ClientIdFromHttpRequestBody = resourceOwnerGrantTypeParameter.ClientId;
+            result.ClientSecretFromHttpRequestBody = resourceOwnerGrantTypeParameter.ClientSecret;
             return result;
-        }
-
-        private static string[] GetParameters(string authorizationHeaderValue)
-        {
-            if (string.IsNullOrWhiteSpace(authorizationHeaderValue))
-            {
-                return new string[0];
-            }
-
-            var decodedParameter = authorizationHeaderValue.Base64Decode();
-            return decodedParameter.Split(':');
         }
 
         #endregion

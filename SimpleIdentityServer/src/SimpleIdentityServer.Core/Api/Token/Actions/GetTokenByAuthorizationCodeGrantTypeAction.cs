@@ -15,10 +15,8 @@
 #endregion
 
 using System;
-using System.Linq;
 using System.Net.Http.Headers;
 using SimpleIdentityServer.Core.Authenticate;
-using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
@@ -39,6 +37,8 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
     public class GetTokenByAuthorizationCodeGrantTypeAction : IGetTokenByAuthorizationCodeGrantTypeAction
     {
+        private readonly IAuthenticateInstructionGenerator _authenticateInstructionGenerator;
+
         private readonly IClientValidator _clientValidator;
 
         private readonly IAuthorizationCodeRepository _authorizationCodeRepository;
@@ -55,6 +55,8 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
         private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
 
+        #region Constructor
+
         public GetTokenByAuthorizationCodeGrantTypeAction(
             IClientValidator clientValidator,
             IAuthorizationCodeRepository authorizationCodeRepository,
@@ -63,7 +65,8 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             IGrantedTokenRepository grantedTokenRepository,
             IAuthenticateClient authenticateClient,
             IClientHelper clientHelper,
-            ISimpleIdentityServerEventSource simpleIdentityServerEventSource)
+            ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
+            IAuthenticateInstructionGenerator authenticateInstructionGenerator)
         {
             _clientValidator = clientValidator;
             _authorizationCodeRepository = authorizationCodeRepository;
@@ -73,7 +76,12 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             _authenticateClient = authenticateClient;
             _clientHelper = clientHelper;
             _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
+            _authenticateInstructionGenerator = authenticateInstructionGenerator;
         }
+
+        #endregion
+
+        #region Public methods
 
         public GrantedToken Execute(
             AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter, 
@@ -118,6 +126,10 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
             return grantedToken;
         }
+
+        #endregion
+
+        #region Private methods
 
         /// <summary>
         /// Check the parameters based on the RFC : http://openid.net/specs/openid-connect-core-1_0.html#TokenRequestValidation
@@ -189,37 +201,14 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter,
             AuthenticationHeaderValue authenticationHeaderValue)
         {
-            var result = new AuthenticateInstruction
-            {
-                ClientAssertion = authorizationCodeGrantTypeParameter.ClientAssertion,
-                ClientAssertionType = authorizationCodeGrantTypeParameter.ClientAssertionType,
-                ClientIdFromHttpRequestBody = authorizationCodeGrantTypeParameter.ClientId,
-                ClientSecretFromHttpRequestBody = authorizationCodeGrantTypeParameter.ClientSecret
-            };
-
-            if (authenticationHeaderValue != null 
-                && !string.IsNullOrWhiteSpace(authenticationHeaderValue.Parameter))
-            {
-                var parameters = GetParameters(authenticationHeaderValue.Parameter);
-                if (parameters != null && parameters.Count() == 2)
-                {
-                    result.ClientIdFromAuthorizationHeader = parameters[0];
-                    result.ClientSecretFromAuthorizationHeader = parameters[1];
-                }
-            }
-
+            var result = _authenticateInstructionGenerator.GetAuthenticateInstruction(authenticationHeaderValue);
+            result.ClientAssertion = authorizationCodeGrantTypeParameter.ClientAssertion;
+            result.ClientAssertionType = authorizationCodeGrantTypeParameter.ClientAssertionType;
+            result.ClientIdFromHttpRequestBody = authorizationCodeGrantTypeParameter.ClientId;
+            result.ClientSecretFromHttpRequestBody = authorizationCodeGrantTypeParameter.ClientSecret;
             return result;
         }
-        
-        private static string[] GetParameters(string authorizationHeaderValue)
-        {
-            if (string.IsNullOrWhiteSpace(authorizationHeaderValue))
-            {
-                return new string[0];
-            }
 
-            var decodedParameter = authorizationHeaderValue.Base64Decode();
-            return decodedParameter.Split(':');
-        }
+        #endregion
     }
 }
