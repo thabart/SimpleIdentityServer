@@ -15,7 +15,7 @@
   },
 
   "dependencies": {
-    "SimpleIdentityServer.Client":  ""
+    "SimpleIdentityServer.Client": ""
   },
 
   "commands": {
@@ -23,6 +23,11 @@
   },
 
   "frameworks": {
-    "dnx451": { }
+    "dnx451": { },
+    "dnxcore50": {
+      "dependencies": {
+        "System.Console": "4.0.0-beta-23516"
+      }
+    }
   }
 }

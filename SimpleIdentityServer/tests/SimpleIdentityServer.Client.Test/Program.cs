@@ -1,27 +1,36 @@
-﻿using System;
-using SimpleIdentityServer.Client;
-using SimpleIdentityServer.Client.Parameters;
+﻿#region copyright
+// Copyright 2015 Habart Thierry
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
+using System;
 
 namespace SimpleIdentityServer.Client.Test
 {
     class Program
     {
-        static void Main(string[] args)
+        #region Public methods
+
+        public static void Main(string[] args)
         {
-            var factory = new IdentityServerClientFactory();
-            var client = factory.CreateClient("http://localhost:50470/swagger/docs/v1", "http://localhost:50470");
-            var request = new GetAccessToken
-            {
-                ClientId = "MyBlog",
-                Username = "administrator",
-                Password = "password",
-                Scope = "BlogApi"
-            };
-            var result = client.GetAccessTokenViaResourceOwnerGrantTypeAsync(request).Result;
-
-            Console.WriteLine(result.AccessToken);
-
+            var identityServerClientFactory = new IdentityServerClientFactory();
+            var discoveryClient = identityServerClientFactory.CreateDiscoveryClient();
+            var discoveryInformation = discoveryClient.GetDiscoveryInformation("http://localhost:5000/.well-known/openid-configuration");
+            Console.WriteLine(discoveryInformation.AuthorizationEndPoint);
             Console.ReadLine();
         }
+        
+        #endregion
     }
 }
