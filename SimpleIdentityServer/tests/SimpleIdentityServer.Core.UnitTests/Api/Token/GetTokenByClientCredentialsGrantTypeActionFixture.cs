@@ -48,6 +48,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
         private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSourceStub;
 
+        private Mock<IClientCredentialsGrantTypeParameterValidator> _clientCredentialsGrantTypeParameterValidatorStub;
+
         private IGetTokenByClientCredentialsGrantTypeAction _getTokenByClientCredentialsGrantTypeAction;
 
         #region Exceptions
@@ -60,20 +62,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
             // ACT & ASSERT
             Assert.Throws<ArgumentNullException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(null, null));
-        }
-
-        [Fact]
-        public void When_Passing_Empty_Socpe_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            var clientCredentialsGrantTypeParameter = new ClientCredentialsGrantTypeParameter();
-
-            // ACT & ASSERT
-            var exception = Assert.Throws<IdentityServerException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null));
-            Assert.NotNull(exception);
-            Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
-            Assert.True(exception.Message == string.Format(ErrorDescriptions.MissingParameter, Constants.StandardTokenRequestParameterNames.ScopeName));
         }
 
         [Fact]
@@ -266,6 +254,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _scopeValidatorStub = new Mock<IScopeValidator>();
             _grantedTokenRepositoryStub = new Mock<IGrantedTokenRepository>();
             _simpleIdentityServerEventSourceStub = new Mock<ISimpleIdentityServerEventSource>();
+            _clientCredentialsGrantTypeParameterValidatorStub = new Mock<IClientCredentialsGrantTypeParameterValidator>();
             _getTokenByClientCredentialsGrantTypeAction = new GetTokenByClientCredentialsGrantTypeAction(
                 _authenticateInstructionGeneratorStub.Object,
                 _authenticateClientStub.Object,
@@ -273,7 +262,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 _grantedTokenGeneratorHelperStub.Object,
                 _scopeValidatorStub.Object,
                 _grantedTokenRepositoryStub.Object,
-                _simpleIdentityServerEventSourceStub.Object);
+                _simpleIdentityServerEventSourceStub.Object,
+                _clientCredentialsGrantTypeParameterValidatorStub.Object);
         }
     }
 }

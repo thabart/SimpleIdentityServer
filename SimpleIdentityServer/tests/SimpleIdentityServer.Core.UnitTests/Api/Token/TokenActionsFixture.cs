@@ -29,6 +29,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
         private Mock<IRefreshTokenGrantTypeParameterValidator> _refreshTokenGrantTypeParameterValidatorFake;
 
+        private Mock<IClientCredentialsGrantTypeParameterValidator> _clientCredentialsGrantTypeParameterValidatorStub;
+
+        private Mock<IGetTokenByClientCredentialsGrantTypeAction> _getTokenByClientCredentialsGrantTypeActionStub;
+
         private ITokenActions _tokenActions;
 
         [Fact]
@@ -156,6 +160,44 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _simpleIdentityServerEventSourceFake.Verify(s => s.EndGetTokenByRefreshToken(accessToken, identityToken));
         }
 
+        [Fact]
+        public void When_Passing_Null_Parameter_To_ClientCredentials_GrantType_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+
+            // ACT & ASSERT
+            Assert.Throws<ArgumentNullException>(() => _tokenActions.GetTokenByClientCredentialsGrantType(null, null));
+        }
+
+        [Fact]
+        public void When_Getting_Token_Via_ClientCredentials_GrantType_Then_GrantedToken_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            const string scope = "valid_scope";
+            const string clientId = "valid_client_id";
+            var parameter = new ClientCredentialsGrantTypeParameter
+            {
+                Scope = scope
+            };
+            var grantedToken = new GrantedToken
+            {
+                ClientId = clientId
+            };
+            _getTokenByClientCredentialsGrantTypeActionStub.Setup(g => g.Execute(It.IsAny<ClientCredentialsGrantTypeParameter>(), It.IsAny<AuthenticationHeaderValue>()))
+                .Returns(grantedToken);
+
+            // ACT
+            var result = _tokenActions.GetTokenByClientCredentialsGrantType(parameter, null);
+
+            // ASSERTS
+            _simpleIdentityServerEventSourceFake.Verify(s => s.StartGetTokenByClientCredentials(scope));
+            _simpleIdentityServerEventSourceFake.Verify(s => s.EndGetTokenByClientCredentials(clientId, scope));
+            Assert.NotNull(result);
+            Assert.True(result.ClientId == clientId);
+        }
+
         private void InitializeFakeObjects()
         {
             _getTokenByResourceOwnerCredentialsGrantTypeActionFake = new Mock<IGetTokenByResourceOwnerCredentialsGrantTypeAction>();
@@ -165,12 +207,16 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _simpleIdentityServerEventSourceFake = new Mock<ISimpleIdentityServerEventSource>();
             _getTokenByRefreshTokenGrantTypeActionFake = new Mock<IGetTokenByRefreshTokenGrantTypeAction>();
             _refreshTokenGrantTypeParameterValidatorFake = new Mock<IRefreshTokenGrantTypeParameterValidator>();
+            _clientCredentialsGrantTypeParameterValidatorStub = new Mock<IClientCredentialsGrantTypeParameterValidator>();
+            _getTokenByClientCredentialsGrantTypeActionStub = new Mock<IGetTokenByClientCredentialsGrantTypeAction>();
             _tokenActions = new TokenActions(_getTokenByResourceOwnerCredentialsGrantTypeActionFake.Object,
                 _getTokenByAuthorizationCodeGrantTypeActionFake.Object,
                 _resourceOwnerGrantTypeParameterValidatorFake.Object,
                 _authorizationCodeGrantTypeParameterTokenEdptValidatorFake.Object,
                 _refreshTokenGrantTypeParameterValidatorFake.Object,
                 _getTokenByRefreshTokenGrantTypeActionFake.Object,
+                _getTokenByClientCredentialsGrantTypeActionStub.Object,
+                _clientCredentialsGrantTypeParameterValidatorStub.Object,
                 _simpleIdentityServerEventSourceFake.Object);
         }
     }
