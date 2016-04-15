@@ -14,16 +14,24 @@
 // limitations under the License.
 #endregion
 
-namespace SimpleIdentityServer.Client.Parameters
+using System.Net.Http;
+
+namespace SimpleIdentityServer.Client.Factories
 {
-    public class GetAccessToken
+    public interface IHttpClientFactory
     {
-        public string Username { get; set; }
+        HttpClient GetHttpClient();
+    }
 
-        public string Password { get; set; }
+    internal sealed class HttpClientFactory : IHttpClientFactory
+    {
+        #region Public methods
 
-        public string Scope { get; set; }
+        public HttpClient GetHttpClient()
+        {
+            return new HttpClient();
+        }
 
-        public string ClientId { get; set; }
+        #endregion
     }
 }

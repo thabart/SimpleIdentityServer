@@ -14,16 +14,10 @@
 // limitations under the License.
 #endregion
 
-namespace SimpleIdentityServer.Client.Parameters
+namespace SimpleIdentityServer.Client.Errors
 {
-    public class GetAccessToken
+    internal static class ErrorDescriptions
     {
-        public string Username { get; set; }
-
-        public string Password { get; set; }
-
-        public string Scope { get; set; }
-
-        public string ClientId { get; set; }
+        public const string TheUrlIsNotWellFormed = "the url {0} is not well formed";
     }
 }

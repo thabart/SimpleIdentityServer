@@ -11,11 +11,22 @@
   },
 
   "dependencies": {
-    "SwaggerLibrary": "",
-    "SimpleIdentityServer.Core": ""
+    "Microsoft.Extensions.DependencyInjection": "1.0.0-rc1-final",
+    "Newtonsoft.Json": "8.0.3"
   },
 
   "frameworks": {
-    "dnx451": { }
+    "dnx451": {
+      "frameworkAssemblies": {
+        "System.Net.Http": "4.0.0.0",
+        "System.Runtime.Serialization": "4.0.0.0"
+      }
+    },
+    "dnxcore50": {
+      "dependencies": {
+        "System.Net.Http": "4.0.1-beta-23516",
+        "System.Runtime.Serialization.Primitives": "4.1.0-rc2-23826"
+      }
+    }
   }
 }
