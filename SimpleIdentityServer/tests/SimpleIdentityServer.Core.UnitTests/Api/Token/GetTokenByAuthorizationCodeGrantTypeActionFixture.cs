@@ -1,4 +1,20 @@
-﻿using Moq;
+﻿#region copyright
+// Copyright 2015 Habart Thierry
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
+using Moq;
 using SimpleIdentityServer.Core.Api.Token.Actions;
 using SimpleIdentityServer.Core.Authenticate;
 using SimpleIdentityServer.Core.Configuration;
@@ -12,6 +28,7 @@ using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
 using System;
+using System.Net.Http.Headers;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Token
@@ -34,7 +51,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
         private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSourceFake;
 
+        private Mock<IAuthenticateInstructionGenerator> _authenticateInstructionGeneratorStub;
+
         private IGetTokenByAuthorizationCodeGrantTypeAction _getTokenByAuthorizationCodeGrantTypeAction;
+
+        #region Exceptions
 
         [Fact]
         public void When_Passing_Empty_Request_Then_Exception_Is_Thrown()
@@ -61,6 +82,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             };
 
             string errorMessage;
+            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
+                .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(),
                 out errorMessage))
                 .Returns(() => null);
@@ -86,6 +109,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             var client = new Client();
 
             string errorMessage;
+            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
+                .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(),
                 out errorMessage))
                 .Returns(() => client);
@@ -121,6 +146,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             };
 
             string errorMessage;
+            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
+                .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(),
                 out errorMessage))
                 .Returns(() => client);
@@ -160,6 +187,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             };
 
             string errorMessage;
+            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
+                .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(),
                 out errorMessage))
                 .Returns(client);
@@ -198,6 +227,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             };
 
             string errorMessage;
+            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
+                .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(),
                 out errorMessage))
                 .Returns(client);
@@ -238,6 +269,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             };
 
             string errorMessage;
+            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
+                .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(),
                 out errorMessage))
                 .Returns(client);
@@ -254,6 +287,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             Assert.True(exception.Code == ErrorCodes.InvalidGrant);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.RedirectUrlIsNotValid, "redirectUri"));
         }
+
+        #endregion
+
+        #region Happy paths
 
         [Fact]
         public void When_Requesting_An_Existed_Granted_Token_Then_Check_Id_Token_Is_Signed_And_Encrypted()
@@ -293,6 +330,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             };
 
             string errorMessage;
+            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
+                .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(),
                 out errorMessage))
                 .Returns(client);
@@ -350,6 +389,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             };
 
             string errorMessage;
+            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
+                .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(),
                 out errorMessage))
                 .Returns(client);
@@ -382,6 +423,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             Assert.True(result.AccessToken == accessToken);
         }
 
+        #endregion
+
         private void InitializeFakeObjects()
         {
             _clientValidatorFake = new Mock<IClientValidator>();
@@ -393,7 +436,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _clientHelper = new Mock<IClientHelper>();
             _simpleIdentityServerConfiguratorFake = new Mock<ISimpleIdentityServerConfigurator>();
             _simpleIdentityServerEventSourceFake = new Mock<ISimpleIdentityServerEventSource>();
-
+            _authenticateInstructionGeneratorStub = new Mock<IAuthenticateInstructionGenerator>();
             _getTokenByAuthorizationCodeGrantTypeAction = new GetTokenByAuthorizationCodeGrantTypeAction(
                 _clientValidatorFake.Object,
                 _authorizationCodeRepositoryFake.Object,
@@ -402,7 +445,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 _grantedTokenRepositoryFake.Object,
                 _authenticateClientFake.Object,
                 _clientHelper.Object,
-                _simpleIdentityServerEventSourceFake.Object); 
+                _simpleIdentityServerEventSourceFake.Object,
+                _authenticateInstructionGeneratorStub.Object); 
         }
     }
 }

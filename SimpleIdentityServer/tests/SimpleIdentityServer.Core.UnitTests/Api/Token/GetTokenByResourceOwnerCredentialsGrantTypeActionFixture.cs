@@ -1,4 +1,20 @@
-﻿using System;
+﻿#region copyright
+// Copyright 2015 Habart Thierry
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using Moq;
@@ -15,6 +31,7 @@ using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
 using Xunit;
+using System.Net.Http.Headers;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 {
@@ -34,7 +51,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
         private Mock<IJwtGenerator> _jwtGeneratorFake;
 
+        private Mock<IAuthenticateInstructionGenerator> _authenticateInstructionGeneratorStub;
+
         private IGetTokenByResourceOwnerCredentialsGrantTypeAction _getTokenByResourceOwnerCredentialsGrantTypeAction;
+
+        #region Exceptions
 
         [Fact]
         public void When_Passing_No_Request_Then_Exception_Is_Thrown()
@@ -64,6 +85,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             };
 
             string message;
+            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
+                .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), out message))
                 .Returns(() => null);
             
@@ -91,6 +114,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             var client = new Client();
 
             string message;
+            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
+                .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), out message))
                 .Returns(() => client);
             _resourceOwnerValidatorFake.Setup(
@@ -125,6 +150,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             var resourceOwner = new ResourceOwner();
 
             string message;
+            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
+                .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), out message))
                 .Returns(() => client);
             _resourceOwnerValidatorFake.Setup(
@@ -137,6 +164,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             var exception = Assert.Throws<IdentityServerException>(() => _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(resourceOwnerGrantTypeParameter, null));
             Assert.True(exception.Code == ErrorCodes.InvalidScope);
         }
+
+        #endregion
+
+        #region Happy path
 
         [Fact]
         public void When_Requesting_An_AccessToken_For_An_Authenticated_User_Then_AccessToken_Is_Granted()
@@ -169,6 +200,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             };
 
             string message;
+            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
+                .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), out message))
                 .Returns(() => client);
             _resourceOwnerValidatorFake.Setup(
@@ -193,6 +226,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _simpleIdentityServerEventSourceFake.Verify(s => s.GrantAccessToClient(clientId, accessToken, invalidScope));
         }
 
+        #endregion
+
         private void InitializeFakeObjects()
         {
             _grantedTokenRepositoryFake = new Mock<IGrantedTokenRepository>();
@@ -202,6 +237,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _simpleIdentityServerEventSourceFake = new Mock<ISimpleIdentityServerEventSource>();
             _authenticateClientFake = new Mock<IAuthenticateClient>();
             _jwtGeneratorFake = new Mock<IJwtGenerator>();
+            _authenticateInstructionGeneratorStub = new Mock<IAuthenticateInstructionGenerator>();
 
             _getTokenByResourceOwnerCredentialsGrantTypeAction = new GetTokenByResourceOwnerCredentialsGrantTypeAction(
                 _grantedTokenRepositoryFake.Object,
@@ -210,7 +246,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 _resourceOwnerValidatorFake.Object,
                 _simpleIdentityServerEventSourceFake.Object,
                 _authenticateClientFake.Object,
-                _jwtGeneratorFake.Object);
+                _jwtGeneratorFake.Object,
+                _authenticateInstructionGeneratorStub.Object);
         }
     }
 }
