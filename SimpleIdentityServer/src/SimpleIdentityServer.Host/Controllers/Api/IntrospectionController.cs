@@ -43,7 +43,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
         #region Public methods
 
         [HttpPost]
-        public IntrospectionResponse Post([FromBody] IntrospectionRequest introspectionRequest)
+        public IntrospectionResponse Post([FromForm] IntrospectionRequest introspectionRequest)
         {
             if (introspectionRequest == null)
             {
