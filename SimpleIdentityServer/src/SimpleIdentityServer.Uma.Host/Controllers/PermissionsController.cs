@@ -41,7 +41,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         #region Public methods
 
         [HttpPost]
-        public ActionResult PostPermission(PostPermission postPermission)
+        public ActionResult PostPermission([FromBody] PostPermission postPermission)
         {
             if (postPermission == null)
             {

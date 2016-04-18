@@ -37,7 +37,7 @@
   },
 
   "commands": {
-    "web": "Microsoft.AspNet.Server.Kestrel --server-urls http://0.0.0.0:5002",
+    "web": "Microsoft.AspNet.Server.Kestrel --server.urls=http://*:5002/",
     "watch": "Microsoft.Dnx.Watcher web"
   },
 

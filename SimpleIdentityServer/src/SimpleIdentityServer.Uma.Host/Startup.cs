@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using System;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -22,6 +23,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
 using SimpleIdentityServer.Oauth2Instrospection.Authentication;
 using SimpleIdentityServer.Uma.Core;
+using SimpleIdentityServer.Uma.Core.Configuration;
 using SimpleIdentityServer.Uma.EF;
 using SimpleIdentityServer.Uma.Host.Middlewares;
 using Swashbuckle.SwaggerGen;
@@ -31,6 +33,14 @@ namespace SimpleIdentityServer.Uma.Host
 
     public class Startup
     {
+        internal class UmaServerConfigurationProvider : IUmaServerConfigurationProvider
+        {
+            public int GetTicketLifetime()
+            {
+                return 3000;
+            }
+        }
+
         public Startup(IHostingEnvironment env, IApplicationEnvironment appEnv)
         {
             var builder = new ConfigurationBuilder()
@@ -117,6 +127,7 @@ namespace SimpleIdentityServer.Uma.Host
         public void RegisterServices(IServiceCollection services)
         {
             var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
+            services.AddTransient<IUmaServerConfigurationProvider, UmaServerConfigurationProvider>();
             services.AddSimpleIdServerUmaCore();
             services.AddSimpleIdServerUmaSqlServer(connectionString);
         }
