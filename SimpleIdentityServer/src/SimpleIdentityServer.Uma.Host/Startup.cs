@@ -67,6 +67,12 @@ namespace SimpleIdentityServer.Uma.Host
                 });
             });
 
+            // Add authorization policies
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("UmaProtection", policy => policy.RequireClaim("scope", "uma_protection"));
+            });
+
             // Add the dependencies needed to enable CORS
             services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
                 .AllowAnyMethod()

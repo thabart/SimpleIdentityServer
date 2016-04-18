@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Mvc;
 using SimpleIdentityServer.Uma.Core.Api.PermissionController;
 using SimpleIdentityServer.Uma.Host.DTOs.Requests;
@@ -41,6 +42,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         #region Public methods
 
         [HttpPost]
+        [Authorize("UmaProtection")]
         public ActionResult PostPermission([FromBody] PostPermission postPermission)
         {
             if (postPermission == null)
