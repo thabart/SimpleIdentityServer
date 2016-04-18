@@ -24,8 +24,6 @@ namespace SimpleIdentityServer.Client.Selectors
 {
     public interface ITokenGrantTypeSelector
     {
-        ITokenClient UseClientCredentials(string scope);
-
         ITokenClient UseClientCredentials(params string[] scopes);
 
         ITokenClient UseClientCredentials(List<string> scopes);
@@ -51,18 +49,6 @@ namespace SimpleIdentityServer.Client.Selectors
 
         #region Public methods
 
-        public ITokenClient UseClientCredentials(string scope)
-        {
-            if (string.IsNullOrWhiteSpace(scope))
-            {
-                throw new ArgumentNullException(nameof(scope));
-            }
-
-            _tokenRequestBuilder.TokenRequest.Scope = scope;
-            _tokenRequestBuilder.TokenRequest.GrantType = GrantTypeRequest.client_credentials;
-            return _tokenClient;
-        }
-
         public ITokenClient UseClientCredentials(params string[] scopes)
         {
             if (scopes == null || !scopes.Any())
@@ -70,7 +56,7 @@ namespace SimpleIdentityServer.Client.Selectors
                 throw new ArgumentNullException(nameof(scopes));
             }
 
-            return UseClientCredentials(ConcatScopes(scopes.ToList()));
+            return UseClientCredentials(scopes.ToList());
         }
 
         public ITokenClient UseClientCredentials(List<string> scopes)
@@ -79,8 +65,10 @@ namespace SimpleIdentityServer.Client.Selectors
             {
                 throw new ArgumentNullException(nameof(scopes));
             }
-
-            return UseClientCredentials(ConcatScopes(scopes));
+            
+            _tokenRequestBuilder.TokenRequest.Scope = ConcatScopes(scopes);
+            _tokenRequestBuilder.TokenRequest.GrantType = GrantTypeRequest.client_credentials;
+            return _tokenClient;
         }
 
         #endregion
