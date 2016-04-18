@@ -13,6 +13,12 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Client
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Core.Common", "src\SimpleIdentityServer.Core.Common\SimpleIdentityServer.Core.Common.xproj", "{8EA9F43D-3B41-40A4-88D7-68AF33F90C55}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01. Unit Tests", "01. Unit Tests", "{80455BD6-64B8-44FC-8117-B963DEAF37D8}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Client.Unit.Tests", "tests\SimpleIdentityServer.Client.Unit.Tests\SimpleIdentityServer.Client.Unit.Tests.xproj", "{0DC8E1D9-8B85-460A-B51C-67056446CA85}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02. Integration Tests", "02. Integration Tests", "{67AE5203-D953-482D-BAF8-6D430FD39A89}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,13 +37,20 @@ Global
 		{8EA9F43D-3B41-40A4-88D7-68AF33F90C55}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8EA9F43D-3B41-40A4-88D7-68AF33F90C55}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8EA9F43D-3B41-40A4-88D7-68AF33F90C55}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DC8E1D9-8B85-460A-B51C-67056446CA85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DC8E1D9-8B85-460A-B51C-67056446CA85}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DC8E1D9-8B85-460A-B51C-67056446CA85}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DC8E1D9-8B85-460A-B51C-67056446CA85}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{8562EA86-1ACB-4A83-9175-8BFCB133EB4D} = {36AA7C9C-AAD9-481C-9587-699D6E8094BE}
-		{D9C65BC1-F1BC-4A74-8C7B-89E73C7E6A94} = {95551D7B-E0DE-4280-8234-D45B0BA7A9B5}
+		{D9C65BC1-F1BC-4A74-8C7B-89E73C7E6A94} = {67AE5203-D953-482D-BAF8-6D430FD39A89}
 		{8EA9F43D-3B41-40A4-88D7-68AF33F90C55} = {36AA7C9C-AAD9-481C-9587-699D6E8094BE}
+		{80455BD6-64B8-44FC-8117-B963DEAF37D8} = {95551D7B-E0DE-4280-8234-D45B0BA7A9B5}
+		{0DC8E1D9-8B85-460A-B51C-67056446CA85} = {80455BD6-64B8-44FC-8117-B963DEAF37D8}
+		{67AE5203-D953-482D-BAF8-6D430FD39A89} = {95551D7B-E0DE-4280-8234-D45B0BA7A9B5}
 	EndGlobalSection
 EndGlobal
