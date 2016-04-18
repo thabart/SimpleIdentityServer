@@ -67,6 +67,7 @@ namespace SimpleIdentityServer.Client
             // Register operations
             serviceCollection.AddTransient<IAddPermissionOperation, AddPermissionOperation>();
             serviceCollection.AddTransient<IGetConfigurationOperation, GetConfigurationOperation>();
+            serviceCollection.AddTransient<IAddResourceSetOperation, AddResourceSetOperation>();
         }
 
         #endregion
