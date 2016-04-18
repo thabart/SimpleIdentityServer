@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Mvc;
 using SimpleIdentityServer.Uma.Core.Api.ResourceSetController;
 using SimpleIdentityServer.Uma.Host.DTOs.Requests;
@@ -41,6 +42,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         #region Public methods
 
         [HttpGet]
+        [Authorize("UmaProtection")]
         public ActionResult GetResourceSets()
         {
             var resourceSetIds = _resourceSetActions.GetAllResourceSet();
@@ -48,6 +50,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize("UmaProtection")]
         public ActionResult GetResourceSet(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -65,6 +68,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         }
 
         [HttpPost]
+        [Authorize("UmaProtection")]
         public ActionResult AddResourceSet([FromBody] PostResourceSet postResourceSet)
         {
             if (postResourceSet == null)
@@ -85,6 +89,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         }
 
         [HttpPut]
+        [Authorize("UmaProtection")]
         public ActionResult UpdateResourceSet([FromBody] PutResourceSet putResourceSet)
         {
             if (putResourceSet == null)
@@ -111,6 +116,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize("UmaProtection")]
         public ActionResult DeleleteResourceSet(string id)
         {
             if (string.IsNullOrWhiteSpace(id))

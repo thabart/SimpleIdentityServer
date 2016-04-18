@@ -16,6 +16,7 @@
 
 using SimpleIdentityServer.Client.Configuration;
 using SimpleIdentityServer.Client.DTOs.Requests;
+using SimpleIdentityServer.Client.DTOs.Responses;
 using SimpleIdentityServer.Client.Errors;
 using System;
 using System.Threading.Tasks;
@@ -24,24 +25,34 @@ namespace SimpleIdentityServer.Client.ResourceSet
 {
     public interface IResourceSetClient
     {
-        Task<bool> AddResourceSetAsync(
+        Task<AddResourceSetResponse> AddResourceSetAsync(
             PostResourceSet postResourceSet,
             string resourceSetUrl,
             string authorizationHeaderValue);
 
-        Task<bool> AddResourceSetAsync(
+        Task<AddResourceSetResponse> AddResourceSetAsync(
             PostResourceSet postResourceSet,
             Uri resourceSetUri,
             string authorizationHeaderValue);
 
-        Task<bool> AddResourceSetnByResolvingUrlAsync(
+        Task<AddResourceSetResponse> AddResourceSetByResolvingUrlAsync(
             PostResourceSet postResourceSet,
             string configurationUrl,
             string authorizationHeaderValue);
 
-        Task<bool> AddResourceSetnByResolvingUrlAsync(
+        Task<AddResourceSetResponse> AddResourceSetByResolvingUrlAsync(
             PostResourceSet postResourceSet,
             Uri configurationUri,
+            string authorizationHeaderValue);
+
+        Task<bool> DeleteResourceSetAsync(
+            string resourceSetId,
+            string resourceSetUrl,
+            string authorizationHeaderValue);
+
+        Task<bool> DeleteResourceSetByResolvingUrlAsync(
+            string resourceSetId,
+            string configurationUrl,
             string authorizationHeaderValue);
     }
 
@@ -49,15 +60,19 @@ namespace SimpleIdentityServer.Client.ResourceSet
     {
         private readonly IAddResourceSetOperation _addResourceSetOperation;
 
+        private readonly IDeleteResourceSetOperation _deleteResourceSetOperation;
+
         private readonly IGetConfigurationOperation _getConfigurationOperation;
 
         #region Constructor
 
         public ResourceSetClient(
             IAddResourceSetOperation addResourceSetOperation,
+            IDeleteResourceSetOperation deleteResourceSetOperation,
             IGetConfigurationOperation getConfigurationOperation)
         {
             _addResourceSetOperation = addResourceSetOperation;
+            _deleteResourceSetOperation = deleteResourceSetOperation;
             _getConfigurationOperation = getConfigurationOperation;
         }
 
@@ -65,7 +80,7 @@ namespace SimpleIdentityServer.Client.ResourceSet
 
         #region Public methods
 
-        public async Task<bool> AddResourceSetAsync(
+        public async Task<AddResourceSetResponse> AddResourceSetAsync(
             PostResourceSet postResourceSet,
             string resourceSetUrl,
             string authorizationHeaderValue)
@@ -81,10 +96,10 @@ namespace SimpleIdentityServer.Client.ResourceSet
                 throw new ArgumentException(string.Format(ErrorDescriptions.TheUriIsNotWellFormed, resourceSetUrl));
             }
 
-            return await AddResourceSet(postResourceSet, uri, authorizationHeaderValue);
+            return await AddResourceSetAsync(postResourceSet, uri, authorizationHeaderValue);
         }
 
-        public async Task<bool> AddResourceSetAsync(
+        public async Task<AddResourceSetResponse> AddResourceSetAsync(
             PostResourceSet postResourceSet,
             Uri resourceSetUri,
             string authorizationHeaderValue)
@@ -94,7 +109,7 @@ namespace SimpleIdentityServer.Client.ResourceSet
                 authorizationHeaderValue);
         }
 
-        public async Task<bool> AddResourceSetnByResolvingUrlAsync(
+        public async Task<AddResourceSetResponse> AddResourceSetByResolvingUrlAsync(
             PostResourceSet postResourceSet,
             string configurationUrl,
             string authorizationHeaderValue)
@@ -110,10 +125,10 @@ namespace SimpleIdentityServer.Client.ResourceSet
                 throw new ArgumentException(string.Format(ErrorDescriptions.TheUriIsNotWellFormed, configurationUrl));
             }
 
-            return await AddResourceSetnByResolvingUrlAsync(postResourceSet, uri, authorizationHeaderValue);
+            return await AddResourceSetByResolvingUrlAsync(postResourceSet, uri, authorizationHeaderValue);
         }
 
-        public async Task<bool> AddResourceSetnByResolvingUrlAsync(
+        public async Task<AddResourceSetResponse> AddResourceSetByResolvingUrlAsync(
             PostResourceSet postResourceSet,
             Uri configurationUri,
             string authorizationHeaderValue)
@@ -125,6 +140,28 @@ namespace SimpleIdentityServer.Client.ResourceSet
             
             var configuration = await _getConfigurationOperation.ExecuteAsync(configurationUri);
             return await AddResourceSetAsync(postResourceSet, configuration.ResourceSetRegistrationEndPoint, authorizationHeaderValue);
+        }
+
+        public async Task<bool> DeleteResourceSetAsync(string resourceSetId, string resourceSetUrl, string authorizationHeaderValue)
+        {
+            return await _deleteResourceSetOperation.ExecuteAsync(resourceSetId, resourceSetUrl, authorizationHeaderValue);
+        }
+
+        public async Task<bool> DeleteResourceSetByResolvingUrlAsync(string resourceSetId, string configurationUrl, string authorizationHeaderValue)
+        {
+            if (string.IsNullOrWhiteSpace(configurationUrl))
+            {
+                throw new ArgumentNullException(nameof(configurationUrl));
+            }
+
+            Uri uri = null;
+            if (!Uri.TryCreate(configurationUrl, UriKind.Absolute, out uri))
+            {
+                throw new ArgumentException(string.Format(ErrorDescriptions.TheUriIsNotWellFormed, configurationUrl));
+            }
+
+            var configuration = await _getConfigurationOperation.ExecuteAsync(uri);
+            return await DeleteResourceSetAsync(resourceSetId, configuration.ResourceSetRegistrationEndPoint, authorizationHeaderValue);
         }
 
         #endregion

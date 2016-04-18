@@ -27,6 +27,7 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
 
         public static void Main(string[] args)
         {
+            // 1. Get access token
             var identityServerClientFactory = new IdentityServerClientFactory();
             var result = identityServerClientFactory.CreateTokenClient()
                 .UseClientSecretPostAuth("UmaResourceServer", "UmaResourceServer")
@@ -34,13 +35,27 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
                 .ResolveAsync("http://localhost:5000/.well-known/openid-configuration")
                 .Result;
 
+            // 2. Add resource set
             var identityServerUmaClientFactory = new IdentityServerUmaClientFactory();
-            var postPermission = new PostPermission
+            var postResourceSet = new PostResourceSet
             {
-                ResourceSetId = "a068e416-948a-4a9c-b1e3-09bbb415e2c3",
+                Name = "resource_set_name",
                 Scopes = new List<string>
                 {
-                    "string"
+                    "scope"
+                }
+            };
+            var newResourceSet = identityServerUmaClientFactory.GetResourceSetClient()
+                .AddResourceSetAsync(postResourceSet, "http://localhost:5002/rs/resource_set", result.AccessToken)
+                .Result;
+
+            // 3. Add permission
+            var postPermission = new PostPermission
+            {
+                ResourceSetId = newResourceSet.Id,
+                Scopes = new List<string>
+                {
+                    "scope"
                 }
             };
             var permission = identityServerUmaClientFactory.GetPermissionClient()

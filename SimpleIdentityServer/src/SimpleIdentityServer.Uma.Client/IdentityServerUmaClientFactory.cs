@@ -26,6 +26,8 @@ namespace SimpleIdentityServer.Client
     public interface IIdentityServerUmaClientFactory
     {
         IPermissionClient GetPermissionClient();
+
+        IResourceSetClient GetResourceSetClient();
     }
 
     public class IdentityServerUmaClientFactory : IIdentityServerUmaClientFactory
@@ -51,6 +53,12 @@ namespace SimpleIdentityServer.Client
             return permissionClient;
         }
 
+        public IResourceSetClient GetResourceSetClient()
+        {
+            var resourceSetClient = (IResourceSetClient)_serviceProvider.GetService(typeof(IResourceSetClient));
+            return resourceSetClient;
+        }
+
         #endregion
 
         #region Private static methods
@@ -68,6 +76,7 @@ namespace SimpleIdentityServer.Client
             serviceCollection.AddTransient<IAddPermissionOperation, AddPermissionOperation>();
             serviceCollection.AddTransient<IGetConfigurationOperation, GetConfigurationOperation>();
             serviceCollection.AddTransient<IAddResourceSetOperation, AddResourceSetOperation>();
+            serviceCollection.AddTransient<IDeleteResourceSetOperation, DeleteResourceSetOperation>();
         }
 
         #endregion

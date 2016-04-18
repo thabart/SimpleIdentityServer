@@ -16,9 +16,9 @@
 
 using Newtonsoft.Json;
 using SimpleIdentityServer.Client.DTOs.Requests;
+using SimpleIdentityServer.Client.DTOs.Responses;
 using SimpleIdentityServer.Client.Factory;
 using System;
-using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,7 +27,7 @@ namespace SimpleIdentityServer.Client.ResourceSet
 {
     public interface IAddResourceSetOperation
     {
-        Task<bool> ExecuteAsync(
+        Task<AddResourceSetResponse> ExecuteAsync(
             PostResourceSet postResourceSet,
             Uri resourceSetUri,
             string authorizationHeaderValue);
@@ -48,7 +48,7 @@ namespace SimpleIdentityServer.Client.ResourceSet
 
         #region Public methods
 
-        public async Task<bool> ExecuteAsync(
+        public async Task<AddResourceSetResponse> ExecuteAsync(
             PostResourceSet postResourceSet,
             Uri resourceSetUri,
             string authorizationHeaderValue)
@@ -80,7 +80,8 @@ namespace SimpleIdentityServer.Client.ResourceSet
             request.Headers.Add("Authorization", "Bearer " + authorizationHeaderValue);
             var httpResult = await httpClient.SendAsync(request);
             httpResult.EnsureSuccessStatusCode();
-            return httpResult.StatusCode == HttpStatusCode.Created;
+            var content = await httpResult.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<AddResourceSetResponse>(content);
         }
 
         #endregion
