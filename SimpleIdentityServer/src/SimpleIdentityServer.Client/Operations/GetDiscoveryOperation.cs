@@ -16,7 +16,6 @@
 
 using Newtonsoft.Json;
 using SimpleIdentityServer.Client.DTOs.Response;
-using SimpleIdentityServer.Client.Errors;
 using SimpleIdentityServer.Client.Factories;
 using System;
 using System.Threading.Tasks;
@@ -25,7 +24,7 @@ namespace SimpleIdentityServer.Client.Operations
 {
     public interface IGetDiscoveryOperation
     {
-        Task<DiscoveryInformation> ExecuteAsync(string discoveryDocumentationUrl);
+        Task<DiscoveryInformation> ExecuteAsync(Uri discoveryDocumentationUri);
     }
 
     internal class GetDiscoveryOperation : IGetDiscoveryOperation
@@ -43,21 +42,15 @@ namespace SimpleIdentityServer.Client.Operations
 
         #region Public methods
 
-        public async Task<DiscoveryInformation> ExecuteAsync(string discoveryDocumentationUrl)
+        public async Task<DiscoveryInformation> ExecuteAsync(Uri discoveryDocumentationUri)
         {
-            if (string.IsNullOrWhiteSpace(discoveryDocumentationUrl))
+            if (discoveryDocumentationUri == null)
             {
-                throw new ArgumentNullException(nameof(discoveryDocumentationUrl));
-            }
-
-            Uri uri = null;
-            if (!Uri.TryCreate(discoveryDocumentationUrl, UriKind.Absolute, out uri))
-            {
-                throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, discoveryDocumentationUrl));
+                throw new ArgumentNullException(nameof(discoveryDocumentationUri));
             }
 
             var httpClient = _httpClientFactory.GetHttpClient();
-            var serializedContent = await httpClient.GetStringAsync(discoveryDocumentationUrl).ConfigureAwait(false);
+            var serializedContent = await httpClient.GetStringAsync(discoveryDocumentationUri).ConfigureAwait(false);
             return JsonConvert.DeserializeObject<DiscoveryInformation>(serializedContent);
         }
 

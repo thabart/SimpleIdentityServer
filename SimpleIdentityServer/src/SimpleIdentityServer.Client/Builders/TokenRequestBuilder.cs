@@ -14,39 +14,33 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Client.DTOs.Request;
+
 namespace SimpleIdentityServer.Client.Builders
 {
     public interface ITokenRequestBuilder
     {
-        void AddAuthorizationHeaderValue(string authorizationHeaderValue);
+        string AuthorizationHeaderValue { get; set; }
 
-        string GetAuthorizationHeaderValue();
+        TokenRequest TokenRequest { get; }
     }
 
     internal class TokenRequestBuilder : ITokenRequestBuilder
     {
-        private string _authorizationHeaderValue;
-
         #region Constructor
 
         public TokenRequestBuilder()
         {
-
+            TokenRequest = new TokenRequest();
         }
 
         #endregion
 
-        #region Public methods
+        #region Properties
 
-        public void AddAuthorizationHeaderValue(string authorizationHeaderValue)
-        {
-            _authorizationHeaderValue = authorizationHeaderValue;
-        }
+        public string AuthorizationHeaderValue { get; set; }
 
-        public string GetAuthorizationHeaderValue()
-        {
-            return _authorizationHeaderValue;
-        }
+        public TokenRequest TokenRequest { get; private set; }
 
         #endregion
     }

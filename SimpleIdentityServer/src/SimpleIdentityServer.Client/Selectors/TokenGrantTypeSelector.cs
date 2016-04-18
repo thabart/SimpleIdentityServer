@@ -15,33 +15,81 @@
 #endregion
 
 using SimpleIdentityServer.Client.Builders;
+using SimpleIdentityServer.Client.DTOs.Request;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SimpleIdentityServer.Client.Selectors
 {
     public interface ITokenGrantTypeSelector
     {
-        ITokenClient UseClientCredentials(); 
+        ITokenClient UseClientCredentials(string scope);
+
+        ITokenClient UseClientCredentials(params string[] scopes);
+
+        ITokenClient UseClientCredentials(List<string> scopes);
     }
 
     internal class TokenGrantTypeSelector : ITokenGrantTypeSelector
     {
         private readonly ITokenRequestBuilder _tokenRequestBuilder;
 
+        private readonly ITokenClient _tokenClient;
+
         #region Constructor
 
-        public TokenGrantTypeSelector(ITokenRequestBuilder tokenRequestBuilder)
+        public TokenGrantTypeSelector(
+            ITokenRequestBuilder tokenRequestBuilder,
+            ITokenClient tokenClient)
         {
             _tokenRequestBuilder = tokenRequestBuilder;
+            _tokenClient = tokenClient;
         }
 
         #endregion
 
         #region Public methods
 
-        public ITokenClient UseClientCredentials()
+        public ITokenClient UseClientCredentials(string scope)
         {
-            var s = _tokenRequestBuilder.GetAuthorizationHeaderValue();
-            return null;
+            if (string.IsNullOrWhiteSpace(scope))
+            {
+                throw new ArgumentNullException(nameof(scope));
+            }
+
+            _tokenRequestBuilder.TokenRequest.Scope = scope;
+            _tokenRequestBuilder.TokenRequest.GrantType = GrantTypeRequest.client_credentials;
+            return _tokenClient;
+        }
+
+        public ITokenClient UseClientCredentials(params string[] scopes)
+        {
+            if (scopes == null || !scopes.Any())
+            {
+                throw new ArgumentNullException(nameof(scopes));
+            }
+
+            return UseClientCredentials(ConcatScopes(scopes.ToList()));
+        }
+
+        public ITokenClient UseClientCredentials(List<string> scopes)
+        {
+            if (scopes == null || !scopes.Any())
+            {
+                throw new ArgumentNullException(nameof(scopes));
+            }
+
+            return UseClientCredentials(ConcatScopes(scopes));
+        }
+
+        #endregion
+
+        #region Private static methods
+
+        private static string ConcatScopes(List<string> scopes)
+        {
+            return string.Join(" ", scopes);
         }
 
         #endregion

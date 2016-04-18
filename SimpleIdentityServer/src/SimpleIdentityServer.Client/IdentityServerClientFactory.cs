@@ -77,6 +77,7 @@ namespace SimpleIdentityServer.Client
 
             // Register operations
             serviceCollection.AddTransient<IGetDiscoveryOperation, GetDiscoveryOperation>();
+            serviceCollection.AddTransient<IPostTokenOperation, PostTokenOperation>();
 
             // Register request builders
             serviceCollection.AddScoped<ITokenRequestBuilder, TokenRequestBuilder>();

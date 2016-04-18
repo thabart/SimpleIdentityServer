@@ -15,14 +15,16 @@
 #endregion
 
 using SimpleIdentityServer.Client.Builders;
+using SimpleIdentityServer.Core.Common.Extensions;
 using System;
-using System.Text;
 
 namespace SimpleIdentityServer.Client.Selectors
 {
     public interface IClientAuthSelector
     {
         ITokenGrantTypeSelector UseClientSecretBasicAuth(string clientId, string clientSecret);
+
+        ITokenGrantTypeSelector UseClientSecretPostAuth(string clientId, string clientSecret);
     }
 
     internal class ClientAuthSelector : IClientAuthSelector
@@ -47,14 +49,36 @@ namespace SimpleIdentityServer.Client.Selectors
 
         public ITokenGrantTypeSelector UseClientSecretBasicAuth(string clientId, string clientSecret)
         {
+            if (string.IsNullOrWhiteSpace(clientId))
+            {
+                throw new ArgumentNullException(nameof(clientId));
+            }
+
+            if (string.IsNullOrWhiteSpace(clientSecret))
+            {
+                throw new ArgumentNullException(nameof(clientSecret));
+            }
+
             var authorizationValue = GetAuthorizationValue(clientId, clientSecret);
-            _tokenRequestBuilder.AddAuthorizationHeaderValue(authorizationValue);
+            _tokenRequestBuilder.AuthorizationHeaderValue = authorizationValue;
             return _tokenGrantTypeSelector;
         }
 
         public ITokenGrantTypeSelector UseClientSecretPostAuth(string clientId, string clientSecret)
         {
-            return null;
+            if (string.IsNullOrWhiteSpace(clientId))
+            {
+                throw new ArgumentNullException(nameof(clientId));
+            }
+
+            if (string.IsNullOrWhiteSpace(clientSecret))
+            {
+                throw new ArgumentNullException(nameof(clientSecret));
+            }
+
+            _tokenRequestBuilder.TokenRequest.ClientId = clientId;
+            _tokenRequestBuilder.TokenRequest.ClientSecret = clientSecret;
+            return _tokenGrantTypeSelector;
         }
 
         public ITokenGrantTypeSelector UseClientSecretJwtAuth(string token)
@@ -74,8 +98,7 @@ namespace SimpleIdentityServer.Client.Selectors
         private static string GetAuthorizationValue(string clientId, string clientSecret)
         {
             var concat = clientId + ":" + clientSecret;
-            var plainTextBytes = Encoding.UTF8.GetBytes(concat);
-            return Convert.ToBase64String(plainTextBytes);
+            return concat.Base64Encode();
         }
 
         #endregion

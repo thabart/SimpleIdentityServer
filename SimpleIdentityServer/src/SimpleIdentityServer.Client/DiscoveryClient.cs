@@ -15,6 +15,7 @@
 #endregion
 
 using SimpleIdentityServer.Client.DTOs.Response;
+using SimpleIdentityServer.Client.Errors;
 using SimpleIdentityServer.Client.Operations;
 using System;
 using System.Threading.Tasks;
@@ -24,7 +25,7 @@ namespace SimpleIdentityServer.Client
     public interface IDiscoveryClient
     {
         /// <summary>
-        /// Get information about open-id contract synchronously.
+        /// Get information about open-id contract asynchronously.
         /// </summary>
         /// <param name="discoveryDocumentationUrl">Absolute uri of the open-id contract</param>
         /// <exception cref="ArgumentNullException">Thrown when parameter is null</exception>
@@ -35,9 +36,8 @@ namespace SimpleIdentityServer.Client
         /// <summary>
         /// Get information about open-id contract synchronously.
         /// </summary>
-        /// <param name="discoveryDocumentationUrl">Absolute uri of the open-id contract</param>
+        /// <param name="discoveryDocumentationUri">Absolute URI of the open-id contract</param>
         /// <exception cref="ArgumentNullException">Thrown when parameter is null</exception>
-        /// <exception cref="ArgumentException">Thrown when parameter is not a valid URI</exception>
         /// <returns>Open-id contract</returns>
         DiscoveryInformation GetDiscoveryInformation(Uri discoveryDocumentationUrl);
 
@@ -53,9 +53,8 @@ namespace SimpleIdentityServer.Client
         /// <summary>
         /// Get information about open-id contract asynchronously.
         /// </summary>
-        /// <param name="discoveryDocumentationUrl">Absolute uri of the open-id contract</param>
+        /// <param name="discoveryDocumentationUri">Absolute URI of the open-id contract</param>
         /// <exception cref="ArgumentNullException">Thrown when parameter is null</exception>
-        /// <exception cref="ArgumentException">Thrown when parameter is not a valid URI</exception>
         /// <returns>Open-id contract</returns>
         Task<DiscoveryInformation> GetDiscoveryInformationAsync(Uri discoveryDocumentationUrl);
     }
@@ -76,7 +75,7 @@ namespace SimpleIdentityServer.Client
         #region Public methods
 
         /// <summary>
-        /// Get information about open-id contract synchronously.
+        /// Get information about open-id contract asynchronously.
         /// </summary>
         /// <param name="discoveryDocumentationUrl">Absolute uri of the open-id contract</param>
         /// <exception cref="ArgumentNullException">Thrown when parameter is null</exception>
@@ -84,27 +83,18 @@ namespace SimpleIdentityServer.Client
         /// <returns>Open-id contract</returns>
         public DiscoveryInformation GetDiscoveryInformation(string discoveryDocumentationUrl)
         {
-            return _getDiscoveryOperation.ExecuteAsync(discoveryDocumentationUrl)
-                .Result;
+            return GetDiscoveryInformationAsync(discoveryDocumentationUrl).Result;
         }
 
         /// <summary>
         /// Get information about open-id contract synchronously.
         /// </summary>
-        /// <param name="discoveryDocumentationUrl">Absolute uri of the open-id contract</param>
+        /// <param name="discoveryDocumentationUri">Absolute URI of the open-id contract</param>
         /// <exception cref="ArgumentNullException">Thrown when parameter is null</exception>
-        /// <exception cref="ArgumentException">Thrown when parameter is not a valid URI</exception>
         /// <returns>Open-id contract</returns>
-        public DiscoveryInformation GetDiscoveryInformation(Uri discoveryDocumentationUrl)
+        public DiscoveryInformation GetDiscoveryInformation(Uri discoveryDocumentationUri)
         {
-            if (discoveryDocumentationUrl == null)
-            {
-                throw new ArgumentNullException(nameof(discoveryDocumentationUrl));
-            }
-
-            var absoluteUri = discoveryDocumentationUrl.AbsoluteUri;
-            return _getDiscoveryOperation.ExecuteAsync(absoluteUri)
-                .Result;
+            return GetDiscoveryInformationAsync(discoveryDocumentationUri).Result;
         }
         
         /// <summary>
@@ -116,25 +106,34 @@ namespace SimpleIdentityServer.Client
         /// <returns>Open-id contract</returns>
         public async Task<DiscoveryInformation> GetDiscoveryInformationAsync(string discoveryDocumentationUrl)
         {
-            return await _getDiscoveryOperation.ExecuteAsync(discoveryDocumentationUrl);
+            if (string.IsNullOrWhiteSpace(discoveryDocumentationUrl))
+            {
+                throw new ArgumentNullException(nameof(discoveryDocumentationUrl));
+            }
+
+            Uri uri = null;
+            if (!Uri.TryCreate(discoveryDocumentationUrl, UriKind.Absolute, out uri))
+            {
+                throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, discoveryDocumentationUrl));
+            }
+
+            return await GetDiscoveryInformationAsync(uri);
         }
 
         /// <summary>
         /// Get information about open-id contract asynchronously.
         /// </summary>
-        /// <param name="discoveryDocumentationUrl">Absolute uri of the open-id contract</param>
+        /// <param name="discoveryDocumentationUri">Absolute URI of the open-id contract</param>
         /// <exception cref="ArgumentNullException">Thrown when parameter is null</exception>
-        /// <exception cref="ArgumentException">Thrown when parameter is not a valid URI</exception>
         /// <returns>Open-id contract</returns>
-        public async Task<DiscoveryInformation> GetDiscoveryInformationAsync(Uri discoveryDocumentationUrl)
+        public async Task<DiscoveryInformation> GetDiscoveryInformationAsync(Uri discoveryDocumentationUri)
         {
-            if (discoveryDocumentationUrl == null)
+            if (discoveryDocumentationUri == null)
             {
-                throw new ArgumentNullException(nameof(discoveryDocumentationUrl));
+                throw new ArgumentNullException(nameof(discoveryDocumentationUri));
             }
-
-            var absoluteUri = discoveryDocumentationUrl.AbsoluteUri;
-            return await _getDiscoveryOperation.ExecuteAsync(absoluteUri);
+            
+            return await _getDiscoveryOperation.ExecuteAsync(discoveryDocumentationUri);
         }
 
         #endregion

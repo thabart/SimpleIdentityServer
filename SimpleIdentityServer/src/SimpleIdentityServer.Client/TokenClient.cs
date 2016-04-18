@@ -14,38 +14,95 @@
 // limitations under the License.
 #endregion
 
-
+using SimpleIdentityServer.Client.Builders;
+using SimpleIdentityServer.Client.DTOs.Response;
+using SimpleIdentityServer.Client.Errors;
+using SimpleIdentityServer.Client.Operations;
 using System;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Client
 {
     public interface ITokenClient
     {
+        Task<GrantedToken> ExecuteAsync(string tokenUrl);
 
+        Task<GrantedToken> ExecuteAsync(Uri tokenUri);
+
+        Task<GrantedToken> ResolveAsync(string discoveryDocumentationUrl);
     }
 
     internal class TokenClient : ITokenClient
     {
+        private readonly IPostTokenOperation _postTokenOperation;
+
+        private readonly IGetDiscoveryOperation _getDiscoveryOperation;
+
+        private readonly ITokenRequestBuilder _tokenRequestBuilder;
+
         #region Constructor
 
-        public TokenClient()
+        public TokenClient(
+            ITokenRequestBuilder tokenRequestBuilder,
+            IPostTokenOperation postTokenOperation,
+            IGetDiscoveryOperation getDiscoveryOperation)
         {
-
+            _tokenRequestBuilder = tokenRequestBuilder;
+            _postTokenOperation = postTokenOperation;
+            _getDiscoveryOperation = getDiscoveryOperation;
         }
 
         #endregion
 
         #region Public methods
         
-        #endregion
-
-        #region Private static methods
-
-        private static string ConstructAuthorizationValue(string clientId, string clientSecret)
+        public async Task<GrantedToken> ExecuteAsync(string tokenUrl)
         {
-            var concat = clientId + ":" + clientSecret;
-            return null;
+            if (string.IsNullOrWhiteSpace(tokenUrl))
+            {
+                throw new ArgumentNullException(nameof(tokenUrl));
+            }
+
+            Uri uri = null;
+            if (!Uri.TryCreate(tokenUrl, UriKind.Absolute, out uri))
+            {
+                throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, tokenUrl));
+            }
+
+            return await ExecuteAsync(uri);
         }
+
+        public async Task<GrantedToken> ExecuteAsync(Uri tokenUri)
+        {
+            if (tokenUri == null)
+            {
+                throw new ArgumentNullException(nameof(tokenUri));
+            }
+
+            var tokenRequest = _tokenRequestBuilder.TokenRequest;
+            var authorizationHeaderValue = _tokenRequestBuilder.AuthorizationHeaderValue;
+            return await _postTokenOperation.ExecuteAsync(tokenRequest,
+                tokenUri,
+                authorizationHeaderValue);
+        }
+
+        public async Task<GrantedToken> ResolveAsync(string discoveryDocumentationUrl)
+        {
+            if (string.IsNullOrWhiteSpace(discoveryDocumentationUrl))
+            {
+                throw new ArgumentNullException(nameof(discoveryDocumentationUrl));
+            }
+
+            Uri uri = null;
+            if (!Uri.TryCreate(discoveryDocumentationUrl, UriKind.Absolute, out uri))
+            {
+                throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, discoveryDocumentationUrl));
+            }
+
+            var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri);
+            return await ExecuteAsync(discoveryDocument.TokenEndPoint);
+        }
+
         #endregion
     }
 }

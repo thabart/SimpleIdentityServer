@@ -19,6 +19,7 @@ using SimpleIdentityServer.Client.DTOs.Request;
 using SimpleIdentityServer.Client.DTOs.Response;
 using SimpleIdentityServer.Client.Factories;
 using System;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,7 +28,10 @@ namespace SimpleIdentityServer.Client.Operations
 {
     public interface IPostTokenOperation
     {
-        Task<GrantedToken> ExecuteAsync(TokenRequest tokenRequest, string authorizationValue);
+        Task<GrantedToken> ExecuteAsync(
+            TokenRequest tokenRequest,
+            Uri requestUri,
+            string authorizationValue);
     }
 
     internal class PostTokenOperation : IPostTokenOperation
@@ -45,23 +49,35 @@ namespace SimpleIdentityServer.Client.Operations
 
         #region Public methods
 
-        public async Task<GrantedToken> ExecuteAsync(TokenRequest tokenRequest, string authorizationValue)
+        public async Task<GrantedToken> ExecuteAsync(
+            TokenRequest tokenRequest,
+            Uri requestUri,
+            string authorizationValue)
         {
             if (tokenRequest == null)
             {
                 throw new ArgumentNullException(nameof(tokenRequest));
             }
 
+            if (requestUri == null)
+            {
+                throw new ArgumentNullException(nameof(requestUri));
+            }
+
             var httpClient = _httpClientFactory.GetHttpClient();
             var serializedTokenRequest = JsonConvert.SerializeObject(tokenRequest);
-            var content = new StringContent(serializedTokenRequest, Encoding.UTF8, "application/json");
+            var body = new StringContent(serializedTokenRequest, Encoding.UTF8, "application/json");
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
-                Content = content
+                Content = body,
+                RequestUri = requestUri
             };
+            request.Headers.Add("Authorization", "Bearer " + authorizationValue);
             var result = await httpClient.SendAsync(request);
-            return null;
+            result.EnsureSuccessStatusCode();
+            var content = await result.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<GrantedToken>(content);
         }
 
         #endregion

@@ -12,7 +12,8 @@
 
   "dependencies": {
     "Microsoft.Extensions.DependencyInjection": "1.0.0-rc1-final",
-    "Newtonsoft.Json": "8.0.3"
+    "Newtonsoft.Json": "8.0.3",
+    "SimpleIdentityServer.Core.Common": ""
   },
 
   "frameworks": {
