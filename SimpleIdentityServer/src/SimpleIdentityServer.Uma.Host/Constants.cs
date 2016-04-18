@@ -122,5 +122,17 @@ namespace SimpleIdentityServer.Uma.Host
 
             public const string ScopeNotFound = "scope cannot be found";
         }
+
+        public static class PostPermissionNames
+        {
+            public const string ResourceSetId = "resource_set_id";
+
+            public const string Scopes = "scopes";
+        }
+
+        public static class AddPermissionResponseNames
+        {
+            public const string TicketId = "ticket_id";
+        }
     }
 }

@@ -38,6 +38,24 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
             return AuthenticationHeaderValue.Parse(authorizationHeader);
         }
 
+        public static string GetClientId(this Controller controller)
+        {
+            if (controller.User == null ||
+                controller.User.Identity == null ||
+                !controller.User.Identity.IsAuthenticated)
+            {
+                return string.Empty;
+            }
+
+            var claim = controller.User.Claims.FirstOrDefault(c => c.Type == Oauth2Instrospection.Authentication.Constants.ClaimNames.ClientId);
+            if (claim == null)
+            {
+                return string.Empty;
+            }
+
+            return claim.Value;
+        }
+
         #endregion
     }
 }

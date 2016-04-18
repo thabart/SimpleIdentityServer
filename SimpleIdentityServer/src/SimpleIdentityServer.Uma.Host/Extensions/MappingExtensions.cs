@@ -70,6 +70,15 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
             };
         }
 
+        public static AddPermissionParameter ToParameter(this PostPermission postPermission)
+        {
+            return new AddPermissionParameter
+            {
+                ResourceSetId = postPermission.ResourceSetId,
+                Scopes = postPermission.Scopes
+            };
+        }
+
         #endregion
 
         #region To responses

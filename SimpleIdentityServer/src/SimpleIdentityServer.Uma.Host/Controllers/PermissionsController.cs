@@ -15,17 +15,25 @@
 #endregion
 
 using Microsoft.AspNet.Mvc;
+using SimpleIdentityServer.Uma.Core.Api.PermissionController;
+using SimpleIdentityServer.Uma.Host.DTOs.Requests;
+using SimpleIdentityServer.Uma.Host.DTOs.Responses;
+using SimpleIdentityServer.Uma.Host.Extensions;
+using System;
+using System.Net;
 
 namespace SimpleIdentityServer.Uma.Host.Controllers
 {
     [Route(Constants.RouteValues.Permission)]
     public class PermissionsController : Controller
     {
+        private readonly IPermissionControllerActions _permissionControllerActions;
+
         #region Constructor
 
-        public PermissionsController()
+        public PermissionsController(IPermissionControllerActions permissionControllerActions)
         {
-
+            _permissionControllerActions = permissionControllerActions;
         }
 
         #endregion
@@ -33,9 +41,24 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         #region Public methods
 
         [HttpPost]
-        public void PostPermission()
+        public ActionResult PostPermission(PostPermission postPermission)
         {
+            if (postPermission == null)
+            {
+                throw new ArgumentNullException(nameof(postPermission));
+            }
 
+            var parameter = postPermission.ToParameter();
+            var clientId = this.GetClientId();
+            var ticketId = _permissionControllerActions.AddPermission(parameter, clientId);
+            var result = new AddPermissionResponse
+            {
+                TicketId = ticketId
+            };
+            return new ObjectResult(result)
+            {
+                StatusCode = (int)HttpStatusCode.Created
+            };
         }
 
         #endregion
