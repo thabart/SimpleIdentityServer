@@ -39,6 +39,11 @@ namespace SimpleIdentityServer.Uma.Host
             {
                 return 3000;
             }
+
+            public int GetRptLifetime()
+            {
+                return 3000;
+            }
         }
 
         public Startup(IHostingEnvironment env, IApplicationEnvironment appEnv)
