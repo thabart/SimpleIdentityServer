@@ -14,27 +14,13 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Collections.Generic;
-
-namespace SimpleIdentityServer.Uma.Core.Models
+namespace SimpleIdentityServer.Uma.Core.Policies
 {
-    public class Ticket
+    public enum AuthorizationPolicyResultEnum
     {
-        public string Id { get; set; }
-
-        public List<string> Scopes { get; set; }
-
-        public string ClientId { get; set; }
-
-        public DateTime ExpirationDateTime { get; set; }
-
-        public bool IsAuthorizedByRo { get; set; }
-
-        public DateTime RoAuthorizationDateTime { get; set; }
-
-        public string ResourceSetId { get; set; }
-
-        public ResourceSet ResourceSet { get; set; }
+        NotAuthorized,
+        NeedInfo, // TODO : Not supported yet
+        RequestSubmitted,
+        Authorized
     }
 }

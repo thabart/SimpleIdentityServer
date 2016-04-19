@@ -23,5 +23,11 @@ namespace SimpleIdentityServer.Uma.Core.Configuration
         /// </summary>
         /// <returns></returns>
         int GetTicketLifetime();
+
+        /// <summary>
+        /// Get RPT litetime in seconds
+        /// </summary>
+        /// <returns></returns>
+        int GetRptLifetime();
     }
 }

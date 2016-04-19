@@ -31,5 +31,9 @@ namespace SimpleIdentityServer.Uma.Core.Models
         public List<string> Scopes { get; set; }
         
         public string IconUri { get; set; }
+
+        public string AuthorizationPolicyId { get; set; }
+
+        public Policy AuthorizationPolicy { get; set; }
     }
 }

@@ -15,26 +15,17 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Uma.Core.Models
 {
-    public class Ticket
+    public class Rpt
     {
-        public string Id { get; set; }
-
-        public List<string> Scopes { get; set; }
-
-        public string ClientId { get; set; }
+        public string Value { get; set; }
 
         public DateTime ExpirationDateTime { get; set; }
 
-        public bool IsAuthorizedByRo { get; set; }
-
-        public DateTime RoAuthorizationDateTime { get; set; }
+        public string TicketId { get; set; }
 
         public string ResourceSetId { get; set; }
-
-        public ResourceSet ResourceSet { get; set; }
     }
 }

@@ -51,5 +51,13 @@ namespace SimpleIdentityServer.Uma.Core.Errors
         public const string TheSchemeIsNotCorrect = "authorization scheme is not correct";
 
         public const string TheTicketCannotBeInserted = "ticket cannot be inserted";
+
+        public const string TheTicketDoesntExist = "the ticket {0} doesn't exist";
+
+        public const string TheTicketIssuerIsDifferentFromTheClient = "the ticket issuer is different from the client";
+
+        public const string TheTicketIsExpired = "the ticket is expired";
+
+        public const string TheRptCannotBeInserted = "the rpt cannot be inserted";
     }
 }
