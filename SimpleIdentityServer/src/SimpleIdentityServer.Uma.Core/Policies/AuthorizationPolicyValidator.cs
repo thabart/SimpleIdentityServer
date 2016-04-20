@@ -14,6 +14,8 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Uma.Core.Errors;
+using SimpleIdentityServer.Uma.Core.Exceptions;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using System;
@@ -36,14 +38,18 @@ namespace SimpleIdentityServer.Uma.Core.Policies
 
         private readonly IBasicAuthorizationPolicy _basicAuthorizationPolicy;
 
+        private readonly IResourceSetRepository _resourceSetRepository;
+
         #region Constructor
 
         public AuthorizationPolicyValidator(
             IPolicyRepository policyRepository,
-            IBasicAuthorizationPolicy basicAuthorizationPolicy)
+            IBasicAuthorizationPolicy basicAuthorizationPolicy,
+            IResourceSetRepository resourceSetRepository)
         {
             _policyRepository = policyRepository;
             _basicAuthorizationPolicy = basicAuthorizationPolicy;
+            _resourceSetRepository = resourceSetRepository;
         }
 
         #endregion
@@ -69,10 +75,11 @@ namespace SimpleIdentityServer.Uma.Core.Policies
                 throw new ArgumentNullException(nameof(claims));
             }
 
-            var resourceSet = validTicket.ResourceSet;
+            var resourceSet = _resourceSetRepository.GetResourceSetById(validTicket.ResourceSetId);
             if (resourceSet == null)
             {
-                throw new ArgumentNullException(nameof(validTicket.ResourceSet));
+                throw new BaseUmaException(ErrorCodes.InternalError,
+                    string.Format(ErrorDescriptions.TheResourceSetDoesntExist, validTicket.ResourceSetId));
             }
 
             var authorizationPolicy = _policyRepository.GetPolicy(resourceSet.AuthorizationPolicyId);

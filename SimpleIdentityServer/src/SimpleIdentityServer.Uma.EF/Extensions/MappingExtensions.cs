@@ -56,7 +56,7 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
                 Scopes = GetScopes(ticket.Scopes),
                 ClientId = ticket.ClientId,
                 ExpirationDateTime = ticket.ExpirationDateTime,
-                ResourceSet = ticket.ResourceSet.ToDomain()
+                ResourceSetId = ticket.ResourceSetId
             };
         }
 
@@ -92,10 +92,10 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
             return new Model.Ticket
             {
                 Id = ticket.Id,
-                ResourceSet = ticket.ResourceSet.ToModel(),
                 Scopes = GetConcatenatedScopes(ticket.Scopes),
                 ExpirationDateTime = ticket.ExpirationDateTime,
-                ClientId = ticket.ClientId
+                ClientId = ticket.ClientId,
+                ResourceSetId = ticket.ResourceSetId
             };
         }
 

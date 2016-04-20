@@ -32,6 +32,6 @@ namespace SimpleIdentityServer.Uma.Core.Models
 
         public string Script { get; set; }
 
-        public ResourceSet ResourceSet { get; set; }
+        public string ResourceSetId { get; set; }
     }
 }

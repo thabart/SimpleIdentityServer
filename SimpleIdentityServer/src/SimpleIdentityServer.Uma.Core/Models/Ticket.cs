@@ -34,7 +34,5 @@ namespace SimpleIdentityServer.Uma.Core.Models
         public DateTime RoAuthorizationDateTime { get; set; }
 
         public string ResourceSetId { get; set; }
-
-        public ResourceSet ResourceSet { get; set; }
     }
 }

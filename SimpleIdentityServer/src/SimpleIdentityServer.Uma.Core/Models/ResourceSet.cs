@@ -33,7 +33,5 @@ namespace SimpleIdentityServer.Uma.Core.Models
         public string IconUri { get; set; }
 
         public string AuthorizationPolicyId { get; set; }
-
-        public Policy AuthorizationPolicy { get; set; }
     }
 }
