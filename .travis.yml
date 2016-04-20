@@ -4,6 +4,12 @@ branches:
     - master
 mono:
  - latest
+env:
+ global:
+  - DEBIAN_FRONTEND=noninteractive
+  - PACKAGE=libunwind7-dev
+  - ISSUE_REPO=apt-package-whitelist
+  - ISSUE_NUMBER=645
 before_install:
  - sudo apt-get update -qq
  - sudo apt-get install -qq nodejs git sqlite3 libsqlite3-dev libssl-dev
