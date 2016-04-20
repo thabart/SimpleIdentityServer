@@ -16,7 +16,7 @@
 
 namespace SimpleIdentityServer.Uma.Core
 {
-    public static class Constants
+    internal static class Constants
     {
         #region DTOs
 

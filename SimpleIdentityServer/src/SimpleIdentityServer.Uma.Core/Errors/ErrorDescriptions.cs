@@ -16,7 +16,7 @@
 
 namespace SimpleIdentityServer.Uma.Core.Errors
 {
-    public static class ErrorDescriptions
+    internal static class ErrorDescriptions
     {
         public const string TheParameterNeedsToBeSpecified = "the parameter {0} needs to be specified";   
         
