@@ -4,9 +4,18 @@ branches:
     - master
 mono:
  - latest
+addons:
+ apt:
+  sources:
+   - debian-sid
+  packages:
+   - nodejs
+   - git
+   - sqlite3
+   - libunwind8
+   - libsqlite3-dev
+   - libssl-dev
 before_install:
- - sudo apt-get update -qq
- - sudo apt-get install -qq nodejs git sqlite3 libunwind8-dev libsqlite3-dev libssl-dev
  - npm install -g bower
  - npm install -g gulp
  - nuget sources Add -Name ASPNETVNEXT -Source https://www.myget.org/F/aspnetvnext/api/v3/index.json
