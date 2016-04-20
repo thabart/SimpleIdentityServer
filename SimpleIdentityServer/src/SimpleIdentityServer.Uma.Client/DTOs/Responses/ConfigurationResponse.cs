@@ -64,8 +64,8 @@ namespace SimpleIdentityServer.Client.DTOs.Responses
         [DataMember(Name = Constants.ConfigurationResponseNames.ResourceSetRegistrationEndPoint)]
         public string ResourceSetRegistrationEndPoint { get; set; }
 
-        [DataMember(Name = Constants.ConfigurationResponseNames.RtpEndPoint)]
-        public string RtpEndPoint { get; set; }
+        [DataMember(Name = Constants.ConfigurationResponseNames.RptEndPoint)]
+        public string RptEndPoint { get; set; }
 
         [DataMember(Name = Constants.ConfigurationResponseNames.RtpProfilesSupported)]
         public List<string> RtpProfilesSupported { get; set; }

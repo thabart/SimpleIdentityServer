@@ -30,6 +30,18 @@ namespace SimpleIdentityServer.Client
             public const string TicketId = "ticket_id";
         }
 
+        public static class AuthorizationResponseNames
+        {
+            public const string Rpt = "rpt";
+        }
+
+        public static class PostAuthorizationNames
+        {
+            public const string Rpt = "rpt";
+
+            public const string TicketId = "ticket";
+        }
+
         public static class ConfigurationResponseNames
         {
             public const string Version = "version";
@@ -64,7 +76,7 @@ namespace SimpleIdentityServer.Client
 
             public const string PermissionRegistrationEndPoint = "permission_registration_endpoint";
 
-            public const string RtpEndPoint = "rpt_endpoint";
+            public const string RptEndPoint = "rpt_endpoint";
         }
 
         public static class ResourceSetResponseNames

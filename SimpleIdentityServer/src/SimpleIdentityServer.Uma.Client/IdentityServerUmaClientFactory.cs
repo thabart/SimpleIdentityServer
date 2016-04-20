@@ -15,6 +15,7 @@
 #endregion
 
 using Microsoft.Extensions.DependencyInjection;
+using SimpleIdentityServer.Client.Authorization;
 using SimpleIdentityServer.Client.Configuration;
 using SimpleIdentityServer.Client.Factory;
 using SimpleIdentityServer.Client.Permission;
@@ -28,6 +29,8 @@ namespace SimpleIdentityServer.Client
         IPermissionClient GetPermissionClient();
 
         IResourceSetClient GetResourceSetClient();
+
+        IAuthorizationClient GetAuthorizationClient();
     }
 
     public class IdentityServerUmaClientFactory : IIdentityServerUmaClientFactory
@@ -59,6 +62,12 @@ namespace SimpleIdentityServer.Client
             return resourceSetClient;
         }
 
+        public IAuthorizationClient GetAuthorizationClient()
+        {
+            var authorizationClient = (IAuthorizationClient)_serviceProvider.GetService(typeof(IAuthorizationClient));
+            return authorizationClient;
+        }
+
         #endregion
 
         #region Private static methods
@@ -68,6 +77,7 @@ namespace SimpleIdentityServer.Client
             // Register clients
             serviceCollection.AddTransient<IResourceSetClient, ResourceSetClient>();
             serviceCollection.AddTransient<IPermissionClient, PermissionClient>();
+            serviceCollection.AddTransient<IAuthorizationClient, AuthorizationClient>();
 
             // Regsiter factories
             serviceCollection.AddTransient<IHttpClientFactory, HttpClientFactory>();
@@ -77,6 +87,7 @@ namespace SimpleIdentityServer.Client
             serviceCollection.AddTransient<IGetConfigurationOperation, GetConfigurationOperation>();
             serviceCollection.AddTransient<IAddResourceSetOperation, AddResourceSetOperation>();
             serviceCollection.AddTransient<IDeleteResourceSetOperation, DeleteResourceSetOperation>();
+            serviceCollection.AddTransient<IGetAuthorizationOperation, GetAuthorizationOperation>();
         }
 
         #endregion

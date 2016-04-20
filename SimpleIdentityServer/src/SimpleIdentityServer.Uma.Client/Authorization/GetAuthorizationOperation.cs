@@ -23,23 +23,23 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SimpleIdentityServer.Client.Permission
+namespace SimpleIdentityServer.Client.Authorization
 {
-    public interface IAddPermissionOperation
+    public interface IGetAuthorizationOperation
     {
-        Task<AddPermissionResponse> ExecuteAsync(
-            PostPermission postPermission,
-            Uri requestUri,
-            string authorizationValue);
+        Task<AuthorizationResponse> ExecuteAsync(
+               PostAuthorization postAuthorization,
+               Uri requestUri,
+               string authorizationValue);
     }
 
-    internal class AddPermissionOperation : IAddPermissionOperation
+    internal class GetAuthorizationOperation : IGetAuthorizationOperation
     {
         private readonly IHttpClientFactory _httpClientFactory;
 
         #region Constructor
 
-        public AddPermissionOperation(IHttpClientFactory httpClientFactory)
+        public GetAuthorizationOperation(IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
         }
@@ -48,14 +48,14 @@ namespace SimpleIdentityServer.Client.Permission
 
         #region Public methods
 
-        public async Task<AddPermissionResponse> ExecuteAsync(
-            PostPermission postPermission,
+        public async Task<AuthorizationResponse> ExecuteAsync(
+            PostAuthorization postAuthorization,
             Uri requestUri,
             string authorizationValue)
         {
-            if (postPermission == null)
+            if (postAuthorization == null)
             {
-                throw new ArgumentNullException(nameof(postPermission));
+                throw new ArgumentNullException(nameof(postAuthorization));
             }
 
             if (requestUri == null)
@@ -69,8 +69,8 @@ namespace SimpleIdentityServer.Client.Permission
             }
 
             var httpClient = _httpClientFactory.GetHttpClient();
-            var serializedPostPermission = JsonConvert.SerializeObject(postPermission);
-            var body = new StringContent(serializedPostPermission, Encoding.UTF8, "application/json");
+            var serializedPostAuthorization = JsonConvert.SerializeObject(postAuthorization);
+            var body = new StringContent(serializedPostAuthorization, Encoding.UTF8, "application/json");
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
@@ -81,7 +81,7 @@ namespace SimpleIdentityServer.Client.Permission
             var result = await httpClient.SendAsync(request).ConfigureAwait(false);
             result.EnsureSuccessStatusCode();
             var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
-            return JsonConvert.DeserializeObject<AddPermissionResponse>(content);
+            return JsonConvert.DeserializeObject<AuthorizationResponse>(content);
         }
 
         #endregion

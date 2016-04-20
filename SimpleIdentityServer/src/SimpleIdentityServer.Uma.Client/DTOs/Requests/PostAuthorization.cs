@@ -16,15 +16,15 @@
 
 using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.Client.DTOs.Responses
+namespace SimpleIdentityServer.Client.DTOs.Requests
 {
     [DataContract]
-    public class AddResourceSetResponse
+    public class PostAuthorization
     {
-        [DataMember(Name = Constants.AddResourceSetResponseNames.Id)]
-        public string Id { get; set; }
+        [DataMember(Name = Constants.PostAuthorizationNames.TicketId)]
+        public string TicketId { get; set; }
 
-        [DataMember(Name = Constants.AddResourceSetResponseNames.UserAccessPolicyUri)]
-        public string UserAccessPolicyUri { get; set; }
+        [DataMember(Name = Constants.PostAuthorizationNames.Rpt)]
+        public string Rpt { get; set; }
     }
 }

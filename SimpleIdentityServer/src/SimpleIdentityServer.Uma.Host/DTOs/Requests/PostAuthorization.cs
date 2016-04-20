@@ -21,10 +21,10 @@ namespace SimpleIdentityServer.Uma.Host.DTOs.Requests
     [DataContract]
     public class PostAuthorization
     {
-        [DataMember(Name = Constants.GetAuthorizationNames.TicketId)]
+        [DataMember(Name = Constants.PostAuthorizationNames.TicketId)]
         public string TicketId { get; set; }
 
-        [DataMember(Name = Constants.GetAuthorizationNames.Rpt)]
+        [DataMember(Name = Constants.PostAuthorizationNames.Rpt)]
         public string Rpt { get; set; }
     }
 }

@@ -67,7 +67,7 @@ namespace SimpleIdentityServer.Uma.Host
                 opts.SingleApiVersion(new Info
                 {
                     Version = "v1",
-                    Title = "Simple identity server manager",
+                    Title = "UMA",
                     TermsOfService = "None"
                 });
             });

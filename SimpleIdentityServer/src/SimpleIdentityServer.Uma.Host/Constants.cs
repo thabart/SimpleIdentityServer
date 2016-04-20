@@ -73,7 +73,7 @@ namespace SimpleIdentityServer.Uma.Host
             public const string Rpt = "rpt";
         }
 
-        public static class GetAuthorizationNames
+        public static class PostAuthorizationNames
         {
             public const string Rpt = "rpt";
 

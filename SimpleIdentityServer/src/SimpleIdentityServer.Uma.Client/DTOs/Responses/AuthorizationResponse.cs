@@ -19,12 +19,9 @@ using System.Runtime.Serialization;
 namespace SimpleIdentityServer.Client.DTOs.Responses
 {
     [DataContract]
-    public class AddResourceSetResponse
+    public class AuthorizationResponse
     {
-        [DataMember(Name = Constants.AddResourceSetResponseNames.Id)]
-        public string Id { get; set; }
-
-        [DataMember(Name = Constants.AddResourceSetResponseNames.UserAccessPolicyUri)]
-        public string UserAccessPolicyUri { get; set; }
+        [DataMember(Name = Constants.AuthorizationResponseNames.Rpt)]
+        public string Rpt { get; set; }
     }
 }
