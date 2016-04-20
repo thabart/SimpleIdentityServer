@@ -1,4 +1,8 @@
-language: CSharp
+language: csharp
+sudo: required
+dist: trusty
+os:
+ - linux
 branches:  
   only:
     - master
@@ -11,8 +15,8 @@ addons:
    - git
    - sqlite3
    - libsqlite3-dev
-   - libunwind8
    - libssl-dev
+   - libunwind8
 before_install:
  - npm install -g bower
  - npm install -g gulp
