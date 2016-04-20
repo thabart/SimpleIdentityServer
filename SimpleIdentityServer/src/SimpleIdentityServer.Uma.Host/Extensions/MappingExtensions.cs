@@ -79,6 +79,15 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
             };
         }
 
+        public static GetAuthorizationActionParameter ToParameter(this PostAuthorization postAuthorization)
+        {
+            return new GetAuthorizationActionParameter
+            {
+                Rpt = postAuthorization.Rpt,
+                TicketId = postAuthorization.TicketId
+            };
+        }
+
         #endregion
 
         #region To responses

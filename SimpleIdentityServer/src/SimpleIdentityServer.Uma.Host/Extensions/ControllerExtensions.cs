@@ -18,6 +18,8 @@ using System.Linq;
 using Microsoft.AspNet.Mvc;
 using Microsoft.Extensions.Primitives;
 using System.Net.Http.Headers;
+using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace SimpleIdentityServer.Uma.Host.Extensions
 {
@@ -54,6 +56,18 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
             }
 
             return claim.Value;
+        }
+
+        public static IEnumerable<Claim> GetClaims(this Controller controller)
+        {
+            if (controller.User == null ||
+                controller.User.Identity == null ||
+                !controller.User.Identity.IsAuthenticated)
+            {
+                return new List<Claim>();
+            }
+
+            return controller.User.Claims;
         }
 
         #endregion

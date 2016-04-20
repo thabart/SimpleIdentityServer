@@ -27,6 +27,8 @@ namespace SimpleIdentityServer.Uma.Host
             public const string Scope = "scopes";
 
             public const string Permission = "/perm";
+
+            public const string Authorization = "/rpt";
         }
 
         public static class ConfigurationResponseNames
@@ -64,6 +66,18 @@ namespace SimpleIdentityServer.Uma.Host
             public const string PermissionRegistrationEndPoint = "permission_registration_endpoint";
 
             public const string RtpEndPoint = "rpt_endpoint";
+        }
+
+        public static class AuthorizationResponseNames
+        {
+            public const string Rpt = "rpt";
+        }
+
+        public static class GetAuthorizationNames
+        {
+            public const string Rpt = "rpt";
+
+            public const string TicketId = "ticket";
         }
 
         public static class ErrorResponseNames
