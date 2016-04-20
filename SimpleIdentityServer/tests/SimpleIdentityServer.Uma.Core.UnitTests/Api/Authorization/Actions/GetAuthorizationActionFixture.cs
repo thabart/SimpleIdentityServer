@@ -1,9 +1,26 @@
-﻿using Moq;
+﻿#region copyright
+// Copyright 2015 Habart Thierry
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
+using Moq;
 using SimpleIdentityServer.Uma.Core.Api.Authorization.Actions;
 using SimpleIdentityServer.Uma.Core.Configuration;
 using SimpleIdentityServer.Uma.Core.Errors;
 using SimpleIdentityServer.Uma.Core.Exceptions;
 using SimpleIdentityServer.Uma.Core.Helpers;
+using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Policies;
 using SimpleIdentityServer.Uma.Core.Repositories;
@@ -83,6 +100,147 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.Authorization.Actions
             Assert.True(exception.Code == ErrorCodes.InvalidTicket);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheTicketDoesntExist, ticketId));
 
+        }
+
+        [Fact]
+        public void When_TicketClientId_Is_Different_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            const string ticketId = "ticket_id";
+            const string clientId = "client_id";
+            InitializeFakeObjects();
+            var getAuthorizationActionParameter = new GetAuthorizationActionParameter
+            {
+                TicketId = ticketId
+            };
+            var claims = new List<Claim>
+            {
+                new Claim("type", "value"),
+                new Claim("client_id", "invalid_client_id")
+            };
+            var ticket = new Ticket
+            {
+                ClientId = clientId
+            };
+            _ticketRepositoryStub.Setup(t => t.GetTicketById(It.IsAny<string>()))
+                .Returns(ticket);
+
+            // ACT & ASSERTS
+            var exception = Assert.Throws<BaseUmaException>(() => _getAuthorizationAction.Execute(getAuthorizationActionParameter, claims));
+            Assert.NotNull(exception);
+            Assert.True(exception.Code == ErrorCodes.InvalidTicket);
+            Assert.True(exception.Message == ErrorDescriptions.TheTicketIssuerIsDifferentFromTheClient);
+        }
+
+        [Fact]
+        public void When_TicketIsExpired_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            const string ticketId = "ticket_id";
+            const string clientId = "client_id";
+            InitializeFakeObjects();
+            var getAuthorizationActionParameter = new GetAuthorizationActionParameter
+            {
+                TicketId = ticketId
+            };
+            var claims = new List<Claim>
+            {
+                new Claim("type", "value"),
+                new Claim("client_id", clientId)
+            };
+            var ticket = new Ticket
+            {
+                ClientId = clientId,
+                ExpirationDateTime = DateTime.UtcNow.AddSeconds(-40)
+            };
+            _ticketRepositoryStub.Setup(t => t.GetTicketById(It.IsAny<string>()))
+                .Returns(ticket);
+
+            // ACT & ASSERTS
+            var exception = Assert.Throws<BaseUmaException>(() => _getAuthorizationAction.Execute(getAuthorizationActionParameter, claims));
+            Assert.NotNull(exception);
+            Assert.True(exception.Code == ErrorCodes.ExpiredTicket);
+            Assert.True(exception.Message == ErrorDescriptions.TheTicketIsExpired);
+        }
+
+        #endregion
+
+        #region Happy paths
+
+        [Fact]
+        public void When_Requesting_Unauthorized_Access_Then_NotAuthorized_Is_Returned()
+        {
+            // ARRANGE
+            const string ticketId = "ticket_id";
+            const string clientId = "client_id";
+            InitializeFakeObjects();
+            var getAuthorizationActionParameter = new GetAuthorizationActionParameter
+            {
+                TicketId = ticketId
+            };
+            var claims = new List<Claim>
+            {
+                new Claim("type", "value"),
+                new Claim("client_id", clientId)
+            };
+            var ticket = new Ticket
+            {
+                ClientId = clientId,
+                ExpirationDateTime = DateTime.UtcNow.AddSeconds(40)
+            };
+            _ticketRepositoryStub.Setup(t => t.GetTicketById(It.IsAny<string>()))
+                .Returns(ticket);
+            _authorizationPolicyValidatorStub.Setup(a => a.IsAuthorized(It.IsAny<Ticket>(),
+                It.IsAny<string>(),
+                It.IsAny<IEnumerable<Claim>>()))
+                .Returns(AuthorizationPolicyResultEnum.NotAuthorized);
+
+            // ACT
+            var result = _getAuthorizationAction.Execute(getAuthorizationActionParameter, claims);
+
+            // ASSERTS
+            Assert.NotNull(result);
+            Assert.True(result.AuthorizationPolicyResult == AuthorizationPolicyResultEnum.NotAuthorized);
+            Assert.Null(result.Rpt);
+        }
+
+        [Fact]
+        public void When_Requesting_Authorized_Access_Then_Rpt_Is_Returned()
+        {
+            // ARRANGE
+            const string ticketId = "ticket_id";
+            const string clientId = "client_id";
+            InitializeFakeObjects();
+            var getAuthorizationActionParameter = new GetAuthorizationActionParameter
+            {
+                TicketId = ticketId
+            };
+            var claims = new List<Claim>
+            {
+                new Claim("type", "value"),
+                new Claim("client_id", clientId)
+            };
+            var ticket = new Ticket
+            {
+                ClientId = clientId,
+                ExpirationDateTime = DateTime.UtcNow.AddSeconds(40)
+            };
+            _ticketRepositoryStub.Setup(t => t.GetTicketById(It.IsAny<string>()))
+                .Returns(ticket);
+            _authorizationPolicyValidatorStub.Setup(a => a.IsAuthorized(It.IsAny<Ticket>(),
+                It.IsAny<string>(),
+                It.IsAny<IEnumerable<Claim>>()))
+                .Returns(AuthorizationPolicyResultEnum.Authorized);
+            _repositoryExceptionHandlerStub.Setup(r => r.HandleException(It.IsAny<string>(), It.IsAny<Func<bool>>()))
+                .Returns(true);
+
+            // ACT
+            var result = _getAuthorizationAction.Execute(getAuthorizationActionParameter, claims);
+
+            // ASSERTS
+            Assert.NotNull(result);
+            Assert.True(result.AuthorizationPolicyResult == AuthorizationPolicyResultEnum.Authorized);
+            Assert.NotEmpty(result.Rpt);
         }
 
         #endregion
