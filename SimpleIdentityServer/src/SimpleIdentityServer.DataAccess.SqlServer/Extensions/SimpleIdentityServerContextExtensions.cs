@@ -510,6 +510,10 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                             new ClientScope
                             {
                                 ScopeName = "uma_protection"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "uma_authorization"
                             }
                         },
                         GrantTypes = "3",
