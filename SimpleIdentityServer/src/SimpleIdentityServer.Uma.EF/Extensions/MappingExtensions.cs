@@ -31,10 +31,11 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
             {
                 IconUri = resourceSet.IconUri,
                 Name = resourceSet.Name,
-                Scopes = GetScopes(resourceSet.Scopes),
+                Scopes = GetList(resourceSet.Scopes),
                 Id = resourceSet.Id,
                 Type = resourceSet.Type,
-                Uri = resourceSet.Uri
+                Uri = resourceSet.Uri,
+                AuthorizationPolicyId = resourceSet.PolicyId
             };
         }
 
@@ -53,10 +54,35 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
             return new Domain.Ticket
             {
                 Id = ticket.Id,
-                Scopes = GetScopes(ticket.Scopes),
+                Scopes = GetList(ticket.Scopes),
                 ClientId = ticket.ClientId,
                 ExpirationDateTime = ticket.ExpirationDateTime,
                 ResourceSetId = ticket.ResourceSetId
+            };
+        }
+
+        public static Domain.Rpt ToDomain(this Model.Rpt rpt)
+        {
+            return new Domain.Rpt
+            {
+                TicketId = rpt.TicketId,
+                ExpirationDateTime = rpt.ExpirationDateTime,
+                ResourceSetId = rpt.ResourceSetId,
+                Value = rpt.Value
+            };
+        }
+
+        public static Domain.Policy ToDomain(this Model.Policy policy)
+        {
+            return new Domain.Policy
+            {
+                Id = policy.Id,
+                IsCustom = policy.IsCustom,
+                ResourceSetId = policy.ResourceSetId,
+                Script = policy.Script,
+                IsResourceOwnerConsentNeeded = policy.IsResourceOwnerConsentNeeded,
+                ClientIdsAllowed = GetList(policy.ClientIdsAllowed),
+                Scopes = GetList(policy.Scopes),
             };
         }
 
@@ -70,10 +96,11 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
             {
                 IconUri = resourceSet.IconUri,
                 Name = resourceSet.Name,
-                Scopes = GetConcatenatedScopes(resourceSet.Scopes),
+                Scopes = GetConcatenatedList(resourceSet.Scopes),
                 Id = resourceSet.Id,
                 Type = resourceSet.Type,
-                Uri = resourceSet.Uri
+                Uri = resourceSet.Uri,
+                PolicyId = resourceSet.AuthorizationPolicyId
             };
         }
 
@@ -92,10 +119,35 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
             return new Model.Ticket
             {
                 Id = ticket.Id,
-                Scopes = GetConcatenatedScopes(ticket.Scopes),
+                Scopes = GetConcatenatedList(ticket.Scopes),
                 ExpirationDateTime = ticket.ExpirationDateTime,
                 ClientId = ticket.ClientId,
                 ResourceSetId = ticket.ResourceSetId
+            };
+        }
+
+        public static Model.Rpt ToModel(this Domain.Rpt rpt)
+        {
+            return new Model.Rpt
+            {
+                TicketId = rpt.TicketId,
+                ExpirationDateTime = rpt.ExpirationDateTime,
+                ResourceSetId = rpt.ResourceSetId,
+                Value = rpt.Value
+            };
+        }
+
+        public static Model.Policy ToModel(this Domain.Policy policy)
+        {
+            return new Model.Policy
+            {
+                Id = policy.Id,
+                IsCustom = policy.IsCustom,
+                ResourceSetId = policy.ResourceSetId,
+                Script = policy.Script,
+                IsResourceOwnerConsentNeeded = policy.IsResourceOwnerConsentNeeded,
+                ClientIdsAllowed = GetConcatenatedList(policy.ClientIdsAllowed),
+                Scopes = GetConcatenatedList(policy.Scopes)
             };
         }
 
@@ -103,28 +155,28 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
 
         #region Private methods
 
-        private static List<string> GetScopes(string cpncatenatedScopes)
+        private static List<string> GetList(string concatenatedList)
         {
 
             var scopes = new List<string>();
-            if (!string.IsNullOrEmpty(cpncatenatedScopes))
+            if (!string.IsNullOrEmpty(concatenatedList))
             {
-                scopes = cpncatenatedScopes.Split(',').ToList();
+                scopes = concatenatedList.Split(',').ToList();
             }
 
             return scopes;
         }
 
-        private static string GetConcatenatedScopes(List<string> scopes)
+        private static string GetConcatenatedList(List<string> list)
         {
-            var concatenatedScopes = string.Empty;
-            if (scopes != null &&
-                scopes.Any())
+            var concatenatedList = string.Empty;
+            if (list != null &&
+                list.Any())
             {
-                concatenatedScopes = string.Join(",", scopes);
+                concatenatedList = string.Join(",", list);
             }
 
-            return concatenatedScopes;
+            return concatenatedList;
         }
 
         #endregion

@@ -14,25 +14,26 @@
 // limitations under the License.
 #endregion
 
-using System;
 using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Uma.EF.Models
 {
-    internal class Ticket
+    internal class Policy
     {
         public string Id { get; set; }
 
-        public string ResourceSetId { get; set; }
+        public string ClientIdsAllowed { get; set; }
 
         public string Scopes { get; set; }
 
-        public string ClientId { get; set; }
+        public bool IsResourceOwnerConsentNeeded { get; set; }
 
-        public DateTime ExpirationDateTime { get; set; }
+        public bool IsCustom { get; set; }
 
-        public virtual ResourceSet ResourceSet { get; set; }
+        public string Script { get; set; }
 
-        public virtual ICollection<Rpt> Rpts { get; set; }
+        public string ResourceSetId { get; set; }
+
+        public virtual ICollection<ResourceSet> ResourceSets { get; set; }
     }
 }

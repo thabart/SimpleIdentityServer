@@ -22,17 +22,31 @@ namespace SimpleIdentityServer.Uma.EF
 {
     internal class SimpleIdServerUmaContext : DbContext
     {
+        #region Properties
+
         public virtual DbSet<ResourceSet> ResourceSets { get; set; }
 
         public virtual DbSet<Scope> Scopes { get; set; }
 
         public virtual DbSet<Ticket> Tickets { get; set; }
 
+        public virtual DbSet<Rpt> Rpts { get; set; }
+
+        public virtual DbSet<Policy> Policies { get; set; }
+
+        #endregion
+
+        #region Protected methods
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.AddResourceSetMappings();
             modelBuilder.AddScopeMappings();
             modelBuilder.AddTicketMappings();
+            modelBuilder.AddRptMappings();
+            modelBuilder.AddPolicyMappings();
         }
+
+        #endregion
     }
 }

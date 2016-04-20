@@ -15,24 +15,21 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Uma.EF.Models
 {
-    internal class Ticket
+    internal class Rpt
     {
-        public string Id { get; set; }
-
-        public string ResourceSetId { get; set; }
-
-        public string Scopes { get; set; }
-
-        public string ClientId { get; set; }
+        public string Value { get; set; }
 
         public DateTime ExpirationDateTime { get; set; }
 
+        public string TicketId { get; set; }
+
+        public string ResourceSetId { get; set; }
+
         public virtual ResourceSet ResourceSet { get; set; }
 
-        public virtual ICollection<Rpt> Rpts { get; set; }
+        public virtual Ticket Ticket { get; set; }
     }
 }

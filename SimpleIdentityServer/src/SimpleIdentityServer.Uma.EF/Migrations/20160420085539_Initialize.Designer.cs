@@ -8,9 +8,10 @@ using SimpleIdentityServer.Uma.EF;
 namespace SimpleIdentityServer.Uma.EF.Migrations
 {
     [DbContext(typeof(SimpleIdServerUmaContext))]
-    partial class SimpleIdServerUmaContextModelSnapshot : ModelSnapshot
+    [Migration("20160420085539_Initialize")]
+    partial class Initialize
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "7.0.0-rc1-16348")

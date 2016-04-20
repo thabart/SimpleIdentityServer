@@ -19,20 +19,23 @@ using SimpleIdentityServer.Uma.EF.Models;
 
 namespace SimpleIdentityServer.Uma.EF.Mappings
 {
-    internal static class ResourceSetMappings
+    internal static class RptMapping
     {
         #region Public static methods
 
-        public static void AddResourceSetMappings(this ModelBuilder modelBuilder)
+        public static void AddRptMappings(this ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<ResourceSet>()
-                .ToTable("ResourceSets")
-                .HasKey(r => r.Id);
-            modelBuilder.Entity<ResourceSet>()
-                .HasOne(r => r.Policy)
-                .WithMany(p => p.ResourceSets)
-                .HasForeignKey(r => r.PolicyId);
-                
+            modelBuilder.Entity<Rpt>()
+                .ToTable("Rpts")
+                .HasKey(r => r.Value);
+            modelBuilder.Entity<Rpt>()
+                .HasOne(r => r.ResourceSet)
+                .WithMany(r => r.Rpts)
+                .HasForeignKey(r => r.ResourceSetId);
+            modelBuilder.Entity<Rpt>()
+                .HasOne(r => r.Ticket)
+                .WithMany(r => r.Rpts)
+                .HasForeignKey(r => r.TicketId);
         }
 
         #endregion

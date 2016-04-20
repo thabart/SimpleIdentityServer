@@ -51,6 +51,8 @@ namespace SimpleIdentityServer.Uma.EF
             serviceCollection.AddTransient<IResourceSetRepository, ResourceSetRepository>();
             serviceCollection.AddTransient<IScopeRepository, ScopeRepository>();
             serviceCollection.AddTransient<ITicketRepository, TicketRepository>();
+            serviceCollection.AddTransient<IPolicyRepository, PolicyRepository>();
+            serviceCollection.AddTransient<IRptRepository, RptRepository>();
         }
 
         #endregion

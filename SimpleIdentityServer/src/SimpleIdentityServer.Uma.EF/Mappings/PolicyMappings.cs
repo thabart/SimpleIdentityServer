@@ -14,25 +14,22 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Collections.Generic;
+using Microsoft.Data.Entity;
+using SimpleIdentityServer.Uma.EF.Models;
 
-namespace SimpleIdentityServer.Uma.EF.Models
+namespace SimpleIdentityServer.Uma.EF.Mappings
 {
-    internal class Ticket
+    internal static class PolicyMappings
     {
-        public string Id { get; set; }
+        #region Public static methods
 
-        public string ResourceSetId { get; set; }
+        public static void AddPolicyMappings(this ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Policy>()
+                .ToTable("Policies")
+                .HasKey(a => a.Id);
+        }
 
-        public string Scopes { get; set; }
-
-        public string ClientId { get; set; }
-
-        public DateTime ExpirationDateTime { get; set; }
-
-        public virtual ResourceSet ResourceSet { get; set; }
-
-        public virtual ICollection<Rpt> Rpts { get; set; }
+        #endregion
     }
 }
