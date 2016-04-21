@@ -17,7 +17,6 @@
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.EF.Extensions;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -59,6 +58,14 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
             }
 
             return policy.ToDomain();
+        }
+
+        public bool AddPolicy(Policy policy)
+        {
+            var record = policy.ToModel();
+            _simpleIdServerUmaContext.Policies.Add(record);
+            _simpleIdServerUmaContext.SaveChanges();
+            return true;
         }
 
         #endregion

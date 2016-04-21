@@ -29,6 +29,8 @@ namespace SimpleIdentityServer.Uma.Host
             public const string Permission = "/perm";
 
             public const string Authorization = "/rpt";
+
+            public const string Policies = "/policies";
         }
 
         public static class ConfigurationResponseNames
@@ -78,6 +80,26 @@ namespace SimpleIdentityServer.Uma.Host
             public const string Rpt = "rpt";
 
             public const string TicketId = "ticket";
+        }
+
+        public static class PostPolicyNames
+        {
+            public const string ClientIdsAllowed = "allowed_clients";
+
+            public const string Scopes = "scopes";
+
+            public const string IsResourceOwnerConsentNeeded = "consent_needed";
+
+            public const string IsCustom = "is_custom";
+
+            public const string Script = "script";
+
+            public const string ResourceSetId = "resource_set_id";
+        }
+
+        public static class AddPolicyResponseNames
+        {
+            public const string PolicyId = "policy";
         }
 
         public static class ErrorResponseNames

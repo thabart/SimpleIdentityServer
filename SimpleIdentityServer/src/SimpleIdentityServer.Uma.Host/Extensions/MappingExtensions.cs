@@ -88,6 +88,19 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
             };
         }
 
+        public static AddPolicyParameter ToParameter(this PostPolicy postPolicy)
+        {
+            return new AddPolicyParameter
+            {
+                ClientIdsAllowed = postPolicy.ClientIdsAllowed,
+                IsCustom = postPolicy.IsCustom,
+                IsResourceOwnerConsentNeeded = postPolicy.IsResourceOwnerConsentNeeded,
+                ResourceSetId = postPolicy.ResourceSetId,
+                Scopes = postPolicy.Scopes,
+                Script = postPolicy.Script
+            };
+        }
+
         #endregion
 
         #region To responses

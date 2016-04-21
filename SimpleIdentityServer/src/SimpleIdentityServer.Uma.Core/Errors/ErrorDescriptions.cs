@@ -59,5 +59,9 @@ namespace SimpleIdentityServer.Uma.Core.Errors
         public const string TheTicketIsExpired = "the ticket is expired";
 
         public const string TheRptCannotBeInserted = "the rpt cannot be inserted";
+
+        public const string ThePolicyCannotBeInserted = "the authorization policy cannot be inserted";
+
+        public const string OneOrMoreScopesDontBelongToAResourceSet = "one or more scopes don't belong to a resource set";
     }
 }

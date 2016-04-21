@@ -24,5 +24,7 @@ namespace SimpleIdentityServer.Uma.Core.Repositories
         List<Policy> GetPolicies();
 
         Policy GetPolicy(string id);
+
+        bool AddPolicy(Policy policy);
     }
 }

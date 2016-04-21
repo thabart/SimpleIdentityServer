@@ -19,6 +19,8 @@ using SimpleIdentityServer.Uma.Core.Api.Authorization;
 using SimpleIdentityServer.Uma.Core.Api.Authorization.Actions;
 using SimpleIdentityServer.Uma.Core.Api.PermissionController;
 using SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions;
+using SimpleIdentityServer.Uma.Core.Api.PolicyController;
+using SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions;
 using SimpleIdentityServer.Uma.Core.Api.ResourceSetController;
 using SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions;
 using SimpleIdentityServer.Uma.Core.Api.ScopeController;
@@ -59,6 +61,8 @@ namespace SimpleIdentityServer.Uma.Core
             serviceCollection.AddTransient<IBasicAuthorizationPolicy, BasicAuthorizationPolicy>();
             serviceCollection.AddTransient<ICustomAuthorizationPolicy, CustomAuthorizationPolicy>();
             serviceCollection.AddTransient<IAuthorizationActions, AuthorizationActions>();
+            serviceCollection.AddTransient<IAddAuthorizationPolicyAction, AddAuthorizationPolicyAction>();
+            serviceCollection.AddTransient<IPolicyActions, PolicyActions>();
             return serviceCollection;
         }
 
