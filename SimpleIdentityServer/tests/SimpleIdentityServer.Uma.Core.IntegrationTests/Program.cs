@@ -20,6 +20,7 @@ using SimpleIdentityServer.Client.DTOs.Response;
 using SimpleIdentityServer.Client.DTOs.Responses;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SimpleIdentityServer.Uma.Core.IntegrationTests
 {
@@ -45,25 +46,72 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
 
         public static void Main(string[] args)
         {
-            _identityServerClientFactory = new IdentityServerClientFactory();
-
-            // 1. Get token valid for uma_protection scope
-            var umaProtectionToken = GetGrantedToken(UmaProtectionScope);
-            // 2. Get token vaild for uma_authorization scope
-            var umaAuthorizationToken = GetGrantedToken(UmaAuthorizationScope);
-            // 3. Add resource set
-            var resourceSet = AddResourceSet("resource_set", "scope", umaProtectionToken.AccessToken);
-            // 4. Add permission
-            var permission = AddPermission(resourceSet.Id, "scope", umaProtectionToken.AccessToken);
-            // 5. Get authorization
-            var authorization = GetAuthorization(permission.TicketId, umaAuthorizationToken.AccessToken);
-            Console.Write(authorization.Rpt);
-            Console.ReadLine();
+            AuthorizedScenario();
         }
 
         #endregion
 
         #region Private static methods
+
+        private static void AuthorizedScenario()
+        {
+            try
+            {
+                _identityServerClientFactory = new IdentityServerClientFactory();
+                const string readScope = "read";
+                const string createScope = "create";
+                // 1. Get token valid for uma_protection scope
+                var umaProtectionToken = GetGrantedToken(UmaProtectionScope);
+                // 2. Get token vaild for uma_authorization scope
+                var umaAuthorizationToken = GetGrantedToken(UmaAuthorizationScope);
+                // 3. Add resource set
+                var resourceSet = AddResourceSet("resource_set", new List<string> { readScope, createScope }, umaProtectionToken.AccessToken);
+                // 4. Add permission
+                var permission = AddPermission(resourceSet.Id, new List<string> { readScope, createScope }, umaProtectionToken.AccessToken);
+                // 5. Add authorization policy
+                var authorizationPolicy = AddPolicy(new List<string> { ClientId }, new List<string> { readScope, createScope }, resourceSet.Id, umaProtectionToken.AccessToken);
+                // 6. Get authorization
+                var authorization = GetAuthorization(permission.TicketId, umaAuthorizationToken.AccessToken);
+                Console.Write(authorization.Rpt);
+            }
+            catch (AggregateException ex)
+            {
+                var firstException = ex.InnerExceptions.First();
+                Console.WriteLine(firstException.Message);
+            }
+
+            Console.ReadLine();
+        }
+
+        private static void UnauthorizedScenario()
+        {
+            try
+            {
+                _identityServerClientFactory = new IdentityServerClientFactory();
+                const string readScope = "read";
+                const string createScope = "create";
+                // 1. Get token valid for uma_protection scope
+                var umaProtectionToken = GetGrantedToken(UmaProtectionScope);
+                // 2. Get token vaild for uma_authorization scope
+                var umaAuthorizationToken = GetGrantedToken(UmaAuthorizationScope);
+                // 3. Add resource set
+                var resourceSet = AddResourceSet("resource_set", new List<string> { readScope, createScope }, umaProtectionToken.AccessToken);
+                // 4. Add permission
+                var permission = AddPermission(resourceSet.Id, new List<string> { createScope }, umaProtectionToken.AccessToken);
+                // 5. Add authorization policy
+                var authorizationPolicy = AddPolicy(new List<string> { ClientId }, new List<string> { readScope }, resourceSet.Id, umaProtectionToken.AccessToken);
+                // 6. Get authorization
+                var authorization = GetAuthorization(permission.TicketId, umaAuthorizationToken.AccessToken);
+                Console.Write(authorization.Rpt);
+            }
+            catch (AggregateException ex)
+            {
+                var firstException = ex.InnerExceptions.First();
+                Console.WriteLine(firstException.Message);
+            }
+
+            Console.ReadLine();
+        }
 
         private static GrantedToken GetGrantedToken(string scope)
         {
@@ -75,15 +123,12 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
             return result;
         }
 
-        private static AddResourceSetResponse AddResourceSet(string resourceSetName, string scope, string accessToken)
+        private static AddResourceSetResponse AddResourceSet(string resourceSetName, List<string> scopes, string accessToken)
         {
             var postResourceSet = new PostResourceSet
             {
                 Name = resourceSetName,
-                Scopes = new List<string>
-                {
-                   scope
-                }
+                Scopes = scopes
             };
             var newResourceSet = _identityServerUmaClientFactory.GetResourceSetClient()
                 .AddResourceSetAsync(postResourceSet, UmaUrl + "/rs/resource_set", accessToken)
@@ -91,15 +136,12 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
             return newResourceSet;
         }
 
-        private static AddPermissionResponse AddPermission(string resourceSetId, string scope, string accessToken)
+        private static AddPermissionResponse AddPermission(string resourceSetId, List<string> scopes, string accessToken)
         {
             var postPermission = new PostPermission
             {
                 ResourceSetId = resourceSetId,
-                Scopes = new List<string>
-                {
-                    scope
-                }
+                Scopes = scopes
             };
             var permission = _identityServerUmaClientFactory.GetPermissionClient()
                 .AddPermissionAsync(postPermission, UmaUrl + "/perm", accessToken)
@@ -117,6 +159,23 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
                 .GetAuthorizationAsync(postAuthorization, UmaUrl + "/rpt", accessToken)
                 .Result;
             return authorization;
+        }
+
+        private static AddPolicyResponse AddPolicy(List<string> clientIds, List<string> scopes, string resourceSetId, string accessToken)
+        {
+            var postPolicy = new PostPolicy
+            {
+                IsCustom = false,
+                Scopes = scopes,
+                ClientIdsAllowed = clientIds,
+                ResourceSetId = resourceSetId,
+                IsResourceOwnerConsentNeeded = false
+            };
+
+            var policyResponse = _identityServerUmaClientFactory.GetPolicyClient()
+                .AddPolicyAsync(postPolicy, UmaUrl + "/policies", accessToken)
+                .Result;
+            return policyResponse;
         }
 
         #endregion

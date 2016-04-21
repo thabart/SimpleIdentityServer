@@ -68,6 +68,8 @@ namespace SimpleIdentityServer.Uma.Host
             public const string PermissionRegistrationEndPoint = "permission_registration_endpoint";
 
             public const string RtpEndPoint = "rpt_endpoint";
+
+            public const string PolicyEndPoint = "policy_endpoint";
         }
 
         public static class AuthorizationResponseNames

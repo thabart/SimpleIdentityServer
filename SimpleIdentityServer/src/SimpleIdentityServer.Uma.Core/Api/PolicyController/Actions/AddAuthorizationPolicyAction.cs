@@ -107,20 +107,26 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
                 }
             }
 
+            // Insert policy
             var policy = new Policy
             {
                 Id = Guid.NewGuid().ToString(),
-                ResourceSetId = addPolicyParameter.ResourceSetId,
                 Script = addPolicyParameter.Script,
                 ClientIdsAllowed = addPolicyParameter.ClientIdsAllowed,
                 Scopes = addPolicyParameter.Scopes,
                 IsResourceOwnerConsentNeeded = addPolicyParameter.IsResourceOwnerConsentNeeded,
                 IsCustom = addPolicyParameter.IsCustom
             };
-
             _repositoryExceptionHelper.HandleException(
                 ErrorDescriptions.ThePolicyCannotBeInserted,
                 () => _policyRepository.AddPolicy(policy));
+
+            // Update resource set
+            resourceSet.AuthorizationPolicyId = policy.Id;
+            _repositoryExceptionHelper.HandleException(
+                string.Format(ErrorDescriptions.TheResourceSetCannotBeUpdated, resourceSet.Id),
+                () => _resourceSetRepository.UpdateResource(resourceSet));
+
             return policy.Id;
         }
 

@@ -78,7 +78,6 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
             {
                 Id = policy.Id,
                 IsCustom = policy.IsCustom,
-                ResourceSetId = policy.ResourceSetId,
                 Script = policy.Script,
                 IsResourceOwnerConsentNeeded = policy.IsResourceOwnerConsentNeeded,
                 ClientIdsAllowed = GetList(policy.ClientIdsAllowed),
@@ -143,7 +142,6 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
             {
                 Id = policy.Id,
                 IsCustom = policy.IsCustom,
-                ResourceSetId = policy.ResourceSetId,
                 Script = policy.Script,
                 IsResourceOwnerConsentNeeded = policy.IsResourceOwnerConsentNeeded,
                 ClientIdsAllowed = GetConcatenatedList(policy.ClientIdsAllowed),

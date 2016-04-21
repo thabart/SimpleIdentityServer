@@ -19,6 +19,7 @@ using SimpleIdentityServer.Client.Authorization;
 using SimpleIdentityServer.Client.Configuration;
 using SimpleIdentityServer.Client.Factory;
 using SimpleIdentityServer.Client.Permission;
+using SimpleIdentityServer.Client.Policy;
 using SimpleIdentityServer.Client.ResourceSet;
 using System;
 
@@ -31,6 +32,8 @@ namespace SimpleIdentityServer.Client
         IResourceSetClient GetResourceSetClient();
 
         IAuthorizationClient GetAuthorizationClient();
+
+        IPolicyClient GetPolicyClient();
     }
 
     public class IdentityServerUmaClientFactory : IIdentityServerUmaClientFactory
@@ -68,6 +71,12 @@ namespace SimpleIdentityServer.Client
             return authorizationClient;
         }
 
+        public IPolicyClient GetPolicyClient()
+        {
+            var policyClient = (IPolicyClient)_serviceProvider.GetService(typeof(IPolicyClient));
+            return policyClient;
+        }
+
         #endregion
 
         #region Private static methods
@@ -78,6 +87,7 @@ namespace SimpleIdentityServer.Client
             serviceCollection.AddTransient<IResourceSetClient, ResourceSetClient>();
             serviceCollection.AddTransient<IPermissionClient, PermissionClient>();
             serviceCollection.AddTransient<IAuthorizationClient, AuthorizationClient>();
+            serviceCollection.AddTransient<IPolicyClient, PolicyClient>();
 
             // Regsiter factories
             serviceCollection.AddTransient<IHttpClientFactory, HttpClientFactory>();
@@ -88,6 +98,7 @@ namespace SimpleIdentityServer.Client
             serviceCollection.AddTransient<IAddResourceSetOperation, AddResourceSetOperation>();
             serviceCollection.AddTransient<IDeleteResourceSetOperation, DeleteResourceSetOperation>();
             serviceCollection.AddTransient<IGetAuthorizationOperation, GetAuthorizationOperation>();
+            serviceCollection.AddTransient<IAddPolicyOperation, AddPolicyOperation>();
         }
 
         #endregion

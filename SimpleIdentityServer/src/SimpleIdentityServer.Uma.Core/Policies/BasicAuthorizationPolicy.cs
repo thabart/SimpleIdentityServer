@@ -58,6 +58,12 @@ namespace SimpleIdentityServer.Uma.Core.Policies
                 return AuthorizationPolicyResultEnum.RequestSubmitted;
             }
 
+            if (validTicket.Scopes.Any(s => !authorizationPolicy.Scopes.Contains(s)))
+            {
+                return AuthorizationPolicyResultEnum.NotAuthorized;
+            }
+
+
             return AuthorizationPolicyResultEnum.Authorized;
         }
 

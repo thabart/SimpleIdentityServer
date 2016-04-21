@@ -31,7 +31,5 @@ namespace SimpleIdentityServer.Uma.Core.Models
         public bool IsCustom { get; set; }
 
         public string Script { get; set; }
-
-        public string ResourceSetId { get; set; }
     }
 }

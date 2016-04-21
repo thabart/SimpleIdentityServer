@@ -89,6 +89,7 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
                 record.Type = rs.Type;
                 record.Uri = rs.Uri;
                 record.IconUri = rs.IconUri;
+                record.PolicyId = rs.PolicyId;
 
                 _simpeIdServerUmaContext.SaveChanges();
                 return record.ToDomain();

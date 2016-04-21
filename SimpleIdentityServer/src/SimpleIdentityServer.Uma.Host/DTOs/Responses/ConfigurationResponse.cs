@@ -78,5 +78,8 @@ namespace SimpleIdentityServer.Uma.Host.DTOs.Responses
 
         [DataMember(Name = Constants.ConfigurationResponseNames.Version)]
         public string Version { get; set; }
+
+        [DataMember(Name = Constants.ConfigurationResponseNames.ResourceSetRegistrationEndPoint)]
+        public string PolicyEndPoint { get; set; }
     }
 }

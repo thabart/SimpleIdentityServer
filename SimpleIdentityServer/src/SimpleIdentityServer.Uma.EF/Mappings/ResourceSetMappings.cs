@@ -31,8 +31,7 @@ namespace SimpleIdentityServer.Uma.EF.Mappings
             modelBuilder.Entity<ResourceSet>()
                 .HasOne(r => r.Policy)
                 .WithMany(p => p.ResourceSets)
-                .HasForeignKey(r => r.PolicyId);
-                
+                .HasForeignKey(r => r.PolicyId);                
         }
 
         #endregion

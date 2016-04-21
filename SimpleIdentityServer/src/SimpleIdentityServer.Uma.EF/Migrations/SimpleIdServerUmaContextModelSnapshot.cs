@@ -26,8 +26,6 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
 
                     b.Property<bool>("IsResourceOwnerConsentNeeded");
 
-                    b.Property<string>("ResourceSetId");
-
                     b.Property<string>("Scopes");
 
                     b.Property<string>("Script");

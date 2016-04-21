@@ -96,14 +96,20 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
         }
 
         [Fact]
-        public void When_AuthorizationPassed_Then_Authorization_Is_Returned()
+        public void When_Doesnt_have_Permission_To_Access_To_Scope_Then_NotAuthorized_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
             var ticket = new Ticket
             {
                 ClientId = "client_id",
-                IsAuthorizedByRo = true
+                IsAuthorizedByRo = true,
+                Scopes =  new List<string>
+                {
+                    "read",
+                    "create",
+                    "update"
+                }
             };
 
             var authorizationPolicy = new Policy
@@ -112,7 +118,46 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                 {
                     "client_id"
                 },
-                IsResourceOwnerConsentNeeded = true
+                IsResourceOwnerConsentNeeded = true,
+                Scopes = new List<string>
+                {
+                    "read"
+                }
+            };
+
+            // ACT
+            var result = _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy);
+
+            // ASSERT
+            Assert.True(result == AuthorizationPolicyResultEnum.NotAuthorized);
+        }
+
+        [Fact]
+        public void When_AuthorizationPassed_Then_Authorization_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var ticket = new Ticket
+            {
+                ClientId = "client_id",
+                IsAuthorizedByRo = true,
+                Scopes = new List<string>
+                {
+                    "create"
+                }
+            };
+
+            var authorizationPolicy = new Policy
+            {
+                ClientIdsAllowed = new List<string>
+                {
+                    "client_id"
+                },
+                IsResourceOwnerConsentNeeded = true,
+                Scopes = new List<string>
+                {
+                    "create"
+                }
             };
 
             // ACT

@@ -25,6 +25,11 @@ namespace SimpleIdentityServer.Client
             public const string Scopes = "scopes";
         }
 
+        public static class AddPolicyResponseNames
+        {
+            public const string PolicyId = "policy";
+        }
+
         public static class AddPermissionResponseNames
         {
             public const string TicketId = "ticket_id";
@@ -77,6 +82,23 @@ namespace SimpleIdentityServer.Client
             public const string PermissionRegistrationEndPoint = "permission_registration_endpoint";
 
             public const string RptEndPoint = "rpt_endpoint";
+
+            public const string PolicyEndPoint = "policy_endpoint";
+        }
+
+        public static class PostPolicyNames
+        {
+            public const string ClientIdsAllowed = "allowed_clients";
+
+            public const string Scopes = "scopes";
+
+            public const string IsResourceOwnerConsentNeeded = "consent_needed";
+
+            public const string IsCustom = "is_custom";
+
+            public const string Script = "script";
+
+            public const string ResourceSetId = "resource_set_id";
         }
 
         public static class ResourceSetResponseNames
