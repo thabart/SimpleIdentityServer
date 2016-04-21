@@ -1,5 +1,5 @@
 rem extract patch
-git format-patch HEAD~5
+git format-patch HEAD~2
 
 rem import patches
-git am *.patch
+git am --ignore-space-change --ignore-whitespace *.patch
