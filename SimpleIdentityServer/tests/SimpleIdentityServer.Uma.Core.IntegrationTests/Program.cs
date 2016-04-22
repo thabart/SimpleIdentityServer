@@ -70,6 +70,8 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
                 var permission = AddPermission(resourceSet.Id, new List<string> { readScope, createScope }, umaProtectionToken.AccessToken);
                 // 5. Add authorization policy
                 var authorizationPolicy = AddPolicy(new List<string> { ClientId }, new List<string> { readScope, createScope }, resourceSet.Id, umaProtectionToken.AccessToken);
+                var policy = GetPolicy(authorizationPolicy.PolicyId, umaProtectionToken.AccessToken);
+                Console.WriteLine($"authorization policy {policy.Id} has been created");
                 // 6. Get authorization
                 var authorization = GetAuthorization(permission.TicketId, umaAuthorizationToken.AccessToken);
                 Console.Write(authorization.Rpt);
@@ -168,12 +170,23 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
                 IsCustom = false,
                 Scopes = scopes,
                 ClientIdsAllowed = clientIds,
-                ResourceSetId = resourceSetId,
+                ResourceSetIds = new List<string>
+                {
+                    resourceSetId
+                },
                 IsResourceOwnerConsentNeeded = false
             };
 
             var policyResponse = _identityServerUmaClientFactory.GetPolicyClient()
                 .AddPolicyAsync(postPolicy, UmaUrl + "/policies", accessToken)
+                .Result;
+            return policyResponse;
+        }
+
+        private static PolicyResponse GetPolicy(string policyId, string accessToken)
+        {
+            var policyResponse = _identityServerUmaClientFactory.GetPolicyClient()
+                .GetPolicyAsync(policyId, UmaUrl + "/policies", accessToken)
                 .Result;
             return policyResponse;
         }

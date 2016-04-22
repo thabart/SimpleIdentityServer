@@ -30,6 +30,23 @@ namespace SimpleIdentityServer.Client
             public const string PolicyId = "policy";
         }
 
+        public static class PolicyNames
+        {
+            public const string Id = "id";
+
+            public const string ClientIdsAllowed = "allowed_clients";
+
+            public const string Scopes = "scopes";
+
+            public const string IsResourceOwnerConsentNeeded = "consent_needed";
+
+            public const string IsCustom = "is_custom";
+
+            public const string Script = "script";
+
+            public const string ResourceSetIds = "resource_set_ids";
+        }
+
         public static class AddPermissionResponseNames
         {
             public const string TicketId = "ticket_id";
@@ -98,7 +115,7 @@ namespace SimpleIdentityServer.Client
 
             public const string Script = "script";
 
-            public const string ResourceSetId = "resource_set_id";
+            public const string ResourceSetIds = "resource_set_ids";
         }
 
         public static class ResourceSetResponseNames

@@ -17,7 +17,7 @@
 using SimpleIdentityServer.Client.Configuration;
 using SimpleIdentityServer.Client.DTOs.Requests;
 using SimpleIdentityServer.Client.DTOs.Responses;
-using SimpleIdentityServer.Client.Errors;
+using SimpleIdentityServer.Client.Extensions;
 using System;
 using System.Threading.Tasks;
 
@@ -35,13 +35,28 @@ namespace SimpleIdentityServer.Client.Policy
             Uri policyUri,
             string authorizationHeaderValue);
 
-        Task<AddResourceSetResponse> AddPolicyByResolvingUrlAsync(
+        Task<AddPolicyResponse> AddPolicyByResolvingUrlAsync(
             PostPolicy postPolicy,
             string configurationUrl,
             string authorizationHeaderValue);
 
-        Task<AddResourceSetResponse> AddPolicyByResolvingUrlAsync(
+        Task<AddPolicyResponse> AddPolicyByResolvingUrlAsync(
             PostPolicy postPolicy,
+            Uri configurationUri,
+            string authorizationHeaderValue);
+
+        Task<PolicyResponse> GetPolicyAsync(
+            string policyId,
+            string policyUrl,
+            string authorizationHeaderValue);
+
+        Task<PolicyResponse> GetPolicyByResolvingUrlAsync(
+            string policyId,
+            string configurationUrl,
+            string authorizationHeaderValue);
+
+        Task<PolicyResponse> GetPolicyByResolvingUrlAsync(
+            string policyId,
             Uri configurationUri,
             string authorizationHeaderValue);
     }
@@ -50,15 +65,19 @@ namespace SimpleIdentityServer.Client.Policy
     {
         private readonly IAddPolicyOperation _addPolicyOperation;
 
+        private readonly IGetPolicyOperation _getPolicyOperation; 
+
         private readonly IGetConfigurationOperation _getConfigurationOperation;
 
         #region Constructor
 
         public PolicyClient(
             IAddPolicyOperation addPolicyOperation,
+            IGetPolicyOperation getPolicyOperation,
             IGetConfigurationOperation getConfigurationOperation)
         {
             _addPolicyOperation = addPolicyOperation;
+            _getPolicyOperation = getPolicyOperation;
             _getConfigurationOperation = getConfigurationOperation;
         }
 
@@ -68,18 +87,7 @@ namespace SimpleIdentityServer.Client.Policy
 
         public async Task<AddPolicyResponse> AddPolicyAsync(PostPolicy postPolicy, string policyUrl, string authorizationHeaderValue)
         {
-            if (string.IsNullOrWhiteSpace(policyUrl))
-            {
-                throw new ArgumentNullException(nameof(policyUrl));
-            }
-
-            Uri uri = null;
-            if (!Uri.TryCreate(policyUrl, UriKind.Absolute, out uri))
-            {
-                throw new ArgumentException(string.Format(ErrorDescriptions.TheUriIsNotWellFormed, policyUrl));
-            }
-
-            return await AddPolicyAsync(postPolicy, uri, authorizationHeaderValue);
+            return await AddPolicyAsync(postPolicy, UriHelpers.GetUri(policyUrl), authorizationHeaderValue);
         }
 
         public async Task<AddPolicyResponse> AddPolicyAsync(PostPolicy postPolicy, Uri policyUri, string authorizationHeaderValue)
@@ -89,23 +97,38 @@ namespace SimpleIdentityServer.Client.Policy
                 authorizationHeaderValue);
         }
 
-        public async Task<AddResourceSetResponse> AddPolicyByResolvingUrlAsync(PostPolicy postPolicy, string configurationUrl, string authorizationHeaderValue)
+        public async Task<AddPolicyResponse> AddPolicyByResolvingUrlAsync(PostPolicy postPolicy, string configurationUrl, string authorizationHeaderValue)
         {
-            if (string.IsNullOrWhiteSpace(configurationUrl))
-            {
-                throw new ArgumentNullException(nameof(configurationUrl));
-            }
-
-            Uri uri = null;
-            if (!Uri.TryCreate(configurationUrl, UriKind.Absolute, out uri))
-            {
-                throw new ArgumentException(string.Format(ErrorDescriptions.TheUriIsNotWellFormed, configurationUrl));
-            }
-
-            return await AddPolicyByResolvingUrlAsync(postPolicy, uri, authorizationHeaderValue);
+            return await AddPolicyByResolvingUrlAsync(postPolicy, UriHelpers.GetUri(configurationUrl), authorizationHeaderValue);
         }
 
-        public async Task<AddResourceSetResponse> AddPolicyByResolvingUrlAsync(PostPolicy postPolicy, Uri configurationUri, string authorizationHeaderValue)
+        public async Task<AddPolicyResponse> AddPolicyByResolvingUrlAsync(PostPolicy postPolicy, Uri configurationUri, string authorizationHeaderValue)
+        {
+            var policyEndpoint = await GetPolicyEndPoint(configurationUri);
+            return await AddPolicyAsync(postPolicy, policyEndpoint, authorizationHeaderValue);
+        }
+
+        public async Task<PolicyResponse> GetPolicyAsync(string policyId, string policyUrl, string authorizationHeaderValue)
+        {
+            return await _getPolicyOperation.ExecuteAsync(policyId, policyUrl, authorizationHeaderValue);
+        }
+
+        public async Task<PolicyResponse> GetPolicyByResolvingUrlAsync(string policyId, string configurationUrl, string authorizationHeaderValue)
+        {
+            return await GetPolicyByResolvingUrlAsync(policyId, UriHelpers.GetUri(configurationUrl), authorizationHeaderValue);
+        }
+
+        public async Task<PolicyResponse> GetPolicyByResolvingUrlAsync(string policyId, Uri configurationUri, string authorizationHeaderValue)
+        {
+            var policyEndpoint = await GetPolicyEndPoint(configurationUri);
+            return await GetPolicyAsync(policyId, policyEndpoint, authorizationHeaderValue);
+        }
+
+        #endregion
+
+        #region private methods
+
+        private async Task<string> GetPolicyEndPoint(Uri configurationUri)
         {
             if (configurationUri == null)
             {
@@ -113,7 +136,7 @@ namespace SimpleIdentityServer.Client.Policy
             }
 
             var configuration = await _getConfigurationOperation.ExecuteAsync(configurationUri);
-            return await AddPolicyByResolvingUrlAsync(postPolicy, configuration.ResourceSetRegistrationEndPoint, authorizationHeaderValue);
+            return configuration.PolicyEndPoint;
         }
 
         #endregion
