@@ -76,19 +76,19 @@ namespace SimpleIdentityServer.Client.Policy
             Uri configurationUri,
             string authorizationHeaderValue);
 
-        Task<List<PolicyResponse>> GetPoliciesAsync(
+        Task<List<string>> GetPoliciesAsync(
             string policyUrl, 
             string authorizationHeaderValue);
 
-        Task<List<PolicyResponse>> GetPoliciesAsync(
+        Task<List<string>> GetPoliciesAsync(
             Uri policyUri,
             string authorizationHeaderValue);
 
-        Task<List<PolicyResponse>> GetPoliciesByResolvingUrlAsync(
+        Task<List<string>> GetPoliciesByResolvingUrlAsync(
             string configurationUrl, 
             string authorizationHeaderValue);
 
-        Task<List<PolicyResponse>> GetPoliciesByResolvingUrlAsync(
+        Task<List<string>> GetPoliciesByResolvingUrlAsync(
             Uri configurationUri, 
             string authorizationHeaderValue);
     }
@@ -180,22 +180,22 @@ namespace SimpleIdentityServer.Client.Policy
             return await DeletePolicyAsync(policyId, policyEndpoint, authorizationHeaderValue);
         }
 
-        public async Task<List<PolicyResponse>> GetPoliciesAsync(string policyUrl, string authorizationHeaderValue)
+        public async Task<List<string>> GetPoliciesAsync(string policyUrl, string authorizationHeaderValue)
         {
             return await GetPoliciesAsync(UriHelpers.GetUri(policyUrl), authorizationHeaderValue);
         }
 
-        public async Task<List<PolicyResponse>> GetPoliciesAsync(Uri policyUri, string authorizationHeaderValue)
+        public async Task<List<string>> GetPoliciesAsync(Uri policyUri, string authorizationHeaderValue)
         {
             return await _getPoliciesOperation.ExecuteAsync(policyUri, authorizationHeaderValue);
         }
 
-        public async Task<List<PolicyResponse>> GetPoliciesByResolvingUrlAsync(string configurationUrl, string authorizationHeaderValue)
+        public async Task<List<string>> GetPoliciesByResolvingUrlAsync(string configurationUrl, string authorizationHeaderValue)
         {
             return await GetPoliciesByResolvingUrlAsync(UriHelpers.GetUri(configurationUrl), authorizationHeaderValue);
         }
 
-        public async Task<List<PolicyResponse>> GetPoliciesByResolvingUrlAsync(Uri configurationUri, string authorizationHeaderValue)
+        public async Task<List<string>> GetPoliciesByResolvingUrlAsync(Uri configurationUri, string authorizationHeaderValue)
         {
             var policyEndpoint = await GetPolicyEndPoint(configurationUri);
             return await GetPoliciesAsync(policyEndpoint, authorizationHeaderValue);

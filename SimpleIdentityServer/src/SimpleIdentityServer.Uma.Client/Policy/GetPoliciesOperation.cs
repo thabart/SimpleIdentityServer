@@ -26,7 +26,7 @@ namespace SimpleIdentityServer.Client.Policy
 {
     public interface IGetPoliciesOperation
     {
-        Task<List<PolicyResponse>> ExecuteAsync(
+        Task<List<string>> ExecuteAsync(
             Uri policyUri,
             string authorizationHeaderValue);
     }
@@ -46,7 +46,7 @@ namespace SimpleIdentityServer.Client.Policy
 
         #region Public methods
         
-        public async Task<List<PolicyResponse>> ExecuteAsync(
+        public async Task<List<string>> ExecuteAsync(
             Uri policyUri,
             string authorizationHeaderValue)
         {
@@ -70,7 +70,7 @@ namespace SimpleIdentityServer.Client.Policy
             var httpResult = await httpClient.SendAsync(request);
             httpResult.EnsureSuccessStatusCode();
             var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            return JsonConvert.DeserializeObject<List<PolicyResponse>>(content);
+            return JsonConvert.DeserializeObject<List<string>>(content);
         }
 
         #endregion

@@ -22,6 +22,7 @@ using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
@@ -35,15 +36,16 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
         private IGetAuthorizationPoliciesAction _getAuthorizationPoliciesAction;
 
         [Fact]
-        public void When_Getting_Authorization_Policies_Then_A_List_Is_Returned()
+        public void When_Getting_Authorization_Policies_Then_A_ListIds_Is_Returned()
         {
             // ARRANGE
+            const string policyId = "policy_id";
             InitializeFakeObjects();
             var policies = new List<Policy>
             {
                 new Policy
                 {
-                    Id = "policy_id"
+                    Id = policyId
                 }
             };
             _repositoryExceptionHelper.Setup(r => r.HandleException(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved,
@@ -55,6 +57,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
 
             // ASSERT
             Assert.NotNull(result);
+            Assert.True(result.Count() == 1);
+            Assert.True(result.First() == policyId);
         }
 
         private void InitializeFakeObjects()

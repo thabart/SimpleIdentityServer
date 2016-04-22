@@ -16,15 +16,15 @@
 
 using SimpleIdentityServer.Uma.Core.Errors;
 using SimpleIdentityServer.Uma.Core.Helpers;
-using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
 {
     public interface IGetAuthorizationPoliciesAction
     {
-        List<Policy> Execute();
+        List<string> Execute();
     }
 
     internal class GetAuthorizationPoliciesAction : IGetAuthorizationPoliciesAction
@@ -47,12 +47,18 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
 
         #region Public methods
 
-        public List<Policy> Execute()
+        public List<string> Execute()
         {
             var policies = _repositoryExceptionHelper.HandleException(
                 ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved,
                 () => _policyRepository.GetPolicies());
-            return policies;
+            if (policies == null
+                || !policies.Any())
+            {
+                return new List<string>();
+            }
+
+            return policies.Select(p => p.Id).ToList();
         }
 
         #endregion

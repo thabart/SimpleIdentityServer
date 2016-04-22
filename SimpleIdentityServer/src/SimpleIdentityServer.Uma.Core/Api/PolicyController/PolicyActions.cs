@@ -29,7 +29,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController
 
         bool DeletePolicy(string policyId);
 
-        List<Policy> GetPolicies();
+        List<string> GetPolicies();
     }
 
     internal class PolicyActions : IPolicyActions
@@ -75,7 +75,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController
             return _deleteAuthorizationPolicyAction.Execute(policyId);
         }
 
-        public List<Policy> GetPolicies()
+        public List<string> GetPolicies()
         {
             return _getAuthorizationPoliciesAction.Execute();
         }

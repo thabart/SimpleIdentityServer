@@ -72,10 +72,10 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
                 var authorizationPolicy = AddPolicy(new List<string> { ClientId }, new List<string> { readScope, createScope }, resourceSet.Id, umaProtectionToken.AccessToken);
                 var policy = GetPolicy(authorizationPolicy.PolicyId, umaProtectionToken.AccessToken);
                 Console.WriteLine($"authorization policy {policy.Id} has been created");
-                var policies = GetPolicies(umaProtectionToken.AccessToken);
-                foreach (var pol in policies)
+                var policyIds = GetPolicies(umaProtectionToken.AccessToken);
+                foreach (var policyId in policyIds)
                 {
-                    Console.WriteLine($"authorization policy : {pol.Id}");
+                    Console.WriteLine($"authorization policy : {policyId}");
                 }
 
                 // 6. Get authorization
@@ -207,7 +207,7 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
                 .Result;
         }
 
-        private static List<PolicyResponse> GetPolicies(string accessToken)
+        private static List<string> GetPolicies(string accessToken)
         {
             return _identityServerUmaClientFactory.GetPolicyClient()
                 .GetPoliciesAsync(UmaUrl + "/policies", accessToken)

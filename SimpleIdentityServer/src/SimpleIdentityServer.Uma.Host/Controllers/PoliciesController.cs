@@ -21,7 +21,6 @@ using SimpleIdentityServer.Uma.Host.DTOs.Requests;
 using SimpleIdentityServer.Uma.Host.DTOs.Responses;
 using SimpleIdentityServer.Uma.Host.Extensions;
 using System;
-using System.Collections.Generic;
 using System.Net;
 
 namespace SimpleIdentityServer.Uma.Host.Controllers
@@ -66,13 +65,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         public ActionResult GetPolicies()
         {
             var policies = _policyActions.GetPolicies();
-            var result = new List<PolicyResponse>();
-            foreach(var policy in policies)
-            {
-                result.Add(policy.ToResponse());
-            }
-
-            return new HttpOkObjectResult(result);
+            return new HttpOkObjectResult(policies);
         }
 
         [HttpPost]
