@@ -81,6 +81,24 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             };
         }
 
+        [HttpDelete("{id}")]
+        [Authorize("UmaProtection")]
+        public ActionResult DeletePolicy(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            var isPolicyExists = _policyActions.DeletePolicy(id);
+            if (!isPolicyExists)
+            {
+                return GetNotFoundPolicy();
+            }
+
+            return new HttpStatusCodeResult((int)HttpStatusCode.NoContent);
+        }
+
         #endregion
 
         #region Private static methods

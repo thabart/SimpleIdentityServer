@@ -26,5 +26,7 @@ namespace SimpleIdentityServer.Uma.Core.Repositories
         Policy GetPolicy(string id);
 
         bool AddPolicy(Policy policy);
+
+        bool DeletePolicy(string id);
     }
 }

@@ -75,6 +75,9 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
                 // 6. Get authorization
                 var authorization = GetAuthorization(permission.TicketId, umaAuthorizationToken.AccessToken);
                 Console.Write(authorization.Rpt);
+                // 7. Drop everything
+                var isAuthorizationPolicyDropped = DeletePolicy(authorizationPolicy.PolicyId, umaProtectionToken.AccessToken);
+                Console.WriteLine($"authorization policy is dropped : {isAuthorizationPolicyDropped}");
             }
             catch (AggregateException ex)
             {
@@ -189,6 +192,13 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
                 .GetPolicyAsync(policyId, UmaUrl + "/policies", accessToken)
                 .Result;
             return policyResponse;
+        }
+
+        private static bool DeletePolicy(string policyId, string accessToken)
+        {
+            return _identityServerUmaClientFactory.GetPolicyClient()
+                .DeletePolicyAsync(policyId, UmaUrl + "/policies", accessToken)
+                .Result;
         }
 
         #endregion

@@ -25,6 +25,8 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController
         string AddPolicy(AddPolicyParameter addPolicyParameter);
 
         Policy GetPolicy(string policyId);
+
+        bool DeletePolicy(string policyId);
     }
 
     internal class PolicyActions : IPolicyActions
@@ -33,14 +35,18 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController
 
         private readonly IGetAuthorizationPolicyAction _getAuthorizationPolicyAction;
 
+        private readonly IDeleteAuthorizationPolicyAction _deleteAuthorizationPolicyAction;
+
         #region  Constructor
 
         public PolicyActions(
             IAddAuthorizationPolicyAction addAuthorizationPolicyAction,
-            IGetAuthorizationPolicyAction getAuthorizationPolicyAction)
+            IGetAuthorizationPolicyAction getAuthorizationPolicyAction,
+            IDeleteAuthorizationPolicyAction deleteAuthorizationPolicyAction)
         {
             _addAuthorizationPolicyAction = addAuthorizationPolicyAction;
             _getAuthorizationPolicyAction = getAuthorizationPolicyAction;
+            _deleteAuthorizationPolicyAction = deleteAuthorizationPolicyAction;
         }
 
         #endregion
@@ -55,6 +61,11 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController
         public Policy GetPolicy(string policyId)
         {
             return _getAuthorizationPolicyAction.Execute(policyId);
+        }
+
+        public bool DeletePolicy(string policyId)
+        {
+            return _deleteAuthorizationPolicyAction.Execute(policyId);
         }
 
         #endregion

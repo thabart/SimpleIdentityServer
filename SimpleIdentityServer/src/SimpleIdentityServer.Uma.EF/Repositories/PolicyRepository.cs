@@ -20,6 +20,7 @@ using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.EF.Extensions;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace SimpleIdentityServer.Uma.EF.Repositories
 {
@@ -67,6 +68,20 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
         {
             var record = policy.ToModel();
             _simpleIdServerUmaContext.Policies.Add(record);
+            _simpleIdServerUmaContext.SaveChanges();
+            return true;
+        }
+
+        public bool DeletePolicy(string id)
+        {
+            var policy = _simpleIdServerUmaContext.Policies
+                .FirstOrDefault(p => p.Id == id);
+            if (policy == null)
+            {
+                return false;
+            }
+
+            _simpleIdServerUmaContext.Policies.Remove(policy);
             _simpleIdServerUmaContext.SaveChanges();
             return true;
         }

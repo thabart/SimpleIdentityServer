@@ -17,6 +17,7 @@
 using SimpleIdentityServer.Client.Factory;
 using System;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Client.ResourceSet
@@ -59,12 +60,23 @@ namespace SimpleIdentityServer.Client.ResourceSet
                 throw new ArgumentNullException(nameof(resourceSetUrl));
             }
 
+            if (string.IsNullOrWhiteSpace(authorizationHeaderValue))
+            {
+                throw new ArgumentNullException(nameof(authorizationHeaderValue));
+            }
+
             if (resourceSetUrl.EndsWith("/"))
             {
                 resourceSetUrl = resourceSetUrl.Remove(0, resourceSetUrl.Length - 1);
             }
 
             resourceSetUrl = resourceSetUrl + "/" + resourceSetId;
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Delete,
+                RequestUri = new Uri(resourceSetUrl)
+            };
+            request.Headers.Add("Authorization", "Bearer " + authorizationHeaderValue);
             var httpClient = _httpClientFactory.GetHttpClient();
             var httpResult = await httpClient.DeleteAsync(resourceSetUrl);
             httpResult.EnsureSuccessStatusCode();

@@ -65,5 +65,7 @@ namespace SimpleIdentityServer.Uma.Core.Errors
         public const string OneOrMoreScopesDontBelongToAResourceSet = "one or more scopes don't belong to a resource set";
 
         public const string TheAuthorizationPolicyCannotBeRetrieved = "the authorization policy {0} cannot be retrieved";
+
+        public const string TheAuthorizationPolicyCannotBeUpdated = "the authorization policy {0} cannot be updated";
     }
 }

@@ -59,13 +59,30 @@ namespace SimpleIdentityServer.Client.Policy
             string policyId,
             Uri configurationUri,
             string authorizationHeaderValue);
+        
+        Task<bool> DeletePolicyAsync(
+            string policyId,
+            string policyUrl,
+            string authorizationHeaderValue);
+
+        Task<bool> DeletePolicyByResolvingUrlAsync(
+            string policyId,
+            string configurationUrl,
+            string authorizationHeaderValue);
+
+        Task<bool> DeletePolicyByResolvingUrlAsync(
+            string policyId,
+            Uri configurationUri,
+            string authorizationHeaderValue);
     }
 
     internal class PolicyClient : IPolicyClient
     {
         private readonly IAddPolicyOperation _addPolicyOperation;
 
-        private readonly IGetPolicyOperation _getPolicyOperation; 
+        private readonly IGetPolicyOperation _getPolicyOperation;
+
+        private readonly IDeletePolicyOperation _deletePolicyOperation;
 
         private readonly IGetConfigurationOperation _getConfigurationOperation;
 
@@ -74,10 +91,12 @@ namespace SimpleIdentityServer.Client.Policy
         public PolicyClient(
             IAddPolicyOperation addPolicyOperation,
             IGetPolicyOperation getPolicyOperation,
+            IDeletePolicyOperation deletePolicyOperation,
             IGetConfigurationOperation getConfigurationOperation)
         {
             _addPolicyOperation = addPolicyOperation;
             _getPolicyOperation = getPolicyOperation;
+            _deletePolicyOperation = deletePolicyOperation;
             _getConfigurationOperation = getConfigurationOperation;
         }
 
@@ -122,6 +141,22 @@ namespace SimpleIdentityServer.Client.Policy
         {
             var policyEndpoint = await GetPolicyEndPoint(configurationUri);
             return await GetPolicyAsync(policyId, policyEndpoint, authorizationHeaderValue);
+        }
+        
+        public async Task<bool> DeletePolicyAsync(string policyId, string policyUrl, string authorizationHeaderValue)
+        {
+            return await _deletePolicyOperation.ExecuteAsync(policyId, policyUrl, authorizationHeaderValue);
+        }
+
+        public async Task<bool> DeletePolicyByResolvingUrlAsync(string policyId, string configurationUrl, string authorizationHeaderValue)
+        {
+            return await DeletePolicyByResolvingUrlAsync(policyId, UriHelpers.GetUri(configurationUrl), authorizationHeaderValue);
+        }
+
+        public async Task<bool> DeletePolicyByResolvingUrlAsync(string policyId, Uri configurationUri, string authorizationHeaderValue)
+        {
+            var policyEndpoint = await GetPolicyEndPoint(configurationUri);
+            return await DeletePolicyAsync(policyId, policyEndpoint, authorizationHeaderValue);
         }
 
         #endregion
