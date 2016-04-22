@@ -84,8 +84,10 @@ namespace SimpleIdentityServer.Uma.Host
             public const string TicketId = "ticket";
         }
 
-        public static class PostPolicyNames
+        public static class PolicyNames
         {
+            public const string Id = "id";
+
             public const string ClientIdsAllowed = "allowed_clients";
 
             public const string Scopes = "scopes";
@@ -96,7 +98,7 @@ namespace SimpleIdentityServer.Uma.Host
 
             public const string Script = "script";
 
-            public const string ResourceSetId = "resource_set_id";
+            public const string ResourceSetIds = "resource_set_ids";
         }
 
         public static class AddPolicyResponseNames
@@ -159,6 +161,8 @@ namespace SimpleIdentityServer.Uma.Host
             public const string ResourceSetNotFound = "resource cannot be found";
 
             public const string ScopeNotFound = "scope cannot be found";
+
+            public const string PolicyNotFound = "authorization policy cannot be found";
         }
 
         public static class PostPermissionNames

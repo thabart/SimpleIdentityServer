@@ -27,6 +27,17 @@ namespace SimpleIdentityServer.Uma.Core
             public const string Scopes = "scopes";
         }
 
+        public static class AddPolicyParameterNames
+        {
+            public const string ResourceSetIds = "resource_set_ids";
+
+            public const string Script = "script";
+
+            public const string Scopes = "scopes";
+
+            public const string ClientIdsAllowed = "allowed_clients";
+        }
+
         #endregion
     }
 }

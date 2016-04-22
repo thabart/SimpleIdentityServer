@@ -95,7 +95,7 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
                 ClientIdsAllowed = postPolicy.ClientIdsAllowed,
                 IsCustom = postPolicy.IsCustom,
                 IsResourceOwnerConsentNeeded = postPolicy.IsResourceOwnerConsentNeeded,
-                ResourceSetId = postPolicy.ResourceSetId,
+                ResourceSetIds = postPolicy.ResourceSetIds,
                 Scopes = postPolicy.Scopes,
                 Script = postPolicy.Script
             };
@@ -124,6 +124,18 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
             {
                 IconUri = scope.IconUri,
                 Name = scope.Name
+            };
+        }
+
+        public static PolicyResponse ToResponse(this Policy policy)
+        {
+            return new PolicyResponse
+            {
+                Id = policy.Id,
+                ClientIdsAllowed = policy.ClientIdsAllowed,
+                IsCustom = policy.IsCustom,
+                IsResourceOwnerConsentNeeded = policy.IsResourceOwnerConsentNeeded,
+                ResourceSetIds = policy.ResourceSetIds
             };
         }
 

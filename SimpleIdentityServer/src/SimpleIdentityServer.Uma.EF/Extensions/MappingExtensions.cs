@@ -74,6 +74,13 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
 
         public static Domain.Policy ToDomain(this Model.Policy policy)
         {
+            var resourceSetIds = new List<string>();
+            if (policy.ResourceSets != null &&
+                policy.ResourceSets.Any())
+            {
+                resourceSetIds = policy.ResourceSets.Select(p => p.Id).ToList();
+            }
+
             return new Domain.Policy
             {
                 Id = policy.Id,
@@ -82,6 +89,7 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
                 IsResourceOwnerConsentNeeded = policy.IsResourceOwnerConsentNeeded,
                 ClientIdsAllowed = GetList(policy.ClientIdsAllowed),
                 Scopes = GetList(policy.Scopes),
+                ResourceSetIds = resourceSetIds
             };
         }
 

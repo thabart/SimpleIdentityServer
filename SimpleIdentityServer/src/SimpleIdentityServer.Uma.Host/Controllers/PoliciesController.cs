@@ -40,6 +40,25 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         #endregion
 
         #region Public methods
+        
+        [HttpGet("{id}")]
+        [Authorize("UmaProtection")]
+        public ActionResult GetPolicy(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentNullException(id);
+            }
+
+            var result = _policyActions.GetPolicy(id);
+            if (result == null)
+            {
+                return GetNotFoundPolicy();
+            }
+
+            var content = result.ToResponse();
+            return new HttpOkObjectResult(content);
+        }
 
         [HttpPost]
         [Authorize("UmaProtection")]
@@ -59,6 +78,24 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             return new ObjectResult(content)
             {
                 StatusCode = (int)HttpStatusCode.Created
+            };
+        }
+
+        #endregion
+
+        #region Private static methods
+
+        private static ActionResult GetNotFoundPolicy()
+        {
+            var errorResponse = new ErrorResponse
+            {
+                Error = Constants.ErrorCodes.NotFound,
+                ErrorDescription = Constants.ErrorDescriptions.PolicyNotFound
+            };
+
+            return new ObjectResult(errorResponse)
+            {
+                StatusCode = (int)HttpStatusCode.NotFound
             };
         }
 

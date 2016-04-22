@@ -15,6 +15,7 @@
 #endregion
 
 using SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions;
+using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Parameters;
 
 namespace SimpleIdentityServer.Uma.Core.Api.PolicyController
@@ -22,17 +23,24 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController
     public interface IPolicyActions
     {
         string AddPolicy(AddPolicyParameter addPolicyParameter);
+
+        Policy GetPolicy(string policyId);
     }
 
     internal class PolicyActions : IPolicyActions
     {
         private readonly IAddAuthorizationPolicyAction _addAuthorizationPolicyAction;
 
+        private readonly IGetAuthorizationPolicyAction _getAuthorizationPolicyAction;
+
         #region  Constructor
 
-        public PolicyActions(IAddAuthorizationPolicyAction addAuthorizationPolicyAction)
+        public PolicyActions(
+            IAddAuthorizationPolicyAction addAuthorizationPolicyAction,
+            IGetAuthorizationPolicyAction getAuthorizationPolicyAction)
         {
             _addAuthorizationPolicyAction = addAuthorizationPolicyAction;
+            _getAuthorizationPolicyAction = getAuthorizationPolicyAction;
         }
 
         #endregion
@@ -42,6 +50,11 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController
         public string AddPolicy(AddPolicyParameter addPolicyParameter)
         {
             return _addAuthorizationPolicyAction.Execute(addPolicyParameter);
+        }
+
+        public Policy GetPolicy(string policyId)
+        {
+            return _getAuthorizationPolicyAction.Execute(policyId);
         }
 
         #endregion

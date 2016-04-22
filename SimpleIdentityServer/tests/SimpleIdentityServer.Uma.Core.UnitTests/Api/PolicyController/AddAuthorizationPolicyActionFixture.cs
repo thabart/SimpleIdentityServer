@@ -61,27 +61,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
             var exception = Assert.Throws<BaseUmaException>(() => _addAuthorizationPolicyAction.Execute(addPolicyParameter));
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
-            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "resource_set_id"));
-        }
-
-        [Fact]
-        public void When_ResourceSetId_Doesnt_Exist_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            const string resourceSetId = "invalid_resource_set_id";
-            var addPolicyParameter = new AddPolicyParameter
-            {
-                ResourceSetId = resourceSetId
-            };
-            _repositoryExceptionHelper.Setup(r => r.HandleException(string.Format(ErrorDescriptions.TheResourceSetCannotBeRetrieved, resourceSetId), It.IsAny<Func<ResourceSet>>()))
-                .Returns(() => null);
-
-            // ACT & ASSERT
-            var exception = Assert.Throws<BaseUmaException>(() => _addAuthorizationPolicyAction.Execute(addPolicyParameter));
-            Assert.NotNull(exception);
-            Assert.True(exception.Code == ErrorCodes.InvalidResourceSetId);
-            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheResourceSetDoesntExist, resourceSetId));
+            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddPolicyParameterNames.ResourceSetIds));
         }
 
         [Fact]
@@ -92,7 +72,10 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
             const string resourceSetId = "resource_set_id";
             var addPolicyParameter = new AddPolicyParameter
             {
-                ResourceSetId = resourceSetId,
+                ResourceSetIds = new List<string>
+                {
+                    resourceSetId
+                },
                 IsCustom = true
             };
             var resourceSet = new ResourceSet
@@ -106,7 +89,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
             var exception = Assert.Throws<BaseUmaException>(() => _addAuthorizationPolicyAction.Execute(addPolicyParameter));
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
-            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "script"));
+            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddPolicyParameterNames.Script));
         }
 
         [Fact]
@@ -117,21 +100,18 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
             const string resourceSetId = "resource_set_id";
             var addPolicyParameter = new AddPolicyParameter
             {
-                ResourceSetId = resourceSetId,
+                ResourceSetIds = new List<string>
+                {
+                    resourceSetId
+                },
                 IsCustom = false
             };
-            var resourceSet = new ResourceSet
-            {
-                Id = resourceSetId
-            };
-            _repositoryExceptionHelper.Setup(r => r.HandleException(string.Format(ErrorDescriptions.TheResourceSetCannotBeRetrieved, resourceSetId), It.IsAny<Func<ResourceSet>>()))
-                .Returns(resourceSet);
 
             // ACT & ASSERTS
             var exception = Assert.Throws<BaseUmaException>(() => _addAuthorizationPolicyAction.Execute(addPolicyParameter));
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
-            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "scopes"));
+            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddPolicyParameterNames.Scopes));
         }
 
         [Fact]
@@ -142,7 +122,68 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
             const string resourceSetId = "resource_set_id";
             var addPolicyParameter = new AddPolicyParameter
             {
-                ResourceSetId = resourceSetId,
+                ResourceSetIds = new List<string>
+                {
+                    resourceSetId
+                },
+                IsCustom = false,
+                Scopes = new List<string>
+                {
+                    "invalid_scope"
+                }
+            };
+
+            // ACT & ASSERTS
+            var exception = Assert.Throws<BaseUmaException>(() => _addAuthorizationPolicyAction.Execute(addPolicyParameter));
+            Assert.NotNull(exception);
+            Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
+            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddPolicyParameterNames.ClientIdsAllowed));
+        }
+        
+        [Fact]
+        public void When_ResourceSetId_Doesnt_Exist_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            const string resourceSetId = "resource_set_id";
+            var addPolicyParameter = new AddPolicyParameter
+            {
+                ResourceSetIds = new List<string>
+                {
+                    resourceSetId
+                },
+                IsCustom = false,
+                Scopes = new List<string>
+                {
+                    "invalid_scope"
+                },
+                ClientIdsAllowed = new List<string>
+                {
+                    "client_id"
+                }
+            };
+            _repositoryExceptionHelper.Setup(r => r.HandleException(string.Format(ErrorDescriptions.TheResourceSetCannotBeRetrieved, resourceSetId), It.IsAny<Func<ResourceSet>>()))
+                .Returns(() => null);
+
+            // ACT & ASSERTS
+            var exception = Assert.Throws<BaseUmaException>(() => _addAuthorizationPolicyAction.Execute(addPolicyParameter));
+            Assert.NotNull(exception);
+            Assert.True(exception.Code == ErrorCodes.InvalidResourceSetId);
+            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheResourceSetDoesntExist, resourceSetId));
+        }
+
+        [Fact]
+        public void When_Resource_Set_Is_Not_Valid_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            const string resourceSetId = "resource_set_id";
+            var addPolicyParameter = new AddPolicyParameter
+            {
+                ResourceSetIds = new List<string>
+                {
+                    resourceSetId
+                },
                 IsCustom = false,
                 Scopes = new List<string>
                 {
@@ -155,7 +196,6 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
             };
             var resourceSet = new ResourceSet
             {
-                Id = resourceSetId,
                 Scopes = new List<string>
                 {
                     "scope"
@@ -172,8 +212,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
         }
 
         #endregion
-
-
+        
         #region Happy path
 
         [Fact]
@@ -182,14 +221,16 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
             // ARRANGE
             InitializeFakeObjects();
             const string resourceSetId = "resource_set_id";
-            const string scope = "scope";
             var addPolicyParameter = new AddPolicyParameter
             {
-                ResourceSetId = resourceSetId,
+                ResourceSetIds = new List<string>
+                {
+                    resourceSetId
+                },
                 IsCustom = false,
                 Scopes = new List<string>
                 {
-                   scope
+                    "scope"
                 },
                 ClientIdsAllowed = new List<string>
                 {
@@ -198,10 +239,9 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
             };
             var resourceSet = new ResourceSet
             {
-                Id = resourceSetId,
                 Scopes = new List<string>
                 {
-                    scope
+                    "scope"
                 }
             };
             _repositoryExceptionHelper.Setup(r => r.HandleException(string.Format(ErrorDescriptions.TheResourceSetCannotBeRetrieved, resourceSetId), It.IsAny<Func<ResourceSet>>()))
@@ -210,8 +250,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
             // ACT
             var result = _addAuthorizationPolicyAction.Execute(addPolicyParameter);
 
-            // ASSERT
-            Assert.NotEmpty(result);
+            // ASSERTS
+            Assert.NotNull(result);
         }
 
         #endregion

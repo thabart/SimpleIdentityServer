@@ -30,6 +30,6 @@ namespace SimpleIdentityServer.Uma.Core.Parameters
 
         public string Script { get; set; }
 
-        public string ResourceSetId { get; set; }
+        public List<string> ResourceSetIds { get; set; }
     }
 }

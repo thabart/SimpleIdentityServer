@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.Data.Entity;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.EF.Extensions;
@@ -51,7 +52,9 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
 
         public Policy GetPolicy(string id)
         {
-            var policy = _simpleIdServerUmaContext.Policies.FirstOrDefault(p => p.Id == id);
+            var policy = _simpleIdServerUmaContext.Policies
+                .Include(p => p.ResourceSets)
+                .FirstOrDefault(p => p.Id == id);
             if (policy == null)
             {
                 return null;

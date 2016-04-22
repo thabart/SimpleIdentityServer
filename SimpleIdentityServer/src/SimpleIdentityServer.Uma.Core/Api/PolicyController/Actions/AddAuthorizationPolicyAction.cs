@@ -21,6 +21,7 @@ using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
@@ -61,19 +62,11 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
                 throw new ArgumentNullException(nameof(addPolicyParameter));
             }
 
-            if (string.IsNullOrWhiteSpace(addPolicyParameter.ResourceSetId))
+            if (addPolicyParameter.ResourceSetIds == null ||
+                !addPolicyParameter.ResourceSetIds.Any())
             {
                 throw new BaseUmaException(ErrorCodes.InvalidRequestCode,
-                        string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "resource_set_id"));
-            }
-
-            var resourceSet = _repositoryExceptionHelper.HandleException(
-                string.Format(ErrorDescriptions.TheResourceSetCannotBeRetrieved, addPolicyParameter.ResourceSetId),
-                () => _resourceSetRepository.GetResourceSetById(addPolicyParameter.ResourceSetId));
-            if (resourceSet == null)
-            {
-                throw new BaseUmaException(ErrorCodes.InvalidResourceSetId,
-                    string.Format(ErrorDescriptions.TheResourceSetDoesntExist, addPolicyParameter.ResourceSetId));
+                        string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddPolicyParameterNames.ResourceSetIds));
             }
 
             if (addPolicyParameter.IsCustom)
@@ -81,7 +74,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
                 if (string.IsNullOrWhiteSpace(addPolicyParameter.Script))
                 {
                     throw new BaseUmaException(ErrorCodes.InvalidRequestCode,
-                        string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "script"));
+                        string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddPolicyParameterNames.Script));
                 }
             }
             else
@@ -90,21 +83,36 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
                     !addPolicyParameter.Scopes.Any())
                 {
                     throw new BaseUmaException(ErrorCodes.InvalidRequestCode,
-                        string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "scopes"));
+                        string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddPolicyParameterNames.Scopes));
                 }
 
                 if (addPolicyParameter.ClientIdsAllowed == null ||
                     !addPolicyParameter.ClientIdsAllowed.Any())
                 {
                     throw new BaseUmaException(ErrorCodes.InvalidRequestCode,
-                        string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "allowed_clients"));
+                        string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddPolicyParameterNames.ClientIdsAllowed));
+                }
+            }
+
+            var resourceSets = new List<ResourceSet>();
+            foreach (var resourceSetId in addPolicyParameter.ResourceSetIds)
+            {
+                var resourceSet = _repositoryExceptionHelper.HandleException(
+                    string.Format(ErrorDescriptions.TheResourceSetCannotBeRetrieved, resourceSetId),
+                    () => _resourceSetRepository.GetResourceSetById(resourceSetId));
+                if (resourceSet == null)
+                {
+                    throw new BaseUmaException(ErrorCodes.InvalidResourceSetId,
+                        string.Format(ErrorDescriptions.TheResourceSetDoesntExist, resourceSetId));
                 }
 
-                if (!addPolicyParameter.Scopes.All(s => resourceSet.Scopes.Contains(s)))
+                if (!addPolicyParameter.IsCustom && !addPolicyParameter.Scopes.All(s => resourceSet.Scopes.Contains(s)))
                 {
                     throw new BaseUmaException(ErrorCodes.InvalidScope,
                         ErrorDescriptions.OneOrMoreScopesDontBelongToAResourceSet);
                 }
+
+                resourceSets.Add(resourceSet);
             }
 
             // Insert policy
@@ -122,10 +130,13 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
                 () => _policyRepository.AddPolicy(policy));
 
             // Update resource set
-            resourceSet.AuthorizationPolicyId = policy.Id;
-            _repositoryExceptionHelper.HandleException(
-                string.Format(ErrorDescriptions.TheResourceSetCannotBeUpdated, resourceSet.Id),
-                () => _resourceSetRepository.UpdateResource(resourceSet));
+            foreach(var resourceSet in resourceSets)
+            {
+                resourceSet.AuthorizationPolicyId = policy.Id;
+                _repositoryExceptionHelper.HandleException(
+                    string.Format(ErrorDescriptions.TheResourceSetCannotBeUpdated, resourceSet.Id),
+                    () => _resourceSetRepository.UpdateResource(resourceSet));
+            }
 
             return policy.Id;
         }

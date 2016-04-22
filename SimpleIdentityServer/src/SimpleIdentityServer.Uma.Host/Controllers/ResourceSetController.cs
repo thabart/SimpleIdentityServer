@@ -64,7 +64,8 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 return GetNotFoundResourceSet();
             }
 
-            return new HttpOkObjectResult(result);
+            var content = result.ToResponse();
+            return new HttpOkObjectResult(content);
         }
 
         [HttpPost]

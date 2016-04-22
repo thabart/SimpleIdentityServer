@@ -17,11 +17,14 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.Uma.Host.DTOs.Requests
+namespace SimpleIdentityServer.Uma.Host.DTOs.Responses
 {
     [DataContract]
-    public class PostPolicy
+    public class PolicyResponse
     {
+        [DataMember(Name = Constants.PolicyNames.Id)]
+        public string Id { get; set; }
+
         [DataMember(Name = Constants.PolicyNames.ClientIdsAllowed)]
         public List<string> ClientIdsAllowed { get; set; }
 
