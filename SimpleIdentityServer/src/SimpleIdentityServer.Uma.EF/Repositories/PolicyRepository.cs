@@ -43,9 +43,9 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
         {
             var policies = _simpleIdServerUmaContext.Policies.ToList();
             if (policies == null ||
-                policies.Any())
+                !policies.Any())
             {
-                return null;
+                return new List<Policy>();
             }
 
             return policies.Select(p => p.ToDomain()).ToList();

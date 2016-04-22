@@ -65,6 +65,7 @@ namespace SimpleIdentityServer.Uma.Core
             serviceCollection.AddTransient<IPolicyActions, PolicyActions>();
             serviceCollection.AddTransient<IGetAuthorizationPolicyAction, GetAuthorizationPolicyAction>();
             serviceCollection.AddTransient<IDeleteAuthorizationPolicyAction, DeleteAuthorizationPolicyAction>();
+            serviceCollection.AddTransient<IGetAuthorizationPoliciesAction, GetAuthorizationPoliciesAction>();
             return serviceCollection;
         }
 

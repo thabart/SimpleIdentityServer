@@ -19,6 +19,7 @@ using SimpleIdentityServer.Client.DTOs.Requests;
 using SimpleIdentityServer.Client.DTOs.Responses;
 using SimpleIdentityServer.Client.Extensions;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Client.Policy
@@ -74,6 +75,22 @@ namespace SimpleIdentityServer.Client.Policy
             string policyId,
             Uri configurationUri,
             string authorizationHeaderValue);
+
+        Task<List<PolicyResponse>> GetPoliciesAsync(
+            string policyUrl, 
+            string authorizationHeaderValue);
+
+        Task<List<PolicyResponse>> GetPoliciesAsync(
+            Uri policyUri,
+            string authorizationHeaderValue);
+
+        Task<List<PolicyResponse>> GetPoliciesByResolvingUrlAsync(
+            string configurationUrl, 
+            string authorizationHeaderValue);
+
+        Task<List<PolicyResponse>> GetPoliciesByResolvingUrlAsync(
+            Uri configurationUri, 
+            string authorizationHeaderValue);
     }
 
     internal class PolicyClient : IPolicyClient
@@ -84,6 +101,8 @@ namespace SimpleIdentityServer.Client.Policy
 
         private readonly IDeletePolicyOperation _deletePolicyOperation;
 
+        private readonly IGetPoliciesOperation _getPoliciesOperation;
+
         private readonly IGetConfigurationOperation _getConfigurationOperation;
 
         #region Constructor
@@ -92,11 +111,13 @@ namespace SimpleIdentityServer.Client.Policy
             IAddPolicyOperation addPolicyOperation,
             IGetPolicyOperation getPolicyOperation,
             IDeletePolicyOperation deletePolicyOperation,
+            IGetPoliciesOperation getPoliciesOperation,
             IGetConfigurationOperation getConfigurationOperation)
         {
             _addPolicyOperation = addPolicyOperation;
             _getPolicyOperation = getPolicyOperation;
             _deletePolicyOperation = deletePolicyOperation;
+            _getPoliciesOperation = getPoliciesOperation;
             _getConfigurationOperation = getConfigurationOperation;
         }
 
@@ -157,6 +178,27 @@ namespace SimpleIdentityServer.Client.Policy
         {
             var policyEndpoint = await GetPolicyEndPoint(configurationUri);
             return await DeletePolicyAsync(policyId, policyEndpoint, authorizationHeaderValue);
+        }
+
+        public async Task<List<PolicyResponse>> GetPoliciesAsync(string policyUrl, string authorizationHeaderValue)
+        {
+            return await GetPoliciesAsync(UriHelpers.GetUri(policyUrl), authorizationHeaderValue);
+        }
+
+        public async Task<List<PolicyResponse>> GetPoliciesAsync(Uri policyUri, string authorizationHeaderValue)
+        {
+            return await _getPoliciesOperation.ExecuteAsync(policyUri, authorizationHeaderValue);
+        }
+
+        public async Task<List<PolicyResponse>> GetPoliciesByResolvingUrlAsync(string configurationUrl, string authorizationHeaderValue)
+        {
+            return await GetPoliciesByResolvingUrlAsync(UriHelpers.GetUri(configurationUrl), authorizationHeaderValue);
+        }
+
+        public async Task<List<PolicyResponse>> GetPoliciesByResolvingUrlAsync(Uri configurationUri, string authorizationHeaderValue)
+        {
+            var policyEndpoint = await GetPolicyEndPoint(configurationUri);
+            return await GetPoliciesAsync(policyEndpoint, authorizationHeaderValue);
         }
 
         #endregion

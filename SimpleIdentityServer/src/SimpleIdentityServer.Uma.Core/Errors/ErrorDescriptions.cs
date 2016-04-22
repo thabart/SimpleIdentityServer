@@ -67,5 +67,7 @@ namespace SimpleIdentityServer.Uma.Core.Errors
         public const string TheAuthorizationPolicyCannotBeRetrieved = "the authorization policy {0} cannot be retrieved";
 
         public const string TheAuthorizationPolicyCannotBeUpdated = "the authorization policy {0} cannot be updated";
+
+        public const string TheAutorizationPoliciesCannotBeRetrieved = "the authorization policies cannot be retrieved";
     }
 }

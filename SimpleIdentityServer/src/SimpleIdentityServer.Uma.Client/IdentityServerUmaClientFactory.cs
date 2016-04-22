@@ -101,6 +101,7 @@ namespace SimpleIdentityServer.Client
             serviceCollection.AddTransient<IAddPolicyOperation, AddPolicyOperation>();
             serviceCollection.AddTransient<IGetPolicyOperation, GetPolicyOperation>();
             serviceCollection.AddTransient<IDeletePolicyOperation, DeletePolicyOperation>();
+            serviceCollection.AddTransient<IGetPoliciesOperation, GetPoliciesOperation>();
         }
 
         #endregion
