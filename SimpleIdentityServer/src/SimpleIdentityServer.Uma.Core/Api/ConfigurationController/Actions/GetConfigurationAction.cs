@@ -16,6 +16,7 @@
 
 using SimpleIdentityServer.Uma.Core.Providers;
 using SimpleIdentityServer.Uma.Core.Responses;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ConfigurationController.Actions
 {
@@ -26,10 +27,34 @@ namespace SimpleIdentityServer.Uma.Core.Api.ConfigurationController.Actions
     
     public class GetConfigurationAction
     {
+        #region Fields
+
+        private readonly List<string> _supportedProfiles = new List<string>
+        {
+            "bearer"
+        };
+
+        private readonly List<string> _bearerRptProfiles = new List<string>
+        {
+            "https://docs.kantarainitiative.org/uma/profiles/uma-token-bearer-1.0"
+        };
+
+        private readonly List<string> _patGrantTypesSupported = new List<string>
+        {
+            "authorization_code"
+        };
+
+        private readonly List<string> _aatGrantTypesSupported = new List<string>
+        {
+            "authorization_code"
+        };
+
         private readonly IHostingProvider _hostingProvider;
-    
+
+        #endregion
+
         #region Constructor
-        
+
         public GetConfigurationAction(IHostingProvider hostingProvider)
         {
             _hostingProvider = hostingProvider;
@@ -44,7 +69,13 @@ namespace SimpleIdentityServer.Uma.Core.Api.ConfigurationController.Actions
             var absoluteUriWithVirtualPath = _hostingProvider.GetAbsoluteUriWithVirtualPath();
             var result = new ConfigurationResponse
             {
-                Version = "1.0"
+                Version = "1.0",
+                Issuer = absoluteUriWithVirtualPath,
+                PatProfilesSupported = _supportedProfiles,
+                AatProfilesSupported = _supportedProfiles,
+                RtpProfilesSupported = _bearerRptProfiles,
+                PatGrantTypesSupported = _patGrantTypesSupported,
+                AatGrantTypesSupported = _aatGrantTypesSupported
             };
             
             return result;

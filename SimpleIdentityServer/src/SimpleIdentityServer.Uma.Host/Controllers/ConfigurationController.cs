@@ -32,7 +32,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         #endregion
         
         [HttpGet]
-        public ConfigurationResponse GetConfiguration()
+        public ActionResult GetConfiguration()
         {
             return null;
         }

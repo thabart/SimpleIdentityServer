@@ -22,9 +22,9 @@ namespace SimpleIdentityServer.Uma.Core.Responses
     {
         public string Version { get; set; }
         
-        public string AatGrantTypesSupported { get; set; }
+        public List<string> AatGrantTypesSupported { get; set; }
 
-        public string AatProfilesSupported { get; set; }
+        public List<string> AatProfilesSupported { get; set; }
 
         public string AuthorizationEndPoint { get; set; }
 
