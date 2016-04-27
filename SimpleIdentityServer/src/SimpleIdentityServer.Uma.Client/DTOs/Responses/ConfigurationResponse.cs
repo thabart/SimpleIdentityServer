@@ -26,13 +26,13 @@ namespace SimpleIdentityServer.Client.DTOs.Responses
         /// OAUTH2.0 grant types supported by the authorization server in issuing AATs.
         /// </summary>
         [DataMember(Name = Constants.ConfigurationResponseNames.AatGrantTypesSupported)]
-        public string AatGrantTypesSupported { get; set; }
+        public List<string> AatGrantTypesSupported { get; set; }
 
         /// <summary>
         /// OAUTH2.0 access token types supported by the authorization server for AAT issuance.
         /// </summary>
         [DataMember(Name = Constants.ConfigurationResponseNames.AatProfilesSupported)]
-        public string AatProfilesSupported { get; set; }
+        public List<string> AatProfilesSupported { get; set; }
 
         [DataMember(Name = Constants.ConfigurationResponseNames.AuthorizationEndPoint)]
         public string AuthorizationEndPoint { get; set; }
@@ -64,7 +64,7 @@ namespace SimpleIdentityServer.Client.DTOs.Responses
         [DataMember(Name = Constants.ConfigurationResponseNames.ResourceSetRegistrationEndPoint)]
         public string ResourceSetRegistrationEndPoint { get; set; }
         
-        [DataMember(Name = Constants.ConfigurationResponseNames.ResourceSetRegistrationEndPoint)]
+        [DataMember(Name = Constants.ConfigurationResponseNames.PolicyEndPoint)]
         public string PolicyEndPoint { get; set; }
 
         [DataMember(Name = Constants.ConfigurationResponseNames.RptEndPoint)]

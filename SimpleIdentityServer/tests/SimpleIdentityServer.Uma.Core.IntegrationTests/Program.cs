@@ -46,7 +46,8 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
 
         public static void Main(string[] args)
         {
-            AuthorizedScenario();
+            // AuthorizedScenario();
+            AuthorizedScenarioByDiscovery();
         }
 
         #endregion
@@ -83,6 +84,47 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
                 Console.Write(authorization.Rpt);
                 // 7. Drop everything
                 var isAuthorizationPolicyDropped = DeletePolicy(authorizationPolicy.PolicyId, umaProtectionToken.AccessToken);
+                Console.WriteLine($"authorization policy is dropped : {isAuthorizationPolicyDropped}");
+            }
+            catch (AggregateException ex)
+            {
+                var firstException = ex.InnerExceptions.First();
+                Console.WriteLine(firstException.Message);
+            }
+
+            Console.ReadLine();
+        }
+
+        private static void AuthorizedScenarioByDiscovery()
+        {
+            try
+            {
+                _identityServerClientFactory = new IdentityServerClientFactory();
+                const string readScope = "read";
+                const string createScope = "create";
+                // 1. Get token valid for uma_protection scope
+                var umaProtectionToken = GetGrantedToken(UmaProtectionScope);
+                // 2. Get token vaild for uma_authorization scope
+                var umaAuthorizationToken = GetGrantedToken(UmaAuthorizationScope);
+                // 3. Add resource set
+                var resourceSet = AddResourceSetByDiscovery("resource_set", new List<string> { readScope, createScope }, umaProtectionToken.AccessToken);
+                // 4. Add permission
+                var permission = AddPermissionByDiscovery(resourceSet.Id, new List<string> { readScope, createScope }, umaProtectionToken.AccessToken);
+                // 5. Add authorization policy
+                var authorizationPolicy = AddPolicyByDiscovery(new List<string> { ClientId }, new List<string> { readScope, createScope }, resourceSet.Id, umaProtectionToken.AccessToken);
+                var policy = GetPolicyByDiscovery(authorizationPolicy.PolicyId, umaProtectionToken.AccessToken);
+                Console.WriteLine($"authorization policy {policy.Id} has been created");
+                var policyIds = GetPoliciesByDiscovery(umaProtectionToken.AccessToken);
+                foreach (var policyId in policyIds)
+                {
+                    Console.WriteLine($"authorization policy : {policyId}");
+                }
+
+                // 6. Get authorization
+                var authorization = GetAuthorizationByDiscovery(permission.TicketId, umaAuthorizationToken.AccessToken);
+                Console.Write(authorization.Rpt);
+                // 7. Drop everything
+                var isAuthorizationPolicyDropped = DeletePolicyByDiscovery(authorizationPolicy.PolicyId, umaProtectionToken.AccessToken);
                 Console.WriteLine($"authorization policy is dropped : {isAuthorizationPolicyDropped}");
             }
             catch (AggregateException ex)
@@ -211,6 +253,86 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
         {
             return _identityServerUmaClientFactory.GetPolicyClient()
                 .GetPoliciesAsync(UmaUrl + "/policies", accessToken)
+                .Result;
+        }
+
+        private static AddResourceSetResponse AddResourceSetByDiscovery(string resourceSetName, List<string> scopes, string accessToken)
+        {
+            var postResourceSet = new PostResourceSet
+            {
+                Name = resourceSetName,
+                Scopes = scopes
+            };
+            var newResourceSet = _identityServerUmaClientFactory.GetResourceSetClient()
+                .AddResourceSetByResolvingUrlAsync(postResourceSet, UmaUrl + "/.well-known/uma-configuration", accessToken)
+                .Result;
+            return newResourceSet;
+        }
+
+        private static AddPermissionResponse AddPermissionByDiscovery(string resourceSetId, List<string> scopes, string accessToken)
+        {
+            var postPermission = new PostPermission
+            {
+                ResourceSetId = resourceSetId,
+                Scopes = scopes
+            };
+            var permission = _identityServerUmaClientFactory.GetPermissionClient()
+                .AddPermissionByResolvingUrlAsync(postPermission, UmaUrl + "/.well-known/uma-configuration", accessToken)
+                .Result;
+            return permission;
+        }
+
+        private static AuthorizationResponse GetAuthorizationByDiscovery(string ticketId, string accessToken)
+        {
+            var postAuthorization = new PostAuthorization
+            {
+                TicketId = ticketId
+            };
+            var authorization = _identityServerUmaClientFactory.GetAuthorizationClient()
+                .GetAuthorizationByResolvingUrlAsync(postAuthorization, UmaUrl + "/.well-known/uma-configuration", accessToken)
+                .Result;
+            return authorization;
+        }
+
+        private static AddPolicyResponse AddPolicyByDiscovery(List<string> clientIds, List<string> scopes, string resourceSetId, string accessToken)
+        {
+            var postPolicy = new PostPolicy
+            {
+                IsCustom = false,
+                Scopes = scopes,
+                ClientIdsAllowed = clientIds,
+                ResourceSetIds = new List<string>
+                {
+                    resourceSetId
+                },
+                IsResourceOwnerConsentNeeded = false
+            };
+
+            var policyResponse = _identityServerUmaClientFactory.GetPolicyClient()
+                .AddPolicyByResolvingUrlAsync(postPolicy, UmaUrl + "/.well-known/uma-configuration", accessToken)
+                .Result;
+            return policyResponse;
+        }
+
+        private static PolicyResponse GetPolicyByDiscovery(string policyId, string accessToken)
+        {
+            var policyResponse = _identityServerUmaClientFactory.GetPolicyClient()
+                .GetPolicyByResolvingUrlAsync(policyId, UmaUrl + "/.well-known/uma-configuration", accessToken)
+                .Result;
+            return policyResponse;
+        }
+
+        private static bool DeletePolicyByDiscovery(string policyId, string accessToken)
+        {
+            return _identityServerUmaClientFactory.GetPolicyClient()
+                .DeletePolicyByResolvingUrlAsync(policyId, UmaUrl + "/.well-known/uma-configuration", accessToken)
+                .Result;
+        }
+
+        private static List<string> GetPoliciesByDiscovery(string accessToken)
+        {
+            return _identityServerUmaClientFactory.GetPolicyClient()
+                .GetPoliciesByResolvingUrlAsync(UmaUrl + "/.well-known/uma-configuration", accessToken)
                 .Result;
         }
 
