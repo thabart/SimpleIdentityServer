@@ -34,19 +34,6 @@ namespace SimpleIdentityServer.Uma.Host
 
     public class Startup
     {
-        internal class UmaServerConfigurationProvider : IUmaServerConfigurationProvider
-        {
-            public int GetTicketLifetime()
-            {
-                return 3000;
-            }
-
-            public int GetRptLifetime()
-            {
-                return 3000;
-            }
-        }
-
         public Startup(IHostingEnvironment env, IApplicationEnvironment appEnv)
         {
             var builder = new ConfigurationBuilder()
@@ -140,13 +127,14 @@ namespace SimpleIdentityServer.Uma.Host
         public void RegisterServices(IServiceCollection services)
         {
             var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
-            services.AddTransient<IUmaServerConfigurationProvider, UmaServerConfigurationProvider>();
             services.AddTransient<IHostingProvider, HostingProvider>();
             services.AddSimpleIdServerUmaCore(opt =>
             {
                 opt.AuthorizeOperation = Configuration["AuthorizationUrl"];
                 opt.RegisterOperation = Configuration["ClientRegister"];
                 opt.TokenOperation = Configuration["TokenUrl"];
+                opt.RptLifeTime = 3000;
+                opt.TicketLifeTime = 3000;
             });
 
             services.AddSimpleIdServerUmaSqlServer(connectionString);

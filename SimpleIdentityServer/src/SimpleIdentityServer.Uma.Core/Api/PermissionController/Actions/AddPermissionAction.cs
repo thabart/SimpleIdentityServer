@@ -41,7 +41,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions
 
         private readonly IRepositoryExceptionHelper _repositoryExceptionHelper;
 
-        private readonly IUmaServerConfigurationProvider _umaServerConfigurationProvider;
+        private readonly UmaServerOptions _umaServerOptions;
 
         #region Constructor
 
@@ -49,12 +49,12 @@ namespace SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions
             IResourceSetRepository resourceSetRepository,
             ITicketRepository ticketRepository,
             IRepositoryExceptionHelper repositoryExceptionHelper,
-            IUmaServerConfigurationProvider umaServerConfigurationProvider)
+            UmaServerOptions umaServerOptions)
         {
             _resourceSetRepository = resourceSetRepository;
             _ticketRepository = ticketRepository;
             _repositoryExceptionHelper = repositoryExceptionHelper;
-            _umaServerConfigurationProvider = umaServerConfigurationProvider;
+            _umaServerOptions = umaServerOptions;
         }
 
         #endregion
@@ -76,7 +76,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions
             }
 
             CheckAddPermissionParameter(addPermissionParameter);
-            var ticketLifetimeInSeconds = _umaServerConfigurationProvider.GetTicketLifetime();
+            var ticketLifetimeInSeconds = _umaServerOptions.TicketLifeTime;
             var ticket = new Ticket
             {
                 Id = Guid.NewGuid().ToString(),

@@ -23,5 +23,9 @@ namespace SimpleIdentityServer.Uma.Core
         public string TokenOperation { get; set; }
 
         public string AuthorizeOperation { get; set; }
+
+        public int TicketLifeTime { get; set; }
+
+        public int RptLifeTime { get; set; }
     }
 }

@@ -37,7 +37,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PermissionController.Actio
 
         private Mock<IRepositoryExceptionHelper> _repositoryExceptionHelperStub;
 
-        private Mock<IUmaServerConfigurationProvider> _umaServerConfigurationProviderStub;
+        private UmaServerOptions _umaServerOptions;
 
         private IAddPermissionAction _addPermissionAction;
 
@@ -189,8 +189,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PermissionController.Actio
             };
             _repositoryExceptionHelperStub.Setup(r => r.HandleException(It.IsAny<string>(), It.IsAny<Func<ResourceSet>>()))
                 .Returns(resourceSet);
-            _umaServerConfigurationProviderStub.Setup(u => u.GetTicketLifetime())
-                .Returns(2);
+            _umaServerOptions.TicketLifeTime = 2;
             _repositoryExceptionHelperStub.Setup(r => r.HandleException(It.IsAny<string>(), It.IsAny<Func<Ticket>>()))
                 .Returns(ticket);
 
@@ -209,12 +208,12 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PermissionController.Actio
             _resourceSetRepositoryStub = new Mock<IResourceSetRepository>();
             _ticketRepositortStub = new Mock<ITicketRepository>();
             _repositoryExceptionHelperStub = new Mock<IRepositoryExceptionHelper>();
-            _umaServerConfigurationProviderStub = new Mock<IUmaServerConfigurationProvider>();
+            _umaServerOptions = new UmaServerOptions();
             _addPermissionAction = new AddPermissionAction(
                 _resourceSetRepositoryStub.Object,
                 _ticketRepositortStub.Object,
                 _repositoryExceptionHelperStub.Object,
-                _umaServerConfigurationProviderStub.Object);
+                _umaServerOptions);
         }
     }
 }

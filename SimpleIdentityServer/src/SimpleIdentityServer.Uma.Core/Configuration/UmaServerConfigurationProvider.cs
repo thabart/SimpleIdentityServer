@@ -19,12 +19,6 @@ namespace SimpleIdentityServer.Uma.Core.Configuration
     public interface IUmaServerConfigurationProvider
     {
         /// <summary>
-        /// Get ticket litetime in seconds
-        /// </summary>
-        /// <returns></returns>
-        int GetTicketLifetime();
-
-        /// <summary>
         /// Get RPT litetime in seconds
         /// </summary>
         /// <returns></returns>

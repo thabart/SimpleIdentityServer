@@ -37,7 +37,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.Authorization.Actions
 
         private Mock<IAuthorizationPolicyValidator> _authorizationPolicyValidatorStub;
 
-        private Mock<IUmaServerConfigurationProvider> _umaServerConfigurationProviderStub;
+        private Mock<UmaServerOptions> _umaServerOptionsStub;
 
         private Mock<IRptRepository> _rptRepositoryStub;
 
@@ -249,13 +249,13 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.Authorization.Actions
         {
             _ticketRepositoryStub = new Mock<ITicketRepository>();
             _authorizationPolicyValidatorStub = new Mock<IAuthorizationPolicyValidator>();
-            _umaServerConfigurationProviderStub = new Mock<IUmaServerConfigurationProvider>();
+           _umaServerOptionsStub = new Mock<UmaServerOptions>();
             _rptRepositoryStub = new Mock<IRptRepository>();
             _repositoryExceptionHandlerStub = new Mock<IRepositoryExceptionHelper>();
             _getAuthorizationAction = new GetAuthorizationAction(
                 _ticketRepositoryStub.Object,
                 _authorizationPolicyValidatorStub.Object,
-                _umaServerConfigurationProviderStub.Object,
+                _umaServerOptionsStub.Object,
                 _rptRepositoryStub.Object,
                 _repositoryExceptionHandlerStub.Object);
         }

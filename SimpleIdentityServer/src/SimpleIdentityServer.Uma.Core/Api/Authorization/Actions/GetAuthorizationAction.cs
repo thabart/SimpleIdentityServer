@@ -43,7 +43,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Authorization.Actions
 
         private readonly IAuthorizationPolicyValidator _authorizationPolicyValidator;
 
-        private readonly IUmaServerConfigurationProvider _umaServerConfigurationProvider;
+        private readonly UmaServerOptions _umaServerOptions;
 
         private readonly IRptRepository _rptRepository;
 
@@ -54,13 +54,13 @@ namespace SimpleIdentityServer.Uma.Core.Api.Authorization.Actions
         public GetAuthorizationAction(
             ITicketRepository ticketRepository,
             IAuthorizationPolicyValidator authorizationPolicyValidator,
-            IUmaServerConfigurationProvider umaServerConfigurationProvider,
+            UmaServerOptions umaServerOptions,
             IRptRepository rptRepository,
             IRepositoryExceptionHelper repositoryExceptionHelper)
         {
             _ticketRepository = ticketRepository;
             _authorizationPolicyValidator = authorizationPolicyValidator;
-            _umaServerConfigurationProvider = umaServerConfigurationProvider;
+            _umaServerOptions = umaServerOptions;
             _rptRepository = rptRepository;
             _repositoryExceptionHelper = repositoryExceptionHelper;
         }
@@ -123,7 +123,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Authorization.Actions
 
             var rpt = new Rpt
             {
-                ExpirationDateTime = DateTime.UtcNow.AddSeconds(_umaServerConfigurationProvider.GetRptLifetime()),
+                ExpirationDateTime = DateTime.UtcNow.AddSeconds(_umaServerOptions.RptLifeTime),
                 Value = Guid.NewGuid().ToString(),
                 TicketId = ticket.Id,
                 ResourceSetId = ticket.ResourceSetId
