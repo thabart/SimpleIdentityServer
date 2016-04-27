@@ -41,7 +41,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ConfigurationController
         
         public ConfigurationResponse GetConfiguration()
         {
-            return null;
+            return _getConfigurationAction.Execute();
         }
         
         #endregion

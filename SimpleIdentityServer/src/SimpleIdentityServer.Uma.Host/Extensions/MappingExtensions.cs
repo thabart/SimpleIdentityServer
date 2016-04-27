@@ -19,6 +19,8 @@ using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Host.DTOs.Requests;
 using SimpleIdentityServer.Uma.Host.DTOs.Responses;
 
+using DomainResponse = SimpleIdentityServer.Uma.Core.Responses;
+
 namespace SimpleIdentityServer.Uma.Host.Extensions
 {
     internal static class MappingExtensions
@@ -136,6 +138,31 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
                 IsCustom = policy.IsCustom,
                 IsResourceOwnerConsentNeeded = policy.IsResourceOwnerConsentNeeded,
                 ResourceSetIds = policy.ResourceSetIds
+            };
+        }
+
+        public static ConfigurationResponse ToResponse(this DomainResponse.ConfigurationResponse configuration)
+        {
+            return new ConfigurationResponse
+            {
+                AatGrantTypesSupported = configuration.AatGrantTypesSupported,
+                AatProfilesSupported = configuration.AatProfilesSupported,
+                AuthorizationEndPoint = configuration.AuthorizationEndPoint,
+                ClaimTokenProfilesSupported = configuration.ClaimTokenProfilesSupported,
+                DynamicClientEndPoint = configuration.DynamicClientEndPoint,
+                IntrospectionEndPoint = configuration.IntrospectionEndPoint,
+                Issuer = configuration.Issuer,
+                PatGrantTypesSupported = configuration.PatGrantTypesSupported,
+                PatProfilesSupported = configuration.PatProfilesSupported,
+                PermissionRegistrationEndPoint = configuration.PermissionRegistrationEndPoint,
+                PolicyEndPoint = configuration.PolicyEndPoint,
+                RequestingPartyClaimsEndPoint = configuration.RequestingPartyClaimsEndPoint,
+                ResourceSetRegistrationEndPoint = configuration.ResourceSetRegistrationEndPoint,
+                RtpEndPoint = configuration.RtpEndPoint,
+                RtpProfilesSupported = configuration.RtpProfilesSupported,
+                TokenEndPoint = configuration.TokenEndPoint,
+                UmaProfilesSupported = configuration.UmaProfilesSupported,
+                Version = configuration.Version
             };
         }
 

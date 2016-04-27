@@ -15,26 +15,35 @@
 #endregion
 
 using Microsoft.AspNet.Mvc;
-using SimpleIdentityServer.Uma.Host.DTOs.Responses;
+using SimpleIdentityServer.Uma.Core.Api.ConfigurationController;
+using SimpleIdentityServer.Uma.Host.Extensions;
 
 namespace SimpleIdentityServer.Uma.Host.Controllers
 {
     [Route(Constants.RouteValues.Configuration)]
     public class ConfigurationController
     {
+        private readonly IConfigurationActions _configurationActions;
+
         #region Constructor
         
-        public ConfigurationController()
+        public ConfigurationController(IConfigurationActions configurationActions)
         {
-            
+            _configurationActions = configurationActions;
         }
-        
+
         #endregion
-        
+
+        #region Public methods
+
         [HttpGet]
         public ActionResult GetConfiguration()
         {
-            return null;
+            var result = _configurationActions.GetConfiguration()
+                .ToResponse();
+            return new HttpOkObjectResult(result);
         }
+
+        #endregion
     }
 }

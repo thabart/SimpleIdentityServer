@@ -53,5 +53,7 @@ namespace SimpleIdentityServer.Uma.Core.Responses
         public string TokenEndPoint { get; set; }
 
         public List<string> UmaProfilesSupported { get; set; }
+
+        public string PolicyEndPoint { get; set; }
     }
 }

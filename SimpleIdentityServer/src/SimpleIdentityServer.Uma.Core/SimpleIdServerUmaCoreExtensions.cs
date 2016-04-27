@@ -17,6 +17,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Uma.Core.Api.Authorization;
 using SimpleIdentityServer.Uma.Core.Api.Authorization.Actions;
+using SimpleIdentityServer.Uma.Core.Api.ConfigurationController;
+using SimpleIdentityServer.Uma.Core.Api.ConfigurationController.Actions;
 using SimpleIdentityServer.Uma.Core.Api.PermissionController;
 using SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions;
 using SimpleIdentityServer.Uma.Core.Api.PolicyController;
@@ -28,6 +30,7 @@ using SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions;
 using SimpleIdentityServer.Uma.Core.Helpers;
 using SimpleIdentityServer.Uma.Core.Policies;
 using SimpleIdentityServer.Uma.Core.Validators;
+using System;
 
 namespace SimpleIdentityServer.Uma.Core
 {
@@ -36,7 +39,40 @@ namespace SimpleIdentityServer.Uma.Core
         #region Public static methods
 
         public static IServiceCollection AddSimpleIdServerUmaCore(
-            this IServiceCollection serviceCollection)
+            this IServiceCollection serviceCollection,
+            UmaServerOptions umaServerOptions)
+        {
+            if (umaServerOptions == null)
+            {
+                throw new ArgumentNullException(nameof(umaServerOptions));
+            }
+
+            RegisterDependencies(serviceCollection, umaServerOptions);
+            return serviceCollection;
+        }
+
+        public static IServiceCollection AddSimpleIdServerUmaCore(
+            this IServiceCollection serviceCollection,
+            Action<UmaServerOptions> callback)
+        {
+            if (callback == null)
+            {
+                throw new ArgumentNullException(nameof(callback));
+            }
+
+            var umaServerOptions = new UmaServerOptions();
+            callback(umaServerOptions);
+            RegisterDependencies(serviceCollection, umaServerOptions);
+            return serviceCollection;
+        }
+
+        #endregion
+
+        #region Private static methods
+
+        private static void RegisterDependencies(
+            IServiceCollection serviceCollection,
+            UmaServerOptions umaServerOptions)
         {
             serviceCollection.AddTransient<IResourceSetActions, ResourceSetActions>();
             serviceCollection.AddTransient<IAddResourceSetAction, AddResourceSetAction>();
@@ -66,7 +102,9 @@ namespace SimpleIdentityServer.Uma.Core
             serviceCollection.AddTransient<IGetAuthorizationPolicyAction, GetAuthorizationPolicyAction>();
             serviceCollection.AddTransient<IDeleteAuthorizationPolicyAction, DeleteAuthorizationPolicyAction>();
             serviceCollection.AddTransient<IGetAuthorizationPoliciesAction, GetAuthorizationPoliciesAction>();
-            return serviceCollection;
+            serviceCollection.AddTransient<IConfigurationActions, ConfigurationActions>();
+            serviceCollection.AddTransient<IGetConfigurationAction, GetConfigurationAction>();
+            serviceCollection.AddInstance(umaServerOptions);
         }
 
         #endregion

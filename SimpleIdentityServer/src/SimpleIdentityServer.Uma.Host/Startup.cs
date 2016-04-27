@@ -14,7 +14,6 @@
 // limitations under the License.
 #endregion
 
-using System;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -24,7 +23,9 @@ using Microsoft.Extensions.PlatformAbstractions;
 using SimpleIdentityServer.Oauth2Instrospection.Authentication;
 using SimpleIdentityServer.Uma.Core;
 using SimpleIdentityServer.Uma.Core.Configuration;
+using SimpleIdentityServer.Uma.Core.Providers;
 using SimpleIdentityServer.Uma.EF;
+using SimpleIdentityServer.Uma.Host.Configuration;
 using SimpleIdentityServer.Uma.Host.Middlewares;
 using Swashbuckle.SwaggerGen;
 
@@ -140,7 +141,14 @@ namespace SimpleIdentityServer.Uma.Host
         {
             var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
             services.AddTransient<IUmaServerConfigurationProvider, UmaServerConfigurationProvider>();
-            services.AddSimpleIdServerUmaCore();
+            services.AddTransient<IHostingProvider, HostingProvider>();
+            services.AddSimpleIdServerUmaCore(opt =>
+            {
+                opt.AuthorizeOperation = Configuration["AuthorizationUrl"];
+                opt.RegisterOperation = Configuration["ClientRegister"];
+                opt.TokenOperation = Configuration["TokenUrl"];
+            });
+
             services.AddSimpleIdServerUmaSqlServer(connectionString);
         }
 

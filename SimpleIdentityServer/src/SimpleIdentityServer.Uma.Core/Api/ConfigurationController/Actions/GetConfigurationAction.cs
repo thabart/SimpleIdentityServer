@@ -25,11 +25,16 @@ namespace SimpleIdentityServer.Uma.Core.Api.ConfigurationController.Actions
         ConfigurationResponse Execute();
     }
     
-    public class GetConfigurationAction
+    public class GetConfigurationAction : IGetConfigurationAction
     {
         #region Fields
 
-        private readonly List<string> _supportedProfiles = new List<string>
+        private readonly List<string> _patsupportedProfiles = new List<string>
+        {
+            "bearer"
+        };
+
+        private readonly List<string> _aatsupportedProfiles = new List<string>
         {
             "bearer"
         };
@@ -48,16 +53,35 @@ namespace SimpleIdentityServer.Uma.Core.Api.ConfigurationController.Actions
         {
             "authorization_code"
         };
+        
+        private const string RegisterApi = "/connect/register";
+
+        private const string TokenApi = "/token";
+
+        private const string AuthorizeApi = "/authorize";
+
+        private const string ResourceSetApi = "/rs/resource_set";
+
+        private const string PermissionApi = "/perm";
+
+        private const string RptApi = "/rpt";
+
+        private const string PolicyApi = "/policies";
 
         private readonly IHostingProvider _hostingProvider;
+
+        private readonly UmaServerOptions _umaServerOptions;
 
         #endregion
 
         #region Constructor
 
-        public GetConfigurationAction(IHostingProvider hostingProvider)
+        public GetConfigurationAction(
+            IHostingProvider hostingProvider,
+            UmaServerOptions umaServerOptions)
         {
             _hostingProvider = hostingProvider;
+            _umaServerOptions = umaServerOptions;
         }
         
         #endregion
@@ -71,11 +95,22 @@ namespace SimpleIdentityServer.Uma.Core.Api.ConfigurationController.Actions
             {
                 Version = "1.0",
                 Issuer = absoluteUriWithVirtualPath,
-                PatProfilesSupported = _supportedProfiles,
-                AatProfilesSupported = _supportedProfiles,
+                PatProfilesSupported = _patsupportedProfiles,
+                AatProfilesSupported = _aatsupportedProfiles,
                 RtpProfilesSupported = _bearerRptProfiles,
                 PatGrantTypesSupported = _patGrantTypesSupported,
-                AatGrantTypesSupported = _aatGrantTypesSupported
+                AatGrantTypesSupported = _aatGrantTypesSupported,
+                ClaimTokenProfilesSupported = new List<string>(),
+                UmaProfilesSupported = new List<string>(),
+                DynamicClientEndPoint = _umaServerOptions.RegisterOperation,
+                TokenEndPoint = _umaServerOptions.TokenOperation,
+                AuthorizationEndPoint = _umaServerOptions.AuthorizeOperation,
+                RequestingPartyClaimsEndPoint = string.Empty,
+                IntrospectionEndPoint = string.Empty,
+                ResourceSetRegistrationEndPoint = absoluteUriWithVirtualPath + ResourceSetApi,
+                PermissionRegistrationEndPoint = absoluteUriWithVirtualPath + PermissionApi,
+                RtpEndPoint = absoluteUriWithVirtualPath + RptApi,
+                PolicyEndPoint = absoluteUriWithVirtualPath + PolicyApi
             };
             
             return result;
