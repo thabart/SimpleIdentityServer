@@ -27,5 +27,7 @@ namespace SimpleIdentityServer.Uma.Core.Models
         public string TicketId { get; set; }
 
         public string ResourceSetId { get; set; }
+
+        public DateTime CreateDateTime { get; set; }
     }
 }

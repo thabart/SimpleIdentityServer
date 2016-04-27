@@ -63,6 +63,7 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
                 {
                     Id = table.Column<string>(nullable: false),
                     ClientId = table.Column<string>(nullable: true),
+                    CreateDateTime = table.Column<DateTime>(nullable: false),
                     ExpirationDateTime = table.Column<DateTime>(nullable: false),
                     ResourceSetId = table.Column<string>(nullable: true),
                     Scopes = table.Column<string>(nullable: true)
@@ -82,6 +83,7 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
                 columns: table => new
                 {
                     Value = table.Column<string>(nullable: false),
+                    CreateDateTime = table.Column<DateTime>(nullable: false),
                     ExpirationDateTime = table.Column<DateTime>(nullable: false),
                     ResourceSetId = table.Column<string>(nullable: true),
                     TicketId = table.Column<string>(nullable: true)

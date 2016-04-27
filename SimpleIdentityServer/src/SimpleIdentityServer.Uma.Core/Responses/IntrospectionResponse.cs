@@ -59,11 +59,11 @@ namespace SimpleIdentityServer.Uma.Core.Responses
             }
         }
 
-        public int Expiration
+        public double Expiration
         {
             get
             {
-                return int.Parse(this[ExpirationName].ToString());
+                return double.Parse(this[ExpirationName].ToString());
             }
             set
             {
@@ -104,11 +104,11 @@ namespace SimpleIdentityServer.Uma.Core.Responses
             }
         }
 
-        public int Expiration
+        public double Expiration
         {
             get
             {
-                return int.Parse(this[ExpirationName].ToString());
+                return double.Parse(this[ExpirationName].ToString());
             }
             set
             {
@@ -116,11 +116,11 @@ namespace SimpleIdentityServer.Uma.Core.Responses
             }
         }
         
-        public int IssuedAt
+        public double IssuedAt
         {
             get
             {
-                return int.Parse(this[IatName].ToString());
+                return double.Parse(this[IatName].ToString());
             }
             set
             {
@@ -128,11 +128,11 @@ namespace SimpleIdentityServer.Uma.Core.Responses
             }
         }
         
-        public int Nbf
+        public double Nbf
         {
             get
             {
-                return int.Parse(this[NbfName].ToString());
+                return double.Parse(this[NbfName].ToString());
             }
             set
             {

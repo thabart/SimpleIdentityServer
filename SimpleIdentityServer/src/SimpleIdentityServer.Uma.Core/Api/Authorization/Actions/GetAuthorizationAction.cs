@@ -126,7 +126,8 @@ namespace SimpleIdentityServer.Uma.Core.Api.Authorization.Actions
                 ExpirationDateTime = DateTime.UtcNow.AddSeconds(_umaServerOptions.RptLifeTime),
                 Value = Guid.NewGuid().ToString(),
                 TicketId = ticket.Id,
-                ResourceSetId = ticket.ResourceSetId
+                ResourceSetId = ticket.ResourceSetId,
+                CreateDateTime = DateTime.UtcNow
             };
 
             _repositoryExceptionHelper.HandleException(

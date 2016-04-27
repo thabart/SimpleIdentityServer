@@ -16,6 +16,7 @@
 
 using SimpleIdentityServer.Uma.Core.Errors;
 using SimpleIdentityServer.Uma.Core.Exceptions;
+using SimpleIdentityServer.Uma.Core.Extensions;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.Core.Responses;
 using System;
@@ -61,12 +62,6 @@ namespace SimpleIdentityServer.Uma.Core.Api.IntrospectionController.Actions
                     string.Format(ErrorDescriptions.TheRptDoesntExist, rpt));
             }
 
-            if (rptInformation.ExpirationDateTime < DateTime.UtcNow)
-            {
-                throw new BaseUmaException(ErrorCodes.InvalidRpt,
-                    ErrorDescriptions.TheRptIsExpired);
-            }
-
             var ticket = _ticketRepository.GetTicketById(rptInformation.TicketId);
             if (ticket == null)
             {
@@ -74,6 +69,16 @@ namespace SimpleIdentityServer.Uma.Core.Api.IntrospectionController.Actions
                     string.Format(ErrorDescriptions.TheTicketDoesntExist, rptInformation.TicketId));
             }
 
+            var result = new IntrospectionResponse
+            {
+                Expiration = rptInformation.ExpirationDateTime.ConvertToUnixTimestamp()
+            };
+
+            if (rptInformation.ExpirationDateTime < DateTime.UtcNow)
+            {
+                result.IsActive = false;
+                return result;
+            }
             return null;
         }
 

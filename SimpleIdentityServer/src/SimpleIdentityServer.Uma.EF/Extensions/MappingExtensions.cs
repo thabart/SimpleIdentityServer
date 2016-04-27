@@ -57,7 +57,8 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
                 Scopes = GetList(ticket.Scopes),
                 ClientId = ticket.ClientId,
                 ExpirationDateTime = ticket.ExpirationDateTime,
-                ResourceSetId = ticket.ResourceSetId
+                ResourceSetId = ticket.ResourceSetId,
+                CreateDateTime = ticket.CreateDateTime
             };
         }
 
@@ -68,7 +69,8 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
                 TicketId = rpt.TicketId,
                 ExpirationDateTime = rpt.ExpirationDateTime,
                 ResourceSetId = rpt.ResourceSetId,
-                Value = rpt.Value
+                Value = rpt.Value,
+                CreateDateTime = rpt.CreateDateTime
             };
         }
 
@@ -129,7 +131,8 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
                 Scopes = GetConcatenatedList(ticket.Scopes),
                 ExpirationDateTime = ticket.ExpirationDateTime,
                 ClientId = ticket.ClientId,
-                ResourceSetId = ticket.ResourceSetId
+                ResourceSetId = ticket.ResourceSetId,
+                CreateDateTime = ticket.CreateDateTime
             };
         }
 
@@ -140,7 +143,8 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
                 TicketId = rpt.TicketId,
                 ExpirationDateTime = rpt.ExpirationDateTime,
                 ResourceSetId = rpt.ResourceSetId,
-                Value = rpt.Value
+                Value = rpt.Value,
+                CreateDateTime = rpt.CreateDateTime
             };
         }
 

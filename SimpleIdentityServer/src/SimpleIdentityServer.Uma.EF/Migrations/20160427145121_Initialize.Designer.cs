@@ -8,7 +8,7 @@ using SimpleIdentityServer.Uma.EF;
 namespace SimpleIdentityServer.Uma.EF.Migrations
 {
     [DbContext(typeof(SimpleIdServerUmaContext))]
-    [Migration("20160421135849_Initialize")]
+    [Migration("20160427145121_Initialize")]
     partial class Initialize
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -61,6 +61,8 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
                 {
                     b.Property<string>("Value");
 
+                    b.Property<DateTime>("CreateDateTime");
+
                     b.Property<DateTime>("ExpirationDateTime");
 
                     b.Property<string>("ResourceSetId");
@@ -90,6 +92,8 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
                     b.Property<string>("Id");
 
                     b.Property<string>("ClientId");
+
+                    b.Property<DateTime>("CreateDateTime");
 
                     b.Property<DateTime>("ExpirationDateTime");
 

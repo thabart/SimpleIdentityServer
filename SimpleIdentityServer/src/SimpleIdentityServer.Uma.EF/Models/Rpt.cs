@@ -24,6 +24,8 @@ namespace SimpleIdentityServer.Uma.EF.Models
 
         public DateTime ExpirationDateTime { get; set; }
 
+        public DateTime CreateDateTime { get; set; }
+
         public string TicketId { get; set; }
 
         public string ResourceSetId { get; set; }

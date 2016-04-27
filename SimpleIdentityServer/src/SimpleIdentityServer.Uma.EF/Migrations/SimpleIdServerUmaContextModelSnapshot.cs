@@ -60,6 +60,8 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
                 {
                     b.Property<string>("Value");
 
+                    b.Property<DateTime>("CreateDateTime");
+
                     b.Property<DateTime>("ExpirationDateTime");
 
                     b.Property<string>("ResourceSetId");
@@ -89,6 +91,8 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
                     b.Property<string>("Id");
 
                     b.Property<string>("ClientId");
+
+                    b.Property<DateTime>("CreateDateTime");
 
                     b.Property<DateTime>("ExpirationDateTime");
 

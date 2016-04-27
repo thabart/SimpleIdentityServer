@@ -83,7 +83,8 @@ namespace SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions
                 ClientId = clientId,
                 ExpirationDateTime = DateTime.UtcNow.AddSeconds(ticketLifetimeInSeconds),
                 Scopes = addPermissionParameter.Scopes,
-                ResourceSetId = addPermissionParameter.ResourceSetId
+                ResourceSetId = addPermissionParameter.ResourceSetId,
+                CreateDateTime = DateTime.UtcNow
             };
 
             var newTicket = _repositoryExceptionHelper.HandleException(
