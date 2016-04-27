@@ -19,6 +19,7 @@ using SimpleIdentityServer.Uma.Core.Api.Authorization;
 using SimpleIdentityServer.Uma.Core.Api.Authorization.Actions;
 using SimpleIdentityServer.Uma.Core.Api.ConfigurationController;
 using SimpleIdentityServer.Uma.Core.Api.ConfigurationController.Actions;
+using SimpleIdentityServer.Uma.Core.Api.IntrospectionController.Actions;
 using SimpleIdentityServer.Uma.Core.Api.PermissionController;
 using SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions;
 using SimpleIdentityServer.Uma.Core.Api.PolicyController;
@@ -104,6 +105,7 @@ namespace SimpleIdentityServer.Uma.Core
             serviceCollection.AddTransient<IGetAuthorizationPoliciesAction, GetAuthorizationPoliciesAction>();
             serviceCollection.AddTransient<IConfigurationActions, ConfigurationActions>();
             serviceCollection.AddTransient<IGetConfigurationAction, GetConfigurationAction>();
+            serviceCollection.AddTransient<IGetIntrospectAction, GetIntrospectAction>();
             serviceCollection.AddInstance(umaServerOptions);
         }
 

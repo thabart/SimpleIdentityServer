@@ -21,5 +21,7 @@ namespace SimpleIdentityServer.Uma.Core.Repositories
     public interface IRptRepository
     {
         bool InsertRpt(Rpt rpt);
+
+        Rpt GetRpt(string value);
     }
 }

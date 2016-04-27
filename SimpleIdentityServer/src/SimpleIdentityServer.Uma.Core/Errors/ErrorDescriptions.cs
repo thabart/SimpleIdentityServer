@@ -69,5 +69,9 @@ namespace SimpleIdentityServer.Uma.Core.Errors
         public const string TheAuthorizationPolicyCannotBeUpdated = "the authorization policy {0} cannot be updated";
 
         public const string TheAutorizationPoliciesCannotBeRetrieved = "the authorization policies cannot be retrieved";
+
+        public const string TheRptDoesntExist = "the rpt {0} doesn't exist";
+
+        public const string TheRptIsExpired = "the rpt is expired";
     }
 }

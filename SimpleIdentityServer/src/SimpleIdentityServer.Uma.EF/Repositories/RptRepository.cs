@@ -14,7 +14,7 @@
 // limitations under the License.
 #endregion
 
-using System;
+using System.Linq;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.EF.Extensions;
@@ -42,6 +42,17 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
             _simpleIdServerUmaContext.Add(record);
             _simpleIdServerUmaContext.SaveChanges();
             return true;
+        }
+
+        public Rpt GetRpt(string value)
+        {
+            var record = _simpleIdServerUmaContext.Rpts.FirstOrDefault(r => r.Value == value);
+            if (record == null)
+            {
+                return null;
+            }
+
+            return record.ToDomain();
         }
 
         #endregion
