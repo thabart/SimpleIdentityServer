@@ -20,12 +20,13 @@ using SimpleIdentityServer.Uma.Core.Extensions;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.Core.Responses;
 using System;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Uma.Core.Api.IntrospectionController.Actions
 {
     public interface IGetIntrospectAction
     {
-
+        IntrospectionResponse Execute(string rpt);
     }
 
     internal class GetIntrospectAction : IGetIntrospectAction
@@ -71,7 +72,8 @@ namespace SimpleIdentityServer.Uma.Core.Api.IntrospectionController.Actions
 
             var result = new IntrospectionResponse
             {
-                Expiration = rptInformation.ExpirationDateTime.ConvertToUnixTimestamp()
+                Expiration = rptInformation.ExpirationDateTime.ConvertToUnixTimestamp(),
+                IssuedAt = rptInformation.CreateDateTime.ConvertToUnixTimestamp()
             };
 
             if (rptInformation.ExpirationDateTime < DateTime.UtcNow)
@@ -79,7 +81,16 @@ namespace SimpleIdentityServer.Uma.Core.Api.IntrospectionController.Actions
                 result.IsActive = false;
                 return result;
             }
-            return null;
+            
+            result.Permissions = new List<PermissionResponse>
+            {
+                new PermissionResponse
+                {
+                    ResourceSetId = rptInformation.ResourceSetId,
+                    Scopes = ticket.Scopes
+                }
+            };
+            return result;
         }
 
         #endregion
