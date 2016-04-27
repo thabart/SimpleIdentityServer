@@ -16,6 +16,9 @@
 
 using Moq;
 using SimpleIdentityServer.Uma.Core.Api.IntrospectionController.Actions;
+using SimpleIdentityServer.Uma.Core.Errors;
+using SimpleIdentityServer.Uma.Core.Exceptions;
+using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using System;
 using Xunit;
@@ -40,6 +43,46 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.IntrospectionController.Ac
 
             // ACT & ASSERT
             Assert.Throws<ArgumentNullException>(() => _getIntrospectAction.Execute(null));
+        }
+
+        [Fact]
+        public void When_Rpt_Doesnt_Exist_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            const string rpt = "invalid_rpt";
+            InitializeFakeObjects();
+            _rptRepositoryStub.Setup(r => r.GetRpt(It.IsAny<string>()))
+                .Returns(() => null);
+
+            // ACT & ASSERTS
+            var exception = Assert.Throws<BaseUmaException>(() => _getIntrospectAction.Execute(rpt));
+            Assert.NotNull(exception);
+            Assert.True(exception.Code == ErrorCodes.InvalidRpt);
+            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheRptDoesntExist, rpt));
+        }
+
+        [Fact]
+        public void When_Ticket_Doesnt_Exist_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            const string rpt = "rpt";
+            const string ticketId = "invalid_ticket_id";
+            var rptInfo = new Rpt
+            {
+                TicketId = ticketId,
+                Value = rpt
+            };
+            InitializeFakeObjects();
+            _rptRepositoryStub.Setup(r => r.GetRpt(It.IsAny<string>()))
+                .Returns(rptInfo);
+            _ticketRepositoryStub.Setup(t => t.GetTicketById(It.IsAny<string>()))
+                .Returns(() => null);
+
+            // ACT & ASSERTS
+            var exception = Assert.Throws<BaseUmaException>(() => _getIntrospectAction.Execute(rpt));
+            Assert.NotNull(exception);
+            Assert.True(exception.Code == ErrorCodes.InternalError);
+            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheTicketDoesntExist, ticketId));
         }
 
         #endregion
