@@ -101,13 +101,13 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
         {
             if (authorizationParameter == null)
             {
-                throw new ArgumentNullException("authorizationParameter");
+                throw new ArgumentNullException(nameof(authorizationParameter));
             }
 
             if (claimsPrincipal == null ||
                 claimsPrincipal.Identity == null)
             {
-                throw new ArgumentNullException("claimsPrincipal");
+                throw new ArgumentNullException(nameof(claimsPrincipal));
             }
             
             allowedClaims = new List<string>();

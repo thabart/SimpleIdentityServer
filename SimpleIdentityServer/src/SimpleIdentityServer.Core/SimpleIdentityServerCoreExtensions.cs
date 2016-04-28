@@ -45,6 +45,8 @@ using SimpleIdentityServer.Core.Api.Introspection;
 using SimpleIdentityServer.Core.Api.Introspection.Actions;
 using SimpleIdentityServer.Core.Api.Registration.Actions;
 using SimpleIdentityServer.Core.Jwt.Converter;
+using SimpleIdentityServer.Core.WebSite.User.Actions;
+using SimpleIdentityServer.Core.WebSite.User;
 
 namespace SimpleIdentityServer.Core
 {
@@ -121,6 +123,8 @@ namespace SimpleIdentityServer.Core
             serviceCollection.AddTransient<IRegisterClientAction, RegisterClientAction>();
             serviceCollection.AddTransient<IJsonWebKeyConverter, JsonWebKeyConverter>();
             serviceCollection.AddTransient<IGenerateClientFromRegistrationRequest, GenerateClientFromRegistrationRequest>();
+            serviceCollection.AddTransient<IGetConsentsOperation, GetConsentsOperation>();
+            serviceCollection.AddTransient<IUserActions, UserActions>();
             return serviceCollection;
         }
     }
