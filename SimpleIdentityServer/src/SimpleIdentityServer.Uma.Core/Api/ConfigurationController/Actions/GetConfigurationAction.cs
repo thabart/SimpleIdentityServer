@@ -53,6 +53,11 @@ namespace SimpleIdentityServer.Uma.Core.Api.ConfigurationController.Actions
         {
             "authorization_code"
         };
+
+        private readonly List<string> _umaProfilesSupported = new List<string>
+        {
+            "https://docs.kantarainitiative.org/uma/profiles/uma-token-bearer-1.0"
+        };
         
         private const string RegisterApi = "/connect/register";
 
@@ -67,6 +72,8 @@ namespace SimpleIdentityServer.Uma.Core.Api.ConfigurationController.Actions
         private const string RptApi = "/rpt";
 
         private const string PolicyApi = "/policies";
+
+        private const string IntrospectionApi = "/status";
 
         private readonly IHostingProvider _hostingProvider;
 
@@ -101,12 +108,12 @@ namespace SimpleIdentityServer.Uma.Core.Api.ConfigurationController.Actions
                 PatGrantTypesSupported = _patGrantTypesSupported,
                 AatGrantTypesSupported = _aatGrantTypesSupported,
                 ClaimTokenProfilesSupported = new List<string>(),
-                UmaProfilesSupported = new List<string>(),
+                UmaProfilesSupported = _umaProfilesSupported,
                 DynamicClientEndPoint = _umaServerOptions.RegisterOperation,
                 TokenEndPoint = _umaServerOptions.TokenOperation,
                 AuthorizationEndPoint = _umaServerOptions.AuthorizeOperation,
                 RequestingPartyClaimsEndPoint = string.Empty,
-                IntrospectionEndPoint = string.Empty,
+                IntrospectionEndPoint = absoluteUriWithVirtualPath + IntrospectionApi,
                 ResourceSetRegistrationEndPoint = absoluteUriWithVirtualPath + ResourceSetApi,
                 PermissionRegistrationEndPoint = absoluteUriWithVirtualPath + PermissionApi,
                 RtpEndPoint = absoluteUriWithVirtualPath + RptApi,

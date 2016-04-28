@@ -18,6 +18,7 @@ using SimpleIdentityServer.Client.Configuration;
 using SimpleIdentityServer.Client.DTOs.Requests;
 using SimpleIdentityServer.Client.DTOs.Responses;
 using SimpleIdentityServer.Client.Errors;
+using SimpleIdentityServer.Client.Extensions;
 using System;
 using System.Threading.Tasks;
 
@@ -68,65 +69,23 @@ namespace SimpleIdentityServer.Client.Authorization
 
         public async Task<AuthorizationResponse> GetAuthorizationAsync(PostAuthorization postAuthorization, string authorizationUrl, string authorizationValue)
         {
-            if (string.IsNullOrWhiteSpace(authorizationUrl))
-            {
-                throw new ArgumentNullException(nameof(authorizationUrl));
-            }
-
-            Uri uri = null;
-            if (!Uri.TryCreate(authorizationUrl, UriKind.Absolute, out uri))
-            {
-                throw new ArgumentException(string.Format(ErrorDescriptions.TheUriIsNotWellFormed, authorizationUrl));
-            }
-
-            return await GetAuthorizationAsync(postAuthorization, uri, authorizationValue);
+            return await GetAuthorizationAsync(postAuthorization, UriHelpers.GetUri(authorizationUrl), authorizationValue);
         }
 
         public async Task<AuthorizationResponse> GetAuthorizationAsync(PostAuthorization postAuthorization, Uri authorizationUri, string authorizationValue)
         {
-            if (postAuthorization == null)
-            {
-                throw new ArgumentNullException(nameof(postAuthorization));
-            }
-
-            if (authorizationUri == null)
-            {
-                throw new ArgumentNullException(nameof(authorizationUri));
-            }
-
-            if (string.IsNullOrWhiteSpace(authorizationValue))
-            {
-                throw new ArgumentNullException(nameof(authorizationValue));
-            }
-
             return await _getAuthorizationOperation.ExecuteAsync(postAuthorization, authorizationUri, authorizationValue);
         }
 
         public async Task<AuthorizationResponse> GetAuthorizationByResolvingUrlAsync(PostAuthorization postAuthorization, string configurationUrl, string authorizationValue)
         {
-            if (string.IsNullOrWhiteSpace(configurationUrl))
-            {
-                throw new ArgumentNullException(nameof(configurationUrl));
-            }
-
-            Uri uri = null;
-            if (!Uri.TryCreate(configurationUrl, UriKind.Absolute, out uri))
-            {
-                throw new ArgumentException(string.Format(ErrorDescriptions.TheUriIsNotWellFormed, configurationUrl));
-            }
-
             return await GetAuthorizationByResolvingUrlAsync(postAuthorization,
-                uri,
+                UriHelpers.GetUri(configurationUrl),
                 authorizationValue);
         }
 
         public async Task<AuthorizationResponse> GetAuthorizationByResolvingUrlAsync(PostAuthorization postAuthorization, Uri configurationUri, string authorizationValue)
         {
-            if (configurationUri == null)
-            {
-                throw new ArgumentNullException(nameof(configurationUri));
-            }
-
             var configuration = await _getConfigurationOperation.ExecuteAsync(configurationUri);
             return await GetAuthorizationAsync(postAuthorization,
                 configuration.RptEndPoint,

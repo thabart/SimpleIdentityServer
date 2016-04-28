@@ -18,7 +18,6 @@ using Microsoft.AspNet.Mvc;
 using Microsoft.Extensions.Primitives;
 using SimpleIdentityServer.Uma.Core.Api.IntrospectionController;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http.Headers;

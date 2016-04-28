@@ -18,6 +18,7 @@ using SimpleIdentityServer.Client.Configuration;
 using SimpleIdentityServer.Client.DTOs.Requests;
 using SimpleIdentityServer.Client.DTOs.Responses;
 using SimpleIdentityServer.Client.Errors;
+using SimpleIdentityServer.Client.Extensions;
 using System;
 using System.Threading.Tasks;
 
@@ -71,18 +72,7 @@ namespace SimpleIdentityServer.Client.Permission
             string permissionUrl,
             string authorizationValue)
         {
-            if (string.IsNullOrWhiteSpace(permissionUrl))
-            {
-                throw new ArgumentNullException(nameof(permissionUrl));
-            }
-
-            Uri uri = null;
-            if (!Uri.TryCreate(permissionUrl, UriKind.Absolute, out uri))
-            {
-                throw new ArgumentException(string.Format(ErrorDescriptions.TheUriIsNotWellFormed, permissionUrl));
-            }
-
-            return await AddPermissionAsync(postPermission, uri, authorizationValue);
+            return await AddPermissionAsync(postPermission, UriHelpers.GetUri(permissionUrl), authorizationValue);
         }
 
         public async Task<AddPermissionResponse> AddPermissionAsync(
@@ -90,21 +80,6 @@ namespace SimpleIdentityServer.Client.Permission
             Uri permissionUri,
             string authorizationValue)
         {
-            if (postPermission == null)
-            {
-                throw new ArgumentNullException(nameof(postPermission));
-            }
-
-            if (permissionUri == null)
-            {
-                throw new ArgumentNullException(nameof(permissionUri));
-            }
-
-            if (string.IsNullOrWhiteSpace(authorizationValue))
-            {
-                throw new ArgumentNullException(nameof(authorizationValue));
-            }
-
             return await _addPermissionOperation.ExecuteAsync(postPermission, permissionUri, authorizationValue);
         }
 
@@ -113,19 +88,8 @@ namespace SimpleIdentityServer.Client.Permission
             string configurationUrl,
             string authorizationValue)
         {
-            if (string.IsNullOrWhiteSpace(configurationUrl))
-            {
-                throw new ArgumentNullException(nameof(configurationUrl));
-            }
-            
-            Uri uri = null;
-            if (!Uri.TryCreate(configurationUrl, UriKind.Absolute, out uri))
-            {
-                throw new ArgumentException(string.Format(ErrorDescriptions.TheUriIsNotWellFormed, configurationUrl));
-            }
-
             return await AddPermissionByResolvingUrlAsync(postPermission,
-                uri,
+                UriHelpers.GetUri(configurationUrl),
                 authorizationValue);
         }
 
@@ -134,11 +98,6 @@ namespace SimpleIdentityServer.Client.Permission
             Uri configurationUri,
             string authorizationValue)
         {
-            if (configurationUri == null)
-            {
-                throw new ArgumentNullException(nameof(configurationUri));
-            }
-
             var configuration = await _getConfigurationOperation.ExecuteAsync(configurationUri);
             return await AddPermissionAsync(postPermission,
                 configuration.PermissionRegistrationEndPoint,

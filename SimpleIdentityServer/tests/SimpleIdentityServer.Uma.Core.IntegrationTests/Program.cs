@@ -46,7 +46,7 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
 
         public static void Main(string[] args)
         {
-            // AuthorizedScenario();
+            AuthorizedScenario();
             AuthorizedScenarioByDiscovery();
         }
 
@@ -81,8 +81,11 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
 
                 // 6. Get authorization
                 var authorization = GetAuthorization(permission.TicketId, umaAuthorizationToken.AccessToken);
-                Console.Write(authorization.Rpt);
-                // 7. Drop everything
+                Console.WriteLine(authorization.Rpt);
+                // 7. Introspect
+                var introspection = GetIntrospection(authorization.Rpt);
+                Console.WriteLine(introspection.IsActive);
+                // 8. Drop everything
                 var isAuthorizationPolicyDropped = DeletePolicy(authorizationPolicy.PolicyId, umaProtectionToken.AccessToken);
                 Console.WriteLine($"authorization policy is dropped : {isAuthorizationPolicyDropped}");
             }
@@ -122,10 +125,13 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
 
                 // 6. Get authorization
                 var authorization = GetAuthorizationByDiscovery(permission.TicketId, umaAuthorizationToken.AccessToken);
-                Console.Write(authorization.Rpt);
-                // 7. Drop everything
-                // var isAuthorizationPolicyDropped = DeletePolicyByDiscovery(authorizationPolicy.PolicyId, umaProtectionToken.AccessToken);
-                // Console.WriteLine($"authorization policy is dropped : {isAuthorizationPolicyDropped}");
+                Console.WriteLine(authorization.Rpt);
+                // 7. Introspect
+                var introspection = GetIntrospectionByDiscovery(authorization.Rpt);
+                Console.WriteLine(introspection.IsActive);
+                // 8. Drop everything
+                var isAuthorizationPolicyDropped = DeletePolicyByDiscovery(authorizationPolicy.PolicyId, umaProtectionToken.AccessToken);
+                Console.WriteLine($"authorization policy is dropped : {isAuthorizationPolicyDropped}");
             }
             catch (AggregateException ex)
             {
@@ -333,6 +339,20 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
         {
             return _identityServerUmaClientFactory.GetPolicyClient()
                 .GetPoliciesByResolvingUrlAsync(UmaUrl + "/.well-known/uma-configuration", accessToken)
+                .Result;
+        }
+
+        private static IntrospectionResponse GetIntrospection(string rpt)
+        {
+            return _identityServerUmaClientFactory.GetIntrospectionClient()
+                .GetIntrospectionAsync(rpt, UmaUrl + "/status")
+                .Result;
+        }
+
+        private static IntrospectionResponse GetIntrospectionByDiscovery(string rpt)
+        {
+            return _identityServerUmaClientFactory.GetIntrospectionClient()
+                .GetIntrospectionByResolvingUrlAsync(rpt, UmaUrl + "/.well-known/uma-configuration")
                 .Result;
         }
 

@@ -18,6 +18,7 @@ using SimpleIdentityServer.Client.Configuration;
 using SimpleIdentityServer.Client.DTOs.Requests;
 using SimpleIdentityServer.Client.DTOs.Responses;
 using SimpleIdentityServer.Client.Errors;
+using SimpleIdentityServer.Client.Extensions;
 using System;
 using System.Threading.Tasks;
 
@@ -85,18 +86,7 @@ namespace SimpleIdentityServer.Client.ResourceSet
             string resourceSetUrl,
             string authorizationHeaderValue)
         {
-            if (string.IsNullOrWhiteSpace(resourceSetUrl))
-            {
-                throw new ArgumentNullException(nameof(resourceSetUrl));
-            }
-
-            Uri uri = null;
-            if (!Uri.TryCreate(resourceSetUrl, UriKind.Absolute, out uri))
-            {
-                throw new ArgumentException(string.Format(ErrorDescriptions.TheUriIsNotWellFormed, resourceSetUrl));
-            }
-
-            return await AddResourceSetAsync(postResourceSet, uri, authorizationHeaderValue);
+            return await AddResourceSetAsync(postResourceSet, UriHelpers.GetUri(resourceSetUrl), authorizationHeaderValue);
         }
 
         public async Task<AddResourceSetResponse> AddResourceSetAsync(
@@ -114,18 +104,7 @@ namespace SimpleIdentityServer.Client.ResourceSet
             string configurationUrl,
             string authorizationHeaderValue)
         {
-            if (string.IsNullOrWhiteSpace(configurationUrl))
-            {
-                throw new ArgumentNullException(nameof(configurationUrl));
-            }
-
-            Uri uri = null;
-            if (!Uri.TryCreate(configurationUrl, UriKind.Absolute, out uri))
-            {
-                throw new ArgumentException(string.Format(ErrorDescriptions.TheUriIsNotWellFormed, configurationUrl));
-            }
-
-            return await AddResourceSetByResolvingUrlAsync(postResourceSet, uri, authorizationHeaderValue);
+            return await AddResourceSetByResolvingUrlAsync(postResourceSet, UriHelpers.GetUri(configurationUrl), authorizationHeaderValue);
         }
 
         public async Task<AddResourceSetResponse> AddResourceSetByResolvingUrlAsync(
@@ -133,11 +112,6 @@ namespace SimpleIdentityServer.Client.ResourceSet
             Uri configurationUri,
             string authorizationHeaderValue)
         {
-            if (configurationUri == null)
-            {
-                throw new ArgumentNullException(nameof(configurationUri));
-            }
-            
             var configuration = await _getConfigurationOperation.ExecuteAsync(configurationUri);
             return await AddResourceSetAsync(postResourceSet, configuration.ResourceSetRegistrationEndPoint, authorizationHeaderValue);
         }
@@ -149,18 +123,7 @@ namespace SimpleIdentityServer.Client.ResourceSet
 
         public async Task<bool> DeleteResourceSetByResolvingUrlAsync(string resourceSetId, string configurationUrl, string authorizationHeaderValue)
         {
-            if (string.IsNullOrWhiteSpace(configurationUrl))
-            {
-                throw new ArgumentNullException(nameof(configurationUrl));
-            }
-
-            Uri uri = null;
-            if (!Uri.TryCreate(configurationUrl, UriKind.Absolute, out uri))
-            {
-                throw new ArgumentException(string.Format(ErrorDescriptions.TheUriIsNotWellFormed, configurationUrl));
-            }
-
-            var configuration = await _getConfigurationOperation.ExecuteAsync(uri);
+            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(configurationUrl));
             return await DeleteResourceSetAsync(resourceSetId, configuration.ResourceSetRegistrationEndPoint, authorizationHeaderValue);
         }
 

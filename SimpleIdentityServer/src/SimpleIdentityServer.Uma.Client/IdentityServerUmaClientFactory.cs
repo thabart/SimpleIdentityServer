@@ -18,6 +18,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Client.Authorization;
 using SimpleIdentityServer.Client.Configuration;
 using SimpleIdentityServer.Client.Factory;
+using SimpleIdentityServer.Client.Introspection;
 using SimpleIdentityServer.Client.Permission;
 using SimpleIdentityServer.Client.Policy;
 using SimpleIdentityServer.Client.ResourceSet;
@@ -34,6 +35,8 @@ namespace SimpleIdentityServer.Client
         IAuthorizationClient GetAuthorizationClient();
 
         IPolicyClient GetPolicyClient();
+
+        IIntrospectionClient GetIntrospectionClient();
     }
 
     public class IdentityServerUmaClientFactory : IIdentityServerUmaClientFactory
@@ -77,6 +80,12 @@ namespace SimpleIdentityServer.Client
             return policyClient;
         }
 
+        public IIntrospectionClient GetIntrospectionClient()
+        {
+            var introspectionClient = (IIntrospectionClient)_serviceProvider.GetService(typeof(IIntrospectionClient));
+            return introspectionClient;
+        }
+
         #endregion
 
         #region Private static methods
@@ -88,6 +97,7 @@ namespace SimpleIdentityServer.Client
             serviceCollection.AddTransient<IPermissionClient, PermissionClient>();
             serviceCollection.AddTransient<IAuthorizationClient, AuthorizationClient>();
             serviceCollection.AddTransient<IPolicyClient, PolicyClient>();
+            serviceCollection.AddTransient<IIntrospectionClient, IntrospectionClient>();
 
             // Regsiter factories
             serviceCollection.AddTransient<IHttpClientFactory, HttpClientFactory>();
@@ -102,6 +112,7 @@ namespace SimpleIdentityServer.Client
             serviceCollection.AddTransient<IGetPolicyOperation, GetPolicyOperation>();
             serviceCollection.AddTransient<IDeletePolicyOperation, DeletePolicyOperation>();
             serviceCollection.AddTransient<IGetPoliciesOperation, GetPoliciesOperation>();
+            serviceCollection.AddTransient<IGetIntrospectionAction, GetIntrospectionAction>();
         }
 
         #endregion
