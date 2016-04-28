@@ -27,10 +27,16 @@ namespace SimpleIdentityServer.Api.Controllers
         [HttpGet]
         public ActionResult Index()
         {
+            return View();
+        }
+
+        [HttpGet]
+        public ActionResult Consent()
+        {
             var authenticatedUser = this.GetAuthenticatedUser();
             var consents = _userActions.GetConsents(authenticatedUser);
             var result = new List<ConsentViewModel>();
-            foreach(var consent in consents)
+            foreach (var consent in consents)
             {
                 var client = consent.Client;
                 var scopes = consent.GrantedScopes;

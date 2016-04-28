@@ -1,12 +1,12 @@
 @using System.Security.Claims
 @using SimpleIdentityServer.Core.Jwt
 @using SimpleIdentityServer.Host.ViewModels
-@using Microsoft.AspNet.Mvc;
-
-@model List<ConsentViewModel>
+@using Microsoft.AspNet.Http.Extensions
 
 @{
-    ViewBag.Title = "Profile";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+    ViewBag.IsConsentDisplayed = false;
+    ViewBag.IsIndexDisplayed = true;
     var identity = User.Identity as ClaimsIdentity;
     var nameClaim = identity.Claims.FirstOrDefault(c => c.Type == Constants.StandardResourceOwnerClaimNames.Name);
     var givenNameClaim = identity.Claims.FirstOrDefault(c => c.Type == Constants.StandardResourceOwnerClaimNames.GivenName);
@@ -18,131 +18,39 @@
     var picture = pictureClaim == null ? Url.Content("~/img/Unknown.png") : pictureClaim.Value;
 }
 
-<div class="row">
-    <ul class="nav nav-tabs">
-        <li class="active">
-            <a href="#information">Information</a>
-        </li>
-        <li>            
-            <a href="#consent">Consents</a>
-        </li>
-    </ul>
-    <div class="tab-content container">        
-        <!-- Display the information -->
-        <div class="tab-pane active" id="information">
-            <h1>Information</h1>
-            <div class="row">
-                <div class="col-md-5">
-                    <label>Name</label>
-                </div>
-                <div class="col-md-7">
-                    @name
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-5">
-                    <label>First name</label>
-                </div>
-                <div class="col-md-7">
-                    @givenName
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-5">
-                    <label>Last name</label>
-                </div>
-                <div class="col-md-7">
-                    @familyName
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-5">
-                    <label>Picture</label>
-                </div>
-                <div class="col-md-7">
-                    <img src="@picture" alt="Picture" class="img-thumbnail" />
-                </div>
-            </div>
+<!-- Display the information -->
+<div class="tab-pane active" id="information">
+    <h1>Information</h1>
+    <div class="row">
+        <div class="col-md-5">
+            <label>Name</label>
         </div>
-        <!-- Display the consents -->
-        <div class="tab-pane" id="consent">
-            <h1>Consents</h1>
-            @if (!Model.Any())
-            {
-                <p>No consent</p>
-            }
-            else
-            {
-                var clients = Model.GroupBy(m => m.ClientDisplayName);
-                foreach (var client in clients)
-                {
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            Client : @client.Key
-                        </div>
-                        <div class="panel-body">
-                            <div>
-                                @if (string.IsNullOrWhiteSpace(client.First().LogoUri))
-                                {
-                                    <img src="@Url.Content("~/img/OAuth2.png")" width="150" height="150" />
-                                }
-                                else
-                                {
-                                    <img src="@Url.Content(client.First().LogoUri)" width="150" height="150" />
-                                }
-                            </div>
-                            <ul class="list-group">
-                                @foreach(var consent in client)
-                                {
-                                    <li class="list-group-item" style="margin-top: 10px;">
-                                        <!-- Display scopes -->
-                                        <h4>Scopes</h4>
-                                        @if (!consent.AllowedScopeDescriptions.Any())
-                                        {
-                                            <p>No scopes</p>
-                                        }
-                                        else
-                                        {
-                                            <ul class="list-group">
-                                                @foreach (var scope in consent.AllowedScopeDescriptions)
-                                                {
-                                                    <li class="list-group-item">@scope</li>
-                                                }
-                                            </ul>
-                                        }
-                                        <!-- Display claims -->
-                                        <h4>Claims</h4>
-                                        @if (!consent.AllowedIndividualClaims.Any())
-                                        {
-                                            <p>No claims</p>
-                                        }
-                                        else
-                                        {
-                                            <ul class="list-group">
-                                                @foreach (var claim in consent.AllowedIndividualClaims)
-                                                {
-                                                    <li class="list-group-item">@claim</li>
-                                                }
-                                            </ul>
-                                        }
-                                    </li>
-                                }
-                            </ul>
-                        </div>
-                    </div>
-                }
-            }
+        <div class="col-md-7">
+            @name
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-5">
+            <label>First name</label>
+        </div>
+        <div class="col-md-7">
+            @givenName
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-5">
+            <label>Last name</label>
+        </div>
+        <div class="col-md-7">
+            @familyName
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-5">
+            <label>Picture</label>
+        </div>
+        <div class="col-md-7">
+            <img src="@picture" alt="Picture" class="img-thumbnail" />
         </div>
     </div>
 </div>
-
-@section Scripts {
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $('.nav-tabs a').click(function (e) {
-                // No e.preventDefault() here
-                $(this).tab('show');
-            });
-        });
-    </script>
-}

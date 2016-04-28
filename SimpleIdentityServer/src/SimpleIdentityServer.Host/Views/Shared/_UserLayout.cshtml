@@ -1,0 +1,19 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Profile";
+}
+
+<div class="row">
+    <ul class="nav nav-tabs">
+        <li class="@(ViewBag.IsIndexDisplayed ? "active": string.Empty)">
+            <a href="@Url.Action("Index")">Information</a>
+        </li>
+        <li class="@(ViewBag.IsConsentDisplayed ? "active": string.Empty)">
+            <a href="@Url.Action("Consent")">Consents</a>
+        </li>
+    </ul>
+
+    <div class="tab-content container">
+        @RenderBody()
+    </div>
+</div>
