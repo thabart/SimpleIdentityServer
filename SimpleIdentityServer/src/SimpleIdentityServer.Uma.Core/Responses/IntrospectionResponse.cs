@@ -14,9 +14,7 @@
 // limitations under the License.
 #endregion
 
-using System.Linq;
 using System.Collections.Generic;
-using System;
 using SimpleIdentityServer.Uma.Core.Extensions;
 
 namespace SimpleIdentityServer.Uma.Core.Responses
@@ -51,11 +49,11 @@ namespace SimpleIdentityServer.Uma.Core.Responses
         {
             get
             {
-                return this[ResourceSetIdName] as List<string>;
+                return this[ScopesName] as List<string>;
             }
             set
             {
-                this.SetValue(ResourceSetIdName, value);
+                this.SetValue(ScopesName, value);
             }
         }
 

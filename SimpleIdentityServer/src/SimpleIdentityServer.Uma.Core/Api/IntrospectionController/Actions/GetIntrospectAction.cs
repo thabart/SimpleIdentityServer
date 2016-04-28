@@ -76,20 +76,24 @@ namespace SimpleIdentityServer.Uma.Core.Api.IntrospectionController.Actions
                 IssuedAt = rptInformation.CreateDateTime.ConvertToUnixTimestamp()
             };
 
-            if (rptInformation.ExpirationDateTime < DateTime.UtcNow)
+            if (rptInformation.ExpirationDateTime < DateTime.UtcNow ||
+                ticket.ExpirationDateTime < DateTime.UtcNow)
             {
                 result.IsActive = false;
                 return result;
             }
-            
+
             result.Permissions = new List<PermissionResponse>
             {
                 new PermissionResponse
                 {
                     ResourceSetId = rptInformation.ResourceSetId,
-                    Scopes = ticket.Scopes
+                    Scopes = ticket.Scopes,
+                    Expiration = ticket.ExpirationDateTime.ConvertToUnixTimestamp()
                 }
             };
+
+            result.IsActive = true;
             return result;
         }
 
