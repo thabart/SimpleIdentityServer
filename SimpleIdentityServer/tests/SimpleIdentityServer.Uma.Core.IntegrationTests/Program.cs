@@ -124,8 +124,8 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
                 var authorization = GetAuthorizationByDiscovery(permission.TicketId, umaAuthorizationToken.AccessToken);
                 Console.Write(authorization.Rpt);
                 // 7. Drop everything
-                var isAuthorizationPolicyDropped = DeletePolicyByDiscovery(authorizationPolicy.PolicyId, umaProtectionToken.AccessToken);
-                Console.WriteLine($"authorization policy is dropped : {isAuthorizationPolicyDropped}");
+                // var isAuthorizationPolicyDropped = DeletePolicyByDiscovery(authorizationPolicy.PolicyId, umaProtectionToken.AccessToken);
+                // Console.WriteLine($"authorization policy is dropped : {isAuthorizationPolicyDropped}");
             }
             catch (AggregateException ex)
             {

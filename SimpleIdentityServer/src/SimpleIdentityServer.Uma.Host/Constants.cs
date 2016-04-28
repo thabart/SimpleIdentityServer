@@ -31,6 +31,8 @@ namespace SimpleIdentityServer.Uma.Host
             public const string Authorization = "/rpt";
 
             public const string Policies = "/policies";
+
+            public const string Introspection = "/status";
         }
 
         public static class ConfigurationResponseNames
