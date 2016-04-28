@@ -4,6 +4,8 @@ namespace SimpleIdentityServer.Host.ViewModels
 {
     public class ConsentViewModel
     {
+        public string Id { get; set; }
+
         public string ClientDisplayName { get; set; }
 
         public List<string> AllowedScopeDescriptions { get; set; }

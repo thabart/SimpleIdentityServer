@@ -23,17 +23,24 @@ namespace SimpleIdentityServer.Core.WebSite.User
     public interface IUserActions
     {
         List<Models.Consent> GetConsents(ClaimsPrincipal claimsPrincipal);
+
+        bool DeleteConsent(string consentId);
     }
 
     internal class UserActions : IUserActions
     {
         private readonly IGetConsentsOperation _getConsentsOperation;
 
+        private readonly IRemoveConsentOperation _removeConsentOperation;
+
         #region Constructor
 
-        public UserActions(IGetConsentsOperation getConsentsOperation)
+        public UserActions(
+            IGetConsentsOperation getConsentsOperation,
+            IRemoveConsentOperation removeConsentOperation)
         {
             _getConsentsOperation = getConsentsOperation;
+            _removeConsentOperation = removeConsentOperation;
         }
 
         #endregion
@@ -43,6 +50,11 @@ namespace SimpleIdentityServer.Core.WebSite.User
         public List<Models.Consent> GetConsents(ClaimsPrincipal claimsPrincipal)
         {
             return _getConsentsOperation.Execute(claimsPrincipal);
+        }
+
+        public bool DeleteConsent(string consentId)
+        {
+            return _removeConsentOperation.Execute(consentId);
         }
 
         #endregion

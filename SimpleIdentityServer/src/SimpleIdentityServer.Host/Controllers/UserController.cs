@@ -8,7 +8,6 @@ using System.Linq;
 
 namespace SimpleIdentityServer.Api.Controllers
 {
-    [Authorize]
     public class UserController : Controller
     {
         private readonly IUserActions _userActions;
@@ -33,6 +32,27 @@ namespace SimpleIdentityServer.Api.Controllers
         [HttpGet]
         public ActionResult Consent()
         {
+            return GetConsents();
+        }
+
+        [HttpPost]
+        public ActionResult Consent(string id)
+        {
+            if (!_userActions.DeleteConsent(id))
+            {
+                ViewBag.ErrorMessage = "the consent cannot be deleted";
+                return GetConsents();
+            }
+
+            return RedirectToAction("Consent");
+        }
+
+        #endregion
+
+        #region Private methods
+
+        private ActionResult GetConsents()
+        {
             var authenticatedUser = this.GetAuthenticatedUser();
             var consents = _userActions.GetConsents(authenticatedUser);
             var result = new List<ConsentViewModel>();
@@ -43,6 +63,7 @@ namespace SimpleIdentityServer.Api.Controllers
                 var claims = consent.Claims;
                 var viewModel = new ConsentViewModel
                 {
+                    Id = consent.Id,
                     ClientDisplayName = client == null ? string.Empty : client.ClientName,
                     AllowedScopeDescriptions = scopes == null || !scopes.Any() ?
                         new List<string>() :
