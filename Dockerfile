@@ -4,6 +4,11 @@ ENV ASPNET_ENV docker
 ENV DNX_USER_HOME /opt/dnx
 ENV PATH $PATH:$DNX_USER_HOME/runtimes/default/bin
 
+ENV IDSERVER_URL $HOST/authorization
+ENV IDSERVER_MANAGER_URL $HOST/managerapi
+ENV CLIENT_ID IdentityServerManager
+ENV CLIENT_CLIENT_SECRET IdentityServerManager
+
 COPY SimpleIdentityServer/src /app
 
 WORKDIR /app

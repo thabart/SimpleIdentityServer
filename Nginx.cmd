@@ -11,4 +11,4 @@ docker run -d -p 80:80 -v /var/run/docker.sock:/tmp/docker.sock -t jwilder/nginx
 *.identityserver.com
 
 # Run the container
-docker run -e VIRTUAL_HOST=idserver.localhost -t -d identitycontrib/identityserver
+docker run -e VIRTUAL_HOST=idserver.localhost -e HOST=http://localhost -t -d identitycontrib/identityserver
