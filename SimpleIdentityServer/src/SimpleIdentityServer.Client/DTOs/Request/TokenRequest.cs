@@ -63,5 +63,23 @@ namespace SimpleIdentityServer.Client.DTOs.Request
 
         [DataMember(Name = Constants.TokenRequestNames.RefreshToken)]
         public string RefreshToken { get; set; }
+		
+		public Dictionary<string, string> GetDic()
+        {
+            return new Dictionary<string, string>
+            {
+                { Constants.TokenRequestNames.GrantType, Enum.GetName(typeof(GrantTypeRequest), GrantType) },
+                { Constants.TokenRequestNames.Username, Username },
+                { Constants.TokenRequestNames.Password, Password },
+                { Constants.TokenRequestNames.Scope, Scope },
+                { Constants.TokenRequestNames.ClientId, ClientId },
+                { Constants.TokenRequestNames.ClientSecret, ClientSecret },
+                { Constants.TokenRequestNames.Code, Code },
+                { Constants.TokenRequestNames.RedirectUri, RedirectUri },
+                { Constants.TokenRequestNames.ClientAssertionType, ClientAssertionType },
+                { Constants.TokenRequestNames.ClientAssertion, ClientAssertion },
+                { Constants.TokenRequestNames.RefreshToken, RefreshToken }
+            };
+        }
     }
 }

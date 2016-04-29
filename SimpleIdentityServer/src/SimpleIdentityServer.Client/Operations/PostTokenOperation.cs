@@ -65,8 +65,7 @@ namespace SimpleIdentityServer.Client.Operations
             }
 
             var httpClient = _httpClientFactory.GetHttpClient();
-            var serializedTokenRequest = JsonConvert.SerializeObject(tokenRequest);
-            var body = new StringContent(serializedTokenRequest, Encoding.UTF8, "application/json");
+			var body = new FormUrlEncodedContent(tokenRequest.GetDic());
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
