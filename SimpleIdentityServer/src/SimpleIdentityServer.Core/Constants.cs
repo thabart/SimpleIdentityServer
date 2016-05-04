@@ -319,6 +319,8 @@ namespace SimpleIdentityServer.Core
 
         #region Internal definitions
 
+        public const string AnonymousClientId = "Anonymous";
+
         // Custom authentication policies defined by Simple Identity Server
         public static class CustomAuthenticationPolicies
         {

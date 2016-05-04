@@ -57,6 +57,8 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
         private readonly IAuthenticateInstructionGenerator _authenticateInstructionGenerator;
 
+        private readonly IClientRepository _clientRepository;
+
         public GetTokenByResourceOwnerCredentialsGrantTypeAction(
             IGrantedTokenRepository grantedTokenRepository,
             IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
@@ -65,7 +67,8 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
             IAuthenticateClient authenticateClient,
             IJwtGenerator jwtGenerator,
-            IAuthenticateInstructionGenerator authenticateInstructionGenerator)
+            IAuthenticateInstructionGenerator authenticateInstructionGenerator,
+            IClientRepository clientRepository)
         {
             _grantedTokenRepository = grantedTokenRepository;
             _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
@@ -75,6 +78,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             _authenticateClient = authenticateClient;
             _jwtGenerator = jwtGenerator;
             _authenticateInstructionGenerator = authenticateInstructionGenerator;
+            _clientRepository = clientRepository;
         }
 
         public GrantedToken Execute(
@@ -93,9 +97,13 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             var client = _authenticateClient.Authenticate(instruction, out errorMessage);
             if (client == null)
             {
-                throw new IdentityServerException(
-                    ErrorCodes.InvalidClient,
-                    errorMessage);
+                _simpleIdentityServerEventSource.Info(ErrorDescriptions.TheClientCannotBeAuthenticated);
+                client = _clientRepository.GetClientById(Constants.AnonymousClientId);
+                if (client == null)
+                {
+                    throw new IdentityServerException(ErrorCodes.InternalError,
+                        string.Format(ErrorDescriptions.ClientIsNotValid, Constants.AnonymousClientId));
+                }
             }
 
             // Try to authenticate a resource owner

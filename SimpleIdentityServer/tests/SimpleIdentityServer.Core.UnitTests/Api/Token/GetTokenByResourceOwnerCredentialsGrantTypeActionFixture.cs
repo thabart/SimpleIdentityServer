@@ -53,6 +53,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
         private Mock<IAuthenticateInstructionGenerator> _authenticateInstructionGeneratorStub;
 
+        private Mock<IClientRepository> _clientRepositoryStub;
+
         private IGetTokenByResourceOwnerCredentialsGrantTypeAction _getTokenByResourceOwnerCredentialsGrantTypeAction;
 
         #region Exceptions
@@ -68,7 +70,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
         }
 
         [Fact]
-        public void When_The_Client_Cannot_Be_Authenticated_Then_Exception_Is_Thrown()
+        public void When_AnonymousClient_Doesnt_Exist_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -89,10 +91,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), out message))
                 .Returns(() => null);
-            
+            _clientRepositoryStub.Setup(c => c.GetClientById(It.IsAny<string>()))
+                .Returns(() => null);
+
             // ACT & ASSERTS
             var exception = Assert.Throws<IdentityServerException>(() => _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(resourceOwnerGrantTypeParameter, null));
-            Assert.True(exception.Code == ErrorCodes.InvalidClient);
+            _simpleIdentityServerEventSourceFake.Verify(s => s.Info(ErrorDescriptions.TheClientCannotBeAuthenticated));
+            Assert.True(exception.Code == ErrorCodes.InternalError);
+            Assert.True(exception.Message == string.Format(ErrorDescriptions.ClientIsNotValid, Constants.AnonymousClientId));
         }
         
         [Fact]
@@ -238,6 +244,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _authenticateClientFake = new Mock<IAuthenticateClient>();
             _jwtGeneratorFake = new Mock<IJwtGenerator>();
             _authenticateInstructionGeneratorStub = new Mock<IAuthenticateInstructionGenerator>();
+            _clientRepositoryStub = new Mock<IClientRepository>();
 
             _getTokenByResourceOwnerCredentialsGrantTypeAction = new GetTokenByResourceOwnerCredentialsGrantTypeAction(
                 _grantedTokenRepositoryFake.Object,
@@ -247,7 +254,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 _simpleIdentityServerEventSourceFake.Object,
                 _authenticateClientFake.Object,
                 _jwtGeneratorFake.Object,
-                _authenticateInstructionGeneratorStub.Object);
+                _authenticateInstructionGeneratorStub.Object,
+                _clientRepositoryStub.Object);
         }
     }
 }

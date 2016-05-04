@@ -46,6 +46,8 @@ namespace SimpleIdentityServer.Core.Errors
 
         public static string InvalidClientMetaData = "invalid_client_metadata";
 
+        public static string InternalError = "internal_error";
+
         #endregion
     }
 }

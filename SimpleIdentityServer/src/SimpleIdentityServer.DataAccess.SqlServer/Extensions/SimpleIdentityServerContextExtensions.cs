@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.DataAccess.SqlServer.Models;
 using System;
@@ -467,6 +468,35 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
             {
                 context.Clients.AddRange(new[]
                 {
+                    new Client
+                    {
+                        ClientId = Constants.AnonymousClientId,
+                        ClientName = "Anonymous client",
+                        ClientSecret = "Anonymous",
+                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
+                        LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
+                        PolicyUri = "http://openid.net",
+                        TosUri = "http://openid.net",
+                        ClientScopes = new List<ClientScope>
+                        {
+                            new ClientScope
+                            {
+                                ScopeName = "openid"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "role"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "profile"
+                            }
+                        },
+                        GrantTypes = "4",
+                        ResponseTypes = "0,1,2",
+                        IdTokenSignedResponseAlg = "RS256",
+                        RedirectionUrls = "http://localhost:4200/callback"
+                    },
                     new Client
                     {
                         ClientId = "IdentityServerManager",

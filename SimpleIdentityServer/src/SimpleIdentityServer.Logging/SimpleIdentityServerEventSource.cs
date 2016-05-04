@@ -148,6 +148,8 @@ namespace SimpleIdentityServer.Logging
 
         void Failure(string message);
 
+        void Info(string message);
+
         #region Events linked to the registration process
 
         void StartRegistration(string clientName);
@@ -614,10 +616,23 @@ namespace SimpleIdentityServer.Logging
             WriteEvent(Constants.EventIds.Failure, message);
         }
 
+        [Event(Constants.EventIds.Information,
+            Level = EventLevel.Informational,
+            Message = "information")]
+        public void Info(string message)
+        {
+            if (!IsEnabled())
+            {
+                return;
+            }
+
+            WriteEvent(Constants.EventIds.Information, message);
+        }
+
         #endregion
 
         #region Other events
-        
+
         [Event(Constants.EventIds.GrantAccessToClient,
             Level = EventLevel.Informational,
             Message = "grant access to the client {0}",

@@ -29,13 +29,6 @@ namespace SimpleIdentityServer.Core.Validators
     {
         public void Validate(ResourceOwnerGrantTypeParameter parameter)
         {
-            if (string.IsNullOrWhiteSpace(parameter.ClientId))
-            {
-                throw new IdentityServerException(
-                    ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.MissingParameter, Constants.StandardTokenRequestParameterNames.ClientIdName));
-            }
-
             if (string.IsNullOrWhiteSpace(parameter.UserName))
             {
                 throw new IdentityServerException(
