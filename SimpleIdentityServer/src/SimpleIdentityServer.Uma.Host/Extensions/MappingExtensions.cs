@@ -137,7 +137,8 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
                 ClientIdsAllowed = policy.ClientIdsAllowed,
                 IsCustom = policy.IsCustom,
                 IsResourceOwnerConsentNeeded = policy.IsResourceOwnerConsentNeeded,
-                ResourceSetIds = policy.ResourceSetIds
+                ResourceSetIds = policy.ResourceSetIds,
+                Scopes = policy.Scopes
             };
         }
 
