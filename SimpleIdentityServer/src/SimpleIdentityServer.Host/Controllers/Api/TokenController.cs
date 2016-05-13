@@ -21,8 +21,6 @@ using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Host.DTOs.Request;
 using SimpleIdentityServer.Host.Extensions;
-using SimpleIdentityServer.RateLimitation;
-using SimpleIdentityServer.RateLimitation.Attributes;
 using System.Linq;
 using System.Net.Http.Headers;
 
@@ -39,7 +37,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             _tokenActions = tokenActions;
         }
         
-        [SimpleTypeFilterAttribute(typeof(RateLimitationFilterAttribute), Arguments = new object[] { "PostToken" })]
+        // [SimpleTypeFilterAttribute(typeof(RateLimitationFilterAttribute), Arguments = new object[] { "PostToken" })]
         [HttpPost]
         public GrantedToken Post([FromForm] TokenRequest tokenRequest)
         {

@@ -80,7 +80,7 @@ namespace SimpleIdentityServer.Startup
                 };
                 opt.MemoryCache = new MemoryCache(new MemoryCacheOptions());
             });
-
+			
             var dataSourceType = DataSourceTypes.InMemory;
             if (isSqlServer)
             {
