@@ -140,7 +140,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             var userInformationPayload = _jwtGenerator.GenerateUserInfoPayloadForScope(claimsPrincipal, authorizationParameter);
 
             var generatedToken = _grantedTokenGeneratorHelper.GenerateToken(
-                resourceOwnerGrantTypeParameter.ClientId,
+                client.ClientId,
                 allowedTokenScopes,
                 userInformationPayload);
             _grantedTokenRepository.Insert(generatedToken);

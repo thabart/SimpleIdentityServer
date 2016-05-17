@@ -27,6 +27,7 @@ using System.Net;
 using Microsoft.AspNet.Mvc.Formatters;
 using System.Collections.Generic;
 using Microsoft.Net.Http.Headers;
+using SimpleIdentityServer.Core.Errors;
 
 namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
 {
@@ -77,6 +78,16 @@ namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
 
             var grantedToken = _grantedTokenRepository.GetToken(accessToken);
             var client = _clientRepository.GetClientById(grantedToken.ClientId);
+            if (client == null)
+            {
+                client = _clientRepository.GetClientById(Constants.AnonymousClientId);
+                if (client == null)
+                {
+                    throw new IdentityServerException(ErrorCodes.InternalError,
+                        string.Format(ErrorDescriptions.ClientIsNotValid, Constants.AnonymousClientId));
+                }
+            }
+
             var signedResponseAlg = client.GetUserInfoSignedResponseAlg();
             var userInformationPayload = grantedToken.UserInfoPayLoad;
             if (signedResponseAlg == null ||

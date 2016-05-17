@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNet.Mvc;
 using Moq;
 using SimpleIdentityServer.Core.Api.UserInfo.Actions;
+using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.JwtToken;
@@ -46,6 +47,27 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
 
             // ACT & ASSERT
             Assert.Throws<AuthorizationException>(() => _getJwsPayload.Execute("access_token"));
+        }
+
+        [Fact]
+        public void When_Anonymous_Client_Doesnt_Exist_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            string errorMessageCode,
+                errorMessageDescription;
+            _grantedTokenValidatorFake.Setup(g => g.CheckAccessToken(It.IsAny<string>(), out errorMessageCode, out errorMessageDescription))
+                .Returns(true);
+            _grantedTokenRepositoryFake.Setup(g => g.GetToken(It.IsAny<string>()))
+                .Returns(new GrantedToken());
+            _clientRepositoryFake.Setup(c => c.GetClientById(It.IsAny<string>()))
+                .Returns(() => null);
+
+            // ACT & ASSERT
+            var exception = Assert.Throws<IdentityServerException>(() => _getJwsPayload.Execute("access_token"));
+            Assert.NotNull(exception);
+            Assert.True(exception.Code == ErrorCodes.InternalError);
+            Assert.True(exception.Message == string.Format(ErrorDescriptions.ClientIsNotValid, Constants.AnonymousClientId));
         }
 
         [Fact]
