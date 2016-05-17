@@ -104,6 +104,7 @@ namespace SimpleIdentityServer.Uma.Core
             serviceCollection.AddTransient<IGetAuthorizationPolicyAction, GetAuthorizationPolicyAction>();
             serviceCollection.AddTransient<IDeleteAuthorizationPolicyAction, DeleteAuthorizationPolicyAction>();
             serviceCollection.AddTransient<IGetAuthorizationPoliciesAction, GetAuthorizationPoliciesAction>();
+            serviceCollection.AddTransient<IUpdatePolicyAction, UpdatePolicyAction>();
             serviceCollection.AddTransient<IConfigurationActions, ConfigurationActions>();
             serviceCollection.AddTransient<IGetConfigurationAction, GetConfigurationAction>();
             serviceCollection.AddTransient<IGetIntrospectAction, GetIntrospectAction>();

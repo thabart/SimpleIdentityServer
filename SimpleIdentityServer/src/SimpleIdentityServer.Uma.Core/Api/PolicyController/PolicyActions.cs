@@ -29,6 +29,8 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController
 
         bool DeletePolicy(string policyId);
 
+        bool UpdatePolicy(UpdatePolicyParameter updatePolicyParameter);
+
         List<string> GetPolicies();
     }
 
@@ -42,18 +44,22 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController
 
         private readonly IGetAuthorizationPoliciesAction _getAuthorizationPoliciesAction;
 
+        private readonly IUpdatePolicyAction _updatePolicyAction;
+
         #region  Constructor
 
         public PolicyActions(
             IAddAuthorizationPolicyAction addAuthorizationPolicyAction,
             IGetAuthorizationPolicyAction getAuthorizationPolicyAction,
             IDeleteAuthorizationPolicyAction deleteAuthorizationPolicyAction,
-            IGetAuthorizationPoliciesAction getAuthorizationPoliciesAction)
+            IGetAuthorizationPoliciesAction getAuthorizationPoliciesAction,
+            IUpdatePolicyAction updatePolicyAction)
         {
             _addAuthorizationPolicyAction = addAuthorizationPolicyAction;
             _getAuthorizationPolicyAction = getAuthorizationPolicyAction;
             _deleteAuthorizationPolicyAction = deleteAuthorizationPolicyAction;
             _getAuthorizationPoliciesAction = getAuthorizationPoliciesAction;
+            _updatePolicyAction = updatePolicyAction;
         }
 
         #endregion
@@ -78,6 +84,11 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController
         public List<string> GetPolicies()
         {
             return _getAuthorizationPoliciesAction.Execute();
+        }
+
+        public bool UpdatePolicy(UpdatePolicyParameter updatePolicyParameter)
+        {
+            return _updatePolicyAction.Execute(updatePolicyParameter);
         }
 
         #endregion

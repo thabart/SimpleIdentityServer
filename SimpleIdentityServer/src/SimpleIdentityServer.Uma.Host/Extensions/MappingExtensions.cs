@@ -103,6 +103,19 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
             };
         }
 
+        public static UpdatePolicyParameter ToParameter(this PutPolicy putPolicy)
+        {
+            return new UpdatePolicyParameter
+            {
+                Script = putPolicy.Script,
+                Scopes = putPolicy.Scopes,
+                PolicyId = putPolicy.PolicyId,
+                ClientIdsAllowed = putPolicy.ClientIdsAllowed,
+                IsCustom = putPolicy.IsCustom,
+                IsResourceOwnerConsentNeeded = putPolicy.IsResourceOwnerConsentNeeded
+            };
+        }
+
         #endregion
 
         #region To responses

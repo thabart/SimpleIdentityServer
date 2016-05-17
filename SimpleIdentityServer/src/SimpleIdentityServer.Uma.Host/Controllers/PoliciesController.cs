@@ -68,6 +68,23 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             return new HttpOkObjectResult(policies);
         }
 
+        [HttpPut]
+        public ActionResult PutPolicy([FromBody] PutPolicy putPolicy)
+        {
+            if (putPolicy == null)
+            {
+                throw new ArgumentNullException(nameof(putPolicy));
+            }
+
+            var isPolicyExists = _policyActions.UpdatePolicy(putPolicy.ToParameter());
+            if (!isPolicyExists)
+            {
+                return GetNotFoundPolicy();
+            }
+
+            return new HttpStatusCodeResult((int)HttpStatusCode.NoContent);
+        }
+
         [HttpPost]
         [Authorize("UmaProtection")]
         public ActionResult PostPolicy([FromBody] PostPolicy postPolicy)

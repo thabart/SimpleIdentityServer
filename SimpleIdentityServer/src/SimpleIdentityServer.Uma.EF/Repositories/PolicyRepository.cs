@@ -86,6 +86,25 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
             return true;
         }
 
+        public bool UpdatePolicy(Policy policy)
+        {
+            var record = _simpleIdServerUmaContext.Policies
+                .FirstOrDefault(p => p.Id == policy.Id);
+            if (record == null)
+            {
+                return false;
+            }
+
+            var model = policy.ToModel();
+            record.ClientIdsAllowed = model.ClientIdsAllowed;
+            record.IsCustom = model.IsCustom;
+            record.IsResourceOwnerConsentNeeded = model.IsResourceOwnerConsentNeeded;
+            record.Scopes = model.Scopes;
+            record.Script = model.Script;
+            _simpleIdServerUmaContext.SaveChanges();
+            return true;
+        }
+
         #endregion
     }
 }
