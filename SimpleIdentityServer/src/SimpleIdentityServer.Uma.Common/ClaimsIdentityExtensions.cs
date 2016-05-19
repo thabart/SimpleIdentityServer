@@ -30,6 +30,11 @@ namespace SimpleIdentityServer.Uma.Common
 
         public static void AddPermission(this ClaimsIdentity claimsIdentity, Permission permission)
         {
+            if (claimsIdentity == null)
+            {
+                throw new ArgumentNullException(nameof(claimsIdentity));
+            }
+
             if (permission == null)
             {
                 throw new ArgumentNullException(nameof(permission));
@@ -41,6 +46,11 @@ namespace SimpleIdentityServer.Uma.Common
 
         public static List<Permission> GetPermissions(this ClaimsIdentity claimsIdentity)
         {
+            if (claimsIdentity == null)
+            {
+                throw new ArgumentNullException(nameof(claimsIdentity));
+            }
+
             var result = new List<Permission>();
             var claims = claimsIdentity.Claims.Where(c => c.Type == PermissionName).ToList();
             foreach(var claim in claims)

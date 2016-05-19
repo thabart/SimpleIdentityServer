@@ -34,6 +34,8 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
     {
         private const string AuthorizationName = "Authorization";
 
+        private const string BearerName = "Bearer";
+
         private readonly RequestDelegate _next;
 
         private readonly IApplicationBuilder _app;
@@ -71,7 +73,7 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
             _options = options.Value;            
             // Register dependencies
             var serviceCollection = new ServiceCollection();
-            RegisterDependencies(serviceCollection);
+            RegisterDependencies(serviceCollection, _options);
             _serviceProvider = serviceCollection.BuildServiceProvider();
             // Create empty middleware
             var nullAuthenticationBuilder = app.New();
@@ -96,6 +98,7 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
             if (string.IsNullOrWhiteSpace(rpt))
             {
                 await _nullAuthenticationNext(context);
+                return;
             }
 
             Uri umaConfigurationUri = null;
@@ -150,13 +153,27 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
             }
 
             var authorizationValues = header[AuthorizationName];
-            return authorizationValues.FirstOrDefault();
+            var authorizationValue = authorizationValues.FirstOrDefault();
+            var splittedAuthorizationValue = authorizationValue.Split(' ');
+            if (splittedAuthorizationValue.Count() == 2 &&
+                splittedAuthorizationValue[0].Equals(BearerName, StringComparison.CurrentCultureIgnoreCase))
+            {
+                return splittedAuthorizationValue[1];
+            }
+
+            return null;
         }
 
-        private static void RegisterDependencies(IServiceCollection serviceCollection)
+        private static void RegisterDependencies(IServiceCollection serviceCollection, UmaIntrospectionOptions options)
         {
-            serviceCollection.AddTransient<IIdentityServerClientFactory, IdentityServerClientFactory>();
-            serviceCollection.AddTransient<IIdentityServerUmaClientFactory, IdentityServerUmaClientFactory>();
+            if (options.IdentityServerUmaClientFactory != null)
+            {
+                serviceCollection.AddInstance(options.IdentityServerUmaClientFactory);
+            }
+            else
+            {
+                serviceCollection.AddTransient<IIdentityServerUmaClientFactory, IdentityServerUmaClientFactory>();
+            }
         }
 
         #endregion

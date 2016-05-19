@@ -14,10 +14,14 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Client;
+
 namespace SimpleIdentityServer.UmaIntrospection.Authentication
 {
     public class UmaIntrospectionOptions
     {
         public string UmaConfigurationUrl { get; set; }
+
+        public IIdentityServerUmaClientFactory IdentityServerUmaClientFactory { get; set; }
     }
 }

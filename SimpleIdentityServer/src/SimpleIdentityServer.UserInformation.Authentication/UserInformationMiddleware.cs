@@ -168,7 +168,7 @@ namespace SimpleIdentityServer.UserInformation.Authentication
 
 #endregion
 
-#region Private static methods
+        #region Private static methods
 
         private static ClaimsPrincipal CreateClaimPrincipal(Dictionary<string, string> userInformationResponse)
         {
@@ -182,6 +182,6 @@ namespace SimpleIdentityServer.UserInformation.Authentication
             return new ClaimsPrincipal(claimsIdentity);
         }
 
-#endregion
+        #endregion
     }
 }

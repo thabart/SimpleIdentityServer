@@ -15,6 +15,7 @@
 #endregion
 
 using Microsoft.AspNet.Builder;
+using SimpleIdentityServer.Authentication.Common.Options;
 using System;
 
 namespace SimpleIdentityServer.UmaIntrospection.Authentication
@@ -23,14 +24,29 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
     {
         #region Public static methods
 
-        public static IApplicationBuilder UseAuthenticationWithUmaIntrospection(this IApplicationBuilder applicationBuilder)
+        public static IApplicationBuilder UseAuthenticationWithUmaIntrospection(this IApplicationBuilder app)
         {
-            if (applicationBuilder == null)
+            if (app == null)
             {
-                throw new ArgumentNullException(nameof(applicationBuilder));
+                throw new ArgumentNullException(nameof(app));
             }
 
-            return applicationBuilder;
+            return app.UseMiddleware<UmaIntrospectionMiddleware<UmaIntrospectionOptions>>(app);
+        }
+
+        public static IApplicationBuilder UseAuthenticationWithUmaIntrospection(this IApplicationBuilder app, UmaIntrospectionOptions umaIntrospectionOptions)
+        {
+            if (app == null)
+            {
+                throw new ArgumentNullException(nameof(app));
+            }
+
+            if (umaIntrospectionOptions == null)
+            {
+                throw new ArgumentNullException(nameof(umaIntrospectionOptions));
+            }
+
+            return app.UseMiddleware<UmaIntrospectionMiddleware<UmaIntrospectionOptions>>(app, Options.Create(umaIntrospectionOptions));
         }
 
         #endregion
