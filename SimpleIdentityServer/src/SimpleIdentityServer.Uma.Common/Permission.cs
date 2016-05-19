@@ -23,5 +23,9 @@ namespace SimpleIdentityServer.Uma.Common
         public string ResourceSetId { get; set; }
 
         public List<string> Scopes { get; set; }
+
+        public string ApplicationName { get; set; }
+
+        public string OperationName { get; set; }
     }
 }

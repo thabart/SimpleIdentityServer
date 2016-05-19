@@ -23,9 +23,9 @@ namespace SimpleIdentityServer.UmaManager.Client.Operation
 {
     public interface IOperationClient
     {
-        Task<List<SearchOperationResponse>> Search(string resourceSetId, string operationUrl);
+        Task<SearchOperationResponse> Search(string resourceSetId, string operationUrl);
 
-        Task<List<SearchOperationResponse>> Search(string resourceSetId, Uri operationUri);
+        Task<SearchOperationResponse> Search(string resourceSetId, Uri operationUri);
     }
 
     internal class OperationClient : IOperationClient
@@ -43,7 +43,7 @@ namespace SimpleIdentityServer.UmaManager.Client.Operation
 
         #region Public methods
 
-        public async Task<List<SearchOperationResponse>> Search(string resourceSetId, string operationUrl)
+        public async Task<SearchOperationResponse> Search(string resourceSetId, string operationUrl)
         {
             if (string.IsNullOrWhiteSpace(operationUrl))
             {
@@ -59,7 +59,7 @@ namespace SimpleIdentityServer.UmaManager.Client.Operation
             return await Search(resourceSetId, operationUri);
         }
 
-        public async Task<List<SearchOperationResponse>> Search(string resourceSetId, Uri operationUri)
+        public async Task<SearchOperationResponse> Search(string resourceSetId, Uri operationUri)
         {
             if (operationUri == null)
             {

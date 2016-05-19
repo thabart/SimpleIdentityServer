@@ -22,6 +22,9 @@ using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Client.DTOs.Responses;
 using SimpleIdentityServer.Client.Introspection;
 using SimpleIdentityServer.Uma.Common;
+using SimpleIdentityServer.UmaManager.Client;
+using SimpleIdentityServer.UmaManager.Client.DTOs.Responses;
+using SimpleIdentityServer.UmaManager.Client.Operation;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -44,7 +47,7 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication.Tests
         }
 
         [Fact]
-        public async Task When_Passing_Invalid_Url_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Invalid_UmaUrl_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             var umaIntrospectionOptions = new UmaIntrospectionOptions
@@ -63,6 +66,30 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication.Tests
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<ArgumentException>(async () => await client.SendAsync(httpRequestMessage)).ConfigureAwait(false);
             Assert.True(exception.Message == $"url {umaIntrospectionOptions.UmaConfigurationUrl} is not well formatted");
+        }
+
+        [Fact]
+        public async Task When_Passing_Invalid_OperationUrl_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            var umaIntrospectionOptions = new UmaIntrospectionOptions
+            {
+                UmaConfigurationUrl = "http://localhost",
+                OperationUrl = "invalid_url",
+                EnrichWithUmaManagerInformation = true
+            };
+            var createServer = CreateServer(umaIntrospectionOptions);
+            var httpRequestMessage = new HttpRequestMessage
+            {
+                Method = HttpMethod.Get,
+                RequestUri = new Uri("http://localhost/operation")
+            };
+            httpRequestMessage.Headers.Add("Authorization", "Bearer RPT");
+            var client = createServer.CreateClient();
+
+            // ACT & ASSERTS
+            var exception = await Assert.ThrowsAsync<ArgumentException>(async () => await client.SendAsync(httpRequestMessage)).ConfigureAwait(false);
+            Assert.True(exception.Message == $"url {umaIntrospectionOptions.OperationUrl} is not well formatted");
         }
 
         #endregion
@@ -88,6 +115,11 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication.Tests
                     }
                 }
             };
+            var searchOperationResponse = new SearchOperationResponse
+            {
+                ApplicationName = "application_name",
+                OperationName = "operation_name"
+            };
             var stubIdentityServerUmaClientFactory = new Mock<IIdentityServerUmaClientFactory>();
             var stubIntrospectionClient = new Mock<IIntrospectionClient>();
             stubIntrospectionClient
@@ -96,9 +128,18 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication.Tests
             stubIdentityServerUmaClientFactory
                 .Setup(s => s.GetIntrospectionClient())
                 .Returns(() => stubIntrospectionClient.Object);
+            var stubIdentityServerUmaManagerClientFactory = new Mock<IIdentityServerUmaManagerClientFactory>();
+            var stubOperationClient = new Mock<IOperationClient>();
+            stubOperationClient.Setup(s => s.Search(It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync(searchOperationResponse);
+            stubIdentityServerUmaManagerClientFactory.Setup(s => s.GetOperationClient())
+                .Returns(stubOperationClient.Object);
             var umaIntrospectionOptions = new UmaIntrospectionOptions
             {
                 UmaConfigurationUrl = "http://localhost/uma",
+                OperationUrl = "http://localhost/uma2",
+                EnrichWithUmaManagerInformation = true,
+                IdentityServerUmaManagerClientFactory = stubIdentityServerUmaManagerClientFactory.Object,
                 IdentityServerUmaClientFactory = stubIdentityServerUmaClientFactory.Object
             };
             var createServer = CreateServer(umaIntrospectionOptions);
@@ -118,8 +159,7 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication.Tests
         }
 
         #endregion
-
-
+        
         #region Private static methods
 
         private static TestServer CreateServer(UmaIntrospectionOptions umaIntrospectionOptions)

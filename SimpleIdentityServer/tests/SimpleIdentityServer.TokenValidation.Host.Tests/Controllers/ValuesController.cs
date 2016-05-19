@@ -8,7 +8,7 @@ namespace SimpleIdentityServer.TokenValidation.Host.Tests.Controllers
     public class ValuesController : Controller
     {
         [HttpGet]
-        [Authorize("getValues")]
+        [Authorize("uma")]
         public List<string> Get()
         {
             return new List<string>

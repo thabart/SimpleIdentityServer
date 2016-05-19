@@ -22,6 +22,7 @@ using SimpleIdentityServer.Authentication.Common.Authentication;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Client.DTOs.Responses;
 using SimpleIdentityServer.Uma.Common;
+using SimpleIdentityServer.UmaManager.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -97,6 +98,10 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
             var rpt = GetRpt(headers);
             if (string.IsNullOrWhiteSpace(rpt))
             {
+                // FAKE USER
+                var claims = new List<Claim>();
+                var claimsIdentity = new ClaimsIdentity(claims, "UserInformation");
+                context.User = new ClaimsPrincipal(claimsIdentity);
                 await _nullAuthenticationNext(context);
                 return;
             }
@@ -107,6 +112,15 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
                 throw new ArgumentException($"url {_options.UmaConfigurationUrl} is not well formatted");
             }
 
+            Uri operationUri = null;
+            if (_options.EnrichWithUmaManagerInformation)
+            {
+                if (!Uri.TryCreate(_options.OperationUrl, UriKind.Absolute, out operationUri))
+                {
+                    throw new ArgumentException($"url {_options.OperationUrl} is not well formatted");
+                }
+            }
+
             // Validate RPT
             var identityServerUmaClientFactory = (IIdentityServerUmaClientFactory)_serviceProvider.GetService(typeof(IIdentityServerUmaClientFactory));
             var introspectionResponse = await identityServerUmaClientFactory
@@ -115,7 +129,7 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
             // Add the permissions
             if (introspectionResponse.IsActive)
             {
-                AddPermissions(context, introspectionResponse.Permissions);
+                await AddPermissions(context, introspectionResponse.Permissions);
             }
 
             await _nullAuthenticationNext(context);
@@ -123,27 +137,39 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
 
         #endregion
 
-        #region Private static methods
-
-        private static void AddPermissions(HttpContext context, List<PermissionResponse> permissions)
+        #region Private methods
+        
+        private async Task AddPermissions(
+            HttpContext context, 
+            List<PermissionResponse> permissions)
         {
-            var claimsIdentity = context.User.Identity as ClaimsIdentity;
-            if (claimsIdentity == null)
-            {
-                return;
-            }
-            
-            foreach(var permission in permissions)
+            var claims = new List<Claim>();
+            var claimsIdentity = new ClaimsIdentity(claims, "UserInformation");
+            var identityServerUmaManagerClientFactory = (IIdentityServerUmaManagerClientFactory)_serviceProvider.GetService(typeof(IIdentityServerUmaManagerClientFactory));
+            foreach (var permission in permissions)
             {
                 var claimPermission = new Permission
                 {
                     ResourceSetId = permission.ResourceSetId,
                     Scopes = permission.Scopes
                 };
+                if (_options.EnrichWithUmaManagerInformation)
+                {
+                    var operationInformation = await identityServerUmaManagerClientFactory.GetOperationClient()
+                        .Search(claimPermission.ResourceSetId, _options.OperationUrl);
+                    claimPermission.ApplicationName = operationInformation.ApplicationName;
+                    claimPermission.OperationName = operationInformation.OperationName;
+                }
 
                 claimsIdentity.AddPermission(claimPermission);
             }
+
+            context.User = new ClaimsPrincipal(claimsIdentity);
         }
+
+        #endregion
+
+        #region Private static methods
 
         private static string GetRpt(IHeaderDictionary header)
         {
@@ -173,6 +199,15 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
             else
             {
                 serviceCollection.AddTransient<IIdentityServerUmaClientFactory, IdentityServerUmaClientFactory>();
+            }
+
+            if (options.IdentityServerUmaManagerClientFactory != null)
+            {
+                serviceCollection.AddInstance(options.IdentityServerUmaManagerClientFactory);
+            }
+            else
+            {
+                serviceCollection.AddTransient<IIdentityServerUmaManagerClientFactory, IdentityServerUmaManagerClientFactory>();
             }
         }
 

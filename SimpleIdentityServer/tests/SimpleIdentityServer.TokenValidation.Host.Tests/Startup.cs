@@ -6,6 +6,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
 using SimpleIdentityServer.Oauth2Instrospection.Authentication;
 using SimpleIdentityServer.UserInformation.Authentication;
+using SimpleIdentityServer.Uma.Authorization;
+using SimpleIdentityServer.UmaIntrospection.Authentication;
 
 namespace SimpleIdentityServer.TokenValidation.Host.Tests
 {
@@ -31,10 +33,20 @@ namespace SimpleIdentityServer.TokenValidation.Host.Tests
 
         public void ConfigureServices(IServiceCollection services)
         {
+            /*
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("getValues", policy => policy.RequireClaim("role", "administrator"));
             });
+            */
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("uma", policy => policy.AddConventionalUma());
+            });
+
+            services.AddAuthentication();
+
             services.AddLogging();
             services.AddMvc();
         }
@@ -47,11 +59,13 @@ namespace SimpleIdentityServer.TokenValidation.Host.Tests
             app.UseStatusCodePages();
 
             // I. ENABLE USER INFORMATION AUTHENTICATION
+            /*
             var options = new UserInformationOptions
             {
                 UserInformationEndPoint = "http://localhost:5000/userinfo"
             };
             app.UseAuthenticationWithUserInformation(options);
+            */
 
             /*
             // II. ENABLE INTROSPECTION ENDPOINT
@@ -63,6 +77,10 @@ namespace SimpleIdentityServer.TokenValidation.Host.Tests
             };
             app.UseAuthenticationWithIntrospection(options);
             */
+
+            // III. ENABLE UMA AUTHORIZATION
+            app.UseAuthenticationWithUmaIntrospection();
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

@@ -14,21 +14,12 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Client;
-using SimpleIdentityServer.UmaManager.Client;
+using System;
 
-namespace SimpleIdentityServer.UmaIntrospection.Authentication
+namespace SimpleIdentityServer.Uma.Authorization
 {
-    public class UmaIntrospectionOptions
+    public class UmaAuthorizeAttribute : Attribute
     {
-        public string UmaConfigurationUrl { get; set; }
 
-        public string OperationUrl { get; set; }
-
-        public bool EnrichWithUmaManagerInformation { get; set; }
-
-        public IIdentityServerUmaClientFactory IdentityServerUmaClientFactory { get; set; }
-
-        public IIdentityServerUmaManagerClientFactory IdentityServerUmaManagerClientFactory { get; set; }
     }
 }

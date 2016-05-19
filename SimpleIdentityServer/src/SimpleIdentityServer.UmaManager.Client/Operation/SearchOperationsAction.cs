@@ -18,7 +18,6 @@ using Newtonsoft.Json;
 using SimpleIdentityServer.UmaManager.Client.DTOs.Responses;
 using SimpleIdentityServer.UmaManager.Client.Factory;
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -26,7 +25,7 @@ namespace SimpleIdentityServer.UmaManager.Client.Operation
 {
     public interface ISearchOperationsAction 
     {
-        Task<List<SearchOperationResponse>> ExecuteAsync(
+        Task<SearchOperationResponse> ExecuteAsync(
             string resourceSetId,
             Uri operationUri);
     }
@@ -46,7 +45,7 @@ namespace SimpleIdentityServer.UmaManager.Client.Operation
 
         #region Public methods
 
-        public async Task<List<SearchOperationResponse>> ExecuteAsync(
+        public async Task<SearchOperationResponse> ExecuteAsync(
             string resourceSetId,
             Uri operationUri)
         {
@@ -70,7 +69,7 @@ namespace SimpleIdentityServer.UmaManager.Client.Operation
             var httpResult = await httpClient.SendAsync(request);
             httpResult.EnsureSuccessStatusCode();
             var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            return JsonConvert.DeserializeObject<List<SearchOperationResponse>>(content);
+            return JsonConvert.DeserializeObject<SearchOperationResponse>(content);
         }
 
         #endregion

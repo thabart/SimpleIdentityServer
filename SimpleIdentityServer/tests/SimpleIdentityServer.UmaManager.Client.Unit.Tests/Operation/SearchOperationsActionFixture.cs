@@ -21,8 +21,6 @@ using SimpleIdentityServer.UmaManager.Client.Factory;
 using SimpleIdentityServer.UmaManager.Client.Operation;
 using SimpleIdentityServer.UmaManager.Client.Unit.Tests.Fake;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -62,16 +60,13 @@ namespace SimpleIdentityServer.UmaManager.Client.Unit.Tests.Operation
             const string resourceSetId = "resource_set_id";
             const string url = "http://localhost/operations/";
             InitializeFakeObjects();
-            var operations = new List<SearchOperationResponse>
-            {
-                new SearchOperationResponse
-                {
-                    ApplicationName = applicationName,
-                    OperationName = operationName,
-                    ResourceSetId = resourceSetId
-                }
+            var operation = new SearchOperationResponse
+            {             
+                ApplicationName = applicationName,
+                OperationName = operationName,
+                ResourceSetId = resourceSetId               
             };
-            var json = JsonConvert.SerializeObject(operations);
+            var json = JsonConvert.SerializeObject(operation);
             var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.OK)
             {
                 Content = new StringContent(json)
@@ -87,8 +82,8 @@ namespace SimpleIdentityServer.UmaManager.Client.Unit.Tests.Operation
             // ASSERTS
             var request = fakeHttpHandler.GetRequest();
             Assert.NotNull(result);
-            Assert.True(result.First().OperationName == operationName);
-            Assert.True(result.First().ApplicationName == applicationName);
+            Assert.True(result.OperationName == operationName);
+            Assert.True(result.ApplicationName == applicationName);
             Assert.True(request.RequestUri.AbsoluteUri == $"http://localhost/operations?resourceSet={resourceSetId}");
         }
 
