@@ -22,7 +22,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
 using SimpleIdentityServer.Oauth2Instrospection.Authentication;
 using SimpleIdentityServer.Uma.Core;
-using SimpleIdentityServer.Uma.Core.Configuration;
 using SimpleIdentityServer.Uma.Core.Providers;
 using SimpleIdentityServer.Uma.EF;
 using SimpleIdentityServer.Uma.Host.Configuration;

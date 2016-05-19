@@ -14,10 +14,14 @@
 // limitations under the License.
 #endregion
 
-namespace SimpleIdentityServer.UmaIntrospection.Authentication
+using System.Collections.Generic;
+
+namespace SimpleIdentityServer.Uma.Common
 {
-    public class UmaIntrospectionOptions
+    public class Permission
     {
-        public string UmaConfigurationUrl { get; set; }
+        public string ResourceSetId { get; set; }
+
+        public List<string> Scopes { get; set; }
     }
 }
