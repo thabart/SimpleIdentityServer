@@ -52,6 +52,22 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             };
         }
 
+        [HttpGet("frontend/{id}")]
+        public ActionResult GetFrontend(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            var result = _codeSampleActions.GetFrontendCode(id);
+            result.Position = 0;
+            return new FileStreamResult(result, "application/zip")
+            {
+                FileDownloadName = "Frontend.zip"
+            };
+        }
+
         #endregion
     }
 }

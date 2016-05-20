@@ -49,7 +49,7 @@ namespace SimpleIdentityServer.Uma.Core.Code
             },
             {
                 TypeCode.Frontend,
-                "Backend"
+                "Frontend"
             }
         };
 
