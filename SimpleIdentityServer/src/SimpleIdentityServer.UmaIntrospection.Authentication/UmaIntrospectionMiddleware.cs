@@ -99,9 +99,6 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
             if (string.IsNullOrWhiteSpace(rpt))
             {
                 // FAKE USER
-                var claims = new List<Claim>();
-                var claimsIdentity = new ClaimsIdentity(claims, "UserInformation");
-                context.User = new ClaimsPrincipal(claimsIdentity);
                 await _nullAuthenticationNext(context);
                 return;
             }

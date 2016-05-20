@@ -15,6 +15,7 @@
 #endregion
 
 using Microsoft.Extensions.DependencyInjection;
+using SimpleIdentityServer.UmaManager.Client.Factory;
 using SimpleIdentityServer.UmaManager.Client.Operation;
 using System;
 
@@ -59,6 +60,9 @@ namespace SimpleIdentityServer.UmaManager.Client
 
             // Register operations
             serviceCollection.AddTransient<ISearchOperationsAction, SearchOperationsAction>();
+
+            // Register factories
+            serviceCollection.AddTransient<IHttpClientFactory, HttpClientFactory>();
         }
 
         #endregion

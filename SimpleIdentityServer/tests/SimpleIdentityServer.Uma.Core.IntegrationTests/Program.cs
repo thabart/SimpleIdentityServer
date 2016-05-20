@@ -46,13 +46,28 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
 
         public static void Main(string[] args)
         {
-            AuthorizedScenario();
-            AuthorizedScenarioByDiscovery();
+            GetRpt("1e6ae546-4ea5-4daa-805a-1b52806f5beb");
+            // AuthorizedScenario();
+            // AuthorizedScenarioByDiscovery();
         }
 
         #endregion
 
         #region Private static methods
+
+        private static void GetRpt(string resourceSetId)
+        {
+            // 1. Get token valid for uma_protection scope
+            var umaProtectionToken = GetGrantedToken(UmaProtectionScope);
+            // 2. Get token valid for uma_authorization scope
+            var umaAuthorizationToken = GetGrantedToken(UmaAuthorizationScope);
+            // 3. Get a permission
+            var permission = AddPermission(resourceSetId, new List<string> { "execute" }, umaProtectionToken.AccessToken);
+            // 4. Get authorization
+            var authorization = GetAuthorization(permission.TicketId, umaAuthorizationToken.AccessToken);
+            Console.WriteLine(authorization.Rpt);
+            Console.ReadLine();
+        }
 
         private static void AuthorizedScenario()
         {

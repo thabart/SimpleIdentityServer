@@ -33,6 +33,7 @@ namespace SimpleIdentityServer.TokenValidation.Host.Tests
 
         public void ConfigureServices(IServiceCollection services)
         {
+            // I. GRANT ACCESS BASED ON USER'S ROLES
             /*
             services.AddAuthorization(options =>
             {
@@ -40,8 +41,10 @@ namespace SimpleIdentityServer.TokenValidation.Host.Tests
             });
             */
 
+            // II. GRANT ACCESS BASED ON UMA AUTHORIZATION POLICY
             services.AddAuthorization(options =>
             {
+                // Add conventional uma authorization
                 options.AddPolicy("uma", policy => policy.AddConventionalUma());
             });
 
@@ -67,8 +70,8 @@ namespace SimpleIdentityServer.TokenValidation.Host.Tests
             app.UseAuthenticationWithUserInformation(options);
             */
 
-            /*
             // II. ENABLE INTROSPECTION ENDPOINT
+            /*
             var options = new Oauth2IntrospectionOptions
             {
                 InstrospectionEndPoint = "http://localhost:5000/introspect",
@@ -78,8 +81,14 @@ namespace SimpleIdentityServer.TokenValidation.Host.Tests
             app.UseAuthenticationWithIntrospection(options);
             */
 
-            // III. ENABLE UMA AUTHORIZATION
-            app.UseAuthenticationWithUmaIntrospection();
+            // III. ENABLE UMA AUTHENTICATION
+            var options = new UmaIntrospectionOptions
+            {
+                EnrichWithUmaManagerInformation = true,
+                OperationUrl = "http://localhost:8080/api/operations",
+                UmaConfigurationUrl = "http://localhost:5002/.well-known/uma-configuration"
+            };
+            app.UseAuthenticationWithUmaIntrospection(options);
 
             app.UseMvc(routes =>
             {

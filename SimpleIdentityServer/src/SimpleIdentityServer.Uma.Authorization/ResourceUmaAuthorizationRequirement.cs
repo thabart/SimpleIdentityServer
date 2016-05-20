@@ -14,10 +14,12 @@
 // limitations under the License.
 #endregion
 
-using System;
 using Microsoft.AspNet.Authorization;
+using SimpleIdentityServer.Uma.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 
 namespace SimpleIdentityServer.Uma.Authorization
 {
@@ -51,8 +53,23 @@ namespace SimpleIdentityServer.Uma.Authorization
 
         protected override void Handle(AuthorizationContext context, ResourceUmaAuthorizationRequirement requirement)
         {
-            var resource = context.Resource;
-            context.Succeed(requirement);
+            if (context.User == null)
+            {
+                return;
+            }
+
+            var claimsIdentity = context.User.Identity as ClaimsIdentity;
+            if (claimsIdentity == null)
+            {
+                return;
+            }
+
+            var permissions = claimsIdentity.GetPermissions();
+            if (permissions.Any(p => string.Equals(p.ResourceSetId, _resourceSetId, StringComparison.OrdinalIgnoreCase) && 
+                _scopes.All(s => p.Scopes.Any(sc => string.Equals(sc, s, StringComparison.OrdinalIgnoreCase)))))
+            {
+                context.Succeed(requirement);
+            }
         }
 
         #endregion

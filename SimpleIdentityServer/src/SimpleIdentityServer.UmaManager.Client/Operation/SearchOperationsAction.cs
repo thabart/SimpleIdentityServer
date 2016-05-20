@@ -59,7 +59,7 @@ namespace SimpleIdentityServer.UmaManager.Client.Operation
                 throw new ArgumentNullException(nameof(operationUri));
             }
 
-            var operationUrl = $"{operationUri.AbsoluteUri.TrimEnd('/')}?resourceSet={resourceSetId}";
+            var operationUrl = $"{operationUri.AbsoluteUri.TrimEnd('/')}/search?resourceSet={resourceSetId}";
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,

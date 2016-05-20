@@ -38,7 +38,7 @@ namespace SimpleIdentityServer.Client.DTOs.Responses
         {
             get
             {
-                return this[ResourceSetIdName].ToString();
+                return this.GetString(ResourceSetIdName);
             }
             set
             {
@@ -50,11 +50,11 @@ namespace SimpleIdentityServer.Client.DTOs.Responses
         {
             get
             {
-                return this[ScopesName] as List<string>;
+                return this.GetObject<List<string>>(ScopesName);
             }
             set
             {
-                this.SetValue(ScopesName, value);
+                this.SetObject(ScopesName, value);
             }
         }
 
@@ -62,7 +62,7 @@ namespace SimpleIdentityServer.Client.DTOs.Responses
         {
             get
             {
-                return double.Parse(this[ExpirationName].ToString());
+                return this.GetDouble(ExpirationName);
             }
             set
             {
@@ -95,7 +95,7 @@ namespace SimpleIdentityServer.Client.DTOs.Responses
         {
             get
             {
-                return bool.Parse(this[ActiveName].ToString());
+                return this.GetBoolean(ActiveName);
             }
             set
             {
@@ -107,7 +107,7 @@ namespace SimpleIdentityServer.Client.DTOs.Responses
         {
             get
             {
-                return double.Parse(this[ExpirationName].ToString());
+                return this.GetDouble(ExpirationName);
             }
             set
             {
@@ -119,7 +119,7 @@ namespace SimpleIdentityServer.Client.DTOs.Responses
         {
             get
             {
-                return double.Parse(this[IatName].ToString());
+                return this.GetDouble(IatName);
             }
             set
             {
@@ -131,7 +131,7 @@ namespace SimpleIdentityServer.Client.DTOs.Responses
         {
             get
             {
-                return double.Parse(this[NbfName].ToString());
+                return this.GetDouble(NbfName);
             }
             set
             {
@@ -143,11 +143,11 @@ namespace SimpleIdentityServer.Client.DTOs.Responses
         {
             get
             {
-                return this[PermissionsName] as List<PermissionResponse>;
+                return this.GetObject<List<PermissionResponse>>(PermissionsName);
             }
             set
             {
-                this.SetValue(PermissionsName, value);
+                this.SetObject(PermissionsName, value);
             }
         }
 
