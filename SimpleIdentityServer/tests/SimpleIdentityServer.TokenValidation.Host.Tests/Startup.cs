@@ -46,6 +46,7 @@ namespace SimpleIdentityServer.TokenValidation.Host.Tests
             {
                 // Add conventional uma authorization
                 options.AddPolicy("uma", policy => policy.AddConventionalUma());
+                // options.AddPolicy("resourceSet", policy => policy.AddResourceUma("<GUID>", "<read>","<update>"));
             });
 
             services.AddAuthentication();

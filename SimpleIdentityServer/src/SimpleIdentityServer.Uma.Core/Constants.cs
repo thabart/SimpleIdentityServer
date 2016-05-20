@@ -14,6 +14,9 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Uma.Core.Code;
+using System.Collections.Generic;
+
 namespace SimpleIdentityServer.Uma.Core
 {
     internal static class Constants
@@ -39,5 +42,18 @@ namespace SimpleIdentityServer.Uma.Core
         }
 
         #endregion
+
+        public static class LanguageCodes
+        {
+            public const string Csharp = "csharp";
+        }
+        
+        public static Dictionary<Languages, string> MappingLanguageToCodes = new Dictionary<Languages, string>
+        {
+            {
+                Languages.Csharp,
+                LanguageCodes.Csharp
+            }
+        };
     }
 }

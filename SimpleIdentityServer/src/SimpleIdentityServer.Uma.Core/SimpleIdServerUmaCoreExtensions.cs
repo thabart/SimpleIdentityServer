@@ -17,6 +17,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Uma.Core.Api.Authorization;
 using SimpleIdentityServer.Uma.Core.Api.Authorization.Actions;
+using SimpleIdentityServer.Uma.Core.Api.CodeSampleController;
+using SimpleIdentityServer.Uma.Core.Api.CodeSampleController.Actions;
 using SimpleIdentityServer.Uma.Core.Api.ConfigurationController;
 using SimpleIdentityServer.Uma.Core.Api.ConfigurationController.Actions;
 using SimpleIdentityServer.Uma.Core.Api.IntrospectionController;
@@ -29,6 +31,7 @@ using SimpleIdentityServer.Uma.Core.Api.ResourceSetController;
 using SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions;
 using SimpleIdentityServer.Uma.Core.Api.ScopeController;
 using SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions;
+using SimpleIdentityServer.Uma.Core.Code;
 using SimpleIdentityServer.Uma.Core.Helpers;
 using SimpleIdentityServer.Uma.Core.Policies;
 using SimpleIdentityServer.Uma.Core.Validators;
@@ -109,6 +112,9 @@ namespace SimpleIdentityServer.Uma.Core
             serviceCollection.AddTransient<IGetConfigurationAction, GetConfigurationAction>();
             serviceCollection.AddTransient<IGetIntrospectAction, GetIntrospectAction>();
             serviceCollection.AddTransient<IIntrospectionActions, IntrospectionActions>();
+            serviceCollection.AddTransient<IGetBackendCodeAction, GetBackendCodeAction>();
+            serviceCollection.AddTransient<ICodeProvider, CodeProvider>();
+            serviceCollection.AddTransient<ICodeSampleActions, CodeSampleActions>();
             serviceCollection.AddInstance(umaServerOptions);
         }
 

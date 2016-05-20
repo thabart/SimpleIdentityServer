@@ -1,33 +1,42 @@
 {
-    "version": "1.0.0-*",
-    "description": "SimpleIdentityServer.Uma.Core Class Library",
-    "authors": [ "thierry habart" ],
-    "tags": [ "" ],
-    "projectUrl": "",
-    "licenseUrl": "",
+  "version": "1.0.0-*",
+  "description": "SimpleIdentityServer.Uma.Core Class Library",
+  "authors": [ "thierry habart" ],
+  "tags": [ "" ],
+  "projectUrl": "",
+  "licenseUrl": "",
 
-    "dependencies": {
-        "Microsoft.AspNet.WebApi.Client": "5.2.3",
-        "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc1-final",
-        "Microsoft.AspNet.Mvc": "6.0.0-rc1-final"
-    },
+  "dependencies": {
+    "Microsoft.AspNet.WebApi.Client": "5.2.3",
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc1-final",
+    "Microsoft.AspNet.Mvc": "6.0.0-rc1-final"
+  },
 
-    "tooling": {
-        "defaultNamespace": "SimpleIdentityServer.Uma.Core"
-    },
+  "tooling": {
+    "defaultNamespace": "SimpleIdentityServer.Uma.Core"
+  },
 
-    "frameworks": {
-      "dnx451": {
-        "frameworkAssemblies": {
-          "System.Net.Http": "4.0.0.0",
-          "System.IdentityModel": "4.0.0.0"
-        }
+  "frameworks": {
+    "dnx451": {
+      "frameworkAssemblies": {
+        "System.Net.Http": "4.0.0.0",
+        "System.IdentityModel": "4.0.0.0"
       },
-      "dnxcore50": {
-        "dependencies": {
-          "Microsoft.AspNet.WebUtilities": "1.0.0-rc1-final",
-          "System.Net.Http": "4.0.1-beta-23516"
-        }
+      "dependencies": {
+        "System.IO.Compression": "4.0.0"
+      }
+    },
+    "dnxcore50": {
+      "dependencies": {
+        "Microsoft.AspNet.WebUtilities": "1.0.0-rc1-final",
+        "System.Net.Http": "4.0.1-beta-23516",
+        "System.IO.Compression": "4.0.0"
       }
     }
+  },
+
+  "resource": [
+    "Code/Backend/**",
+    "Code/Frontend/**"
+  ]
 }

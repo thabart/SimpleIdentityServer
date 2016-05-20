@@ -33,6 +33,8 @@ namespace SimpleIdentityServer.Uma.Host
             public const string Policies = "/policies";
 
             public const string Introspection = "/status";
+
+            public const string CodeSample = "/codesamples";
         }
 
         public static class ConfigurationResponseNames

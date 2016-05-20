@@ -1344,7 +1344,8 @@
         "dependencies": {
           "Microsoft.AspNet.Mvc": "6.0.0-rc1-final",
           "Microsoft.AspNet.WebApi.Client": "5.2.3",
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc1-final"
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc1-final",
+          "System.IO.Compression": "4.0.0"
         },
         "frameworkAssemblies": [
           "System.IdentityModel",
@@ -1422,6 +1423,18 @@
       },
       "System.IO/4.0.0": {
         "type": "package",
+        "compile": {
+          "ref/net45/_._": {}
+        },
+        "runtime": {
+          "lib/net45/_._": {}
+        }
+      },
+      "System.IO.Compression/4.0.0": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "System.IO.Compression"
+        ],
         "compile": {
           "ref/net45/_._": {}
         },
@@ -2818,6 +2831,7 @@
           "Microsoft.AspNet.WebApi.Client": "5.2.3",
           "Microsoft.AspNet.WebUtilities": "1.0.0-rc1-final",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc1-final",
+          "System.IO.Compression": "4.0.0",
           "System.Net.Http": "4.0.1-beta-23516"
         }
       },
@@ -3134,6 +3148,26 @@
         },
         "runtime": {
           "lib/DNXCore50/System.IO.dll": {}
+        }
+      },
+      "System.IO.Compression/4.0.0": {
+        "type": "package",
+        "dependencies": {
+          "System.Collections": "4.0.0",
+          "System.IO": "4.0.0",
+          "System.Resources.ResourceManager": "4.0.0",
+          "System.Runtime": "4.0.0",
+          "System.Runtime.Extensions": "4.0.0",
+          "System.Runtime.InteropServices": "4.0.0",
+          "System.Text.Encoding": "4.0.0",
+          "System.Threading": "4.0.0",
+          "System.Threading.Tasks": "4.0.0"
+        },
+        "compile": {
+          "ref/dotnet/System.IO.Compression.dll": {}
+        },
+        "runtime": {
+          "lib/dotnet/System.IO.Compression.dll": {}
         }
       },
       "System.IO.FileSystem/4.0.1-beta-23516": {
@@ -5092,7 +5126,8 @@
         "dependencies": {
           "Microsoft.AspNet.Mvc": "6.0.0-rc1-final",
           "Microsoft.AspNet.WebApi.Client": "5.2.3",
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc1-final"
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc1-final",
+          "System.IO.Compression": "4.0.0"
         },
         "frameworkAssemblies": [
           "System.IdentityModel",
@@ -5175,6 +5210,24 @@
         },
         "runtime": {
           "lib/net45/_._": {}
+        }
+      },
+      "System.IO.Compression/4.0.0": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "System.IO.Compression"
+        ],
+        "compile": {
+          "ref/net45/_._": {}
+        },
+        "runtime": {
+          "lib/net45/_._": {}
+        }
+      },
+      "System.IO.Compression.clrcompression-x86/4.0.0": {
+        "type": "package",
+        "native": {
+          "runtimes/win7-x86/native/clrcompression.dll": {}
         }
       },
       "System.Linq/4.0.0": {
@@ -6647,7 +6700,8 @@
         "dependencies": {
           "Microsoft.AspNet.Mvc": "6.0.0-rc1-final",
           "Microsoft.AspNet.WebApi.Client": "5.2.3",
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc1-final"
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc1-final",
+          "System.IO.Compression": "4.0.0"
         },
         "frameworkAssemblies": [
           "System.IdentityModel",
@@ -6730,6 +6784,24 @@
         },
         "runtime": {
           "lib/net45/_._": {}
+        }
+      },
+      "System.IO.Compression/4.0.0": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "System.IO.Compression"
+        ],
+        "compile": {
+          "ref/net45/_._": {}
+        },
+        "runtime": {
+          "lib/net45/_._": {}
+        }
+      },
+      "System.IO.Compression.clrcompression-x64/4.0.0": {
+        "type": "package",
+        "native": {
+          "runtimes/win7-x64/native/clrcompression.dll": {}
         }
       },
       "System.Linq/4.0.0": {
@@ -8447,6 +8519,7 @@
           "Microsoft.AspNet.WebApi.Client": "5.2.3",
           "Microsoft.AspNet.WebUtilities": "1.0.0-rc1-final",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc1-final",
+          "System.IO.Compression": "4.0.0",
           "System.Net.Http": "4.0.1-beta-23516"
         }
       },
@@ -8811,6 +8884,12 @@
         },
         "runtime": {
           "lib/dotnet/System.IO.Compression.dll": {}
+        }
+      },
+      "System.IO.Compression.clrcompression-x86/4.0.0": {
+        "type": "package",
+        "native": {
+          "runtimes/win7-x86/native/clrcompression.dll": {}
         }
       },
       "System.IO.FileSystem/4.0.1-beta-23516": {
@@ -11181,6 +11260,7 @@
           "Microsoft.AspNet.WebApi.Client": "5.2.3",
           "Microsoft.AspNet.WebUtilities": "1.0.0-rc1-final",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc1-final",
+          "System.IO.Compression": "4.0.0",
           "System.Net.Http": "4.0.1-beta-23516"
         }
       },
@@ -11545,6 +11625,12 @@
         },
         "runtime": {
           "lib/dotnet/System.IO.Compression.dll": {}
+        }
+      },
+      "System.IO.Compression.clrcompression-x64/4.0.0": {
+        "type": "package",
+        "native": {
+          "runtimes/win7-x64/native/clrcompression.dll": {}
         }
       },
       "System.IO.FileSystem/4.0.1-beta-23516": {
@@ -15178,6 +15264,28 @@
         "System.IO.Compression.4.0.0.nupkg",
         "System.IO.Compression.4.0.0.nupkg.sha512",
         "System.IO.Compression.nuspec"
+      ]
+    },
+    "System.IO.Compression.clrcompression-x64/4.0.0": {
+      "type": "package",
+      "sha512": "Lqr+URMwKzf+8HJF6YrqEqzKzDzFJTE4OekaxqdIns71r8Ufbd8SbZa0LKl9q+7nu6Em4SkIEXVMB7plSXekOw==",
+      "files": [
+        "runtimes/win10-x64/native/ClrCompression.dll",
+        "runtimes/win7-x64/native/clrcompression.dll",
+        "System.IO.Compression.clrcompression-x64.4.0.0.nupkg",
+        "System.IO.Compression.clrcompression-x64.4.0.0.nupkg.sha512",
+        "System.IO.Compression.clrcompression-x64.nuspec"
+      ]
+    },
+    "System.IO.Compression.clrcompression-x86/4.0.0": {
+      "type": "package",
+      "sha512": "GmevpuaMRzYDXHu+xuV10fxTO8DsP7OKweWxYtkaxwVnDSj9X6RBupSiXdiveq9yj/xjZ1NbG+oRRRb99kj+VQ==",
+      "files": [
+        "runtimes/win10-x86/native/ClrCompression.dll",
+        "runtimes/win7-x86/native/clrcompression.dll",
+        "System.IO.Compression.clrcompression-x86.4.0.0.nupkg",
+        "System.IO.Compression.clrcompression-x86.4.0.0.nupkg.sha512",
+        "System.IO.Compression.clrcompression-x86.nuspec"
       ]
     },
     "System.IO.FileSystem/4.0.1-beta-23516": {
