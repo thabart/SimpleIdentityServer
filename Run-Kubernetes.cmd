@@ -1,3 +1,4 @@
+docker rm -f $(docker ps -aq)
 export K8S_VERSION=$(curl -sS https://storage.googleapis.com/kubernetes-release/release/stable.txt)
 export ARCH=amd64
 docker run -d \
@@ -18,3 +19,9 @@ docker run -d \
         --cluster-dns=10.0.0.10 \
         --cluster-domain=cluster.local \
         --allow-privileged --v=2
+# Run kubectl  commands 
+docker run                       \
+  -ti                            \
+  --net=host                     \
+  tdeheurles/gcloud-tools:latest \
+  bash
