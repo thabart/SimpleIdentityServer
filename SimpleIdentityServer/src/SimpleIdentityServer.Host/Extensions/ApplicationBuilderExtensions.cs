@@ -31,6 +31,7 @@ using SimpleIdentityServer.Host.Controllers;
 using SimpleIdentityServer.Host.MiddleWare;
 using SimpleIdentityServer.Logging;
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
@@ -124,10 +125,9 @@ namespace SimpleIdentityServer.Host
             app.UseIISPlatformHandler(opts => opts.AuthenticationDescriptions.Clear());
 
             var staticFileOptions = new StaticFileOptions();
-            staticFileOptions.FileProvider = new CompositeFileProvider(
-                    new EmbeddedFileProvider(
+            staticFileOptions.FileProvider = new EmbeddedFileProvider(
                         typeof(AuthenticateController).GetTypeInfo().Assembly,
-                        "SimpleIdentityServer.Host.wwwroot"));
+                        "SimpleIdentityServer.Host.wwwroot");
             app.UseStaticFiles(staticFileOptions);           
             app.UseStatusCodePagesWithRedirects("~/Error/{0}");
 

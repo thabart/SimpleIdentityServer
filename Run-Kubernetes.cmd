@@ -19,6 +19,7 @@ docker run -d \
         --cluster-dns=10.0.0.10 \
         --cluster-domain=cluster.local \
         --allow-privileged --v=2
+docker-machine ssh default -f -N -L "8080:localhost:8080"
 # Run kubectl  commands 
 docker run                       \
   -ti                            \

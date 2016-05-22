@@ -203,12 +203,9 @@ namespace SimpleIdentityServer.Host
             services.AddMvc();
             services.Configure<RazorViewEngineOptions>(options =>
             {
-                options.FileProvider = new CompositeFileProvider(
-                    new EmbeddedFileProvider(
+                options.FileProvider = new EmbeddedFileProvider(
                         typeof(AuthenticateController).GetTypeInfo().Assembly,
                         "SimpleIdentityServer.Host"
-                    ),
-                    options.FileProvider
                 );
             });
         }

@@ -1,0 +1,21 @@
+version: '2'
+services:
+ web:
+  build:
+   dockerfile: Dockerfile-Authorization
+   context: .
+  ports:
+   - "5000:5000"
+  depends_on:
+   - postgresql
+ postgresql:
+  image: sameersbn/postgresql:9.4-21
+  ports:
+   - "5432:5432"
+  environment:
+   - DEBUG=false
+   - DB_USER=postgres
+   - DB_PASS=password
+   - DB_NAME=postgres
+  volumes:
+   - /srv/docker/postgresql:/var/lib/postgresql

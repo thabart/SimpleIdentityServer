@@ -145,12 +145,9 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
             {
                 serviceCollection.Configure<RazorViewEngineOptions>(options =>
                 {
-                    options.FileProvider = new CompositeFileProvider(
-                        new EmbeddedFileProvider(
-                            typeof(SwaggerUiController).GetTypeInfo().Assembly,
-                            "SimpleIdentityServer.Manager.Host"
-                        ),
-                        options.FileProvider
+                    options.FileProvider = new EmbeddedFileProvider(
+                      typeof(SwaggerUiController).GetTypeInfo().Assembly,
+                      "SimpleIdentityServer.Manager.Host"
                     );
                 });
             }
