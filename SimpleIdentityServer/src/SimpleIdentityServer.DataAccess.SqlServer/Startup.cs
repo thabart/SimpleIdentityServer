@@ -53,6 +53,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
             var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
             var isSqlServer = bool.Parse(Configuration["isSqlServer"]);
             var isSqlLite = bool.Parse(Configuration["isSqlLite"]);
+            var isPostgre = bool.Parse(Configuration["isPostgre"]);
             Console.WriteLine(isSqlServer);
             Console.WriteLine(connectionString);
             if (isSqlServer)
@@ -68,6 +69,13 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
                    .AddSqlite()
                    .AddDbContext<SimpleIdentityServerContext>(options =>
                        options.UseSqlite(connectionString));
+            }
+            else if (isPostgre)
+            {
+                services.AddEntityFramework()
+                    .AddNpgsql()
+                    .AddDbContext<SimpleIdentityServerContext>(options =>
+                        options.UseNpgsql(connectionString));
             }
         }
 

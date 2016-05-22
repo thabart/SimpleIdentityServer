@@ -50,6 +50,17 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
             return serviceCollection;
         }
 
+        public static IServiceCollection AddSimpleIdentityServerPostgre(
+            this IServiceCollection serviceCollection,
+            string connectionString) {
+            RegisterServices(serviceCollection);
+            serviceCollection.AddEntityFramework()
+                .AddNpgsql()
+                .AddDbContext<SimpleIdentityServerContext>(options =>
+                    options.UseNpgsql(connectionString));
+            return serviceCollection;
+        }
+
         #endregion
 
         #region Private method
