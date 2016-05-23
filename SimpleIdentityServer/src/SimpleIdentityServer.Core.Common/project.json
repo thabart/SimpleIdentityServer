@@ -25,9 +25,9 @@
     },
     "netstandard1.5": {
       "dependencies": {
-        "System.IO": "4.1.0-rc2-24027",
-        "System.Runtime.Serialization.Json": "4.0.2-rc2-24027",
-        "System.Runtime.Extensions": "4.1.0-rc2-24027"
+        "System.IO": "4.1.0-*",
+        "System.Runtime.Serialization.Json": "4.0.2-*",
+        "System.Runtime.Extensions": "4.1.0-*"
       }
     }
   }

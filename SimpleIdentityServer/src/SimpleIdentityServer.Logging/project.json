@@ -2,19 +2,21 @@
   "version": "1.0.0-*",
   "description": "SimpleIdentityServer.Logging Class Library",
   "authors": [ "thierry habart" ],
-  "tags": [ "" ],
-  "projectUrl": "",
-  "licenseUrl": "",
+  "packOptions": {
+    "tags": [ "" ],
+	"projectUrl": "",
+	"licenseUrl": ""
+  },
 
   "tooling": {
     "defaultNamespace": "SimpleIdentityServer.Logging"
   },
 
   "frameworks": {
-    "dnx451": { },
-    "dnxcore50": {
+    "net46": { },
+    "netstandard1.5": {
       "dependencies": {
-        "System.Diagnostics.Tracing": "4.1.0-rc2-23826"
+        "System.Diagnostics.Tracing": "4.1.0-*"
       }
     }
   }
