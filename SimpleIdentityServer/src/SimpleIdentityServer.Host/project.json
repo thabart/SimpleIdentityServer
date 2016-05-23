@@ -49,7 +49,7 @@
       "gulp clean",
       "gulp min"
     ],
-	  "postrestore": [ "npm install", "bower --allow-root install" ],
+	"postrestore": [ "npm install", "bower --allow-root install" ],
     "prepare": [ "gulp clean", "gulp min" ]
   },
 

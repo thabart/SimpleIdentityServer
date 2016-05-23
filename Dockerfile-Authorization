@@ -9,7 +9,10 @@ COPY SimpleIdentityServer/src /app
 WORKDIR /app
 
 # Add nuget sources + create database + restore the nuget packages + crate the database
-# RUN bash -c "nuget sources Add -Name ASPNETVNEXT -Source https://www.myget.org/F/aspnetvnext/api/v3/index.json \
+RUN curl -sL https://deb.nodesource.com/setup_5.x | bash -
+RUN apt-get install -y nodejs git libunwind8 libssl-dev bzip2 \
+	&& npm install -g bower gulp
+#RUN bash -c "nuget sources Add -Name ASPNETVNEXT -Source https://www.myget.org/F/aspnetvnext/api/v3/index.json \
 #		&& nuget sources Add -Name AspNetCi -Source https://www.myget.org/F/aspnetcidev/api/v3/index.json \
 #		&& dnu restore \
 #		&& source $DNX_USER_HOME/dnvm/dnvm.sh \

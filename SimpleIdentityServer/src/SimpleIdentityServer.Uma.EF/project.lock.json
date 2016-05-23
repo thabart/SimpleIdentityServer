@@ -3416,23 +3416,8 @@
           "lib/DNXCore50/System.Reflection.TypeExtensions.dll": {}
         }
       },
-      "System.Resources.ReaderWriter/4.0.0-beta-23516": {
-        "type": "package",
-        "dependencies": {
-          "System.Collections": "4.0.10",
-          "System.IO": "4.0.10",
-          "System.Resources.ResourceManager": "4.0.0",
-          "System.Runtime": "4.0.20",
-          "System.Runtime.Extensions": "4.0.10",
-          "System.Text.Encoding": "4.0.10",
-          "System.Threading": "4.0.10"
-        },
-        "compile": {
-          "ref/dotnet5.1/System.Resources.ReaderWriter.dll": {}
-        },
-        "runtime": {
-          "lib/DNXCore50/System.Resources.ReaderWriter.dll": {}
-        }
+      "System.Resources.ReaderWriter/4.0.0-rc2-24027": {
+        "type": "package"
       },
       "System.Resources.ResourceManager/4.0.1-beta-23516": {
         "type": "package",
@@ -9222,23 +9207,8 @@
           "lib/DNXCore50/System.Reflection.TypeExtensions.dll": {}
         }
       },
-      "System.Resources.ReaderWriter/4.0.0-beta-23516": {
-        "type": "package",
-        "dependencies": {
-          "System.Collections": "4.0.10",
-          "System.IO": "4.0.10",
-          "System.Resources.ResourceManager": "4.0.0",
-          "System.Runtime": "4.0.20",
-          "System.Runtime.Extensions": "4.0.10",
-          "System.Text.Encoding": "4.0.10",
-          "System.Threading": "4.0.10"
-        },
-        "compile": {
-          "ref/dotnet5.1/System.Resources.ReaderWriter.dll": {}
-        },
-        "runtime": {
-          "lib/DNXCore50/System.Resources.ReaderWriter.dll": {}
-        }
+      "System.Resources.ReaderWriter/4.0.0-rc2-24027": {
+        "type": "package"
       },
       "System.Resources.ResourceManager/4.0.1-beta-23516": {
         "type": "package",
@@ -11963,23 +11933,8 @@
           "lib/DNXCore50/System.Reflection.TypeExtensions.dll": {}
         }
       },
-      "System.Resources.ReaderWriter/4.0.0-beta-23516": {
-        "type": "package",
-        "dependencies": {
-          "System.Collections": "4.0.10",
-          "System.IO": "4.0.10",
-          "System.Resources.ResourceManager": "4.0.0",
-          "System.Runtime": "4.0.20",
-          "System.Runtime.Extensions": "4.0.10",
-          "System.Text.Encoding": "4.0.10",
-          "System.Threading": "4.0.10"
-        },
-        "compile": {
-          "ref/dotnet5.1/System.Resources.ReaderWriter.dll": {}
-        },
-        "runtime": {
-          "lib/DNXCore50/System.Resources.ReaderWriter.dll": {}
-        }
+      "System.Resources.ReaderWriter/4.0.0-rc2-24027": {
+        "type": "package"
       },
       "System.Resources.ResourceManager/4.0.1-beta-23516": {
         "type": "package",
@@ -16266,36 +16221,41 @@
         "System.Reflection.TypeExtensions.nuspec"
       ]
     },
-    "System.Resources.ReaderWriter/4.0.0-beta-23516": {
+    "System.Resources.ReaderWriter/4.0.0-rc2-24027": {
       "type": "package",
-      "serviceable": true,
-      "sha512": "NQMV4xl+LGD4mfY0reS9EddaYwsvU8xif2n7ruXJw/rn0Vnq4R58eOXkPiXmpePv4Pw4GRHjrnyriWUS+cRysA==",
+      "sha512": "fiKvkRiumtljbE6RQgFMdqrSTz7s/BS/U3FYZbNNevegLS43qI3kxvd3ZT1IEs7woNVfH2tru+QzmGh6mTh3QA==",
       "files": [
-        "lib/DNXCore50/System.Resources.ReaderWriter.dll",
+        "dotnet_library_license.txt",
         "lib/MonoAndroid10/_._",
         "lib/MonoTouch10/_._",
         "lib/net46/System.Resources.ReaderWriter.dll",
+        "lib/netstandard1.3/System.Resources.ReaderWriter.dll",
         "lib/xamarinios10/_._",
         "lib/xamarinmac20/_._",
-        "ref/dotnet5.1/de/System.Resources.ReaderWriter.xml",
-        "ref/dotnet5.1/es/System.Resources.ReaderWriter.xml",
-        "ref/dotnet5.1/fr/System.Resources.ReaderWriter.xml",
-        "ref/dotnet5.1/it/System.Resources.ReaderWriter.xml",
-        "ref/dotnet5.1/ja/System.Resources.ReaderWriter.xml",
-        "ref/dotnet5.1/ko/System.Resources.ReaderWriter.xml",
-        "ref/dotnet5.1/ru/System.Resources.ReaderWriter.xml",
-        "ref/dotnet5.1/System.Resources.ReaderWriter.dll",
-        "ref/dotnet5.1/System.Resources.ReaderWriter.xml",
-        "ref/dotnet5.1/zh-hans/System.Resources.ReaderWriter.xml",
-        "ref/dotnet5.1/zh-hant/System.Resources.ReaderWriter.xml",
+        "lib/xamarintvos10/_._",
+        "lib/xamarinwatchos10/_._",
         "ref/MonoAndroid10/_._",
         "ref/MonoTouch10/_._",
         "ref/net46/System.Resources.ReaderWriter.dll",
+        "ref/netstandard1.3/de/System.Resources.ReaderWriter.xml",
+        "ref/netstandard1.3/es/System.Resources.ReaderWriter.xml",
+        "ref/netstandard1.3/fr/System.Resources.ReaderWriter.xml",
+        "ref/netstandard1.3/it/System.Resources.ReaderWriter.xml",
+        "ref/netstandard1.3/ja/System.Resources.ReaderWriter.xml",
+        "ref/netstandard1.3/ko/System.Resources.ReaderWriter.xml",
+        "ref/netstandard1.3/ru/System.Resources.ReaderWriter.xml",
+        "ref/netstandard1.3/System.Resources.ReaderWriter.dll",
+        "ref/netstandard1.3/System.Resources.ReaderWriter.xml",
+        "ref/netstandard1.3/zh-hans/System.Resources.ReaderWriter.xml",
+        "ref/netstandard1.3/zh-hant/System.Resources.ReaderWriter.xml",
         "ref/xamarinios10/_._",
         "ref/xamarinmac20/_._",
-        "System.Resources.ReaderWriter.4.0.0-beta-23516.nupkg",
-        "System.Resources.ReaderWriter.4.0.0-beta-23516.nupkg.sha512",
-        "System.Resources.ReaderWriter.nuspec"
+        "ref/xamarintvos10/_._",
+        "ref/xamarinwatchos10/_._",
+        "System.Resources.ReaderWriter.4.0.0-rc2-24027.nupkg",
+        "System.Resources.ReaderWriter.4.0.0-rc2-24027.nupkg.sha512",
+        "System.Resources.ReaderWriter.nuspec",
+        "ThirdPartyNotices.txt"
       ]
     },
     "System.Resources.ResourceManager/4.0.0": {
