@@ -8,7 +8,7 @@ using SimpleIdentityServer.DataAccess.SqlServer;
 namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
 {
     [DbContext(typeof(SimpleIdentityServerContext))]
-    [Migration("20160225183645_Initialize")]
+    [Migration("20160523093146_Initialize")]
     partial class Initialize
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -201,6 +201,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                     b.Property<int>("ExpiresIn");
 
                     b.Property<string>("IdTokenPayLoad");
+
+                    b.Property<string>("ParentRefreshToken");
 
                     b.Property<string>("RefreshToken");
 

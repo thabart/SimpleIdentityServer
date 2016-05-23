@@ -201,6 +201,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
 
                     b.Property<string>("IdTokenPayLoad");
 
+                    b.Property<string>("ParentRefreshToken");
+
                     b.Property<string>("RefreshToken");
 
                     b.Property<string>("Scope");

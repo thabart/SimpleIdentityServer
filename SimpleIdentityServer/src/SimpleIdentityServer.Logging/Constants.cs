@@ -53,6 +53,8 @@ namespace SimpleIdentityServer.Logging
             public const int StartGetTokenByClientCredentials = 29;
             public const int EndGetTokenByClientCredentials = 30;
             public const int Information = 31;
+            public const int StartRevokeToken = 32;
+            public const int EndRevokeToken = 33;
         }
 
         public static class Tasks

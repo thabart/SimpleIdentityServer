@@ -21,6 +21,7 @@ using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Host.DTOs.Request;
 using SimpleIdentityServer.Host.Extensions;
+using System;
 using System.Linq;
 using System.Net.Http.Headers;
 
@@ -36,7 +37,9 @@ namespace SimpleIdentityServer.Api.Controllers.Api
         {
             _tokenActions = tokenActions;
         }
-        
+
+        #region Public methods
+
         // [SimpleTypeFilterAttribute(typeof(RateLimitationFilterAttribute), Arguments = new object[] { "PostToken" })]
         [HttpPost]
         public GrantedToken Post([FromForm] TokenRequest tokenRequest)
@@ -82,5 +85,35 @@ namespace SimpleIdentityServer.Api.Controllers.Api
 
             return result;
         }
+
+        [HttpPost("revoke")]
+        public ActionResult Post([FromForm] RevocationRequest revocationRequest)
+        {
+            if (revocationRequest == null)
+            {
+                throw new ArgumentNullException(nameof(revocationRequest));
+            }
+
+            // Fetch the authorization header
+            StringValues authorizationHeader;
+            AuthenticationHeaderValue authenticationHeaderValue = null;
+            if (Request.Headers.TryGetValue("Authorization", out authorizationHeader))
+            {
+                var authorizationHeaderValue = authorizationHeader.First();
+                var splittedAuthorizationHeaderValue = authorizationHeaderValue.Split(' ');
+                if (splittedAuthorizationHeaderValue.Count() == 2)
+                {
+                    authenticationHeaderValue = new AuthenticationHeaderValue(
+                        splittedAuthorizationHeaderValue[0],
+                        splittedAuthorizationHeaderValue[1]);
+                }
+            }
+
+            // Revoke the token
+            _tokenActions.RevokeToken(revocationRequest.ToParameter(), authenticationHeaderValue);
+            return new HttpOkResult();
+        }
+
+        #endregion
     }
 }

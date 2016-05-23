@@ -41,6 +41,10 @@ namespace SimpleIdentityServer.Core.Api.Token
         GrantedToken GetTokenByClientCredentialsGrantType(
             ClientCredentialsGrantTypeParameter clientCredentialsGrantTypeParameter,
             AuthenticationHeaderValue authenticationHeaderValue);
+
+        bool RevokeToken(
+            RevokeTokenParameter revokeTokenParameter,
+            AuthenticationHeaderValue authenticationHeaderValue);
     }
 
     public class TokenActions : ITokenActions
@@ -61,6 +65,8 @@ namespace SimpleIdentityServer.Core.Api.Token
 
         private readonly IClientCredentialsGrantTypeParameterValidator _clientCredentialsGrantTypeParameterValidator;
 
+        private readonly IRevokeTokenAction _revokeTokenAction;
+
         private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
 
         public TokenActions(
@@ -72,7 +78,8 @@ namespace SimpleIdentityServer.Core.Api.Token
             IGetTokenByRefreshTokenGrantTypeAction getTokenByRefreshTokenGrantTypeAction,
             IGetTokenByClientCredentialsGrantTypeAction getTokenByClientCredentialsGrantTypeAction,
             IClientCredentialsGrantTypeParameterValidator clientCredentialsGrantTypeParameterValidator,
-            ISimpleIdentityServerEventSource simpleIdentityServerEventSource)
+            ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
+            IRevokeTokenAction revokeTokenAction)
         {
             _getTokenByResourceOwnerCredentialsGrantType = getTokenByResourceOwnerCredentialsGrantType;
             _getTokenByAuthorizationCodeGrantTypeAction = getTokenByAuthorizationCodeGrantTypeAction;
@@ -83,6 +90,7 @@ namespace SimpleIdentityServer.Core.Api.Token
             _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
             _getTokenByClientCredentialsGrantTypeAction = getTokenByClientCredentialsGrantTypeAction;
             _clientCredentialsGrantTypeParameterValidator = clientCredentialsGrantTypeParameterValidator;
+            _revokeTokenAction = revokeTokenAction;
         }
 
         public GrantedToken GetTokenByResourceOwnerCredentialsGrantType(
@@ -161,6 +169,21 @@ namespace SimpleIdentityServer.Core.Api.Token
             _simpleIdentityServerEventSource.EndGetTokenByClientCredentials(
                 result.ClientId,
                 clientCredentialsGrantTypeParameter.Scope);
+            return result;
+        }
+
+        public bool RevokeToken(
+            RevokeTokenParameter revokeTokenParameter, 
+            AuthenticationHeaderValue authenticationHeaderValue)
+        {
+            if (revokeTokenParameter == null)
+            {
+                throw new ArgumentNullException(nameof(revokeTokenParameter));
+            }
+
+            _simpleIdentityServerEventSource.StartRevokeToken(revokeTokenParameter.Token);
+            var result = _revokeTokenAction.Execute(revokeTokenParameter, authenticationHeaderValue);
+            _simpleIdentityServerEventSource.EndRevokeToken(revokeTokenParameter.Token);
             return result;
         }
     }

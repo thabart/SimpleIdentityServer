@@ -134,6 +134,10 @@ namespace SimpleIdentityServer.Logging
             string clientId,
             string scope);
 
+        void StartRevokeToken(string token);
+
+        void EndRevokeToken(string token);
+
         #endregion
 
         void AuthenticateResourceOwner(string subject);
@@ -582,6 +586,38 @@ namespace SimpleIdentityServer.Logging
             WriteEvent(Constants.EventIds.EndGetTokenByClientCredentials,
                 clientId,
                 scope);
+        }
+
+        [Event(Constants.EventIds.StartRevokeToken,
+            Level = EventLevel.Informational,
+            Message = "start revoking token",
+            Opcode = EventOpcode.Start,
+            Task = Constants.Tasks.Token)]
+        public void StartRevokeToken(string token)
+        {
+            if (!IsEnabled())
+            {
+                return;
+            }
+
+            WriteEvent(Constants.EventIds.StartRevokeToken,
+                token);
+        }
+
+        [Event(Constants.EventIds.EndRevokeToken,
+            Level = EventLevel.Informational,
+            Message = "end revoking token",
+            Opcode = EventOpcode.Stop,
+            Task = Constants.Tasks.Token)]
+        public void EndRevokeToken(string token)
+        {
+            if (!IsEnabled())
+            {
+                return;
+            }
+
+            WriteEvent(Constants.EventIds.EndRevokeToken,
+                token);
         }
 
         #endregion

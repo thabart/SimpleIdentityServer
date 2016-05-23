@@ -66,6 +66,19 @@ namespace SimpleIdentityServer.Host.Extensions
             return result;
         }
 
+        public static RevokeTokenParameter ToParameter(this RevocationRequest revocationRequest)
+        {
+            return new RevokeTokenParameter
+            {
+                ClientAssertion = revocationRequest.ClientAssertion,
+                ClientAssertionType = revocationRequest.ClientAssertionType,
+                ClientId = revocationRequest.ClientId,
+                ClientSecret = revocationRequest.ClientSecret,
+                Token = revocationRequest.Token,
+                TokenTypeHint = revocationRequest.TokenTypeHint
+            };
+        }
+
         public static LocalAuthenticationParameter ToParameter(this AuthorizeViewModel viewModel)
         {
             return new LocalAuthenticationParameter

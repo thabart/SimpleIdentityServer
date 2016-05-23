@@ -33,6 +33,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
         private Mock<IGetTokenByClientCredentialsGrantTypeAction> _getTokenByClientCredentialsGrantTypeActionStub;
 
+        private Mock<IRevokeTokenAction> _revokeTokenActionStub;
+
         private ITokenActions _tokenActions;
 
         [Fact]
@@ -198,6 +200,34 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             Assert.True(result.ClientId == clientId);
         }
 
+        [Fact]
+        public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+
+            // ACT & ASSERT
+            Assert.Throws<ArgumentNullException>(() => _tokenActions.RevokeToken(null, null));
+        }
+
+        [Fact]
+        public void When_Revoking_Token_Then_Action_Is_Executed()
+        {
+            // ARRANGE
+            const string accessToken = "access_token";
+            InitializeFakeObjects();
+
+            // ACT
+            _tokenActions.RevokeToken(new RevokeTokenParameter
+            {
+                Token = accessToken
+            }, null);
+
+            // ASSERTS
+            _simpleIdentityServerEventSourceFake.Verify(s => s.StartRevokeToken(accessToken));
+            _simpleIdentityServerEventSourceFake.Verify(s => s.EndRevokeToken(accessToken));
+        }
+
         private void InitializeFakeObjects()
         {
             _getTokenByResourceOwnerCredentialsGrantTypeActionFake = new Mock<IGetTokenByResourceOwnerCredentialsGrantTypeAction>();
@@ -209,6 +239,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _refreshTokenGrantTypeParameterValidatorFake = new Mock<IRefreshTokenGrantTypeParameterValidator>();
             _clientCredentialsGrantTypeParameterValidatorStub = new Mock<IClientCredentialsGrantTypeParameterValidator>();
             _getTokenByClientCredentialsGrantTypeActionStub = new Mock<IGetTokenByClientCredentialsGrantTypeAction>();
+            _revokeTokenActionStub = new Mock<IRevokeTokenAction>();
             _tokenActions = new TokenActions(_getTokenByResourceOwnerCredentialsGrantTypeActionFake.Object,
                 _getTokenByAuthorizationCodeGrantTypeActionFake.Object,
                 _resourceOwnerGrantTypeParameterValidatorFake.Object,
@@ -217,7 +248,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 _getTokenByRefreshTokenGrantTypeActionFake.Object,
                 _getTokenByClientCredentialsGrantTypeActionStub.Object,
                 _clientCredentialsGrantTypeParameterValidatorStub.Object,
-                _simpleIdentityServerEventSourceFake.Object);
+                _simpleIdentityServerEventSourceFake.Object,
+                _revokeTokenActionStub.Object);
         }
     }
 }

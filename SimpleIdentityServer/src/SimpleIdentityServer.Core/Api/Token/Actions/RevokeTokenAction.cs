@@ -24,7 +24,7 @@ using System;
 using System.Linq;
 using System.Net.Http.Headers;
 
-namespace SimpleIdentityServer.Core.Api.Revocation.Actions
+namespace SimpleIdentityServer.Core.Api.Token.Actions
 {
     public interface IRevokeTokenAction
     {
@@ -41,16 +41,20 @@ namespace SimpleIdentityServer.Core.Api.Revocation.Actions
 
         private readonly IGrantedTokenRepository _grantedTokenRepository;
 
+        private readonly IClientRepository _clientRepository;
+
         #region Constructor
 
         public RevokeTokenAction(
             IAuthenticateInstructionGenerator authenticateInstructionGenerator,
             IAuthenticateClient authenticateClient,
-            IGrantedTokenRepository grantedTokenRepository)
+            IGrantedTokenRepository grantedTokenRepository,
+            IClientRepository clientRepository)
         {
             _authenticateInstructionGenerator = authenticateInstructionGenerator;
             _authenticateClient = authenticateClient;
             _grantedTokenRepository = grantedTokenRepository;
+            _clientRepository = clientRepository;
         }
 
         #endregion
@@ -78,8 +82,12 @@ namespace SimpleIdentityServer.Core.Api.Revocation.Actions
             var client = _authenticateClient.Authenticate(instruction, out errorMessage);
             if (client == null)
             {
-                throw new IdentityServerException(ErrorCodes.InvalidClient,
-                    errorMessage);
+                client = _clientRepository.GetClientById(Constants.AnonymousClientId);
+                if (client == null)
+                {
+                    throw new IdentityServerException(ErrorCodes.InternalError,
+                        string.Format(ErrorDescriptions.ClientIsNotValid, Constants.AnonymousClientId));
+                }
             }
 
             // Retrieve the granted token & check if it exists
@@ -93,8 +101,7 @@ namespace SimpleIdentityServer.Core.Api.Revocation.Actions
 
             if (grantedToken == null)
             {
-                throw new IdentityServerException(ErrorCodes.InvalidToken,
-                    ErrorDescriptions.TheTokenDoesntExist);
+                return false;
             }
 
             // Verifies whether the token was issued to the client making the revocation request
@@ -123,6 +130,7 @@ namespace SimpleIdentityServer.Core.Api.Revocation.Actions
                 return _grantedTokenRepository.Update(grantedToken);
             }
 
+            // Revoke the access token & its refresh token.
             return _grantedTokenRepository.Delete(grantedToken);
         }
 

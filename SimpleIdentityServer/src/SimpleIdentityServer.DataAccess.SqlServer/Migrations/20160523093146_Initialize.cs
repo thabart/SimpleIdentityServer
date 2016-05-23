@@ -86,6 +86,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                     CreateDateTime = table.Column<DateTime>(nullable: false),
                     ExpiresIn = table.Column<int>(nullable: false),
                     IdTokenPayLoad = table.Column<string>(nullable: true),
+                    ParentRefreshToken = table.Column<string>(nullable: true),
                     RefreshToken = table.Column<string>(nullable: true),
                     Scope = table.Column<string>(nullable: true),
                     UserInfoPayLoad = table.Column<string>(nullable: true)

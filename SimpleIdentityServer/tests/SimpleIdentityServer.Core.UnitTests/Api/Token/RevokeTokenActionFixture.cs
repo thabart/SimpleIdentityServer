@@ -15,7 +15,7 @@
 #endregion
 
 using Moq;
-using SimpleIdentityServer.Core.Api.Revocation.Actions;
+using SimpleIdentityServer.Core.Api.Token.Actions;
 using SimpleIdentityServer.Core.Authenticate;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
@@ -27,7 +27,7 @@ using System.Collections.Generic;
 using System.Net.Http.Headers;
 using Xunit;
 
-namespace SimpleIdentityServer.Core.UnitTests.Api.Revocation
+namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 {
     public class RevokeTokenActionFixture
     {
@@ -37,9 +37,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Revocation
 
         private Mock<IGrantedTokenRepository> _grantedTokenRepositoryStub;
 
+        private Mock<IClientRepository> _clientRepositoryStub;
+
         private IRevokeTokenAction _revokeTokenAction;
 
-        #region Excceptions
+        #region Exceptions
 
         [Fact]
         public void When_Passing_Null_Parameter_Then_Exceptions_Are_Thrown()
@@ -53,7 +55,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Revocation
         }
 
         [Fact]
-        public void When_Client_Credentials_Are_Not_Correct_Then_Exception_Is_Thrown()
+        public void When_AnonymousClient_Doesnt_Exist_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -66,15 +68,22 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Revocation
                 .Returns(new AuthenticateInstruction());
             _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), out errorMessage))
                 .Returns(() => null);
+            _clientRepositoryStub.Setup(c => c.GetClientById(It.IsAny<string>()))
+                .Returns(() => null);
 
             // ACT & ASSERTS
             var exception = Assert.Throws<IdentityServerException>(() => _revokeTokenAction.Execute(parameter, null));
             Assert.NotNull(exception);
-            Assert.True(exception.Code == ErrorCodes.InvalidClient);
+            Assert.True(exception.Code == ErrorCodes.InternalError);
+            Assert.True(exception.Message == string.Format(ErrorDescriptions.ClientIsNotValid, Constants.AnonymousClientId));
         }
 
+        #endregion
+
+        #region Happy path
+
         [Fact]
-        public void When_Token_Doesnt_Exist_Then_Exception_Is_Thrown()
+        public void When_Token_Doesnt_Exist_Then_False_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -92,16 +101,12 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Revocation
             _grantedTokenRepositoryStub.Setup(g => g.GetTokenByRefreshToken(It.IsAny<string>()))
                 .Returns(() => null);
 
-            // ACT & ASSERTS
-            var exception = Assert.Throws<IdentityServerException>(() => _revokeTokenAction.Execute(parameter, null));
-            Assert.NotNull(exception);
-            Assert.True(exception.Code == ErrorCodes.InvalidToken);
-            Assert.True(exception.Message == ErrorDescriptions.TheTokenDoesntExist);
+            // ACT
+            var result = _revokeTokenAction.Execute(parameter, null);
+
+            // ASSERT
+            Assert.False(result);
         }
-
-        #endregion
-
-        #region Happy path
 
         [Fact]
         public void When_Invalidating_Refresh_Token_Then_GrantedTokenChildren_Are_Removed()
@@ -187,10 +192,12 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Revocation
             _authenticateInstructionGeneratorStub = new Mock<IAuthenticateInstructionGenerator>();
             _authenticateClientStub = new Mock<IAuthenticateClient>();
             _grantedTokenRepositoryStub = new Mock<IGrantedTokenRepository>();
+            _clientRepositoryStub = new Mock<IClientRepository>();
             _revokeTokenAction = new RevokeTokenAction(
                 _authenticateInstructionGeneratorStub.Object,
                 _authenticateClientStub.Object,
-                _grantedTokenRepositoryStub.Object);
+                _grantedTokenRepositoryStub.Object,
+                _clientRepositoryStub.Object);
         }
 
         #endregion

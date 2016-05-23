@@ -47,8 +47,6 @@ using SimpleIdentityServer.Core.Api.Registration.Actions;
 using SimpleIdentityServer.Core.Jwt.Converter;
 using SimpleIdentityServer.Core.WebSite.User.Actions;
 using SimpleIdentityServer.Core.WebSite.User;
-using SimpleIdentityServer.Core.Api.Revocation;
-using SimpleIdentityServer.Core.Api.Revocation.Actions;
 
 namespace SimpleIdentityServer.Core
 {
@@ -128,7 +126,6 @@ namespace SimpleIdentityServer.Core
             serviceCollection.AddTransient<IGetConsentsOperation, GetConsentsOperation>();
             serviceCollection.AddTransient<IUserActions, UserActions>();
             serviceCollection.AddTransient<IRemoveConsentOperation, RemoveConsentOperation>();
-            serviceCollection.AddTransient<IRevocationActions, RevocationActions>();
             serviceCollection.AddTransient<IRevokeTokenAction, RevokeTokenAction>();
             return serviceCollection;
         }
