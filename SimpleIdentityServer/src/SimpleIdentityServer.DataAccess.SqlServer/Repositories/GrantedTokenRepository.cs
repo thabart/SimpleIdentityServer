@@ -22,6 +22,7 @@ using System.Linq;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
 using Microsoft.Data.Entity;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 {
@@ -136,6 +137,49 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             }
 
             return true;
+        }
+
+        public bool Update(GrantedToken grantedToken)
+        {
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    var token = _context.GrantedTokens.FirstOrDefault(g => g.AccessToken == grantedToken.AccessToken);
+                    token.RefreshToken = grantedToken.RefreshToken;
+                    _context.GrantedTokens.Update(token);
+                    _context.SaveChanges();
+                    transaction.Commit();
+                }
+                catch (Exception)
+                {
+                    transaction.Rollback();
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public List<GrantedToken> GetGrantedTokenChildren(string refreshToken)
+        {
+            var result = new List<GrantedToken>();
+            AddGrantedTokenChildren(result, refreshToken);
+            return result;
+        }
+
+        #endregion
+
+        #region Private methods
+
+        private void AddGrantedTokenChildren(List<GrantedToken> result, string refreshToken)
+        {
+            var grantedTokens = _context.GrantedTokens.Where(g => g.ParentRefreshToken == refreshToken);
+            foreach (var grantedToken in grantedTokens)
+            {
+                result.Add(grantedToken.ToDomain());
+                AddGrantedTokenChildren(result, grantedToken.RefreshToken);
+            }
         }
 
         #endregion

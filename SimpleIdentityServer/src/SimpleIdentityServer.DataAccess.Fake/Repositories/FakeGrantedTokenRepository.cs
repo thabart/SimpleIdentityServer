@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Models;
@@ -92,6 +93,16 @@ namespace SimpleIdentityServer.DataAccess.Fake.Repositories
             }
 
             _fakeDataSource.GrantedTokens.Remove(grantedTokenToBeRemoved);
+            return true;
+        }
+
+        public List<GrantedToken> GetGrantedTokenChildren(string refreshToken)
+        {
+            return null;
+        }
+
+        public bool Update(GrantedToken grantedToken)
+        {
             return true;
         }
     }

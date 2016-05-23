@@ -21,13 +21,16 @@ using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
 using System;
+using System.Linq;
 using System.Net.Http.Headers;
 
 namespace SimpleIdentityServer.Core.Api.Revocation.Actions
 {
     public interface IRevokeTokenAction
     {
-
+        bool Execute(
+               RevokeTokenParameter revokeTokenParameter,
+               AuthenticationHeaderValue authenticationHeaderValue);
     }
 
     internal class RevokeTokenAction : IRevokeTokenAction
@@ -54,7 +57,7 @@ namespace SimpleIdentityServer.Core.Api.Revocation.Actions
 
         #region Public methods
 
-        public void Execute(
+        public bool Execute(
             RevokeTokenParameter revokeTokenParameter,
             AuthenticationHeaderValue authenticationHeaderValue)
         {
@@ -67,16 +70,7 @@ namespace SimpleIdentityServer.Core.Api.Revocation.Actions
             {
                 throw new ArgumentNullException(nameof(revokeTokenParameter.Token));
             }
-
-            if (!string.IsNullOrWhiteSpace(revokeTokenParameter.TokenTypeHint) 
-                && !Constants.AllStandardTokenTypeHintNames.Contains(revokeTokenParameter.TokenTypeHint))
-            {
-                throw new IdentityServerException(ErrorCodes.UnsupportedTokenType,
-                    string.Format(ErrorDescriptions.ParameterIsNotCorrect, Constants.RevokeTokenParameterNames.TokenTypeHint));
-            }
-
-            var tokenTypeHint = Constants.AllStandardTokenTypeHintNames.Contains(revokeTokenParameter.TokenTypeHint) ?
-                revokeTokenParameter.TokenTypeHint : Constants.StandardTokenTypeHintNames.AccessToken;
+            
             // Check the client credentials
             var errorMessage = string.Empty;
             var instruction = CreateAuthenticateInstruction(revokeTokenParameter,
@@ -89,13 +83,11 @@ namespace SimpleIdentityServer.Core.Api.Revocation.Actions
             }
 
             // Retrieve the granted token & check if it exists
-            GrantedToken grantedToken;
-            if (tokenTypeHint == Constants.StandardTokenTypeHintNames.AccessToken)
+            var isAccessToken = true;
+            GrantedToken grantedToken = _grantedTokenRepository.GetToken(revokeTokenParameter.Token);
+            if (grantedToken == null)
             {
-                grantedToken = _grantedTokenRepository.GetToken(revokeTokenParameter.Token);
-            }
-            else
-            {
+                isAccessToken = false;
                 grantedToken = _grantedTokenRepository.GetTokenByRefreshToken(revokeTokenParameter.Token);
             }
 
@@ -112,7 +104,26 @@ namespace SimpleIdentityServer.Core.Api.Revocation.Actions
                     string.Format(ErrorDescriptions.TheTokenHasNotBeenIssuedForTheGivenClientId, client.ClientId));
             }
 
+            // Invalid the granted token
+            if (!isAccessToken)
+            {
+                var children = _grantedTokenRepository.GetGrantedTokenChildren(grantedToken.RefreshToken);
+                if (children != null && children.Any())
+                {
+                    foreach (var child in children)
+                    {
+                        if (!_grantedTokenRepository.Delete(child))
+                        {
+                            return false;
+                        }
+                    }
+                }
 
+                grantedToken.RefreshToken = string.Empty;
+                return _grantedTokenRepository.Update(grantedToken);
+            }
+
+            return _grantedTokenRepository.Delete(grantedToken);
         }
 
         #endregion
@@ -130,7 +141,7 @@ namespace SimpleIdentityServer.Core.Api.Revocation.Actions
             result.ClientSecretFromHttpRequestBody = revokeTokenParameter.ClientSecret;
             return result;
         }
-
+        
         #endregion
     }
 }

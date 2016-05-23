@@ -15,6 +15,7 @@
 #endregion
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Models;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Core.Repositories
 {
@@ -23,6 +24,8 @@ namespace SimpleIdentityServer.Core.Repositories
         bool Insert(GrantedToken grantedToken);
 
         bool Delete(GrantedToken grantedToken);
+
+        bool Update(GrantedToken grantedToken);
 
         GrantedToken GetToken(string accessToken);
 
@@ -33,5 +36,7 @@ namespace SimpleIdentityServer.Core.Repositories
             JwsPayload userInfoJwsPayload);
 
         GrantedToken GetTokenByRefreshToken(string refreshToken);
+
+        List<GrantedToken> GetGrantedTokenChildren(string refreshToken);
     }
 }
