@@ -20,6 +20,16 @@ using System.Runtime.Serialization;
 namespace SimpleIdentityServer.Uma.Host.DTOs.Requests
 {
     [DataContract]
+    public class PostClaim
+    {
+        [DataMember(Name = Constants.ClaimNames.Type)]
+        public string Type { get; set; }
+
+        [DataMember(Name = Constants.ClaimNames.Value)]
+        public string Value { get; set; }
+    }
+
+    [DataContract]
     public class PostPolicy
     {
         [DataMember(Name = Constants.PolicyNames.ClientIdsAllowed)]
@@ -28,11 +38,11 @@ namespace SimpleIdentityServer.Uma.Host.DTOs.Requests
         [DataMember(Name = Constants.PolicyNames.Scopes)]
         public List<string> Scopes { get; set; }
 
+        [DataMember(Name = Constants.PolicyNames.ResourceSetIds)]
+        public List<PostClaim> Claims { get; set; }
+
         [DataMember(Name = Constants.PolicyNames.IsResourceOwnerConsentNeeded)]
         public bool IsResourceOwnerConsentNeeded { get; set; }
-
-        [DataMember(Name = Constants.PolicyNames.IsCustom)]
-        public bool IsCustom { get; set; }
 
         [DataMember(Name = Constants.PolicyNames.Script)]
         public string Script { get; set; }

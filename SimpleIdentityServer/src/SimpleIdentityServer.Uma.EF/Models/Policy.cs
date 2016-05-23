@@ -28,8 +28,6 @@ namespace SimpleIdentityServer.Uma.EF.Models
 
         public bool IsResourceOwnerConsentNeeded { get; set; }
 
-        public bool IsCustom { get; set; }
-
         public string Script { get; set; }
 
         public virtual ICollection<ResourceSet> ResourceSets { get; set; }

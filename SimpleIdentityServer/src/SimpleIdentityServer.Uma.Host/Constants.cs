@@ -88,6 +88,13 @@ namespace SimpleIdentityServer.Uma.Host
             public const string TicketId = "ticket";
         }
 
+        public static class ClaimNames
+        {
+            public const string Type = "type";
+
+            public const string Value = "value";
+        }
+
         public static class PolicyNames
         {
             public const string Id = "id";

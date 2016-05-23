@@ -18,6 +18,13 @@ using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Uma.Core.Models
 {
+    public class Claim
+    {
+        public string Type { get; set; }
+
+        public string Value { get; set; }
+    }
+
     public class Policy
     {
         public string Id { get; set; }
@@ -28,10 +35,10 @@ namespace SimpleIdentityServer.Uma.Core.Models
 
         public bool IsResourceOwnerConsentNeeded { get; set; }
 
-        public bool IsCustom { get; set; }
-
         public string Script { get; set; }
 
         public List<string> ResourceSetIds { get; set; }
+
+        public List<Claim> Claims { get; set; }
     }
 }

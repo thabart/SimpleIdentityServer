@@ -18,6 +18,13 @@ using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Uma.Core.Parameters
 {
+    public class AddClaimParameter
+    {
+        public string Type { get; set; }
+
+        public string Value { get; set; }
+    }
+
     public class AddPolicyParameter
     {
         public List<string> ClientIdsAllowed { get; set; }
@@ -26,10 +33,10 @@ namespace SimpleIdentityServer.Uma.Core.Parameters
 
         public bool IsResourceOwnerConsentNeeded { get; set; }
 
-        public bool IsCustom { get; set; }
-
         public string Script { get; set; }
 
         public List<string> ResourceSetIds { get; set; }
+
+        public List<AddClaimParameter> Claims { get; set; }
     }
 }

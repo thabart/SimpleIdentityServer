@@ -20,6 +20,8 @@ using SimpleIdentityServer.Uma.Host.DTOs.Requests;
 using SimpleIdentityServer.Uma.Host.DTOs.Responses;
 
 using DomainResponse = SimpleIdentityServer.Uma.Core.Responses;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SimpleIdentityServer.Uma.Host.Extensions
 {
@@ -92,14 +94,25 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
 
         public static AddPolicyParameter ToParameter(this PostPolicy postPolicy)
         {
+            var claims = postPolicy.Claims == null ? new List<AddClaimParameter>()
+                : postPolicy.Claims.Select(p => p.ToParameter()).ToList();
             return new AddPolicyParameter
             {
                 ClientIdsAllowed = postPolicy.ClientIdsAllowed,
-                IsCustom = postPolicy.IsCustom,
                 IsResourceOwnerConsentNeeded = postPolicy.IsResourceOwnerConsentNeeded,
                 ResourceSetIds = postPolicy.ResourceSetIds,
                 Scopes = postPolicy.Scopes,
-                Script = postPolicy.Script
+                Script = postPolicy.Script,
+                Claims = claims
+            };
+        }
+
+        public static AddClaimParameter ToParameter(this PostClaim postClaim)
+        {
+            return new AddClaimParameter
+            {
+                Type = postClaim.Type,
+                Value = postClaim.Value
             };
         }
 
