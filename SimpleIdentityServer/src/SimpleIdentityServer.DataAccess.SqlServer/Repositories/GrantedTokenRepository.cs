@@ -174,7 +174,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 
         private void AddGrantedTokenChildren(List<GrantedToken> result, string refreshToken)
         {
-            var grantedTokens = _context.GrantedTokens.Where(g => g.ParentRefreshToken == refreshToken);
+            var grantedTokens = _context.GrantedTokens.Where(g => g.ParentRefreshToken == refreshToken).ToList();
             foreach (var grantedToken in grantedTokens)
             {
                 result.Add(grantedToken.ToDomain());

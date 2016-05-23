@@ -66,20 +66,20 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                 grantedToken.ClientId,
                 grantedToken.Scope,
                 grantedToken.UserInfoPayLoad);
-            grantedToken.ParentRefreshToken = grantedToken.RefreshToken;
-            _grantedTokenRepository.Insert(grantedToken);
+            generatedToken.ParentRefreshToken = grantedToken.RefreshToken;
+            _grantedTokenRepository.Insert(generatedToken);
             // 3. Fill-in the idtoken
-            if (grantedToken.IdTokenPayLoad != null)
+            if (generatedToken.IdTokenPayLoad != null)
             {
-                grantedToken.IdToken = _clientHelper.GenerateIdToken(
-                    grantedToken.ClientId,
-                    grantedToken.IdTokenPayLoad);
+                generatedToken.IdToken = _clientHelper.GenerateIdToken(
+                    generatedToken.ClientId,
+                    generatedToken.IdTokenPayLoad);
             }
 
-            _simpleIdentityServerEventSource.GrantAccessToClient(grantedToken.ClientId,
+            _simpleIdentityServerEventSource.GrantAccessToClient(generatedToken.ClientId,
                 generatedToken.AccessToken,
-                grantedToken.Scope);
-            return grantedToken;
+                generatedToken.Scope);
+            return generatedToken;
         }
 
         private GrantedToken ValidateParameter(RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter)
