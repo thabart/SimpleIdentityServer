@@ -59,6 +59,8 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
         private readonly IClientRepository _clientRepository;
 
+        private readonly IClientHelper _clientHelper;
+
         public GetTokenByResourceOwnerCredentialsGrantTypeAction(
             IGrantedTokenRepository grantedTokenRepository,
             IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
@@ -68,7 +70,8 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             IAuthenticateClient authenticateClient,
             IJwtGenerator jwtGenerator,
             IAuthenticateInstructionGenerator authenticateInstructionGenerator,
-            IClientRepository clientRepository)
+            IClientRepository clientRepository,
+            IClientHelper clientHelper)
         {
             _grantedTokenRepository = grantedTokenRepository;
             _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
@@ -79,6 +82,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             _jwtGenerator = jwtGenerator;
             _authenticateInstructionGenerator = authenticateInstructionGenerator;
             _clientRepository = clientRepository;
+            _clientHelper = clientHelper;
         }
 
         public GrantedToken Execute(
@@ -143,7 +147,14 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                 client.ClientId,
                 allowedTokenScopes,
                 userInformationPayload);
-            _grantedTokenRepository.Insert(generatedToken);
+            _grantedTokenRepository.Insert(generatedToken);            
+            // Fill-in the id-token
+            if (generatedToken.IdTokenPayLoad != null)
+            {
+                generatedToken.IdToken = _clientHelper.GenerateIdToken(
+                    generatedToken.ClientId,
+                    generatedToken.IdTokenPayLoad);
+            }
 
             _simpleIdentityServerEventSource.GrantAccessToClient(client.ClientId,
                 generatedToken.AccessToken,

@@ -276,6 +276,12 @@ namespace SimpleIdentityServer.Core
             public const string RequestUris = "request_uris";
         }
 
+        public static class RevokeTokenParameterNames
+        {
+            public const string Token = "token";
+            public const string TokenTypeHint = "token_type_hint";
+        }
+
         public static class IntrospectionRequestNames
         {
             public const string Token = "token";

@@ -59,5 +59,7 @@ namespace SimpleIdentityServer.Core.Models
         /// Gets or sets the identity token payload
         /// </summary>
         public JwsPayload IdTokenPayLoad { get; set; }
+
+        public string ParentRefreshToken { get; set; }
     }
 }

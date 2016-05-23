@@ -48,6 +48,8 @@ namespace SimpleIdentityServer.Core.Errors
 
         public static string InternalError = "internal_error";
 
+        public static string UnsupportedTokenType = "unsupported_token_type";
+
         #endregion
     }
 }

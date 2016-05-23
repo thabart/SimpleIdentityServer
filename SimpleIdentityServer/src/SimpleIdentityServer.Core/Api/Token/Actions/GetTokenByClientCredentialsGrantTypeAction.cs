@@ -54,6 +54,8 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
         private readonly IClientCredentialsGrantTypeParameterValidator _clientCredentialsGrantTypeParameterValidator;
 
+        private readonly IClientHelper _clientHelper;
+
         #region Constructor
 
         public GetTokenByClientCredentialsGrantTypeAction(
@@ -64,7 +66,8 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             IScopeValidator scopeValidator,
             IGrantedTokenRepository grantedTokenRepository,
             ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
-            IClientCredentialsGrantTypeParameterValidator clientCredentialsGrantTypeParameterValidator)
+            IClientCredentialsGrantTypeParameterValidator clientCredentialsGrantTypeParameterValidator,
+            IClientHelper clientHelper)
         {
             _authenticateInstructionGenerator = authenticateInstructionGenerator;
             _authenticateClient = authenticateClient;
@@ -74,6 +77,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             _grantedTokenRepository = grantedTokenRepository;
             _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
             _clientCredentialsGrantTypeParameterValidator = clientCredentialsGrantTypeParameterValidator;
+            _clientHelper = clientHelper;
         }
 
         #endregion
@@ -139,6 +143,13 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                 client.ClientId,
                 allowedTokenScopes);
             _grantedTokenRepository.Insert(generatedToken);
+            // Fill-in the id-token
+            if (generatedToken.IdTokenPayLoad != null)
+            {
+                generatedToken.IdToken = _clientHelper.GenerateIdToken(
+                    generatedToken.ClientId,
+                    generatedToken.IdTokenPayLoad);
+            }
 
             _simpleIdentityServerEventSource.GrantAccessToClient(client.ClientId,
                 generatedToken.AccessToken,

@@ -55,6 +55,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
         private Mock<IClientRepository> _clientRepositoryStub;
 
+        private Mock<IClientHelper> _clientHelperStub;
+
         private IGetTokenByResourceOwnerCredentialsGrantTypeAction _getTokenByResourceOwnerCredentialsGrantTypeAction;
 
         #region Exceptions
@@ -202,7 +204,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             var userInformationJwsPayload = new JwsPayload();
             var grantedToken = new GrantedToken
             {
-                AccessToken = accessToken
+                AccessToken = accessToken,
+                IdTokenPayLoad = new JwsPayload()
             };
 
             string message;
@@ -230,6 +233,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             // ASSERT
             _grantedTokenRepositoryFake.Verify(g => g.Insert(grantedToken));
             _simpleIdentityServerEventSourceFake.Verify(s => s.GrantAccessToClient(clientId, accessToken, invalidScope));
+            _clientHelperStub.Verify(c => c.GenerateIdToken(It.IsAny<string>(), It.IsAny<JwsPayload>()));
         }
 
         #endregion
@@ -245,6 +249,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _jwtGeneratorFake = new Mock<IJwtGenerator>();
             _authenticateInstructionGeneratorStub = new Mock<IAuthenticateInstructionGenerator>();
             _clientRepositoryStub = new Mock<IClientRepository>();
+            _clientHelperStub = new Mock<IClientHelper>();
 
             _getTokenByResourceOwnerCredentialsGrantTypeAction = new GetTokenByResourceOwnerCredentialsGrantTypeAction(
                 _grantedTokenRepositoryFake.Object,
@@ -255,7 +260,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 _authenticateClientFake.Object,
                 _jwtGeneratorFake.Object,
                 _authenticateInstructionGeneratorStub.Object,
-                _clientRepositoryStub.Object);
+                _clientRepositoryStub.Object,
+                _clientHelperStub.Object);
         }
     }
 }

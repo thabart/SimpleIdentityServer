@@ -46,5 +46,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Models
         /// Gets or sets the identity token payload
         /// </summary>
         public string IdTokenPayLoad { get; set; }
+
+        public string ParentRefreshToken { get; set; }
     }
 }

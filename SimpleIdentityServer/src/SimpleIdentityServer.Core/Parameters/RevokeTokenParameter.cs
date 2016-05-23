@@ -16,31 +16,18 @@
 
 namespace SimpleIdentityServer.Core.Parameters
 {
-    public class ClientCredentialsGrantTypeParameter
+    public class RevokeTokenParameter
     {
-        /// <summary>
-        /// Gets or sets the scope
-        /// </summary>
-        public string Scope { get; set; }
+        public string Token { get; set; }
 
-        /// <summary>
-        /// Gets or sets the client identifier
-        /// </summary>
+        public string TokenTypeHint { get; set; }
+
         public string ClientId { get; set; }
 
-        /// <summary>
-        /// Gets or sets the client secret
-        /// </summary>
         public string ClientSecret { get; set; }
 
-        /// <summary>
-        /// Gets or sets the client assertion type
-        /// </summary>
         public string ClientAssertionType { get; set; }
-
-        /// <summary>
-        /// Gets or sets the client assertion
-        /// </summary>
+        
         public string ClientAssertion { get; set; }
     }
 }

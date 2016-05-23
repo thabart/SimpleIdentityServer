@@ -178,5 +178,7 @@ namespace SimpleIdentityServer.Core.Errors
         public static string TheExternalProviderIsNotSupported = "the external provider {0} is not supported";
 
         public static string NoSubjectCanBeExtracted = "no subject can be extracted";
+
+        public static string TheTokenDoesntExist = "the token doesn't exist";
     }
 }

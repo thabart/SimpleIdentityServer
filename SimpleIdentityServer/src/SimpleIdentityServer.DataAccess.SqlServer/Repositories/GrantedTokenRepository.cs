@@ -98,6 +98,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                         ExpiresIn = grantedToken.ExpiresIn,
                         RefreshToken = grantedToken.RefreshToken,
                         Scope = grantedToken.Scope,
+                        ParentRefreshToken = grantedToken.ParentRefreshToken,
                         IdTokenPayLoad = grantedToken.IdTokenPayLoad == null ? string.Empty : grantedToken.IdTokenPayLoad.SerializeWithJavascript(),
                         UserInfoPayLoad = grantedToken.UserInfoPayLoad == null ? string.Empty : grantedToken.UserInfoPayLoad.SerializeWithJavascript()
                     };

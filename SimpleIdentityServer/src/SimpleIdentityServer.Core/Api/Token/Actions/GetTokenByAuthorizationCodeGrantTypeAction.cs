@@ -117,6 +117,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                     grantedToken.IdToken);
             }
 
+            // Fill-in the id-token
             if (grantedToken.IdTokenPayLoad != null)
             {
                 grantedToken.IdToken = _clientHelper.GenerateIdToken(
