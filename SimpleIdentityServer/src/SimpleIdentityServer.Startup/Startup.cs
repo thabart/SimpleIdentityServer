@@ -14,13 +14,12 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Hosting;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.PlatformAbstractions;
 using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Host.Configuration;
 using SimpleIdentityServer.RateLimitation.Configuration;
@@ -40,8 +39,7 @@ namespace SimpleIdentityServer.Startup
 
         #region Public methods
 
-        public Startup(IHostingEnvironment env,
-            IApplicationEnvironment appEnv)
+        public Startup(IHostingEnvironment env)
         {
             // Load all the configuration information from the "json" file & the environment variables.
             var builder = new ConfigurationBuilder()
@@ -127,13 +125,6 @@ namespace SimpleIdentityServer.Startup
                 FacebookClientSecret = Configuration["Facebook:ClientSecret"]
             }, _swaggerOptions);
         }
-
-        #endregion
-
-        #region Public static methods
-
-        // Entry point for the application.
-        public static void Main(string[] args) => WebApplication.Run<Startup>(args);
 
         #endregion
     }

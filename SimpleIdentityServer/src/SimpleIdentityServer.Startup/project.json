@@ -1,72 +1,41 @@
 {
   "version": "1.0.0-*",
-
-  "compilationOptions": {
-    "emitEntryPoint": true
-  },
-
   "tooling": {
     "defaultNamespace": "SimpleIdentityServer.Startup"
   },
+  "packOptions": {
+    "tags": [ "" ],
+    "licenseUrl": "",
+    "projectUrl": ""
+  },
 
   "dependencies": {
-    "Microsoft.AspNet.IISPlatformHandler": "1.0.0-rc1-final",
-    "Microsoft.AspNet.Mvc": "6.0.0-rc1-final",
-    "Microsoft.AspNet.Mvc.TagHelpers": "6.0.0-rc1-final",
-    "Microsoft.AspNet.Server.Kestrel": "1.0.0-rc1-final",
-    "Microsoft.AspNet.StaticFiles": "1.0.0-rc1-final",
-    "Microsoft.AspNet.Tooling.Razor": "1.0.0-rc1-final",
-    "Microsoft.Dnx.Runtime": "1.0.0-rc1-final",
-    "Microsoft.Extensions.Primitives": "1.0.0-rc1-final",
-    "Microsoft.Dnx.Watcher": "1.0.0-rc1-final",
-    "Microsoft.Extensions.CodeGenerators.Mvc": "1.0.0-rc1-final",
-    "Microsoft.Extensions.Configuration.FileProviderExtensions": "1.0.0-rc1-final",
-    "Microsoft.Extensions.Configuration.Json": "1.0.0-rc1-final",
-    "Microsoft.Extensions.Configuration.UserSecrets": "1.0.0-rc1-final",
-    "Microsoft.Extensions.Logging": "1.0.0-rc1-final",
-    "Microsoft.Extensions.Logging.Console": "1.0.0-rc1-final",
-    "Microsoft.Extensions.Logging.Debug": "1.0.0-rc1-final",
-    "Microsoft.AspNet.Diagnostics": "1.0.0-rc1-final",
-    "SimpleIdentityServer.Host": ""
+    "Microsoft.AspNetCore.Server.Kestrel": "1.0.0-*",
+    "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0-*",
+    "SimpleIdentityServer.Host": "*"
   },
-
-  "commands": {
-    "web": "Microsoft.AspNet.Server.Kestrel --server.urls http://0.0.0.0:5000",
-    "watch": "Microsoft.Dnx.Watcher web",
-    "ef": "EntityFramework.Commands"
-  },
-
   "frameworks": {
-    "dnx451": {
+    "net46": {
       "frameworkAssemblies": {
         "System.Web": "4.0.0.0"
       }
     },
-    "dnxcore50": { }
-  },
-
-  "exclude": [
-    "wwwroot",
-    "node_modules",
-    "bower_components"
-  ],
-
-  "publishExclude": [
-    "**.user",
-    "**.vspscc"
-  ],
-
-  "configurations": {
-    "Debug": {
-      "compilationOptions": {
-        "define": [ "DEBUG" ]
-      }
-    },
-    "Release": {
-      "compilationOptions": {
-        "define": [ "RELEASE" ],
-        "optimize": true
+    "netcoreapp1.0": {
+      "imports": [ "dotnet5.6", "dnxcore50", "portable-net451+win8" ],
+      "dependencies": {
+        "Microsoft.NETCore.App": {
+          "type": "platform",
+          "version": "1.0.0-*"
+        }
       }
     }
+  },
+  "buildOptions": {
+    "emitEntryPoint": true
+  },
+  "publishOptions": {
+    "include": [
+      "appsettings.json"
+    ]
   }
 }
