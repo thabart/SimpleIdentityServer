@@ -14,7 +14,8 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.Data.Entity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 
 using SimpleIdentityServer.Core.Repositories;
@@ -32,7 +33,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
         {
             RegisterServices(serviceCollection);
             serviceCollection.AddEntityFramework()
-                .AddSqlServer()
                 .AddDbContext<SimpleIdentityServerContext>(options =>
                     options.UseSqlServer(connectionString));
             return serviceCollection;
@@ -44,7 +44,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
         {
             RegisterServices(serviceCollection);
             serviceCollection.AddEntityFramework()
-                .AddSqlite()
                 .AddDbContext<SimpleIdentityServerContext>(options =>
                     options.UseSqlite(connectionString));
             return serviceCollection;
@@ -55,7 +54,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
             string connectionString) {
             RegisterServices(serviceCollection);
             serviceCollection.AddEntityFramework()
-                .AddNpgsql()
                 .AddDbContext<SimpleIdentityServerContext>(options =>
                     options.UseNpgsql(connectionString));
             return serviceCollection;

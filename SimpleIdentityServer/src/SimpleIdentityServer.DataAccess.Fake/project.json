@@ -2,21 +2,21 @@
   "version": "1.0.0-*",
   "description": "SimpleIdentityServer.DataAccess.Fake class Library",
   "authors": [ "thierry habart" ],
-  "tags": [""],
-  "projectUrl": "",
-  "licenseUrl": "",
+  "packOptions": {
+    "tags": [ "" ],
+    "licenseUrl": "",
+    "projectUrl": ""
+  },
   "tooling": {
     "defaultNamespace": "SimpleIdentityServer.DataAccess.Fake"
   },
-  
   "dependencies": {
-      "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc1-final",
-	    "SimpleIdentityServer.Core.Jwt": "",
-	    "SimpleIdentityServer.Core": ""
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-*",
+    "SimpleIdentityServer.Core.Jwt": "*",
+    "SimpleIdentityServer.Core": "*"
   },
-  
   "frameworks": {
-    "dnx451": { },
-    "dnxcore50": { }
+    "net46": { },
+    "netcoreapp1.0": { }
   }
 }

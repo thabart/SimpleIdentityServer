@@ -21,7 +21,6 @@ using SimpleIdentityServer.Core.Repositories;
 using System.Linq;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
-using Microsoft.Data.Entity;
 using System.Collections.Generic;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories

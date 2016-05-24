@@ -20,8 +20,8 @@ using System.Linq;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
 using SimpleIdentityServer.DataAccess.SqlServer.Models;
-using Microsoft.Data.Entity;
 using SimpleIdentityServer.Core.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 {

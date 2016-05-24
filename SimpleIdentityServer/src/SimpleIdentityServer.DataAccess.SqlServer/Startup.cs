@@ -14,13 +14,13 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Hosting;
-using Microsoft.Data.Entity;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.PlatformAbstractions;
 using System;
 using System.Linq;
 
@@ -36,8 +36,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
 
         #region Public methods
 
-        public Startup(IHostingEnvironment env,
-            IApplicationEnvironment appEnv)
+        public Startup(IHostingEnvironment env)
         {
             var environment = GetEnvironment();
             var builder = new ConfigurationBuilder()
@@ -59,21 +58,18 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
             if (isSqlServer)
             {
                 services.AddEntityFramework()
-                   .AddSqlServer()
                    .AddDbContext<SimpleIdentityServerContext>(options =>
                        options.UseSqlServer(connectionString));
             }
             else if (isSqlLite)
             {
                 services.AddEntityFramework()
-                   .AddSqlite()
                    .AddDbContext<SimpleIdentityServerContext>(options =>
                        options.UseSqlite(connectionString));
             }
             else if (isPostgre)
             {
                 services.AddEntityFramework()
-                    .AddNpgsql()
                     .AddDbContext<SimpleIdentityServerContext>(options =>
                         options.UseNpgsql(connectionString));
             }
@@ -99,5 +95,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
         }
        
         #endregion
+
+        public static void Main(string[] args) { }
     }
 }

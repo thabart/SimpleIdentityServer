@@ -14,7 +14,7 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using SimpleIdentityServer.DataAccess.SqlServer.Models;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings

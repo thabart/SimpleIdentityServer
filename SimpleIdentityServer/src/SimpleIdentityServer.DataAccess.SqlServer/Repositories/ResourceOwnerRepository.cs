@@ -19,8 +19,8 @@ using System.Linq;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
 using Domains = SimpleIdentityServer.Core.Models;
-using Microsoft.Data.Entity;
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 {
