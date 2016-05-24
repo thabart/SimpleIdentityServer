@@ -27,15 +27,15 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
 {
     public sealed class CreateJwsSignatureFixture
     {
-#if DNX451
+#if NET46
         private Mock<ICngKeySerializer> _cngKeySerializer;
 #endif
 
         private ICreateJwsSignature _createJwsSignature;
 
-#region Rsa algorithm
+        #region Rsa algorithm
 
-#region Create the signature
+        #region Create the signature
 
         [Fact]
         public void When_Trying_To_Rsa_Sign_With_A_Not_Supported_Algorithm_Then_Null_Is_Returned()
@@ -81,14 +81,13 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
             const string messageToBeSigned = "message_to_be_signed";
             InitializeFakeObjects();
             string serializedKeysXml;
-#if DNXCORE50
-            using (var rsa = new RSAOpenSsl())
+#if NET46
+            using (var rsa = new RSACryptoServiceProvider())
             {
                 serializedKeysXml = rsa.ToXmlString(true);
             };
-#endif
-#if DNX451
-            using (var rsa = new RSACryptoServiceProvider())
+#else
+            using (var rsa = new RSAOpenSsl())
             {
                 serializedKeysXml = rsa.ToXmlString(true);
             };
@@ -104,9 +103,9 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
             Assert.NotNull(signedMessage);
         }
 
-#endregion
+        #endregion
 
-#region Check the signature
+        #region Check the signature
 
         [Fact]
         public void When_Trying_To_Check_The_Signature_With_A_Not_Supported_Algorithm_Then_False_Is_Returned()
@@ -142,17 +141,16 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
             const string messageToBeSigned = "message_to_be_signed";
             InitializeFakeObjects();
             string serializedKeysXml;
-#if DNXCORE50
-            using (var provider = new RSAOpenSsl())
-            {
-                serializedKeysXml = provider.ToXmlString(true);
-            };
-#endif
-#if DNX451
+#if NET46
             using (var rsa = new RSACryptoServiceProvider())
             {
                 serializedKeysXml = rsa.ToXmlString(true);
             }
+#else
+            using (var provider = new RSAOpenSsl())
+            {
+                serializedKeysXml = provider.ToXmlString(true);
+            };
 #endif
             var signedMessage = _createJwsSignature.SignWithRsa(JwsAlg.RS256,
                 serializedKeysXml,
@@ -169,15 +167,15 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
             Assert.True(isSignatureCorrect);
         }
 
-#endregion
+        #endregion
 
-#endregion
+        #endregion
 
-#if DNX451
+#if NET46
 
-#region Elliptic curve algorithm
+        #region Elliptic curve algorithm
 
-#region Generate Signature
+        #region Generate Signature
 
         [Fact]
         public void When_Passing_EmptyString_To_The_Method_Sign_With_EC_Then_Exception_Is_Thrown()
@@ -190,9 +188,9 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
             Assert.Throws<ArgumentNullException>(() => _createJwsSignature.SignWithEllipseCurve("serialized", null));
         }
 
-#endregion
+        #endregion
 
-#region Check signature
+        #region Check signature
 
         [Fact]
         public void When_Passing_Empty_String_To_The_Method_Check_EC_Signature_Then_Exception_Is_Thrown()
@@ -206,23 +204,22 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
             Assert.Throws<ArgumentNullException>(() => _createJwsSignature.VerifyWithEllipticCurve("serialized", "message", null));
         }
 
-#endregion
+        #endregion
 
-#endregion
+        #endregion
 
 #endif
 
-#if DNXCORE50
-        private void InitializeFakeObjects()
-        {
-            _createJwsSignature = new CreateJwsSignature();
-        }
-#endif
-#if DNX451
+#if NET46
         private void InitializeFakeObjects()
         {
             _cngKeySerializer = new Mock<ICngKeySerializer>();
-            _createJwsSignature = new CreateJwsSignature(_cngKeySerializer.Object);   
+            _createJwsSignature = new CreateJwsSignature(_cngKeySerializer.Object);
+        }
+#else
+        private void InitializeFakeObjects()
+        {
+            _createJwsSignature = new CreateJwsSignature();
         }
 #endif
     }

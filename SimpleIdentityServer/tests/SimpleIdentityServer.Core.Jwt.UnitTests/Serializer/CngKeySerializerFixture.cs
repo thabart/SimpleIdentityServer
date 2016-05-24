@@ -14,7 +14,7 @@
 // limitations under the License.
 #endregion
 
-#if DNX451
+#if NET46
 
 using SimpleIdentityServer.Core.Jwt.Serializer;
 using System;
@@ -28,7 +28,7 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Serializer
     {
         private ICngKeySerializer _cngKeySerializer;
 
-        #region Serialize with private key
+#region Serialize with private key
 
         [Fact]
         public void When_Passing_Null_To_Serialize_With_Private_Key_Then_Exception_Is_Thrown()
