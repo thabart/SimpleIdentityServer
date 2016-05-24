@@ -37,7 +37,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
             string input,
             byte[] signature);
 
-#if DNX451
+#if NET46
         string SignWithEllipseCurve(string serializedKeys,
            string combinedJwsNotSigned);
 
@@ -50,7 +50,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
     public class CreateJwsSignature : ICreateJwsSignature
     {
 
-#if DNX451
+#if NET46
         private readonly Dictionary<JwsAlg, string> _mappingJwsAlgorithmToRsaHashingAlgorithms = new Dictionary<JwsAlg, string>
         {
             {
@@ -65,7 +65,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
         };
 #endif
 
-#if DNXCORE50
+#if NETSTANDARD1_5 
         private readonly Dictionary<JwsAlg, HashAlgorithmName> _mappingJwsAlgorithmToRsaHashingAlgorithms = new Dictionary<JwsAlg, HashAlgorithmName>
         {
             {
@@ -80,17 +80,17 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
         };
 #endif
 
-#if DNXCORE50
+#if NETSTANDARD1_5
         public CreateJwsSignature()
         {
         }
 #endif
 
-#if DNX451
+#if NET46
         private readonly ICngKeySerializer _cngKeySerializer;
 #endif
 
-#if DNX451
+#if NET46
         public CreateJwsSignature(ICngKeySerializer cngKeySerializer)
         {
             _cngKeySerializer = cngKeySerializer;
@@ -116,7 +116,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
 
             var hashMethod = _mappingJwsAlgorithmToRsaHashingAlgorithms[algorithm];
 
-#if DNXCORE50
+#if NETSTANDARD1_5
             using (var rsa = new RSAOpenSsl())
             {
                 var bytesToBeSigned = ASCIIEncoding.ASCII.GetBytes(combinedJwsNotSigned);
@@ -125,7 +125,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
                 return byteToBeConverted.Base64EncodeBytes();
             }
 #endif
-#if DNX451
+#if NET46
             using (var rsa = new RSACryptoServiceProvider())
             {
                 var bytesToBeSigned = ASCIIEncoding.ASCII.GetBytes(combinedJwsNotSigned);
@@ -154,14 +154,14 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
 
             var plainBytes = ASCIIEncoding.ASCII.GetBytes(input);
             var hashMethod = _mappingJwsAlgorithmToRsaHashingAlgorithms[algorithm];
-#if DNXCORE50
+#if NETSTANDARD1_5
             using (var rsa = new RSAOpenSsl())
             {
                 rsa.FromXmlString(serializedKeys);
                 return rsa.VerifyData(plainBytes, signature, hashMethod, RSASignaturePadding.Pkcs1);
             }
 #endif
-#if DNX451
+#if NET46
             using (var rsa = new RSACryptoServiceProvider())
             {
                 rsa.FromXmlString(serializedKeys);
@@ -174,7 +174,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
 
 #region Elliptic Curve algorithm
 
-#if DNX451
+#if NET46
 
         public string SignWithEllipseCurve(string serializedKeys,
             string combinedJwsNotSigned)

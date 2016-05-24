@@ -111,14 +111,14 @@ namespace SimpleIdentityServer.Core.Jwt.Converter
                 Exponent = exponentKeyPair.Value.ToString().Base64DecodeBytes()
             };
             
-#if DNXCORE50
+#if NETSTANDARD1_5
             using (var rsaCryptoServiceProvider = new RSAOpenSsl())
             {
                 rsaCryptoServiceProvider.ImportParameters(rsaParameters);
                 return rsaCryptoServiceProvider.ToXmlString(false);
             }
 #endif
-#if DNX451
+#if NET46
             using (var rsaCryptoServiceProvider = new RSACryptoServiceProvider())
             {
                 rsaCryptoServiceProvider.ImportParameters(rsaParameters);

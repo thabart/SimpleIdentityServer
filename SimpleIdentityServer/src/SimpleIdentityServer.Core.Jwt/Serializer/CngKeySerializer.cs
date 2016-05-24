@@ -14,7 +14,7 @@
 // limitations under the License.
 #endregion
 
-#if DNX451
+#if NET46
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,7 +24,7 @@ using System.Xml.Serialization;
 
 namespace SimpleIdentityServer.Core.Jwt.Serializer
 {
-#if DNX451
+#if NET46
     public interface ICngKeySerializer
     {
         string SerializeCngKeyWithPrivateKey(CngKey toBeSerialized);

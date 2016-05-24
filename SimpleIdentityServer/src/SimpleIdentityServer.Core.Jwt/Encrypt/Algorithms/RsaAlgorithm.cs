@@ -31,14 +31,14 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt.Algorithms
             byte[] toBeEncrypted,
             JsonWebKey jsonWebKey)
         {
-#if DNXCORE50
+#if NETSTANDARD1_5
             using (var rsa = new RSAOpenSsl())
             {
                 rsa.FromXmlString(jsonWebKey.SerializedKey);
                 return rsa.Encrypt(toBeEncrypted, RSAEncryptionPadding.Pkcs1);
             }
 #endif
-#if DNX451
+#if NET46
             using (var rsa = new RSACryptoServiceProvider())
             {
                 rsa.FromXmlString(jsonWebKey.SerializedKey);
@@ -50,14 +50,14 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt.Algorithms
             byte[] toBeDecrypted, 
             JsonWebKey jsonWebKey)
         {
-#if DNXCORE50
+#if NETSTANDARD1_5
             using (var rsa = new RSAOpenSsl())
             {
                 rsa.FromXmlString(jsonWebKey.SerializedKey);
                 return rsa.Decrypt(toBeDecrypted, RSAEncryptionPadding.Pkcs1);
             }
 #endif
-#if DNX451
+#if NET46
             using (var rsa = new RSACryptoServiceProvider())
             {
                 rsa.FromXmlString(jsonWebKey.SerializedKey);
