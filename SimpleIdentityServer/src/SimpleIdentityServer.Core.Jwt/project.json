@@ -3,13 +3,13 @@
   "description": "SimpleIdentityServer.Core.Jwt Class Library",
   "authors": [ "thierry habart" ],
   "packOptions": {
-	"tags": [ "" ],
-	"licenseUrl": "",
-	"projectUrl": ""
+    "tags": [ "" ],
+    "licenseUrl": "",
+    "projectUrl": ""
   },
   "dependencies": {
     "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-*",
-	"SimpleIdentityServer.Core.Common": "*"
+    "SimpleIdentityServer.Core.Common": "*"
   },
   "tooling": {
     "defaultNamespace": "SimpleIdentityServer.Core.Jwt"
@@ -23,18 +23,18 @@
     },
     "netstandard1.5": {
       "dependencies": {
-		"NETStandard.Library": "1.5.0-*",
+        "NETStandard.Library": "1.5.0-*",
         "System.Security.Claims": "4.0.1-*",
         "System.Dynamic.Runtime": "4.0.11-*",
         "System.Runtime.Serialization.Xml": "4.1.1-*",
         "System.Runtime.Serialization.Primitives": "4.1.1-*",
         "System.Private.DataContractSerialization": "4.1.1-*",
         "System.Xml.XmlSerializer": "4.0.11-*",
-        "System.Security.Cryptography.Algorithms": "4.0.11-*",
+        "System.Security.Cryptography.Algorithms": "4.1.0-*",
         "System.Security.Cryptography.Csp": "4.0.0-*",
         "System.Security.Cryptography.Cng": "4.1.0-*",
         "System.Security.Cryptography.OpenSsl": "4.0.0-*",
-		"System.Security.Cryptography.Algorithms.Extensions": "*"
+        "System.Security.Cryptography.Algorithms.Extensions": "*"
       }
     }
   }

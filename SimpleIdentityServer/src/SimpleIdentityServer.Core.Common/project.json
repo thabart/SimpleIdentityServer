@@ -1,11 +1,11 @@
 {
   "version": "1.0.0-*",
   "description": "SimpleIdentityServer.Core.Common Class Library",
-  "authors": [ "thierry habart" ],  
+  "authors": [ "thierry habart" ],
   "packOptions": {
-	"tags": [ "" ],
-	"licenseUrl": "",
-	"projectUrl": ""
+    "tags": [ "" ],
+    "licenseUrl": "",
+    "projectUrl": ""
   },
   "tooling": {
     "defaultNamespace": "SimpleIdentityServer.Core.Common"
@@ -21,7 +21,7 @@
         "System.Runtime.Serialization": "4.0.0.0",
         "System.Web.Extensions": "4.0.0.0",
         "System.Xml": "4.0.0.0",
-		"System.Runtime": "4.0.0.0"
+        "System.Runtime": "4.0.20.0"
       }
     },
     "netstandard1.5": {

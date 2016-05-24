@@ -2,9 +2,11 @@
   "version": "1.0.0-*",
   "description": "SimpleIdentityServer.DataAccess.SqlServer Class Library",
   "authors": [ "thierry habart" ],
-  "tags": [ "" ],
-  "projectUrl": "",
-  "licenseUrl": "",
+  "packOptions": {
+	"tags": [ "" ],
+	"licenseUrl": "",
+	"projectUrl": ""
+  },
   "dependencies": {
     "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc1-final",
     "EntityFramework.Commands": "7.0.0-rc1-final",
@@ -15,20 +17,16 @@
     "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0-rc1-final",
     "SimpleIdentityServer.Core": ""
   },
-
   "tooling": {
     "defaultNamespace": "SimpleIdentityServer.DataAccess.SqlServer"
   },
-
   "commands": {
     "ef": "EntityFramework.Commands"
   },
-
   "frameworks": {
     "dnx451": { },
     "dnxcore50": { }
   },
-
   "resource": [
     "Migrations/*.resx"
   ]

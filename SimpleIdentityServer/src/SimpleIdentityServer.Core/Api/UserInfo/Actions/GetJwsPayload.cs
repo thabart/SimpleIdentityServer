@@ -14,6 +14,11 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.Net.Http.Headers;
+using Newtonsoft.Json;
+using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Jwt;
@@ -22,12 +27,8 @@ using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Validators;
 using System;
-using Microsoft.AspNet.Mvc;
+using System.Buffers;
 using System.Net;
-using Microsoft.AspNet.Mvc.Formatters;
-using System.Collections.Generic;
-using Microsoft.Net.Http.Headers;
-using SimpleIdentityServer.Core.Errors;
 
 namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
 {
@@ -93,20 +94,15 @@ namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
             if (signedResponseAlg == null ||
                 signedResponseAlg.Value == JwsAlg.none)
             {
+                var objectResult = new ObjectResult(grantedToken.UserInfoPayLoad)
+                {
+                    StatusCode = (int)HttpStatusCode.OK
+                };
+                objectResult.ContentTypes.Add(new MediaTypeHeaderValue("application/json"));
+                objectResult.Formatters.Add(new JsonOutputFormatter(new JsonSerializerSettings(), ArrayPool<char>.Shared));
                 return new UserInfoResult
                 {
-                    Content = new ObjectResult(grantedToken.UserInfoPayLoad)
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        Formatters = new List<IOutputFormatter>
-                        {
-                            new JsonOutputFormatter()
-                        },
-                        ContentTypes = new List<MediaTypeHeaderValue>
-                        {
-                            new MediaTypeHeaderValue("application/json")
-                        }
-                    }
+                    Content = objectResult
                 };
             }
 
@@ -132,8 +128,8 @@ namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
                 Content = new ContentResult
                 {
                     Content = jwt,
-                    ContentType = new MediaTypeHeaderValue("application/jwt"),
-                    StatusCode = (int)HttpStatusCode.OK
+                    StatusCode = (int)HttpStatusCode.OK,
+                    ContentType = "application/jwt",
                 }
             };
         }

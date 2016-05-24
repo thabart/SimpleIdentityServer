@@ -18,6 +18,6 @@ namespace SimpleIdentityServer.Core.Results
 {
     public class UserInfoResult
     {
-        public Microsoft.AspNet.Mvc.ActionResult Content { get; set; }
+        public Microsoft.AspNetCore.Mvc.ActionResult Content { get; set; }
     }
 }
