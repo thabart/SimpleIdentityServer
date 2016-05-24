@@ -15,11 +15,8 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "web": {
-      "commandName": "web",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+    "SimpleIdentityServer.Startup": {
+      "commandName": "Project"
     }
   }
 }

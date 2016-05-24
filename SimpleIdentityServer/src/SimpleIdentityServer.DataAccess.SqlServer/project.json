@@ -42,6 +42,11 @@
     "emitEntryPoint": true,
     "embed": [
       "Migrations/*.resx"
+    ],
+    "copyToOutput": [
+      "appsettings.json",
+      "appsettings.azure.json",
+      "appsettings.docker.json"
     ]
   },
   "publishOptions": {

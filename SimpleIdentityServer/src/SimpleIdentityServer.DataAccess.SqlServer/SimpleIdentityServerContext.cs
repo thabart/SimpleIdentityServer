@@ -22,6 +22,14 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
 {
     public class SimpleIdentityServerContext : DbContext
     {
+        #region Constructor
+
+        public SimpleIdentityServerContext(DbContextOptions dbContextOptions):base(dbContextOptions)
+        {
+        }
+
+        #endregion
+
         public virtual DbSet<Translation> Translations { get; set; }
 
         public virtual DbSet<Scope> Scopes { get; set; }

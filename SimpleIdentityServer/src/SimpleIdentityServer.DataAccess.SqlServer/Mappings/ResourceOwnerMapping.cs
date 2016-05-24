@@ -28,7 +28,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
                 .HasKey(j => j.Id);
             modelBuilder.Entity<ResourceOwner>()
                 .HasOne(r => r.Address)
-                .WithOne(a => a.ResourceOwner);
+                .WithOne(a => a.ResourceOwner)
+                .HasForeignKey<Address>(a => a.ResourceOwnerForeignKey);
             /*
             ToTable("resourceOwners");
             HasKey(r => r.Id);

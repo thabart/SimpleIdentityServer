@@ -31,7 +31,11 @@
     }
   },
   "buildOptions": {
-    "emitEntryPoint": true
+    "emitEntryPoint": true,
+    "preserveCompilationContext": true,
+    "copyToOutput": [
+      "appsettings.json"
+    ]
   },
   "publishOptions": {
     "include": [

@@ -4,6 +4,8 @@
     {
         public int Id { get; set; }
 
+        public string ResourceOwnerForeignKey { get; set; }
+
         public string Formatted { get; set; }
 
         public string StreetAddress { get; set; }
