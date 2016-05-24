@@ -14,7 +14,7 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
@@ -50,6 +50,14 @@ namespace SimpleIdentityServer.RateLimitation
         public Type ServiceType { get; set; }
         
         public object[] Arguments { get; set; }
+
+        public bool IsReusable
+        {
+            get
+            {
+                return true;
+            }
+        }
 
         #endregion
 

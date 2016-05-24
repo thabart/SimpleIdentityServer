@@ -14,13 +14,13 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Http.Features;
-using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Mvc.Filters;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.OptionsModel;
+using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using SimpleIdentityServer.RateLimitation.Configuration;
 using SimpleIdentityServer.RateLimitation.Constants;
@@ -155,7 +155,7 @@ namespace SimpleIdentityServer.RateLimitation.Attributes
                 {
                     StatusCode = 429,
                     Content = message,
-                    ContentType = new MediaTypeHeaderValue("text/plain")
+                    ContentType = "text/plain"
                 };
                 headers.Add(RateLimitationConstants.XRateLimitLimitName, NumberOfRequests.ToString(CultureInfo.InvariantCulture));
                 headers.Add(RateLimitationConstants.XRateLimitRemainingName, numberOfRemainingRequests.ToString(CultureInfo.InvariantCulture));

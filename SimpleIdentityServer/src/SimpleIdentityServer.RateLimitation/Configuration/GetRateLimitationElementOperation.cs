@@ -14,7 +14,7 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.Extensions.OptionsModel;
+using Microsoft.Extensions.Options;
 
 namespace SimpleIdentityServer.RateLimitation.Configuration
 {

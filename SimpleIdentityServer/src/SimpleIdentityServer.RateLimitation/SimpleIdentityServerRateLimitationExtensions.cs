@@ -17,7 +17,6 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.RateLimitation.Configuration;
-using System.Collections.Generic;
 
 namespace SimpleIdentityServer.RateLimitation
 {
