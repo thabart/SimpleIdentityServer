@@ -50,7 +50,7 @@ namespace SimpleIdentityServer.Startup
             Configuration = builder.Build();
             _swaggerOptions = new SwaggerOptions
             {
-                IsSwaggerEnabled = true
+                IsSwaggerEnabled = false
             };
         }
 
@@ -116,7 +116,7 @@ namespace SimpleIdentityServer.Startup
 
             app.UseSimpleIdentityServer(new HostingOptions
             {
-                IsDataMigrated = true,
+                IsDataMigrated = false,
                 IsDeveloperModeEnabled = false,
                 IsMicrosoftAuthenticationEnabled = true,
                 MicrosoftClientId = Configuration["Microsoft:ClientId"],

@@ -202,7 +202,7 @@ namespace SimpleIdentityServer.Host
             */
 
             services.AddDataProtection();
-            // services.AddInstance<SwaggerOptions>(swaggerOptions);
+            services.AddSingleton<SwaggerOptions>(swaggerOptions);
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddAuthentication(opts => opts.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme);
             services.AddMvc();
