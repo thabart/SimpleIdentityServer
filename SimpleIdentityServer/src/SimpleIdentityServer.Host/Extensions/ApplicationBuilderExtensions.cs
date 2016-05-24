@@ -14,16 +14,14 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Authentication.Cookies;
-using Microsoft.AspNet.Authentication.Facebook;
-using Microsoft.AspNet.Authentication.MicrosoftAccount;
-using Microsoft.AspNet.Authentication.OAuth;
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.FileProviders;
-using Microsoft.AspNet.Http;
-using Microsoft.AspNet.StaticFiles;
-using Microsoft.AspNet.WebUtilities;
+using Microsoft.AspNetCore.Authentication.Facebook;
+using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
+using Microsoft.AspNetCore.Authentication.OAuth;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.DataAccess.SqlServer;
 using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
@@ -31,7 +29,6 @@ using SimpleIdentityServer.Host.Controllers;
 using SimpleIdentityServer.Host.MiddleWare;
 using SimpleIdentityServer.Logging;
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
@@ -122,7 +119,7 @@ namespace SimpleIdentityServer.Host
                 throw new ArgumentNullException(nameof(swaggerOptions));
             }
 
-            app.UseIISPlatformHandler(opts => opts.AuthenticationDescriptions.Clear());
+            // app.UseIISPlatformHandler(opts => opts.AuthenticationDescriptions.Clear());
 
             var staticFileOptions = new StaticFileOptions();
             staticFileOptions.FileProvider = new EmbeddedFileProvider(
@@ -145,7 +142,7 @@ namespace SimpleIdentityServer.Host
             
             // 1. Configure the IUrlHelper extension
             var httpContextAccessor = app.ApplicationServices.GetRequiredService<IHttpContextAccessor>();
-            SimpleIdentityServer.Host.Extensions.UriHelperExtensions.Configure(httpContextAccessor); 
+            Extensions.UriHelperExtensions.Configure(httpContextAccessor); 
 
             // 2. Enable cookie authentication
             app.UseCookieAuthentication(new CookieAuthenticationOptions
@@ -201,7 +198,7 @@ namespace SimpleIdentityServer.Host
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
-
+            /*
             if (swaggerOptions.IsSwaggerEnabled)
             {
                 app.UseSwaggerGen();
@@ -214,6 +211,7 @@ namespace SimpleIdentityServer.Host
                     app.UseSwaggerUi();
                 }
             }
+            */
         }
         
         #endregion
@@ -235,8 +233,7 @@ namespace SimpleIdentityServer.Host
                 AuthorizationEndpoint = MicrosoftAccountDefaults.AuthorizationEndpoint,
                 TokenEndpoint = MicrosoftAccountDefaults.TokenEndpoint,
                 UserInformationEndpoint = MicrosoftAccountDefaults.UserInformationEndpoint,
-                Scope = { "wl.basic" },
-                SaveTokensAsClaims = true
+                Scope = { "wl.basic" }
             };
             
             microsoftAccountOptions.Events = new OAuthEvents
@@ -262,7 +259,7 @@ namespace SimpleIdentityServer.Host
                     }
                     
                     // 3. Retrieve the name
-                    var name = MicrosoftAccountHelper.GetName(payload);
+                    var name = MicrosoftAccountHelper.GetGivenName(payload);
                     if (!string.IsNullOrWhiteSpace(name)) 
                     {
                         context.Identity.AddClaim(new Claim(

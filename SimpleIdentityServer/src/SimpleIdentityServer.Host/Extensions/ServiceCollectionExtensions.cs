@@ -14,10 +14,10 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Authentication.Cookies;
-using Microsoft.AspNet.FileProviders;
-using Microsoft.AspNet.Mvc.Razor;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Jwt;
@@ -25,14 +25,12 @@ using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.DataAccess.Fake;
-using SimpleIdentityServer.DataAccess.Fake.Extensions;
 using SimpleIdentityServer.DataAccess.SqlServer;
 using SimpleIdentityServer.Host.Configuration;
 using SimpleIdentityServer.Host.Controllers;
 using SimpleIdentityServer.Host.Parsers;
 using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.RateLimitation;
-using Swashbuckle.SwaggerGen;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -127,6 +125,7 @@ namespace SimpleIdentityServer.Host
                 throw new ArgumentNullException(nameof(swaggerOptions));
             }
             
+            /*
             if (dataSourceOptions.DataSourceType == DataSourceTypes.InMemory) 
             {
                 serviceCollection.AddSimpleIdentityServerFake();
@@ -146,6 +145,7 @@ namespace SimpleIdentityServer.Host
 
                 serviceCollection.AddTransient(a => fakeDataSource);
             }
+            */
 
             if (dataSourceOptions.DataSourceType == DataSourceTypes.SqlServer)
             {
@@ -183,7 +183,9 @@ namespace SimpleIdentityServer.Host
             services.AddTransient<IRedirectInstructionParser, RedirectInstructionParser>();
             services.AddTransient<IActionResultParser, ActionResultParser>();
             services.AddTransient<ISimpleIdentityServerConfigurator, ConcreteSimpleIdentityServerConfigurator>();
-            services.AddInstance<ISimpleIdentityServerEventSource>(logging);
+            services.AddSingleton<ISimpleIdentityServerEventSource>(logging);
+
+            /*
             if (swaggerOptions.IsSwaggerEnabled)
             {
                 services.AddSwaggerGen();
@@ -196,17 +198,18 @@ namespace SimpleIdentityServer.Host
                     });
                 });
             }
+            */
 
             services.AddDataProtection();
-            services.AddInstance<SwaggerOptions>(swaggerOptions);
+            // services.AddInstance<SwaggerOptions>(swaggerOptions);
             services.AddAuthentication(opts => opts.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme);
             services.AddMvc();
             services.Configure<RazorViewEngineOptions>(options =>
             {
-                options.FileProvider = new EmbeddedFileProvider(
+                options.FileProviders.Add(new EmbeddedFileProvider(
                         typeof(AuthenticateController).GetTypeInfo().Assembly,
                         "SimpleIdentityServer.Host"
-                );
+                ));
             });
         }
         

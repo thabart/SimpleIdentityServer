@@ -14,15 +14,15 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Http.Authentication;
-using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Routing;
+using Microsoft.AspNetCore.Http.Authentication;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Host.DTOs.Request;
 using SimpleIdentityServer.Host.Parsers;
 using System;
 using System.Security.Claims;
-using ActionResult = Microsoft.AspNet.Mvc.ActionResult;
+using ActionResult = Microsoft.AspNetCore.Mvc.ActionResult;
 using ResponseMode = SimpleIdentityServer.Core.Parameters.ResponseMode;
 
 namespace SimpleIdentityServer.Host.Extensions

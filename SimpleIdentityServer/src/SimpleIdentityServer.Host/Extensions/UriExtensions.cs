@@ -14,7 +14,7 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Routing;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
@@ -28,7 +28,7 @@ namespace SimpleIdentityServer.Host.Extensions
         public static Uri AddParameter(this Uri uri, string parameterName, string parameterValue)
         {
             var uriBuilder = new UriBuilder(uri);
-            var query = Microsoft.AspNet.WebUtilities.QueryHelpers.ParseQuery(uriBuilder.Query);
+            var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uriBuilder.Query);
             query[parameterName] = parameterValue;
             uriBuilder.Query = query.ToString();
             return new Uri(uriBuilder.ToString());
@@ -43,7 +43,7 @@ namespace SimpleIdentityServer.Host.Extensions
         public static Uri AddParametersInQuery(this Uri uri, RouteValueDictionary dic)
         {
             var uriBuilder = new UriBuilder(uri); 
-            var query = Microsoft.AspNet.WebUtilities.QueryHelpers.ParseQuery(uriBuilder.Query);
+            var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uriBuilder.Query);
             foreach (var keyPair in dic)
             {
                 query[keyPair.Key] = keyPair.Value.ToString();
@@ -62,7 +62,7 @@ namespace SimpleIdentityServer.Host.Extensions
         public static Uri AddParametersInFragment(this Uri uri, RouteValueDictionary dic)
         {
             var uriBuilder = new UriBuilder(uri);
-            var query = Microsoft.AspNet.WebUtilities.QueryHelpers.ParseQuery(uriBuilder.Query);
+            var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uriBuilder.Query);
             foreach (var keyPair in dic)
             {
                 query[keyPair.Key] = keyPair.Value.ToString();

@@ -14,12 +14,12 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Mvc;
 using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.Core.Api.Discovery;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Host;
-    
+using Microsoft.AspNetCore.Mvc;
+
 namespace SimpleIdentityServer.Api.Controllers.Api
 {
     [Route(Constants.EndPoints.DiscoveryAction)]

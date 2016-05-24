@@ -14,8 +14,8 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.DataProtection;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Core.Api.Authorization;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
@@ -63,7 +63,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
         #region Public methods
 
         [HttpGet]
-        public async Task<Microsoft.AspNet.Mvc.ActionResult> Get([FromQuery]AuthorizationRequest authorizationRequest)
+        public async Task<Microsoft.AspNetCore.Mvc.ActionResult> Get([FromQuery]AuthorizationRequest authorizationRequest)
         {
             if (authorizationRequest == null)
             {
@@ -135,7 +135,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
         #region Private static methods
         
         private static string GetRedirectionUrl(
-            Microsoft.AspNet.Http.HttpRequest request,
+            Microsoft.AspNetCore.Http.HttpRequest request,
             IdentityServerEndPoints identityServerEndPoints)
         {
             var uri = request.GetAbsoluteUriWithVirtualPath();

@@ -14,11 +14,11 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Authentication.Cookies;
-using Microsoft.AspNet.DataProtection;
-using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Http.Authentication;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Authentication;
+using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Api.ViewModels;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Protector;
@@ -308,7 +308,7 @@ namespace SimpleIdentityServer.Host.Controllers
 
             // 1 : retrieve the request from the cookie
             var cookieName = string.Format(ExternalAuthenticateCookieName, code);
-            var request = Request.Cookies[string.Format(ExternalAuthenticateCookieName, code)].FirstOrDefault();
+            var request = Request.Cookies[string.Format(ExternalAuthenticateCookieName, code)];
             if (request == null)
             {
                 throw new IdentityServerException(Core.Errors.ErrorCodes.UnhandledExceptionCode,

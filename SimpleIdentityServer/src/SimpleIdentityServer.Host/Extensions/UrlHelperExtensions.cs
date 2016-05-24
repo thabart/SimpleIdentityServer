@@ -14,8 +14,8 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace SimpleIdentityServer.Host.Extensions
 {

@@ -14,9 +14,9 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.DataProtection;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Translation;

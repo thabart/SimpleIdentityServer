@@ -39,7 +39,10 @@
     }
   },
   "buildOptions": {
-    "emitEntryPoint": true
+    "emitEntryPoint": true,
+    "embed": [
+      "Migrations/*.resx"
+    ]
   },
   "publishOptions": {
     "include": [

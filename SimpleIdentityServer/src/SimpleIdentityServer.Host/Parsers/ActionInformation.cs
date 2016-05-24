@@ -14,7 +14,7 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Routing;
+using Microsoft.AspNetCore.Routing;
 
 namespace SimpleIdentityServer.Host.Parsers
 {

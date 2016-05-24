@@ -14,7 +14,7 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using SimpleIdentityServer.Core.Api.Token;
 using SimpleIdentityServer.Core.Models;
@@ -111,7 +111,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
 
             // Revoke the token
             _tokenActions.RevokeToken(revocationRequest.ToParameter(), authenticationHeaderValue);
-            return new HttpOkResult();
+            return new OkResult();
         }
 
         #endregion

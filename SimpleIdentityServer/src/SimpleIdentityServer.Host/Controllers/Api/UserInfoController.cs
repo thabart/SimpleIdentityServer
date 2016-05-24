@@ -21,10 +21,10 @@ using SimpleIdentityServer.Core.Api.UserInfo;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using System.Collections.Generic;
-using Microsoft.AspNet.Mvc;
 using SimpleIdentityServer.Host;
 using Microsoft.Extensions.Primitives;
 using SimpleIdentityServer.Host.Extensions;
+using Microsoft.AspNetCore.Mvc;
 
 namespace SimpleIdentityServer.Api.Controllers.Api
 {
@@ -71,11 +71,11 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             }
             catch (AuthorizationException)
             {
-                return new HttpUnauthorizedResult();
+                return new UnauthorizedResult();
             }
             catch (Exception ex)
             {
-                return new HttpOkObjectResult(ex.StackTrace);
+                return new OkObjectResult(ex.StackTrace);
             }
         }
 
@@ -143,7 +143,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             }
 
             var content = Request.ReadAsStringAsync().Result;
-            var queryString = Microsoft.AspNet.WebUtilities.QueryHelpers.ParseQuery(content);
+            var queryString = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(content);
             if (!queryString.Keys.Contains(accessTokenName))
             {
                 return emptyResult;

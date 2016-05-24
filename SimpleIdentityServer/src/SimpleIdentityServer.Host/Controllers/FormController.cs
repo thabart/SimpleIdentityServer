@@ -14,7 +14,7 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Host.ViewModels;
 
 namespace SimpleIdentityServer.Api.Controllers
@@ -24,7 +24,7 @@ namespace SimpleIdentityServer.Api.Controllers
         public ActionResult Index(dynamic parameters)
         {
             var queryStringValue = Request.QueryString.Value;            
-            var queryString = Microsoft.AspNet.WebUtilities.QueryHelpers.ParseQuery(queryStringValue);
+            var queryString = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(queryStringValue);
             var idToken = queryString[Core.Constants.StandardAuthorizationResponseNames.IdTokenName];
             var accessToken = queryString[Core.Constants.StandardAuthorizationResponseNames.AccessTokenName];
             var authorizationCode = queryString[Core.Constants.StandardAuthorizationResponseNames.AuthorizationCodeName];

@@ -14,7 +14,7 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.DataProtection;
+using Microsoft.AspNetCore.DataProtection;
 using SimpleIdentityServer.Core.Common.Extensions;
 using System;
 using System.Text;
