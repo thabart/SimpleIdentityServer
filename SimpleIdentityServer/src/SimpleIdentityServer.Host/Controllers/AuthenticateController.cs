@@ -19,6 +19,8 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
 using SimpleIdentityServer.Api.ViewModels;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Protector;
@@ -60,14 +62,15 @@ namespace SimpleIdentityServer.Host.Controllers
             IEncoder encoder,
             ITranslationManager translationManager,
             ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
-            IUrlHelper urlHelper)
+            IUrlHelperFactory urlHelperFactory,
+            IActionContextAccessor actionContextAccessor)
         {
             _authenticateActions = authenticateActions;
             _dataProtector = dataProtectionProvider.CreateProtector("Request");
             _encoder = encoder;
             _translationManager = translationManager;
             _simpleIdentityServerEventSource = simpleIdentityServerEventSource;            
-            _urlHelper = urlHelper;
+            _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
         }
         
         #region Public methods

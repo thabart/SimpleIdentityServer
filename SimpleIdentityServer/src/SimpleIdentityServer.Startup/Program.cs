@@ -15,6 +15,7 @@
 #endregion
 
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 
 namespace SimpleIdentityServer.Startup
 {
@@ -22,8 +23,14 @@ namespace SimpleIdentityServer.Startup
     {
         public static void Main(string[] args)
         {
+            // To launch the application : dotnet run --server.urls=http://*:5000
+            var configuration = new ConfigurationBuilder()
+                .AddCommandLine(args)
+                .AddEnvironmentVariables(prefix: "ASPNETCORE_")
+                .Build();
             var host = new WebHostBuilder()
                 .UseKestrel()
+                .UseConfiguration(configuration)
                 .UseStartup<Startup>()
                 .Build();
             host.Run();

@@ -20,7 +20,6 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.PlatformAbstractions;
 using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Host.Configuration;
 using SimpleIdentityServer.RateLimitation.Configuration;
@@ -116,7 +115,7 @@ namespace SimpleIdentityServer.Startup
 
             app.UseSimpleIdentityServer(new HostingOptions
             {
-                IsDataMigrated = false,
+                IsDataMigrated = true,
                 IsDeveloperModeEnabled = false,
                 IsMicrosoftAuthenticationEnabled = true,
                 MicrosoftClientId = Configuration["Microsoft:ClientId"],
