@@ -6,6 +6,6 @@ SET DOCKER_CERT_PATH=C:\Users\habar\.docker\machine\machines\dev
 SET DOCKER_MACHINE_NAME=dev
 
 docker-machine start dev
-docker build -t simpleidserver .
+docker build -t simpleidserver -f Dockerfile-Authorization .
 docker run -t -d -p 5000:5000 simpleidserver
 docker run -t -i simpleidserver /bin/bash

@@ -14,8 +14,6 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.TestHost;
 using Newtonsoft.Json;
 using SimpleIdentityServer.UserInformation.Authentication.Tests.Fake;
 using System;
@@ -27,11 +25,47 @@ using Xunit;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using SimpleIdentityServer.UserInformation.Authentication.Errors;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.AspNetCore.Hosting;
 
 namespace SimpleIdentityServer.UserInformation.Authentication.Tests
 {
     public class UserInformationMiddlewareFixture
     {
+        private class FakeStartup
+        {
+            public void ConfigureServices(IServiceCollection serviceCollection)
+            {
+                serviceCollection.AddMvc();
+            }
+
+            public void Configure(IApplicationBuilder app)
+            {
+                var options = app.ApplicationServices.GetRequiredService<UserInformationOptions>();
+                app.UseAuthenticationWithUserInformation(options);
+                app.Map("/protectedoperation", a =>
+                {
+                    a.Run(async context =>
+                    {
+                        var user = context.User;
+                        var claim = user.Claims.ToList().FirstOrDefault(c => c.Type == "role");
+                        if (claim == null || claim.Value != "administrator")
+                        {
+                            context.Response.StatusCode = 401;
+                            context.Response.Headers.Add("WWW-Authenticate",
+                                new[] { "Basic" });
+                        }
+                        else
+                        {
+                            context.Response.ContentType = "application/json";
+                            context.Response.StatusCode = 200;
+                        }
+                    });
+                });
+            }
+        }
+
         #region Exceptions
 
         [Fact]
@@ -139,32 +173,17 @@ namespace SimpleIdentityServer.UserInformation.Authentication.Tests
 
         private static TestServer CreateServer(UserInformationOptions options)
         {
-            return TestServer.Create(app =>
-            {
-                app.UseAuthenticationWithUserInformation(options);
-                app.Map("/protectedoperation", a =>
+            var builder = new WebHostBuilder()
+                .ConfigureServices((services) =>
                 {
-                    a.Run(async context =>
-                    {
-                        var user = context.User;
-                        var claim = user.Claims.ToList().FirstOrDefault(c => c.Type == "role");
-                        if (claim == null || claim.Value != "administrator")
-                        {
-                            context.Response.StatusCode = 401;
-                            context.Response.Headers.Add("WWW-Authenticate",
-                                new[] { "Basic" });
-                        }
-                        else
-                        {
-                            context.Response.ContentType = "application/json";
-                            context.Response.StatusCode = 200;           
-                        }
-                    });
-                });
-            }, services =>
-            {
-                services.AddMvc();
-            });
+                    InitializeServices(services, options);
+                })
+                .UseStartup(typeof(FakeStartup));
+            return new TestServer(builder);
+        }
+        private static void InitializeServices(IServiceCollection services, UserInformationOptions options)
+        {
+            services.AddSingleton(options);
         }
     }
 }

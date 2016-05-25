@@ -1,14 +1,11 @@
-FROM microsoft/aspnet
+FROM microsoft/dotnet:onbuild
 
-ENV ASPNET_ENV docker
-ENV DNX_USER_HOME /opt/dnx
-ENV PATH $PATH:$DNX_USER_HOME/runtimes/default/bin
+ENV ASPNETCORE_ENVIRONMENT docker
 
 COPY SimpleIdentityServer/src /app
 
 WORKDIR /app
 
-# Add nuget sources + create database + restore the nuget packages + crate the database
 RUN curl -sL https://deb.nodesource.com/setup_5.x | bash -
 RUN apt-get install -y nodejs git libunwind8 libssl-dev bzip2 \
 	&& npm install -g bower gulp

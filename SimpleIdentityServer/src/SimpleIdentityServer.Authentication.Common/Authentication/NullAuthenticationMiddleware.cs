@@ -14,11 +14,12 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Authentication;
-using Microsoft.AspNet.Builder;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.WebEncoders;
-using System;
+using Microsoft.Extensions.Options;
+using System.Text.Encodings.Web;
 
 namespace SimpleIdentityServer.Authentication.Common.Authentication
 {
@@ -26,9 +27,10 @@ namespace SimpleIdentityServer.Authentication.Common.Authentication
     {
         public NullAuthenticationMiddleware(
             RequestDelegate next,
-            NullAuthenticationOptions options, 
-            ILoggerFactory loggerFactory, 
-            IUrlEncoder encoder)
+            IDataProtectionProvider dataProtectionProvider,
+            ILoggerFactory loggerFactory,
+            UrlEncoder encoder,
+            IOptions<NullAuthenticationOptions> options)
             : base(next, options, loggerFactory, encoder)
         {
         }

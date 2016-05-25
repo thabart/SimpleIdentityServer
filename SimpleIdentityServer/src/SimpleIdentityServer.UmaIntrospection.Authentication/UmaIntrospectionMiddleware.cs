@@ -14,10 +14,10 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Http;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.OptionsModel;
+using Microsoft.Extensions.Options;
 using SimpleIdentityServer.Authentication.Common.Authentication;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Client.DTOs.Responses;
@@ -83,7 +83,7 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
                 AutomaticAuthenticate = true,
                 AutomaticChallenge = true
             };
-            nullAuthenticationBuilder.UseMiddleware<NullAuthenticationMiddleware>(nullAuthenticationOptions);
+            nullAuthenticationBuilder.UseMiddleware<NullAuthenticationMiddleware>(Options.Create(nullAuthenticationOptions));
             nullAuthenticationBuilder.Run(ctx => next(ctx));
             _nullAuthenticationNext = nullAuthenticationBuilder.Build();
         }
@@ -191,7 +191,7 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
         {
             if (options.IdentityServerUmaClientFactory != null)
             {
-                serviceCollection.AddInstance(options.IdentityServerUmaClientFactory);
+                serviceCollection.AddSingleton(options.IdentityServerUmaClientFactory);
             }
             else
             {
@@ -200,7 +200,7 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
 
             if (options.IdentityServerUmaManagerClientFactory != null)
             {
-                serviceCollection.AddInstance(options.IdentityServerUmaManagerClientFactory);
+                serviceCollection.AddSingleton(options.IdentityServerUmaManagerClientFactory);
             }
             else
             {

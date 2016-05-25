@@ -15,7 +15,7 @@
 #endregion
 
 using System.Threading.Tasks;
-using Microsoft.AspNet.Authentication;
+using Microsoft.AspNetCore.Authentication;
 
 namespace SimpleIdentityServer.Authentication.Common.Authentication
 {
@@ -23,7 +23,7 @@ namespace SimpleIdentityServer.Authentication.Common.Authentication
     {
         protected override Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            return Task.FromResult(AuthenticateResult.Failed("an error occured ??"));
+            return Task.FromResult(AuthenticateResult.Fail("an error occured ??"));
         }
     }
 }

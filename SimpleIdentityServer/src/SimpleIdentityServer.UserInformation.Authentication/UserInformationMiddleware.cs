@@ -14,20 +14,20 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Http;
-using Microsoft.Extensions.OptionsModel;
-using Newtonsoft.Json;
 using SimpleIdentityServer.Authentication.Common.Authentication;
 using SimpleIdentityServer.UserInformation.Authentication.Errors;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Threading.Tasks;
-#if DNXCORE50
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Builder;
+using Newtonsoft.Json;
+using System.Net.Http.Headers;
+using Microsoft.Extensions.Options;
+#if NETSTANDARD1_5
 using curl_sharp;
 #endif
 
@@ -74,7 +74,7 @@ namespace SimpleIdentityServer.UserInformation.Authentication
                 AutomaticAuthenticate = true,
                 AutomaticChallenge = true
             };
-            nullAuthenticationBuilder.UseMiddleware<NullAuthenticationMiddleware>(nullAuthenticationOptions);
+            nullAuthenticationBuilder.UseMiddleware<NullAuthenticationMiddleware>(Options.Create(nullAuthenticationOptions));
             nullAuthenticationBuilder.Run(ctx => next(ctx));
             _nullAuthenticationNext = nullAuthenticationBuilder.Build();
         }
@@ -137,8 +137,7 @@ namespace SimpleIdentityServer.UserInformation.Authentication
             {
                 throw new ArgumentException(ErrorDescriptions.TheUserInfoEndPointIsNotAWellFormedUrl);
             }
-
-#if DNX451
+#if NET46
             var requestMessage = new HttpRequestMessage(HttpMethod.Get, url);
             requestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             requestMessage.Headers.Add(AuthorizationName, string.Format("Bearer {0}", token));
@@ -150,8 +149,7 @@ namespace SimpleIdentityServer.UserInformation.Authentication
 
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<Dictionary<string, string>>(content);
-#endif
-#if DNXCORE50
+#else
             var argument = string.Format("-H \"Accept: application/json\" -H \"Authorization: Bearer {0}\" -X GET {1}",
                 token, url);
             try

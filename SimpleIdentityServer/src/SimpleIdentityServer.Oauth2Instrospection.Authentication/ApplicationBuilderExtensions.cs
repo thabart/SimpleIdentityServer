@@ -14,8 +14,8 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Builder;
-using SimpleIdentityServer.Authentication.Common.Options;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Options;
 using System;
 
 namespace SimpleIdentityServer.Oauth2Instrospection.Authentication

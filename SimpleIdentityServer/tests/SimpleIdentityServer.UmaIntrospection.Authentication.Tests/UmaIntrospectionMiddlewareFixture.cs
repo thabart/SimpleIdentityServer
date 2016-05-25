@@ -14,8 +14,9 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.TestHost;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using SimpleIdentityServer.Client;
@@ -37,6 +38,30 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication.Tests
 {
     public class UmaIntrospectionMiddlewareFixture
     {
+        private class FakeStartup
+        {
+            public void ConfigureServices(IServiceCollection serviceCollection)
+            {
+                serviceCollection.AddMvc();
+            }
+
+            public void Configure(IApplicationBuilder app)
+            {
+                var umaIntrospectionOptions = app.ApplicationServices.GetRequiredService<UmaIntrospectionOptions>();
+                app.UseAuthenticationWithUmaIntrospection(umaIntrospectionOptions);
+                app.Map("/operation", a =>
+                {
+                    a.Run(async context =>
+                    {
+                        var user = context.User;
+                        var claimsIdentity = user.Identity as ClaimsIdentity;
+                        var permissions = claimsIdentity.GetPermissions();
+                        context.Response.StatusCode = 200;
+                    });
+                });
+            }
+        }
+
         #region Exceptions
 
         [Fact]
@@ -164,23 +189,18 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication.Tests
 
         private static TestServer CreateServer(UmaIntrospectionOptions umaIntrospectionOptions)
         {
-            return TestServer.Create(app =>
-            {
-                app.UseAuthenticationWithUmaIntrospection(umaIntrospectionOptions);
-                app.Map("/operation", a =>
+            var builder = new WebHostBuilder()
+                .ConfigureServices((services) =>
                 {
-                    a.Run(async context =>
-                    {
-                        var user = context.User;
-                        var claimsIdentity = user.Identity as ClaimsIdentity;
-                        var permissions = claimsIdentity.GetPermissions();
-                        context.Response.StatusCode = 200;
-                    });
-                });
-            }, services =>
-            {
-                services.AddMvc();
-            });
+                    InitializeServices(services, umaIntrospectionOptions);
+                })
+                .UseStartup(typeof(FakeStartup));
+            return new TestServer(builder);
+        }
+
+        private static void InitializeServices(IServiceCollection services, UmaIntrospectionOptions options)
+        {
+            services.AddSingleton(options);
         }
 
         #endregion

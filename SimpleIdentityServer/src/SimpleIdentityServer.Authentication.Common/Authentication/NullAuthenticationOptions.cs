@@ -15,7 +15,7 @@
 #endregion
 
 
-using Microsoft.AspNet.Authentication;
+using Microsoft.AspNetCore.Builder;
 
 namespace SimpleIdentityServer.Authentication.Common.Authentication
 {

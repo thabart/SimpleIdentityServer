@@ -2,15 +2,16 @@
   "version": "1.0.0-*",
   "description": "SimpleIdentityServer.Uma.Common Class Library",
   "authors": [ "thierry habart" ],
-  "tags": [ "" ],
-  "projectUrl": "",
-  "licenseUrl": "",
-
+  "packOptions": {
+    "tags": [ "" ],
+    "licenseUrl": "",
+    "projectUrl": ""
+  },
   "dependencies": {
-    "Microsoft.AspNet.Http.Abstractions": "1.0.0-rc1-final",
-    "Microsoft.AspNet.Authentication": "1.0.0-rc1-final",
-    "Microsoft.Extensions.OptionsModel": "1.0.0-rc1-final",
-    "Newtonsoft.Json": "8.0.2"
+    "Microsoft.AspNetCore.Http.Abstractions": "1.0.0-*",
+    "Microsoft.AspNetCore.Authentication": "1.0.0-*",
+    "Microsoft.Extensions.OptionsModel": "1.0.0-*",
+    "Newtonsoft.Json": "8.0.4-*"
   },
 
   "tooling": {
@@ -18,16 +19,19 @@
   },
 
   "frameworks": {
-    "dnx451": {
+    "net46": {
       "frameworkAssemblies": {
         "System.Web": "4.0.0.0",
         "System.Runtime.Serialization": "4.0.0.0"
       }
     },
-    "dnxcore50": {
-      "dependencies": {        
+    "netstandard1.5": {
+      "dependencies": {
         "CurlSharp": "0.6.2"
-      }
+      },
+      "imports": [
+        "dnxcore50"
+      ]
     }
   }
 }

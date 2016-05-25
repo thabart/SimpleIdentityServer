@@ -14,9 +14,9 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Http;
-using Microsoft.Extensions.OptionsModel;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using SimpleIdentityServer.Authentication.Common.Authentication;
 using SimpleIdentityServer.Oauth2Instrospection.Authentication.Errors;
@@ -71,7 +71,7 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
                 AutomaticAuthenticate = true,
                 AutomaticChallenge = true
             };
-            nullAuthenticationBuilder.UseMiddleware<NullAuthenticationMiddleware>(nullAuthenticationOptions);
+            nullAuthenticationBuilder.UseMiddleware<NullAuthenticationMiddleware>(Options.Create(nullAuthenticationOptions));
             nullAuthenticationBuilder.Run(ctx => next(ctx));
             _nullAuthenticationNext = nullAuthenticationBuilder.Build();
         }

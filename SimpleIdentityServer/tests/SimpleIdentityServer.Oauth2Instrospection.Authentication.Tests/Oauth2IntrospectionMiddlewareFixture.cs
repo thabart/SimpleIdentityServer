@@ -14,8 +14,6 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.TestHost;
 using Newtonsoft.Json;
 using SimpleIdentityServer.Oauth2Instrospection.Authentication.Errors;
 using SimpleIdentityServer.Oauth2Instrospection.Authentication.Tests.Fake;
@@ -26,11 +24,48 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Builder;
 
 namespace SimpleIdentityServer.Oauth2Instrospection.Authentication.Tests
 {
+
     public class Oauth2IntrospectionMiddlewareFixture
     {
+        private class FakeStartup
+        {
+            public void ConfigureServices(IServiceCollection serviceCollection)
+            {
+                serviceCollection.AddMvc();
+            }
+
+            public void Configure(IApplicationBuilder app)
+            {
+                var options = app.ApplicationServices.GetRequiredService<Oauth2IntrospectionOptions>();
+                app.UseAuthenticationWithIntrospection(options);
+                app.Map("/protectedoperation", a =>
+                {
+                    a.Run(async context =>
+                    {
+                        var user = context.User;
+                        var claim = user.Claims.ToList().FirstOrDefault(c => c.Type == "scope");
+                        if (claim == null || claim.Value != "GetMethod")
+                        {
+                            context.Response.StatusCode = 401;
+                            context.Response.Headers.Add("WWW-Authenticate",
+                                new[] { "Basic" });
+                        }
+                        else
+                        {
+                            context.Response.ContentType = "application/json";
+                            context.Response.StatusCode = 200;
+                        }
+                    });
+                });
+            }
+        }
+
         #region Exceptions
 
         [Fact]
@@ -208,34 +243,24 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication.Tests
 
         #endregion
 
+        #region Private methods
+
         private static TestServer CreateServer(Oauth2IntrospectionOptions options)
         {
-            return TestServer.Create(app =>
-            {
-                app.UseAuthenticationWithIntrospection(options);
-                app.Map("/protectedoperation", a =>
+            var builder = new WebHostBuilder()
+                .ConfigureServices((services) =>
                 {
-                    a.Run(async context =>
-                    {
-                        var user = context.User;
-                        var claim = user.Claims.ToList().FirstOrDefault(c => c.Type == "scope");
-                        if (claim == null || claim.Value != "GetMethod")
-                        {
-                            context.Response.StatusCode = 401;
-                            context.Response.Headers.Add("WWW-Authenticate",
-                                new[] { "Basic" });
-                        }
-                        else
-                        {
-                            context.Response.ContentType = "application/json";
-                            context.Response.StatusCode = 200;           
-                        }
-                    });
-                });
-            }, services =>
-            {
-                services.AddMvc();
-            });
+                    InitializeServices(services, options);
+                })
+                .UseStartup(typeof(FakeStartup));
+            return new TestServer(builder);
         }
+
+        private static void InitializeServices(IServiceCollection services, Oauth2IntrospectionOptions options)
+        {
+            services.AddSingleton(options);
+        }
+
+        #endregion
     }
 }

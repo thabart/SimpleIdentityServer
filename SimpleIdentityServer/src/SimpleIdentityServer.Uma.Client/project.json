@@ -2,31 +2,30 @@
   "version": "1.0.0-*",
   "description": "SimpleIdentityServer.Uma.Client",
   "authors": [ "" ],
-  "tags": [ "" ],
-  "projectUrl": "",
-  "licenseUrl": "",
-
+  "packOptions": {
+    "tags": [ "" ],
+    "licenseUrl": "",
+    "projectUrl": ""
+  },
   "tooling": {
     "defaultNamespace": "SimpleIdentityServer.Uma.Client"
   },
-
   "dependencies": {
-    "Microsoft.Extensions.DependencyInjection": "1.0.0-rc1-final",
-    "Newtonsoft.Json": "8.0.3",
-    "SimpleIdentityServer.Core.Common": ""
+    "Microsoft.Extensions.DependencyInjection": "1.0.0-*",
+    "Newtonsoft.Json": "8.0.4-*",
+    "SimpleIdentityServer.Core.Common": "*"
   },
-
   "frameworks": {
-    "dnx451": {
+    "net46": {
       "frameworkAssemblies": {
         "System.Net.Http": "4.0.0.0",
         "System.Runtime.Serialization": "4.0.0.0"
       }
     },
-    "dnxcore50": {
+    "netstandard1.5": {
       "dependencies": {
-        "System.Net.Http": "4.0.1-beta-23516",
-        "System.Runtime.Serialization.Primitives": "4.1.0-rc2-23826"
+        "System.Net.Http": "4.0.1-*",
+        "System.Runtime.Serialization.Primitives": "4.1.1-*"
       }
     }
   }

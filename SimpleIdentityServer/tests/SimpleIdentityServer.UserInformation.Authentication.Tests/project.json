@@ -1,31 +1,27 @@
 {
-    "version": "1.0.0-*",
-    "description": "",
-    "authors": [ "thierry habart" ],
+  "version": "1.0.0-*",
+  "description": "",
+  "authors": [ "thierry habart" ],
+  "packOptions": {
     "tags": [ "" ],
-    "projectUrl": "",
     "licenseUrl": "",
-    "tooling": {
-        "defaultNamespace": "SimpleIdentityServer.UserInformation.Authentication.Tests"
-    },
+    "projectUrl": ""
+  },
+  "tooling": {
+    "defaultNamespace": "SimpleIdentityServer.UserInformation.Authentication.Tests"
+  },
   "dependencies": {
     "Moq": "4.2.1510.2205",
-    "NUnit": "3.0.1",
     "xunit": "2.1.0",
-    "xunit.runner.dnx": "2.1.0-rc1-build204",
-    "Microsoft.AspNet.TestHost": "1.0.0-rc1-final",
-    "Microsoft.AspNet.Authorization": "1.0.0-rc1-final",
-    "Microsoft.AspNet.Mvc": "6.0.0-rc1-final",
-    "SimpleIdentityServer.UserInformation.Authentication": ""
+    "dotnet-test-xunit": "1.0.0-*",
+    "Microsoft.AspNetCore.TestHost": "1.0.0-*",
+    "Microsoft.AspNetCore.Authorization": "1.0.0-*",
+    "Microsoft.AspNetCore.Mvc": "1.0.0-*",
+    "Microsoft.NETCore.Platforms": "1.0.1-*",
+    "SimpleIdentityServer.UserInformation.Authentication": "*"
   },
-    "commands": {
-        "test": "xunit.runner.dnx"
-    },
-    "frameworks": {
-        "dnx451": {
-            "frameworkAssemblies": {
-                "System.Core": "4.0.0.0"
-            }
-        }
-    }
+  "testRunner": "xunit",
+  "frameworks": {
+    "net46": { }
+  }
 }

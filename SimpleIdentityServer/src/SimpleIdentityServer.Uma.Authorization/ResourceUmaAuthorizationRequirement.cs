@@ -14,7 +14,7 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using SimpleIdentityServer.Uma.Common;
 using System;
 using System.Collections.Generic;
@@ -51,7 +51,7 @@ namespace SimpleIdentityServer.Uma.Authorization
 
         #region Protected methods
 
-        protected override void Handle(AuthorizationContext context, ResourceUmaAuthorizationRequirement requirement)
+        protected override void Handle(AuthorizationHandlerContext context, ResourceUmaAuthorizationRequirement requirement)
         {
             if (context.User == null)
             {
