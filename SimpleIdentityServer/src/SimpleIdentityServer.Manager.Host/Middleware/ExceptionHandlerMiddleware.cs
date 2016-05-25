@@ -14,8 +14,7 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Http;
+using Microsoft.AspNetCore.Http;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Manager.Core.Errors;
 using SimpleIdentityServer.Manager.Core.Exceptions;

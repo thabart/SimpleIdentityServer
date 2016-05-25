@@ -14,7 +14,7 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Builder;
+using Microsoft.AspNetCore.Builder;
 using SimpleIdentityServer.Manager.Host.Middleware;
 using SimpleIdentityServer.UserInformation.Authentication;
 using System;
@@ -59,13 +59,6 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
                     name: "default",
                     template: "{controller}/{action}/{id?}");
             });
-
-            // Launch swagger
-            if (swaggerOptions.IsEnabled)
-            {
-                applicationBuilder.UseSwaggerGen();
-                applicationBuilder.UseSwaggerUi();
-            }
         }
     }
 }

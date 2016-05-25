@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "SimpleIdentityServer.Manager.Host.Startup": {
+      "commandName": "Project"
+    }
+  }
+}

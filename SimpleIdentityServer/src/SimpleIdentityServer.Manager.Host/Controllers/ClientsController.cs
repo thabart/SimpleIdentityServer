@@ -14,8 +14,8 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Manager.Core.Api.Clients;
 using SimpleIdentityServer.Manager.Host.DTOs.Requests;
 using SimpleIdentityServer.Manager.Host.DTOs.Responses;

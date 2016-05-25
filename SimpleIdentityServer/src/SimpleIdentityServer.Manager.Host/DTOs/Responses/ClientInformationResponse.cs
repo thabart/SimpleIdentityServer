@@ -15,12 +15,11 @@
 #endregion
 
 using System.Runtime.Serialization;
-using WebApi.Hal;
 
 namespace SimpleIdentityServer.Manager.Host.DTOs.Responses
 {
     [DataContract]
-    public class ClientInformationResponse : Representation
+    public class ClientInformationResponse
     {        
         /// <summary>
         /// Gets or sets the client identifier.
@@ -39,26 +38,5 @@ namespace SimpleIdentityServer.Manager.Host.DTOs.Responses
         /// </summary>
         [DataMember(Name = Constants.ClientNames.LogoUri)]
         public string LogoUri { get; set; }
-
-        public override string Rel
-        {
-            get
-            {
-                return LinkTemplates.Clients.GetClients.Rel;
-            }
-        }
-
-        public override string Href
-        {
-            get
-            {
-                return LinkTemplates.Clients.GetClients.Href;
-            }
-        }
-
-        protected override void CreateHypermedia()
-        {
-            Links.Add(LinkTemplates.Clients.GetClient.CreateLink(new { id = ClientId }));
-        }
     }
 }

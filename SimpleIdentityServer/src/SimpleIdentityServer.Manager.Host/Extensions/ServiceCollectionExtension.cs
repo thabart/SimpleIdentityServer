@@ -14,46 +14,18 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.FileProviders;
-using Microsoft.AspNet.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.DataAccess.SqlServer;
 using SimpleIdentityServer.Manager.Core;
-using SimpleIdentityServer.Manager.Host.Hal;
-using SimpleIdentityServer.Manager.Host.Swagger;
-using Swashbuckle.SwaggerGen;
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 
 namespace SimpleIdentityServer.Manager.Host.Extensions
 {
     public static class ServiceCollectionExtension
     {
-        private class AssignOauth2SecurityRequirements : IOperationFilter
-        {
-            public void Apply(Operation operation, OperationFilterContext context)
-            {
-                var assignedScopes = new List<string>
-                {
-                    "openid",
-                    "SimpleIdentityServerManager:GetClients"
-                };
-
-                var oauthRequirements = new Dictionary<string, IEnumerable<string>>
-                {
-                    {
-                        "oauth2", assignedScopes
-                    }
-                };
-
-                operation.Security = new List<IDictionary<string, IEnumerable<string>>>();
-                operation.Security.Add(oauthRequirements);
-            }
-        }
-
         public static void AddSimpleIdentityServerManager(
             this IServiceCollection serviceCollection,
             AuthorizationServerOptions authorizationServerOptions,
@@ -74,31 +46,6 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
             {
                 throw new ArgumentNullException(nameof(swaggerOptions));
             }
-
-            // Add the dependencies needed to run Swagger
-            serviceCollection.AddSwaggerGen();
-            serviceCollection.ConfigureSwaggerDocument(opts => {
-                opts.SingleApiVersion(new Info
-                {
-                    Version = "v1",
-                    Title = "Simple identity server manager",
-                    TermsOfService = "None"
-                });
-                opts.SecurityDefinitions.Add("oauth2", new OAuth2Scheme
-                {
-                    Type = "oauth2",
-                    Flow = "implicit",
-                    AuthorizationUrl = authorizationServerOptions.AuthorizationUrl,
-                    TokenUrl = authorizationServerOptions.TokenUrl,
-                    Description = "Implicit flow",
-                    Scopes = new Dictionary<string, string>
-                    {
-                        { "openid", "OpenId" },
-                        { "role" , "Get the roles" }
-                    }
-                });
-                opts.OperationFilter<AssignOauth2SecurityRequirements>();
-            });
 
             // Add the dependencies needed to enable CORS
             serviceCollection.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
@@ -136,21 +83,7 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
             serviceCollection.AddSimpleIdentityServerJwt();
 
             // Add the dependencies needed to run MVC
-            serviceCollection.AddMvc(options =>
-            {
-                options.OutputFormatters.Add(new JsonHalMediaTypeFormatter());
-            });
-
-            if (swaggerOptions.IsEnabled)
-            {
-                serviceCollection.Configure<RazorViewEngineOptions>(options =>
-                {
-                    options.FileProvider = new EmbeddedFileProvider(
-                      typeof(SwaggerUiController).GetTypeInfo().Assembly,
-                      "SimpleIdentityServer.Manager.Host"
-                    );
-                });
-            }
+            serviceCollection.AddMvc();
         }
     }
 }

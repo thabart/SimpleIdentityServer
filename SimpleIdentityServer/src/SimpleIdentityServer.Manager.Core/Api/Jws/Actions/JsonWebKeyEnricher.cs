@@ -107,15 +107,14 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jws.Actions
         public void SetRsaPublicKeyInformation(Dictionary<string, object> result, JsonWebKey jsonWebKey)
         {
             RSAParameters rsaParameters;
-#if DNXCORE50
-            using (var provider = new RSAOpenSsl())
+#if NET46
+            using (var provider = new RSACryptoServiceProvider())
             {
                 provider.FromXmlString(jsonWebKey.SerializedKey);
                 rsaParameters = provider.ExportParameters(false);
             }
-#endif
-#if DNX451
-            using (var provider = new RSACryptoServiceProvider())
+#else
+            using (var provider = new RSAOpenSsl())
             {
                 provider.FromXmlString(jsonWebKey.SerializedKey);
                 rsaParameters = provider.ExportParameters(false);

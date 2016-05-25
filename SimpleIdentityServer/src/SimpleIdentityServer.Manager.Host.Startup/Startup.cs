@@ -14,46 +14,21 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Hosting;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.PlatformAbstractions;
 using SimpleIdentityServer.Manager.Host.Extensions;
-using Swashbuckle.SwaggerGen;
-using System.Collections.Generic;
 
-namespace SimpleIdentityServer.Manager.Host
+namespace SimpleIdentityServer.Manager.Host.Startup
 {
 
     public class Startup
     {
         private SwaggerOptions _swaggerOptions;
 
-        private class AssignOauth2SecurityRequirements : IOperationFilter
-        {
-            public void Apply(Operation operation, OperationFilterContext context)
-            {
-                var assignedScopes = new List<string>
-                {
-                    "openid",
-                    "SimpleIdentityServerManager:GetClients"
-                };
-
-                var oauthRequirements = new Dictionary<string, IEnumerable<string>>
-                {
-                    {
-                        "oauth2", assignedScopes
-                    }
-                };
-
-                operation.Security = new List<IDictionary<string, IEnumerable<string>>>();
-                operation.Security.Add(oauthRequirements);
-            }
-        }
-
-        public Startup(IHostingEnvironment env, IApplicationEnvironment appEnv)
+        public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
@@ -89,7 +64,7 @@ namespace SimpleIdentityServer.Manager.Host
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             var userInfoUrl = Configuration["UserInfoUrl"];
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+            loggerFactory.AddConsole();
             loggerFactory.AddDebug();
 
             app.UseSimpleIdentityServerManager(new AuthorizationServerOptions
@@ -97,8 +72,5 @@ namespace SimpleIdentityServer.Manager.Host
                 UserInformationUrl = userInfoUrl
             }, _swaggerOptions);
         }
-
-        // Entry point for the application.
-        public static void Main(string[] args) => WebApplication.Run<Startup>(args);
     }
 }

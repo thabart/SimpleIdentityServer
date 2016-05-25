@@ -65,16 +65,15 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws.Actions
             // ARRANGE
             InitializeFakeObjects();
             var serializedRsa = string.Empty;
-#if DNXCORE50
-            using (var rsa = new RSAOpenSsl())
-            {
-                serializedRsa = rsa.ToXmlString(true);
-            };
-#endif
-#if DNX451
+#if NET46
             using (var provider = new RSACryptoServiceProvider())
             {
                 serializedRsa = provider.ToXmlString(true);
+            };
+#else
+            using (var rsa = new RSAOpenSsl())
+            {
+                serializedRsa = rsa.ToXmlString(true);
             };
 #endif
             var jsonWebKey = new JsonWebKey

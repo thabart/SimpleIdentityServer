@@ -4,8 +4,8 @@
   "authors": [ "thierry habart" ],
   "packOptions": {
     "tags": [ "" ],
-	"projectUrl": "",
-	"licenseUrl": ""
+    "projectUrl": "",
+    "licenseUrl": ""
   },
 
   "tooling": {

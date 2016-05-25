@@ -14,7 +14,7 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Builder;
+using Microsoft.AspNetCore.Builder;
 
 namespace SimpleIdentityServer.Manager.Host.Middleware
 {
