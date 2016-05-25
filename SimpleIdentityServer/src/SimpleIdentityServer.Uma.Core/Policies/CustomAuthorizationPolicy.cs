@@ -34,7 +34,7 @@ namespace SimpleIdentityServer.Uma.Core.Policies
         public bool Execute(
             Ticket validTicket,
             Policy authorizationPolicy,
-            IEnumerable<Claim> claims)
+            IEnumerable<System.Security.Claims.Claim> claims)
         {
             if (validTicket == null)
             {

@@ -14,13 +14,13 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Hosting;
-using Microsoft.Data.Entity;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.PlatformAbstractions;
 using System.Linq;
 
 namespace SimpleIdentityServer.Uma.EF
@@ -35,8 +35,7 @@ namespace SimpleIdentityServer.Uma.EF
 
         #region Public methods
 
-        public Startup(IHostingEnvironment env,
-            IApplicationEnvironment appEnv)
+        public Startup(IHostingEnvironment env)
         {
             var environment = GetEnvironment();
             var builder = new ConfigurationBuilder()
@@ -50,7 +49,6 @@ namespace SimpleIdentityServer.Uma.EF
         {
             var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
             services.AddEntityFramework()
-                            .AddSqlServer()
                             .AddDbContext<SimpleIdServerUmaContext>(options => options.UseSqlServer(connectionString));
         }
 
@@ -69,10 +67,12 @@ namespace SimpleIdentityServer.Uma.EF
             var configuration = new ConfigurationBuilder()
                 .AddEnvironmentVariables();
             var environmentVariables = configuration.Build();
-            var environmentVariable = environmentVariables.GetChildren().FirstOrDefault(e => e.Key == "ASPNET_ENV");
+            var environmentVariable = environmentVariables.GetChildren().FirstOrDefault(e => e.Key == "ASPNETCORE_ENV");
             return environmentVariable == null ? string.Empty : environmentVariable.Value;
         }
 
         #endregion
+
+        public static void Main(string[] args) { }
     }
 }

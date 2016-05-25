@@ -34,7 +34,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Authorization.Actions
     {
         AuthorizationResponse Execute(
                GetAuthorizationActionParameter getAuthorizationActionParameter,
-               IEnumerable<Claim> claims);
+               IEnumerable<System.Security.Claims.Claim> claims);
     }
 
     internal class GetAuthorizationAction : IGetAuthorizationAction
@@ -71,7 +71,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Authorization.Actions
 
         public AuthorizationResponse Execute(
             GetAuthorizationActionParameter getAuthorizationActionParameter,
-            IEnumerable<Claim> claims)
+            IEnumerable<System.Security.Claims.Claim> claims)
         {
             if (getAuthorizationActionParameter == null)
             {
@@ -144,7 +144,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Authorization.Actions
 
         #region Private static methods
 
-        private static string GetClientId(IEnumerable<Claim> claims)
+        private static string GetClientId(IEnumerable<System.Security.Claims.Claim> claims)
         {
             var clientClaim = claims.FirstOrDefault(c => c.Type == "client_id");
             if (clientClaim == null)

@@ -14,8 +14,7 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using SimpleIdentityServer.Uma.Core.Api.IntrospectionController;
 using System;
@@ -76,11 +75,11 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
 
             if (authenticationHeaderValue == null)
             {
-                return new HttpStatusCodeResult((int)HttpStatusCode.Forbidden);
+                return new StatusCodeResult((int)HttpStatusCode.Forbidden);
             }
 
             var result = _introspectionActions.GetIntrospection(authenticationHeaderValue.Parameter);
-            return new HttpOkObjectResult(result);
+            return new OkObjectResult(result);
         }
 
         #endregion

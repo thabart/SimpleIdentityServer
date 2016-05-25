@@ -14,8 +14,8 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Uma.Core.Api.ResourceSetController;
 using SimpleIdentityServer.Uma.Host.DTOs.Requests;
 using SimpleIdentityServer.Uma.Host.DTOs.Responses;
@@ -26,7 +26,7 @@ using System.Net;
 namespace SimpleIdentityServer.Uma.Host.Controllers
 {
     [Route(Constants.RouteValues.ResourceSet)]
-    public class ResourceSetController
+    public class ResourceSetController : Controller
     {
         private readonly IResourceSetActions _resourceSetActions;
 
@@ -46,7 +46,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         public ActionResult GetResourceSets()
         {
             var resourceSetIds = _resourceSetActions.GetAllResourceSet();
-            return new HttpOkObjectResult(resourceSetIds);
+            return new OkObjectResult(resourceSetIds);
         }
 
         [HttpGet("{id}")]
@@ -65,7 +65,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             }
 
             var content = result.ToResponse();
-            return new HttpOkObjectResult(content);
+            return new OkObjectResult(content);
         }
 
         [HttpPost]
@@ -131,7 +131,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 return GetNotFoundResourceSet();
             }
 
-            return new HttpStatusCodeResult((int)HttpStatusCode.NoContent);
+            return new StatusCodeResult((int)HttpStatusCode.NoContent);
         }
 
         #endregion

@@ -161,7 +161,6 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
             {
                 Id = policy.Id,
                 ClientIdsAllowed = policy.ClientIdsAllowed,
-                IsCustom = policy.IsCustom,
                 IsResourceOwnerConsentNeeded = policy.IsResourceOwnerConsentNeeded,
                 ResourceSetIds = policy.ResourceSetIds,
                 Scopes = policy.Scopes

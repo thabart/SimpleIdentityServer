@@ -59,9 +59,9 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             {
                 ResourceSetId = "resource_set_id"
             };
-            var claims = new List<Claim>
+            var claims = new List<System.Security.Claims.Claim>
             {
-                new Claim("subject", "value")
+                new System.Security.Claims.Claim("subject", "value")
             };
             InitializeFakeObjects();
             _resourceSetRepositoryStub.Setup(r => r.GetResourceSetById(It.IsAny<string>()))
@@ -83,9 +83,9 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
         {
             // ARRANGE
             var ticket = new Ticket();
-            var claims = new List<Claim>
+            var claims = new List<System.Security.Claims.Claim>
             {
-                new Claim("subject", "value")
+                new System.Security.Claims.Claim("subject", "value")
             };
             var resourceSet = new ResourceSet
             {
@@ -109,9 +109,9 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
         {
             // ARRANGE
             var ticket = new Ticket();
-            var claims = new List<Claim>
+            var claims = new List<System.Security.Claims.Claim>
             {
-                new Claim("subject", "value")
+                new System.Security.Claims.Claim("subject", "value")
             };
             var resourceSet = new ResourceSet
             {

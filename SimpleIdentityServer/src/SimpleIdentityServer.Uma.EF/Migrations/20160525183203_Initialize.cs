@@ -1,6 +1,6 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
-using Microsoft.Data.Entity.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace SimpleIdentityServer.Uma.EF.Migrations
 {
@@ -14,15 +14,15 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
                 {
                     Id = table.Column<string>(nullable: false),
                     ClientIdsAllowed = table.Column<string>(nullable: true),
-                    IsCustom = table.Column<bool>(nullable: false),
                     IsResourceOwnerConsentNeeded = table.Column<bool>(nullable: false),
                     Scopes = table.Column<string>(nullable: true),
                     Script = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Policy", x => x.Id);
+                    table.PrimaryKey("PK_Policies", x => x.Id);
                 });
+
             migrationBuilder.CreateTable(
                 name: "Scopes",
                 columns: table => new
@@ -33,8 +33,9 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Scope", x => x.Id);
+                    table.PrimaryKey("PK_Scopes", x => x.Id);
                 });
+
             migrationBuilder.CreateTable(
                 name: "ResourceSets",
                 columns: table => new
@@ -49,14 +50,15 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ResourceSet", x => x.Id);
+                    table.PrimaryKey("PK_ResourceSets", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ResourceSet_Policy_PolicyId",
+                        name: "FK_ResourceSets_Policies_PolicyId",
                         column: x => x.PolicyId,
                         principalTable: "Policies",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
+
             migrationBuilder.CreateTable(
                 name: "Tickets",
                 columns: table => new
@@ -70,14 +72,15 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Ticket", x => x.Id);
+                    table.PrimaryKey("PK_Tickets", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Ticket_ResourceSet_ResourceSetId",
+                        name: "FK_Tickets_ResourceSets_ResourceSetId",
                         column: x => x.ResourceSetId,
                         principalTable: "ResourceSets",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
+
             migrationBuilder.CreateTable(
                 name: "Rpts",
                 columns: table => new
@@ -90,29 +93,58 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Rpt", x => x.Value);
+                    table.PrimaryKey("PK_Rpts", x => x.Value);
                     table.ForeignKey(
-                        name: "FK_Rpt_ResourceSet_ResourceSetId",
+                        name: "FK_Rpts_ResourceSets_ResourceSetId",
                         column: x => x.ResourceSetId,
                         principalTable: "ResourceSets",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Rpt_Ticket_TicketId",
+                        name: "FK_Rpts_Tickets_TicketId",
                         column: x => x.TicketId,
                         principalTable: "Tickets",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ResourceSets_PolicyId",
+                table: "ResourceSets",
+                column: "PolicyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Rpts_ResourceSetId",
+                table: "Rpts",
+                column: "ResourceSetId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Rpts_TicketId",
+                table: "Rpts",
+                column: "TicketId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tickets_ResourceSetId",
+                table: "Tickets",
+                column: "ResourceSetId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable("Rpts");
-            migrationBuilder.DropTable("Scopes");
-            migrationBuilder.DropTable("Tickets");
-            migrationBuilder.DropTable("ResourceSets");
-            migrationBuilder.DropTable("Policies");
+            migrationBuilder.DropTable(
+                name: "Rpts");
+
+            migrationBuilder.DropTable(
+                name: "Scopes");
+
+            migrationBuilder.DropTable(
+                name: "Tickets");
+
+            migrationBuilder.DropTable(
+                name: "ResourceSets");
+
+            migrationBuilder.DropTable(
+                name: "Policies");
         }
     }
 }

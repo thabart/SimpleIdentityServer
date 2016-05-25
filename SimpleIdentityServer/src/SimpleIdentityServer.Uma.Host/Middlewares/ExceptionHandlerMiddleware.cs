@@ -14,8 +14,7 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Http;
+using Microsoft.AspNetCore.Http;
 using SimpleIdentityServer.Uma.Core.Exceptions;
 using SimpleIdentityServer.Uma.Host.DTOs.Responses;
 using SimpleIdentityServer.Uma.Host.Extensions;
@@ -64,7 +63,6 @@ namespace SimpleIdentityServer.Uma.Host.Middlewares
 
                 var code = identityServerException.Code;
                 var message = identityServerException.Message;
-                // context.Response.Clear();
                 var error = new ErrorResponse();
                 PopulateError(error, identityServerException);
                 context.Response.StatusCode = (int)HttpStatusCode.BadRequest;

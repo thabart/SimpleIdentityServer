@@ -14,8 +14,8 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Uma.Core.Api.PolicyController;
 using SimpleIdentityServer.Uma.Host.DTOs.Requests;
 using SimpleIdentityServer.Uma.Host.DTOs.Responses;
@@ -26,7 +26,7 @@ using System.Net;
 namespace SimpleIdentityServer.Uma.Host.Controllers
 {
     [Route(Constants.RouteValues.Policies)]
-    public class PoliciesController
+    public class PoliciesController : Controller
     {
         private readonly IPolicyActions _policyActions;
 
@@ -57,7 +57,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             }
 
             var content = result.ToResponse();
-            return new HttpOkObjectResult(content);
+            return new OkObjectResult(content);
         }
 
         [HttpGet]
@@ -65,7 +65,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         public ActionResult GetPolicies()
         {
             var policies = _policyActions.GetPolicies();
-            return new HttpOkObjectResult(policies);
+            return new OkObjectResult(policies);
         }
 
         [HttpPut]
@@ -82,7 +82,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 return GetNotFoundPolicy();
             }
 
-            return new HttpStatusCodeResult((int)HttpStatusCode.NoContent);
+            return new StatusCodeResult((int)HttpStatusCode.NoContent);
         }
 
         [HttpPost]
@@ -121,7 +121,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 return GetNotFoundPolicy();
             }
 
-            return new HttpStatusCodeResult((int)HttpStatusCode.NoContent);
+            return new StatusCodeResult((int)HttpStatusCode.NoContent);
         }
 
         #endregion

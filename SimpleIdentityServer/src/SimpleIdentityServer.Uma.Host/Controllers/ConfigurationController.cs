@@ -14,14 +14,14 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Uma.Core.Api.ConfigurationController;
 using SimpleIdentityServer.Uma.Host.Extensions;
 
 namespace SimpleIdentityServer.Uma.Host.Controllers
 {
     [Route(Constants.RouteValues.Configuration)]
-    public class ConfigurationController
+    public class ConfigurationController : Controller
     {
         private readonly IConfigurationActions _configurationActions;
 
@@ -41,7 +41,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         {
             var result = _configurationActions.GetConfiguration()
                 .ToResponse();
-            return new HttpOkObjectResult(result);
+            return new OkObjectResult(result);
         }
 
         #endregion

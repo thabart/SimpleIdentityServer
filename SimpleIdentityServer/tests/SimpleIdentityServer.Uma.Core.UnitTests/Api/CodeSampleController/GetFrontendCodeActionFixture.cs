@@ -55,8 +55,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.CodeSampleController
         #endregion
 
         #region Happy path
-
-        
+                
         [Fact]
         public void When_Getting_Csharp_Frontend_Code_Then_MemoryStream_Is_Returned()
         {

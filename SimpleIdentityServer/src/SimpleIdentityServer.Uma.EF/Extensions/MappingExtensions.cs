@@ -86,7 +86,6 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
             return new Domain.Policy
             {
                 Id = policy.Id,
-                IsCustom = policy.IsCustom,
                 Script = policy.Script,
                 IsResourceOwnerConsentNeeded = policy.IsResourceOwnerConsentNeeded,
                 ClientIdsAllowed = GetList(policy.ClientIdsAllowed),
@@ -153,7 +152,6 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
             return new Model.Policy
             {
                 Id = policy.Id,
-                IsCustom = policy.IsCustom,
                 Script = policy.Script,
                 IsResourceOwnerConsentNeeded = policy.IsResourceOwnerConsentNeeded,
                 ClientIdsAllowed = GetConcatenatedList(policy.ClientIdsAllowed),

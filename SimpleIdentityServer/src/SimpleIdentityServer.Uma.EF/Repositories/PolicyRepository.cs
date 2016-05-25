@@ -14,13 +14,12 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.EF.Extensions;
 using System.Collections.Generic;
 using System.Linq;
-using System;
 
 namespace SimpleIdentityServer.Uma.EF.Repositories
 {
@@ -97,7 +96,6 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
 
             var model = policy.ToModel();
             record.ClientIdsAllowed = model.ClientIdsAllowed;
-            record.IsCustom = model.IsCustom;
             record.IsResourceOwnerConsentNeeded = model.IsResourceOwnerConsentNeeded;
             record.Scopes = model.Scopes;
             record.Script = model.Script;

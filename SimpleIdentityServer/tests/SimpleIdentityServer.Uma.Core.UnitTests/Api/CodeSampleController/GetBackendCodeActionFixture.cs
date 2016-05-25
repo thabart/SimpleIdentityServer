@@ -70,8 +70,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.CodeSampleController
         }
 
         #endregion
-
-
+        
         #region Private methods
             
         private void InitializeFakeObjects()

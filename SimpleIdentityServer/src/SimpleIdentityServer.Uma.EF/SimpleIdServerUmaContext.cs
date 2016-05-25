@@ -14,7 +14,7 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using SimpleIdentityServer.Uma.EF.Mappings;
 using SimpleIdentityServer.Uma.EF.Models;
 
@@ -22,6 +22,14 @@ namespace SimpleIdentityServer.Uma.EF
 {
     internal class SimpleIdServerUmaContext : DbContext
     {
+        #region Constructor
+
+        public SimpleIdServerUmaContext(DbContextOptions dbContextOptions):base(dbContextOptions)
+        {
+        }
+
+        #endregion
+
         #region Properties
 
         public virtual DbSet<ResourceSet> ResourceSets { get; set; }
@@ -45,6 +53,7 @@ namespace SimpleIdentityServer.Uma.EF
             modelBuilder.AddTicketMappings();
             modelBuilder.AddRptMappings();
             modelBuilder.AddPolicyMappings();
+            base.OnModelCreating(modelBuilder);
         }
 
         #endregion

@@ -1,34 +1,55 @@
 {
-    "version": "1.0.0-*",
-    "description": "SimpleIdentityServer.Uma.EF Class Library",
-    "authors": [ "thierry habart" ],
+  "version": "1.0.0-*",
+  "description": "SimpleIdentityServer.Uma.EF Class Library",
+  "authors": [ "thierry habart" ],
+  "packOptions": {
     "tags": [ "" ],
-    "projectUrl": "",
     "licenseUrl": "",
-    "dependencies": {
-        "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc1-final",
-        "EntityFramework.Commands": "7.0.0-rc1-final",
-        "EntityFramework.MicrosoftSqlServer": "7.0.0-rc1-final",
-        "EntityFramework.SQLite": "7.0.0-rc1-final",
-        "Microsoft.Extensions.Configuration.Json": "1.0.0-rc1-final",
-        "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0-rc1-final",
-        "SimpleIdentityServer.Uma.Core": ""
+    "projectUrl": ""
+  },
+  "dependencies": {
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-*",
+    "Microsoft.EntityFrameworkCore.Sqlite": "1.0.0-*",
+    "Microsoft.EntityFrameworkCore.SqlServer": "1.0.0-*",
+    "Npgsql.EntityFrameworkCore.PostgreSQL": "1.0.0-*",
+    "Microsoft.Extensions.Configuration.Json": "1.0.0-*",
+    "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0-*",
+    "Microsoft.EntityFrameworkCore.Tools": {
+      "type": "build",
+      "version": "1.0.0-preview1-final"
     },
-
-    "tooling": {
-        "defaultNamespace": "SimpleIdentityServer.DataAccess.SqlServer"
-    },
-
-    "commands": {
-        "ef": "EntityFramework.Commands"
-    },
-
-    "frameworks": {
-      "dnx451": { },
-      "dnxcore50": { }
-    },
-
-    "resource": [
-        "Migrations/*.resx"
+    "SimpleIdentityServer.Uma.Core": "*"
+  },
+  "tools": {
+    "Microsoft.EntityFrameworkCore.Tools": {
+      "imports": [ "dnxcore50", "portable-net451+win8" ],
+      "version": "1.0.0-preview1-final"
+    }
+  },
+  "frameworks": {
+    "net46": { },
+    "netcoreapp1.0": {
+      "imports": [ "dnxcore50", "portable-net451+win8" ],
+      "dependencies": {
+        "Microsoft.NETCore.App": {
+          "type": "platform",
+          "version": "1.0.0-*"
+        }
+      }
+    }
+  },
+  "buildOptions": {
+    "emitEntryPoint": true,
+    "embed": [
+      "Migrations/*.resx"
+    ],
+    "copyToOutput": [
+      "appsettings.json"
     ]
+  },
+  "publishOptions": {
+    "include": [
+      "appsettings.json"
+    ]
+  }
 }

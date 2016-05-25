@@ -1,8 +1,8 @@
-using System;
-using Microsoft.Data.Entity;
-using Microsoft.Data.Entity.Infrastructure;
-using Microsoft.Data.Entity.Metadata;
-using Microsoft.Data.Entity.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using SimpleIdentityServer.Uma.EF;
 
 namespace SimpleIdentityServer.Uma.EF.Migrations
@@ -13,7 +13,7 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.0-rc1-16348")
+                .HasAnnotation("ProductVersion", "1.0.0-rc2-20901")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("SimpleIdentityServer.Uma.EF.Models.Policy", b =>
@@ -21,8 +21,6 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
                     b.Property<string>("Id");
 
                     b.Property<string>("ClientIdsAllowed");
-
-                    b.Property<bool>("IsCustom");
 
                     b.Property<bool>("IsResourceOwnerConsentNeeded");
 
@@ -32,7 +30,7 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAnnotation("Relational:TableName", "Policies");
+                    b.ToTable("Policies");
                 });
 
             modelBuilder.Entity("SimpleIdentityServer.Uma.EF.Models.ResourceSet", b =>
@@ -53,7 +51,9 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAnnotation("Relational:TableName", "ResourceSets");
+                    b.HasIndex("PolicyId");
+
+                    b.ToTable("ResourceSets");
                 });
 
             modelBuilder.Entity("SimpleIdentityServer.Uma.EF.Models.Rpt", b =>
@@ -70,7 +70,11 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
 
                     b.HasKey("Value");
 
-                    b.HasAnnotation("Relational:TableName", "Rpts");
+                    b.HasIndex("ResourceSetId");
+
+                    b.HasIndex("TicketId");
+
+                    b.ToTable("Rpts");
                 });
 
             modelBuilder.Entity("SimpleIdentityServer.Uma.EF.Models.Scope", b =>
@@ -83,7 +87,7 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAnnotation("Relational:TableName", "Scopes");
+                    b.ToTable("Scopes");
                 });
 
             modelBuilder.Entity("SimpleIdentityServer.Uma.EF.Models.Ticket", b =>
@@ -102,7 +106,9 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAnnotation("Relational:TableName", "Tickets");
+                    b.HasIndex("ResourceSetId");
+
+                    b.ToTable("Tickets");
                 });
 
             modelBuilder.Entity("SimpleIdentityServer.Uma.EF.Models.ResourceSet", b =>

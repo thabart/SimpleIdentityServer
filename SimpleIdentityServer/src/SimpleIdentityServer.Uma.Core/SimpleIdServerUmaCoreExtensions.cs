@@ -116,7 +116,7 @@ namespace SimpleIdentityServer.Uma.Core
             serviceCollection.AddTransient<ICodeProvider, CodeProvider>();
             serviceCollection.AddTransient<ICodeSampleActions, CodeSampleActions>();
             serviceCollection.AddTransient<IGetFrontendCodeAction, GetFrontendCodeAction>();
-            serviceCollection.AddInstance(umaServerOptions);
+            serviceCollection.AddSingleton(umaServerOptions);
         }
 
         #endregion

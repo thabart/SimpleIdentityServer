@@ -14,7 +14,7 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Uma.Core.Api.CodeSampleController;
 using System;
 

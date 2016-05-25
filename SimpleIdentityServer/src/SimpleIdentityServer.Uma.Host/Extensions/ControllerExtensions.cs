@@ -15,11 +15,11 @@
 #endregion
 
 using System.Linq;
-using Microsoft.AspNet.Mvc;
 using Microsoft.Extensions.Primitives;
 using System.Net.Http.Headers;
 using System.Collections.Generic;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc;
 
 namespace SimpleIdentityServer.Uma.Host.Extensions
 {

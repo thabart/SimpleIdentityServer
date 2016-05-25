@@ -29,7 +29,7 @@ namespace SimpleIdentityServer.Uma.Core.Policies
     {
         AuthorizationPolicyResultEnum IsAuthorized(Ticket validTicket,
                string clientId,
-               IEnumerable<Claim> claims);
+               IEnumerable<System.Security.Claims.Claim> claims);
     }
 
     internal class AuthorizationPolicyValidator : IAuthorizationPolicyValidator
@@ -58,7 +58,7 @@ namespace SimpleIdentityServer.Uma.Core.Policies
 
         public AuthorizationPolicyResultEnum IsAuthorized(Ticket validTicket,
             string clientId,
-            IEnumerable<Claim> claims)
+            IEnumerable<System.Security.Claims.Claim> claims)
         {
             if (validTicket == null)
             {
@@ -84,11 +84,6 @@ namespace SimpleIdentityServer.Uma.Core.Policies
 
             var authorizationPolicy = _policyRepository.GetPolicy(resourceSet.AuthorizationPolicyId);
             if (authorizationPolicy == null)
-            {
-                return AuthorizationPolicyResultEnum.Authorized;
-            }
-
-            if (authorizationPolicy.IsCustom)
             {
                 return AuthorizationPolicyResultEnum.Authorized;
             }

@@ -14,7 +14,7 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using SimpleIdentityServer.Uma.EF.Models;
 
 namespace SimpleIdentityServer.Uma.EF.Mappings

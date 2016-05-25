@@ -64,7 +64,6 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
             policy.ClientIdsAllowed = updatePolicyParameter.ClientIdsAllowed;
             policy.Scopes = updatePolicyParameter.Scopes;
             policy.IsResourceOwnerConsentNeeded = updatePolicyParameter.IsResourceOwnerConsentNeeded;
-            policy.IsCustom = updatePolicyParameter.IsCustom;
             policy.Script = updatePolicyParameter.Script;
             return _repositoryExceptionHelper.HandleException(
                 string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeUpdated, updatePolicyParameter.PolicyId),

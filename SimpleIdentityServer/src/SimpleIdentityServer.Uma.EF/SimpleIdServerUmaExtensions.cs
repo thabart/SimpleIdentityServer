@@ -14,11 +14,17 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.Data.Entity;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using SimpleIdentityServer.Uma.Core.Repositories;
-using SimpleIdentityServer.Uma.EF.Repositories;
+// using SimpleIdentityServer.Uma.EF.Repositories;
 using System;
+using System.Linq;
 
 namespace SimpleIdentityServer.Uma.EF
 {
@@ -37,7 +43,6 @@ namespace SimpleIdentityServer.Uma.EF
 
             RegisterServices(serviceCollection);
             serviceCollection.AddEntityFramework()
-                .AddSqlServer()
                 .AddDbContext<SimpleIdServerUmaContext>(options => options.UseSqlServer(connectionString));
             return serviceCollection;
         }
@@ -48,11 +53,13 @@ namespace SimpleIdentityServer.Uma.EF
 
         private static void RegisterServices(IServiceCollection serviceCollection)
         {
+            /*
             serviceCollection.AddTransient<IResourceSetRepository, ResourceSetRepository>();
             serviceCollection.AddTransient<IScopeRepository, ScopeRepository>();
             serviceCollection.AddTransient<ITicketRepository, TicketRepository>();
             serviceCollection.AddTransient<IPolicyRepository, PolicyRepository>();
             serviceCollection.AddTransient<IRptRepository, RptRepository>();
+            */
         }
 
         #endregion

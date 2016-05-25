@@ -14,7 +14,7 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Uma.Core.Api.ScopeController;
 using SimpleIdentityServer.Uma.Host.DTOs.Requests;
 using SimpleIdentityServer.Uma.Host.DTOs.Responses;
@@ -25,7 +25,7 @@ using System.Net;
 namespace SimpleIdentityServer.Uma.Host.Controllers
 {
     [Route(Constants.RouteValues.Scope)]
-    public class ScopesController
+    public class ScopesController : Controller
     {
         private readonly IScopeActions _scopeActions;
 
@@ -44,7 +44,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         public ActionResult GetScopeIds()
         {
             var resourceSetIds = _scopeActions.GetScopes();
-            return new HttpOkObjectResult(resourceSetIds);
+            return new OkObjectResult(resourceSetIds);
         }
 
         [HttpGet("{id}")]
@@ -61,7 +61,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 return GetNotFoundScope();
             }
 
-            return new HttpOkObjectResult(result.ToResponse());
+            return new OkObjectResult(result.ToResponse());
         }
 
         [HttpPost]
@@ -124,7 +124,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 return GetNotFoundScope();
             }
 
-            return new HttpStatusCodeResult((int)HttpStatusCode.NoContent);
+            return new StatusCodeResult((int)HttpStatusCode.NoContent);
         }
 
         #endregion

@@ -65,9 +65,9 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.Authorization.Actions
             // ARRANGE
             InitializeFakeObjects();
             var getAuthorizationActionParameter = new GetAuthorizationActionParameter();
-            var claims = new List<Claim>
+            var claims = new List<System.Security.Claims.Claim>
             {
-                new Claim("type", "value")
+                new System.Security.Claims.Claim("type", "value")
             };
 
             // ACT & ASSERTS
@@ -87,9 +87,9 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.Authorization.Actions
             {
                 TicketId = ticketId
             };
-            var claims = new List<Claim>
+            var claims = new List<System.Security.Claims.Claim>
             {
-                new Claim("type", "value")
+                new System.Security.Claims.Claim("type", "value")
             };
             _ticketRepositoryStub.Setup(t => t.GetTicketById(It.IsAny<string>()))
                 .Returns(() => null);
@@ -113,10 +113,10 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.Authorization.Actions
             {
                 TicketId = ticketId
             };
-            var claims = new List<Claim>
+            var claims = new List<System.Security.Claims.Claim>
             {
-                new Claim("type", "value"),
-                new Claim("client_id", "invalid_client_id")
+                new System.Security.Claims.Claim("type", "value"),
+                new System.Security.Claims.Claim("client_id", "invalid_client_id")
             };
             var ticket = new Ticket
             {
@@ -143,10 +143,10 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.Authorization.Actions
             {
                 TicketId = ticketId
             };
-            var claims = new List<Claim>
+            var claims = new List<System.Security.Claims.Claim>
             {
-                new Claim("type", "value"),
-                new Claim("client_id", clientId)
+                new System.Security.Claims.Claim("type", "value"),
+                new System.Security.Claims.Claim("client_id", clientId)
             };
             var ticket = new Ticket
             {
@@ -178,10 +178,10 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.Authorization.Actions
             {
                 TicketId = ticketId
             };
-            var claims = new List<Claim>
+            var claims = new List<System.Security.Claims.Claim>
             {
-                new Claim("type", "value"),
-                new Claim("client_id", clientId)
+                new System.Security.Claims.Claim("type", "value"),
+                new System.Security.Claims.Claim("client_id", clientId)
             };
             var ticket = new Ticket
             {
@@ -192,7 +192,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.Authorization.Actions
                 .Returns(ticket);
             _authorizationPolicyValidatorStub.Setup(a => a.IsAuthorized(It.IsAny<Ticket>(),
                 It.IsAny<string>(),
-                It.IsAny<IEnumerable<Claim>>()))
+                It.IsAny<IEnumerable<System.Security.Claims.Claim>>()))
                 .Returns(AuthorizationPolicyResultEnum.NotAuthorized);
 
             // ACT
@@ -215,10 +215,10 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.Authorization.Actions
             {
                 TicketId = ticketId
             };
-            var claims = new List<Claim>
+            var claims = new List<System.Security.Claims.Claim>
             {
-                new Claim("type", "value"),
-                new Claim("client_id", clientId)
+                new System.Security.Claims.Claim("type", "value"),
+                new System.Security.Claims.Claim("client_id", clientId)
             };
             var ticket = new Ticket
             {
@@ -229,7 +229,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.Authorization.Actions
                 .Returns(ticket);
             _authorizationPolicyValidatorStub.Setup(a => a.IsAuthorized(It.IsAny<Ticket>(),
                 It.IsAny<string>(),
-                It.IsAny<IEnumerable<Claim>>()))
+                It.IsAny<IEnumerable<System.Security.Claims.Claim>>()))
                 .Returns(AuthorizationPolicyResultEnum.Authorized);
             _repositoryExceptionHandlerStub.Setup(r => r.HandleException(It.IsAny<string>(), It.IsAny<Func<bool>>()))
                 .Returns(true);

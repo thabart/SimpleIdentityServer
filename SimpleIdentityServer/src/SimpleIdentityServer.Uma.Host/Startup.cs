@@ -14,26 +14,24 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Hosting;
+
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.PlatformAbstractions;
 using SimpleIdentityServer.Oauth2Instrospection.Authentication;
 using SimpleIdentityServer.Uma.Core;
 using SimpleIdentityServer.Uma.Core.Providers;
 using SimpleIdentityServer.Uma.EF;
 using SimpleIdentityServer.Uma.Host.Configuration;
-using SimpleIdentityServer.Uma.Host.Middlewares;
-using Swashbuckle.SwaggerGen;
 
 namespace SimpleIdentityServer.Uma.Host
 {
 
     public class Startup
     {
-        public Startup(IHostingEnvironment env, IApplicationEnvironment appEnv)
+        public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
@@ -49,15 +47,6 @@ namespace SimpleIdentityServer.Uma.Host
         {
             // Add the dependencies needed to run Swagger
             RegisterServices(services);
-            services.AddSwaggerGen();
-            services.ConfigureSwaggerDocument(opts => {
-                opts.SingleApiVersion(new Info
-                {
-                    Version = "v1",
-                    Title = "UMA",
-                    TermsOfService = "None"
-                });
-            });
 
             // Add authorization policies
             services.AddAuthorization(options =>
@@ -83,7 +72,7 @@ namespace SimpleIdentityServer.Uma.Host
             var introspectionUrl = Configuration["IntrospectionUrl"];
             var clientId = Configuration["ClientId"];
             var clientSecret = Configuration["ClientSecret"];
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+            loggerFactory.AddConsole();
             loggerFactory.AddDebug();
 
             // Display status code page
@@ -112,14 +101,7 @@ namespace SimpleIdentityServer.Uma.Host
                     name: "default",
                     template: "{controller}/{action}/{id?}");
             });
-
-            // Launch swagger
-            app.UseSwaggerGen();
-            app.UseSwaggerUi();
         }
-
-        // Entry point for the application.
-        public static void Main(string[] args) => WebApplication.Run<Startup>(args);
 
         #region Private methods
 

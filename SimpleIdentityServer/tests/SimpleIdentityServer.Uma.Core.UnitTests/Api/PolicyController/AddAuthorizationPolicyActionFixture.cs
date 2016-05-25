@@ -64,6 +64,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddPolicyParameterNames.ResourceSetIds));
         }
 
+        /*
         [Fact]
         public void When_Passing_EmptyScript_For_Custom_Policy_Then_Exception_Is_Thrown()
         {
@@ -75,8 +76,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
                 ResourceSetIds = new List<string>
                 {
                     resourceSetId
-                },
-                IsCustom = true
+                }
             };
             var resourceSet = new ResourceSet
             {
@@ -103,8 +103,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
                 ResourceSetIds = new List<string>
                 {
                     resourceSetId
-                },
-                IsCustom = false
+                }
             };
 
             // ACT & ASSERTS
@@ -126,7 +125,6 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
                 {
                     resourceSetId
                 },
-                IsCustom = false,
                 Scopes = new List<string>
                 {
                     "invalid_scope"
@@ -138,8 +136,9 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddPolicyParameterNames.ClientIdsAllowed));
-        }
-        
+        }        
+        */
+
         [Fact]
         public void When_ResourceSetId_Doesnt_Exist_Then_Exception_Is_Thrown()
         {
@@ -152,7 +151,6 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
                 {
                     resourceSetId
                 },
-                IsCustom = false,
                 Scopes = new List<string>
                 {
                     "invalid_scope"
@@ -184,7 +182,6 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
                 {
                     resourceSetId
                 },
-                IsCustom = false,
                 Scopes = new List<string>
                 {
                     "invalid_scope"
@@ -227,7 +224,6 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
                 {
                     resourceSetId
                 },
-                IsCustom = false,
                 Scopes = new List<string>
                 {
                     "scope"

@@ -14,8 +14,8 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Uma.Core.Api.Authorization;
 using SimpleIdentityServer.Uma.Core.Policies;
 using SimpleIdentityServer.Uma.Host.DTOs.Requests;
@@ -95,7 +95,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             {
                 Rpt = result.Rpt
             };
-            return new HttpOkObjectResult(content);
+            return new OkObjectResult(content);
         }
 
         #endregion
