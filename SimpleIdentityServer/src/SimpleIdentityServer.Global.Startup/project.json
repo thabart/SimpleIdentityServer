@@ -1,49 +1,43 @@
 {
   "version": "1.0.0-*",
-
-  "compilationOptions": {
-    "emitEntryPoint": true
+  "packOptions": {
+    "tags": [ "" ],
+    "licenseUrl": "",
+    "projectUrl": ""
   },
-
+  "buildOptions": {
+    "emitEntryPoint": true,
+    "preserveCompilationContext": true,
+    "copyToOutput": [
+      "appsettings.json",
+      "appsettings.docker.json"
+    ]
+  },
   "tooling": {
     "defaultNamespace": "SimpleIdentityServer.Global.Startup"
   },
 
   "dependencies": {
-    "SimpleIdentityServer.Manager.Host": "",
-    "SimpleIdentityServer.Host": ""
+    "Microsoft.Extensions.Configuration.CommandLine": "1.0.0-*",
+    "Microsoft.AspNetCore.Server.Kestrel": "1.0.0-*",
+    "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0-*",
+    "SimpleIdentityServer.Manager.Host": "*",
+    "SimpleIdentityServer.Host": "*"
   },
 
   "frameworks": {
-    "dnx451": {
+    "net46": {
+      "frameworkAssemblies": {
+        "System.Web": "4.0.0.0"
+      }
     },
-    "dnxcore50": {
+    "netcoreapp1.0": {
+      "imports": [ "dotnet5.6", "dnxcore50", "portable-net451+win8" ],
       "dependencies": {
-      }
-    }
-  },
-  
-  "commands": {
-    "web": "Microsoft.AspNet.Server.Kestrel --server.urls http://0.0.0.0:5000",
-    "watch": "Microsoft.Dnx.Watcher web",
-    "ef": "EntityFramework.Commands"
-  },
-
-  "publishExclude": [
-    "**.user",
-    "**.vspscc"
-  ],
-
-  "configurations": {
-    "Debug": {
-      "compilationOptions": {
-        "define": [ "DEBUG" ]
-      }
-    },
-    "Release": {
-      "compilationOptions": {
-        "define": [ "RELEASE" ],
-        "optimize": true
+        "Microsoft.NETCore.App": {
+          "type": "platform",
+          "version": "1.0.0-*"
+        }
       }
     }
   }
