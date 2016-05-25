@@ -1,17 +1,97 @@
-﻿using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.UnitTests.Fake;
+﻿#region copyright
+// Copyright 2015 Habart Thierry
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
+using Moq;
+using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Validators;
 using System.Collections.Generic;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Validators
 {
-    public class ClientValidatorFixture : BaseFixture
+    public class ClientValidatorFixture
     {
+        private Mock<IClientRepository> _clientRepositoryStub;
+
         private IClientValidator _clientValidator;
 
+        #region ValidateClientExist
+
         [Fact]
-        public void When_Passing_Null_To_ValidateGrantType_Then_False_Is_Returned()
+        public void When_Checking_Client_Exists_Then_Operation_Is_Called()
+        {
+            // ARRANGE
+            const string clientId = "client_id";
+            InitializeMockingObjects();
+
+            // ACT
+            _clientValidator.ValidateClientExist(clientId);
+
+            // ASSERT
+            _clientRepositoryStub.Verify(c => c.GetClientById(clientId));
+        }
+
+        #endregion
+
+        #region ValidateRedirectionUrl
+
+        [Fact]
+        public void When_Client_Doesnt_Contain_RedirectionUri_Then_Null_Is_Returned()
+        {
+            // ARRANGE
+            InitializeMockingObjects();
+
+            // ACTS & ASSERTS
+            Assert.Null(_clientValidator.ValidateRedirectionUrl(null, null));
+            Assert.Null(_clientValidator.ValidateRedirectionUrl("url", null));
+            Assert.Null(_clientValidator.ValidateRedirectionUrl("url", new Client()));
+            Assert.Null(_clientValidator.ValidateRedirectionUrl("url", new Client
+            {
+                RedirectionUrls = new List<string>()
+            }));
+        }
+
+        [Fact]
+        public void When_Checking_RedirectionUri_Then_Uri_Is_Returned()
+        {
+            // ARRANGE
+            const string url = "url";
+            var client = new Client
+            {
+                RedirectionUrls = new List<string>
+                {
+                    url
+                }
+            };
+            InitializeMockingObjects();
+
+            // ACT
+            var result = _clientValidator.ValidateRedirectionUrl(url, client);
+
+            // ASSERT
+            Assert.True(result == url);
+        }
+
+        #endregion
+
+        #region ValidateGrantType
+
+        [Fact]
+        public void When_Passing_Null_Parameter_To_ValidateGrantType_Then_False_Is_Returned()
         {
             // ARRANGE
             InitializeMockingObjects();
@@ -24,7 +104,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
         }
 
         [Fact]
-        public void When_Passing_Client_Without_GrantTypes_Then_The_ClientGrantType_Is_AuthorizationCode()
+        public void When_Client_Doesnt_Have_GrantType_Then_AuthorizationCode_Is_Assigned()
         {
             // ARRANGE
             InitializeMockingObjects();
@@ -35,10 +115,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
 
             // ASSERTS
             Assert.True(result);
+            Assert.True(client.GrantTypes.Contains(GrantType.authorization_code));
         }
 
         [Fact]
-        public void When_Passing_Client_With_GrantType_Implicit_Then_TheClient_Contains_Implicit_GrantType()
+        public void When_Checking_Client_Has_Implicit_Grant_Type_Then_True_Is_Returned()
         {
             // ARRANGE
             InitializeMockingObjects();
@@ -56,11 +137,66 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             // ASSERTS
             Assert.True(result);
         }
-        
+
+        #endregion
+
+        #region ValidateGrantTypes
+
+        [Fact]
+        public void When_Passing_Null_Parameters_Then_Null_Is_Returned()
+        {
+            // ARRANGE
+            InitializeMockingObjects();
+
+            // ACTS & ASSERTS
+            Assert.False(_clientValidator.ValidateGrantTypes(null, null));
+            Assert.False(_clientValidator.ValidateGrantTypes(new Client(), null));
+        }
+
+        [Fact]
+        public void When_Checking_Client_Grant_Types_Then_True_Is_Returned()
+        {
+            // ARRANGE
+            InitializeMockingObjects();
+            var client = new Client
+            {
+                GrantTypes = new List<GrantType>
+                {
+                    GrantType.@implicit,
+                    GrantType.password
+                }
+            };
+
+            // ACTS & ASSERTS
+            Assert.True(_clientValidator.ValidateGrantTypes(client, GrantType.@implicit, GrantType.password));
+            Assert.True(_clientValidator.ValidateGrantTypes(client, GrantType.@implicit));
+        }
+
+        [Fact]
+        public void When_Checking_Client_Grant_Types_Then_False_Is_Returned()
+        {
+            // ARRANGE
+            InitializeMockingObjects();
+            var client = new Client
+            {
+                GrantTypes = new List<GrantType>
+                {
+                    GrantType.@implicit,
+                    GrantType.password
+                }
+            };
+
+            // ACTS & ASSERTS
+            Assert.False(_clientValidator.ValidateGrantTypes(client, GrantType.refresh_token));
+            Assert.False(_clientValidator.ValidateGrantTypes(client, GrantType.refresh_token, GrantType.password));
+        }
+
+        #endregion
+
         public void InitializeMockingObjects()
         {
-            var clientRepository = FakeFactories.GetClientRepository();
-            _clientValidator = new ClientValidator(clientRepository);
+            _clientRepositoryStub = new Mock<IClientRepository>();
+            _clientValidator = new ClientValidator(_clientRepositoryStub.Object);
         }
     }
 }

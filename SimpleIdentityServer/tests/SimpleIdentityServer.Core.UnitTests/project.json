@@ -2,38 +2,31 @@
   "version": "1.0.0-*",
   "description": "SimpleIdentityServer.Core.UnitTests Unit test project",
   "authors": [ "thierry habart" ],
-  "tags": [ "" ],
-  "projectUrl": "",
-  "licenseUrl": "",
+  "packOptions": {
+    "tags": [ "" ],
+    "licenseUrl": "",
+    "projectUrl": ""
+  },
   "tooling": {
     "defaultNamespace": "SimpleIdentityServer.Core.UnitTests"
   },
+  "testRunner": "xunit",
   "dependencies": {
     "xunit": "2.1.0",
-    "xunit.runner.dnx": "2.1.0-rc1-build204",
-    "xunit.runner.console": "2.1.0",
-    "OpenCover": "4.6.166",
-    "ReportGenerator": "2.3.5.0",
+    "dotnet-test-xunit": "1.0.0-*",
+    "OpenCover": "4.6.519",
+    "ReportGenerator": "2.4.5",
     "coveralls.io": "1.3.4",
-    "SimpleIdentityServer.DataAccess.Fake": "",
-    "SimpleIdentityServer.Core.Jwt": "",
-    "SimpleIdentityServer.Core": ""
-  },
-  "commands": {
-    "test": "xunit.runner.dnx"
+    "SimpleIdentityServer.DataAccess.Fake": "*",
+    "SimpleIdentityServer.Core.Jwt": "*",
+    "SimpleIdentityServer.Core": "*"
   },
   "frameworks": {
-    "dnx451": {			
-			"frameworkAssemblies": {
-				"System.Core": "4.0.0.0"
-			},
+    "net46": {
+      "frameworkAssemblies": { },
       "dependencies": {
-        "Moq": "4.2.1510.2205"
-      }
-		},
-    "dnxcore50": {
-      "dependencies": {
-        "moq.netcore": "4.4.0-beta8"
+        "Moq": "4.5.9-*",
+        "Microsoft.NETCore.Platforms": "1.0.1-*"
       }
     }
   }

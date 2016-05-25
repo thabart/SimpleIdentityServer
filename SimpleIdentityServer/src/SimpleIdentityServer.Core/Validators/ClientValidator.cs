@@ -40,11 +40,17 @@ namespace SimpleIdentityServer.Core.Validators
     {
         private readonly IClientRepository _clientRepository;
 
+        #region Constructor
+
         public ClientValidator(
             IClientRepository clientRepository)
         {
             _clientRepository = clientRepository;
         }
+
+        #endregion
+
+        #region Public methods
 
         public Client ValidateClientExist(string clientId)
         {
@@ -53,7 +59,10 @@ namespace SimpleIdentityServer.Core.Validators
         
         public string ValidateRedirectionUrl(string url, Client client)
         {
-            if (client.RedirectionUrls == null || !client.RedirectionUrls.Any())
+            if (string.IsNullOrWhiteSpace(url) ||
+                client == null || 
+                client.RedirectionUrls == null || 
+                !client.RedirectionUrls.Any())
             {
                 return null;
             }
@@ -74,7 +83,7 @@ namespace SimpleIdentityServer.Core.Validators
 
         public bool ValidateGrantTypes(Client client, params GrantType[] grantTypes)
         {
-            if (client == null)
+            if (client == null || grantTypes == null)
             {
                 return false;
             }
@@ -105,6 +114,10 @@ namespace SimpleIdentityServer.Core.Validators
             return client.ResponseTypes != null && responseTypes.All(rt => client.ResponseTypes.Contains(rt));
         }
 
+        #endregion
+
+        #region Private static methods
+
         private static void SetDefaultClientGrantType(Client client)
         {
             if (client.GrantTypes == null || !client.GrantTypes.Any())
@@ -126,5 +139,7 @@ namespace SimpleIdentityServer.Core.Validators
                 };
             }
         }
+
+        #endregion
     }
 }

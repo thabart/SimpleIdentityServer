@@ -110,16 +110,15 @@ namespace SimpleIdentityServer.Core.Jwt.Converter
                 Modulus = modulusKeyPair.Value.ToString().Base64DecodeBytes(),
                 Exponent = exponentKeyPair.Value.ToString().Base64DecodeBytes()
             };
-            
-#if NETSTANDARD1_5
-            using (var rsaCryptoServiceProvider = new RSAOpenSsl())
+
+#if NET46
+            using (var rsaCryptoServiceProvider = new RSACryptoServiceProvider())
             {
                 rsaCryptoServiceProvider.ImportParameters(rsaParameters);
                 return rsaCryptoServiceProvider.ToXmlString(false);
             }
-#endif
-#if NET46
-            using (var rsaCryptoServiceProvider = new RSACryptoServiceProvider())
+#else
+            using (var rsaCryptoServiceProvider = new RSAOpenSsl())
             {
                 rsaCryptoServiceProvider.ImportParameters(rsaParameters);
                 return rsaCryptoServiceProvider.ToXmlString(false);

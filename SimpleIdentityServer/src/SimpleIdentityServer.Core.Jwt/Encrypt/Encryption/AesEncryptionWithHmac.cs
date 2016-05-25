@@ -179,7 +179,7 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt.Encryption
 
                 return decrypted;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw new Exception("invalid " + toDecrypt);
             }

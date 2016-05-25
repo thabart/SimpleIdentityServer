@@ -1,4 +1,20 @@
-﻿using System.Linq;
+﻿#region copyright
+// Copyright 2015 Habart Thierry
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
+using System.Linq;
 using Moq;
 using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Errors;
@@ -21,6 +37,8 @@ using SimpleIdentityServer.Core.Jwt.Serializer;
 using SimpleIdentityServer.Core.Jwt;
 using System.Security.Cryptography;
 using Xunit;
+using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Models;
 
 namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 {
@@ -30,6 +48,12 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 
         private Mock<ISimpleIdentityServerConfigurator> _simpleIdentityServerConfigurator;
 
+        private Mock<IClientRepository> _clientRepositoryStub;
+                
+        private Mock<IJsonWebKeyRepository> _jsonWebKeyRepositoryStub;
+
+        private Mock<IScopeRepository> _scopeRepositoryStub;
+                        
         #region GeneratedIdTokenPayloadForScopes
 
         [Fact]
@@ -62,6 +86,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             {
                 MaxAge = 2
             };
+            _clientRepositoryStub.Setup(c => c.GetAll()).Returns(FakeOpenIdAssets.GetClients());
 
             // ACT
             var result = _jwtGenerator.GenerateIdTokenPayloadForScopes(
@@ -82,7 +107,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             // ARRANGE
             InitializeMockObjects();
             const string issuerName = "IssuerName";
-            var clientId = FakeFactories.FakeDataSource.Clients.First().ClientId;
+            var clientId = FakeOpenIdAssets.GetClients().First().ClientId;
             const string subject = "habarthierry@hotmail.fr";
             var claims = new List<Claim>
             {
@@ -95,6 +120,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 ClientId = clientId
             };
             _simpleIdentityServerConfigurator.Setup(s => s.GetIssuerName()).Returns(issuerName);
+            _clientRepositoryStub.Setup(c => c.GetAll()).Returns(FakeOpenIdAssets.GetClients());
 
             // ACT
             var result = _jwtGenerator.GenerateIdTokenPayloadForScopes(
@@ -115,11 +141,10 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             InitializeMockObjects();
             const string issuerName = "IssuerName";
             const string clientId = "clientId";
-            FakeFactories.FakeDataSource.Clients.Clear();
             const string subject = "habarthierry@hotmail.fr";
             var claims = new List<Claim>
             {
-                new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject)
+                new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject)
             };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
@@ -128,6 +153,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 ClientId = clientId
             };
             _simpleIdentityServerConfigurator.Setup(s => s.GetIssuerName()).Returns(issuerName);
+            _clientRepositoryStub.Setup(c => c.GetAll()).Returns(new List<Client>());
 
             // ACT
             var result = _jwtGenerator.GenerateIdTokenPayloadForScopes(
@@ -156,6 +182,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
             _simpleIdentityServerConfigurator.Setup(s => s.GetIssuerName()).Returns(issuerName);
+            _clientRepositoryStub.Setup(c => c.GetAll()).Returns(FakeOpenIdAssets.GetClients());
 
             // ACT
             var result = _jwtGenerator.GenerateIdTokenPayloadForScopes(
@@ -225,6 +252,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                     }
                 }
             };
+            _clientRepositoryStub.Setup(c => c.GetAll()).Returns(FakeOpenIdAssets.GetClients());
 
             // ACT & ASSERT
             var exception =
@@ -277,6 +305,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             };
             _simpleIdentityServerConfigurator.Setup(s => s.GetIssuerName())
                 .Returns("fake_issuer");
+            _clientRepositoryStub.Setup(c => c.GetAll()).Returns(FakeOpenIdAssets.GetClients());
 
             // ACT & ASSERT
             var exception =
@@ -327,6 +356,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                     }
                 }
             };
+            _clientRepositoryStub.Setup(c => c.GetAll()).Returns(FakeOpenIdAssets.GetClients());
 
             // ACT & ASSERT
             var exception =
@@ -373,6 +403,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                     }
                 }
             };
+            _clientRepositoryStub.Setup(c => c.GetAll()).Returns(FakeOpenIdAssets.GetClients());
 
             // ACT & ASSERTS
             var result = Assert.Throws<IdentityServerExceptionWithState>(() => _jwtGenerator.GenerateFilteredIdTokenPayload(
@@ -423,7 +454,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                     {
                         {
                             Constants.StandardClaimParameterValueNames.ValuesName,
-                            new [] { FakeFactories.FakeDataSource.Clients.First().ClientId }
+                            new [] { FakeOpenIdAssets.GetClients().First().ClientId }
                         }
                     }
                 },
@@ -439,6 +470,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                     }
                 }
             };
+            _clientRepositoryStub.Setup(c => c.GetAll()).Returns(FakeOpenIdAssets.GetClients());
 
             // ACT
             var result = _jwtGenerator.GenerateFilteredIdTokenPayload(
@@ -490,6 +522,9 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             {
                 Scope = "profile"
             };
+            _clientRepositoryStub.Setup(c => c.GetAll()).Returns(FakeOpenIdAssets.GetClients());
+            _scopeRepositoryStub.Setup(s => s.GetScopeByName(It.IsAny<string>()))
+                .Returns(FakeOpenIdAssets.GetScopes().FirstOrDefault(s => s.Name == "profile"));
 
             // ACT
             var result = _jwtGenerator.GenerateUserInfoPayloadForScope(
@@ -553,6 +588,9 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 Scope = "profile",
                 State = state
             };
+            _clientRepositoryStub.Setup(c => c.GetAll()).Returns(FakeOpenIdAssets.GetClients());
+            _scopeRepositoryStub.Setup(s => s.GetScopeByName(It.IsAny<string>()))
+                .Returns(FakeOpenIdAssets.GetScopes().FirstOrDefault(s => s.Name == "profile"));
 
             // ACT & ASSERT
             var exception = Assert.Throws<IdentityServerExceptionWithState>(() => _jwtGenerator.GenerateFilteredUserInfoPayload(
@@ -598,6 +636,9 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 Scope = "profile",
                 State = state
             };
+            _clientRepositoryStub.Setup(c => c.GetAll()).Returns(FakeOpenIdAssets.GetClients());
+            _scopeRepositoryStub.Setup(s => s.GetScopeByName(It.IsAny<string>()))
+                .Returns(FakeOpenIdAssets.GetScopes().FirstOrDefault(s => s.Name == "profile"));
 
             // ACT & ASSERT
             var exception = Assert.Throws<IdentityServerExceptionWithState>(() => _jwtGenerator.GenerateFilteredUserInfoPayload(
@@ -643,6 +684,9 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 Scope = "profile",
                 State = state
             };
+            _clientRepositoryStub.Setup(c => c.GetAll()).Returns(FakeOpenIdAssets.GetClients());
+            _scopeRepositoryStub.Setup(s => s.GetScopeByName(It.IsAny<string>()))
+                .Returns(FakeOpenIdAssets.GetScopes().FirstOrDefault(s => s.Name == "profile"));
 
             // ACT & ASSERT
             var exception = Assert.Throws<IdentityServerExceptionWithState>(() => _jwtGenerator.GenerateFilteredUserInfoPayload(
@@ -700,6 +744,9 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 Scope = "profile",
                 State = state
             };
+            _clientRepositoryStub.Setup(c => c.GetAll()).Returns(FakeOpenIdAssets.GetClients());
+            _scopeRepositoryStub.Setup(s => s.GetScopeByName(It.IsAny<string>()))
+                .Returns(FakeOpenIdAssets.GetScopes().FirstOrDefault(s => s.Name == "profile"));
 
             // ACT & ASSERT
             var exception = Assert.Throws<IdentityServerExceptionWithState>(() => _jwtGenerator.GenerateFilteredUserInfoPayload(
@@ -760,6 +807,9 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             {
                 Scope = "profile"
             };
+            _clientRepositoryStub.Setup(c => c.GetAll()).Returns(FakeOpenIdAssets.GetClients());
+            _scopeRepositoryStub.Setup(s => s.GetScopeByName(It.IsAny<string>()))
+                .Returns(FakeOpenIdAssets.GetScopes().FirstOrDefault(s => s.Name == "profile"));
 
             // ACT
             var result = _jwtGenerator.GenerateFilteredUserInfoPayload(
@@ -802,6 +852,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             {
                 ClientId = "client_doesnt_exist"
             };
+            _clientRepositoryStub.Setup(c => c.GetAll()).Returns(FakeOpenIdAssets.GetClients());
 
             // ACT & ASSERT
             Assert.Throws<InvalidOperationException>(() => _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(jwsPayload,
@@ -815,13 +866,14 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
         {
             // ARRANGE
             InitializeMockObjects();
-            var client = FakeFactories.FakeDataSource.Clients.First();
+            var client = FakeOpenIdAssets.GetClients().First();
             client.IdTokenSignedResponseAlg = "none";
             var jwsPayload = new JwsPayload();
             var authorizationParameter = new AuthorizationParameter
             {
                 ClientId = client.ClientId
             };
+            _clientRepositoryStub.Setup(c => c.GetClientById(It.IsAny<string>())).Returns(FakeOpenIdAssets.GetClients().First());
 
             // ACT & ASSERT
             _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(jwsPayload,
@@ -837,13 +889,14 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
         {
             // ARRANGE
             InitializeMockObjects();
-            var client = FakeFactories.FakeDataSource.Clients.First();
+            var client = FakeOpenIdAssets.GetClients().First();
             client.IdTokenSignedResponseAlg = Jwt.Constants.JwsAlgNames.RS256;
             var jwsPayload = new JwsPayload();
             var authorizationParameter = new AuthorizationParameter
             {
                 ClientId = client.ClientId
             };
+            _clientRepositoryStub.Setup(c => c.GetClientById(It.IsAny<string>())).Returns(client);
 
             // ACT & ASSERT
             _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(jwsPayload,
@@ -859,13 +912,14 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
         {
             // ARRANGE
             InitializeMockObjects();
-            var client = FakeFactories.FakeDataSource.Clients.First();
+            var client = FakeOpenIdAssets.GetClients().First();
             client.IdTokenSignedResponseAlg = Jwt.Constants.JwsAlgNames.RS384;
             var jwsPayload = new JwsPayload();
             var authorizationParameter = new AuthorizationParameter
             {
                 ClientId = client.ClientId
             };
+            _clientRepositoryStub.Setup(c => c.GetClientById(It.IsAny<string>())).Returns(client);
 
             // ACT & ASSERT
             _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(jwsPayload,
@@ -881,13 +935,14 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
         {
             // ARRANGE
             InitializeMockObjects();
-            var client = FakeFactories.FakeDataSource.Clients.First();
+            var client = FakeOpenIdAssets.GetClients().First();
             client.IdTokenSignedResponseAlg = Jwt.Constants.JwsAlgNames.RS512;
             var jwsPayload = new JwsPayload();
             var authorizationParameter = new AuthorizationParameter
             {
                 ClientId = client.ClientId
             };
+            _clientRepositoryStub.Setup(c => c.GetClientById(It.IsAny<string>())).Returns(client);
 
             // ACT & ASSERT
             _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(jwsPayload,
@@ -907,36 +962,37 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
         {
             // ARRANGE
             InitializeMockObjects();
-            var client = FakeFactories.FakeDataSource.Clients.First();
+            var client = FakeOpenIdAssets.GetClients().First();
             client.IdTokenEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5;
             var serializedRsa = string.Empty;
-#if DNXCORE50
+#if NET46
+            using (var provider = new RSACryptoServiceProvider())
+            {
+                serializedRsa = provider.ToXmlString(true);
+            };
+#else
             using (var provider = new RSAOpenSsl())
             {
                 serializedRsa = provider.ToXmlString(true);
             };
 #endif
-#if DNX451
-            using (var provider = new RSACryptoServiceProvider())
+            var jsonWebKey = new JsonWebKey
             {
-                serializedRsa = provider.ToXmlString(true);
-            };
-#endif
-            var jsonWebKey = new DataAccess.Fake.Models.JsonWebKey
-            {
-                Alg = DataAccess.Fake.Models.AllAlg.RSA1_5,
+                Alg = AllAlg.RSA1_5,
                 KeyOps = new[]
                     {
-                        DataAccess.Fake.Models.KeyOperations.Encrypt,
-                        DataAccess.Fake.Models.KeyOperations.Decrypt
+                       KeyOperations.Encrypt,
+                       KeyOperations.Decrypt
                     },
                 Kid = "3",
-                Kty = DataAccess.Fake.Models.KeyType.RSA,
-                Use = DataAccess.Fake.Models.Use.Enc,
+                Kty = KeyType.RSA,
+                Use = Use.Enc,
                 SerializedKey = serializedRsa,
             };
-            FakeFactories.FakeDataSource.JsonWebKeys.Add(jsonWebKey);
             var jws = "jws";
+            _jsonWebKeyRepositoryStub.Setup(j => j.GetByAlgorithm(It.IsAny<Use>(), It.IsAny<AllAlg>(), It.IsAny<KeyOperations[]>()))
+                .Returns(new List<JsonWebKey> { jsonWebKey });
+            _clientRepositoryStub.Setup(c => c.GetClientById(It.IsAny<string>())).Returns(client);
 
             // ACT
             var jwe = _jwtGenerator.Encrypt(jws,
@@ -956,35 +1012,36 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
         {
             // ARRANGE
             InitializeMockObjects();
-            var client = FakeFactories.FakeDataSource.Clients.First();
+            var client = FakeOpenIdAssets.GetClients().First();
             client.IdTokenEncryptedResponseAlg = Jwt.Constants.JwsAlgNames.RS256;
             var serializedRsa = string.Empty;
-#if DNXCORE50
+#if NET46
+            using (var provider = new RSACryptoServiceProvider())
+            {
+                serializedRsa = provider.ToXmlString(true);
+            };
+#else            
             using (var provider = new RSAOpenSsl())
             {
                 serializedRsa = provider.ToXmlString(true);
             };
 #endif
-#if DNX451
-            using (var provider = new RSACryptoServiceProvider())
+            var jsonWebKey = new JsonWebKey
             {
-                serializedRsa = provider.ToXmlString(true);
-            };
-#endif
-            var jsonWebKey = new DataAccess.Fake.Models.JsonWebKey
-            {
-                Alg = DataAccess.Fake.Models.AllAlg.RS256,
+                Alg = AllAlg.RS256,
                 KeyOps = new[]
                 {
-                    DataAccess.Fake.Models.KeyOperations.Sign,
-                   DataAccess.Fake.Models. KeyOperations.Verify
+                   KeyOperations.Sign,
+                   KeyOperations.Verify
                 },
                 Kid = "a3rMUgMFv9tPclLa6yF3zAkfquE",
-                Kty = DataAccess.Fake.Models.KeyType.RSA,
-                Use = DataAccess.Fake.Models.Use.Sig,
+                Kty = KeyType.RSA,
+                Use = Use.Sig,
                 SerializedKey = serializedRsa
             };
-            FakeFactories.FakeDataSource.JsonWebKeys.Add(jsonWebKey);
+            _jsonWebKeyRepositoryStub.Setup(j => j.GetByAlgorithm(It.IsAny<Use>(), It.IsAny<AllAlg>(), It.IsAny<KeyOperations[]>()))
+                .Returns(new List<JsonWebKey> { jsonWebKey });
+            _clientRepositoryStub.Setup(c => c.GetClientById(It.IsAny<string>())).Returns(client);
             var jwsPayload = new JwsPayload();
 
             // ACT
@@ -1000,32 +1057,28 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
         private void InitializeMockObjects()
         {
             _simpleIdentityServerConfigurator = new Mock<ISimpleIdentityServerConfigurator>();
-            var clientRepository = FakeFactories.GetClientRepository();
-            var clientValidator = new ClientValidator(clientRepository);
-            var jsonWebKeyRepository = FakeFactories.GetJsonWebKeyRepository();
-            var scopeRepository = FakeFactories.GetScopeRepository();
+            _clientRepositoryStub = new Mock<IClientRepository>();
+            _jsonWebKeyRepositoryStub = new Mock<IJsonWebKeyRepository>();
+            _scopeRepositoryStub = new Mock<IScopeRepository>();
+            var clientValidator = new ClientValidator(_clientRepositoryStub.Object);
             var claimsMapping = new ClaimsMapping();
-            var parameterParserHelper = new ParameterParserHelper(scopeRepository);
-#if DNXCORE50
-            var createJwsSignature = new CreateJwsSignature();
-#endif
-#if DNX451
+            var parameterParserHelper = new ParameterParserHelper(_scopeRepositoryStub.Object);
+#if NET46
             var createJwsSignature = new CreateJwsSignature(new CngKeySerializer());
+#else
+            var createJwsSignature = new CreateJwsSignature();
 #endif
             var aesEncryptionHelper = new AesEncryptionHelper();
             var jweHelper = new JweHelper(aesEncryptionHelper);
             var jwsGenerator = new JwsGenerator(createJwsSignature);
             var jweGenerator = new JweGenerator(jweHelper);
 
-            FakeFactories.FakeDataSource.Scopes = FakeOpenIdAssets.GetScopes();
-            FakeFactories.FakeDataSource.Clients = FakeOpenIdAssets.GetClients();
-
             _jwtGenerator = new JwtGenerator(
                 _simpleIdentityServerConfigurator.Object,
-                clientRepository,
+                _clientRepositoryStub.Object,
                 clientValidator,
-                jsonWebKeyRepository,
-                scopeRepository,
+                _jsonWebKeyRepositoryStub.Object,
+                _scopeRepositoryStub.Object,
                 claimsMapping,
                 parameterParserHelper,
                 jwsGenerator,
