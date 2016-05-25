@@ -28,17 +28,6 @@
         "Moq": "4.5.9-*",
         "Microsoft.NETCore.Platforms": "1.0.1-*"
       }
-    },
-    "netcoreapp1.0": {
-      "imports": [ "dotnet", "portable-net45+win8" ],
-      "dependencies": {
-        "System.Diagnostics.TraceSource": "4.0.0-*",
-        "Microsoft.NETCore.App": {
-          "type": "platform",
-          "version": "1.0.0-rc2"
-        },
-        "moq.netcore": "4.4.0-*"
-      }
     }
   }
 }

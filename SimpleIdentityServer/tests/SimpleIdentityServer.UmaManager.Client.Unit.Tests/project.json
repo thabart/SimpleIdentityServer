@@ -2,34 +2,27 @@
   "version": "1.0.0-*",
   "description": "SimpleIdentityServer.UmaManager.Client.Unit.Tests Unit test project",
   "authors": [ "thierry habart" ],
-  "tags": [ "" ],
-  "projectUrl": "",
-  "licenseUrl": "",
+  "packOptions": {
+    "tags": [ "" ],
+    "licenseUrl": "",
+    "projectUrl": ""
+  },
+  "testRunner": "xunit",
   "tooling": {
     "defaultNamespace": "SimpleIdentityServer.UmaManager.Client.Unit.Tests"
   },
-  "dependencies": {    
+  "dependencies": {
     "xunit": "2.1.0",
-    "xunit.runner.dnx": "2.1.0-rc1-build204",
-    "xunit.runner.console": "2.1.0",
-    "SimpleIdentityServer.UmaManager.Client": ""
-  },
-  "commands": {
-    "test": "xunit.runner.dnx"
+    "dotnet-test-xunit": "1.0.0-*",
+    "SimpleIdentityServer.UmaManager.Client": "*"
   },
   "frameworks": {
-    "dnx451": {
-      "frameworkAssemblies": {
-        "System.Core": "4.0.0.0"
-      },
-	  "dependencies": {
-		"Moq": "4.2.1510.2205"	
-	  }
-    },
-	"dnxcore50": {	
+    "net46": {
+      "frameworkAssemblies": { },
       "dependencies": {
-        "moq.netcore": "4.4.0-beta8"
+        "Moq": "4.5.9-*",
+        "Microsoft.NETCore.Platforms": "1.0.1-*"
       }
-	}
+    }
   }
 }

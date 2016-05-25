@@ -84,7 +84,7 @@ namespace SimpleIdentityServer.UmaManager.Client.Unit.Tests.Operation
             Assert.NotNull(result);
             Assert.True(result.OperationName == operationName);
             Assert.True(result.ApplicationName == applicationName);
-            Assert.True(request.RequestUri.AbsoluteUri == $"http://localhost/operations?resourceSet={resourceSetId}");
+            Assert.True(request.RequestUri.AbsoluteUri == $"http://localhost/operations/search?resourceSet={resourceSetId}");
         }
 
         #endregion
