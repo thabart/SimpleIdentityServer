@@ -35,16 +35,6 @@
     "SimpleIdentityServer.DataAccess.SqlServer": "*",
     "SimpleIdentityServer.RateLimitation": "*"
   },
-  "scripts": {
-    "prebuild": [
-      "npm install",
-      "bower --allow-root install",
-      "gulp clean",
-      "gulp min"
-    ],
-    "postrestore": [ "npm install", "bower --allow-root install" ],
-    "prepare": [ "gulp clean", "gulp min" ]
-  },
   "frameworks": {
     "net46": {
       "frameworkAssemblies": {
@@ -64,10 +54,12 @@
     "embed": [
       "SimpleIdentityServer.pfx",
       "Views/**",
-      "wwwroot/output/**",
+      "wwwroot/css/**",
+      "wwwroot/lib/**",
       "wwwroot/img/**",
       "wwwroot/fonts/**"
-    ]
+    ],
+    "preserveCompilationContext": true
   },
   "publishOptions": {
     "exclude": [
@@ -76,18 +68,5 @@
       "node_modules",
       "bower_components"
     ]
-  },
-  "configurations": {
-    "Debug": {
-      "compilationOptions": {
-        "define": [ "DEBUG" ]
-      }
-    },
-    "Release": {
-      "compilationOptions": {
-        "define": [ "RELEASE" ],
-        "optimize": true
-      }
-    }
   }
 }

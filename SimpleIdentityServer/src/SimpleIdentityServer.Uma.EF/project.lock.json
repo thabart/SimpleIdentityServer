@@ -6849,7 +6849,7 @@
       ]
     },
     "Microsoft.Extensions.DependencyModel/1.0.0-rc2-final": {
-      "sha512": "p9cTPcAxJhjBSQ1jq1FMW6bBTm/HaR3fXPvWfDq44LzjJ/+ZmNwQEGKO27oSd2C8Fw+Gf45+HZjTFkFH6Czr/A==",
+      "sha512": "IFfLyVWxqGOA+ql+h6gvPjWbDMXClLORxgoeJab7WxpPHTcHut/5vFLu8+29iQklymlKfYefRo8tudtwjxjCRw==",
       "type": "package",
       "files": [
         "Microsoft.Extensions.DependencyModel.1.0.0-rc2-final.nupkg.sha512",
