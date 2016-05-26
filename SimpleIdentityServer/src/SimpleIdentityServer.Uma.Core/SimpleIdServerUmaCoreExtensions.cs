@@ -15,6 +15,8 @@
 #endregion
 
 using Microsoft.Extensions.DependencyInjection;
+using SimpleIdentityServer.Client;
+using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Uma.Core.Api.Authorization;
 using SimpleIdentityServer.Uma.Core.Api.Authorization.Actions;
 using SimpleIdentityServer.Uma.Core.Api.CodeSampleController;
@@ -33,6 +35,7 @@ using SimpleIdentityServer.Uma.Core.Api.ScopeController;
 using SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions;
 using SimpleIdentityServer.Uma.Core.Code;
 using SimpleIdentityServer.Uma.Core.Helpers;
+using SimpleIdentityServer.Uma.Core.JwtToken;
 using SimpleIdentityServer.Uma.Core.Policies;
 using SimpleIdentityServer.Uma.Core.Validators;
 using System;
@@ -116,6 +119,9 @@ namespace SimpleIdentityServer.Uma.Core
             serviceCollection.AddTransient<ICodeProvider, CodeProvider>();
             serviceCollection.AddTransient<ICodeSampleActions, CodeSampleActions>();
             serviceCollection.AddTransient<IGetFrontendCodeAction, GetFrontendCodeAction>();
+            serviceCollection.AddTransient<IJwsParser, JwsParser>();
+            serviceCollection.AddTransient<IIdentityServerClientFactory, IdentityServerClientFactory>();
+            serviceCollection.AddTransient<IJwtTokenParser, JwtTokenParser>();
             serviceCollection.AddSingleton(umaServerOptions);
         }
 

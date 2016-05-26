@@ -1795,7 +1795,8 @@
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection": "1.0.0",
           "Newtonsoft.Json": "8.0.4",
-          "SimpleIdentityServer.Core.Common": "1.0.0"
+          "SimpleIdentityServer.Core.Common": "1.0.0",
+          "SimpleIdentityServer.Core.Jwt": "1.0.0"
         },
         "frameworkAssemblies": [
           "System.Net.Http",
@@ -1827,6 +1828,24 @@
           "net46/SimpleIdentityServer.Core.Common.dll": {}
         }
       },
+      "SimpleIdentityServer.Core.Jwt/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.6",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
+          "SimpleIdentityServer.Core.Common": "1.0.0"
+        },
+        "frameworkAssemblies": [
+          "System.ComponentModel.Composition",
+          "System.Runtime.Serialization"
+        ],
+        "compile": {
+          "net46/SimpleIdentityServer.Core.Jwt.dll": {}
+        },
+        "runtime": {
+          "net46/SimpleIdentityServer.Core.Jwt.dll": {}
+        }
+      },
       "SimpleIdentityServer.Uma.Core/1.0.0": {
         "type": "project",
         "framework": ".NETFramework,Version=v4.6",
@@ -1836,6 +1855,7 @@
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
           "Newtonsoft.Json": "8.0.4",
           "SimpleIdentityServer.Client": "1.0.0",
+          "SimpleIdentityServer.Core.Jwt": "1.0.0",
           "System.IO.Compression": "4.0.0"
         },
         "frameworkAssemblies": [
@@ -5556,6 +5576,11 @@
       "type": "project",
       "path": "../../src/SimpleIdentityServer.Core.Common/project.json",
       "msbuildProject": "../../src/SimpleIdentityServer.Core.Common/SimpleIdentityServer.Core.Common.xproj"
+    },
+    "SimpleIdentityServer.Core.Jwt/1.0.0": {
+      "type": "project",
+      "path": "../../src/SimpleIdentityServer.Core.Jwt/project.json",
+      "msbuildProject": "../../src/SimpleIdentityServer.Core.Jwt/SimpleIdentityServer.Core.Jwt.xproj"
     },
     "SimpleIdentityServer.Uma.Core/1.0.0": {
       "type": "project",

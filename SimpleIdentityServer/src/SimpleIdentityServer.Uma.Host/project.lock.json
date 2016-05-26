@@ -1976,7 +1976,7 @@
           "System.Threading": "4.0.11-rc2-24027"
         },
         "compile": {
-          "ref/netstandard1.3/_._": {}
+          "ref/netstandard1.3/System.Collections.NonGeneric.dll": {}
         },
         "runtime": {
           "lib/netstandard1.3/System.Collections.NonGeneric.dll": {}
@@ -2424,7 +2424,7 @@
           "ref/netstandard1.3/System.IO.Compression.ZipFile.dll": {}
         },
         "runtime": {
-          "lib/netstandard1.3/_._": {}
+          "lib/netstandard1.3/System.IO.Compression.ZipFile.dll": {}
         }
       },
       "System.IO.FileSystem/4.0.1-rc2-24027": {
@@ -3260,6 +3260,23 @@
           "lib/netstandard1.3/System.Runtime.Serialization.Primitives.dll": {}
         }
       },
+      "System.Runtime.Serialization.Xml/4.1.1-rc2-24027": {
+        "type": "package",
+        "dependencies": {
+          "System.IO": "4.1.0-rc2-24027",
+          "System.Private.DataContractSerialization": "4.1.1-rc2-24027",
+          "System.Runtime": "4.1.0-rc2-24027",
+          "System.Runtime.Serialization.Primitives": "4.1.1-rc2-24027",
+          "System.Text.Encoding": "4.0.11-rc2-24027",
+          "System.Xml.ReaderWriter": "4.0.11-rc2-24027"
+        },
+        "compile": {
+          "ref/netstandard1.3/System.Runtime.Serialization.Xml.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard1.3/System.Runtime.Serialization.Xml.dll": {}
+        }
+      },
       "System.Security.Claims/4.0.1-rc2-24027": {
         "type": "package",
         "dependencies": {
@@ -3318,7 +3335,7 @@
           "System.Text.Encoding": "4.0.11-rc2-24027"
         },
         "compile": {
-          "ref/netstandard1.4/_._": {}
+          "ref/netstandard1.4/System.Security.Cryptography.Cng.dll": {}
         },
         "runtimeTargets": {
           "runtimes/unix/lib/netstandard1.4/System.Security.Cryptography.Cng.dll": {
@@ -3348,7 +3365,7 @@
           "System.Threading": "4.0.11-rc2-24027"
         },
         "compile": {
-          "ref/netstandard1.3/_._": {}
+          "ref/netstandard1.3/System.Security.Cryptography.Csp.dll": {}
         },
         "runtimeTargets": {
           "runtimes/unix/lib/netstandard1.3/System.Security.Cryptography.Csp.dll": {
@@ -3912,6 +3929,7 @@
           "Microsoft.Extensions.DependencyInjection": "1.0.0",
           "Newtonsoft.Json": "8.0.4",
           "SimpleIdentityServer.Core.Common": "1.0.0",
+          "SimpleIdentityServer.Core.Jwt": "1.0.0",
           "System.Net.Http": "4.0.1",
           "System.Runtime.Serialization.Primitives": "4.1.1"
         },
@@ -3936,6 +3954,31 @@
         },
         "runtime": {
           "netstandard1.5/SimpleIdentityServer.Core.Common.dll": {}
+        }
+      },
+      "SimpleIdentityServer.Core.Jwt/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v1.5",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
+          "NETStandard.Library": "1.5.0",
+          "SimpleIdentityServer.Core.Common": "1.0.0",
+          "System.Dynamic.Runtime": "4.0.11",
+          "System.Private.DataContractSerialization": "4.1.1",
+          "System.Runtime.Serialization.Primitives": "4.1.1",
+          "System.Runtime.Serialization.Xml": "4.1.1",
+          "System.Security.Claims": "4.0.1",
+          "System.Security.Cryptography.Algorithms": "4.1.0",
+          "System.Security.Cryptography.Algorithms.Extensions": "1.0.0",
+          "System.Security.Cryptography.Cng": "4.1.0",
+          "System.Security.Cryptography.Csp": "4.0.0",
+          "System.Xml.XmlSerializer": "4.0.11"
+        },
+        "compile": {
+          "netstandard1.5/SimpleIdentityServer.Core.Jwt.dll": {}
+        },
+        "runtime": {
+          "netstandard1.5/SimpleIdentityServer.Core.Jwt.dll": {}
         }
       },
       "SimpleIdentityServer.Oauth2Instrospection.Authentication/1.0.0": {
@@ -3964,6 +4007,7 @@
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
           "Newtonsoft.Json": "8.0.4",
           "SimpleIdentityServer.Client": "1.0.0",
+          "SimpleIdentityServer.Core.Jwt": "1.0.0",
           "System.IO.Compression": "4.0.0",
           "System.Net.Http": "4.0.1"
         },
@@ -3992,6 +4036,27 @@
         },
         "runtime": {
           "netcoreapp1.0/SimpleIdentityServer.Uma.EF.dll": {}
+        }
+      },
+      "System.Security.Cryptography.Algorithms.Extensions/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v1.5",
+        "dependencies": {
+          "NETStandard.Library": "1.5.0",
+          "Newtonsoft.Json": "8.0.4",
+          "System.Collections": "4.0.11",
+          "System.Collections.NonGeneric": "4.0.1",
+          "System.Diagnostics.Contracts": "4.0.1",
+          "System.Runtime.Extensions": "4.1.0",
+          "System.Security.Cryptography.Algorithms": "4.1.0",
+          "System.Security.Cryptography.Cng": "4.1.0",
+          "System.Security.Cryptography.Csp": "4.0.0"
+        },
+        "compile": {
+          "netstandard1.5/System.Security.Cryptography.Algorithms.Extensions.dll": {}
+        },
+        "runtime": {
+          "netstandard1.5/System.Security.Cryptography.Algorithms.Extensions.dll": {}
         }
       }
     },
@@ -6081,7 +6146,8 @@
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection": "1.0.0",
           "Newtonsoft.Json": "8.0.4",
-          "SimpleIdentityServer.Core.Common": "1.0.0"
+          "SimpleIdentityServer.Core.Common": "1.0.0",
+          "SimpleIdentityServer.Core.Jwt": "1.0.0"
         },
         "frameworkAssemblies": [
           "System.Net.Http",
@@ -6111,6 +6177,24 @@
         },
         "runtime": {
           "net46/SimpleIdentityServer.Core.Common.dll": {}
+        }
+      },
+      "SimpleIdentityServer.Core.Jwt/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.6",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
+          "SimpleIdentityServer.Core.Common": "1.0.0"
+        },
+        "frameworkAssemblies": [
+          "System.ComponentModel.Composition",
+          "System.Runtime.Serialization"
+        ],
+        "compile": {
+          "net46/SimpleIdentityServer.Core.Jwt.dll": {}
+        },
+        "runtime": {
+          "net46/SimpleIdentityServer.Core.Jwt.dll": {}
         }
       },
       "SimpleIdentityServer.Oauth2Instrospection.Authentication/1.0.0": {
@@ -6143,6 +6227,7 @@
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
           "Newtonsoft.Json": "8.0.4",
           "SimpleIdentityServer.Client": "1.0.0",
+          "SimpleIdentityServer.Core.Jwt": "1.0.0",
           "System.IO.Compression": "4.0.0"
         },
         "frameworkAssemblies": [
@@ -11158,6 +11243,75 @@
         "runtimes/aot/lib/netcore50/System.Runtime.Serialization.Primitives.dll"
       ]
     },
+    "System.Runtime.Serialization.Xml/4.1.1-rc2-24027": {
+      "sha512": "dBbTKau0yDuAVR4F+2xxFbyufmHTyI7qdJf2oAn3qKWScXRVQ9vj25P6t/VPNvfXu+LjMWt/FDPM/6Yclw3ahQ==",
+      "type": "package",
+      "files": [
+        "System.Runtime.Serialization.Xml.4.1.1-rc2-24027.nupkg.sha512",
+        "System.Runtime.Serialization.Xml.nuspec",
+        "ThirdPartyNotices.txt",
+        "dotnet_library_license.txt",
+        "lib/MonoAndroid10/_._",
+        "lib/MonoTouch10/_._",
+        "lib/net45/_._",
+        "lib/net46/System.Runtime.Serialization.Xml.dll",
+        "lib/netcore50/System.Runtime.Serialization.Xml.dll",
+        "lib/netstandard1.3/System.Runtime.Serialization.Xml.dll",
+        "lib/portable-net45+win8+wp8+wpa81/_._",
+        "lib/win8/_._",
+        "lib/wp80/_._",
+        "lib/wpa81/_._",
+        "lib/xamarinios10/_._",
+        "lib/xamarinmac20/_._",
+        "lib/xamarintvos10/_._",
+        "lib/xamarinwatchos10/_._",
+        "ref/MonoAndroid10/_._",
+        "ref/MonoTouch10/_._",
+        "ref/net45/_._",
+        "ref/net46/System.Runtime.Serialization.Xml.dll",
+        "ref/netcore50/System.Runtime.Serialization.Xml.dll",
+        "ref/netcore50/System.Runtime.Serialization.Xml.xml",
+        "ref/netcore50/de/System.Runtime.Serialization.Xml.xml",
+        "ref/netcore50/es/System.Runtime.Serialization.Xml.xml",
+        "ref/netcore50/fr/System.Runtime.Serialization.Xml.xml",
+        "ref/netcore50/it/System.Runtime.Serialization.Xml.xml",
+        "ref/netcore50/ja/System.Runtime.Serialization.Xml.xml",
+        "ref/netcore50/ko/System.Runtime.Serialization.Xml.xml",
+        "ref/netcore50/ru/System.Runtime.Serialization.Xml.xml",
+        "ref/netcore50/zh-hans/System.Runtime.Serialization.Xml.xml",
+        "ref/netcore50/zh-hant/System.Runtime.Serialization.Xml.xml",
+        "ref/netstandard1.0/System.Runtime.Serialization.Xml.dll",
+        "ref/netstandard1.0/System.Runtime.Serialization.Xml.xml",
+        "ref/netstandard1.0/de/System.Runtime.Serialization.Xml.xml",
+        "ref/netstandard1.0/es/System.Runtime.Serialization.Xml.xml",
+        "ref/netstandard1.0/fr/System.Runtime.Serialization.Xml.xml",
+        "ref/netstandard1.0/it/System.Runtime.Serialization.Xml.xml",
+        "ref/netstandard1.0/ja/System.Runtime.Serialization.Xml.xml",
+        "ref/netstandard1.0/ko/System.Runtime.Serialization.Xml.xml",
+        "ref/netstandard1.0/ru/System.Runtime.Serialization.Xml.xml",
+        "ref/netstandard1.0/zh-hans/System.Runtime.Serialization.Xml.xml",
+        "ref/netstandard1.0/zh-hant/System.Runtime.Serialization.Xml.xml",
+        "ref/netstandard1.3/System.Runtime.Serialization.Xml.dll",
+        "ref/netstandard1.3/System.Runtime.Serialization.Xml.xml",
+        "ref/netstandard1.3/de/System.Runtime.Serialization.Xml.xml",
+        "ref/netstandard1.3/es/System.Runtime.Serialization.Xml.xml",
+        "ref/netstandard1.3/fr/System.Runtime.Serialization.Xml.xml",
+        "ref/netstandard1.3/it/System.Runtime.Serialization.Xml.xml",
+        "ref/netstandard1.3/ja/System.Runtime.Serialization.Xml.xml",
+        "ref/netstandard1.3/ko/System.Runtime.Serialization.Xml.xml",
+        "ref/netstandard1.3/ru/System.Runtime.Serialization.Xml.xml",
+        "ref/netstandard1.3/zh-hans/System.Runtime.Serialization.Xml.xml",
+        "ref/netstandard1.3/zh-hant/System.Runtime.Serialization.Xml.xml",
+        "ref/portable-net45+win8+wp8+wpa81/_._",
+        "ref/win8/_._",
+        "ref/wp80/_._",
+        "ref/wpa81/_._",
+        "ref/xamarinios10/_._",
+        "ref/xamarinmac20/_._",
+        "ref/xamarintvos10/_._",
+        "ref/xamarinwatchos10/_._"
+      ]
+    },
     "System.Security.Claims/4.0.1-rc2-24027": {
       "sha512": "9oxucsKjs8q2UZHHx6tQm78uXzAiCWE7MVbxUmLlVzCRXLKtzjWCgZqHzCjg37GHMvi326PhblnOI222CGW2GA==",
       "type": "package",
@@ -12414,6 +12568,11 @@
       "path": "../SimpleIdentityServer.Core.Common/project.json",
       "msbuildProject": "../SimpleIdentityServer.Core.Common/SimpleIdentityServer.Core.Common.xproj"
     },
+    "SimpleIdentityServer.Core.Jwt/1.0.0": {
+      "type": "project",
+      "path": "../SimpleIdentityServer.Core.Jwt/project.json",
+      "msbuildProject": "../SimpleIdentityServer.Core.Jwt/SimpleIdentityServer.Core.Jwt.xproj"
+    },
     "SimpleIdentityServer.Oauth2Instrospection.Authentication/1.0.0": {
       "type": "project",
       "path": "../SimpleIdentityServer.Oauth2Instrospection.Authentication/project.json",
@@ -12428,6 +12587,11 @@
       "type": "project",
       "path": "../SimpleIdentityServer.Uma.EF/project.json",
       "msbuildProject": "../SimpleIdentityServer.Uma.EF/SimpleIdentityServer.Uma.EF.xproj"
+    },
+    "System.Security.Cryptography.Algorithms.Extensions/1.0.0": {
+      "type": "project",
+      "path": "../System.Security.Cryptography.Algorithms.Extensions/project.json",
+      "msbuildProject": "../System.Security.Cryptography.Algorithms.Extensions/System.Security.Cryptography.Algorithms.Extensions.xproj"
     }
   },
   "projectFileDependencyGroups": {

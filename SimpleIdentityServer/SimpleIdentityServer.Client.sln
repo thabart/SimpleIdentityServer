@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Client", "src\SimpleIdentityServer.Client\SimpleIdentityServer.Client.xproj", "{8562EA86-1ACB-4A83-9175-8BFCB133EB4D}"
 EndProject
@@ -18,6 +18,10 @@ EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Client.Unit.Tests", "tests\SimpleIdentityServer.Client.Unit.Tests\SimpleIdentityServer.Client.Unit.Tests.xproj", "{0DC8E1D9-8B85-460A-B51C-67056446CA85}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02. Integration Tests", "02. Integration Tests", "{67AE5203-D953-482D-BAF8-6D430FD39A89}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Core.Jwt", "src\SimpleIdentityServer.Core.Jwt\SimpleIdentityServer.Core.Jwt.xproj", "{7709D106-0AA1-4FE2-BE16-9E997F483311}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "System.Security.Cryptography.Algorithms.Extensions", "src\System.Security.Cryptography.Algorithms.Extensions\System.Security.Cryptography.Algorithms.Extensions.xproj", "{4940E66D-CAF7-476E-BA8D-2F612C38F11F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +45,14 @@ Global
 		{0DC8E1D9-8B85-460A-B51C-67056446CA85}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0DC8E1D9-8B85-460A-B51C-67056446CA85}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0DC8E1D9-8B85-460A-B51C-67056446CA85}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7709D106-0AA1-4FE2-BE16-9E997F483311}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7709D106-0AA1-4FE2-BE16-9E997F483311}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7709D106-0AA1-4FE2-BE16-9E997F483311}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7709D106-0AA1-4FE2-BE16-9E997F483311}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4940E66D-CAF7-476E-BA8D-2F612C38F11F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4940E66D-CAF7-476E-BA8D-2F612C38F11F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4940E66D-CAF7-476E-BA8D-2F612C38F11F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4940E66D-CAF7-476E-BA8D-2F612C38F11F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -52,5 +64,7 @@ Global
 		{80455BD6-64B8-44FC-8117-B963DEAF37D8} = {95551D7B-E0DE-4280-8234-D45B0BA7A9B5}
 		{0DC8E1D9-8B85-460A-B51C-67056446CA85} = {80455BD6-64B8-44FC-8117-B963DEAF37D8}
 		{67AE5203-D953-482D-BAF8-6D430FD39A89} = {95551D7B-E0DE-4280-8234-D45B0BA7A9B5}
+		{7709D106-0AA1-4FE2-BE16-9E997F483311} = {36AA7C9C-AAD9-481C-9587-699D6E8094BE}
+		{4940E66D-CAF7-476E-BA8D-2F612C38F11F} = {36AA7C9C-AAD9-481C-9587-699D6E8094BE}
 	EndGlobalSection
 EndGlobal

@@ -28,6 +28,8 @@ namespace SimpleIdentityServer.Client
         IDiscoveryClient CreateDiscoveryClient();
 
         IClientAuthSelector CreateTokenClient();
+
+        IJwksClient CreateJwksClient();
     }
 
     public class IdentityServerClientFactory : IIdentityServerClientFactory
@@ -65,6 +67,16 @@ namespace SimpleIdentityServer.Client
             return result;
         }
 
+        /// <summary>
+        /// Create token client
+        /// </summary>
+        /// <returns>Jwks client</returns>
+        public IJwksClient CreateJwksClient()
+        {
+            var result = (IJwksClient)_serviceProvider.GetService(typeof(IJwksClient));
+            return result;
+        }
+
         #region Private static methods
 
         private static void RegisterDependencies(IServiceCollection serviceCollection)
@@ -74,10 +86,12 @@ namespace SimpleIdentityServer.Client
             // Register clients
             serviceCollection.AddTransient<ITokenClient, TokenClient>();
             serviceCollection.AddTransient<IDiscoveryClient, DiscoveryClient>();
+            serviceCollection.AddTransient<IJwksClient, JwksClient>();
 
             // Register operations
             serviceCollection.AddTransient<IGetDiscoveryOperation, GetDiscoveryOperation>();
             serviceCollection.AddTransient<IPostTokenOperation, PostTokenOperation>();
+            serviceCollection.AddTransient<IGetJsonWebKeysOperation, GetJsonWebKeysOperation>();
 
             // Register request builders
             serviceCollection.AddScoped<ITokenRequestBuilder, TokenRequestBuilder>();

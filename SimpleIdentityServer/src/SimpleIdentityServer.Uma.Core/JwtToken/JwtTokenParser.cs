@@ -14,9 +14,85 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Client;
+using SimpleIdentityServer.Core.Jwt;
+using SimpleIdentityServer.Core.Jwt.Signature;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
 namespace SimpleIdentityServer.Uma.Core.JwtToken
 {
-    public class JwtTokenParser
+    public interface IJwtTokenParser
     {
+
+    }
+
+    internal class JwtTokenParser : IJwtTokenParser
+    {
+        private readonly IJwsParser _jwsParser;
+
+        private readonly IIdentityServerClientFactory _identityServerClientFactory;
+
+        private readonly IParametersProvider _parametersProvider;
+
+        #region Constructor
+
+        public JwtTokenParser(
+            IJwsParser jwsParser,
+            IIdentityServerClientFactory identityServerClientFactory,
+            IParametersProvider parametersProvider)
+        {
+            _jwsParser = jwsParser;
+            _identityServerClientFactory = identityServerClientFactory;
+            _parametersProvider = parametersProvider;
+        }
+
+        #endregion
+
+        #region Public methods
+
+        public async Task<JwsPayload> UnSign(string jws)
+        {
+            if (string.IsNullOrWhiteSpace(jws))
+            {
+                throw new ArgumentNullException(nameof(jws));
+            }
+
+            var protectedHeader = _jwsParser.GetHeader(jws);
+            if (protectedHeader == null)
+            {
+                return null;
+            }
+
+            var jsonWebKeySet = await _identityServerClientFactory.CreateJwksClient()
+                .ResolveAsync(_parametersProvider.GetOpenIdConfigurationUrl())
+                .ConfigureAwait(false);
+            var keys = jsonWebKeySet.Keys;
+            return null;
+        }
+
+        #endregion
+
+        #region Private methods
+
+        private List<JsonWebKey> GetJsonWebKeys(List<Dictionary<string, object>> lst)
+        {
+            var result = new List<JsonWebKey>();
+            foreach(var record in lst)
+            {
+                /*
+                 * var use = record[SimpleIdentityServer.Core.Jwt.Constants.JsonWebKeyParameterNames.UseName]
+                var jsonWebKey = new JsonWebKey
+                {
+                    Use = 
+                };
+                */
+            }
+
+            return null;
+        }
+
+        #endregion
     }
 }
