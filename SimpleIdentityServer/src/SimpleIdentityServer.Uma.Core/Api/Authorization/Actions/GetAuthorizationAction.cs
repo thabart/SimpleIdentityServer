@@ -110,14 +110,15 @@ namespace SimpleIdentityServer.Uma.Core.Api.Authorization.Actions
                     ErrorDescriptions.TheTicketIsExpired);
             }
 
-            var isAuthorized = _authorizationPolicyValidator.IsAuthorized(ticket,
+            var authorizationResult = _authorizationPolicyValidator.IsAuthorized(ticket,
                 clientId,
                 claims);
-            if (isAuthorized != AuthorizationPolicyResultEnum.Authorized)
+            if (authorizationResult.Type != AuthorizationPolicyResultEnum.Authorized)
             {
                 return new AuthorizationResponse
                 {
-                    AuthorizationPolicyResult = isAuthorized
+                    AuthorizationPolicyResult = authorizationResult.Type,
+                    ErrorDetails = authorizationResult.ErrorDetails
                 };
             }
 

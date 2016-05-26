@@ -13,6 +13,7 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(nullable: false),
+                    Claims = table.Column<string>(nullable: true),
                     ClientIdsAllowed = table.Column<string>(nullable: true),
                     IsResourceOwnerConsentNeeded = table.Column<bool>(nullable: false),
                     Scopes = table.Column<string>(nullable: true),

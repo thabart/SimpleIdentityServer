@@ -38,15 +38,13 @@ namespace SimpleIdentityServer.Host.DTOs.Response
         /// </summary>
         [DataMember(Name = Core.Constants.IntrospectionResponseNames.ClientId)]
         public string ClientId { get; set; }
-
-
+        
         /// <summary>
         /// Gets or sets identifier for the resource owner who authorized this token
         /// </summary>
         [DataMember(Name = Core.Constants.IntrospectionResponseNames.UserName)]
         public string UserName { get; set; }
-
-
+        
         /// <summary>
         /// Gets or sets the token type
         /// </summary>

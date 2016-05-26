@@ -3905,6 +3905,39 @@
           "netstandard1.5/SimpleIdentityServer.Authentication.Common.dll": {}
         }
       },
+      "SimpleIdentityServer.Client/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v1.5",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection": "1.0.0",
+          "Newtonsoft.Json": "8.0.4",
+          "SimpleIdentityServer.Core.Common": "1.0.0",
+          "System.Net.Http": "4.0.1",
+          "System.Runtime.Serialization.Primitives": "4.1.1"
+        },
+        "compile": {
+          "netstandard1.5/SimpleIdentityServer.Client.dll": {}
+        },
+        "runtime": {
+          "netstandard1.5/SimpleIdentityServer.Client.dll": {}
+        }
+      },
+      "SimpleIdentityServer.Core.Common/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v1.5",
+        "dependencies": {
+          "Newtonsoft.Json": "8.0.4",
+          "System.IO": "4.1.0",
+          "System.Runtime.Extensions": "4.1.0",
+          "System.Runtime.Serialization.Json": "4.0.2"
+        },
+        "compile": {
+          "netstandard1.5/SimpleIdentityServer.Core.Common.dll": {}
+        },
+        "runtime": {
+          "netstandard1.5/SimpleIdentityServer.Core.Common.dll": {}
+        }
+      },
       "SimpleIdentityServer.Oauth2Instrospection.Authentication/1.0.0": {
         "type": "project",
         "framework": ".NETStandard,Version=v1.5",
@@ -3930,6 +3963,7 @@
           "Microsoft.AspNetCore.WebUtilities": "1.0.0",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
           "Newtonsoft.Json": "8.0.4",
+          "SimpleIdentityServer.Client": "1.0.0",
           "System.IO.Compression": "4.0.0",
           "System.Net.Http": "4.0.1"
         },
@@ -6041,6 +6075,44 @@
           "net46/SimpleIdentityServer.Authentication.Common.dll": {}
         }
       },
+      "SimpleIdentityServer.Client/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.6",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection": "1.0.0",
+          "Newtonsoft.Json": "8.0.4",
+          "SimpleIdentityServer.Core.Common": "1.0.0"
+        },
+        "frameworkAssemblies": [
+          "System.Net.Http",
+          "System.Runtime.Serialization"
+        ],
+        "compile": {
+          "net46/SimpleIdentityServer.Client.dll": {}
+        },
+        "runtime": {
+          "net46/SimpleIdentityServer.Client.dll": {}
+        }
+      },
+      "SimpleIdentityServer.Core.Common/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.6",
+        "dependencies": {
+          "Newtonsoft.Json": "8.0.4"
+        },
+        "frameworkAssemblies": [
+          "System.Runtime",
+          "System.Runtime.Serialization",
+          "System.Web.Extensions",
+          "System.Xml"
+        ],
+        "compile": {
+          "net46/SimpleIdentityServer.Core.Common.dll": {}
+        },
+        "runtime": {
+          "net46/SimpleIdentityServer.Core.Common.dll": {}
+        }
+      },
       "SimpleIdentityServer.Oauth2Instrospection.Authentication/1.0.0": {
         "type": "project",
         "framework": ".NETFramework,Version=v4.6",
@@ -6070,6 +6142,7 @@
           "Microsoft.AspNetCore.WebUtilities": "1.0.0",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
           "Newtonsoft.Json": "8.0.4",
+          "SimpleIdentityServer.Client": "1.0.0",
           "System.IO.Compression": "4.0.0"
         },
         "frameworkAssemblies": [
@@ -12330,6 +12403,16 @@
       "type": "project",
       "path": "../SimpleIdentityServer.Authentication.Common/project.json",
       "msbuildProject": "../SimpleIdentityServer.Authentication.Common/SimpleIdentityServer.Authentication.Common.xproj"
+    },
+    "SimpleIdentityServer.Client/1.0.0": {
+      "type": "project",
+      "path": "../SimpleIdentityServer.Client/project.json",
+      "msbuildProject": "../SimpleIdentityServer.Client/SimpleIdentityServer.Client.xproj"
+    },
+    "SimpleIdentityServer.Core.Common/1.0.0": {
+      "type": "project",
+      "path": "../SimpleIdentityServer.Core.Common/project.json",
+      "msbuildProject": "../SimpleIdentityServer.Core.Common/SimpleIdentityServer.Core.Common.xproj"
     },
     "SimpleIdentityServer.Oauth2Instrospection.Authentication/1.0.0": {
       "type": "project",

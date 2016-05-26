@@ -26,5 +26,8 @@ namespace SimpleIdentityServer.Uma.Host.DTOs.Responses
 
         [DataMember(Name = Constants.ErrorResponseNames.ErrorDescription)]
         public string ErrorDescription { get; set; }
+
+        [DataMember(Name = Constants.ErrorResponseNames.ErrorDetails)]
+        public object ErrorDetails { get; set; }
     }
 }

@@ -69,7 +69,7 @@ namespace SimpleIdentityServer.Uma.Host
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            var introspectionUrl = Configuration["IntrospectionUrl"];
+            var introspectionUrl = Configuration["AuthorizationServerUrl"] + "/introspect";
             var clientId = Configuration["ClientId"];
             var clientSecret = Configuration["ClientSecret"];
             loggerFactory.AddConsole();
@@ -107,13 +107,16 @@ namespace SimpleIdentityServer.Uma.Host
 
         public void RegisterServices(IServiceCollection services)
         {
+            var authorizationServerUrl = Configuration["AuthorizationServerUrl"];
             var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
+            var parametersProvider = new ParametersProvider(authorizationServerUrl);
             services.AddTransient<IHostingProvider, HostingProvider>();
+            services.AddSingleton(parametersProvider);
             services.AddSimpleIdServerUmaCore(opt =>
             {
-                opt.AuthorizeOperation = Configuration["AuthorizationUrl"];
-                opt.RegisterOperation = Configuration["ClientRegister"];
-                opt.TokenOperation = Configuration["TokenUrl"];
+                opt.AuthorizeOperation = authorizationServerUrl + "/authorization";
+                opt.RegisterOperation = authorizationServerUrl + "/connect/register";
+                opt.TokenOperation = authorizationServerUrl + "/token";
                 opt.RptLifeTime = 3000;
                 opt.TicketLifeTime = 3000;
             });

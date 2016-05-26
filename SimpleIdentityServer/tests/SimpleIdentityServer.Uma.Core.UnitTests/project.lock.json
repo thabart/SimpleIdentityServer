@@ -1789,6 +1789,44 @@
           "lib/net35/xunit.runner.utility.desktop.dll": {}
         }
       },
+      "SimpleIdentityServer.Client/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.6",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection": "1.0.0",
+          "Newtonsoft.Json": "8.0.4",
+          "SimpleIdentityServer.Core.Common": "1.0.0"
+        },
+        "frameworkAssemblies": [
+          "System.Net.Http",
+          "System.Runtime.Serialization"
+        ],
+        "compile": {
+          "net46/SimpleIdentityServer.Client.dll": {}
+        },
+        "runtime": {
+          "net46/SimpleIdentityServer.Client.dll": {}
+        }
+      },
+      "SimpleIdentityServer.Core.Common/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.6",
+        "dependencies": {
+          "Newtonsoft.Json": "8.0.4"
+        },
+        "frameworkAssemblies": [
+          "System.Runtime",
+          "System.Runtime.Serialization",
+          "System.Web.Extensions",
+          "System.Xml"
+        ],
+        "compile": {
+          "net46/SimpleIdentityServer.Core.Common.dll": {}
+        },
+        "runtime": {
+          "net46/SimpleIdentityServer.Core.Common.dll": {}
+        }
+      },
       "SimpleIdentityServer.Uma.Core/1.0.0": {
         "type": "project",
         "framework": ".NETFramework,Version=v4.6",
@@ -1797,6 +1835,7 @@
           "Microsoft.AspNetCore.WebUtilities": "1.0.0",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
           "Newtonsoft.Json": "8.0.4",
+          "SimpleIdentityServer.Client": "1.0.0",
           "System.IO.Compression": "4.0.0"
         },
         "frameworkAssemblies": [
@@ -5507,6 +5546,16 @@
         "xunit.runner.utility.2.1.0.nupkg.sha512",
         "xunit.runner.utility.nuspec"
       ]
+    },
+    "SimpleIdentityServer.Client/1.0.0": {
+      "type": "project",
+      "path": "../../src/SimpleIdentityServer.Client/project.json",
+      "msbuildProject": "../../src/SimpleIdentityServer.Client/SimpleIdentityServer.Client.xproj"
+    },
+    "SimpleIdentityServer.Core.Common/1.0.0": {
+      "type": "project",
+      "path": "../../src/SimpleIdentityServer.Core.Common/project.json",
+      "msbuildProject": "../../src/SimpleIdentityServer.Core.Common/SimpleIdentityServer.Core.Common.xproj"
     },
     "SimpleIdentityServer.Uma.Core/1.0.0": {
       "type": "project",

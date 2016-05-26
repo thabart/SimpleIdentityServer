@@ -193,7 +193,10 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.Authorization.Actions
             _authorizationPolicyValidatorStub.Setup(a => a.IsAuthorized(It.IsAny<Ticket>(),
                 It.IsAny<string>(),
                 It.IsAny<IEnumerable<System.Security.Claims.Claim>>()))
-                .Returns(AuthorizationPolicyResultEnum.NotAuthorized);
+                .Returns(new AuthorizationPolicyResult
+                {
+                    Type = AuthorizationPolicyResultEnum.NotAuthorized
+                });
 
             // ACT
             var result = _getAuthorizationAction.Execute(getAuthorizationActionParameter, claims);
@@ -230,7 +233,10 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.Authorization.Actions
             _authorizationPolicyValidatorStub.Setup(a => a.IsAuthorized(It.IsAny<Ticket>(),
                 It.IsAny<string>(),
                 It.IsAny<IEnumerable<System.Security.Claims.Claim>>()))
-                .Returns(AuthorizationPolicyResultEnum.Authorized);
+                .Returns(new AuthorizationPolicyResult
+                {
+                    Type = AuthorizationPolicyResultEnum.Authorized
+                });
             _repositoryExceptionHandlerStub.Setup(r => r.HandleException(It.IsAny<string>(), It.IsAny<Func<bool>>()))
                 .Returns(true);
 

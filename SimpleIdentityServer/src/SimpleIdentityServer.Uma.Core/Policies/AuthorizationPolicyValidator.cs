@@ -21,13 +21,12 @@ using SimpleIdentityServer.Uma.Core.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 
 namespace SimpleIdentityServer.Uma.Core.Policies
 {
     public interface IAuthorizationPolicyValidator
     {
-        AuthorizationPolicyResultEnum IsAuthorized(Ticket validTicket,
+        AuthorizationPolicyResult IsAuthorized(Ticket validTicket,
                string clientId,
                IEnumerable<System.Security.Claims.Claim> claims);
     }
@@ -56,7 +55,7 @@ namespace SimpleIdentityServer.Uma.Core.Policies
 
         #region Public methods
 
-        public AuthorizationPolicyResultEnum IsAuthorized(Ticket validTicket,
+        public AuthorizationPolicyResult IsAuthorized(Ticket validTicket,
             string clientId,
             IEnumerable<System.Security.Claims.Claim> claims)
         {
@@ -85,10 +84,13 @@ namespace SimpleIdentityServer.Uma.Core.Policies
             var authorizationPolicy = _policyRepository.GetPolicy(resourceSet.AuthorizationPolicyId);
             if (authorizationPolicy == null)
             {
-                return AuthorizationPolicyResultEnum.Authorized;
+                return new AuthorizationPolicyResult
+                {
+                    Type = AuthorizationPolicyResultEnum.Authorized
+                };
             }
 
-            return _basicAuthorizationPolicy.Execute(validTicket, authorizationPolicy);
+            return _basicAuthorizationPolicy.Execute(validTicket, authorizationPolicy, null);
         }
 
         #endregion

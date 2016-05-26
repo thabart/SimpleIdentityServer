@@ -18,6 +18,7 @@ using Moq;
 using SimpleIdentityServer.Uma.Core.Errors;
 using SimpleIdentityServer.Uma.Core.Exceptions;
 using SimpleIdentityServer.Uma.Core.Models;
+using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Policies;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using System;
@@ -101,7 +102,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             var result = _authorizationPolicyValidator.IsAuthorized(ticket, "client_id", claims);
 
             // ASSERT
-            Assert.True(result == AuthorizationPolicyResultEnum.Authorized);
+            Assert.True(result.Type == AuthorizationPolicyResultEnum.Authorized);
         }
 
         [Fact]
@@ -123,14 +124,17 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                 .Returns(resourceSet);
             _policyRepositoryStub.Setup(p => p.GetPolicy(It.IsAny<string>()))
                 .Returns(policy);
-            _basicAuthorizationPolicyStub.Setup(b => b.Execute(It.IsAny<Ticket>(), It.IsAny<Policy>()))
-                .Returns(AuthorizationPolicyResultEnum.Authorized);
+            _basicAuthorizationPolicyStub.Setup(b => b.Execute(It.IsAny<Ticket>(), It.IsAny<Policy>(), It.IsAny<List<ClaimTokenParameter>>()))
+                .Returns(new AuthorizationPolicyResult
+                {
+                    Type = AuthorizationPolicyResultEnum.Authorized
+                });
 
             // ACT
             var result = _authorizationPolicyValidator.IsAuthorized(ticket, "client_id", claims);
 
             // ASSERT
-            Assert.True(result == AuthorizationPolicyResultEnum.Authorized);
+            Assert.True(result.Type == AuthorizationPolicyResultEnum.Authorized);
         }
 
         #endregion

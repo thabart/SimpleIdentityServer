@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using Domain = SimpleIdentityServer.Uma.Core.Models;
@@ -83,6 +84,12 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
                 resourceSetIds = policy.ResourceSets.Select(p => p.Id).ToList();
             }
 
+            var claims = new List<Domain.Claim>();
+            if (!string.IsNullOrWhiteSpace(policy.Claims))
+            {
+                claims = JsonConvert.DeserializeObject<List<Domain.Claim>>(policy.Claims);
+            }
+
             return new Domain.Policy
             {
                 Id = policy.Id,
@@ -90,7 +97,8 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
                 IsResourceOwnerConsentNeeded = policy.IsResourceOwnerConsentNeeded,
                 ClientIdsAllowed = GetList(policy.ClientIdsAllowed),
                 Scopes = GetList(policy.Scopes),
-                ResourceSetIds = resourceSetIds
+                ResourceSetIds = resourceSetIds,
+                Claims = claims
             };
         }
 
@@ -149,13 +157,21 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
 
         public static Model.Policy ToModel(this Domain.Policy policy)
         {
+            var serializedClaims = string.Empty;
+            if (policy.Claims != null &&
+                policy.Claims.Any())
+            {
+                serializedClaims = JsonConvert.SerializeObject(policy.Claims);
+            }
+
             return new Model.Policy
             {
                 Id = policy.Id,
                 Script = policy.Script,
                 IsResourceOwnerConsentNeeded = policy.IsResourceOwnerConsentNeeded,
                 ClientIdsAllowed = GetConcatenatedList(policy.ClientIdsAllowed),
-                Scopes = GetConcatenatedList(policy.Scopes)
+                Scopes = GetConcatenatedList(policy.Scopes),
+                Claims = serializedClaims
             };
         }
 

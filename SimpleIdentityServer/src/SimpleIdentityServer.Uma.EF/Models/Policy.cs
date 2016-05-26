@@ -30,6 +30,8 @@ namespace SimpleIdentityServer.Uma.EF.Models
 
         public string Script { get; set; }
 
+        public string Claims { get; set; }
+
         public virtual ICollection<ResourceSet> ResourceSets { get; set; }
     }
 }

@@ -41,6 +41,21 @@ namespace SimpleIdentityServer.Uma.Core
             public const string ClientIdsAllowed = "allowed_clients";
         }
 
+        public static class ErrorDetailNames
+        {
+            public const string RequestingPartyClaims = "requesting_party_claims";
+
+            public const string RequiredClaims = "required_claims";
+
+            public const string ClaimName = "name";
+
+            public const string ClaimFriendlyName = "friendly_name";
+
+            public const string ClaimIssuer = "issuer";
+
+            public const string RedirectUser = "redirect_user";
+        }
+
         #endregion
 
         public static class LanguageCodes

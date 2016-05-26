@@ -33,31 +33,19 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
     {
         private readonly IAuthorizationActions _authorizationActions;
 
-        private static Dictionary<AuthorizationPolicyResultEnum, ErrorResponse> _mappingResultWithError = new Dictionary<AuthorizationPolicyResultEnum, ErrorResponse>()
+        private static Dictionary<AuthorizationPolicyResultEnum, Func<Core.Responses.AuthorizationResponse, ErrorResponse>> _mappingResultWithError = new Dictionary<AuthorizationPolicyResultEnum, Func<Core.Responses.AuthorizationResponse, ErrorResponse>>()
         {
             {
                 AuthorizationPolicyResultEnum.NeedInfo,
-                new ErrorResponse
-                {
-                    Error = ErrorCodes.NeedInfo,
-                    ErrorDescription = ErrorDescriptions.TheAuthorizationProcessNeedsMoreInformation
-                }
+                GetNeedInfo
             },
             {
                 AuthorizationPolicyResultEnum.NotAuthorized,
-                new ErrorResponse
-                {
-                    Error = ErrorCodes.NotAuthorized,
-                    ErrorDescription = ErrorDescriptions.TheClientIsNotAuthorized
-                }
+                GetNotAuthorized
             },
             {
                 AuthorizationPolicyResultEnum.RequestSubmitted,
-                new ErrorResponse
-                {
-                    Error = ErrorCodes.RequestSubmitted,
-                    ErrorDescription = ErrorDescriptions.TheResourceOwnerDidntGiveHisConsent
-                }
+                GetRequestSubmitted
             }
         };
         
@@ -108,6 +96,34 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             return new ObjectResult(error)
             {
                 StatusCode = (int)HttpStatusCode.Forbidden
+            };
+        }
+
+        private static ErrorResponse GetNeedInfo(Core.Responses.AuthorizationResponse authorizationResponse)
+        {
+            return new ErrorResponse
+            {
+                Error = ErrorCodes.NeedInfo,
+                ErrorDescription = ErrorDescriptions.TheAuthorizationProcessNeedsMoreInformation,
+                ErrorDetails = authorizationResponse.ErrorDetails
+            };
+        }
+
+        private static ErrorResponse GetNotAuthorized(Core.Responses.AuthorizationResponse authorizationResponse)
+        {
+            return new ErrorResponse
+            {
+                Error = ErrorCodes.NotAuthorized,
+                ErrorDescription = ErrorDescriptions.TheClientIsNotAuthorized
+            };
+        }
+
+        private static ErrorResponse GetRequestSubmitted(Core.Responses.AuthorizationResponse authorizationResponse)
+        {
+            return new ErrorResponse
+            {
+                Error = ErrorCodes.RequestSubmitted,
+                ErrorDescription = ErrorDescriptions.TheResourceOwnerDidntGiveHisConsent
             };
         }
 

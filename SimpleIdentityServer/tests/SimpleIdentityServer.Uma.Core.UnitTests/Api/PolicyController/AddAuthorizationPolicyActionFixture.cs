@@ -64,81 +64,6 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddPolicyParameterNames.ResourceSetIds));
         }
 
-        /*
-        [Fact]
-        public void When_Passing_EmptyScript_For_Custom_Policy_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            const string resourceSetId = "resource_set_id";
-            var addPolicyParameter = new AddPolicyParameter
-            {
-                ResourceSetIds = new List<string>
-                {
-                    resourceSetId
-                }
-            };
-            var resourceSet = new ResourceSet
-            {
-                Id = resourceSetId
-            };
-            _repositoryExceptionHelper.Setup(r => r.HandleException(string.Format(ErrorDescriptions.TheResourceSetCannotBeRetrieved, resourceSetId), It.IsAny<Func<ResourceSet>>()))
-                .Returns(resourceSet);
-
-            // ACT & ASSERTS
-            var exception = Assert.Throws<BaseUmaException>(() => _addAuthorizationPolicyAction.Execute(addPolicyParameter));
-            Assert.NotNull(exception);
-            Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
-            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddPolicyParameterNames.Script));
-        }
-
-        [Fact]
-        public void When_Passing_No_Scopes_For_Generic_Policy_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            const string resourceSetId = "resource_set_id";
-            var addPolicyParameter = new AddPolicyParameter
-            {
-                ResourceSetIds = new List<string>
-                {
-                    resourceSetId
-                }
-            };
-
-            // ACT & ASSERTS
-            var exception = Assert.Throws<BaseUmaException>(() => _addAuthorizationPolicyAction.Execute(addPolicyParameter));
-            Assert.NotNull(exception);
-            Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
-            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddPolicyParameterNames.Scopes));
-        }
-
-        [Fact]
-        public void When_Passing_No_ClientIds_For_Generic_Policy_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            const string resourceSetId = "resource_set_id";
-            var addPolicyParameter = new AddPolicyParameter
-            {
-                ResourceSetIds = new List<string>
-                {
-                    resourceSetId
-                },
-                Scopes = new List<string>
-                {
-                    "invalid_scope"
-                }
-            };
-
-            // ACT & ASSERTS
-            var exception = Assert.Throws<BaseUmaException>(() => _addAuthorizationPolicyAction.Execute(addPolicyParameter));
-            Assert.NotNull(exception);
-            Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
-            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddPolicyParameterNames.ClientIdsAllowed));
-        }        
-        */
-
         [Fact]
         public void When_ResourceSetId_Doesnt_Exist_Then_Exception_Is_Thrown()
         {
@@ -171,7 +96,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
         }
 
         [Fact]
-        public void When_Resource_Set_Is_Not_Valid_Then_Exception_Is_Thrown()
+        public void When_Scope_Is_Not_Valid_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -231,6 +156,14 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
                 ClientIdsAllowed = new List<string>
                 {
                     "client_id"
+                },
+                Claims = new List<AddClaimParameter>
+                {
+                    new AddClaimParameter
+                    {
+                        Type = "type",
+                        Value = "value"
+                    }
                 }
             };
             var resourceSet = new ResourceSet
