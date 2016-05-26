@@ -3,10 +3,10 @@
   "version": 2,
   "targets": {
     ".NETFramework,Version=v4.6": {
-      "Microsoft.Extensions.DependencyInjection/1.0.0-rc3-21052": {
+      "Microsoft.Extensions.DependencyInjection/1.0.0-rc2-final": {
         "type": "package",
         "dependencies": {
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc3-21052",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc2-final",
           "System.Collections": "4.0.11-rc2-24027",
           "System.Collections.Concurrent": "4.0.12-rc2-24027",
           "System.Runtime.Extensions": "4.1.0-rc2-24027",
@@ -20,7 +20,7 @@
           "lib/netstandard1.1/Microsoft.Extensions.DependencyInjection.dll": {}
         }
       },
-      "Microsoft.Extensions.DependencyInjection.Abstractions/1.0.0-rc3-21052": {
+      "Microsoft.Extensions.DependencyInjection.Abstractions/1.0.0-rc2-final": {
         "type": "package",
         "dependencies": {
           "System.ComponentModel": "4.0.1-rc2-24027",
@@ -203,10 +203,10 @@
           "lib/netstandard1.3/Microsoft.CSharp.dll": {}
         }
       },
-      "Microsoft.Extensions.DependencyInjection/1.0.0-rc3-21052": {
+      "Microsoft.Extensions.DependencyInjection/1.0.0-rc2-final": {
         "type": "package",
         "dependencies": {
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc3-21052",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc2-final",
           "System.Collections": "4.0.11-rc2-24027",
           "System.Collections.Concurrent": "4.0.12-rc2-24027",
           "System.Runtime.Extensions": "4.1.0-rc2-24027",
@@ -220,7 +220,7 @@
           "lib/netstandard1.1/Microsoft.Extensions.DependencyInjection.dll": {}
         }
       },
-      "Microsoft.Extensions.DependencyInjection.Abstractions/1.0.0-rc3-21052": {
+      "Microsoft.Extensions.DependencyInjection.Abstractions/1.0.0-rc2-final": {
         "type": "package",
         "dependencies": {
           "System.ComponentModel": "4.0.1-rc2-24027",
@@ -1313,22 +1313,26 @@
         "ref/xamarinwatchos10/_._"
       ]
     },
-    "Microsoft.Extensions.DependencyInjection/1.0.0-rc3-21052": {
-      "sha512": "aMjqxXrgvqDkOvYb4svSfzsoh3IZdVTwxmV8xWKQqF33u2vAepHUwI4sxpbVXTRcJFFAyqrL4Z+qXkCU4prtRg==",
+    "Microsoft.Extensions.DependencyInjection/1.0.0-rc2-final": {
+      "sha512": "TreRt5BDwivHosFbDpfaJ9CArhyZUHWzv9dlqZx2e0+PSbZznXRBg0QWteh+Y5gEPmJy6hANuz4ZeVK52nLKXA==",
       "type": "package",
       "files": [
-        "Microsoft.Extensions.DependencyInjection.1.0.0-rc3-21052.nupkg.sha512",
+        "Microsoft.Extensions.DependencyInjection.1.0.0-rc2-final.nupkg.sha512",
         "Microsoft.Extensions.DependencyInjection.nuspec",
+        "lib/netcore50/Microsoft.Extensions.DependencyInjection.dll",
+        "lib/netcore50/Microsoft.Extensions.DependencyInjection.xml",
         "lib/netstandard1.1/Microsoft.Extensions.DependencyInjection.dll",
         "lib/netstandard1.1/Microsoft.Extensions.DependencyInjection.xml"
       ]
     },
-    "Microsoft.Extensions.DependencyInjection.Abstractions/1.0.0-rc3-21052": {
-      "sha512": "qAZP/kpviMBBrIG7gX+ANp6pZP7rU+buHUUrx2IesKBPIK5JxBQTVJAA2PkJM16lEMsqek1ujCOfY4+C4TyH+w==",
+    "Microsoft.Extensions.DependencyInjection.Abstractions/1.0.0-rc2-final": {
+      "sha512": "KRvRif+xioZSjml/O/Y6W/fksieNZ/hp+Bf/4Nau85gQleG8UJl+etaJXj18SWu8bQ3ApD4ikzq6qKXLlO8AMg==",
       "type": "package",
       "files": [
-        "Microsoft.Extensions.DependencyInjection.Abstractions.1.0.0-rc3-21052.nupkg.sha512",
+        "Microsoft.Extensions.DependencyInjection.Abstractions.1.0.0-rc2-final.nupkg.sha512",
         "Microsoft.Extensions.DependencyInjection.Abstractions.nuspec",
+        "lib/netcore50/Microsoft.Extensions.DependencyInjection.Abstractions.dll",
+        "lib/netcore50/Microsoft.Extensions.DependencyInjection.Abstractions.xml",
         "lib/netstandard1.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll",
         "lib/netstandard1.0/Microsoft.Extensions.DependencyInjection.Abstractions.xml"
       ]

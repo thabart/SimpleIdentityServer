@@ -2,31 +2,26 @@
   "version": "1.0.0-*",
   "description": "SimpleIdentityServer.Client.Test",
   "authors": [ "" ],
-  "tags": [ "" ],
-  "projectUrl": "",
-  "licenseUrl": "",
-
-  "compilationOptions": {
+  "packOptions": {
+    "tags": [ "" ],
+    "licenseUrl": "",
+    "projectUrl": ""
+  },
+  "buildOptions": {
     "emitEntryPoint": true
   },
-
-  "tooling": {
-    "defaultNamespace": "SimpleIdentityServer.Client.Test"
-  },
-
   "dependencies": {
-    "SimpleIdentityServer.Client": ""
+    "SimpleIdentityServer.Client": "*"
   },
-
-  "commands": {
-    "run": "SimpleIdentityServer.Client.Test"
-  },
-
   "frameworks": {
-    "dnx451": { },
-    "dnxcore50": {
+    "net46": { },
+    "netcoreapp1.0": {
+      "imports": "dnxcore50",
       "dependencies": {
-        "System.Console": "4.0.0-beta-23516"
+        "Microsoft.NETCore.App": {
+          "type": "platform",
+          "version": "1.0.0-*"
+        }
       }
     }
   }
