@@ -122,14 +122,20 @@ namespace SimpleIdentityServer.Uma.Core.Policies
         private AuthorizationPolicyResult GetNeedInfoResult(List<Claim> claims)
         {
             var requestingPartyClaims = new Dictionary<string, object>();
-            var requiredClaims = new List<List<KeyValuePair<string, string>>>();
+            var requiredClaims = new List<Dictionary<string, string>>();
             foreach (var claim in claims)
             {
-                requiredClaims.Add(new List<KeyValuePair<string, string>>
+                requiredClaims.Add(new Dictionary<string, string>
                 {
-                    new KeyValuePair<string, string>(Constants.ErrorDetailNames.ClaimName, claim.Type),
-                    new KeyValuePair<string, string>(Constants.ErrorDetailNames.ClaimFriendlyName, claim.Type),
-                    new KeyValuePair<string, string>(Constants.ErrorDetailNames.ClaimIssuer, _parametersProvider.GetOpenIdConfigurationUrl())
+                    {
+                        Constants.ErrorDetailNames.ClaimName, claim.Type
+                    },
+                    {
+                        Constants.ErrorDetailNames.ClaimFriendlyName, claim.Type
+                    },
+                    {
+                        Constants.ErrorDetailNames.ClaimIssuer, _parametersProvider.GetOpenIdConfigurationUrl()
+                    }
                 });
             }
 
@@ -138,7 +144,13 @@ namespace SimpleIdentityServer.Uma.Core.Policies
             return new AuthorizationPolicyResult
             {
                 Type = AuthorizationPolicyResultEnum.NeedInfo,
-                ErrorDetails = new KeyValuePair<string, object>(Constants.ErrorDetailNames.RequestingPartyClaims, requestingPartyClaims)
+                ErrorDetails = new Dictionary<string, object>
+                {
+                    {
+                        Constants.ErrorDetailNames.RequestingPartyClaims,
+                        requestingPartyClaims
+                    }
+                }
             };
         }
 

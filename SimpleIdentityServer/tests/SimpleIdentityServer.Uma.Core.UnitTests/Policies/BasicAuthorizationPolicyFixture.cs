@@ -15,11 +15,14 @@
 #endregion
 
 using Moq;
+using Newtonsoft.Json;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Uma.Core.Models;
+using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Policies;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
@@ -114,6 +117,78 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
 
             // ASSERT
             Assert.True(result.Type == AuthorizationPolicyResultEnum.NotAuthorized);
+        }
+
+        [Fact]
+        public void When_There_Is_No_Access_Token_Passed_Then_NeedInfo_Is_Returned()
+        {
+            // ARRANGE
+            const string configurationUrl = "http://localhost/configuration";
+            InitializeFakeObjects();
+            var ticket = new Ticket
+            {
+                ClientId = "client_id",
+                Scopes = new List<string>
+                {
+                    "read",
+                    "create",
+                    "update"
+                }
+            };
+
+            var authorizationPolicy = new Policy
+            {
+                ClientIdsAllowed = new List<string>
+                {
+                    "client_id"
+                },
+                Scopes = new List<string>
+                {
+                    "read",
+                    "create",
+                    "update"
+                },
+                Claims = new List<Claim>
+                {
+                    new Claim
+                    {
+                        Type = "name"
+                    },
+                    new Claim
+                    {
+                        Type = "email"
+                    }
+                }
+            };
+            var claimTokenParameters = new List<ClaimTokenParameter>
+            {
+                new ClaimTokenParameter
+                {
+                    Format = "bad_format",
+                    Token = "token"
+                }
+            };
+            _parametersProviderStub.Setup(p => p.GetOpenIdConfigurationUrl())
+                .Returns(configurationUrl);
+
+            // ACT
+            var result = _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameters);
+
+            // ASSERT
+            Assert.True(result.Type == AuthorizationPolicyResultEnum.NeedInfo);
+            var errorDetails = result.ErrorDetails as Dictionary<string, object>;
+            Assert.NotNull(errorDetails);
+            Assert.True(errorDetails.ContainsKey(Constants.ErrorDetailNames.RequestingPartyClaims));
+            var requestingPartyClaims = errorDetails[Constants.ErrorDetailNames.RequestingPartyClaims] as Dictionary<string, object>;
+            Assert.NotNull(requestingPartyClaims);
+            Assert.True(requestingPartyClaims.ContainsKey(Constants.ErrorDetailNames.RequiredClaims));
+            Assert.True(requestingPartyClaims.ContainsKey(Constants.ErrorDetailNames.RedirectUser));
+            var requiredClaims = requestingPartyClaims[Constants.ErrorDetailNames.RequiredClaims] as List<Dictionary<string, string>>;
+            Assert.NotNull(requiredClaims);
+            Assert.True(requiredClaims.Any(r => r.Any(kv => kv.Key == Constants.ErrorDetailNames.ClaimName && kv.Value == "name")));
+            Assert.True(requiredClaims.Any(r => r.Any(kv => kv.Key == Constants.ErrorDetailNames.ClaimFriendlyName && kv.Value == "name")));
+            Assert.True(requiredClaims.Any(r => r.Any(kv => kv.Key == Constants.ErrorDetailNames.ClaimName && kv.Value == "email")));
+            Assert.True(requiredClaims.Any(r => r.Any(kv => kv.Key == Constants.ErrorDetailNames.ClaimFriendlyName && kv.Value == "email")));
         }
 
         [Fact]
