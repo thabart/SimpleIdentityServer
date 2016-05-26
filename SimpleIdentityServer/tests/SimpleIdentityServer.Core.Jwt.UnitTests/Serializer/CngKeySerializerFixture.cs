@@ -14,8 +14,6 @@
 // limitations under the License.
 #endregion
 
-#if NET46
-
 using SimpleIdentityServer.Core.Jwt.Serializer;
 using System;
 using System.Security.Cryptography;
@@ -196,4 +194,3 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Serializer
         }
     }
 }
-#endif

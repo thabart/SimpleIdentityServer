@@ -965,17 +965,11 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             var client = FakeOpenIdAssets.GetClients().First();
             client.IdTokenEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5;
             var serializedRsa = string.Empty;
-#if NET46
             using (var provider = new RSACryptoServiceProvider())
             {
                 serializedRsa = provider.ToXmlString(true);
             };
-#else
-            using (var provider = new RSAOpenSsl())
-            {
-                serializedRsa = provider.ToXmlString(true);
-            };
-#endif
+
             var jsonWebKey = new JsonWebKey
             {
                 Alg = AllAlg.RSA1_5,
@@ -1015,17 +1009,10 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             var client = FakeOpenIdAssets.GetClients().First();
             client.IdTokenEncryptedResponseAlg = Jwt.Constants.JwsAlgNames.RS256;
             var serializedRsa = string.Empty;
-#if NET46
             using (var provider = new RSACryptoServiceProvider())
             {
                 serializedRsa = provider.ToXmlString(true);
             };
-#else            
-            using (var provider = new RSAOpenSsl())
-            {
-                serializedRsa = provider.ToXmlString(true);
-            };
-#endif
             var jsonWebKey = new JsonWebKey
             {
                 Alg = AllAlg.RS256,
@@ -1063,11 +1050,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             var clientValidator = new ClientValidator(_clientRepositoryStub.Object);
             var claimsMapping = new ClaimsMapping();
             var parameterParserHelper = new ParameterParserHelper(_scopeRepositoryStub.Object);
-#if NET46
             var createJwsSignature = new CreateJwsSignature(new CngKeySerializer());
-#else
-            var createJwsSignature = new CreateJwsSignature();
-#endif
             var aesEncryptionHelper = new AesEncryptionHelper();
             var jweHelper = new JweHelper(aesEncryptionHelper);
             var jwsGenerator = new JwsGenerator(createJwsSignature);

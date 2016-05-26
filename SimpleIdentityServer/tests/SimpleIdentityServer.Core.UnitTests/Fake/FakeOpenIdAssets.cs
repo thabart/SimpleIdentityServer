@@ -297,17 +297,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Fake
         public static List<JsonWebKey> GetJsonWebKeys()
         {
             var serializedRsa = string.Empty;
-#if NET46
             using (var provider = new RSACryptoServiceProvider())
             {
                 serializedRsa = provider.ToXmlString(true);
             }
-#else
-            using (var provider = new RSAOpenSsl())
-            {
-                serializedRsa = provider.ToXmlString(true);
-            }
-#endif
 
             return new List<JsonWebKey>
             {

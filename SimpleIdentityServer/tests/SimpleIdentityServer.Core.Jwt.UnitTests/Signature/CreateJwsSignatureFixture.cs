@@ -27,9 +27,7 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
 {
     public sealed class CreateJwsSignatureFixture
     {
-#if NET46
         private Mock<ICngKeySerializer> _cngKeySerializer;
-#endif
 
         private ICreateJwsSignature _createJwsSignature;
 
@@ -81,17 +79,10 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
             const string messageToBeSigned = "message_to_be_signed";
             InitializeFakeObjects();
             string serializedKeysXml;
-#if NET46
             using (var rsa = new RSACryptoServiceProvider())
             {
                 serializedKeysXml = rsa.ToXmlString(true);
             };
-#else
-            using (var rsa = new RSAOpenSsl())
-            {
-                serializedKeysXml = rsa.ToXmlString(true);
-            };
-#endif
 
             // ACT
             var signedMessage = _createJwsSignature.SignWithRsa(
@@ -141,17 +132,11 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
             const string messageToBeSigned = "message_to_be_signed";
             InitializeFakeObjects();
             string serializedKeysXml;
-#if NET46
             using (var rsa = new RSACryptoServiceProvider())
             {
                 serializedKeysXml = rsa.ToXmlString(true);
             }
-#else
-            using (var provider = new RSAOpenSsl())
-            {
-                serializedKeysXml = provider.ToXmlString(true);
-            };
-#endif
+
             var signedMessage = _createJwsSignature.SignWithRsa(JwsAlg.RS256,
                 serializedKeysXml,
                 messageToBeSigned);
@@ -171,7 +156,6 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
 
         #endregion
 
-#if NET46
 
         #region Elliptic curve algorithm
 
@@ -208,19 +192,11 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
 
         #endregion
 
-#endif
 
-#if NET46
         private void InitializeFakeObjects()
         {
             _cngKeySerializer = new Mock<ICngKeySerializer>();
             _createJwsSignature = new CreateJwsSignature(_cngKeySerializer.Object);
         }
-#else
-        private void InitializeFakeObjects()
-        {
-            _createJwsSignature = new CreateJwsSignature();
-        }
-#endif
     }
 }

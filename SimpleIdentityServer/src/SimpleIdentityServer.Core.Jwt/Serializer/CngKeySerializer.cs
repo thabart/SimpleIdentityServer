@@ -14,17 +14,14 @@
 // limitations under the License.
 #endregion
 
-#if NET46
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Xml.Serialization;
-#endif
 
 namespace SimpleIdentityServer.Core.Jwt.Serializer
 {
-#if NET46
     public interface ICngKeySerializer
     {
         string SerializeCngKeyWithPrivateKey(CngKey toBeSerialized);
@@ -38,7 +35,7 @@ namespace SimpleIdentityServer.Core.Jwt.Serializer
 
     public class CngKeySerializer : ICngKeySerializer
     {
-#region Fields
+        #region Fields
 
         private readonly Dictionary<int, int> MappingSizeAndMagicNumberForPrivateKey = new Dictionary<int, int>
         {
@@ -220,7 +217,6 @@ namespace SimpleIdentityServer.Core.Jwt.Serializer
             }
         }
 
-#endregion
+        #endregion
     }
-#endif
 }

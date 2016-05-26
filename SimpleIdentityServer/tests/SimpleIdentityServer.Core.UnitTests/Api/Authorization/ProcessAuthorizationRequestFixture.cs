@@ -29,7 +29,7 @@ using SimpleIdentityServer.Core.Jwt.Serializer;
 using Xunit;
 using JwsAlg = SimpleIdentityServer.Core.Jwt.JwsAlg;
 
-#if DNX451
+/*
 namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 {
     public sealed class ProcessAuthorizationRequestFixture : BaseFixture
@@ -670,12 +670,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             var aesEncryptionHelper = new AesEncryptionHelper();
             var jweHelper = new JweHelper(aesEncryptionHelper);
             var jweParser = new JweParser(jweHelper);
-#if DNXCORE50
-            var createJwsSignature = new CreateJwsSignature();
-#endif
-#if DNX451
             var createJwsSignature = new CreateJwsSignature(new CngKeySerializer());
-#endif
             var jwsParser = new JwsParser(createJwsSignature);
             var jsonWebKeyConverter = new JsonWebKeyConverter();
             var httpClientFactory = new HttpClientFactory();
@@ -711,4 +706,4 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
         }
     }
 }
-#endif
+*/

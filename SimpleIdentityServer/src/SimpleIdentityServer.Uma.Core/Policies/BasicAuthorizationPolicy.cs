@@ -37,7 +37,7 @@ namespace SimpleIdentityServer.Uma.Core.Policies
 
         private readonly IIdentityServerClientFactory _identityServerClientFactory;
 
-        private const string AccessTokenType = "http://openid.net/specs/openid-connect-core-1_0.html#HybridAccessToken2";
+        private const string IdTokenType = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken";
 
         #region Constructor
 
@@ -93,7 +93,7 @@ namespace SimpleIdentityServer.Uma.Core.Policies
                 authorizationPolicy.Claims.Any())
             {
                 if (claimTokenParameters == null ||
-                    !claimTokenParameters.Any(c => c.Format == AccessTokenType))
+                    !claimTokenParameters.Any(c => c.Format == IdTokenType))
                 {
                     return GetNeedInfoResult(authorizationPolicy.Claims);
                 }
