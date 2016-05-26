@@ -97,14 +97,16 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
                         combinedProtectedHeaderAndPayLoad,
                         signature);
                     break;
+#if NET46
                 case KeyType.EC:
                     signatureIsCorrect = _createJwsSignature.VerifyWithEllipticCurve(
                         jsonWebKey.SerializedKey,
                         combinedProtectedHeaderAndPayLoad,
                         signature);
                     break;
+#endif
             }
-            
+
             if (!signatureIsCorrect)
             {
                 return null;

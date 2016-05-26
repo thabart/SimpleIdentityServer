@@ -425,10 +425,17 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
             if (!context.JsonWebKeys.Any())
             {
                 var serializedRsa = string.Empty;
+#if NET46
                 using (var provider = new RSACryptoServiceProvider())
                 {
                     serializedRsa = provider.ToXmlString(true);
                 }
+#else
+                using (var rsa = new RSAOpenSsl())
+                {
+                    serializedRsa = rsa.ToXmlString(true);
+                }
+#endif
 
                 context.JsonWebKeys.AddRange(new[]
                 {

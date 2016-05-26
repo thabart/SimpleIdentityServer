@@ -14,6 +14,8 @@
 // limitations under the License.
 #endregion
 
+#if NET46
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -65,7 +67,7 @@ namespace SimpleIdentityServer.Core.Jwt.Serializer
 
 #endregion
 
-#region Public methods
+        #region Public methods
 
         public string SerializeCngKeyWithPrivateKey(CngKey toBeSerialized)
         {
@@ -220,3 +222,4 @@ namespace SimpleIdentityServer.Core.Jwt.Serializer
         #endregion
     }
 }
+#endif

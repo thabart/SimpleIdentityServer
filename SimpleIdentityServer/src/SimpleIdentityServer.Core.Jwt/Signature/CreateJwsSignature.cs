@@ -37,16 +37,21 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
             string input,
             byte[] signature);
 
+#if NET46
+
         string SignWithEllipseCurve(string serializedKeys,
            string combinedJwsNotSigned);
 
          bool VerifyWithEllipticCurve(string serializedKeys,
             string message,
             byte[] signature);
+
+#endif
     }
 
     public class CreateJwsSignature : ICreateJwsSignature
-    {        
+    {
+#if NET46
         private readonly Dictionary<JwsAlg, string> _mappingJwsAlgorithmToRsaHashingAlgorithms = new Dictionary<JwsAlg, string>
         {
             {
@@ -59,13 +64,33 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
                 JwsAlg.RS512, "SHA512"
             }
         };
-        
+#else
+        private readonly Dictionary<JwsAlg, HashAlgorithmName> _mappingJwsAlgorithmToRsaHashingAlgorithms = new Dictionary<JwsAlg, HashAlgorithmName>
+        {
+            {
+                JwsAlg.RS256, HashAlgorithmName.SHA256
+            },
+            {
+                JwsAlg.RS384, HashAlgorithmName.SHA384
+            },
+            {
+                JwsAlg.RS512, HashAlgorithmName.SHA512
+            }
+        };
+#endif
+
+#if NET46        
         private readonly ICngKeySerializer _cngKeySerializer;
 
         public CreateJwsSignature(ICngKeySerializer cngKeySerializer)
         {
             _cngKeySerializer = cngKeySerializer;
         }
+#else
+        public CreateJwsSignature()
+        {
+        }
+#endif
 
         #region Rsa agorithm
 
@@ -85,6 +110,8 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
             }
 
             var hashMethod = _mappingJwsAlgorithmToRsaHashingAlgorithms[algorithm];
+
+#if NET46
             using (var rsa = new RSACryptoServiceProvider())
             {
                 var bytesToBeSigned = ASCIIEncoding.ASCII.GetBytes(combinedJwsNotSigned);
@@ -92,6 +119,15 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
                 var byteToBeConverted = rsa.SignData(bytesToBeSigned, hashMethod);
                 return byteToBeConverted.Base64EncodeBytes();
             }
+#else
+            using (var rsa = new RSAOpenSsl())
+            {
+                var bytesToBeSigned = ASCIIEncoding.ASCII.GetBytes(combinedJwsNotSigned);
+                rsa.FromXmlString(serializedKeys);
+                var byteToBeConverted = rsa.SignData(bytesToBeSigned, 0, bytesToBeSigned.Length, hashMethod, RSASignaturePadding.Pkcs1);
+                return byteToBeConverted.Base64EncodeBytes();
+            }
+#endif
         }
 
         public bool VerifyWithRsa(
@@ -112,17 +148,27 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
 
             var plainBytes = ASCIIEncoding.ASCII.GetBytes(input);
             var hashMethod = _mappingJwsAlgorithmToRsaHashingAlgorithms[algorithm];
+#if NET46
             using (var rsa = new RSACryptoServiceProvider())
             {
                 rsa.FromXmlString(serializedKeys);
                 return rsa.VerifyData(plainBytes, hashMethod, signature);
             }
+#else
+            using (var rsa = new RSAOpenSsl())
+            {
+                rsa.FromXmlString(serializedKeys);
+                return rsa.VerifyData(plainBytes, signature, hashMethod, RSASignaturePadding.Pkcs1);
+            }
+#endif
         }
 
         #endregion
 
-        #region Elliptic Curve algorithm
-        
+#region Elliptic Curve algorithm
+
+#if NET46
+
         public string SignWithEllipseCurve(string serializedKeys,
             string combinedJwsNotSigned)
         {
@@ -179,6 +225,8 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
             }
         }
 
-        #endregion
+#endif
+
+#endregion
     }
 }

@@ -26,11 +26,17 @@ namespace SimpleIdentityServer.Host.Configuration
         public static List<JsonWebKey> Get()
         {
             var serializedRsa = string.Empty;
+#if NET46
             using (var provider = new RSACryptoServiceProvider())
             {
                 serializedRsa = provider.ToXmlString(true);
             }
-
+#else
+            using (var provider = new RSAOpenSsl())
+            {
+                serializedRsa = provider.ToXmlString(true);
+            }
+#endif
             return new List<JsonWebKey>
             {
                 new JsonWebKey

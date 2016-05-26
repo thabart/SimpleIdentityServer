@@ -75,6 +75,7 @@ namespace SimpleIdentityServer.Core.Api.Jwks.Actions
 
         public void SetRsaPublicKeyInformation(Dictionary<string, object> result, JsonWebKey jsonWebKey)
         {
+#if NET46
             using (var provider = new RSACryptoServiceProvider())
             {
                 provider.FromXmlString(jsonWebKey.SerializedKey);
@@ -87,6 +88,20 @@ namespace SimpleIdentityServer.Core.Api.Jwks.Actions
                 result.Add(Jwt.Constants.JsonWebKeyParameterNames.RsaKey.ModulusName, modulus);
                 result.Add(Jwt.Constants.JsonWebKeyParameterNames.RsaKey.ExponentName, exponent);
             }
+#else
+            using (var provider = new RSAOpenSsl())
+            {
+                provider.FromXmlString(jsonWebKey.SerializedKey);
+                var rsaParameters = provider.ExportParameters(false);
+                // Export the modulus
+                var modulus = rsaParameters.Modulus.Base64EncodeBytes();
+                // Export the exponent
+                var exponent = rsaParameters.Exponent.Base64EncodeBytes();
+
+                result.Add(Jwt.Constants.JsonWebKeyParameterNames.RsaKey.ModulusName, modulus);
+                result.Add(Jwt.Constants.JsonWebKeyParameterNames.RsaKey.ExponentName, exponent);
+            }
+#endif
         }
     }
 }

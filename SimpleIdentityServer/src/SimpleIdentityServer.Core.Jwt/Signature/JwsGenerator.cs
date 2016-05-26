@@ -78,9 +78,11 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
                     case KeyType.RSA:
                         signedJws = _createJwsSignature.SignWithRsa(jwsAlg, jsonWebKey.SerializedKey, combinedProtectedHeaderAndPayLoad);
                         break;
+#if NET46
                     case KeyType.EC:
                         signedJws = _createJwsSignature.SignWithEllipseCurve(jsonWebKey.SerializedKey, combinedProtectedHeaderAndPayLoad);
                         break;
+#endif
                 }
             }
 
