@@ -1,9 +1,8 @@
 # Simple identity server
 
-|               | Badges                                                                                                                                                       |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| DNXCORE50     | [![Build Status](https://travis-ci.org/thabart/SimpleIdentityServer.svg?branch=master)](https://travis-ci.org/thabart/SimpleIdentityServer)                  |
-| DNX451        | [![Build status](https://ci.appveyor.com/api/projects/status/ctvpsd79ovexlsdb?svg=true)](https://ci.appveyor.com/project/thabart/simpleidentityserver)       |
+|                           | Badges                                                                                                                                                       |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| NET46 & DOTNETCORE        | [![Build status](https://ci.appveyor.com/api/projects/status/ctvpsd79ovexlsdb?svg=true)](https://ci.appveyor.com/project/thabart/simpleidentityserver)       |
 
 | Description   | Badges                                                                                                                                                                                       |
 | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
