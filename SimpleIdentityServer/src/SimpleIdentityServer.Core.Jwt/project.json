@@ -33,6 +33,7 @@
         "System.Security.Cryptography.Algorithms": "4.1.0-*",
         "System.Security.Cryptography.Csp": "4.0.0-*",
         "System.Security.Cryptography.Cng": "4.1.0-*",
+        "System.Security.Cryptography.OpenSsl": "4.0.0-*",
         "System.Security.Cryptography.Algorithms.Extensions": "*"
       }
     }
