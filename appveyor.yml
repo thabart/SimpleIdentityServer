@@ -7,7 +7,7 @@ before_build:
     core.exe /install /quiet /norestart
 
     dotnet restore
-build:
-  verbosity: minimal
+build_script:
+- cmd: dotnet build SimpleIdentityServer\src\SimpleIdentityServer.Startup
 test_script:
 - cmd: dotnet test SimpleIdentityServer\tests\SimpleIdentityServer.Core.UnitTests
