@@ -18,6 +18,7 @@ using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Client.DTOs.Response;
 using SimpleIdentityServer.Client.DTOs.Requests;
 using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace SimpleIdentityServer.Uma.Core.Code.Frontend.csharp
 {
@@ -33,7 +34,7 @@ namespace SimpleIdentityServer.Uma.Core.Code.Frontend.csharp
 
         #region Public static methods
 
-        public static string GetRpt(string resourceSetId,
+        public static string GetAuthorization(string resourceSetId,
             List<string> scopes,
             string clientId,
             string clientSecret,
@@ -49,6 +50,40 @@ namespace SimpleIdentityServer.Uma.Core.Code.Frontend.csharp
             // 4. Get authorization
             var authorization = GetAuthorization(permission.TicketId, umaAuthorizationToken.AccessToken);
             return authorization.Rpt;
+        }
+
+		public static string GetAuthorization(string resourceSetId,
+			List<string> scopes,
+			string clientId,
+			string clientSecret,
+			string idToken,
+			string authorizationUrl,
+			string umaUrl)
+        {
+            // 1. Get valid token for uma_protection scope
+            var umaProtectionToken = GetGrantedToken(UmaProtectionScope, clientId, clientSecret, authorizationUrl);
+            // 2. Get valid token for uma_authorization scope
+            var umaAuthorizationToken = GetGrantedToken(UmaAuthorizationScope, clientId, clientSecret, authorizationUrl);
+            // 3. Get a permission
+            var permission = AddPermission(resourceSetId, scopes, umaProtectionToken.AccessToken, umaUrl);
+            // 4. Get authorization
+            var authorization = GetAuthorization(permission.TicketId, umaAuthorizationToken.AccessToken, idToken);
+            return authorization.Rpt;
+        }
+
+        public static string AuthenticateUser(
+			string clientId,
+			string clientSecret,
+			string login,
+			string password,
+			string authorizationUrl)
+        {
+            var result = _identityServerClientFactory.CreateTokenClient()
+                .UseClientSecretPostAuth(clientId, clientSecret)
+                .UsePassword(login, password, "openid", "role")
+                .ResolveAsync(authorizationUrl + "/.well-known/openid-configuration")
+                .Result;
+            return result.IdToken;
         }
 
         #endregion
@@ -87,18 +122,31 @@ namespace SimpleIdentityServer.Uma.Core.Code.Frontend.csharp
         private static AuthorizationResponse GetAuthorization(
             string ticketId, 
             string accessToken,
-            string umaUrl)
+            string umaUrl,
+			string idToken = null)
         {
             var postAuthorization = new PostAuthorization
             {
                 TicketId = ticketId
             };
+            if (!string.IsNullOrWhiteSpace(idToken))
+            {
+                postAuthorization.ClaimTokens = new List<PostClaimToken>
+                {
+                    new PostClaimToken
+                    {
+                        Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
+                        Token = idToken
+                    }
+                };
+            }
+
             var authorization = _identityServerUmaClientFactory.GetAuthorizationClient()
                 .GetAuthorizationAsync(postAuthorization, umaUrl + "/rpt", accessToken)
                 .Result;
             return authorization;
         }
-
+		
         #endregion
     }
 }

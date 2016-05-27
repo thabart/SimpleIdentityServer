@@ -47,8 +47,8 @@ namespace SimpleIdentityServer.Manager.Host.Startup
         public void ConfigureServices(IServiceCollection services)
         {
             var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
-            var authorizationUrl = Configuration["AuthorizationUrl"];
-            var tokenUrl = Configuration["TokenUrl"];
+            var authorizationUrl = Configuration["AuthorizationServer"] + "/authorization";
+            var tokenUrl = authorizationUrl + "/token";
             services.AddSimpleIdentityServerManager(new AuthorizationServerOptions
             {
                 AuthorizationUrl = authorizationUrl,
@@ -63,7 +63,7 @@ namespace SimpleIdentityServer.Manager.Host.Startup
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            var userInfoUrl = Configuration["UserInfoUrl"];
+            var userInfoUrl = Configuration["AuthorizationServer"] + "/userinfo";
             loggerFactory.AddConsole();
             loggerFactory.AddDebug();
 
