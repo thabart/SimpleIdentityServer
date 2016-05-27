@@ -17,6 +17,7 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -112,6 +113,7 @@ namespace SimpleIdentityServer.Uma.Host
             var parametersProvider = new ParametersProvider(authorizationServerUrl);
             services.AddTransient<IHostingProvider, HostingProvider>();
             services.AddSingleton<IParametersProvider>(parametersProvider);
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSimpleIdServerUmaCore(opt =>
             {
                 opt.AuthorizeOperation = authorizationServerUrl + "/authorization";

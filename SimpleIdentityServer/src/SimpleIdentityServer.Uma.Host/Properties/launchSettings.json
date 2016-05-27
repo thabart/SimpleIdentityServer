@@ -1,22 +1,8 @@
 {
-  "iisSettings": {
-    "windowsAuthentication": false,
-    "anonymousAuthentication": true,
-    "iisExpress": {
-      "applicationUrl": "http://localhost:64293/",
-      "sslPort": 0
-    }
-  },
   "profiles": {
-    "IIS Express": {
-      "commandName": "IISExpress",
-      "launchBrowser": true,
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    },
     "SimpleIdentityServer.Uma.Host": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "--server.urls=http://*:5001"
     }
   }
 }
