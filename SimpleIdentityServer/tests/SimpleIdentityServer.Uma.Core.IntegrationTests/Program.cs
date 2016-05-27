@@ -198,9 +198,39 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
 
         private static void AuthorizedScenarioWithClaims()
         {
+            _identityServerClientFactory = new IdentityServerClientFactory();
+            const string readScope = "read";
+            const string createScope = "create";
             // 1. Retrieve identity token
             var userToken = AuthenticateUser();
-            Console.WriteLine(userToken.IdToken);
+            // 2. Get token valid for uma_protection scope
+            var umaProtectionToken = GetGrantedToken(UmaProtectionScope);
+            // 3. Get token valid for uma_authorization scope
+            var umaAuthorizationToken = GetGrantedToken(UmaAuthorizationScope);
+            // 4. Add resource set
+            var resourceSet = AddResourceSet("resource_set", new List<string> { readScope, createScope }, umaProtectionToken.AccessToken);
+            // 5. Add authorization policy
+            var authorizationPolicy = AddPolicy(
+                new List<string> { ClientId }, 
+                new List<string> { readScope, createScope }, 
+                resourceSet.Id, 
+                umaProtectionToken.AccessToken,
+                new List<PostClaim>
+                {
+                    new PostClaim
+                    {
+                        Type = "role",
+                        Value = "administrator"
+                    }
+                });
+            // 6. Add permission
+            var permission = AddPermission(resourceSet.Id, new List<string> { createScope }, umaProtectionToken.AccessToken);
+            // 7. Get an authorization
+            var authorization = GetAuthorization(
+                permission.TicketId, 
+                umaAuthorizationToken.AccessToken, 
+                userToken.IdToken);
+            Console.Write(authorization.Rpt);
             Console.ReadLine();
         }
 
@@ -250,19 +280,39 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
             return permission;
         }
 
-        private static AuthorizationResponse GetAuthorization(string ticketId, string accessToken)
+        private static AuthorizationResponse GetAuthorization(
+            string ticketId, 
+            string accessToken,
+            string idToken = null)
         {
             var postAuthorization = new PostAuthorization
             {
                 TicketId = ticketId
             };
+            if (!string.IsNullOrWhiteSpace(idToken))
+            {
+                postAuthorization.ClaimTokens = new List<PostClaimToken>
+                {
+                    new PostClaimToken
+                    {
+                        Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
+                        Token = idToken
+                    }
+                };
+            }
+
             var authorization = _identityServerUmaClientFactory.GetAuthorizationClient()
                 .GetAuthorizationAsync(postAuthorization, UmaUrl + "/rpt", accessToken)
                 .Result;
             return authorization;
         }
 
-        private static AddPolicyResponse AddPolicy(List<string> clientIds, List<string> scopes, string resourceSetId, string accessToken)
+        private static AddPolicyResponse AddPolicy(
+            List<string> clientIds, 
+            List<string> scopes, 
+            string resourceSetId, 
+            string accessToken,
+            List<PostClaim> claims = null)
         {
             var postPolicy = new PostPolicy
             {
@@ -272,7 +322,8 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
                 {
                     resourceSetId
                 },
-                IsResourceOwnerConsentNeeded = false
+                IsResourceOwnerConsentNeeded = false,
+                Claims = claims
             };
 
             var policyResponse = _identityServerUmaClientFactory.GetPolicyClient()

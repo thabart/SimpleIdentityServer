@@ -111,7 +111,7 @@ namespace SimpleIdentityServer.Uma.Host
             var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
             var parametersProvider = new ParametersProvider(authorizationServerUrl);
             services.AddTransient<IHostingProvider, HostingProvider>();
-            services.AddSingleton(parametersProvider);
+            services.AddSingleton<IParametersProvider>(parametersProvider);
             services.AddSimpleIdServerUmaCore(opt =>
             {
                 opt.AuthorizeOperation = authorizationServerUrl + "/authorization";
