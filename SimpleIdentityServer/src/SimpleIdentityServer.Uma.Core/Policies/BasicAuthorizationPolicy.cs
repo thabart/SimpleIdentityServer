@@ -15,17 +15,19 @@
 #endregion
 
 using SimpleIdentityServer.Client;
+using SimpleIdentityServer.Uma.Core.JwtToken;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Parameters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Policies
 {
     public interface IBasicAuthorizationPolicy
     {
-        AuthorizationPolicyResult Execute(
+        Task<AuthorizationPolicyResult> Execute(
             Ticket ticket,
             Policy policy,
             List<ClaimTokenParameter> claimTokenParameters);
@@ -37,23 +39,27 @@ namespace SimpleIdentityServer.Uma.Core.Policies
 
         private readonly IIdentityServerClientFactory _identityServerClientFactory;
 
+        private readonly IJwtTokenParser _jwtTokenParser;
+
         private const string IdTokenType = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken";
 
         #region Constructor
 
         public BasicAuthorizationPolicy(
             IParametersProvider parametersProvider,
-            IIdentityServerClientFactory identityServerClientFactory)
+            IIdentityServerClientFactory identityServerClientFactory,
+            IJwtTokenParser jwtTokenParser)
         {
             _parametersProvider = parametersProvider;
             _identityServerClientFactory = identityServerClientFactory;
+            _jwtTokenParser = jwtTokenParser;
         }
 
         #endregion
 
         #region Public methods
 
-        public AuthorizationPolicyResult Execute(
+        public async Task<AuthorizationPolicyResult> Execute(
             Ticket validTicket,
             Policy authorizationPolicy,
             List<ClaimTokenParameter> claimTokenParameters)
@@ -96,6 +102,29 @@ namespace SimpleIdentityServer.Uma.Core.Policies
                     !claimTokenParameters.Any(c => c.Format == IdTokenType))
                 {
                     return GetNeedInfoResult(authorizationPolicy.Claims);
+                }
+
+                var idToken = claimTokenParameters.First(c => c.Format == IdTokenType);
+                var jwsPayload = await _jwtTokenParser.UnSign(idToken.Token);
+                if (jwsPayload == null)
+                {
+                    return new AuthorizationPolicyResult
+                    {
+                        Type = AuthorizationPolicyResultEnum.NotAuthorized
+                    };
+                }
+
+                foreach(var claim in authorizationPolicy.Claims)
+                {
+                    if (jwsPayload
+                        .FirstOrDefault(j => j.Key == claim.Type && j.Value.ToString() == claim.Value)
+                        .Equals(default(KeyValuePair<string, object>)))
+                    {
+                        return new AuthorizationPolicyResult
+                        {
+                            Type = AuthorizationPolicyResultEnum.NotAuthorized
+                        };
+                    }
                 }
             }
 

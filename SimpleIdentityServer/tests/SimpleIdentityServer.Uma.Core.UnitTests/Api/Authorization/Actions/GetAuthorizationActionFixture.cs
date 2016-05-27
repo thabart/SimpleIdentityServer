@@ -16,7 +16,6 @@
 
 using Moq;
 using SimpleIdentityServer.Uma.Core.Api.Authorization.Actions;
-using SimpleIdentityServer.Uma.Core.Configuration;
 using SimpleIdentityServer.Uma.Core.Errors;
 using SimpleIdentityServer.Uma.Core.Exceptions;
 using SimpleIdentityServer.Uma.Core.Helpers;
@@ -26,7 +25,7 @@ using SimpleIdentityServer.Uma.Core.Policies;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using System;
 using System.Collections.Generic;
-using System.Security.Claims;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.Authorization.Actions
@@ -55,12 +54,12 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.Authorization.Actions
             var getAuthorizationActionParameter = new GetAuthorizationActionParameter();
 
             // ACT & ASSERTS
-            Assert.Throws<ArgumentNullException>(() => _getAuthorizationAction.Execute(null, null));
-            Assert.Throws<ArgumentNullException>(() => _getAuthorizationAction.Execute(getAuthorizationActionParameter, null));
+            Assert.ThrowsAsync<ArgumentNullException>(() => _getAuthorizationAction.Execute(null, null));
+            Assert.ThrowsAsync<ArgumentNullException>(() => _getAuthorizationAction.Execute(getAuthorizationActionParameter, null));
         }
 
         [Fact]
-        public void When_TicketId_IsNot_Specified_Then_Exception_Is_Thrown()
+        public async Task When_TicketId_IsNot_Specified_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -71,14 +70,14 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.Authorization.Actions
             };
 
             // ACT & ASSERTS
-            var exception = Assert.Throws<BaseUmaException>(() => _getAuthorizationAction.Execute(getAuthorizationActionParameter, claims));
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _getAuthorizationAction.Execute(getAuthorizationActionParameter, claims));
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "ticket_id"));
         }
 
         [Fact]
-        public void When_Ticket_DoesntExist_Then_Exception_Is_Thrown()
+        public async Task When_Ticket_DoesntExist_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             const string ticketId = "ticket_id";
@@ -95,7 +94,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.Authorization.Actions
                 .Returns(() => null);
 
             // ACT & ASSERTS
-            var exception = Assert.Throws<BaseUmaException>(() => _getAuthorizationAction.Execute(getAuthorizationActionParameter, claims));
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _getAuthorizationAction.Execute(getAuthorizationActionParameter, claims));
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidTicket);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheTicketDoesntExist, ticketId));
@@ -103,7 +102,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.Authorization.Actions
         }
 
         [Fact]
-        public void When_TicketClientId_Is_Different_Then_Exception_Is_Thrown()
+        public async Task When_TicketClientId_Is_Different_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             const string ticketId = "ticket_id";
@@ -126,14 +125,14 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.Authorization.Actions
                 .Returns(ticket);
 
             // ACT & ASSERTS
-            var exception = Assert.Throws<BaseUmaException>(() => _getAuthorizationAction.Execute(getAuthorizationActionParameter, claims));
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _getAuthorizationAction.Execute(getAuthorizationActionParameter, claims));
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidTicket);
             Assert.True(exception.Message == ErrorDescriptions.TheTicketIssuerIsDifferentFromTheClient);
         }
 
         [Fact]
-        public void When_TicketIsExpired_Then_Exception_Is_Thrown()
+        public async Task When_TicketIsExpired_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             const string ticketId = "ticket_id";
@@ -157,7 +156,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.Authorization.Actions
                 .Returns(ticket);
 
             // ACT & ASSERTS
-            var exception = Assert.Throws<BaseUmaException>(() => _getAuthorizationAction.Execute(getAuthorizationActionParameter, claims));
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _getAuthorizationAction.Execute(getAuthorizationActionParameter, claims));
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.ExpiredTicket);
             Assert.True(exception.Message == ErrorDescriptions.TheTicketIsExpired);
@@ -168,7 +167,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.Authorization.Actions
         #region Happy paths
 
         [Fact]
-        public void When_Requesting_Unauthorized_Access_Then_NotAuthorized_Is_Returned()
+        public async Task When_Requesting_Unauthorized_Access_Then_NotAuthorized_Is_Returned()
         {
             // ARRANGE
             const string ticketId = "ticket_id";
@@ -192,14 +191,14 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.Authorization.Actions
                 .Returns(ticket);
             _authorizationPolicyValidatorStub.Setup(a => a.IsAuthorized(It.IsAny<Ticket>(),
                 It.IsAny<string>(),
-                It.IsAny<IEnumerable<System.Security.Claims.Claim>>()))
-                .Returns(new AuthorizationPolicyResult
+                It.IsAny<List<ClaimTokenParameter>>()))
+                .Returns(Task.FromResult(new AuthorizationPolicyResult
                 {
                     Type = AuthorizationPolicyResultEnum.NotAuthorized
-                });
+                }));
 
             // ACT
-            var result = _getAuthorizationAction.Execute(getAuthorizationActionParameter, claims);
+            var result = await _getAuthorizationAction.Execute(getAuthorizationActionParameter, claims);
 
             // ASSERTS
             Assert.NotNull(result);
@@ -208,7 +207,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.Authorization.Actions
         }
 
         [Fact]
-        public void When_Requesting_Authorized_Access_Then_Rpt_Is_Returned()
+        public async Task When_Requesting_Authorized_Access_Then_Rpt_Is_Returned()
         {
             // ARRANGE
             const string ticketId = "ticket_id";
@@ -232,16 +231,16 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.Authorization.Actions
                 .Returns(ticket);
             _authorizationPolicyValidatorStub.Setup(a => a.IsAuthorized(It.IsAny<Ticket>(),
                 It.IsAny<string>(),
-                It.IsAny<IEnumerable<System.Security.Claims.Claim>>()))
-                .Returns(new AuthorizationPolicyResult
+                It.IsAny<List<ClaimTokenParameter>>()))
+                .Returns(Task.FromResult(new AuthorizationPolicyResult
                 {
                     Type = AuthorizationPolicyResultEnum.Authorized
-                });
+                }));
             _repositoryExceptionHandlerStub.Setup(r => r.HandleException(It.IsAny<string>(), It.IsAny<Func<bool>>()))
                 .Returns(true);
 
             // ACT
-            var result = _getAuthorizationAction.Execute(getAuthorizationActionParameter, claims);
+            var result = await _getAuthorizationAction.Execute(getAuthorizationActionParameter, claims);
 
             // ASSERTS
             Assert.NotNull(result);

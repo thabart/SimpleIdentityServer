@@ -20,12 +20,13 @@ using SimpleIdentityServer.Uma.Core.Responses;
 using SimpleIdentityServer.Uma.Core.Api.Authorization.Actions;
 using System.Security.Claims;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.Authorization
 {
     public interface IAuthorizationActions
     {
-        AuthorizationResponse GetAuthorization(GetAuthorizationActionParameter getAuthorizationActionParameter,
+        Task<AuthorizationResponse> GetAuthorization(GetAuthorizationActionParameter getAuthorizationActionParameter,
             IEnumerable<Claim> claims);
     }
 
@@ -44,10 +45,10 @@ namespace SimpleIdentityServer.Uma.Core.Api.Authorization
 
         #region Public methods
 
-        public AuthorizationResponse GetAuthorization(GetAuthorizationActionParameter getAuthorizationActionParameter,
+        public async Task<AuthorizationResponse> GetAuthorization(GetAuthorizationActionParameter getAuthorizationActionParameter,
             IEnumerable<Claim> claims)
         {
-            return _getAuthorizationAction.Execute(getAuthorizationActionParameter,
+            return await _getAuthorizationAction.Execute(getAuthorizationActionParameter,
                 claims);
         }
 

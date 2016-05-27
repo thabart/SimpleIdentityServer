@@ -16,6 +16,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Client;
+using SimpleIdentityServer.Core.Jwt.Converter;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Uma.Core.Api.Authorization;
 using SimpleIdentityServer.Uma.Core.Api.Authorization.Actions;
@@ -122,6 +123,7 @@ namespace SimpleIdentityServer.Uma.Core
             serviceCollection.AddTransient<IJwsParser, JwsParser>();
             serviceCollection.AddTransient<IIdentityServerClientFactory, IdentityServerClientFactory>();
             serviceCollection.AddTransient<IJwtTokenParser, JwtTokenParser>();
+            serviceCollection.AddTransient<IJsonWebKeyConverter, JsonWebKeyConverter>();
             serviceCollection.AddSingleton(umaServerOptions);
         }
 

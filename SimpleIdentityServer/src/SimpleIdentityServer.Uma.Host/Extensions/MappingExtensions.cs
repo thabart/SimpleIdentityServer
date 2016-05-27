@@ -85,10 +85,27 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
 
         public static GetAuthorizationActionParameter ToParameter(this PostAuthorization postAuthorization)
         {
+            var tokens = new List<ClaimTokenParameter>();
+            if (postAuthorization.ClaimTokens != null &&
+                postAuthorization.ClaimTokens.Any())
+            {
+                tokens = postAuthorization.ClaimTokens.Select(ct => ct.ToParameter()).ToList();
+            }
+
             return new GetAuthorizationActionParameter
             {
                 Rpt = postAuthorization.Rpt,
-                TicketId = postAuthorization.TicketId
+                TicketId = postAuthorization.TicketId,
+                ClaimTokenParameters = tokens
+            };
+        }
+
+        public static ClaimTokenParameter ToParameter(this PostClaimToken postClaimToken)
+        {
+            return new ClaimTokenParameter
+            {
+                Format = postClaimToken.Format,
+                Token = postClaimToken.Token
             };
         }
 

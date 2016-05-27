@@ -27,12 +27,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.Authorization.Actions
 {
     public interface IGetAuthorizationAction
     {
-        AuthorizationResponse Execute(
+        Task<AuthorizationResponse> Execute(
                GetAuthorizationActionParameter getAuthorizationActionParameter,
                IEnumerable<System.Security.Claims.Claim> claims);
     }
@@ -69,7 +70,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Authorization.Actions
 
         #region Public methods
 
-        public AuthorizationResponse Execute(
+        public async Task<AuthorizationResponse> Execute(
             GetAuthorizationActionParameter getAuthorizationActionParameter,
             IEnumerable<System.Security.Claims.Claim> claims)
         {
@@ -110,9 +111,9 @@ namespace SimpleIdentityServer.Uma.Core.Api.Authorization.Actions
                     ErrorDescriptions.TheTicketIsExpired);
             }
 
-            var authorizationResult = _authorizationPolicyValidator.IsAuthorized(ticket,
+            var authorizationResult = await _authorizationPolicyValidator.IsAuthorized(ticket,
                 clientId,
-                claims);
+                getAuthorizationActionParameter.ClaimTokenParameters);
             if (authorizationResult.Type != AuthorizationPolicyResultEnum.Authorized)
             {
                 return new AuthorizationResponse

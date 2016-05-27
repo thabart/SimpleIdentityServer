@@ -17,12 +17,15 @@
 using Moq;
 using Newtonsoft.Json;
 using SimpleIdentityServer.Client;
+using SimpleIdentityServer.Core.Jwt;
+using SimpleIdentityServer.Uma.Core.JwtToken;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Policies;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
@@ -32,6 +35,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
         private Mock<IParametersProvider> _parametersProviderStub;
 
         private Mock<IIdentityServerClientFactory> _identityServerClientFactoryStub;
+
+        private Mock<IJwtTokenParser> _jwtTokenParserStub;
 
         private IBasicAuthorizationPolicy _basicAuthorizationPolicy;
 
@@ -44,8 +49,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            Assert.Throws<ArgumentNullException>(() => _basicAuthorizationPolicy.Execute(null, null, null));
-            Assert.Throws<ArgumentNullException>(() => _basicAuthorizationPolicy.Execute(new Ticket(), null, null));
+            Assert.ThrowsAsync<ArgumentNullException>(() => _basicAuthorizationPolicy.Execute(null, null, null));
+            Assert.ThrowsAsync<ArgumentNullException>(() => _basicAuthorizationPolicy.Execute(new Ticket(), null, null));
         }
 
         #endregion
@@ -53,7 +58,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
         #region Happy paths
 
         [Fact]
-        public void When_Doesnt_have_Permission_To_Access_To_Scope_Then_NotAuthorized_Is_Returned()
+        public async Task When_Doesnt_have_Permission_To_Access_To_Scope_Then_NotAuthorized_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -76,14 +81,14 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             };
 
             // ACT
-            var result = _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, null);
+            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, null);
 
             // ASSERT
             Assert.True(result.Type == AuthorizationPolicyResultEnum.NotAuthorized);
         }
 
         [Fact]
-        public void When_Client_Is_Not_Allowed_Then_NotAuthorized_Is_Returned()
+        public async Task When_Client_Is_Not_Allowed_Then_NotAuthorized_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -113,14 +118,14 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             };
             
             // ACT
-            var result = _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, null);
+            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, null);
 
             // ASSERT
             Assert.True(result.Type == AuthorizationPolicyResultEnum.NotAuthorized);
         }
 
         [Fact]
-        public void When_There_Is_No_Access_Token_Passed_Then_NeedInfo_Is_Returned()
+        public async Task When_There_Is_No_Access_Token_Passed_Then_NeedInfo_Is_Returned()
         {
             // ARRANGE
             const string configurationUrl = "http://localhost/configuration";
@@ -172,7 +177,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                 .Returns(configurationUrl);
 
             // ACT
-            var result = _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameters);
+            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameters);
 
             // ASSERT
             Assert.True(result.Type == AuthorizationPolicyResultEnum.NeedInfo);
@@ -192,7 +197,136 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
         }
 
         [Fact]
-        public void When_ResourceOwnerConsent_Is_Required_Then_RequestSubmitted_Is_Returned()
+        public async Task When_JwsPayload_Cannot_Be_Extracted_Then_NotAuthorized_Is_Returned()
+        {
+            // ARRANGE
+            const string configurationUrl = "http://localhost/configuration";
+            InitializeFakeObjects();
+            var ticket = new Ticket
+            {
+                ClientId = "client_id",
+                Scopes = new List<string>
+                {
+                    "read",
+                    "create",
+                    "update"
+                }
+            };
+
+            var authorizationPolicy = new Policy
+            {
+                ClientIdsAllowed = new List<string>
+                {
+                    "client_id"
+                },
+                Scopes = new List<string>
+                {
+                    "read",
+                    "create",
+                    "update"
+                },
+                Claims = new List<Claim>
+                {
+                    new Claim
+                    {
+                        Type = "name"
+                    },
+                    new Claim
+                    {
+                        Type = "email"
+                    }
+                }
+            };
+            var claimTokenParameters = new List<ClaimTokenParameter>
+            {
+                new ClaimTokenParameter
+                {
+                    Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
+                    Token = "token"
+                }
+            };
+            _parametersProviderStub.Setup(p => p.GetOpenIdConfigurationUrl())
+                .Returns(configurationUrl);
+            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>()))
+                .Returns(Task.FromResult<JwsPayload>(null));
+
+            // ACT
+            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameters);
+
+            // ASSERT
+            Assert.True(result.Type == AuthorizationPolicyResultEnum.NotAuthorized);
+        }
+
+        [Fact]
+        public async Task When_Claims_Are_Not_Corred_Then_NotAuthorized_Is_Returned()
+        {
+            // ARRANGE
+            const string configurationUrl = "http://localhost/configuration";
+            InitializeFakeObjects();
+            var ticket = new Ticket
+            {
+                ClientId = "client_id",
+                Scopes = new List<string>
+                {
+                    "read",
+                    "create",
+                    "update"
+                }
+            };
+
+            var authorizationPolicy = new Policy
+            {
+                ClientIdsAllowed = new List<string>
+                {
+                    "client_id"
+                },
+                Scopes = new List<string>
+                {
+                    "read",
+                    "create",
+                    "update"
+                },
+                Claims = new List<Claim>
+                {
+                    new Claim
+                    {
+                        Type = "name",
+                        Value = "name"
+                    },
+                    new Claim
+                    {
+                        Type = "email",
+                        Value = "email"
+                    }
+                }
+            };
+            var claimTokenParameters = new List<ClaimTokenParameter>
+            {
+                new ClaimTokenParameter
+                {
+                    Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
+                    Token = "token"
+                }
+            };
+            _parametersProviderStub.Setup(p => p.GetOpenIdConfigurationUrl())
+                .Returns(configurationUrl);
+            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>()))
+                .Returns(Task.FromResult(new JwsPayload
+                {
+                    {
+                        "name", "bad_name"
+                    }
+                }));
+
+            // ACT
+            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameters);
+
+            // ASSERT
+            Assert.True(result.Type == AuthorizationPolicyResultEnum.NotAuthorized);
+        }
+
+        [Fact]
+        public async Task When_ResourceOwnerConsent_Is_Required_Then_RequestSubmitted_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -224,14 +358,14 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             };
 
             // ACT
-            var result = _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, null);
+            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, null);
 
             // ASSERT
             Assert.True(result.Type == AuthorizationPolicyResultEnum.RequestSubmitted);
         }
 
         [Fact]
-        public void When_AuthorizationPassed_Then_Authorization_Is_Returned()
+        public async Task When_AuthorizationPassed_Then_Authorization_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -259,7 +393,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             };
 
             // ACT
-            var result = _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, null);
+            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, null);
 
             // ASSERT
             Assert.True(result.Type == AuthorizationPolicyResultEnum.Authorized);
@@ -271,8 +405,10 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
         {
             _parametersProviderStub = new Mock<IParametersProvider>();
             _identityServerClientFactoryStub = new Mock<IIdentityServerClientFactory>();
+            _jwtTokenParserStub = new Mock<IJwtTokenParser>();
             _basicAuthorizationPolicy = new BasicAuthorizationPolicy(_parametersProviderStub.Object,
-                _identityServerClientFactoryStub.Object);
+                _identityServerClientFactoryStub.Object,
+                _jwtTokenParserStub.Object);
         }
     }
 }

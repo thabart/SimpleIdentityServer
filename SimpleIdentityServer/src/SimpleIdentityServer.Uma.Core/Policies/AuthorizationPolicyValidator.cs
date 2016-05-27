@@ -17,18 +17,20 @@
 using SimpleIdentityServer.Uma.Core.Errors;
 using SimpleIdentityServer.Uma.Core.Exceptions;
 using SimpleIdentityServer.Uma.Core.Models;
+using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Policies
 {
     public interface IAuthorizationPolicyValidator
     {
-        AuthorizationPolicyResult IsAuthorized(Ticket validTicket,
-               string clientId,
-               IEnumerable<System.Security.Claims.Claim> claims);
+        Task<AuthorizationPolicyResult> IsAuthorized(
+            Ticket validTicket,
+            string clientId,
+            List<ClaimTokenParameter> claimTokenParameters);
     }
 
     internal class AuthorizationPolicyValidator : IAuthorizationPolicyValidator
@@ -55,9 +57,10 @@ namespace SimpleIdentityServer.Uma.Core.Policies
 
         #region Public methods
 
-        public AuthorizationPolicyResult IsAuthorized(Ticket validTicket,
+        public async Task<AuthorizationPolicyResult> IsAuthorized(
+            Ticket validTicket,
             string clientId,
-            IEnumerable<System.Security.Claims.Claim> claims)
+            List<ClaimTokenParameter> claimTokenParameters)
         {
             if (validTicket == null)
             {
@@ -67,11 +70,6 @@ namespace SimpleIdentityServer.Uma.Core.Policies
             if (string.IsNullOrWhiteSpace(clientId))
             {
                 throw new ArgumentNullException(nameof(clientId));
-            }
-
-            if (claims == null || !claims.Any())
-            {
-                throw new ArgumentNullException(nameof(claims));
             }
 
             var resourceSet = _resourceSetRepository.GetResourceSetById(validTicket.ResourceSetId);
@@ -90,7 +88,7 @@ namespace SimpleIdentityServer.Uma.Core.Policies
                 };
             }
 
-            return _basicAuthorizationPolicy.Execute(validTicket, authorizationPolicy, null);
+            return await _basicAuthorizationPolicy.Execute(validTicket, authorizationPolicy, claimTokenParameters);
         }
 
         #endregion

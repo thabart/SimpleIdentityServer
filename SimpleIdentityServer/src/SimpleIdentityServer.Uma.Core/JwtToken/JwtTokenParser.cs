@@ -16,16 +16,18 @@
 
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Core.Jwt;
+using SimpleIdentityServer.Core.Jwt.Converter;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Jwt = SimpleIdentityServer.Core.Jwt;
 
 namespace SimpleIdentityServer.Uma.Core.JwtToken
 {
     public interface IJwtTokenParser
     {
-
+        Task<JwsPayload> UnSign(string jws);
     }
 
     internal class JwtTokenParser : IJwtTokenParser
@@ -36,16 +38,20 @@ namespace SimpleIdentityServer.Uma.Core.JwtToken
 
         private readonly IParametersProvider _parametersProvider;
 
+        private readonly IJsonWebKeyConverter _jsonWebKeyConverter;
+
         #region Constructor
 
         public JwtTokenParser(
             IJwsParser jwsParser,
             IIdentityServerClientFactory identityServerClientFactory,
-            IParametersProvider parametersProvider)
+            IParametersProvider parametersProvider,
+            IJsonWebKeyConverter jsonWebKeyConverter)
         {
             _jwsParser = jwsParser;
             _identityServerClientFactory = identityServerClientFactory;
             _parametersProvider = parametersProvider;
+            _jsonWebKeyConverter = jsonWebKeyConverter;
         }
 
         #endregion
@@ -68,29 +74,20 @@ namespace SimpleIdentityServer.Uma.Core.JwtToken
             var jsonWebKeySet = await _identityServerClientFactory.CreateJwksClient()
                 .ResolveAsync(_parametersProvider.GetOpenIdConfigurationUrl())
                 .ConfigureAwait(false);
-            var keys = jsonWebKeySet.Keys;
-            return null;
-        }
-
-        #endregion
-
-        #region Private methods
-
-        private List<JsonWebKey> GetJsonWebKeys(List<Dictionary<string, object>> lst)
-        {
-            var result = new List<JsonWebKey>();
-            foreach(var record in lst)
+            var jsonWebKeys = _jsonWebKeyConverter.ExtractSerializedKeys(jsonWebKeySet);
+            if (jsonWebKeys == null ||
+                !jsonWebKeys.Any(j => j.Kid == protectedHeader.Kid))
             {
-                /*
-                 * var use = record[SimpleIdentityServer.Core.Jwt.Constants.JsonWebKeyParameterNames.UseName]
-                var jsonWebKey = new JsonWebKey
-                {
-                    Use = 
-                };
-                */
+                return null;
             }
 
-            return null;
+            var jsonWebKey = jsonWebKeys.First(j => j.Kid == protectedHeader.Kid);
+            if (protectedHeader.Alg == Jwt.Constants.JwsAlgNames.NONE)
+            {
+                return _jwsParser.GetPayload(jws);
+            }
+
+            return _jwsParser.ValidateSignature(jws, jsonWebKey);
         }
 
         #endregion

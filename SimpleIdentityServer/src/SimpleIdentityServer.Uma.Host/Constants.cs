@@ -86,6 +86,15 @@ namespace SimpleIdentityServer.Uma.Host
             public const string Rpt = "rpt";
 
             public const string TicketId = "ticket";
+
+            public const string ClaimTokens = "claim_tokens";
+        }
+
+        public static class PostClaimTokenNames
+        {
+            public const string Format = "format";
+
+            public const string Token = "token";
         }
 
         public static class ClaimNames

@@ -25,6 +25,7 @@ using SimpleIdentityServer.Uma.Host.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Host.Controllers
 {
@@ -62,7 +63,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
 
         [HttpPost]
         [Authorize("Authorization")]
-        public ActionResult GetAuthorization([FromBody] PostAuthorization postAuthorization)
+        public async Task<ActionResult> GetAuthorization([FromBody] PostAuthorization postAuthorization)
         {
             if (postAuthorization == null)
             {
@@ -71,7 +72,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
 
             var parameter = postAuthorization.ToParameter();
             var claims = this.GetClaims();
-            var result = _authorizationActions.GetAuthorization(
+            var result = await _authorizationActions.GetAuthorization(
                 parameter,
                 claims);
             if (result.AuthorizationPolicyResult != AuthorizationPolicyResultEnum.Authorized)
