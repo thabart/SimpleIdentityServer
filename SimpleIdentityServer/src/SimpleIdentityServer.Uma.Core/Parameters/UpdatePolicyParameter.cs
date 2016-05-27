@@ -28,8 +28,8 @@ namespace SimpleIdentityServer.Uma.Core.Parameters
 
         public bool IsResourceOwnerConsentNeeded { get; set; }
 
-        public bool IsCustom { get; set; }
-
         public string Script { get; set; }
+
+        public List<AddClaimParameter> Claims { get; set; }
     }
 }

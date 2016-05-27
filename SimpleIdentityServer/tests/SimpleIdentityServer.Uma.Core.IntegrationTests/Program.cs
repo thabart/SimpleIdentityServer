@@ -34,11 +34,19 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
 
         private const string ClientSecret = "UmaResourceServer";
 
+        private const string IdentityServerManagerClientId = "IdentityServerManager";
+
+        private const string IdentityServerManagerClientSecret = "IdentityServerManager";
+
+        private const string Login = "administrator";
+
+        private const string Password = "password";
+
         private const string UmaProtectionScope = "uma_protection";
 
         private const string UmaAuthorizationScope = "uma_authorization";
 
-        private const string UmaUrl = "http://localhost:5002";
+        private const string UmaUrl = "http://localhost:5001";
 
         private const string AuthorizationUrl = "http://localhost:5000";
 
@@ -46,7 +54,8 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
 
         public static void Main(string[] args)
         {
-            GetRpt("1e6ae546-4ea5-4daa-805a-1b52806f5beb");
+            AuthorizedScenarioWithClaims();
+            // GetRpt("1e6ae546-4ea5-4daa-805a-1b52806f5beb");
             // AuthorizedScenario();
             // AuthorizedScenarioByDiscovery();
         }
@@ -187,6 +196,24 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
             Console.ReadLine();
         }
 
+        private static void AuthorizedScenarioWithClaims()
+        {
+            // 1. Retrieve identity token
+            var userToken = AuthenticateUser();
+            Console.WriteLine(userToken.IdToken);
+            Console.ReadLine();
+        }
+
+        private static GrantedToken AuthenticateUser()
+        {
+            var result = _identityServerClientFactory.CreateTokenClient()
+                .UseClientSecretPostAuth(IdentityServerManagerClientId, IdentityServerManagerClientSecret)
+                .UsePassword(Login, Password, "openid", "role")
+                .ResolveAsync(AuthorizationUrl + "/.well-known/openid-configuration")
+                .Result;
+            return result;
+        }
+
         private static GrantedToken GetGrantedToken(string scope)
         {
             var result = _identityServerClientFactory.CreateTokenClient()
@@ -239,7 +266,6 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
         {
             var postPolicy = new PostPolicy
             {
-                IsCustom = false,
                 Scopes = scopes,
                 ClientIdsAllowed = clientIds,
                 ResourceSetIds = new List<string>
@@ -319,7 +345,6 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
         {
             var postPolicy = new PostPolicy
             {
-                IsCustom = false,
                 Scopes = scopes,
                 ClientIdsAllowed = clientIds,
                 ResourceSetIds = new List<string>

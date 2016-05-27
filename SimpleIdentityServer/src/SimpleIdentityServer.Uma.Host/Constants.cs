@@ -114,11 +114,11 @@ namespace SimpleIdentityServer.Uma.Host
 
             public const string IsResourceOwnerConsentNeeded = "consent_needed";
 
-            public const string IsCustom = "is_custom";
-
             public const string Script = "script";
 
             public const string ResourceSetIds = "resource_set_ids";
+
+            public const string Claims = "claims";
         }
 
         public static class AddPolicyResponseNames

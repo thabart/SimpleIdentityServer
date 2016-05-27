@@ -19,6 +19,7 @@ using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.Core.Helpers;
 using SimpleIdentityServer.Uma.Core.Errors;
+using System.Linq;
 
 namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
 {
@@ -65,6 +66,15 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
             policy.Scopes = updatePolicyParameter.Scopes;
             policy.IsResourceOwnerConsentNeeded = updatePolicyParameter.IsResourceOwnerConsentNeeded;
             policy.Script = updatePolicyParameter.Script;
+            if (updatePolicyParameter.Claims != null)
+            {
+                policy.Claims = updatePolicyParameter.Claims.Select(c => new Models.Claim
+                {
+                    Type = c.Type,
+                    Value = c.Value
+                }).ToList();
+            }
+
             return _repositoryExceptionHelper.HandleException(
                 string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeUpdated, updatePolicyParameter.PolicyId),
                 () => _policyRepository.UpdatePolicy(policy));

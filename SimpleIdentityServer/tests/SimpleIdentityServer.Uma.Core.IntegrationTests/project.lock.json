@@ -1649,7 +1649,7 @@
           "runtime.native.System.Security.Cryptography": "4.0.0-rc2-24027"
         },
         "compile": {
-          "ref/netstandard1.4/_._": {}
+          "ref/netstandard1.4/System.Security.Cryptography.OpenSsl.dll": {}
         },
         "runtimeTargets": {
           "runtimes/unix/lib/netstandard1.4/System.Security.Cryptography.OpenSsl.dll": {
@@ -2144,6 +2144,7 @@
           "System.Security.Cryptography.Algorithms.Extensions": "1.0.0",
           "System.Security.Cryptography.Cng": "4.1.0",
           "System.Security.Cryptography.Csp": "4.0.0",
+          "System.Security.Cryptography.OpenSsl": "4.0.0",
           "System.Xml.XmlSerializer": "4.0.11"
         },
         "compile": {

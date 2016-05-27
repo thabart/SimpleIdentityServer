@@ -24,6 +24,9 @@ namespace SimpleIdentityServer.Client.DTOs.Response
         [DataMember(Name = Constants.GrantedTokenNames.AccessToken)]
         public string AccessToken { get; set; }
 
+        [DataMember(Name = Constants.GrantedTokenNames.IdToken)]
+        public string IdToken { get; set; }
+
         [DataMember(Name = Constants.GrantedTokenNames.TokenType)]
         public string TokenType { get; set; }
 

@@ -45,6 +45,8 @@ namespace SimpleIdentityServer.Client
             public const string Script = "script";
 
             public const string ResourceSetIds = "resource_set_ids";
+
+            public const string Claims = "claims";
         }
 
         public static class AddPermissionResponseNames
@@ -57,11 +59,20 @@ namespace SimpleIdentityServer.Client
             public const string Rpt = "rpt";
         }
 
+        public static class PostClaimTokenNames
+        {
+            public const string Format = "format";
+
+            public const string Token = "token";
+        }
+
         public static class PostAuthorizationNames
         {
             public const string Rpt = "rpt";
 
             public const string TicketId = "ticket";
+
+            public const string ClaimTokens = "claim_tokens";
         }
 
         public static class ConfigurationResponseNames
@@ -103,6 +114,13 @@ namespace SimpleIdentityServer.Client
             public const string PolicyEndPoint = "policy_endpoint";
         }
 
+        public static class ClaimNames
+        {
+            public const string Type = "type";
+
+            public const string Value = "value";
+        }
+
         public static class PostPolicyNames
         {
             public const string ClientIdsAllowed = "allowed_clients";
@@ -110,8 +128,6 @@ namespace SimpleIdentityServer.Client
             public const string Scopes = "scopes";
 
             public const string IsResourceOwnerConsentNeeded = "consent_needed";
-
-            public const string IsCustom = "is_custom";
 
             public const string Script = "script";
 

@@ -99,6 +99,7 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
             record.IsResourceOwnerConsentNeeded = model.IsResourceOwnerConsentNeeded;
             record.Scopes = model.Scopes;
             record.Script = model.Script;
+            record.Claims = model.Claims;
             _simpleIdServerUmaContext.SaveChanges();
             return true;
         }

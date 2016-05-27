@@ -141,12 +141,13 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             {
                 Scope = resourceOwnerGrantTypeParameter.Scope
             };
-            var userInformationPayload = _jwtGenerator.GenerateUserInfoPayloadForScope(claimsPrincipal, authorizationParameter);
+            var payload = _jwtGenerator.GenerateUserInfoPayloadForScope(claimsPrincipal, authorizationParameter);
 
             var generatedToken = _grantedTokenGeneratorHelper.GenerateToken(
                 client.ClientId,
                 allowedTokenScopes,
-                userInformationPayload);
+                payload,
+                payload);
             _grantedTokenRepository.Insert(generatedToken);            
             // Fill-in the id-token
             if (generatedToken.IdTokenPayLoad != null)

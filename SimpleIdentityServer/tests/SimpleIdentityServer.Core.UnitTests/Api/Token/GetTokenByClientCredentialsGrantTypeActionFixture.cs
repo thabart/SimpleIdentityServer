@@ -20,6 +20,7 @@ using SimpleIdentityServer.Core.Authenticate;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
+using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
@@ -234,7 +235,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(client);
             _scopeValidatorStub.Setup(s => s.IsScopesValid(It.IsAny<string>(), It.IsAny<Client>(), out messageDescription))
                 .Returns(scopes);
-            _grantedTokenGeneratorHelperStub.Setup(g => g.GenerateToken(It.IsAny<string>(), It.IsAny<string>(), null, null))
+            _grantedTokenGeneratorHelperStub.Setup(g => g.GenerateToken(It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<JwsPayload>(),
+                It.IsAny<JwsPayload>()))
                 .Returns(grantedToken);
 
             // ACT
@@ -244,7 +248,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _simpleIdentityServerEventSourceStub.Verify(s => s.GrantAccessToClient(clientId, accessToken, scope));
             Assert.NotNull(result);
             Assert.True(result.ClientId == clientId);
-            _clientHelperStub.Verify(c => c.GenerateIdToken(It.IsAny<string>(), It.IsAny<Jwt.JwsPayload>()));
         }
 
         #endregion

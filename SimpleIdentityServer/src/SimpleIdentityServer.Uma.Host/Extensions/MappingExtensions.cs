@@ -135,14 +135,16 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
 
         public static UpdatePolicyParameter ToParameter(this PutPolicy putPolicy)
         {
+            var claims = putPolicy.Claims == null ? new List<AddClaimParameter>()
+                : putPolicy.Claims.Select(p => p.ToParameter()).ToList();
             return new UpdatePolicyParameter
             {
                 Script = putPolicy.Script,
                 Scopes = putPolicy.Scopes,
                 PolicyId = putPolicy.PolicyId,
                 ClientIdsAllowed = putPolicy.ClientIdsAllowed,
-                IsCustom = putPolicy.IsCustom,
-                IsResourceOwnerConsentNeeded = putPolicy.IsResourceOwnerConsentNeeded
+                IsResourceOwnerConsentNeeded = putPolicy.IsResourceOwnerConsentNeeded,
+                Claims = claims
             };
         }
 
@@ -174,13 +176,26 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
 
         public static PolicyResponse ToResponse(this Policy policy)
         {
+            var claims = policy.Claims == null ? new List<PostClaim>()
+                : policy.Claims.Select(p => p.ToResponse()).ToList();
             return new PolicyResponse
             {
                 Id = policy.Id,
                 ClientIdsAllowed = policy.ClientIdsAllowed,
                 IsResourceOwnerConsentNeeded = policy.IsResourceOwnerConsentNeeded,
                 ResourceSetIds = policy.ResourceSetIds,
-                Scopes = policy.Scopes
+                Scopes = policy.Scopes,
+                Claims = claims,
+                Script = policy.Script
+            };
+        }
+
+        public static PostClaim ToResponse(this Claim claim)
+        {
+            return new PostClaim
+            {
+                Type = claim.Type,
+                Value = claim.Value
             };
         }
 

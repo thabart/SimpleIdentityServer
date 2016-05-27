@@ -27,6 +27,10 @@ namespace SimpleIdentityServer.Client.Selectors
         ITokenClient UseClientCredentials(params string[] scopes);
 
         ITokenClient UseClientCredentials(List<string> scopes);
+
+        ITokenClient UsePassword(string userName, string password, params string[] scopes);
+
+        ITokenClient UsePassword(string userName, string password, List<string> scopes);
     }
 
     internal class TokenGrantTypeSelector : ITokenGrantTypeSelector
@@ -68,6 +72,40 @@ namespace SimpleIdentityServer.Client.Selectors
             
             _tokenRequestBuilder.TokenRequest.Scope = ConcatScopes(scopes);
             _tokenRequestBuilder.TokenRequest.GrantType = GrantTypeRequest.client_credentials;
+            return _tokenClient;
+        }
+
+        public ITokenClient UsePassword(string userName, string password, params string[] scopes)
+        {
+            if (scopes == null)
+            {
+                throw new ArgumentNullException(nameof(scopes));
+            }
+
+            return UsePassword(userName, password, scopes.ToList());
+        }
+
+        public ITokenClient UsePassword(string userName, string password, List<string> scopes)
+        {
+            if (string.IsNullOrWhiteSpace(userName))
+            {
+                throw new ArgumentNullException(nameof(userName));
+            }
+
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                throw new ArgumentNullException(nameof(password));
+            }
+
+            if (scopes == null || !scopes.Any())
+            {
+                throw new ArgumentNullException(nameof(scopes));
+            }
+
+            _tokenRequestBuilder.TokenRequest.Username = userName;
+            _tokenRequestBuilder.TokenRequest.Password = password;
+            _tokenRequestBuilder.TokenRequest.Scope = ConcatScopes(scopes);
+            _tokenRequestBuilder.TokenRequest.GrantType = GrantTypeRequest.password;
             return _tokenClient;
         }
 

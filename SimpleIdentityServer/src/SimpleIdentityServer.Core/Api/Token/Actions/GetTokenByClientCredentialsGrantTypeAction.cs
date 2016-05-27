@@ -143,13 +143,6 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                 client.ClientId,
                 allowedTokenScopes);
             _grantedTokenRepository.Insert(generatedToken);
-            // Fill-in the id-token
-            if (generatedToken.IdTokenPayLoad != null)
-            {
-                generatedToken.IdToken = _clientHelper.GenerateIdToken(
-                    generatedToken.ClientId,
-                    generatedToken.IdTokenPayLoad);
-            }
 
             _simpleIdentityServerEventSource.GrantAccessToClient(client.ClientId,
                 generatedToken.AccessToken,

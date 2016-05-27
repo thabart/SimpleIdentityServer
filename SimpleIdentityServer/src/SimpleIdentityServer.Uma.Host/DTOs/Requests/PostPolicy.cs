@@ -38,7 +38,7 @@ namespace SimpleIdentityServer.Uma.Host.DTOs.Requests
         [DataMember(Name = Constants.PolicyNames.Scopes)]
         public List<string> Scopes { get; set; }
 
-        [DataMember(Name = Constants.PolicyNames.ResourceSetIds)]
+        [DataMember(Name = Constants.PolicyNames.Claims)]
         public List<PostClaim> Claims { get; set; }
 
         [DataMember(Name = Constants.PolicyNames.IsResourceOwnerConsentNeeded)]

@@ -14,10 +14,21 @@
 // limitations under the License.
 #endregion
 
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace SimpleIdentityServer.Client.DTOs.Requests
 {
+    [DataContract]
+    public class PostClaimToken
+    {
+        [DataMember(Name = Constants.PostClaimTokenNames.Format)]
+        public string Format { get; set; }
+
+        [DataMember(Name = Constants.PostClaimTokenNames.Token)]
+        public string Token { get; set; }
+    }
+
     [DataContract]
     public class PostAuthorization
     {
@@ -26,5 +37,8 @@ namespace SimpleIdentityServer.Client.DTOs.Requests
 
         [DataMember(Name = Constants.PostAuthorizationNames.Rpt)]
         public string Rpt { get; set; }
+        
+        [DataMember(Name = Constants.PostAuthorizationNames.ClaimTokens)]
+        public List<PostClaimToken> ClaimTokens { get; set; }
     }
 }

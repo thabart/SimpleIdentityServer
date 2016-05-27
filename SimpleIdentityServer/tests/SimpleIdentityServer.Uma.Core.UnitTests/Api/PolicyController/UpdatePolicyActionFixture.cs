@@ -22,6 +22,7 @@ using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
@@ -76,7 +77,15 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
             // ARRANGE
             var updatePolicyParameter = new UpdatePolicyParameter
             {
-                PolicyId = "valid_policy_id"
+                PolicyId = "valid_policy_id",
+                Claims = new List<AddClaimParameter>
+                {
+                    new AddClaimParameter
+                    {
+                        Type = "type",
+                        Value = "value"
+                    }
+                }
             };
             InitializeFakeObjects();
             _repositoryExceptionHelperStub.Setup(r => r.HandleException(

@@ -31,11 +31,11 @@ namespace SimpleIdentityServer.Uma.Host.DTOs.Requests
         [DataMember(Name = Constants.PolicyNames.Scopes)]
         public List<string> Scopes { get; set; }
 
+        [DataMember(Name = Constants.PolicyNames.Claims)]
+        public List<PostClaim> Claims { get; set; }
+
         [DataMember(Name = Constants.PolicyNames.IsResourceOwnerConsentNeeded)]
         public bool IsResourceOwnerConsentNeeded { get; set; }
-
-        [DataMember(Name = Constants.PolicyNames.IsCustom)]
-        public bool IsCustom { get; set; }
 
         [DataMember(Name = Constants.PolicyNames.Script)]
         public string Script { get; set; }
