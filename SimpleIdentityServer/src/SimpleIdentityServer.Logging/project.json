@@ -7,7 +7,9 @@
     "projectUrl": "",
     "licenseUrl": ""
   },
-
+  "dependencies": {
+    "Serilog": "2.0.0-*"
+  },
   "tooling": {
     "defaultNamespace": "SimpleIdentityServer.Logging"
   },

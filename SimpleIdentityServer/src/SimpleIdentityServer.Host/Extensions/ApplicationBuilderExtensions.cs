@@ -23,7 +23,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
+using Serilog;
 using SimpleIdentityServer.DataAccess.SqlServer;
 using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
 using SimpleIdentityServer.Host.Controllers;
@@ -87,7 +89,8 @@ namespace SimpleIdentityServer.Host
         
         public static void UseSimpleIdentityServer(this IApplicationBuilder app,
             Action<HostingOptions> hostingCallback,
-            Action<SwaggerOptions> swaggerCallback) 
+            Action<SwaggerOptions> swaggerCallback,
+            ILoggerFactory loggerFactory) 
         {
             if (hostingCallback == null) 
             {
@@ -103,13 +106,14 @@ namespace SimpleIdentityServer.Host
             var swaggerOptions = new SwaggerOptions();
             hostingCallback(hostingOptions);
             swaggerCallback(swaggerOptions);
-            app.UseSimpleIdentityServer(hostingOptions, swaggerOptions);
+            app.UseSimpleIdentityServer(hostingOptions, swaggerOptions, loggerFactory);
         }
         
         public static void UseSimpleIdentityServer(
             this IApplicationBuilder app,
             HostingOptions hostingOptions,
-            SwaggerOptions swaggerOptions) 
+            SwaggerOptions swaggerOptions,
+            ILoggerFactory loggerFactory) 
         {
             if (hostingOptions == null)
             {
@@ -119,8 +123,6 @@ namespace SimpleIdentityServer.Host
             if (swaggerOptions == null) {
                 throw new ArgumentNullException(nameof(swaggerOptions));
             }
-
-            // app.UseIISPlatformHandler(opts => opts.AuthenticationDescriptions.Clear());
 
             var staticFileOptions = new StaticFileOptions();
             staticFileOptions.FileProvider = new EmbeddedFileProvider(
@@ -137,7 +139,7 @@ namespace SimpleIdentityServer.Host
             {
                 app.UseSimpleIdentityServerExceptionHandler(new ExceptionHandlerMiddlewareOptions
                 {
-                    SimpleIdentityServerEventSource = SimpleIdentityServerEventSource.Log
+                    SimpleIdentityServerEventSource = app.ApplicationServices.GetService<ISimpleIdentityServerEventSource>()
                 });
             }
 
@@ -178,6 +180,10 @@ namespace SimpleIdentityServer.Host
                 }
             }
 
+            // 6. Add logging
+            loggerFactory.AddSerilog();
+
+            // 7. Configure ASP.NET MVC
             app.UseMvc(routes =>
             {
                 routes.MapRoute("Error401Route",
@@ -199,20 +205,6 @@ namespace SimpleIdentityServer.Host
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
-            /*
-            if (swaggerOptions.IsSwaggerEnabled)
-            {
-                app.UseSwaggerGen();
-                if (!string.IsNullOrWhiteSpace(swaggerOptions.SwaggerUrl))
-                {
-                    app.UseSwaggerUi(swaggerUrl : swaggerOptions.SwaggerUrl);
-                }
-                else
-                {
-                    app.UseSwaggerUi();
-                }
-            }
-            */
         }
         
         #endregion

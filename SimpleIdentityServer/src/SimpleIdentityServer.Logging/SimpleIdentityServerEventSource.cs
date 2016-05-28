@@ -14,8 +14,7 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Diagnostics.Tracing;
+using Serilog;
 
 namespace SimpleIdentityServer.Logging
 {
@@ -164,600 +163,240 @@ namespace SimpleIdentityServer.Logging
 
         #endregion
     }
-
-    [EventSource(Name = "SimpleIdentityServer")]
-    public class SimpleIdentityServerEventSource : EventSource, ISimpleIdentityServerEventSource
+    
+    public class SimpleIdentityServerEventSource : ISimpleIdentityServerEventSource
     {
-        private static readonly Lazy<SimpleIdentityServerEventSource> Instance = new Lazy<SimpleIdentityServerEventSource>(() => new SimpleIdentityServerEventSource());
+        private readonly ILogger _logger;
+                
+        #region Constructor
 
-        private SimpleIdentityServerEventSource()
+        public SimpleIdentityServerEventSource(ILogger logger)
         {
+            _logger = logger;
         }
 
-        public static SimpleIdentityServerEventSource Log
-        {
-            get { return Instance.Value; }
-        }
+        #endregion
 
         #region Events linked to the authorization process
 
-        [Event(Constants.EventIds.AuthorizationStarted, 
-            Level = EventLevel.Informational, 
-            Message = "start the authorization process",
-            Opcode = EventOpcode.Start,
-            Task = Constants.Tasks.Authorization)]
         public void StartAuthorization(
             string clientId, 
             string responseType,
             string scope, 
             string individualClaims)
         {
-            if (!IsEnabled())
-            {
-                return;
-            }
-
-            WriteEvent(Constants.EventIds.AuthorizationStarted, clientId, responseType, scope, individualClaims);
+            _logger.Information($"Start the authorization process for the client : {clientId}, response type : {responseType}, scope : {scope} and claims : {individualClaims}");
         }
 
-
-        [Event(Constants.EventIds.AuthorizationCodeFlowStarted,
-            Level = EventLevel.Informational,
-            Message = "start the authorization code flow",
-            Opcode = EventOpcode.Start,
-            Task = Constants.Tasks.Authorization)]
         public void StartAuthorizationCodeFlow(
             string clientId,
             string scope,
             string individualClaims)
         {
-            if (!IsEnabled())
-            {
-                return;
-            }
-
-            WriteEvent(Constants.EventIds.AuthorizationCodeFlowStarted, clientId, scope, individualClaims);
+            _logger.Information($"Start the authorization code flow for the client : {clientId}, scope : {scope} and claims : {individualClaims}");
         }
 
-        [Event(Constants.EventIds.StartProcessingAuthorizationRequest,
-            Level = EventLevel.Informational,
-            Message = "start processing the authorization request",
-            Opcode = EventOpcode.Start,
-            Task = Constants.Tasks.Authorization)]
         public void StartProcessingAuthorizationRequest(string jsonAuthorizationRequest)
         {
-            if (!IsEnabled())
-            {
-                return;
-            }
-
-            WriteEvent(Constants.EventIds.StartProcessingAuthorizationRequest, jsonAuthorizationRequest);
+            _logger.Information($"Start processing the authorization request : {jsonAuthorizationRequest}");
         }
 
-        [Event(Constants.EventIds.EndProcessingAuthorizationRequest,
-            Level = EventLevel.Informational,
-            Message = "end processing the authorization request",
-            Opcode = EventOpcode.Stop,
-            Task = Constants.Tasks.Authorization)]
         public void EndProcessingAuthorizationRequest(
             string jsonAuthorizationRequest,
             string actionType,
             string actionName)
         {
-            if (!IsEnabled())
-            {
-                return;
-            }
-
-            WriteEvent(Constants.EventIds.EndProcessingAuthorizationRequest, jsonAuthorizationRequest, actionType, actionName);
+            _logger.Information($"End processing the authorization request, request : {jsonAuthorizationRequest}, action type : {actionType} and action name : {actionName}");
         }
-        
-        [Event(Constants.EventIds.StartGeneratingAuthorizationResponseToClient,
-            Level = EventLevel.Informational,
-            Message = "start to generate an authorization response for the client {0}",
-            Opcode = EventOpcode.Start,
-            Task = Constants.Tasks.Authorization)]
+
         public void StartGeneratingAuthorizationResponseToClient(
             string clientId,
             string responseTypes)
         {
-            if (!IsEnabled())
-            {
-                return;
-            }
-
-            WriteEvent(Constants.EventIds.StartGeneratingAuthorizationResponseToClient,
-                clientId,
-                responseTypes);
+            _logger.Information($"Start to generate an authorization response for the client {clientId}, response types : {responseTypes}");
         }
 
-        [Event(Constants.EventIds.GrantAuthorizationCodeToClient,
-            Level = EventLevel.Informational,
-            Message = "grant authorization code to the client {0}",
-            Opcode = EventOpcode.Info,
-            Task = Constants.Tasks.Authorization)]
         public void GrantAuthorizationCodeToClient(
             string clientId,
             string authorizationCode,
             string scopes)
         {
-            if (!IsEnabled())
-            {
-                return;
-            }
-
-            WriteEvent(Constants.EventIds.GrantAuthorizationCodeToClient,
-                clientId,
-                authorizationCode,
-                scopes);
+            _logger.Information($"Grant authorization code to the client {clientId}, authorization code : {authorizationCode} and scopes : {scopes}");
         }
 
-        [Event(Constants.EventIds.EndGeneratingAuthorizationResponseToClient,
-            Level = EventLevel.Informational,
-            Message = "finished to generate the authorization response for the client {0}",
-            Opcode = EventOpcode.Stop,
-            Task = Constants.Tasks.Authorization)]
         public void EndGeneratingAuthorizationResponseToClient(
             string clientId,
             string parameters)
         {
-            if (!IsEnabled())
-            {
-                return;
-            }
-
-            WriteEvent(Constants.EventIds.EndGeneratingAuthorizationResponseToClient,
-                clientId, 
-                parameters);
+            _logger.Information($"Finished to generate the authorization response for the client {clientId}, parameters : {parameters}");
         }
 
-
-        [Event(Constants.EventIds.AuthorizationCodeFlowEnded,
-            Level = EventLevel.Informational,
-            Message = "end of the authorization code flow",
-            Opcode = EventOpcode.Stop,
-            Task = Constants.Tasks.Authorization)]
         public void EndAuthorizationCodeFlow(string clientId, string actionType, string actionName)
         {
-            if (!IsEnabled())
-            {
-                return;
-            }
-
-            WriteEvent(Constants.EventIds.AuthorizationCodeFlowEnded,
-                clientId,
-                actionType,
-                actionName);
+            _logger.Information($"End of the authorization code flow, client : {clientId}, action type : {actionType}, action name : {actionName}");
         }
 
-        [Event(Constants.EventIds.AuthorizationEnded,
-            Level = EventLevel.Informational,
-            Message = "end the authorization process",
-            Opcode = EventOpcode.Stop,
-            Task = Constants.Tasks.Authorization)]
         public void EndAuthorization(
             string actionType,
             string actionName,
             string parameters)
         {
-            if (!IsEnabled())
-            {
-                return;
-            }
-
-            WriteEvent(Constants.EventIds.AuthorizationEnded, actionType, actionName, parameters);
+            _logger.Information($"End the authorization process, action type : {actionType}, action name : {actionName} and parameters : {parameters}");
         }
 
-        [Event(Constants.EventIds.ImplicitFlowStart,
-            Level = EventLevel.Informational,
-            Message = "start the implicit flow",
-            Opcode = EventOpcode.Start,
-            Task = Constants.Tasks.Authorization)]
         public void StartImplicitFlow(
             string clientId, 
             string scope, 
             string individualClaims)
         {
-            if (!IsEnabled())
-            {
-                return;
-            }
-
-            WriteEvent(Constants.EventIds.ImplicitFlowStart, clientId, scope, individualClaims);
+            _logger.Information($"Start the implicit flow, client : {clientId}, scope : {scope} and claims : {individualClaims}");
         }
 
-        [Event(Constants.EventIds.ImplicitFlowEnd,
-            Level = EventLevel.Informational,
-            Message = "end the implicit flow",
-            Opcode = EventOpcode.Stop,
-            Task = Constants.Tasks.Authorization)]
         public void EndImplicitFlow(
             string clientId, 
             string actionType, 
             string actionName)
         {
-            if (!IsEnabled())
-            {
-                return;
-            }
-
-            WriteEvent(Constants.EventIds.ImplicitFlowEnd, clientId, actionType, actionName);
+            _logger.Information($"End the implicit flow, client : {clientId}, action type : {actionType} and action name : {actionName}");
         }
 
-        [Event(Constants.EventIds.HybridFlowStart,
-            Level = EventLevel.Informational,
-            Message = "start the hybrid flow",
-            Opcode = EventOpcode.Start,
-            Task = Constants.Tasks.Authorization)]
         public void StartHybridFlow(
             string clientId, 
             string scope, 
             string individualClaims)
         {
-            if (!IsEnabled())
-            {
-                return;
-            }
-
-            WriteEvent(Constants.EventIds.HybridFlowStart, clientId, scope, individualClaims);
+            _logger.Information($"Start the hybrid flow, client : {clientId}, scope : {scope} and claims : {individualClaims}");
         }
 
-        [Event(Constants.EventIds.HybridFlowEnd,
-            Level = EventLevel.Informational,
-            Message = "end the hybrid flow",
-            Opcode = EventOpcode.Stop,
-            Task = Constants.Tasks.Authorization)]
         public void EndHybridFlow(string clientId, string actionType, string actionName)
         {
-            if (!IsEnabled())
-            {
-                return;
-            }
-
-            WriteEvent(Constants.EventIds.HybridFlowEnd, clientId, actionType, actionName);
+            _logger.Information($"End the hybrid flow : {clientId}, action type : {actionType} and action name : {actionName}");
         }
 
         #endregion
 
         #region Events linked to the token endpoint
         
-        [Event(Constants.EventIds.StartResourceOwnerCredentialsGrantType,
-            Level = EventLevel.Informational,
-            Message = "start resource owner credentials grant-type",
-            Opcode = EventOpcode.Start,
-            Task = Constants.Tasks.Token)]
         public void StartGetTokenByResourceOwnerCredentials(string clientId, string userName, string password)
         {
-            if (!IsEnabled())
-            {
-                return;
-            }
-
-            WriteEvent(Constants.EventIds.StartResourceOwnerCredentialsGrantType, clientId, userName, password);
+            _logger.Information($"Start resource owner credentials grant-type, client : {clientId}, user name : {userName}, password : {password}");
         }
-        
-        [Event(Constants.EventIds.EndResourceOwnerCredentialsGrantType,
-            Level = EventLevel.Informational,
-            Message = "end of the resource owner credentials grant-type",
-            Opcode = EventOpcode.Stop,
-            Task = Constants.Tasks.Token)]
+
         public void EndGetTokenByResourceOwnerCredentials(string accessToken, string identityToken)
         {
-            if (!IsEnabled())
-            {
-                return;
-            }
-
-            WriteEvent(Constants.EventIds.EndResourceOwnerCredentialsGrantType, accessToken, identityToken);
+            _logger.Information($"End of the resource owner credentials grant-type, access token : {accessToken}, identity token : {identityToken}");
         }
-        
-        [Event(Constants.EventIds.StartAuthorizationCodeGrantType,
-            Level = EventLevel.Informational,
-            Message = "start authorization code grant-type",
-            Opcode = EventOpcode.Start,
-            Task = Constants.Tasks.Token)]
+
         public void StartGetTokenByAuthorizationCode(
             string clientId, 
             string authorizationCode)
         {
-            if (!IsEnabled())
-            {
-                return;
-            }
-
-            WriteEvent(Constants.EventIds.StartAuthorizationCodeGrantType, clientId, authorizationCode);
+            _logger.Information($"Start authorization code grant-type, client : {clientId} and authorization code : {authorizationCode}");
         }
 
-        [Event(Constants.EventIds.EndAuthorizationCodeGrantType,
-            Level = EventLevel.Informational,
-            Message = "end of the authorization code grant-type",
-            Opcode = EventOpcode.Stop,
-            Task = Constants.Tasks.Token)]
         public void EndGetTokenByAuthorizationCode(string accessToken, string identityToken)
         {
-            if (!IsEnabled())
-            {
-                return;
-            }
-
-            WriteEvent(Constants.EventIds.EndAuthorizationCodeGrantType, accessToken, identityToken);
+            _logger.Information($"End of the authorization code grant-type, access token : {accessToken}, identity token : {identityToken}");
         }
 
-        [Event(Constants.EventIds.StartToAuthenticateTheClient,
-            Level = EventLevel.Informational,
-            Message = "start to authenticate the client",
-            Opcode = EventOpcode.Start,
-            Task = Constants.Tasks.Token)]
         public void StartToAuthenticateTheClient(string clientId, 
             string authenticationType)
         {
-            if (!IsEnabled())
-            {
-                return;
-            }
-
-            WriteEvent(Constants.EventIds.StartToAuthenticateTheClient,
-                clientId, 
-                authenticationType);
+            _logger.Information($"Start to authenticate the client, client : {clientId}, authentication type : {authenticationType}");
         }
-
-        [Event(Constants.EventIds.FinishToAuthenticateTheClient,
-            Level = EventLevel.Informational,
-            Message = "finish to authenticate the client",
-            Opcode = EventOpcode.Stop,
-            Task = Constants.Tasks.Token)]
+        
         public void FinishToAuthenticateTheClient(string clientId,
             string authenticationType)
         {
-            if (!IsEnabled())
-            {
-                return;
-            }
-
-            WriteEvent(Constants.EventIds.FinishToAuthenticateTheClient,
-                clientId,
-                authenticationType);
+            _logger.Information($"Finish to authenticate the client, client : {clientId}, authentication type : {authenticationType}");
         }
 
-        [Event(Constants.EventIds.StartRefreshTokenGrantType,
-            Level = EventLevel.Informational,
-            Message = "start refresh token grant-type",
-            Opcode = EventOpcode.Start,
-            Task = Constants.Tasks.Token)]
         public void StartGetTokenByRefreshToken(
             string clientId, 
             string refreshToken)
         {
-            if (!IsEnabled())
-            {
-                return;
-            }
-
-            WriteEvent(Constants.EventIds.StartRefreshTokenGrantType,
-                clientId,
-                refreshToken);
+            _logger.Information($"Start refresh token grant-type, client : {clientId}, refresh token : {refreshToken}");
         }
-
-        [Event(Constants.EventIds.EndRefreshTokenGrantType,
-            Level = EventLevel.Informational,
-            Message = "end refresh token grant-type",
-            Opcode = EventOpcode.Stop,
-            Task = Constants.Tasks.Token)]
+        
         public void EndGetTokenByRefreshToken(string accessToken, string identityToken)
         {
-            if (!IsEnabled())
-            {
-                return;
-            }
-
-            WriteEvent(Constants.EventIds.EndRefreshTokenGrantType,
-                accessToken,
-                identityToken);
+            _logger.Information($"End refresh token grant-type, access token : {accessToken}, identity token : {identityToken}");
         }
 
-        [Event(Constants.EventIds.StartGetTokenByClientCredentials,
-            Level = EventLevel.Informational,
-            Message = "start get token by client credentials",
-            Opcode = EventOpcode.Start,
-            Task = Constants.Tasks.Token)]
         public void StartGetTokenByClientCredentials(string scope)
         {
-            if (!IsEnabled())
-            {
-                return;
-            }
-
-            WriteEvent(Constants.EventIds.StartGetTokenByClientCredentials,
-                scope);
+            _logger.Information($"Start get token by client credentials, scope : {scope}");
         }
 
-        [Event(Constants.EventIds.EndGetTokenByClientCredentials,
-            Level = EventLevel.Informational,
-            Message = "end get token by client credentials",
-            Opcode = EventOpcode.Stop,
-            Task = Constants.Tasks.Token)]
         public void EndGetTokenByClientCredentials(string clientId, string scope)
         {
-            if (!IsEnabled())
-            {
-                return;
-            }
-
-            WriteEvent(Constants.EventIds.EndGetTokenByClientCredentials,
-                clientId,
-                scope);
+            _logger.Information($"End get token by client credentials, client : {clientId}, scope : {scope}");
         }
-
-        [Event(Constants.EventIds.StartRevokeToken,
-            Level = EventLevel.Informational,
-            Message = "start revoking token",
-            Opcode = EventOpcode.Start,
-            Task = Constants.Tasks.Token)]
+        
         public void StartRevokeToken(string token)
         {
-            if (!IsEnabled())
-            {
-                return;
-            }
-
-            WriteEvent(Constants.EventIds.StartRevokeToken,
-                token);
+            _logger.Information($"Start revoking token, token : {token}");
         }
 
-        [Event(Constants.EventIds.EndRevokeToken,
-            Level = EventLevel.Informational,
-            Message = "end revoking token",
-            Opcode = EventOpcode.Stop,
-            Task = Constants.Tasks.Token)]
         public void EndRevokeToken(string token)
         {
-            if (!IsEnabled())
-            {
-                return;
-            }
-
-            WriteEvent(Constants.EventIds.EndRevokeToken,
-                token);
+            _logger.Information($"End revoking token, token : {token}");
         }
 
         #endregion
 
         #region Failing events
 
-        [Event(Constants.EventIds.OpenIdFailure,
-            Level = EventLevel.Error,
-            Message = "something goes wrong in the open-id process")]
         public void OpenIdFailure(string code, 
             string description, 
             string state)
         {
-            if (!IsEnabled())
-            {
-                return;
-            }
-
-            WriteEvent(Constants.EventIds.OpenIdFailure, code, description, state);
+            _logger.Error($"Something goes wrong in the open-id process, code : {code}, description : {description}, state : {state}");
         }
-
-        [Event(Constants.EventIds.Failure,
-            Level = EventLevel.Error,
-            Message = "something goes wrong")]
+        
         public void Failure(string message)
         {
-            if (!IsEnabled())
-            {
-                return;
-            }
-
-            WriteEvent(Constants.EventIds.Failure, message);
+            _logger.Error($"Something goes wrong, code : {message}");
         }
 
-        [Event(Constants.EventIds.Information,
-            Level = EventLevel.Informational,
-            Message = "information")]
         public void Info(string message)
         {
-            if (!IsEnabled())
-            {
-                return;
-            }
-
-            WriteEvent(Constants.EventIds.Information, message);
+            _logger.Information(message);
         }
 
         #endregion
 
         #region Other events
 
-        [Event(Constants.EventIds.GrantAccessToClient,
-            Level = EventLevel.Informational,
-            Message = "grant access to the client {0}",
-            Opcode = EventOpcode.Info,
-            Task = Constants.Tasks.Grant)]
         public void GrantAccessToClient(string clientId,
             string accessToken,
             string scopes)
         {
-            if (!IsEnabled())
-            {
-                return;
-            }
-
-            WriteEvent(Constants.EventIds.GrantAccessToClient,
-                clientId,
-                accessToken,
-                scopes);
+            _logger.Information($"Grant access to the client {clientId}, access token : {accessToken}, scopes : {scopes}");
         }
 
-        [Event(Constants.EventIds.ResourceOwnerIsAuthenticated,
-            Level = EventLevel.Informational,
-            Message = "the resource owner is authenticated",
-            Opcode = EventOpcode.Info,
-            Task = Constants.Tasks.Authenticate)]
         public void AuthenticateResourceOwner(string subject)
         {
-            if (!IsEnabled())
-            {
-                return;
-            }
-
-            WriteEvent(Constants.EventIds.ResourceOwnerIsAuthenticated,
-                subject);
+            _logger.Information($"The resource owner is authenticated {subject}");
         }
-
-        [Event(Constants.EventIds.ConsentHasBeenGivenByResourceOwner,
-            Level = EventLevel.Informational,
-            Message = "the consent has been given by the resource owner",
-            Opcode = EventOpcode.Info,
-            Task = Constants.Tasks.Consent)]
+        
         public void GiveConsent(string subject,
             string clientId,
             string consentId)
         {
-            if (!IsEnabled())
-            {
-                return;
-            }
-
-            WriteEvent(Constants.EventIds.ConsentHasBeenGivenByResourceOwner,
-                subject,
-                clientId,
-                consentId);
+            _logger.Information($"The consent has been given by the resource owner, subject : {subject}, client id : {clientId}, consent id : {consentId}");
         }
 
-        [Event(Constants.EventIds.StartRegistration,
-            Level = EventLevel.Informational,
-            Message = "start the registration process",
-            Opcode = EventOpcode.Start,
-            Task = Constants.Tasks.Registration)]
         public void StartRegistration(string clientName)
         {
-            if (!IsEnabled())
-            {
-                return;
-            }
-
-            WriteEvent(Constants.EventIds.StartRegistration,
-                clientName);
+            _logger.Information($"Start the registration process, client name : {clientName}");
         }
 
-        [Event(Constants.EventIds.EndRegistration,
-            Level = EventLevel.Informational,
-            Message = "end the registration process",
-            Opcode = EventOpcode.Stop,
-            Task = Constants.Tasks.Registration)]
         public void EndRegistration(
             string clientId,
             string clientName)
         {
-            if (!IsEnabled())
-            {
-                return;
-            }
-
-            WriteEvent(Constants.EventIds.EndRegistration,
-                clientId,
-                clientName);
+            _logger.Information($"End the registration process, client id : {clientId}, client name : {clientName}");
         }
 
         #endregion

@@ -20,13 +20,14 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
+using Serilog;
+using Serilog.Sinks.RollingFile;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Services;
-using SimpleIdentityServer.DataAccess.Fake;
 using SimpleIdentityServer.DataAccess.SqlServer;
 using SimpleIdentityServer.Host.Configuration;
 using SimpleIdentityServer.Host.Controllers;
@@ -35,7 +36,6 @@ using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.RateLimitation;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace SimpleIdentityServer.Host 
@@ -179,29 +179,11 @@ namespace SimpleIdentityServer.Host
             services.AddSimpleIdentityServerJwt();
             services.AddRateLimitation();
 
-            var logging = SimpleIdentityServerEventSource.Log;
             services.AddTransient<ICertificateStore, CertificateStore>();
             services.AddTransient<IResourceOwnerService, InMemoryUserService>();
             services.AddTransient<IRedirectInstructionParser, RedirectInstructionParser>();
             services.AddTransient<IActionResultParser, ActionResultParser>();
             services.AddTransient<ISimpleIdentityServerConfigurator, ConcreteSimpleIdentityServerConfigurator>();
-            services.AddSingleton<ISimpleIdentityServerEventSource>(logging);
-
-            /*
-            if (swaggerOptions.IsSwaggerEnabled)
-            {
-                services.AddSwaggerGen();
-                services.ConfigureSwaggerDocument(opts => {
-                    opts.SingleApiVersion(new Info
-                    {
-                        Version = "v1",
-                        Title = "Simple Identity Server",
-                        TermsOfService = "None"
-                    });
-                });
-            }
-            */
-
             services.AddDataProtection();
             services.AddSingleton<SwaggerOptions>(swaggerOptions);
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -215,6 +197,17 @@ namespace SimpleIdentityServer.Host
                         "SimpleIdentityServer.Host"
                 ));
             });
+            
+            // Configure SeriLog pipeline
+            var logger = new LoggerConfiguration()
+                .MinimumLevel.Information()
+                .Enrich.FromLogContext()
+                .WriteTo.ColoredConsole()
+                .WriteTo.RollingFile("log-{Date}.txt")
+                .CreateLogger();
+            Log.Logger = logger;
+            services.AddTransient<ISimpleIdentityServerEventSource, SimpleIdentityServerEventSource>();
+            services.AddSingleton<ILogger>(logger);
         }
         
         #endregion

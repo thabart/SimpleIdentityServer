@@ -20,6 +20,8 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Serilog;
+using Serilog.Sinks.RollingFile;
 using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Host.Configuration;
 using SimpleIdentityServer.RateLimitation.Configuration;
@@ -108,8 +110,6 @@ namespace SimpleIdentityServer.Startup
             IHostingEnvironment env,
             ILoggerFactory loggerFactory)
         {
-            loggerFactory.AddConsole();
-
             // Enable CORS
             app.UseCors("AllowAll");
 
@@ -123,7 +123,7 @@ namespace SimpleIdentityServer.Startup
                 IsFacebookAuthenticationEnabled = true,
                 FacebookClientId = Configuration["Facebook:ClientId"],
                 FacebookClientSecret = Configuration["Facebook:ClientSecret"]
-            }, _swaggerOptions);
+            }, _swaggerOptions, loggerFactory);
         }
 
         #endregion
