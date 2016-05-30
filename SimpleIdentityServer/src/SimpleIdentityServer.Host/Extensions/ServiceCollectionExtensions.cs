@@ -44,7 +44,8 @@ namespace SimpleIdentityServer.Host
     {
         InMemory,
         SqlServer,
-        SqlLite
+        SqlLite,
+        Postgre
     }
     
     public sealed class DataSourceOptions
@@ -157,6 +158,11 @@ namespace SimpleIdentityServer.Host
             if (dataSourceOptions.DataSourceType == DataSourceTypes.SqlLite)
             {
                 serviceCollection.AddSimpleIdentityServerSqlLite(dataSourceOptions.ConnectionString);
+            }
+
+            if (dataSourceOptions.DataSourceType == DataSourceTypes.Postgre)
+            {
+                serviceCollection.AddSimpleIdentityServerPostgre(dataSourceOptions.ConnectionString);
             }
             
             ConfigureSimpleIdentityServer(serviceCollection, swaggerOptions);

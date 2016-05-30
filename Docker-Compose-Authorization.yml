@@ -8,14 +8,11 @@ services:
    - "5000:5000"
   depends_on:
    - postgresql
+  links:
+   - postgresql
  postgresql:
-  image: sameersbn/postgresql:9.4-21
-  ports:
-   - "5432:5432"
+  image: postgres
   environment:
-   - DEBUG=false
-   - DB_USER=postgres
-   - DB_PASS=password
-   - DB_NAME=postgres
-  volumes:
-   - /srv/docker/postgresql:/var/lib/postgresql
+   - POSTGRES_USER=postgres
+   - POSTGRES_PASSWORD=password
+   - POSTGRES_DB=postgres

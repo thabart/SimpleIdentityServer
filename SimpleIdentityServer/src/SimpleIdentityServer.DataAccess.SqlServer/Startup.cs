@@ -90,7 +90,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
             var configuration = new ConfigurationBuilder()
                 .AddEnvironmentVariables();
             var environmentVariables = configuration.Build();
-            var environmentVariable = environmentVariables.GetChildren().FirstOrDefault(e => e.Key == "ASPNET_ENV");
+            var environmentVariable = environmentVariables.GetChildren().FirstOrDefault(e => e.Key == "ASPNETCORE_ENVIRONMENT");
             return environmentVariable == null ? string.Empty : environmentVariable.Value;
         }
        

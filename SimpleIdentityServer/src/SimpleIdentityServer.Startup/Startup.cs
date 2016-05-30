@@ -59,6 +59,7 @@ namespace SimpleIdentityServer.Startup
         {
             var isSqlServer = bool.Parse(Configuration["isSqlServer"]);
             var isSqlLite = bool.Parse(Configuration["isSqlLite"]);
+            var isPostgre = bool.Parse(Configuration["isPostgre"]);
             // Add the dependencies needed to enable CORS
             services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
                 .AllowAnyMethod()
@@ -89,6 +90,10 @@ namespace SimpleIdentityServer.Startup
             else if (isSqlLite)
             {
                 dataSourceType = DataSourceTypes.SqlLite;
+            }
+            else if(isPostgre)
+            {
+                dataSourceType = DataSourceTypes.Postgre;
             }
 
             // Configure Simple identity server
