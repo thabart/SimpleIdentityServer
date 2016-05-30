@@ -507,7 +507,8 @@ namespace SimpleIdentityServer.Core
                 Jwt.Constants.StandardResourceOwnerClaimNames.EmailVerified,
                 Jwt.Constants.StandardResourceOwnerClaimNames.Address,
                 Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber,
-                Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumberVerified
+                Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumberVerified,
+                Jwt.Constants.StandardResourceOwnerClaimNames.Role
             };
         }
 
