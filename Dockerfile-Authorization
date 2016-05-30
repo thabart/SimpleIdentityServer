@@ -7,7 +7,8 @@ COPY SimpleIdentityServer/src /app
 WORKDIR /app
 
 RUN dotnet restore
-RUN bash -c "cd SimpleIdentityServer.DataAccess.SqlServer && dotnet ef database update"
+RUN apt-get update && apt-get install postgresql-client
+# RUN bash -c "./wait-for-it.sh postgresql:5432 -- cd SimpleIdentityServer.DataAccess.SqlServer && dotnet ef database update"
 
 EXPOSE 5000
 
