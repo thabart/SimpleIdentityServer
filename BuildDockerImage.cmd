@@ -1,3 +1,5 @@
+# clean volumes
+docker volume rm $(docker volume ls -qf dangling=true)
 docker-machine regenerate-certs dev
 
 SET DOCKER_TLS_VERIFY=1

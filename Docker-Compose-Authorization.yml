@@ -8,6 +8,11 @@ services:
    - "5000:5000"
   links:
    - postgresql
+  depends_on:
+   - "postgresql"
+  environment:
+   - DB_ALIAS=postgresql
+   - DB_PORT=5432
  postgresql:
   image: postgres
   environment:

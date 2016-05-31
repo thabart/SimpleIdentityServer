@@ -1,15 +1,15 @@
 FROM microsoft/dotnet:latest
 
 ENV ASPNETCORE_ENVIRONMENT docker
+ENV DB_ALIAS postgresql
+ENV DB_PORT 5432
 
 COPY SimpleIdentityServer/src /app
 
 WORKDIR /app
 
 RUN dotnet restore
-RUN apt-get update && apt-get install postgresql-client
-# RUN bash -c "./wait-for-it.sh postgresql:5432 -- cd SimpleIdentityServer.DataAccess.SqlServer && dotnet ef database update"
 
 EXPOSE 5000
 
-ENTRYPOINT ["dotnet", "run", "--project", "SimpleIdentityServer.Startup/project.json"]
+ENTRYPOINT ["/simpleidserver-entrypoint.sh"]
