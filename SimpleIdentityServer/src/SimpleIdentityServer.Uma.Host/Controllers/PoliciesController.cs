@@ -69,6 +69,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         }
 
         [HttpPut]
+        [Authorize("UmaProtection")]
         public ActionResult PutPolicy([FromBody] PutPolicy putPolicy)
         {
             if (putPolicy == null)
