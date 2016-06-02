@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
 {
@@ -83,7 +82,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                        .Annotation("Npgsql:Serial", true),
                     AccessToken = table.Column<string>(nullable: true),
                     ClientId = table.Column<string>(nullable: true),
                     CreateDateTime = table.Column<DateTime>(nullable: false),
@@ -200,8 +199,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                 name: "addresses",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Id = table.Column<string>(nullable: false),
                     Country = table.Column<string>(nullable: true),
                     Formatted = table.Column<string>(nullable: true),
                     Locality = table.Column<string>(nullable: true),
@@ -226,7 +224,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                        .Annotation("Npgsql:Serial", true),
                     ClientId = table.Column<string>(nullable: true),
                     ResourceOwnerId = table.Column<string>(nullable: true)
                 },

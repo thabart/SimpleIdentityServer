@@ -388,6 +388,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         Name = "administrator",
                         Address = new Address
                         {
+                            Id = Guid.NewGuid().ToString(),
                             Country  = "France"
                         },
                         BirthDate = "1989-10-07",

@@ -8,19 +8,17 @@ using SimpleIdentityServer.DataAccess.SqlServer;
 namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
 {
     [DbContext(typeof(SimpleIdentityServerContext))]
-    [Migration("20160524154933_Initialize")]
+    [Migration("20160602175656_Initialize")]
     partial class Initialize
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
-                .HasAnnotation("ProductVersion", "1.0.0-rc2-20901")
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "1.0.0-rc2-20901");
 
             modelBuilder.Entity("SimpleIdentityServer.DataAccess.SqlServer.Models.Address", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                    b.Property<string>("Id");
 
                     b.Property<string>("Country");
 

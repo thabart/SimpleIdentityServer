@@ -13,13 +13,11 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
             modelBuilder
-                .HasAnnotation("ProductVersion", "1.0.0-rc2-20901")
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "1.0.0-rc2-20901");
 
             modelBuilder.Entity("SimpleIdentityServer.DataAccess.SqlServer.Models.Address", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                    b.Property<string>("Id");
 
                     b.Property<string>("Country");
 

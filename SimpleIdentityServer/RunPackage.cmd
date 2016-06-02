@@ -1,1 +1,0 @@
-dnu publish src\SimpleIdentityServer.Startup -o output\

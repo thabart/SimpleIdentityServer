@@ -8,9 +8,9 @@ COPY SimpleIdentityServer/src /app
 
 WORKDIR /app
 
-RUN chmod +x simpleidserver-entrypoint.sh && chmod +x wait-for-it.sh
+RUN chmod +x /app/simpleidserver-entrypoint.sh && chmod +x /app/wait-for-it.sh
 RUN dotnet restore
 
 EXPOSE 5000
 
-# ENTRYPOINT ["./simpleidserver-entrypoint.sh"]
+ENTRYPOINT ["/app/simpleidserver-entrypoint.sh"]
