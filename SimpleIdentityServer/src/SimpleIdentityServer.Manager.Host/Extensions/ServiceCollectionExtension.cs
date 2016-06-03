@@ -65,6 +65,12 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
                 serviceCollection.AddSimpleIdentityServerSqlLite(databaseOptions.ConnectionString);
             }
 
+            // Enable postgresql
+            if (databaseOptions.DataSourceType == DataSourceTypes.Postgres)
+            {
+                serviceCollection.AddSimpleIdentityServerPostgre(databaseOptions.ConnectionString);
+            }
+
             serviceCollection.AddSimpleIdentityServerCore();
             serviceCollection.AddSimpleIdentityServerManagerCore();
 

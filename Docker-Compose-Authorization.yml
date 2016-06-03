@@ -27,6 +27,20 @@ services:
   environment:
    - DB_ALIAS=postgresql
    - DB_PORT=5432
+ manager:
+  build:
+   dockerfile: Dockerfile-Manager
+   context: .
+  ports:
+   - "5002:5002"
+  links:
+   - postgresql
+   - web:simpleidserver
+  depends_on:
+   - "postgresql"
+  environment:
+   - DB_ALIAS=postgresql
+   - DB_PORT=5432
  postgresql:
   image: postgres
   environment:

@@ -43,12 +43,25 @@ namespace SimpleIdentityServer.Manager.Host.Startup
         }
 
         public IConfigurationRoot Configuration { get; set; }
-        
+
         public void ConfigureServices(IServiceCollection services)
         {
             var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
+            var isSqlServer = bool.Parse(Configuration["isSqlServer"]);
+            var isPostgre = bool.Parse(Configuration["isPostgre"]);
             var authorizationUrl = Configuration["AuthorizationServer"] + "/authorization";
             var tokenUrl = authorizationUrl + "/token";
+            var dataSourceType = DataSourceTypes.InMemory;
+            if (isSqlServer)
+            {
+                dataSourceType = DataSourceTypes.SqlServer;
+            }
+
+            if (isPostgre)
+            {
+                dataSourceType = DataSourceTypes.Postgres;
+            }
+
             services.AddSimpleIdentityServerManager(new AuthorizationServerOptions
             {
                 AuthorizationUrl = authorizationUrl,
@@ -57,7 +70,7 @@ namespace SimpleIdentityServer.Manager.Host.Startup
             new DatabaseOptions
             {
                 ConnectionString = connectionString,
-                DataSourceType = DataSourceTypes.SqlServer
+                DataSourceType = dataSourceType
             }, _swaggerOptions);
         }
 

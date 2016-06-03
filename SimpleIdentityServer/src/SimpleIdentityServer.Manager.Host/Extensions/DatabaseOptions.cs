@@ -20,7 +20,8 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
     {
         InMemory,
         SqlServer,
-        SqlLite
+        SqlLite,
+        Postgres
     }
 
     public class DatabaseOptions
