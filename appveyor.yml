@@ -9,5 +9,15 @@ before_build:
     dotnet restore
 build_script:
 - cmd: dotnet build SimpleIdentityServer\src\SimpleIdentityServer.Startup
+- cmd: dotnet build SimpleIdentityServer\src\SimpleIdentityServer.Uma.Host
+- cmd: dotnet build SimpleIdentityServer\src\SimpleIdentityServer.Manager.Host.Startup
 test_script:
 - cmd: dotnet test SimpleIdentityServer\tests\SimpleIdentityServer.Core.UnitTests
+- cmd: dotnet test SimpleIdentityServer\tests\SimpleIdentityServer.Client.Unit.Tests
+- cmd: dotnet test SimpleIdentityServer\tests\SimpleIdentityServer.Core.Jwt.UnitTests
+- cmd: dotnet test SimpleIdentityServer\tests\SimpleIdentityServer.Manager.Core.Tests
+- cmd: dotnet test SimpleIdentityServer\tests\SimpleIdentityServer.Oauth2Instrospection.Authentication.Tests
+- cmd: dotnet test SimpleIdentityServer\tests\SimpleIdentityServer.Uma.Core.UnitTests
+- cmd: dotnet test SimpleIdentityServer\tests\SimpleIdentityServer.UmaIntrospection.Authentication.Tests
+- cmd: dotnet test SimpleIdentityServer\tests\SimpleIdentityServer.UmaManager.Client.Unit.Tests
+- cmd: dotnet test SimpleIdentityServer\tests\SimpleIdentityServer.UserInformation.Authentication.Tests
