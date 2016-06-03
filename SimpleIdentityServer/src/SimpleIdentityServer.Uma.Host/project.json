@@ -3,7 +3,9 @@
   "buildOptions": {
     "emitEntryPoint": true,
     "copyToOutput": [
-      "appsettings.json"
+      "appsettings.json",
+      "appsettings.docker.json",
+      "appsettings.azure.json"
     ]
   },
   "tooling": {

@@ -1,0 +1,16 @@
+FROM microsoft/dotnet:latest
+
+ENV ASPNETCORE_ENVIRONMENT docker
+ENV DB_ALIAS postgresql
+ENV DB_PORT 5432
+
+COPY SimpleIdentityServer/src /app
+
+WORKDIR /app
+
+RUN chmod +x /app/uma-entrypoint.sh && chmod +x /app/wait-for-it.sh
+RUN dotnet restore
+
+EXPOSE 5001
+
+ENTRYPOINT ["/app/uma-entrypoint.sh"]

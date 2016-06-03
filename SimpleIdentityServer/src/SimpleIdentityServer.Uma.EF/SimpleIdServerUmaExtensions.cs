@@ -42,6 +42,21 @@ namespace SimpleIdentityServer.Uma.EF
             return serviceCollection;
         }
 
+        public static IServiceCollection AddSimpleIdServerUmaPostgresql(
+            this IServiceCollection serviceCollection,
+            string connectionString)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new ArgumentNullException(nameof(connectionString));
+            }
+
+            RegisterServices(serviceCollection);
+            serviceCollection.AddEntityFramework()
+                            .AddDbContext<SimpleIdServerUmaContext>(options => options.UseNpgsql(connectionString));
+            return serviceCollection;
+        }
+
         #endregion
 
         #region Private static methods

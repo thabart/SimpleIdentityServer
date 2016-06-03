@@ -109,6 +109,8 @@ namespace SimpleIdentityServer.Uma.Host
         public void RegisterServices(IServiceCollection services)
         {
             var authorizationServerUrl = Configuration["AuthorizationServerUrl"];
+            var isSqlServer = bool.Parse(Configuration["isSqlServer"]);
+            var isPostgre = bool.Parse(Configuration["isPostgre"]);
             var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
             var parametersProvider = new ParametersProvider(authorizationServerUrl);
             services.AddTransient<IHostingProvider, HostingProvider>();
@@ -123,7 +125,15 @@ namespace SimpleIdentityServer.Uma.Host
                 opt.TicketLifeTime = 3000;
             });
 
-            services.AddSimpleIdServerUmaSqlServer(connectionString);
+            if (isSqlServer)
+            {
+                services.AddSimpleIdServerUmaSqlServer(connectionString);
+            }
+
+            if (isPostgre)
+            {
+                services.AddSimpleIdServerUmaPostgresql(connectionString);
+            }
         }
 
         #endregion

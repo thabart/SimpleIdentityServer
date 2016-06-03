@@ -21,6 +21,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Linq;
 
 namespace SimpleIdentityServer.Uma.EF
@@ -48,8 +49,20 @@ namespace SimpleIdentityServer.Uma.EF
         public void ConfigureServices(IServiceCollection services)
         {
             var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
-            services.AddEntityFramework()
-                            .AddDbContext<SimpleIdServerUmaContext>(options => options.UseSqlServer(connectionString));
+            var isSqlServer = bool.Parse(Configuration["isSqlServer"]);
+            var isPostgre = bool.Parse(Configuration["isPostgre"]);
+            Console.WriteLine(isPostgre);
+            if (isSqlServer)
+            {
+                services.AddEntityFramework()
+                                .AddDbContext<SimpleIdServerUmaContext>(options => options.UseSqlServer(connectionString));
+            }
+
+            if (isPostgre)
+            {
+                services.AddEntityFramework()
+                                .AddDbContext<SimpleIdServerUmaContext>(options => options.UseNpgsql(connectionString));
+            }
         }
 
         public void Configure(IApplicationBuilder app,
@@ -67,7 +80,7 @@ namespace SimpleIdentityServer.Uma.EF
             var configuration = new ConfigurationBuilder()
                 .AddEnvironmentVariables();
             var environmentVariables = configuration.Build();
-            var environmentVariable = environmentVariables.GetChildren().FirstOrDefault(e => e.Key == "ASPNETCORE_ENV");
+            var environmentVariable = environmentVariables.GetChildren().FirstOrDefault(e => e.Key == "ASPNETCORE_ENVIRONMENT");
             return environmentVariable == null ? string.Empty : environmentVariable.Value;
         }
 

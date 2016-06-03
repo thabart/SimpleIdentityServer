@@ -13,7 +13,26 @@ services:
   environment:
    - DB_ALIAS=postgresql
    - DB_PORT=5432
+ uma:
+  build:
+   dockerfile: Dockerfile-Uma
+   context: .
+  ports:
+   - "5001:5001"
+  links:
+   - postgresql_uma:postgresql
+  depends_on:
+   - "postgresql_uma"
+  environment:
+   - DB_ALIAS=postgresql
+   - DB_PORT=5432
  postgresql:
+  image: postgres
+  environment:
+   - POSTGRES_USER=postgres
+   - POSTGRES_PASSWORD=password
+   - POSTGRES_DB=postgres
+ postgresql_uma:
   image: postgres
   environment:
    - POSTGRES_USER=postgres
