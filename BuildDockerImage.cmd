@@ -12,4 +12,4 @@ docker run --name simpleidserver -e DB_ALIAS=postgresql -e DB_PORT=5432 --link p
 docker run --name postgresql_uma -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=password -e POSTGRES_DB=postgres -d postgres
 
 # Run UMA
-docker run --name uma -e DB_ALIAS=postgresql -e DB_PORT=5432 --link postgresql_uma:postgresql uma
+docker run --name uma -e DB_ALIAS=postgresql -e DB_PORT=5432 --link postgresql_uma:postgresql --link simpleidserver:simpleidserver uma

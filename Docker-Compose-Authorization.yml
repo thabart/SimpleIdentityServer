@@ -21,6 +21,7 @@ services:
    - "5001:5001"
   links:
    - postgresql_uma:postgresql
+   - web:simpleidserver
   depends_on:
    - "postgresql_uma"
   environment:
