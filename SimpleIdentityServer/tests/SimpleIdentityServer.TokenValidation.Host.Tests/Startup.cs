@@ -102,7 +102,7 @@ namespace SimpleIdentityServer.TokenValidation.Host.Tests
             {
                 EnrichWithUmaManagerInformation = true,
                 OperationUrl = "http://localhost:8080/api/operations",
-                UmaConfigurationUrl = "http://localhost:5002/.well-known/uma-configuration"
+                UmaConfigurationUrl = "http://localhost:5001/.well-known/uma-configuration"
             };
             app.UseAuthenticationWithUmaIntrospection(options);
 

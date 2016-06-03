@@ -1,7 +1,8 @@
 {
   "profiles": {
     "SimpleIdentityServer.Startup": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "--server.urls=http://*:5000"
     }
   }
 }

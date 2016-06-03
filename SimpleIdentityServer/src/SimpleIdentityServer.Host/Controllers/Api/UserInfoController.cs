@@ -58,25 +58,14 @@ namespace SimpleIdentityServer.Api.Controllers.Api
 
         private ActionResult ProcessRequest()
         {
-            try
+            var accessToken = TryToGetTheAccessToken();
+            if (string.IsNullOrWhiteSpace(accessToken))
             {
-                var accessToken = TryToGetTheAccessToken();
-                if (string.IsNullOrWhiteSpace(accessToken))
-                {
-                    throw new AuthorizationException(ErrorCodes.InvalidToken, string.Empty);
-                }
+                throw new AuthorizationException(ErrorCodes.InvalidToken, string.Empty);
+            }
 
-                var result = _userInfoActions.GetUserInformation(accessToken);
-                return result.Content;
-            }
-            catch (AuthorizationException)
-            {
-                return new UnauthorizedResult();
-            }
-            catch (Exception ex)
-            {
-                return new OkObjectResult(ex.StackTrace);
-            }
+            var result = _userInfoActions.GetUserInformation(accessToken);
+            return result.Content;
         }
 
         private string TryToGetTheAccessToken()

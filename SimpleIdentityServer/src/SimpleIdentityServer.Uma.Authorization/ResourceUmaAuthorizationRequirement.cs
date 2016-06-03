@@ -51,7 +51,7 @@ namespace SimpleIdentityServer.Uma.Authorization
 
         #region Protected methods
 
-        protected override void Handle(AuthorizationHandlerContext context, ResourceUmaAuthorizationRequirement requirement)
+        protected override void Handle(AuthorizationContext context, ResourceUmaAuthorizationRequirement requirement)
         {
             if (context.User == null)
             {
@@ -65,7 +65,7 @@ namespace SimpleIdentityServer.Uma.Authorization
             }
 
             var permissions = claimsIdentity.GetPermissions();
-            if (permissions.Any(p => string.Equals(p.ResourceSetId, _resourceSetId, StringComparison.OrdinalIgnoreCase) && 
+            if (permissions.Any(p => string.Equals(p.ResourceSetId, _resourceSetId, StringComparison.OrdinalIgnoreCase) &&
                 _scopes.All(s => p.Scopes.Any(sc => string.Equals(sc, s, StringComparison.OrdinalIgnoreCase)))))
             {
                 context.Succeed(requirement);

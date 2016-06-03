@@ -120,13 +120,19 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
 
             // Validate RPT
             var identityServerUmaClientFactory = (IIdentityServerUmaClientFactory)_serviceProvider.GetService(typeof(IIdentityServerUmaClientFactory));
-            var introspectionResponse = await identityServerUmaClientFactory
-                .GetIntrospectionClient()
-                .GetIntrospectionByResolvingUrlAsync(rpt, umaConfigurationUri);
-            // Add the permissions
-            if (introspectionResponse.IsActive)
+            try
             {
-                await AddPermissions(context, introspectionResponse.Permissions);
+                var introspectionResponse = await identityServerUmaClientFactory
+                    .GetIntrospectionClient()
+                    .GetIntrospectionByResolvingUrlAsync(rpt, umaConfigurationUri);
+                // Add the permissions
+                if (introspectionResponse.IsActive)
+                {
+                    await AddPermissions(context, introspectionResponse.Permissions);
+                }
+            }
+            catch (Exception)
+            {
             }
 
             await _nullAuthenticationNext(context);

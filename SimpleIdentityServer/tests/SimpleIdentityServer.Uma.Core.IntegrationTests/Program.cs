@@ -54,8 +54,8 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
 
         public static void Main(string[] args)
         {
-            AuthorizedScenarioWithClaims();
-            // GetRpt("1e6ae546-4ea5-4daa-805a-1b52806f5beb");
+            // AuthorizedScenarioWithClaims();
+            GetRpt("36d318b5-6d6e-414d-a693-3970d3490b9d");
             // AuthorizedScenario();
             // AuthorizedScenarioByDiscovery();
         }

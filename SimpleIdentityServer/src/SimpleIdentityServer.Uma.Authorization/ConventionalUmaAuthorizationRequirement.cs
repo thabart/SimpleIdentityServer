@@ -34,8 +34,8 @@ namespace SimpleIdentityServer.Uma.Authorization
         #endregion
 
         #region Protected methods
-                
-        protected override void Handle(AuthorizationHandlerContext context, ConventionalUmaAuthorizationRequirement requirement)
+
+        protected override void Handle(AuthorizationContext context, ConventionalUmaAuthorizationRequirement requirement)
         {
             var resource = context.Resource as Microsoft.AspNetCore.Mvc.Filters.AuthorizationFilterContext;
             if (context.User == null || resource == null)

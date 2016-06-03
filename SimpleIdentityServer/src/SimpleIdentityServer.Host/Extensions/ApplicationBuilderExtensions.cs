@@ -200,7 +200,6 @@ namespace SimpleIdentityServer.Host
                         controller = "Error",
                         action = "Get404"
                     });
-
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");

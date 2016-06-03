@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.EntityFrameworkCore;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.EF.Extensions;
@@ -117,7 +118,10 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
         {
             try
             {
-                var record = _simpeIdServerUmaContext.ResourceSets.FirstOrDefault(r => r.Id == id);
+                var record = _simpeIdServerUmaContext.ResourceSets
+                    .Include(r => r.Rpts)
+                    .Include(r => r.Tickets)
+                    .FirstOrDefault(r => r.Id == id);
                 if (record == null)
                 {
                     return false;
