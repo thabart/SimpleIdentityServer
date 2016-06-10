@@ -21,8 +21,7 @@
     "SimpleIdentityServer.DataAccess.Fake": "*",
     "SimpleIdentityServer.DataAccess.SqlServer": "*",
     "SimpleIdentityServer.Manager.Core": "*",
-    "SimpleIdentityServer.Oauth2Instrospection.Authentication": "*",
-    "SimpleIdentityServer.UserInformation.Authentication": "*"
+    "SimpleIdentityServer.Oauth2Instrospection.Authentication": "*"
   },
   "frameworks": {
     "net46": {

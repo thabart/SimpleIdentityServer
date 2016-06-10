@@ -16,7 +16,7 @@
 
 using Microsoft.AspNetCore.Builder;
 using SimpleIdentityServer.Manager.Host.Middleware;
-using SimpleIdentityServer.UserInformation.Authentication;
+using SimpleIdentityServer.Oauth2Instrospection.Authentication;
 using System;
 
 namespace SimpleIdentityServer.Manager.Host.Extensions
@@ -46,11 +46,13 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
 
             // Enable custom exception handler
             applicationBuilder.UseSimpleIdentityServerManagerExceptionHandler();
-            var userInformationOptions = new UserInformationOptions
+            var introspectionOptions = new Oauth2IntrospectionOptions
             {
-                UserInformationEndPoint = authorizationServerOptions.UserInformationUrl
+                InstrospectionEndPoint = authorizationServerOptions.IntrospectionUrl,
+                ClientId = authorizationServerOptions.ClientId,
+                ClientSecret = authorizationServerOptions.ClientSecret
             };
-            applicationBuilder.UseAuthenticationWithUserInformation(userInformationOptions);
+            applicationBuilder.UseAuthenticationWithIntrospection(introspectionOptions);
 
             // Launch ASP.NET MVC
             applicationBuilder.UseMvc(routes =>

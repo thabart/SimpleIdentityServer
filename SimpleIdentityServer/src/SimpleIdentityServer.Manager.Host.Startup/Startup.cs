@@ -76,13 +76,17 @@ namespace SimpleIdentityServer.Manager.Host.Startup
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            var userInfoUrl = Configuration["AuthorizationServer"] + "/userinfo";
+            var introspectionUrl = Configuration["AuthorizationServerUrl"] + "/introspect";
+            var clientId = Configuration["ClientId"];
+            var clientSecret = Configuration["ClientSecret"];
             loggerFactory.AddConsole();
             loggerFactory.AddDebug();
 
             app.UseSimpleIdentityServerManager(new AuthorizationServerOptions
             {
-                UserInformationUrl = userInfoUrl
+                IntrospectionUrl = introspectionUrl,
+                ClientId = clientId,
+                ClientSecret = clientSecret
             }, _swaggerOptions);
         }
     }

@@ -41,28 +41,28 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
         #region Public methods
 
         [HttpGet]
-        [Authorize("getAllClients")]
+        [Authorize("manager")]
         public List<ClientInformationResponse> GetAll()
         {
             return _clientActions.GetClients().ToDtos();
         }
 
         [HttpGet("{id}")]
-        [Authorize("getClient")]
+        [Authorize("manager")]
         public ClientResponse Get(string id)
         {
             return _clientActions.GetClient(id).ToClientResponseDto();
         }
 
         [HttpDelete("{id}")]
-        [Authorize("deleteClient")]
+        [Authorize("manager")]
         public bool Delete(string id)
         {
             return _clientActions.DeleteClient(id);
         }
 
         [HttpPut]
-        [Authorize("updateClient")]
+        [Authorize("manager")]
         public bool Put([FromBody] UpdateClientRequest updateClientRequest)
         {
             return _clientActions.UpdateClient(updateClientRequest.ToParameter());

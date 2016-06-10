@@ -22,6 +22,10 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
 
         public string TokenUrl { get; set; }
 
-        public string UserInformationUrl { get; set; }
+        public string IntrospectionUrl { get; set; }
+
+        public string ClientId { get; set; }
+
+        public string ClientSecret { get; set; }
     }
 }

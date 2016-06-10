@@ -80,10 +80,7 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
             // Add authorization policy rules
             serviceCollection.AddAuthorization(options =>
             {
-                options.AddPolicy("getAllClients", policy => policy.RequireClaim("role", "administrator"));
-                options.AddPolicy("getClient", policy => policy.RequireClaim("role", "administrator"));
-                options.AddPolicy("deleteClient", policy => policy.RequireClaim("role", "administrator"));
-                options.AddPolicy("updateClient", policy => policy.RequireClaim("role", "administrator"));
+                options.AddPolicy("manager", policy => policy.RequireClaim("scope", "openid_manager"));
             });
 
             serviceCollection.AddSimpleIdentityServerJwt();

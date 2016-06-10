@@ -30,9 +30,9 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
 
         private static IdentityServerUmaClientFactory _identityServerUmaClientFactory = new IdentityServerUmaClientFactory();
 
-        private const string ClientId = "UmaResourceServer";
+        private const string ClientId = "ManagerWebSite";
 
-        private const string ClientSecret = "UmaResourceServer";
+        private const string ClientSecret = "ManagerWebSite";
 
         private const string IdentityServerManagerClientId = "IdentityServerManager";
 
@@ -54,8 +54,8 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
 
         public static void Main(string[] args)
         {
-            // AuthorizedScenarioWithClaims();
-            GetRpt("36d318b5-6d6e-414d-a693-3970d3490b9d");
+            AuthorizedScenarioWithClaims();
+            // GetRpt("36d318b5-6d6e-414d-a693-3970d3490b9d");
             // AuthorizedScenario();
             // AuthorizedScenarioByDiscovery();
         }
@@ -208,12 +208,13 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
             // 3. Get token valid for uma_authorization scope
             var umaAuthorizationToken = GetGrantedToken(UmaAuthorizationScope);
             // 4. Add resource set
-            var resourceSet = AddResourceSet("resource_set", new List<string> { readScope, createScope }, umaProtectionToken.AccessToken);
+            // var resourceSet = AddResourceSet("resource_set", new List<string> { readScope, createScope }, umaProtectionToken.AccessToken);
+            var resourceSetId = "153e2c10-8626-490f-a3e9-689fb6ae937c";
             // 5. Add authorization policy
             var authorizationPolicy = AddPolicy(
                 new List<string> { ClientId }, 
-                new List<string> { readScope, createScope }, 
-                resourceSet.Id, 
+                new List<string> { "execute" },
+                resourceSetId, 
                 umaProtectionToken.AccessToken,
                 new List<PostClaim>
                 {
@@ -224,7 +225,7 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
                     }
                 });
             // 6. Add permission
-            var permission = AddPermission(resourceSet.Id, new List<string> { createScope }, umaProtectionToken.AccessToken);
+            var permission = AddPermission(resourceSetId, new List<string> { "execute" }, umaProtectionToken.AccessToken);
             // 7. Get an authorization
             var authorization = GetAuthorization(
                 permission.TicketId, 

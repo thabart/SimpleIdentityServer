@@ -210,6 +210,14 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         IsOpenIdScope = false,
                         IsDisplayedInConsent = true,
                         Type = ScopeType.ProtectedApi
+                    },
+                    new Scope
+                    {
+                        Name = "openid_manager",
+                        Description = "Access to the OpenId Manager",
+                        IsOpenIdScope = false,
+                        IsDisplayedInConsent = true,
+                        Type = ScopeType.ProtectedApi
                     }
                 });
             }
@@ -499,34 +507,9 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                     },
                     new Client
                     {
-                        ClientId = "IdentityServerManager",
-                        ClientName = "Identity server manager",
-                        ClientSecret = "IdentityServerManager",
-                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
-                        LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
-                        PolicyUri = "http://openid.net",
-                        TosUri = "http://openid.net",
-                        ClientScopes = new List<ClientScope>
-                        {
-                            new ClientScope
-                            {
-                                ScopeName = "openid"
-                            },
-                            new ClientScope
-                            {
-                                ScopeName = "role"
-                            }
-                        },
-                        GrantTypes = "0,1",
-                        ResponseTypes = "0,1,2",
-                        IdTokenSignedResponseAlg = "RS256",
-                        RedirectionUrls = "http://localhost:5002/callback,http://localhost:5001/swagger/ui/o2c.html"
-                    },
-                    new Client
-                    {
-                        ClientId = "UmaResourceServer",
+                        ClientId = "ManagerWebSite",
                         ClientName = "Resource server sample",
-                        ClientSecret = "UmaResourceServer",
+                        ClientSecret = "ManagerWebSite",
                         TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
                         LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
                         PolicyUri = "http://openid.net",
@@ -544,6 +527,10 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                             new ClientScope
                             {
                                 ScopeName = "uma_authorization"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "openid_manager"
                             }
                         },
                         GrantTypes = "3",
