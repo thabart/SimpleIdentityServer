@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
 {
@@ -81,8 +82,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                 name: "grantedTokens",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:Serial", true),
+                    Id = table.Column<string>(nullable: false),
                     AccessToken = table.Column<string>(nullable: true),
                     ClientId = table.Column<string>(nullable: true),
                     CreateDateTime = table.Column<DateTime>(nullable: false),
@@ -224,7 +224,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:Serial", true),
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     ClientId = table.Column<string>(nullable: true),
                     ResourceOwnerId = table.Column<string>(nullable: true)
                 },

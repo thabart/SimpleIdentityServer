@@ -20,7 +20,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Models
 {
     public class GrantedToken
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         public string AccessToken { get; set; }
 

@@ -8,13 +8,14 @@ using SimpleIdentityServer.DataAccess.SqlServer;
 namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
 {
     [DbContext(typeof(SimpleIdentityServerContext))]
-    [Migration("20160602175656_Initialize")]
+    [Migration("20160613075037_Initialize")]
     partial class Initialize
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
-                .HasAnnotation("ProductVersion", "1.0.0-rc2-20901");
+                .HasAnnotation("ProductVersion", "1.0.0-rc2-20901")
+                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("SimpleIdentityServer.DataAccess.SqlServer.Models.Address", b =>
                 {
@@ -205,8 +206,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
 
             modelBuilder.Entity("SimpleIdentityServer.DataAccess.SqlServer.Models.GrantedToken", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                    b.Property<string>("Id");
 
                     b.Property<string>("AccessToken");
 

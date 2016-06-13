@@ -92,6 +92,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                 {
                     var record = new Models.GrantedToken
                     {
+                        Id = Guid.NewGuid().ToString(),
                         AccessToken = grantedToken.AccessToken,
                         ClientId = grantedToken.ClientId,
                         CreateDateTime = grantedToken.CreateDateTime,
