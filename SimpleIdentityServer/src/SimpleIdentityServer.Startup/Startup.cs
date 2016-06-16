@@ -118,17 +118,20 @@ namespace SimpleIdentityServer.Startup
             // Enable CORS
             app.UseCors("AllowAll");
 
-            app.UseSimpleIdentityServer(new HostingOptions
+            app.Map("/openid", subApp =>
             {
-                IsDataMigrated = true,
-                IsDeveloperModeEnabled = false,
-                IsMicrosoftAuthenticationEnabled = true,
-                MicrosoftClientId = Configuration["Microsoft:ClientId"],
-                MicrosoftClientSecret = Configuration["Microsoft:ClientSecret"],
-                IsFacebookAuthenticationEnabled = true,
-                FacebookClientId = Configuration["Facebook:ClientId"],
-                FacebookClientSecret = Configuration["Facebook:ClientSecret"]
-            }, _swaggerOptions, loggerFactory);
+                subApp.UseSimpleIdentityServer(new HostingOptions
+                {
+                    IsDataMigrated = true,
+                    IsDeveloperModeEnabled = false,
+                    IsMicrosoftAuthenticationEnabled = true,
+                    MicrosoftClientId = Configuration["Microsoft:ClientId"],
+                    MicrosoftClientSecret = Configuration["Microsoft:ClientSecret"],
+                    IsFacebookAuthenticationEnabled = true,
+                    FacebookClientId = Configuration["Facebook:ClientId"],
+                    FacebookClientSecret = Configuration["Facebook:ClientSecret"]
+                }, _swaggerOptions, loggerFactory);
+            });
         }
 
         #endregion
