@@ -56,7 +56,7 @@ namespace SimpleIdentityServer.Api.Controllers
         {
             var user = Request.HttpContext.User;
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
-            var client = new Client();
+            var client = new Core.Models.Client();
             var scopes = new List<Scope>();
             var claims = new List<string>();
             var authenticatedUser = this.GetAuthenticatedUser();

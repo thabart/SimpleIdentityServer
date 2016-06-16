@@ -19,4 +19,9 @@
   <Import Project="$(VSToolsPath)\DotNet.Web\Microsoft.DotNet.Web.targets" Condition="'$(VSToolsPath)' != ''" />
   -->
   <Import Project="$(VSToolsPath)\DotNet\Microsoft.DotNet.targets" Condition="'$(VSToolsPath)' != ''" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties __JSONSchema="http://json.schemastore.org/chrome-manifest" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>

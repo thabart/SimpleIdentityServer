@@ -19,7 +19,6 @@ using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -160,13 +159,13 @@ namespace SimpleIdentityServer.Host
             // 3. Enable live connect authentication
             if (hostingOptions.IsMicrosoftAuthenticationEnabled) 
             {                
-                UseMicrosoftAuthentication(app, hostingOptions.MicrosoftClientId, hostingOptions.MicrosoftClientSecret);
+                // UseMicrosoftAuthentication(app, hostingOptions.MicrosoftClientId, hostingOptions.MicrosoftClientSecret);
             }
 
             // 4. Enable facebook authentication
             if (hostingOptions.IsFacebookAuthenticationEnabled)
             {
-                UseFacebookAuthentication(app, hostingOptions.FacebookClientId, hostingOptions.FacebookClientSecret);
+                // UseFacebookAuthentication(app, hostingOptions.FacebookClientId, hostingOptions.FacebookClientSecret);
             }
 
             // 5. Migrate all the database

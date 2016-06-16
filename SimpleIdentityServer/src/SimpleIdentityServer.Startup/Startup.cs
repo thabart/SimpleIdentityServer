@@ -20,8 +20,6 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Serilog;
-using Serilog.Sinks.RollingFile;
 using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Host.Configuration;
 using SimpleIdentityServer.RateLimitation.Configuration;
@@ -60,6 +58,9 @@ namespace SimpleIdentityServer.Startup
             var isSqlServer = bool.Parse(Configuration["isSqlServer"]);
             var isSqlLite = bool.Parse(Configuration["isSqlLite"]);
             var isPostgre = bool.Parse(Configuration["isPostgre"]);
+            var clientId = Configuration["ClientId"];
+            var clientSecret = Configuration["ClientSecret"];
+            var configurationUrl = Configuration["ConfigurationUrl"];
             // Add the dependencies needed to enable CORS
             services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
                 .AllowAnyMethod()
@@ -82,12 +83,8 @@ namespace SimpleIdentityServer.Startup
                 opt.MemoryCache = new MemoryCache(new MemoryCacheOptions());
             });
 			
-            var dataSourceType = DataSourceTypes.InMemory;
-            if (isSqlServer)
-            {
-                dataSourceType = DataSourceTypes.SqlServer;
-            }
-            else if (isSqlLite)
+            var dataSourceType = DataSourceTypes.SqlServer;
+            if (isSqlLite)
             {
                 dataSourceType = DataSourceTypes.SqlLite;
             }
@@ -100,13 +97,13 @@ namespace SimpleIdentityServer.Startup
             services.AddSimpleIdentityServer(new DataSourceOptions
             {
                 DataSourceType = dataSourceType,
-                ConnectionString = connectionString,
-                Clients = Clients.Get(),
-                JsonWebKeys = JsonWebKeys.Get(),
-                ResourceOwners = ResourceOwners.Get(),
-                Scopes = Scopes.Get(),
-                Translations = Translations.Get()
-            }, _swaggerOptions);
+                ConnectionString = connectionString
+            }, _swaggerOptions, new Host.Configuration.AuthenticationOptions
+            {
+                ClientId = clientId,
+                ClientSecret = clientSecret,
+                ConfigurationUrl = configurationUrl
+            });
 
             services.AddLogging();
         }
@@ -115,23 +112,18 @@ namespace SimpleIdentityServer.Startup
             IHostingEnvironment env,
             ILoggerFactory loggerFactory)
         {
-            // Enable CORS
             app.UseCors("AllowAll");
-
-            app.Map("/openid", subApp =>
+            app.UseSimpleIdentityServer(new HostingOptions
             {
-                subApp.UseSimpleIdentityServer(new HostingOptions
-                {
-                    IsDataMigrated = true,
-                    IsDeveloperModeEnabled = false,
-                    IsMicrosoftAuthenticationEnabled = true,
-                    MicrosoftClientId = Configuration["Microsoft:ClientId"],
-                    MicrosoftClientSecret = Configuration["Microsoft:ClientSecret"],
-                    IsFacebookAuthenticationEnabled = true,
-                    FacebookClientId = Configuration["Facebook:ClientId"],
-                    FacebookClientSecret = Configuration["Facebook:ClientSecret"]
-                }, _swaggerOptions, loggerFactory);
-            });
+                IsDataMigrated = true,
+                IsDeveloperModeEnabled = false,
+                IsMicrosoftAuthenticationEnabled = true,
+                MicrosoftClientId = Configuration["Microsoft:ClientId"],
+                MicrosoftClientSecret = Configuration["Microsoft:ClientSecret"],
+                IsFacebookAuthenticationEnabled = true,
+                FacebookClientId = Configuration["Facebook:ClientId"],
+                FacebookClientSecret = Configuration["Facebook:ClientSecret"]
+            }, _swaggerOptions, loggerFactory);
         }
 
         #endregion

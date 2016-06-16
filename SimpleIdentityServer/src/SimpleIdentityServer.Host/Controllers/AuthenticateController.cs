@@ -15,12 +15,15 @@
 #endregion
 
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Authentication;
+using Microsoft.AspNetCore.Http.Features.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.Extensions.Logging;
 using SimpleIdentityServer.Api.ViewModels;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Protector;
@@ -28,12 +31,15 @@ using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.Authenticate;
 using SimpleIdentityServer.Host.DTOs.Request;
 using SimpleIdentityServer.Host.Extensions;
+using SimpleIdentityServer.Host.Handlers;
 using SimpleIdentityServer.Host.ViewModels;
 using SimpleIdentityServer.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Security.Claims;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Host.Controllers
@@ -56,6 +62,8 @@ namespace SimpleIdentityServer.Host.Controllers
         
         private readonly IUrlHelper _urlHelper;
 
+        private readonly IAuthenticationManager _authenticationManager;
+
         public AuthenticateController(
             IAuthenticateActions authenticateActions,
             IDataProtectionProvider dataProtectionProvider,
@@ -63,7 +71,8 @@ namespace SimpleIdentityServer.Host.Controllers
             ITranslationManager translationManager,
             ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
             IUrlHelperFactory urlHelperFactory,
-            IActionContextAccessor actionContextAccessor)
+            IActionContextAccessor actionContextAccessor,
+            IAuthenticationManager authenticationManager)
         {
             _authenticateActions = authenticateActions;
             _dataProtector = dataProtectionProvider.CreateProtector("Request");
@@ -71,6 +80,7 @@ namespace SimpleIdentityServer.Host.Controllers
             _translationManager = translationManager;
             _simpleIdentityServerEventSource = simpleIdentityServerEventSource;            
             _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
+            _authenticationManager = authenticationManager;
         }
         
         #region Public methods
@@ -84,8 +94,9 @@ namespace SimpleIdentityServer.Host.Controllers
                 
         #region Normal authentication process
         
-        public ActionResult Index()
+        public async Task<ActionResult> Index(string name)
         {
+            await _authenticationManager.Initialize(HttpContext);
             var authenticatedUser = this.GetAuthenticatedUser();
             if (authenticatedUser == null ||
                 !authenticatedUser.Identity.IsAuthenticated)
@@ -138,13 +149,14 @@ namespace SimpleIdentityServer.Host.Controllers
         [HttpPost]
         public async Task ExternalLogin(string provider)
         {
+            await _authenticationManager.Initialize(HttpContext);
             if (string.IsNullOrWhiteSpace(provider))
             {
                 throw new ArgumentNullException(nameof(provider));
             }
 
             var redirectUrl = _urlHelper.AbsoluteAction("LoginCallback", "Authenticate");
-            await this.HttpContext.Authentication.ChallengeAsync(provider, new AuthenticationProperties() 
+            await HttpContext.Authentication.ChallengeAsync(provider, new AuthenticationProperties() 
             {
                 RedirectUri = redirectUrl
             });

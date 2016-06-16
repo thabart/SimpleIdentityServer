@@ -36,7 +36,9 @@
     "SimpleIdentityServer.Core.Jwt": "*",
     "SimpleIdentityServer.DataAccess.Fake": "*",
     "SimpleIdentityServer.DataAccess.SqlServer": "*",
-    "SimpleIdentityServer.RateLimitation": "*"
+    "SimpleIdentityServer.RateLimitation": "*",
+    "SimpleIdentityServer.Configuration.Client": "*",
+    "SimpleIdentityServer.Client": "*"
   },
   "frameworks": {
     "net46": {
