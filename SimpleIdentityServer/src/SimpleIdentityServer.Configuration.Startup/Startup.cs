@@ -22,6 +22,8 @@ using Microsoft.Extensions.Logging;
 using SimpleIdentityServer.Configuration.Core;
 using SimpleIdentityServer.Configuration.EF;
 using SimpleIdentityServer.Configuration.EF.Extensions;
+using SimpleIdentityServer.Configuration.Startup.Middleware;
+using SimpleIdentityServer.Oauth2Instrospection.Authentication;
 
 namespace SimpleIdentityServer.Configuration.Startup
 {
@@ -46,13 +48,11 @@ namespace SimpleIdentityServer.Configuration.Startup
             RegisterServices(services);
 
             // Add authorization policies
-            /*
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("UmaProtection", policy => policy.RequireClaim("scope", "uma_protection"));
-                options.AddPolicy("Authorization", policy => policy.RequireClaim("scope", "uma_authorization"));
+                options.AddPolicy("display", policy => policy.RequireClaim("scope", "display_configuration"));
+                options.AddPolicy("manage", policy => policy.RequireClaim("scope", "manage_configuration"));
             });
-            */
 
             // Add the dependencies needed to enable CORS
             services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
@@ -85,8 +85,13 @@ namespace SimpleIdentityServer.Configuration.Startup
             // Display status code page
             app.UseStatusCodePages();
 
-            // Enable OAUTH authentication
-            /*
+            // Enable CORS
+            app.UseCors("AllowAll");
+
+            // Enable custom exception handler
+            app.UseSimpleIdentityServerManagerExceptionHandler();
+
+            // Enable authentication
             var introspectionOptions = new Oauth2IntrospectionOptions
             {
                 InstrospectionEndPoint = introspectionUrl,
@@ -94,13 +99,6 @@ namespace SimpleIdentityServer.Configuration.Startup
                 ClientSecret = clientSecret
             };
             app.UseAuthenticationWithIntrospection(introspectionOptions);
-            */
-
-            // Enable CORS
-            app.UseCors("AllowAll");
-
-            // Display exception
-            app.UseExceptionHandler();
 
             // Launch ASP.NET MVC
             app.UseMvc(routes =>
@@ -115,7 +113,6 @@ namespace SimpleIdentityServer.Configuration.Startup
 
         public void RegisterServices(IServiceCollection services)
         {
-            var authorizationServerUrl = Configuration["AuthorizationServerUrl"];
             var isSqlServer = bool.Parse(Configuration["isSqlServer"]);
             var isPostgre = bool.Parse(Configuration["isPostgre"]);
             var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];

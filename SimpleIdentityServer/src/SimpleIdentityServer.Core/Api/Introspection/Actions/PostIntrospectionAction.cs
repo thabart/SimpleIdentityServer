@@ -123,15 +123,7 @@ namespace SimpleIdentityServer.Core.Api.Introspection.Actions
                     ErrorDescriptions.TheTokenIsNotValid);
             }
 
-            // 6. Throw an exception if the token has not been issued for the client
-            if (grantedToken.ClientId != client.ClientId)
-            {
-                throw new IdentityServerException(
-                    ErrorCodes.InvalidToken,
-                    string.Format(ErrorDescriptions.TheTokenHasNotBeenIssuedForTheGivenClientId, client.ClientId));
-            }
-
-            // 7. Fill-in parameters
+            // 6. Fill-in parameters
             //// TODO : Specifiy the other parameters : NBF & JTI
             var result = new IntrospectionResult
             {
@@ -141,7 +133,7 @@ namespace SimpleIdentityServer.Core.Api.Introspection.Actions
                 TokenType = grantedToken.TokenType
             };
 
-            // 8. Fill-in the other parameters
+            // 7. Fill-in the other parameters
             if (grantedToken.IdTokenPayLoad != null)
             {
                 var audiences = string.Empty;
@@ -162,7 +154,7 @@ namespace SimpleIdentityServer.Core.Api.Introspection.Actions
                 result.UserName = userName;
             }
 
-            // 9. Based on the expiration date disable OR enable the introspection result
+            // 8. Based on the expiration date disable OR enable the introspection result
             var expirationDateTime = grantedToken.CreateDateTime.AddSeconds(grantedToken.ExpiresIn);
             var tokenIsExpired = DateTime.UtcNow > expirationDateTime;
             if (tokenIsExpired)

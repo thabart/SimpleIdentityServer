@@ -94,41 +94,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
             Assert.True(exception.Code == ErrorCodes.InvalidToken);
             Assert.True(exception.Message == ErrorDescriptions.TheTokenIsNotValid);
         }
-
-        [Fact]
-        public void When_Token_Has_Not_Been_Issued_By_The_Same_Client_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            const string fakeClientId = "fake_client_id";
-            var authenticationHeaderValue = new AuthenticationHeaderValue("Basic", "");
-            var parameter = new IntrospectionParameter
-            {
-                TokenTypeHint = Constants.StandardTokenTypeHintNames.RefreshToken,
-                Token = "token"
-            };
-            string errorMessage;
-            var client = new Client
-            {
-                ClientId = fakeClientId
-            };
-            var grantedToken = new GrantedToken
-            {
-                ClientId = "client_id"
-            };
-            _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), out errorMessage))
-                .Returns(client);
-            _grantedTokenRepositoryStub.Setup(a => a.GetTokenByRefreshToken(It.IsAny<string>()))
-                .Returns(() => null);
-            _grantedTokenRepositoryStub.Setup(a => a.GetToken(It.IsAny<string>()))
-                .Returns(grantedToken);
-
-            // ACT & ASSERTS
-            var exception = Assert.Throws<IdentityServerException>(() => _postIntrospectionAction.Execute(parameter, authenticationHeaderValue));
-            Assert.True(exception.Code == ErrorCodes.InvalidToken);
-            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheTokenHasNotBeenIssuedForTheGivenClientId, fakeClientId));
-        }
-
+        
         #endregion
 
         #region Happy paths

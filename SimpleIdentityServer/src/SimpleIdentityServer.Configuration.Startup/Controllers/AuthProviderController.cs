@@ -14,10 +14,10 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Configuration.Core.Api.AuthProvider;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Configuration.Startup.Controllers
@@ -39,12 +39,14 @@ namespace SimpleIdentityServer.Configuration.Startup.Controllers
         #region Public methods
 
         [HttpGet]
+        [Authorize("display")]
         public async Task<ActionResult> Get()
         {
            return await _authProviderActions.GetAuthenticationProviders();
         }
 
         [HttpGet("{id}")]
+        [Authorize("display")]
         public async Task<ActionResult> Get(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -56,6 +58,7 @@ namespace SimpleIdentityServer.Configuration.Startup.Controllers
         }
 
         [HttpGet("{id}/enable")]
+        [Authorize("manage")]
         public async Task<ActionResult> GetEnable(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -67,6 +70,7 @@ namespace SimpleIdentityServer.Configuration.Startup.Controllers
         }
 
         [HttpGet("{id}/disable")]
+        [Authorize("manage")]
         public async Task<ActionResult> GetDisable(string id)
         {
             if (string.IsNullOrWhiteSpace(id))

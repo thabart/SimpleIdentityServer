@@ -22,5 +22,12 @@ namespace SimpleIdentityServer.Configuration.Startup
         {
             public const string AuthProvider = "authproviders";
         }
+
+        public static class ErrorResponseNames
+        {
+            public const string Code = "code";
+
+            public const string Message = "message";
+        }
     }
 }

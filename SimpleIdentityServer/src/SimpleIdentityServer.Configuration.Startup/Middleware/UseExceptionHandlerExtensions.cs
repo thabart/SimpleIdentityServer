@@ -14,12 +14,16 @@
 // limitations under the License.
 #endregion
 
-namespace SimpleIdentityServer.Configuration.Core.Errors
-{
-    public static class ErrorDescriptions
-    {
-        public const string InternalErrorOccurred = "an internal error occured";
+using Microsoft.AspNetCore.Builder;
 
-        public const string TheAuthenticationProviderDoesntExist = "the authentication provider doesn't exist";
+namespace SimpleIdentityServer.Configuration.Startup.Middleware
+{
+    public static class UseExceptionHandlerExtensions
+    {
+        public static IApplicationBuilder UseSimpleIdentityServerManagerExceptionHandler(
+            this IApplicationBuilder applicationBuilder)
+        {
+            return applicationBuilder.UseMiddleware<ExceptionHandlerMiddleware>();
+        }
     }
 }
