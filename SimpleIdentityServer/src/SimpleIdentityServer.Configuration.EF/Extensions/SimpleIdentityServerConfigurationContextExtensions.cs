@@ -92,7 +92,7 @@ namespace SimpleIdentityServer.Configuration.EF.Extensions
                             {
                                 Id = Guid.NewGuid().ToString(),
                                 Key = "Scope",
-                                Value = "wl.basic"
+                                Value = "openid"
                             }
                         }
                     }
