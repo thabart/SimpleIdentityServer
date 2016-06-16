@@ -41,21 +41,11 @@ namespace SimpleIdentityServer.Host.Handlers
 {
     public interface IAuthenticationManager
     {
-        Task Initialize(HttpContext httpContext);
+        Task<bool> Initialize(HttpContext httpContext);
     }
 
     internal class AuthenticationManager : IAuthenticationManager
     {
-        private Dictionary<string, Action<List<Option>, HttpContext, ILogger, IDataProtectionProvider>> _mappingNameToCallback = new Dictionary<string, Action<List<Option>, HttpContext, ILogger, IDataProtectionProvider>>
-        {
-            {
-                "Facebook", EnableFacebookAuthentication
-            },
-            {
-                "Microsoft", EnableMicrosoftAuthentication
-            }
-        };
-
         private readonly ISimpleIdServerConfigurationClientFactory _simpleIdServerConfigurationClientFactory;
 
         private readonly IIdentityServerClientFactory _identityServerClientFactory;
@@ -86,7 +76,7 @@ namespace SimpleIdentityServer.Host.Handlers
 
         #region Public methods
 
-        public async Task Initialize(HttpContext httpContext)
+        public async Task<bool> Initialize(HttpContext httpContext)
         {
             var url = httpContext.Request.GetAbsoluteUriWithVirtualPath();
             var options = _authenticationOptionsProvider.GetOptions();
@@ -98,35 +88,48 @@ namespace SimpleIdentityServer.Host.Handlers
                 .GetAuthProviders(new Uri(options.ConfigurationUrl + "/authproviders"), grantedToken.AccessToken);
             foreach(var authProvider in authProviders)
             {
-                if (authProvider.IsEnabled && _mappingNameToCallback.ContainsKey(authProvider.Name))
+                if (authProvider.Name == "Facebook")
                 {
-                    _mappingNameToCallback[authProvider.Name](authProvider.Options, httpContext, _logger, _dataProtectionProvider);
+                    if (await EnableFacebookAuthentication(authProvider.Options, httpContext))
+                    {
+                        return true;
+                    }
+                }
+                else if (authProvider.Name == "Microsoft")
+                {
+                    if (await EnableMicrosoftAuthentication(authProvider.Options, httpContext))
+                    {
+                        return true;
+                    }
                 }
             }
+
+            return false;
         }
 
         #endregion
 
         #region Enable authentication methods
 
-        private static void EnableFacebookAuthentication(List<Option> options, HttpContext context, ILogger logger, IDataProtectionProvider dataProtectionProvider)
+        private async Task<bool> EnableFacebookAuthentication(List<Option> options, HttpContext context)
         {
-            var option = ExtractFacebookOptions(options, dataProtectionProvider);
+            var option = ExtractFacebookOptions(options, _dataProtectionProvider);
             if (option == null)
             {
-                return;
+                return false;
             }
 
             var handler = new FacebookHandler(new HttpClient());
-            handler.InitializeAsync(option, context, logger, UrlEncoder.Default);
+            await handler.InitializeAsync(option, context, _logger, UrlEncoder.Default);
+            return await handler.HandleRequestAsync();
         }
 
-        private static void EnableMicrosoftAuthentication(List<Option> options, HttpContext httpContext, ILogger logger, IDataProtectionProvider dataProtectionProvider)
+        private async Task<bool> EnableMicrosoftAuthentication(List<Option> options, HttpContext httpContext)
         {
-            var microsoftOptions = ExtractMicrosoftOptions(options, dataProtectionProvider);
+            var microsoftOptions = ExtractMicrosoftOptions(options, _dataProtectionProvider);
             if (microsoftOptions == null)
             {
-                return;
+                return false;
             }
 
             microsoftOptions.Events = new OAuthEvents
@@ -174,7 +177,8 @@ namespace SimpleIdentityServer.Host.Handlers
             };
 
             var handler = new OAuthHandler<OAuthOptions>(new HttpClient());
-            handler.InitializeAsync(microsoftOptions, httpContext, logger, UrlEncoder.Default);
+            await handler.InitializeAsync(microsoftOptions, httpContext, _logger, UrlEncoder.Default);
+            return await handler.HandleRequestAsync();
         }
 
         #endregion

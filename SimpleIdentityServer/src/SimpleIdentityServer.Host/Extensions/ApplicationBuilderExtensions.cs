@@ -155,7 +155,10 @@ namespace SimpleIdentityServer.Host
             });
 
             // Check this implementation : https://github.com/aspnet/Security/blob/dev/samples/SocialSample/Startup.cs
-            
+
+            // 3. Enable authentication
+            app.UseAuthentication();
+
             // 3. Enable live connect authentication
             if (hostingOptions.IsMicrosoftAuthenticationEnabled) 
             {                
@@ -181,6 +184,8 @@ namespace SimpleIdentityServer.Host
 
             // 6. Add logging
             loggerFactory.AddSerilog();
+
+
 
             // 7. Configure ASP.NET MVC
             app.UseMvc(routes =>
