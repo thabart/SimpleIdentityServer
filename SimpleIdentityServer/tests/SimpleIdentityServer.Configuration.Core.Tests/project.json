@@ -1,0 +1,28 @@
+{
+  "version": "1.0.0-*",
+  "description": "SimpleIdentityServer.Configuration.Core.Tests Unit test project",
+  "authors": [ "thierry habart" ],
+  "packOptions": {
+    "tags": [ "" ],
+    "licenseUrl": "",
+    "projectUrl": ""
+  },
+  "tooling": {
+    "defaultNamespace": "SimpleIdentityServer.Configuration.Core.Tests"
+  },
+  "testRunner": "xunit",
+  "dependencies": {
+    "xunit": "2.1.0",
+    "dotnet-test-xunit": "1.0.0-*",
+    "SimpleIdentityServer.Configuration.Core": "*"
+  },
+  "frameworks": {
+    "net46": {
+      "frameworkAssemblies": { },
+      "dependencies": {
+        "Moq": "4.5.9-*",
+        "Microsoft.NETCore.Platforms": "1.0.1-*"
+      }
+    }
+  }
+}

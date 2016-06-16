@@ -1,0 +1,33 @@
+{
+  "version": "1.0.0-*",
+  "description": "SimpleIdentityServer.Configuration.Core Class Library",
+  "authors": [ "thierry habart" ],
+  "packOptions": {
+    "tags": [ "" ],
+    "licenseUrl": "",
+    "projectUrl": ""
+  },
+  "dependencies": {
+    "Microsoft.AspNetCore.Mvc.Core": "1.0.0-*",
+    "Newtonsoft.Json": "8.0.4-*",
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-*",
+    "System.Runtime.Serialization.Primitives": "4.1.1-*"
+  },
+  "tooling": {
+    "defaultNamespace": "SimpleIdentityServer.Configuration.Core"
+  },
+  "frameworks": {
+    "net46": {
+      "frameworkAssemblies": {
+        "System.Net.Http": "4.0.0.0",
+        "System.Web": "4.0.0.0",
+        "System.Runtime": "4.0.20.0"
+      }
+    },
+    "netstandard1.5": {
+      "dependencies": {
+        "System.Runtime.Serialization.Json": "4.0.2-*"
+      }
+    }
+  }
+}
