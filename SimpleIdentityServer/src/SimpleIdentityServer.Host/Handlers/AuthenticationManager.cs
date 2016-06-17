@@ -88,7 +88,7 @@ namespace SimpleIdentityServer.Host.Handlers
                 .UseClientCredentials("display_configuration")
                 .ExecuteAsync(url + "/" + Constants.EndPoints.Token);
             var authProviders = await _simpleIdServerConfigurationClientFactory.GetAuthProviderClient()
-                .GetAuthProviders(new Uri(authenticationOptions.ConfigurationUrl + "/authproviders"), grantedToken.AccessToken);
+                .GetAuthProvidersByResolving(authenticationOptions.ConfigurationUrl, grantedToken.AccessToken);
             foreach(var authProvider in authProviders)
             {
                 if (authProvider.Name == "Facebook")

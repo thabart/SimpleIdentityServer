@@ -145,7 +145,7 @@ namespace SimpleIdentityServer.Host
             // Check this implementation : https://github.com/aspnet/Security/blob/dev/samples/SocialSample/Startup.cs
 
             // 3. Enable authentication
-            app.UseAuthentication();
+            app.UseAuthentication(authenticationOptions);
 
             // 5. Migrate all the database
             if (hostingOptions.IsDataMigrated)
