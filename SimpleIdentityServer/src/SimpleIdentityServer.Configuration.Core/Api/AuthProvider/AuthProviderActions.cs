@@ -17,6 +17,7 @@
 using System.Threading.Tasks;
 using SimpleIdentityServer.Configuration.Core.Api.AuthProvider.Actions;
 using Microsoft.AspNetCore.Mvc;
+using SimpleIdentityServer.Configuration.Core.Models;
 
 namespace SimpleIdentityServer.Configuration.Core.Api.AuthProvider
 {
@@ -29,6 +30,8 @@ namespace SimpleIdentityServer.Configuration.Core.Api.AuthProvider
         Task<ActionResult> EnableAuthenticationProvider(string name);
 
         Task<ActionResult> DisableAuthenticationProvider(string name);
+
+        Task<ActionResult> UpdateAuthenticationProvider(AuthenticationProvider authenticationProvider);
     }
 
     internal class AuthProviderActions : IAuthProviderActions
@@ -39,16 +42,20 @@ namespace SimpleIdentityServer.Configuration.Core.Api.AuthProvider
 
         private readonly IActivateAuthenticationProvider _activateAuthenticationProvider;
 
+        private readonly IUpdateAuthenticationProvider _updateAuthenticationProvider;
+
         #region Constructor
 
         public AuthProviderActions(
             IGetAuthenticationProvider getAuthenticationProvider,
             IGetAuthenticationProviders getAuthenticationProviders,
-            IActivateAuthenticationProvider activateAuthenticationProvider)
+            IActivateAuthenticationProvider activateAuthenticationProvider,
+            IUpdateAuthenticationProvider updateAuthenticationProvider)
         {
             _getAuthenticationProvider = getAuthenticationProvider;
             _getAuthenticationProviders = getAuthenticationProviders;
             _activateAuthenticationProvider = activateAuthenticationProvider;
+            _updateAuthenticationProvider = updateAuthenticationProvider;
         }
 
         #endregion
@@ -73,6 +80,11 @@ namespace SimpleIdentityServer.Configuration.Core.Api.AuthProvider
         public async Task<ActionResult> DisableAuthenticationProvider(string name)
         {
             return await _activateAuthenticationProvider.ExecuteAsync(name, false);
+        }
+
+        public async Task<ActionResult> UpdateAuthenticationProvider(AuthenticationProvider authenticationProvider)
+        {
+            return await _updateAuthenticationProvider.ExecuteAsync(authenticationProvider);
         }
 
         #endregion

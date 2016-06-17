@@ -106,14 +106,16 @@ namespace SimpleIdentityServer.Configuration.EF.Repositories
                                 Key = opt.Key,
                                 Value = opt.Value
                             };
+                            record.Options.Add(option);
                         }
                         optsNotToBeDeleted.Add(option.Id);
                     }
                 }
 
-                foreach(var opt in record.Options.Where(o => !optsNotToBeDeleted.Contains(o.Id)))
+                var optionIds = record.Options.Select(o => o.Id).ToList();
+                foreach(var optId in optionIds.Where(id => !optsNotToBeDeleted.Contains(id)))
                 {
-                    record.Options.Remove(opt);
+                    record.Options.Remove(record.Options.First(o => o.Id == optId));
                 }
                 
                 await _simpleIdentityServerConfigurationContext.SaveChangesAsync();

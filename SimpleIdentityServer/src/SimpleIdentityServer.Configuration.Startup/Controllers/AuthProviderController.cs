@@ -17,6 +17,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Configuration.Core.Api.AuthProvider;
+using SimpleIdentityServer.Configuration.Core.Models;
 using System;
 using System.Threading.Tasks;
 
@@ -79,6 +80,18 @@ namespace SimpleIdentityServer.Configuration.Startup.Controllers
             }
 
             return await _authProviderActions.DisableAuthenticationProvider(id);
+        }
+
+        [HttpPut]
+        [Authorize("manage")]
+        public async Task<ActionResult> Update([FromBody] AuthenticationProvider authenticationProvider)
+        {
+            if (authenticationProvider == null)
+            {
+                throw new ArgumentNullException(nameof(authenticationProvider));
+            }
+
+            return await _authProviderActions.UpdateAuthenticationProvider(authenticationProvider);
         }
 
         #endregion

@@ -30,6 +30,7 @@ namespace SimpleIdentityServer.Configuration.Core
             serviceCollection.AddTransient<IGetAuthenticationProvider, GetAuthenticationProvider>();
             serviceCollection.AddTransient<IGetAuthenticationProviders, GetAuthenticationProviders>();
             serviceCollection.AddTransient<IActivateAuthenticationProvider, ActivateAuthenticationProvider>();
+            serviceCollection.AddTransient<IUpdateAuthenticationProvider, UpdateAuthenticationProvider>();
             return serviceCollection;
         }
 
