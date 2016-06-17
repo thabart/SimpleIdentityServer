@@ -91,6 +91,11 @@ namespace SimpleIdentityServer.Host.Handlers
                 .GetAuthProvidersByResolving(authenticationOptions.ConfigurationUrl, grantedToken.AccessToken);
             foreach(var authProvider in authProviders)
             {
+                if (!authProvider.IsEnabled)
+                {
+                    continue;
+                }
+
                 if (authProvider.Name == "Facebook")
                 {
                     if (await EnableFacebookAuthentication(authProvider.Options, httpContext))
