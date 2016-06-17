@@ -14,27 +14,14 @@
 // limitations under the License.
 #endregion
 
-namespace SimpleIdentityServer.Configuration.Startup
+using System.Runtime.Serialization;
+
+namespace SimpleIdentityServer.Configuration.Startup.DTOs.Responses
 {
-    internal static class Constants
+    [DataContract]
+    public class ConfigurationResponse
     {
-        public static class RouteValues
-        {
-            public const string AuthProvider = "authproviders";
-
-            public const string Configuration = "configuration";
-        }
-
-        public static class ErrorResponseNames
-        {
-            public const string Code = "code";
-
-            public const string Message = "message";
-        }
-
-        public static class ConfigurationResponseNames
-        {
-            public const string AuthProviderEndPoint = "authprovider_endpoint";
-        }
+        [DataMember(Name = Constants.ConfigurationResponseNames.AuthProviderEndPoint)]
+        public string AuthProviderEndPoint { get; set; }
     }
 }

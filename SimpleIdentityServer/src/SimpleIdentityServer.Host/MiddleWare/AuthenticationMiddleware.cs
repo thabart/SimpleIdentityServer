@@ -15,13 +15,15 @@
 #endregion
 
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using SimpleIdentityServer.Host.Handlers;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Host.MiddleWare
 {
-    internal class AuthenticationMiddleware
+    internal class AuthenticationMiddleware<TOptions> where TOptions : AuthenticationOptions, new()
     {
         private readonly List<string> _includedPaths = new List<string>
         {
@@ -32,17 +34,34 @@ namespace SimpleIdentityServer.Host.MiddleWare
 
         private readonly RequestDelegate _next;
 
-        private readonly ExceptionHandlerMiddlewareOptions _options;
+        private readonly AuthenticationOptions _options;
 
         private readonly IAuthenticationManager _authenticationManager;
 
         #region Constructor
 
         public AuthenticationMiddleware(
-            RequestDelegate next, 
+            RequestDelegate next,
+            IOptions<TOptions> options,
             IAuthenticationManager authenticationManager)
         {
+            if (next == null)
+            {
+                throw new ArgumentNullException(nameof(next));
+            }
+
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            if (authenticationManager == null)
+            {
+                throw new ArgumentNullException(nameof(authenticationManager));
+            }
+
             _next = next;
+            _options = options.Value;
             _authenticationManager = authenticationManager;
         }
 
@@ -54,7 +73,7 @@ namespace SimpleIdentityServer.Host.MiddleWare
         {        
             if (_includedPaths.Contains(context.Request.Path))
             {
-                if (!await _authenticationManager.Initialize(context))
+                if (!await _authenticationManager.Initialize(context, _options))
                 {
                     await _next(context);
                 }

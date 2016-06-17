@@ -14,16 +14,11 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNetCore.Authentication.Facebook;
-using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
-using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using Serilog;
 using SimpleIdentityServer.DataAccess.SqlServer;
 using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
@@ -31,10 +26,7 @@ using SimpleIdentityServer.Host.Controllers;
 using SimpleIdentityServer.Host.MiddleWare;
 using SimpleIdentityServer.Logging;
 using System;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Reflection;
-using System.Security.Claims;
 
 namespace SimpleIdentityServer.Host
 {
@@ -49,46 +41,25 @@ namespace SimpleIdentityServer.Host
         /// Migrate the data
         /// </summary>
         public bool IsDataMigrated { get; set; }
+    }
 
-        /// <summary>
-        /// Gets or sets microsoft authentication enabled
-        /// </summary>
-        public bool IsMicrosoftAuthenticationEnabled { get; set; }
+    public class AuthenticationOptions
+    {
+        public string ConfigurationUrl { get; set; }
 
-        /// <summary>
-        /// Gets or sets the microsoft client id
-        /// </summary>
-        public string MicrosoftClientId { get; set; }
+        public string ClientId { get; set; }
 
-        /// <summary>
-        /// Gets or sets the microsoft client secret
-        /// </summary>
-        public string MicrosoftClientSecret { get; set; }
-
-        /// <summary>
-        /// Gets or sets facebook authentication enabled
-        /// </summary>
-        public bool IsFacebookAuthenticationEnabled { get; set; }
-
-        /// <summary>
-        /// Gets or sets facebook client id
-        /// </summary>
-        public string FacebookClientId { get; set; }
-
-        /// <summary>
-        /// Gets or sets facebook client secret
-        /// </summary>        
-        public string FacebookClientSecret { get; set; }
+        public string ClientSecret { get; set; }
     }
 
     public static class ApplicationBuilderExtensions 
-    {
-        
+    {        
         #region Public static methods
         
         public static void UseSimpleIdentityServer(this IApplicationBuilder app,
             Action<HostingOptions> hostingCallback,
             Action<SwaggerOptions> swaggerCallback,
+            Action<AuthenticationOptions> authenticationOptionsCallback,
             ILoggerFactory loggerFactory) 
         {
             if (hostingCallback == null) 
@@ -100,18 +71,29 @@ namespace SimpleIdentityServer.Host
             {
                 throw new ArgumentNullException(nameof(swaggerCallback));
             }
+
+            if (authenticationOptionsCallback == null)
+            {
+                throw new ArgumentNullException(nameof(authenticationOptionsCallback));
+            }
             
             var hostingOptions = new HostingOptions();
             var swaggerOptions = new SwaggerOptions();
+            var authenticationOptions = new AuthenticationOptions();
             hostingCallback(hostingOptions);
             swaggerCallback(swaggerOptions);
-            app.UseSimpleIdentityServer(hostingOptions, swaggerOptions, loggerFactory);
+            authenticationOptionsCallback(authenticationOptions);
+            app.UseSimpleIdentityServer(hostingOptions,
+                swaggerOptions, 
+                authenticationOptions, 
+                loggerFactory);
         }
         
         public static void UseSimpleIdentityServer(
             this IApplicationBuilder app,
             HostingOptions hostingOptions,
             SwaggerOptions swaggerOptions,
+            AuthenticationOptions authenticationOptions,
             ILoggerFactory loggerFactory) 
         {
             if (hostingOptions == null)
@@ -121,6 +103,12 @@ namespace SimpleIdentityServer.Host
 
             if (swaggerOptions == null) {
                 throw new ArgumentNullException(nameof(swaggerOptions));
+            }
+
+
+            if (authenticationOptions == null)
+            {
+                throw new ArgumentNullException(nameof(authenticationOptions));
             }
 
             var staticFileOptions = new StaticFileOptions();
@@ -159,18 +147,6 @@ namespace SimpleIdentityServer.Host
             // 3. Enable authentication
             app.UseAuthentication();
 
-            // 3. Enable live connect authentication
-            if (hostingOptions.IsMicrosoftAuthenticationEnabled) 
-            {                
-                // UseMicrosoftAuthentication(app, hostingOptions.MicrosoftClientId, hostingOptions.MicrosoftClientSecret);
-            }
-
-            // 4. Enable facebook authentication
-            if (hostingOptions.IsFacebookAuthenticationEnabled)
-            {
-                // UseFacebookAuthentication(app, hostingOptions.FacebookClientId, hostingOptions.FacebookClientSecret);
-            }
-
             // 5. Migrate all the database
             if (hostingOptions.IsDataMigrated)
             {
@@ -184,8 +160,7 @@ namespace SimpleIdentityServer.Host
 
             // 6. Add logging
             loggerFactory.AddSerilog();
-
-
+            
 
             // 7. Configure ASP.NET MVC
             app.UseMvc(routes =>
@@ -210,132 +185,6 @@ namespace SimpleIdentityServer.Host
             });
         }
         
-        #endregion
-        
-        #region Private static methods
-        
-        private static void UseMicrosoftAuthentication(
-            IApplicationBuilder app,
-            string clientId,
-            string clientSecret) 
-        {            
-            var microsoftAccountOptions = new OAuthOptions
-            {
-                AuthenticationScheme = Constants.IdentityProviderNames.Microsoft,
-                DisplayName = Constants.IdentityProviderNames.Microsoft,
-                ClientId = clientId,
-                ClientSecret = clientSecret,
-                CallbackPath = new PathString("/signin-microsoft"),
-                AuthorizationEndpoint = MicrosoftAccountDefaults.AuthorizationEndpoint,
-                TokenEndpoint = MicrosoftAccountDefaults.TokenEndpoint,
-                UserInformationEndpoint = MicrosoftAccountDefaults.UserInformationEndpoint,
-                Scope = { "wl.basic" }
-            };
-            
-            microsoftAccountOptions.Events = new OAuthEvents
-            {
-                OnCreatingTicket = async context =>
-                {
-                    // 1. Fetch the user information from the user-information endpoint
-                    var request = new HttpRequestMessage(HttpMethod.Get, microsoftAccountOptions.UserInformationEndpoint);
-                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", context.AccessToken);
-                    request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    var response = await context.Backchannel.SendAsync(request, context.HttpContext.RequestAborted);
-                    response.EnsureSuccessStatusCode();                    
-                    var payload = JObject.Parse(await response.Content.ReadAsStringAsync());
-                    
-                    // 2. Retrieve the subject
-                    var identifier = MicrosoftAccountHelper.GetId(payload);
-                    if (!string.IsNullOrWhiteSpace(identifier)) 
-                    {
-                        context.Identity.AddClaim(new Claim(
-                            Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject,
-                            identifier, ClaimValueTypes.String, context.Options.ClaimsIssuer
-                        ));
-                    }
-                    
-                    // 3. Retrieve the name
-                    var name = MicrosoftAccountHelper.GetGivenName(payload);
-                    if (!string.IsNullOrWhiteSpace(name)) 
-                    {
-                        context.Identity.AddClaim(new Claim(
-                            Core.Jwt.Constants.StandardResourceOwnerClaimNames.Name,
-                            name, ClaimValueTypes.String, context.Options.ClaimsIssuer
-                        ));
-                    }
-                    
-                    // 3. Retrieve the email
-                    var email = MicrosoftAccountHelper.GetEmail(payload);
-                    if (!string.IsNullOrWhiteSpace(email)) {
-                        context.Identity.AddClaim(new Claim(
-                            Core.Jwt.Constants.StandardResourceOwnerClaimNames.Email,
-                            email, ClaimValueTypes.String, context.Options.ClaimsIssuer
-                        ));
-                    }
-                }
-            };
-            
-            app.UseOAuthAuthentication(microsoftAccountOptions);
-        }
-        
-        private static void UseFacebookAuthentication(            
-            IApplicationBuilder app,
-            string clientId,
-            string clientSecret) 
-        {
-            var facebookOptions = new FacebookOptions
-            {
-                AuthenticationScheme = Constants.IdentityProviderNames.Facebook,
-                DisplayName = Constants.IdentityProviderNames.Facebook,
-                AppId = clientId,
-                AppSecret = clientSecret,
-                Scope = { "email" }
-            };
-            facebookOptions.Events =  new OAuthEvents
-            {
-                OnCreatingTicket = async context =>
-                {
-                    // 1. Fetch the user information from the user-information endpoint
-                    var endPoint = QueryHelpers.AddQueryString(facebookOptions.UserInformationEndpoint, "access_token", context.AccessToken);
-                    var response = await context.Backchannel.GetAsync(endPoint, context.HttpContext.RequestAborted);
-                    response.EnsureSuccessStatusCode();
-                    var payload = JObject.Parse(await response.Content.ReadAsStringAsync());
-
-                    // 2. Retrieve the subject
-                    var identifier = FacebookHelper.GetId(payload);
-                    if (!string.IsNullOrEmpty(identifier))
-                    {
-                        context.Identity.AddClaim(new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, 
-                            identifier, 
-                            ClaimValueTypes.String, 
-                            facebookOptions.ClaimsIssuer));
-                    }
-
-                    // 3. Retrieve the email
-                    var email = FacebookHelper.GetEmail(payload);
-                    if (!string.IsNullOrEmpty(email))
-                    {
-                        context.Identity.AddClaim(new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Email,
-                            email, 
-                            ClaimValueTypes.String,
-                            facebookOptions.ClaimsIssuer));
-                    }
-
-                    // 4. Retrieve the name
-                    var name = FacebookHelper.GetName(payload);
-                    if (!string.IsNullOrEmpty(name))
-                    {
-                        context.Identity.AddClaim(new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Name,
-                            name, 
-                            ClaimValueTypes.String,
-                            facebookOptions.ClaimsIssuer));
-                    }
-                }
-            };
-
-            app.UseFacebookAuthentication(facebookOptions);
-        }
-        
-        #endregion
+        #endregion        
     }
 }

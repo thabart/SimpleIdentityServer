@@ -15,6 +15,8 @@
 #endregion
 
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Options;
+using System;
 
 namespace SimpleIdentityServer.Host.MiddleWare
 {
@@ -23,7 +25,29 @@ namespace SimpleIdentityServer.Host.MiddleWare
         public static IApplicationBuilder UseAuthentication(
             this IApplicationBuilder applicationBuilder)
         {
-            return applicationBuilder.UseMiddleware<AuthenticationMiddleware>();
+            if (applicationBuilder == null)
+            {
+                throw new ArgumentNullException(nameof(applicationBuilder));
+            }
+
+            return applicationBuilder.UseMiddleware<AuthenticationMiddleware<AuthenticationOptions>>();
+        }
+
+        public static IApplicationBuilder UseAuthentication(
+            this IApplicationBuilder applicationBuilder,
+            AuthenticationOptions authenticationOptions)
+        {
+            if (applicationBuilder == null)
+            {
+                throw new ArgumentNullException(nameof(applicationBuilder));
+            }
+
+            if (authenticationOptions == null)
+            {
+                throw new ArgumentNullException(nameof(authenticationOptions));
+            }
+
+            return applicationBuilder.UseMiddleware<AuthenticationMiddleware<AuthenticationOptions>>(Options.Create(authenticationOptions));
         }
     }
 }

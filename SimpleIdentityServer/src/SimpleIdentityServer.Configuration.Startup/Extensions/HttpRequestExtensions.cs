@@ -14,27 +14,23 @@
 // limitations under the License.
 #endregion
 
-namespace SimpleIdentityServer.Configuration.Startup
+using Microsoft.AspNetCore.Http;
+
+namespace SimpleIdentityServer.Configuration.Startup.Extensions
 {
-    internal static class Constants
+    public static class HttpRequestExtensions
     {
-        public static class RouteValues
+        public static string GetAbsoluteUriWithVirtualPath(this HttpRequest requestMessage)
         {
-            public const string AuthProvider = "authproviders";
+            var host = requestMessage.Host.Value;
+            var http = "http://";
+            if (requestMessage.IsHttps)
+            {
+                http = "https://";
+            }
 
-            public const string Configuration = "configuration";
-        }
-
-        public static class ErrorResponseNames
-        {
-            public const string Code = "code";
-
-            public const string Message = "message";
-        }
-
-        public static class ConfigurationResponseNames
-        {
-            public const string AuthProviderEndPoint = "authprovider_endpoint";
+            var relativePath = requestMessage.PathBase.Value;
+            return http + host + relativePath;
         }
     }
 }

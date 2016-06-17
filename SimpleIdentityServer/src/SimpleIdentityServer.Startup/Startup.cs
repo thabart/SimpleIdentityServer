@@ -58,9 +58,6 @@ namespace SimpleIdentityServer.Startup
             var isSqlServer = bool.Parse(Configuration["isSqlServer"]);
             var isSqlLite = bool.Parse(Configuration["isSqlLite"]);
             var isPostgre = bool.Parse(Configuration["isPostgre"]);
-            var clientId = Configuration["ClientId"];
-            var clientSecret = Configuration["ClientSecret"];
-            var configurationUrl = Configuration["ConfigurationUrl"];
             // Add the dependencies needed to enable CORS
             services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
                 .AllowAnyMethod()
@@ -98,12 +95,7 @@ namespace SimpleIdentityServer.Startup
             {
                 DataSourceType = dataSourceType,
                 ConnectionString = connectionString
-            }, _swaggerOptions, new Host.Configuration.AuthenticationOptions
-            {
-                ClientId = clientId,
-                ClientSecret = clientSecret,
-                ConfigurationUrl = configurationUrl
-            });
+            }, _swaggerOptions);
 
             services.AddLogging();
         }
@@ -112,18 +104,20 @@ namespace SimpleIdentityServer.Startup
             IHostingEnvironment env,
             ILoggerFactory loggerFactory)
         {
+            var clientId = Configuration["ClientId"];
+            var clientSecret = Configuration["ClientSecret"];
+            var configurationUrl = Configuration["ConfigurationUrl"];
             app.UseCors("AllowAll");
             app.UseSimpleIdentityServer(new HostingOptions
             {
                 IsDataMigrated = true,
-                IsDeveloperModeEnabled = false,
-                IsMicrosoftAuthenticationEnabled = true,
-                MicrosoftClientId = Configuration["Microsoft:ClientId"],
-                MicrosoftClientSecret = Configuration["Microsoft:ClientSecret"],
-                IsFacebookAuthenticationEnabled = true,
-                FacebookClientId = Configuration["Facebook:ClientId"],
-                FacebookClientSecret = Configuration["Facebook:ClientSecret"]
-            }, _swaggerOptions, loggerFactory);
+                IsDeveloperModeEnabled = false
+            }, _swaggerOptions, new Host.AuthenticationOptions
+            {
+                ClientId = clientId,
+                ClientSecret = clientSecret,
+                ConfigurationUrl = configurationUrl
+            }, loggerFactory);
         }
 
         #endregion

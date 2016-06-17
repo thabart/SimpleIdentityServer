@@ -35,5 +35,10 @@ namespace SimpleIdentityServer.Configuration.Client
 
             public const string Value = "value";
         }
+
+        public static class ConfigurationResponseNames
+        {
+            public const string AuthProviderEndPoint = "authprovider_endpoint";
+        }
     }
 }

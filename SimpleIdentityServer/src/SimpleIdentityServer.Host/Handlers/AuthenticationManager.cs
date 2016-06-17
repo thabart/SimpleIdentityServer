@@ -25,8 +25,6 @@ using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Configuration.Client;
 using SimpleIdentityServer.Configuration.Client.DTOs.Responses;
-using SimpleIdentityServer.DataAccess.SqlServer.Models;
-using SimpleIdentityServer.Host.Configuration;
 using SimpleIdentityServer.Host.Extensions;
 using System;
 using System.Collections.Generic;
@@ -41,7 +39,7 @@ namespace SimpleIdentityServer.Host.Handlers
 {
     public interface IAuthenticationManager
     {
-        Task<bool> Initialize(HttpContext httpContext);
+        Task<bool> Initialize(HttpContext httpContext, AuthenticationOptions authenticationOptions);
     }
 
     internal class AuthenticationManager : IAuthenticationManager
@@ -49,8 +47,6 @@ namespace SimpleIdentityServer.Host.Handlers
         private readonly ISimpleIdServerConfigurationClientFactory _simpleIdServerConfigurationClientFactory;
 
         private readonly IIdentityServerClientFactory _identityServerClientFactory;
-
-        private readonly IAuthenticationOptionsProvider _authenticationOptionsProvider;
 
         private readonly ILogger _logger;
 
@@ -61,13 +57,11 @@ namespace SimpleIdentityServer.Host.Handlers
         public AuthenticationManager(
             ISimpleIdServerConfigurationClientFactory simpleIdServerConfigurationClientFactory,
             IIdentityServerClientFactory identityServerClientFactory,
-            IAuthenticationOptionsProvider authenticationOptionsProvider,
             ILoggerFactory loggerFactory,
             IDataProtectionProvider dataProtectionProvider)
         {
             _simpleIdServerConfigurationClientFactory = simpleIdServerConfigurationClientFactory;
             _identityServerClientFactory = identityServerClientFactory;
-            _authenticationOptionsProvider = authenticationOptionsProvider;
             _logger = loggerFactory.CreateLogger("authentication");
             _dataProtectionProvider = dataProtectionProvider;
         }
@@ -76,16 +70,25 @@ namespace SimpleIdentityServer.Host.Handlers
 
         #region Public methods
 
-        public async Task<bool> Initialize(HttpContext httpContext)
+        public async Task<bool> Initialize(HttpContext httpContext, AuthenticationOptions authenticationOptions)
         {
+            if (httpContext == null)
+            {
+                throw new ArgumentNullException(nameof(httpContext));
+            }
+
+            if (authenticationOptions == null)
+            {
+                throw new ArgumentNullException(nameof(authenticationOptions));
+            }
+
             var url = httpContext.Request.GetAbsoluteUriWithVirtualPath();
-            var options = _authenticationOptionsProvider.GetOptions();
             var grantedToken = await _identityServerClientFactory.CreateTokenClient()
-                .UseClientSecretPostAuth(options.ClientId, options.ClientSecret)
+                .UseClientSecretPostAuth(authenticationOptions.ClientId, authenticationOptions.ClientSecret)
                 .UseClientCredentials("display_configuration")
                 .ExecuteAsync(url + "/" + Constants.EndPoints.Token);
             var authProviders = await _simpleIdServerConfigurationClientFactory.GetAuthProviderClient()
-                .GetAuthProviders(new Uri(options.ConfigurationUrl + "/authproviders"), grantedToken.AccessToken);
+                .GetAuthProviders(new Uri(authenticationOptions.ConfigurationUrl + "/authproviders"), grantedToken.AccessToken);
             foreach(var authProvider in authProviders)
             {
                 if (authProvider.Name == "Facebook")

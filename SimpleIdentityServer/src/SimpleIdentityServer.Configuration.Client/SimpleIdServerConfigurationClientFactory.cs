@@ -49,6 +49,12 @@ namespace SimpleIdentityServer.Configuration.Client
             return authProviderClient;
         }
 
+        public IGetConfigurationOperation GetConfiguration()
+        {
+            var configurationClient = (IGetConfigurationOperation)_serviceProvider.GetService(typeof(IGetConfigurationOperation));
+            return configurationClient;
+        }
+
         #endregion
 
         #region Private static methods
@@ -66,6 +72,7 @@ namespace SimpleIdentityServer.Configuration.Client
             serviceCollection.AddTransient<IEnableAuthProviderOperation, EnableAuthProviderOperation>();
             serviceCollection.AddTransient<IGetAuthProviderOperation, GetAuthProviderOperation>();
             serviceCollection.AddTransient<IGetAuthProvidersOperation, GetAuthProvidersOperation>();
+            serviceCollection.AddTransient<IGetConfigurationOperation, GetConfigurationOperation>();
         }
 
         #endregion

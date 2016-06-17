@@ -67,8 +67,7 @@ namespace SimpleIdentityServer.Host
         public static void AddSimpleIdentityServer(
             this IServiceCollection serviceCollection,
             Action<DataSourceOptions> dataSourceCallback,
-            Action<SwaggerOptions> swaggerCallback,
-            Action<AuthenticationOptions> authenticationOptionsCallback) 
+            Action<SwaggerOptions> swaggerCallback) 
         {
             if (dataSourceCallback == null)
             {
@@ -79,29 +78,20 @@ namespace SimpleIdentityServer.Host
             {
                 throw new ArgumentNullException(nameof(swaggerCallback));
             }
-
-            if (authenticationOptionsCallback == null)
-            {
-                throw new ArgumentNullException(nameof(authenticationOptionsCallback));
-            }
             
             var dataSourceOptions = new DataSourceOptions();
             var swaggerOptions = new SwaggerOptions();
-            var authenticationOptions = new AuthenticationOptions();
             dataSourceCallback(dataSourceOptions);
             swaggerCallback(swaggerOptions);
-            authenticationOptionsCallback(authenticationOptions);
             serviceCollection.AddSimpleIdentityServer(
                 dataSourceOptions,
-                swaggerOptions,
-                authenticationOptions);
+                swaggerOptions);
         }
         
         public static void AddSimpleIdentityServer(
             this IServiceCollection serviceCollection, 
             DataSourceOptions dataSourceOptions,
-            SwaggerOptions swaggerOptions,
-            AuthenticationOptions authenticationOptions) 
+            SwaggerOptions swaggerOptions) 
         {
             if (dataSourceOptions == null) {
                 throw new ArgumentNullException(nameof(dataSourceOptions));
@@ -109,11 +99,6 @@ namespace SimpleIdentityServer.Host
             
             if (swaggerOptions == null) {
                 throw new ArgumentNullException(nameof(swaggerOptions));
-            }
-            
-            if (authenticationOptions == null)
-            {
-                throw new ArgumentNullException(nameof(authenticationOptions));
             }
 
             if (dataSourceOptions.DataSourceType == DataSourceTypes.SqlServer)
@@ -131,7 +116,7 @@ namespace SimpleIdentityServer.Host
                 serviceCollection.AddSimpleIdentityServerPostgre(dataSourceOptions.ConnectionString);
             }
             
-            ConfigureSimpleIdentityServer(serviceCollection, swaggerOptions, authenticationOptions);
+            ConfigureSimpleIdentityServer(serviceCollection, swaggerOptions);
         }
         
         #endregion
@@ -145,8 +130,7 @@ namespace SimpleIdentityServer.Host
         /// <param name="swaggerOptions"></param>
         private static void ConfigureSimpleIdentityServer(
             IServiceCollection services,
-            SwaggerOptions swaggerOptions,
-            AuthenticationOptions authenticationOptions) 
+            SwaggerOptions swaggerOptions) 
         {
             services.AddSimpleIdentityServerCore();
             services.AddSimpleIdentityServerJwt();
@@ -182,7 +166,6 @@ namespace SimpleIdentityServer.Host
             services.AddLogging();
             services.AddTransient<ISimpleIdentityServerEventSource, SimpleIdentityServerEventSource>();
             services.AddSingleton<ILogger>(logger);
-            services.AddSingleton<IAuthenticationOptionsProvider>(new AuthenticationOptionsProvider(authenticationOptions));
             services.AddSingleton<ISimpleIdServerConfigurationClientFactory>(new SimpleIdServerConfigurationClientFactory());
             services.AddSingleton<IIdentityServerClientFactory>(new IdentityServerClientFactory());
             services.AddTransient<IAuthenticationManager, AuthenticationManager>();

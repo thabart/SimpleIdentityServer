@@ -27,16 +27,32 @@ namespace SimpleIdentityServer.Configuration.Client.AuthProvider
             string authenticationProviderUrl,
             string accessToken);
 
+        Task<bool> DisableAuthProviderByResolving(string name,
+            string configurationUrl,
+            string accessToken);
+
         Task<bool> EnableAuthProvider(string name,
             string authenticationProviderUrl,
+            string accessToken);
+
+        Task<bool> EnableAuthProviderByResolving(string name,
+            string configurationUrl,
             string accessToken);
 
         Task<AuthenticationProviderResponse> GetAuthProvider(string name,
             string authenticationProviderUrl,
             string accessToken);
 
+        Task<AuthenticationProviderResponse> GetAuthProviderByResolving(string name,
+            string configurationUrl,
+            string accessToken);
+
         Task<List<AuthenticationProviderResponse>> GetAuthProviders(
             Uri authenticationProviderUri,
+            string accessToken);
+
+        Task<List<AuthenticationProviderResponse>> GetAuthProvidersByResolving(
+            string configurationUrl,
             string accessToken);
     }
 
@@ -50,18 +66,22 @@ namespace SimpleIdentityServer.Configuration.Client.AuthProvider
 
         private readonly IGetAuthProvidersOperation _getAuthProvidersOperation;
 
+        private readonly IGetConfigurationOperation _getConfigurationOperation;
+
         #region Constructor
 
         public AuthProviderClient(
             IDisableAuthProviderOperation disableAuthProviderOperation,
             IEnableAuthProviderOperation enableAuthProviderOperation,
             IGetAuthProviderOperation getAuthProviderOperation,
-            IGetAuthProvidersOperation getAuthProvidersOperation)
+            IGetAuthProvidersOperation getAuthProvidersOperation,
+            IGetConfigurationOperation getConfigurationOperation)
         {
             _disableAuthProviderOperation = disableAuthProviderOperation;
             _enableAuthProviderOperation = enableAuthProviderOperation;
             _getAuthProviderOperation = getAuthProviderOperation;
             _getAuthProvidersOperation = getAuthProvidersOperation;
+            _getConfigurationOperation = getConfigurationOperation;
         }
 
         #endregion
@@ -75,11 +95,31 @@ namespace SimpleIdentityServer.Configuration.Client.AuthProvider
             return await _disableAuthProviderOperation.ExecuteAsync(name, authenticationProviderUrl, accessToken);
         }
 
+        public async Task<bool> DisableAuthProviderByResolving(string name,
+            string configurationUrl,
+            string accessToken)
+        {
+            var authProviderUrl = await GetAuthProviderUrl(configurationUrl);
+            return await DisableAuthProvider(name,
+                authProviderUrl,
+                accessToken);
+        }
+
         public async Task<bool> EnableAuthProvider(string name,
             string authenticationProviderUrl,
             string accessToken)
         {
             return await _enableAuthProviderOperation.ExecuteAsync(name, authenticationProviderUrl, accessToken);
+        }
+
+        public async Task<bool> EnableAuthProviderByResolving(string name,
+            string configurationUrl,
+            string accessToken)
+        {
+            var authProviderUrl = await GetAuthProviderUrl(configurationUrl);
+            return await EnableAuthProvider(name,
+                authProviderUrl,
+                accessToken);
         }
 
         public async Task<AuthenticationProviderResponse> GetAuthProvider(string name,
@@ -89,10 +129,51 @@ namespace SimpleIdentityServer.Configuration.Client.AuthProvider
             return await _getAuthProviderOperation.ExecuteAsync(name, authenticationProviderUrl, accessToken);
         }
 
+        public async Task<AuthenticationProviderResponse> GetAuthProviderByResolving(string name,
+            string configurationUrl,
+            string accessToken)
+        {
+            var authProviderUrl = await GetAuthProviderUrl(configurationUrl);
+            return await GetAuthProvider(name, authProviderUrl, accessToken);
+        }
+
         public async Task<List<AuthenticationProviderResponse>> GetAuthProviders(Uri authenticationProviderUri,
             string accessToken)
         {
             return await _getAuthProvidersOperation.ExecuteAsync(authenticationProviderUri, accessToken);
+        }
+
+        public async Task<List<AuthenticationProviderResponse>> GetAuthProvidersByResolving(string configurationUrl,
+            string accessToken)
+        {
+            var authProviderUrl = await GetAuthProviderUrl(configurationUrl);
+            return await GetAuthProviders(new Uri(authProviderUrl), accessToken);
+        }
+
+        #endregion
+
+        #region Private methods
+
+        private async Task<string> GetAuthProviderUrl(string configurationUrl)
+        {
+            var configurationUri = GetUri(configurationUrl);
+            var configuration = await _getConfigurationOperation.ExecuteAsync(configurationUri);
+            return configuration.AuthProviderEndPoint;
+        }
+
+        #endregion
+
+        #region Private static methods
+
+        private static Uri GetUri(string url)
+        {
+            Uri uri;
+            if (!Uri.TryCreate(url, UriKind.Absolute, out uri))
+            {
+                throw new ArgumentException("the url is not well formed");
+            }
+
+            return uri;
         }
 
         #endregion
