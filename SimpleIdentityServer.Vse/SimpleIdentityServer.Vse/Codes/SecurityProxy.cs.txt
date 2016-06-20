@@ -1,0 +1,33 @@
+﻿namespace SimpleIdentityServer.Vse.Codes
+{
+    public class SecurityProxy_{guid}
+    {
+        #region Public methods
+
+        public SecurityProxy()
+        {
+        }
+
+        #endregion
+
+        #region Public methods
+
+        public string GetPermission()
+        {
+            return "";
+        }
+
+        #endregion
+
+        #region Private methods
+
+        private string Authenticate()
+        {
+            const string login = "login",
+                password = "password";
+            return "id_token";
+        }
+
+        #endregion
+    }
+}
