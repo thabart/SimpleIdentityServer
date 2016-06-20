@@ -88,7 +88,68 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
         public IList<Domains.Scope> GetAllScopes()
         {
             var result = _context.Scopes.ToList();
+            foreach(var scope in result)
+            {
+                scope.ScopeClaims = _context.ScopeClaims
+                .Include(c => c.Claim)
+                .Where(c => c.ScopeName == scope.Name)
+                .ToList();
+            }
+
             return result.Select(r => r.ToDomain()).ToList();
+        }
+
+        public bool DeleteScope(Domains.Scope scope)
+        {
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    var connectedScope = _context.Scopes
+                        .FirstOrDefault(c => c.Name == scope.Name);
+                    if (connectedScope == null)
+                    {
+                        return false;
+                    }
+
+                    _context.Scopes.Remove(connectedScope);
+                    _context.SaveChanges();
+                    transaction.Commit();
+
+                }
+                catch (Exception)
+                {
+                    transaction.Rollback();
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public bool UpdateScope(Domains.Scope scope)
+        {
+            using (var translation = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    var connectedScope = _context.Scopes
+                        .FirstOrDefault(c => c.Name == scope.Name);
+                    connectedScope.Description = scope.Description;
+                    connectedScope.IsDisplayedInConsent = scope.IsDisplayedInConsent;
+                    connectedScope.IsExposed = scope.IsExposed;
+                    _context.SaveChanges();
+                    translation.Commit();
+
+                }
+                catch (Exception)
+                {
+                    translation.Rollback();
+                    return false;
+                }
+
+                return true;
+            }
         }
     }
 }

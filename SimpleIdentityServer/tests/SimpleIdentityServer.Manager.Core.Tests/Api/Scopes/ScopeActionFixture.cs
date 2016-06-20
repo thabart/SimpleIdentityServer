@@ -14,22 +14,9 @@
 // limitations under the License.
 #endregion
 
-using System.Collections.Generic;
-
-using SimpleIdentityServer.Core.Models;
-
-namespace SimpleIdentityServer.Core.Repositories
+namespace SimpleIdentityServer.Manager.Core.Tests.Api.Scopes
 {
-    public interface IScopeRepository
+    public class ScopeActionFixture
     {
-        bool InsertScope(Scope scope);
-
-        Scope GetScopeByName(string name);
-
-        IList<Scope> GetAllScopes();
-
-        bool DeleteScope(Scope scope);
-
-        bool UpdateScope(Scope scope);
     }
 }

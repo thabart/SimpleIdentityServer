@@ -27,6 +27,8 @@ namespace SimpleIdentityServer.Manager.Host
             public const string Jwe = RootPath + "/jwe";
 
             public const string Clients = RootPath + "/clients";
+
+            public const string Scopes = RootPath + "/scopes";
         }
 
         public static class GetJwsRequestNames
@@ -132,6 +134,17 @@ namespace SimpleIdentityServer.Manager.Host
             public const string JsonWebKeys = "json_web_keys";
             public const string RedirectionUrls = "redirection_urls";
             public const string SectorIdentifierUri = "sector_identifier_uri";
+        }
+
+        public static class ScopeResponseNames
+        {
+            public const string Name = "name";
+            public const string Description = "description";
+            public const string IsDisplayedInConsent = "is_displayed_in_consent";
+            public const string IsOpenIdScope = "is_openid_scope";
+            public const string IsExposed = "is_exposed";
+            public const string Type = "type";
+            public const string Claims = "claims";
         }
     }
 }

@@ -21,6 +21,8 @@ using SimpleIdentityServer.Manager.Core.Api.Jwe;
 using SimpleIdentityServer.Manager.Core.Api.Jwe.Actions;
 using SimpleIdentityServer.Manager.Core.Api.Jws;
 using SimpleIdentityServer.Manager.Core.Api.Jws.Actions;
+using SimpleIdentityServer.Manager.Core.Api.Scopes;
+using SimpleIdentityServer.Manager.Core.Api.Scopes.Actions;
 using SimpleIdentityServer.Manager.Core.Factories;
 using SimpleIdentityServer.Manager.Core.Helpers;
 
@@ -44,6 +46,10 @@ namespace SimpleIdentityServer.Manager.Core
             serviceCollection.AddTransient<IGetClientAction, GetClientAction>();
             serviceCollection.AddTransient<IRemoveClientAction, RemoveClientAction>();
             serviceCollection.AddTransient<IUpdateClientAction, UpdateClientAction>();
+            serviceCollection.AddTransient<IScopeActions, ScopeActions>();
+            serviceCollection.AddTransient<IDeleteScopeOperation, DeleteScopeOperation>();
+            serviceCollection.AddTransient<IGetScopeOperation, GetScopeOperation>();
+            serviceCollection.AddTransient<IGetScopesOperation, GetScopesOperation>();
             return serviceCollection;
         }
     }

@@ -40,6 +40,8 @@ namespace SimpleIdentityServer.Manager.Core.Errors
 
         public static string MissingParameter = "the parameter {0} is missing";
 
+        public const string TheScopeDoesntExist = "the scope '{0}' doesn't exist";
+
         public static string TheRedirectUriParameterIsNotValid = "one or more redirect_uri values are invalid";
 
         public static string TheRedirectUriContainsAFragment = "one or more redirect_uri contains a fragment";

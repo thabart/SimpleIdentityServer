@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
 
 using SimpleIdentityServer.DataAccess.Fake.Extensions;
@@ -31,6 +33,16 @@ namespace SimpleIdentityServer.DataAccess.Fake.Repositories
         public IList<Core.Models.Scope> GetAllScopes()
         {
             return _fakeDataSource.Scopes.Select(s => s.ToBusiness()).ToList();
+        }
+
+        public bool DeleteScope(Scope scope)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool UpdateScope(Scope scope)
+        {
+            throw new NotImplementedException();
         }
     }
 }

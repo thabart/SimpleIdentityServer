@@ -183,6 +183,20 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
             };
         }
 
+        public static ScopeResponse ToDto(this Scope scope)
+        {
+            return new ScopeResponse
+            {
+                Claims = scope.Claims,
+                Description = scope.Description,
+                IsDisplayedInConsent = scope.IsDisplayedInConsent,
+                IsExposed = scope.IsExposed,
+                IsOpenIdScope = scope.IsOpenIdScope,
+                Name = scope.Name,
+                Type = scope.Type
+            };
+        }
+
         #endregion
 
         #region To List of DTOs
@@ -190,6 +204,11 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
         public static List<ClientInformationResponse> ToDtos(this List<Client> clients)
         {
             return clients.Select(c => c.ToDto()).ToList();
+        }
+
+        public static List<ScopeResponse> ToDtos(this List<Scope> scopes)
+        {
+            return scopes.Select(s => s.ToDto()).ToList();
         }
 
         #endregion
