@@ -71,9 +71,15 @@ namespace SimpleIdentityServer.Core.Api.Registration.Actions
                 Constants.StandardScopes.Phone
             };
 
+            var clientId = Guid.NewGuid().ToString();
+            if (string.IsNullOrWhiteSpace(client.ClientName))
+            {
+                client.ClientName = "Unknown " + clientId;
+            }
+
             var result = new RegistrationResponse
             {
-                ClientId = Guid.NewGuid().ToString(),
+                ClientId = clientId,
                 ClientSecretExpiresAt = 0,
                 ClientIdIssuedAt = DateTime.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture),
                 ApplicationType = Enum.GetName(typeof(ApplicationTypes), client.ApplicationType),
