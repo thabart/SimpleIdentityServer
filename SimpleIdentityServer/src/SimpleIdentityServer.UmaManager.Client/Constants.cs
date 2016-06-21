@@ -27,6 +27,8 @@ namespace SimpleIdentityServer.UmaManager.Client
             public const string AuthorizationPolicy = "authorization_policy";
 
             public const string Policy = "policy";
+
+            public const string ResourceSetId = "resource_set_id";
         }
 
         public static class PolicyResponseNames

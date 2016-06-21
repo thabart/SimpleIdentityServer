@@ -1,0 +1,32 @@
+{
+  "version": "1.0.0-*",
+  "description": "SimpleIdentityServer.Proxy",
+  "authors": [ "" ],
+  "packOptions": {
+    "tags": [ "" ],
+    "licenseUrl": "",
+    "projectUrl": ""
+  },
+  "tooling": {
+    "defaultNamespace": "SimpleIdentityServer.Proxy"
+  },
+  "dependencies": {
+    "SimpleIdentityServer.Uma.Client": "*",
+    "SimpleIdentityServer.Client": "*",
+    "SimpleIdentityServer.UmaManager.Client": "*"
+  },
+  "frameworks": {
+    "net46": {
+      "frameworkAssemblies": {
+        "System.Net.Http": "4.0.0.0",
+        "System.Runtime.Serialization": "4.0.0.0"
+      }
+    },
+    "netstandard1.5": {
+      "dependencies": {
+        "System.Net.Http": "4.0.1-*",
+        "System.Runtime.Serialization.Primitives": "4.1.1-*"
+      }
+    }
+  }
+}

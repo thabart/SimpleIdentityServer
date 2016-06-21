@@ -30,6 +30,9 @@ namespace SimpleIdentityServer.UmaManager.Client.DTOs.Responses
         [DataMember(Name = Constants.ResourceResponseNames.AuthorizationPolicy)]
         public string AuthorizationPolicy { get; set; }
 
+        [DataMember(Name = Constants.ResourceResponseNames.ResourceSetId)]
+        public string ResourceSetId { get; set; }
+
         [DataMember(Name = Constants.ResourceResponseNames.Policy)]
         public PolicyResponse Policy { get; set; }
     }

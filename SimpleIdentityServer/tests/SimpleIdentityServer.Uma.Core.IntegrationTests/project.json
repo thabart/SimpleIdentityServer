@@ -15,7 +15,9 @@
   },
   "dependencies": {
     "SimpleIdentityServer.Uma.Client": "*",
-    "SimpleIdentityServer.Client": "*"
+    "SimpleIdentityServer.Client": "*",
+    "SimpleIdentityServer.UmaManager.Client": "*",
+    "SimpleIdentityServer.Proxy":  "*"
   },
   "frameworks": {
     "net46": { },

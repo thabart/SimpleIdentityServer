@@ -2154,6 +2154,23 @@
           "netstandard1.5/SimpleIdentityServer.Core.Jwt.dll": {}
         }
       },
+      "SimpleIdentityServer.Proxy/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v1.5",
+        "dependencies": {
+          "SimpleIdentityServer.Client": "1.0.0",
+          "SimpleIdentityServer.Uma.Client": "1.0.0",
+          "SimpleIdentityServer.UmaManager.Client": "1.0.0",
+          "System.Net.Http": "4.0.1",
+          "System.Runtime.Serialization.Primitives": "4.1.1"
+        },
+        "compile": {
+          "netstandard1.5/SimpleIdentityServer.Proxy.dll": {}
+        },
+        "runtime": {
+          "netstandard1.5/SimpleIdentityServer.Proxy.dll": {}
+        }
+      },
       "SimpleIdentityServer.Uma.Client/1.0.0": {
         "type": "project",
         "framework": ".NETStandard,Version=v1.5",
@@ -2169,6 +2186,23 @@
         },
         "runtime": {
           "netstandard1.5/SimpleIdentityServer.Uma.Client.dll": {}
+        }
+      },
+      "SimpleIdentityServer.UmaManager.Client/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v1.5",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection": "1.0.0",
+          "Newtonsoft.Json": "8.0.4",
+          "SimpleIdentityServer.Core.Common": "1.0.0",
+          "System.Net.Http": "4.0.1",
+          "System.Runtime.Serialization.Primitives": "4.1.1"
+        },
+        "compile": {
+          "netstandard1.5/SimpleIdentityServer.UmaManager.Client.dll": {}
+        },
+        "runtime": {
+          "netstandard1.5/SimpleIdentityServer.UmaManager.Client.dll": {}
         }
       },
       "System.Security.Cryptography.Algorithms.Extensions/1.0.0": {
@@ -2403,6 +2437,25 @@
           "net46/SimpleIdentityServer.Core.Jwt.dll": {}
         }
       },
+      "SimpleIdentityServer.Proxy/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.6",
+        "dependencies": {
+          "SimpleIdentityServer.Client": "1.0.0",
+          "SimpleIdentityServer.Uma.Client": "1.0.0",
+          "SimpleIdentityServer.UmaManager.Client": "1.0.0"
+        },
+        "frameworkAssemblies": [
+          "System.Net.Http",
+          "System.Runtime.Serialization"
+        ],
+        "compile": {
+          "net46/SimpleIdentityServer.Proxy.dll": {}
+        },
+        "runtime": {
+          "net46/SimpleIdentityServer.Proxy.dll": {}
+        }
+      },
       "SimpleIdentityServer.Uma.Client/1.0.0": {
         "type": "project",
         "framework": ".NETFramework,Version=v4.6",
@@ -2420,6 +2473,25 @@
         },
         "runtime": {
           "net46/SimpleIdentityServer.Uma.Client.dll": {}
+        }
+      },
+      "SimpleIdentityServer.UmaManager.Client/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.6",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection": "1.0.0",
+          "Newtonsoft.Json": "8.0.4",
+          "SimpleIdentityServer.Core.Common": "1.0.0"
+        },
+        "frameworkAssemblies": [
+          "System.Net.Http",
+          "System.Runtime.Serialization"
+        ],
+        "compile": {
+          "net46/SimpleIdentityServer.UmaManager.Client.dll": {}
+        },
+        "runtime": {
+          "net46/SimpleIdentityServer.UmaManager.Client.dll": {}
         }
       }
     }
@@ -7291,10 +7363,20 @@
       "path": "../../src/SimpleIdentityServer.Core.Jwt/project.json",
       "msbuildProject": "../../src/SimpleIdentityServer.Core.Jwt/SimpleIdentityServer.Core.Jwt.xproj"
     },
+    "SimpleIdentityServer.Proxy/1.0.0": {
+      "type": "project",
+      "path": "../../src/SimpleIdentityServer.Proxy/project.json",
+      "msbuildProject": "../../src/SimpleIdentityServer.Proxy/SimpleIdentityServer.Proxy.xproj"
+    },
     "SimpleIdentityServer.Uma.Client/1.0.0": {
       "type": "project",
       "path": "../../src/SimpleIdentityServer.Uma.Client/project.json",
       "msbuildProject": "../../src/SimpleIdentityServer.Uma.Client/SimpleIdentityServer.Uma.Client.xproj"
+    },
+    "SimpleIdentityServer.UmaManager.Client/1.0.0": {
+      "type": "project",
+      "path": "../../src/SimpleIdentityServer.UmaManager.Client/project.json",
+      "msbuildProject": "../../src/SimpleIdentityServer.UmaManager.Client/SimpleIdentityServer.UmaManager.Client.xproj"
     },
     "System.Security.Cryptography.Algorithms.Extensions/1.0.0": {
       "type": "project",
@@ -7305,7 +7387,9 @@
   "projectFileDependencyGroups": {
     "": [
       "SimpleIdentityServer.Client",
-      "SimpleIdentityServer.Uma.Client"
+      "SimpleIdentityServer.Proxy",
+      "SimpleIdentityServer.Uma.Client",
+      "SimpleIdentityServer.UmaManager.Client"
     ],
     ".NETCoreApp,Version=v1.0": [
       "Microsoft.NETCore.App >= 1.0.0-*"

@@ -7,7 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01. Core Layer", "01. Core 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02. Hosting Layer", "02. Hosting Layer", "{EE4204D4-7992-4554-A53B-5FD4DF1B21FB}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "04. Testing Layer", "04. Testing Layer", "{BF09DAC3-424A-4EAA-AD60-564DE7F16D31}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "05. Testing Layer", "05. Testing Layer", "{BF09DAC3-424A-4EAA-AD60-564DE7F16D31}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Uma.Host", "src\SimpleIdentityServer.Uma.Host\SimpleIdentityServer.Uma.Host.xproj", "{FE57F5A5-433D-413E-9B97-D3FD169CC245}"
 EndProject
@@ -42,6 +42,10 @@ EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Core.Jwt", "src\SimpleIdentityServer.Core.Jwt\SimpleIdentityServer.Core.Jwt.xproj", "{7709D106-0AA1-4FE2-BE16-9E997F483311}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "System.Security.Cryptography.Algorithms.Extensions", "src\System.Security.Cryptography.Algorithms.Extensions\System.Security.Cryptography.Algorithms.Extensions.xproj", "{4940E66D-CAF7-476E-BA8D-2F612C38F11F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "04. Proxy Layer", "04. Proxy Layer", "{226A6DAA-44D7-40C3-A493-F0647631D94D}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Proxy", "src\SimpleIdentityServer.Proxy\SimpleIdentityServer.Proxy.xproj", "{700C6BED-55C6-44CF-9E6A-433F432FCEE3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -105,6 +109,10 @@ Global
 		{4940E66D-CAF7-476E-BA8D-2F612C38F11F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4940E66D-CAF7-476E-BA8D-2F612C38F11F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4940E66D-CAF7-476E-BA8D-2F612C38F11F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{700C6BED-55C6-44CF-9E6A-433F432FCEE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{700C6BED-55C6-44CF-9E6A-433F432FCEE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{700C6BED-55C6-44CF-9E6A-433F432FCEE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{700C6BED-55C6-44CF-9E6A-433F432FCEE3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -126,5 +134,6 @@ Global
 		{7E806579-6619-4971-8083-F0C5DEC6B765} = {363460AB-4201-4E2A-9DF8-8339143C90CA}
 		{7709D106-0AA1-4FE2-BE16-9E997F483311} = {A70EBAB2-FCB5-491F-822F-76AB632B4F0C}
 		{4940E66D-CAF7-476E-BA8D-2F612C38F11F} = {A70EBAB2-FCB5-491F-822F-76AB632B4F0C}
+		{700C6BED-55C6-44CF-9E6A-433F432FCEE3} = {226A6DAA-44D7-40C3-A493-F0647631D94D}
 	EndGlobalSection
 EndGlobal
