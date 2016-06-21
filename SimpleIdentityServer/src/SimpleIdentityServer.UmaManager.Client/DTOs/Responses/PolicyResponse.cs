@@ -14,20 +14,21 @@
 // limitations under the License.
 #endregion
 
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace SimpleIdentityServer.UmaManager.Client.DTOs.Responses
 {
     [DataContract]
-    public class SearchOperationResponse
+    public class PolicyResponse
     {
-        [DataMember(Name = Constants.SearchOperationResponseNames.OperationName)]
-        public string OperationName { get; set; }
+        [DataMember(Name = Constants.PolicyResponseNames.Claims)]
+        public List<ClaimResponse> Claims { get; set; }
 
-        [DataMember(Name = Constants.SearchOperationResponseNames.ApplicationName)]
-        public string ApplicationName { get; set; }
+        [DataMember(Name = Constants.PolicyResponseNames.Scopes)]
+        public List<string> Scopes { get; set; }
 
-        [DataMember(Name = Constants.SearchOperationResponseNames.ResourceSetId)]
-        public string ResourceSetId { get; set; }
+        [DataMember(Name = Constants.PolicyResponseNames.AllowedClients)]
+        public List<string> AllowedClients { get; set; }
     }
 }

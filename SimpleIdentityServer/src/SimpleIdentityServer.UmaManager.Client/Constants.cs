@@ -18,13 +18,31 @@ namespace SimpleIdentityServer.UmaManager.Client
 {
     public static class Constants
     {
-        public static class SearchOperationResponseNames
+        public static class ResourceResponseNames
         {
-            public const string OperationName = "operation_name";
+            public const string Url = "url";
 
-            public const string ApplicationName = "application_name";
+            public const string Hash = "hash";
 
-            public const string ResourceSetId = "resource_set_id";
+            public const string AuthorizationPolicy = "authorization_policy";
+
+            public const string Policy = "policy";
+        }
+
+        public static class PolicyResponseNames
+        {
+            public const string Claims = "claims";
+
+            public const string Scopes = "scopes";
+
+            public const string AllowedClients = "allowed_clients";
+        }
+
+        public static class ClaimResponseNames
+        {
+            public const string Type = "type";
+
+            public const string Value = "value";
         }
     }
 }

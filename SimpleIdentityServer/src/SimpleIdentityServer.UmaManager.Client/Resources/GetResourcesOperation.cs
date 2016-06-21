@@ -18,25 +18,26 @@ using Newtonsoft.Json;
 using SimpleIdentityServer.UmaManager.Client.DTOs.Responses;
 using SimpleIdentityServer.UmaManager.Client.Factory;
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace SimpleIdentityServer.UmaManager.Client.Operation
+namespace SimpleIdentityServer.UmaManager.Client.Resources
 {
-    public interface ISearchOperationsAction 
+    public interface IGetResourcesOperation
     {
-        Task<SearchOperationResponse> ExecuteAsync(
-            string resourceSetId,
-            Uri operationUri);
+        Task<List<ResourceResponse>> ExecuteAsync(
+            Uri uri,
+            string accessToken);
     }
 
-    internal class SearchOperationsAction : ISearchOperationsAction
+    internal class GetResourcesOperation : IGetResourcesOperation
     {
         private readonly IHttpClientFactory _httpClientFactory;
 
         #region Constructor
 
-        public SearchOperationsAction(IHttpClientFactory httpClientFactory)
+        public GetResourcesOperation(IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
         }
@@ -45,31 +46,25 @@ namespace SimpleIdentityServer.UmaManager.Client.Operation
 
         #region Public methods
 
-        public async Task<SearchOperationResponse> ExecuteAsync(
-            string resourceSetId,
-            Uri operationUri)
+        public async Task<List<ResourceResponse>> ExecuteAsync(
+            Uri uri,
+            string accessToken)
         {
-            if (string.IsNullOrWhiteSpace(resourceSetId))
+            if (uri == null)
             {
-                throw new ArgumentNullException(nameof(resourceSetId));
+                throw new ArgumentNullException(nameof(uri));
             }
 
-            if (operationUri == null)
-            {
-                throw new ArgumentNullException(nameof(operationUri));
-            }
-
-            var operationUrl = $"{operationUri.AbsoluteUri.TrimEnd('/')}/search?resourceSet={resourceSetId}";
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
-                RequestUri = new Uri(operationUrl)
+                RequestUri = uri
             };
             var httpClient = _httpClientFactory.GetHttpClient();
             var httpResult = await httpClient.SendAsync(request);
             httpResult.EnsureSuccessStatusCode();
             var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            return JsonConvert.DeserializeObject<SearchOperationResponse>(content);
+            return JsonConvert.DeserializeObject<List<ResourceResponse>>(content);
         }
 
         #endregion

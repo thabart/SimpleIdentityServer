@@ -16,14 +16,14 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.UmaManager.Client.Factory;
-using SimpleIdentityServer.UmaManager.Client.Operation;
+using SimpleIdentityServer.UmaManager.Client.Resources;
 using System;
 
 namespace SimpleIdentityServer.UmaManager.Client
 {
     public interface IIdentityServerUmaManagerClientFactory
     {
-        IOperationClient GetOperationClient();
+        IResourceClient GetResourceClient();
     }
 
     public class IdentityServerUmaManagerClientFactory : IIdentityServerUmaManagerClientFactory
@@ -43,9 +43,9 @@ namespace SimpleIdentityServer.UmaManager.Client
 
         #region Public methods
 
-        public IOperationClient GetOperationClient()
+        public IResourceClient GetResourceClient()
         {
-            var operationClient = (IOperationClient)_serviceProvider.GetService(typeof(IOperationClient));
+            var operationClient = (IResourceClient)_serviceProvider.GetService(typeof(IResourceClient));
             return operationClient;
         }
 
@@ -56,10 +56,12 @@ namespace SimpleIdentityServer.UmaManager.Client
         private static void RegisterDependencies(IServiceCollection serviceCollection)
         {
             // Register clients
-            serviceCollection.AddTransient<IOperationClient, OperationClient>();
+            serviceCollection.AddTransient<IResourceClient, ResourceClient>();
 
             // Register operations
-            serviceCollection.AddTransient<ISearchOperationsAction, SearchOperationsAction>();
+            serviceCollection.AddTransient<ISearchResourceOperation, SearchResourceOperation>();
+            serviceCollection.AddTransient<IGetResourcesOperation, GetResourcesOperation>();
+            serviceCollection.AddTransient<IGetResourceOperation, GetResourceOperation>();
 
             // Register factories
             serviceCollection.AddTransient<IHttpClientFactory, HttpClientFactory>();
