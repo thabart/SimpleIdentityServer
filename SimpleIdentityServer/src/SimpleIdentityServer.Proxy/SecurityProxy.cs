@@ -30,11 +30,8 @@ namespace SimpleIdentityServer.Proxy
     public interface ISecurityProxy
     {
         Task<string> GetRpt(string resourceUrl,
-            params string[] permissions);
-
-        Task<string> GetRpt(string resourceUrl,
-            List<string> permissions,
-            string identityToken);
+            string identityToken,
+            List<string> permissions);
 
         Task<string> GetRpt(string resourceUrl,
             string identityToken,
@@ -77,28 +74,26 @@ namespace SimpleIdentityServer.Proxy
         #region Public methods
 
         public async Task<string> GetRpt(string resourceUrl,
-            params string[] permissions)
-        {
-            if (permissions == null)
-            {
-                throw new ArgumentNullException(nameof(permissions));
-            }
-
-            return await GetRpt(resourceUrl, permissions.ToList());
-        }
-
-        public async Task<string> GetRpt(string resourceUrl,
             List<string> permissions)
         {
             Func<string, string, Task<string>> callback = new Func<string, string, Task<string>>(async (t, a) => {
-                AuthorizationResponse resp = await GetAuthorization(t, a);
+                AuthorizationResponse resp = null;
+                try
+                {
+                    resp = await GetAuthorization(t, a);
+                }
+                catch
+                {
+                    throw new InvalidOperationException("you're not allowed to access to the resource");
+                }
+
                 return resp.Rpt;
             });
 
             return await CommonGetRpt(resourceUrl, permissions, callback);
         }
-
-        public async Task<string> GetRpt(string resourceUrl,
+        
+        public async Task<string> GetRpt(string resourceUrl, 
             string identityToken,
             params string[] permissions)
         {
@@ -107,15 +102,29 @@ namespace SimpleIdentityServer.Proxy
                 throw new ArgumentNullException(nameof(permissions));
             }
 
-            return await GetRpt(resourceUrl, permissions.ToList(), identityToken);
+            return await GetRpt(resourceUrl, identityToken, permissions.ToList());
         }
 
         public async Task<string> GetRpt(string resourceUrl,
-            List<string> permissions,
-            string identityToken)
+            string identityToken,
+            List<string> permissions)
         {
+            if (string.IsNullOrWhiteSpace(identityToken))
+            {
+                throw new ArgumentNullException(nameof(identityToken));
+            }
+
             Func<string, string, Task<string>> callback = new Func<string, string, Task<string>>(async (t, a) => {
-                AuthorizationResponse resp = await GetAuthorization(t, a, identityToken);
+                AuthorizationResponse resp = null;
+                try
+                {
+                    resp = await GetAuthorization(t, a, identityToken);
+                }
+                catch
+                {
+                    throw new InvalidOperationException("you're not allowed to access to the resource");
+                }
+
                 return resp.Rpt;
             });
 
@@ -140,15 +149,39 @@ namespace SimpleIdentityServer.Proxy
                 throw new ArgumentNullException(nameof(permissions));
             }
 
-            IEnumerable<GrantedToken> result = await Task.WhenAll(GetGrantedToken(UmaProtectionScope),
-                GetGrantedToken(UmaAuthorizationScope));
-            var tokens = result.ToList();
-            GrantedToken umaProtectionToken = tokens[0],
-                umaAuthorizationToken = tokens[1];
+            GrantedToken umaProtectionToken = null,
+                umaAuthorizationToken = null;
+            try
+            {
+                umaProtectionToken = await GetGrantedToken(UmaProtectionScope);
+            }
+            catch
+            {
+                throw new InvalidOperationException($"Access token valid for {UmaProtectionScope} cannot be retrieved. Client is either invalid or is not allowed to access");
+            }
+
+            try
+            {
+                umaAuthorizationToken = await GetGrantedToken(UmaAuthorizationScope);
+            }
+            catch
+            {
+                throw new InvalidOperationException($"Access token valid for {UmaAuthorizationScope} cannot be retrieved. Client is either invalid or is not allowed to access");
+            }
+
             // 1. Get resource
             var resource = await GetResource(resourceUrl);
             // 2. Get permission
-            var permission = await AddPermission(resource.ResourceSetId, permissions, umaProtectionToken.AccessToken);
+            AddPermissionResponse permission;
+            try
+            {
+                permission = await AddPermission(resource.ResourceSetId, permissions, umaProtectionToken.AccessToken);
+            }
+            catch
+            {
+                throw new InvalidOperationException("Either the access token is wrong, resource id doesn't exist or permissions are not correct");
+            }
+
             return await callback(permission.TicketId, umaAuthorizationToken.AccessToken);
         }
 

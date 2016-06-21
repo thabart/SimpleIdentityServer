@@ -15,6 +15,8 @@
 #endregion
 
 using SimpleIdentityServer.Proxy;
+using System;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Uma.Core.IntegrationTests
 {
@@ -23,14 +25,29 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
         public void Start()
         {
             var factory = new SecurityProxyFactory();
-            factory.GetProxy(new SecurityOptions
+            var proxy = factory.GetProxy(new SecurityOptions
             {
-                ClientId = "Configuration",
-                ClientSecret = "Configuration",
+                ClientId = "SampleClient",
+                ClientSecret = "SampleClient",
                 UmaConfigurationUrl = "http://localhost:5001/.well-known/uma-configuration",
                 OpenidConfigurationUrl = "http://localhost:5000/.well-known/openid-configuration",
                 RootManageApiUrl = "http://localhost:8080/api"
             });
+            try
+            {
+                var result = proxy.GetRpt("resources/first", new List<string>
+                {
+                    "read"
+                }).Result;
+                Console.WriteLine($"RPT token is {result}");
+            }
+            catch(AggregateException ex)
+            {
+                foreach(var inner in ex.InnerExceptions)
+                {
+                    Console.WriteLine(inner.Message);
+                }
+            }
         }
     }
 }

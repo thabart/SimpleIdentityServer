@@ -609,6 +609,33 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         GrantTypes = "3",
                         ResponseTypes = "1",
                         IdTokenSignedResponseAlg = "RS256"
+                    },
+                    // Manager website : 
+                    new Client
+                    {
+                        ClientId = "SampleClient",
+                        ClientName = "Sample client",
+                        ClientSecret = "SampleClient",
+                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
+                        LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
+                        ClientScopes = new List<ClientScope>
+                        {
+                            new ClientScope
+                            {
+                                ScopeName = "openid"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "uma_protection"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "uma_authorization"
+                            }
+                        },
+                        GrantTypes = "3",
+                        ResponseTypes = "1",
+                        IdTokenSignedResponseAlg = "RS256"
                     }
                 });
             }
