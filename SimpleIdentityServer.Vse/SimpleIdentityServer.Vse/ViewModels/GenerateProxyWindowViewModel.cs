@@ -14,19 +14,64 @@
 // limitations under the License.
 #endregion
 
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 namespace SimpleIdentityServer.Vse.ViewModels
 {
-    public class GenerateProxyWindowViewModel
+    public class GenerateProxyWindowViewModel : INotifyPropertyChanged
     {
-        public List<ResourceViewModel> Resources { get; set; }
+        #region Fields
+
+        private bool _isLoading;
+
+        #endregion
+
+        #region Properties
+
+        public ObservableCollection<ResourceViewModel> Resources { get; set; }
+
+        public bool IsLoading
+        {
+            get
+            {
+                return _isLoading;
+            }
+            set
+            {
+                _isLoading = value;
+                NotifyChange("IsLoading");
+            }
+        }
+
+        public string Query { get; set; }
+
+        #endregion
 
         #region Constructor
 
         public GenerateProxyWindowViewModel()
         {
-            Resources = new List<ResourceViewModel>();
+            _isLoading = true;
+            Resources = new ObservableCollection<ResourceViewModel>();
+        }
+
+        #endregion
+
+        #region Events
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        #endregion
+
+        #region Private methods
+
+        private void NotifyChange(string name)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(name));
+            }
         }
 
         #endregion

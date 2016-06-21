@@ -15,19 +15,26 @@
 #endregion
 
 using EnvDTE;
-using EnvDTE80;
+using SimpleIdentityServer.UmaManager.Client;
+using SimpleIdentityServer.UmaManager.Client.DTOs.Responses;
+using SimpleIdentityServer.UmaManager.Client.Resources;
 using SimpleIdentityServer.Vse.Helpers;
 using SimpleIdentityServer.Vse.ViewModels;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
 
 namespace SimpleIdentityServer.Vse
 {
     public partial class GenerateProxyWindowControl : UserControl
     {
+        private readonly IResourceClient _resourceClient;
+
         private GenerateProxyWindowViewModel _viewModel;
 
         private Options _options;
@@ -36,6 +43,8 @@ namespace SimpleIdentityServer.Vse
 
         public GenerateProxyWindowControl()
         {
+            var factory = new IdentityServerUmaManagerClientFactory();
+            _resourceClient = factory.GetResourceClient();
             InitializeComponent();
             Loaded += Load;
         }
@@ -70,13 +79,101 @@ namespace SimpleIdentityServer.Vse
 
         private void Load(object sender, RoutedEventArgs e)
         {
-            _viewModel = new GenerateProxyWindowViewModel();
-            _viewModel.Resources.Add(new ResourceViewModel
+            var uri = CheckUri();
+            if (uri == null)
             {
-                Name = "name",
-                IsSelected = false
-            });
+                return;
+            }
+
+            _viewModel = new GenerateProxyWindowViewModel();
+            _viewModel.IsLoading = true;
             DataContext = _viewModel;
+            DisplayAllResources(uri);
+        }
+        
+        private void Search(object sender, RoutedEventArgs e)
+        {
+            var uri = CheckUri();
+            if (uri == null)
+            {
+                return;
+            }
+            
+            _viewModel.IsLoading = true;
+            _viewModel.Resources.Clear();
+            SearchResources(_viewModel.Query, uri);
+        }
+
+        private async Task SearchResources(string query, Uri uri)
+        {
+            await DisplayResources(() =>
+            {
+                return _resourceClient.SearchResources(query, uri, string.Empty);
+            });
+        }
+
+        private async Task DisplayAllResources(Uri uri)
+        {
+            await DisplayResources(() =>
+            {
+                return _resourceClient.GetResources(uri, string.Empty);
+            });
+        }
+
+        private async Task DisplayResources(Func<Task<List<ResourceResponse>>> callback)
+        {
+            try
+            {
+                var resources = await callback();
+                ExecuteRequestToUi(() =>
+                {
+                    foreach (var resource in resources)
+                    {
+                        _viewModel.Resources.Add(new ResourceViewModel
+                        {
+                            IsSelected = false,
+                            Name = resource.Url
+                        });
+                    }
+
+                    _viewModel.IsLoading = false;
+                });
+            }
+            catch
+            {
+                ExecuteRequestToUi(() =>
+                {
+                    MessageBox.Show("Resources cannot be retrieved");
+                    _viewModel.IsLoading = false;
+                });
+            }
+        }
+
+        private Uri CheckUri()
+        {
+            var url = _options.Package.Url;
+            if (string.IsNullOrWhiteSpace(url))
+            {
+                MessageBox.Show("url cannot be empty");
+                return null;
+            }
+
+            Uri uri = null;
+            if (!Uri.TryCreate(url, UriKind.Absolute, out uri))
+            {
+                MessageBox.Show($"{url} is not a well formatted url");
+                return null;
+            }
+
+            return uri;
+        }
+
+        private void ExecuteRequestToUi(Action callback)
+        {
+            Dispatcher.BeginInvoke((Action)(() =>
+            {
+                callback();
+            }));
         }
 
         private void GenerateProxy(object sender, RoutedEventArgs e)
@@ -131,7 +228,7 @@ namespace SimpleIdentityServer.Vse
 
             return result;
         }
-                
+
         #endregion
     }
 }
