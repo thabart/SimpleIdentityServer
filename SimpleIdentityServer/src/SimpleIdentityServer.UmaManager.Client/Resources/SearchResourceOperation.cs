@@ -52,11 +52,6 @@ namespace SimpleIdentityServer.UmaManager.Client.Resources
             Uri uri,
             string accessToken)
         {
-            if (string.IsNullOrWhiteSpace(query))
-            {
-                throw new ArgumentNullException(nameof(query));
-            }
-
             if (uri == null)
             {
                 throw new ArgumentNullException(nameof(uri));
