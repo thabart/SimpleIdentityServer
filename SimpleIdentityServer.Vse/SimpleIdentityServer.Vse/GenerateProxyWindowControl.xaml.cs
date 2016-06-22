@@ -75,7 +75,7 @@ namespace SimpleIdentityServer.Vse
 
         #endregion
 
-        #region Private methods
+        #region Event handlers
 
         private void Load(object sender, RoutedEventArgs e)
         {
@@ -103,6 +103,38 @@ namespace SimpleIdentityServer.Vse
             _viewModel.Resources.Clear();
             SearchResources(_viewModel.Query, uri);
         }
+        
+        private void GenerateProxy(object sender, RoutedEventArgs e)
+        {
+            var project = GetSelectedProject();
+            if (project == null)
+            {
+                return;
+            }
+
+            var folder = project.GetRootFolder();
+            string result = GetSecurityProxyContent();
+            var id = Guid.NewGuid().ToString();
+            result = result.Replace("{guid}", id);
+            var fileName = string.Format("SecurityProxy_{0}.cs", id);
+            var path = Path.Combine(folder, fileName);
+            if (File.Exists(path))
+            {
+                MessageBox.Show("The file '" + fileName + "' already exists");
+                return;
+            }
+
+            using (var writer = new StreamWriter(path))
+            {
+                writer.Write(result);
+            }
+
+            project.AddFileToProject(path, _options.Dte);
+        }
+
+        #endregion
+
+        #region Private methods
 
         private async Task SearchResources(string query, Uri uri)
         {
@@ -176,34 +208,6 @@ namespace SimpleIdentityServer.Vse
             }));
         }
 
-        private void GenerateProxy(object sender, RoutedEventArgs e)
-        {
-            var project = GetSelectedProject();
-            if (project == null)
-            {
-                return;
-            }
-
-            var folder = project.GetRootFolder();
-            string result = GetSecurityProxyContent();
-            var id = Guid.NewGuid().ToString();
-            result = result.Replace("{guid}", id);
-            var fileName = string.Format("SecurityProxy_{0}.cs", id);
-            var path = Path.Combine(folder, fileName);
-            if (File.Exists(path))
-            {
-                MessageBox.Show("The file '" + fileName + "' already exists");
-                return;
-            }
-
-            using (var writer = new StreamWriter(path))
-            {
-                writer.Write(result);
-            }
-
-            project.AddFileToProject(path, _options.Dte);
-        }
-
         private Project GetSelectedProject()
         {
             var items = (Array)_options.Dte.ToolWindows.SolutionExplorer.SelectedItems;
@@ -227,6 +231,10 @@ namespace SimpleIdentityServer.Vse
             }
 
             return result;
+        }
+
+        private void InstallNugetPackages()
+        {
         }
 
         #endregion
