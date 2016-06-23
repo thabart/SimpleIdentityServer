@@ -58,13 +58,21 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Compile Include="GenerateProxyCommand.cs" />
+    <Compile Include="Extensions\Dte2Extensions.cs" />
+    <Compile Include="Extensions\ProjectExtensions.cs" />
+    <Compile Include="Commands\GenerateProxyCommand.cs" />
     <Compile Include="GenerateProxyCommandPackage.cs" />
-    <Compile Include="GenerateProxyWindow.cs" />
-    <Compile Include="GenerateProxyWindowControl.xaml.cs">
+    <Compile Include="Windows\GenerateProxyWindow.cs" />
+    <Compile Include="UserControls\GenerateProxyWindowControl.xaml.cs">
       <DependentUpon>GenerateProxyWindowControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\GenerateResourceWindow.cs" />
+    <Compile Include="Commands\GenerateResourceCommandCommand.cs" />
+    <Compile Include="UserControls\GenerateResourceWindowControl.xaml.cs">
+      <DependentUpon>GenerateResourceWindowControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Helpers\ProjectHelpers.cs" />
+    <Compile Include="Helpers\VisualStudioHelper.cs" />
     <Compile Include="Identifiers\Guids.cs" />
     <Compile Include="Identifiers\PkgCmdIds.cs" />
     <Compile Include="OptionsPageGrid.cs">
@@ -83,6 +91,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\AddResource.png" />
     <Content Include="Resources\NewItem.png" />
     <VSCTCompile Include="GenerateProxyCommandPackage.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>
@@ -234,7 +243,11 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="GenerateProxyWindowControl.xaml">
+    <Page Include="UserControls\GenerateProxyWindowControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\GenerateResourceWindowControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

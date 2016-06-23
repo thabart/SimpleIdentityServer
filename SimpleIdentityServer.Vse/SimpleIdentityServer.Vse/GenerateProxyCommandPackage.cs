@@ -40,6 +40,7 @@ namespace SimpleIdentityServer.Vse
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [ProvideToolWindow(typeof(GenerateProxyWindow))]
+    [ProvideToolWindow(typeof(GenerateResourceWindow))]
     [ProvideOptionPage(typeof(OptionsPageGrid), "SimpleIdentityServer", "Configuration", 0, 0, true)]
     [Guid(PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
@@ -80,6 +81,7 @@ namespace SimpleIdentityServer.Vse
                 ComponentModel = (IComponentModel)GetGlobalService(typeof(SComponentModel))
             };
             GenerateProxyCommand.Initialize(options);
+            GenerateResourceCommandCommand.Initialize(options);
             base.Initialize();
         }
 

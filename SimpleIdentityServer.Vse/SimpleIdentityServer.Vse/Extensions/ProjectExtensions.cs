@@ -14,11 +14,21 @@
 // limitations under the License.
 #endregion
 
-namespace SimpleIdentityServer.Vse.Identifiers
+using EnvDTE;
+using SimpleIdentityServer.Vse.Helpers;
+using System.Collections.Generic;
+
+namespace SimpleIdentityServer.Vse.Extensions
 {
-    public static class PkgCmdIds
+    public static class ProjectExtensions
     {
-        public const int GenerateProxyCommand = 0x0100;
-        public const int GenerateResourceCommand = 0x0200;
+        #region Public static methods
+
+        public static List<CodeElement> GetClasses(this Project project)
+        {
+            return VisualStudioHelper.GetAllCodeElementsOfType(project.CodeModel.CodeElements, EnvDTE.vsCMElement.vsCMElementClass, false);
+        }
+
+        #endregion
     }
 }

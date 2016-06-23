@@ -19,6 +19,7 @@ using NuGet.VisualStudio;
 using SimpleIdentityServer.UmaManager.Client;
 using SimpleIdentityServer.UmaManager.Client.DTOs.Responses;
 using SimpleIdentityServer.UmaManager.Client.Resources;
+using SimpleIdentityServer.Vse.Extensions;
 using SimpleIdentityServer.Vse.Helpers;
 using SimpleIdentityServer.Vse.ViewModels;
 using System;
@@ -124,7 +125,7 @@ namespace SimpleIdentityServer.Vse
                 return;
             }
 
-            var project = GetSelectedProject();
+            var project = _options.Dte2.GetSelectedProject();
             if (project == null)
             {
                 return;
@@ -260,18 +261,7 @@ namespace SimpleIdentityServer.Vse
                 callback();
             }));
         }
-
-        private Project GetSelectedProject()
-        {
-            var items = (Array)_options.Dte2.ToolWindows.SolutionExplorer.SelectedItems;
-            foreach (UIHierarchyItem selItem in items)
-            {
-                return selItem.Object as Project;
-            }
-
-            return null;
-        }
-
+        
         private string GetSecurityProxyContent()
         {
             string result = null;

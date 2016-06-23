@@ -16,9 +16,17 @@
           <ButtonText>Generate security proxy</ButtonText>
         </Strings>
       </Button>
+      <Button guid="guidGenerateProxyCommandPackageCmdSet" id="GenerateResourceCommandCommand" priority="0x0200" type="Button">
+        <Parent guid="guidGenerateProxyCommandPackageCmdSet" id="MyMenuGroup" />
+        <Icon guid="guidImagesResource" id="createResources" />
+        <Strings>
+          <ButtonText>Generate resource</ButtonText>
+        </Strings>
+      </Button>
     </Buttons>
     <Bitmaps>
       <Bitmap guid="guidImages" href="Resources\NewItem.png" usedList="createItem" />
+      <Bitmap guid="guidImagesResource" href="Resources\AddResource.png" usedList="createResources" />
     </Bitmaps>
   </Commands>
 
@@ -27,9 +35,13 @@
     <GuidSymbol name="guidGenerateProxyCommandPackageCmdSet" value="{887c8c76-0121-48b1-8bbf-61e5b84821a5}">
       <IDSymbol name="MyMenuGroup" value="0x1020" />
       <IDSymbol name="GenerateProxyCommandId" value="0x0100" />
+      <IDSymbol name="GenerateResourceCommandCommand" value="0x0200" />
     </GuidSymbol>
     <GuidSymbol name="guidImages" value="{a84b5884-1f75-4130-9609-7da77d6b39cb}">
       <IDSymbol name="createItem" value="1" />
+    </GuidSymbol>  
+    <GuidSymbol name="guidImagesResource" value="{2c285e1f-4079-4b0e-9873-3f3fe384a245}" >
+      <IDSymbol name="createResources" value="1" />
     </GuidSymbol>
   </Symbols>
 </CommandTable>
