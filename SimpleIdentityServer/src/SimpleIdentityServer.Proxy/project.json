@@ -1,7 +1,7 @@
 {
   "version": "1.0.0-*",
   "description": "SimpleIdentityServer.Proxy",
-  "authors": [ "" ],
+  "authors": [ "thabart" ],
   "packOptions": {
     "tags": [ "" ],
     "licenseUrl": "",
@@ -17,6 +17,12 @@
   },
   "frameworks": {
     "net46": {
+      "frameworkAssemblies": {
+        "System.Net.Http": "4.0.0.0",
+        "System.Runtime.Serialization": "4.0.0.0"
+      }
+    },
+    "net45": {
       "frameworkAssemblies": {
         "System.Net.Http": "4.0.0.0",
         "System.Runtime.Serialization": "4.0.0.0"

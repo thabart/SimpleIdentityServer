@@ -1,7 +1,7 @@
 {
   "version": "1.0.0-*",
   "description": "SimpleIdentityServer.Client",
-  "authors": [ "" ],
+  "authors": [ "thabart" ],
   "packOptions": {
     "tags": [ "" ],
     "licenseUrl": "",
@@ -19,6 +19,12 @@
 
   "frameworks": {
     "net46": {
+      "frameworkAssemblies": {
+        "System.Net.Http": "",
+        "System.Runtime.Serialization": ""
+      }
+    },
+    "net45": {
       "frameworkAssemblies": {
         "System.Net.Http": "",
         "System.Runtime.Serialization": ""

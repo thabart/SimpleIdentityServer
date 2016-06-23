@@ -20,6 +20,8 @@ namespace SimpleIdentityServer.Vse.ViewModels
     {
         public string Name { get; set; }
 
+        public string Hash { get; set; }
+
         public bool IsSelected { get; set; }
     }
 }

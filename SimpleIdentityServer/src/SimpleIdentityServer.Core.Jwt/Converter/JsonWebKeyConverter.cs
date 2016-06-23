@@ -111,7 +111,7 @@ namespace SimpleIdentityServer.Core.Jwt.Converter
                 Exponent = exponentKeyPair.Value.ToString().Base64DecodeBytes()
             };
 
-#if NET46
+#if NET46 || NET45
             using (var rsaCryptoServiceProvider = new RSACryptoServiceProvider())
             {
                 rsaCryptoServiceProvider.ImportParameters(rsaParameters);

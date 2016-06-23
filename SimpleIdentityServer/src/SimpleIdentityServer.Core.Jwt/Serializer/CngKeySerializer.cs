@@ -14,7 +14,7 @@
 // limitations under the License.
 #endregion
 
-#if NET46
+#if NET46 || NET45
 
 using System;
 using System.Collections.Generic;

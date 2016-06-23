@@ -1,7 +1,7 @@
 {
   "version": "1.0.0-*",
   "description": "SimpleIdentityServer.Core.Jwt Class Library",
-  "authors": [ "thierry habart" ],
+  "authors": [ "thabart" ],
   "packOptions": {
     "tags": [ "" ],
     "licenseUrl": "",
@@ -19,6 +19,16 @@
       "frameworkAssemblies": {
         "System.ComponentModel.Composition": "4.0.0.0",
         "System.Runtime.Serialization": "4.0.0.0"
+      }
+    },
+    "net45": {
+      "frameworkAssemblies": {
+        "System.ComponentModel.Composition": "",
+        "System.Runtime.Serialization": "",
+        "System.Runtime": {
+          "type": "build",
+          "version": ""
+        }
       }
     },
     "netstandard1.5": {

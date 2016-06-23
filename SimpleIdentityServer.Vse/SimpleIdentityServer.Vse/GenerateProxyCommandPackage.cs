@@ -16,6 +16,7 @@
 
 using EnvDTE;
 using EnvDTE80;
+using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Shell;
 using SimpleIdentityServer.Vse.Identifiers;
 using System;
@@ -28,7 +29,11 @@ namespace SimpleIdentityServer.Vse
     {
         public GenerateProxyCommandPackage Package { get; set; }
 
-        public DTE2 Dte { get; set; }
+        public DTE2 Dte2 { get; set; }
+
+        public DTE Dte { get; set; }
+
+        public IComponentModel ComponentModel { get; set; }
     }
 
     [PackageRegistration(UseManagedResourcesOnly = true)]
@@ -70,7 +75,9 @@ namespace SimpleIdentityServer.Vse
             var options = new Options
             {
                 Package = this,
-                Dte = GetService(typeof(DTE)) as DTE2
+                Dte2 = GetService(typeof(DTE)) as DTE2,
+                Dte = GetGlobalService(typeof(DTE)) as DTE,
+                ComponentModel = (IComponentModel)GetGlobalService(typeof(SComponentModel))
             };
             GenerateProxyCommand.Initialize(options);
             base.Initialize();

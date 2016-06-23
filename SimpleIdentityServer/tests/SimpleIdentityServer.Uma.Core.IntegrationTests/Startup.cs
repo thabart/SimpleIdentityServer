@@ -35,7 +35,7 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
             });
             try
             {
-                var result = proxy.GetRpt("resources/first", new List<string>
+                var result = proxy.GetRpt("resources/folder", new List<string>
                 {
                     "read"
                 }).Result;

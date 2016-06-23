@@ -17,6 +17,7 @@
 using System;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.Shell;
+using System.Windows;
 
 namespace SimpleIdentityServer.Vse
 {
@@ -54,7 +55,15 @@ namespace SimpleIdentityServer.Vse
                 throw new ArgumentNullException(nameof(options.Dte));
             }
 
-            (Content as GenerateProxyWindowControl).Initialize(options);
+            try
+            {
+                (Content as GenerateProxyWindowControl).Initialize(options);
+            }
+            catch
+            {
+                MessageBox.Show("The window cannot be initialized");
+                throw;
+            }
         }
 
         #endregion
