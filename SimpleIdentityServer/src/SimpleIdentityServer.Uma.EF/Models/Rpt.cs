@@ -18,7 +18,7 @@ using System;
 
 namespace SimpleIdentityServer.Uma.EF.Models
 {
-    internal class Rpt
+    public class Rpt
     {
         public string Value { get; set; }
 

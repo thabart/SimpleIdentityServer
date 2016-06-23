@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.UmaManager.Client.DTOs.Requests;
 using SimpleIdentityServer.UmaManager.Client.DTOs.Responses;
 using System;
 using System.Collections.Generic;
@@ -50,6 +51,15 @@ namespace SimpleIdentityServer.UmaManager.Client.Resources
             string query,
             string url,
             string accessToken);
+
+        Task<bool> AddControllerAction(
+            AddControllerActionRequest request,
+            Uri uri,
+            string accessToken);
+        Task<bool> AddControllerAction(
+            AddControllerActionRequest request,
+            string url,
+            string accessToken);
     }
 
     internal class ResourceClient : IResourceClient
@@ -60,16 +70,20 @@ namespace SimpleIdentityServer.UmaManager.Client.Resources
 
         private readonly ISearchResourceOperation _searchResourceOperation;
 
+        private readonly IAddControllerActionOperation _addControllerActionOperation;
+
         #region Constructor
 
         public ResourceClient(
             IGetResourceOperation getResourceOperation,
             IGetResourcesOperation getResourcesOperation,
-            ISearchResourceOperation searchResourceOperation)
+            ISearchResourceOperation searchResourceOperation,
+            IAddControllerActionOperation addControllerActionOperation)
         {
             _getResourceOperation = getResourceOperation;
             _getResourcesOperation = getResourcesOperation;
             _searchResourceOperation = searchResourceOperation;
+            _addControllerActionOperation = addControllerActionOperation;
         }
 
         #endregion
@@ -120,6 +134,16 @@ namespace SimpleIdentityServer.UmaManager.Client.Resources
             string accessToken)
         {
             return await _searchResourceOperation.ExecuteAsync(query, TryGetUri(url), accessToken);
+        }
+
+        public async Task<bool> AddControllerAction(AddControllerActionRequest request, Uri uri, string accessToken)
+        {
+            return await _addControllerActionOperation.ExecuteAsync(request, uri, accessToken);
+        }
+
+        public async Task<bool> AddControllerAction(AddControllerActionRequest request, string url, string accessToken)
+        {
+            return await _addControllerActionOperation.ExecuteAsync(request, TryGetUri(url), accessToken);
         }
 
         #endregion

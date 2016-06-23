@@ -3,10 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:viewModel="clr-namespace:SimpleIdentityServer.Vse.ViewModels"
              Background="{DynamicResource VsBrush.Window}"
              Foreground="{DynamicResource VsBrush.WindowText}"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300"
+             d:DataContext="{d:DesignInstance Type=viewModel:GenerateResourceWindowViewModel}"
              Name="MyToolWindow">
     <Grid>
         <Grid.RowDefinitions>
@@ -20,21 +22,46 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Label Grid.Column="0" Grid.Row="0">API version</Label>
-        <TextBox Grid.Column="1" Grid.Row="0" Width="200" HorizontalAlignment="Right"></TextBox>
+        <TextBox Grid.Column="1" Grid.Row="0" Width="200" HorizontalAlignment="Right" Text="{Binding Path=Version, Mode=OneWayToSource}"></TextBox>
         <Label Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2">Choose the operations to protect</Label>
-        <ItemsControl Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" Grid.RowSpan="2">
+        <Label Grid.Column="0" Grid.Row="2">
+            <Label.Style>
+                <Style TargetType="Label">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsLoading}" Value="True">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Label.Style>
+            Is loading ...
+        </Label>
+        <ItemsControl Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" Grid.RowSpan="2" ItemsSource="{Binding Path=Actions}">
+            <ItemsControl.Style>
+                <Style TargetType="ItemsControl">
+                    <Setter Property="Visibility" Value="Visible" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsLoading}" Value="True">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ItemsControl.Style>
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                    <StackPanel Orientation="Vertical" VerticalAlignment="Top" HorizontalAlignment="Left" />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <!-- Display radiobutton -->
+                    <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1">
+                        <RadioButton Margin="5"  Content="{Binding Path=DisplayName}" IsChecked="{Binding Path=IsSelected}"/>
+                    </Border>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
-        <Button Grid.Column="0" Grid.Row="3" HorizontalAlignment="Left">Protect</Button>
+        <Button Grid.Column="0" Grid.Row="3" HorizontalAlignment="Left" Click="Protect">Protect</Button>
         <Button Grid.Column="1" Grid.Row="3" HorizontalAlignment="Right" Click="Refresh">Refresh</Button>
     </Grid>
 </UserControl>

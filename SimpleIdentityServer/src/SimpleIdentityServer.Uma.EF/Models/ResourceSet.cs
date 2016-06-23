@@ -18,7 +18,7 @@ using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Uma.EF.Models
 {
-    internal class ResourceSet
+    public class ResourceSet
     {
         public string Id { get; set; }
 

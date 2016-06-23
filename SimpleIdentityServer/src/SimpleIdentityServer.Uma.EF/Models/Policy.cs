@@ -18,7 +18,7 @@ using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Uma.EF.Models
 {
-    internal class Policy
+    public class Policy
     {
         public string Id { get; set; }
 

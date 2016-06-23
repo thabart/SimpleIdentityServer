@@ -62,6 +62,7 @@ namespace SimpleIdentityServer.UmaManager.Client
             serviceCollection.AddTransient<ISearchResourceOperation, SearchResourceOperation>();
             serviceCollection.AddTransient<IGetResourcesOperation, GetResourcesOperation>();
             serviceCollection.AddTransient<IGetResourceOperation, GetResourceOperation>();
+            serviceCollection.AddTransient<IAddControllerActionOperation, AddControllerActionOperation>();
 
             // Register factories
             serviceCollection.AddTransient<IHttpClientFactory, HttpClientFactory>();

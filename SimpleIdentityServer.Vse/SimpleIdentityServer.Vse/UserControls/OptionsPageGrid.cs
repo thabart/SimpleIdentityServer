@@ -24,7 +24,7 @@ namespace SimpleIdentityServer.Vse
     {
         #region Private fields
 
-        private string _url = "http://localhost:8080/api";
+        private string _url = "http://localhost:8080/api/vs/resources";
 
         #endregion
 

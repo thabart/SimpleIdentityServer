@@ -15,9 +15,14 @@
 #endregion
 
 using EnvDTE;
+using SimpleIdentityServer.UmaManager.Client.DTOs.Requests;
 using SimpleIdentityServer.Vse.Extensions;
 using SimpleIdentityServer.Vse.Helpers;
+using SimpleIdentityServer.Vse.ViewModels;
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace SimpleIdentityServer.Vse
@@ -26,11 +31,22 @@ namespace SimpleIdentityServer.Vse
     {
         private Options _options;
 
+        private List<string> _httpAttributeFullNames = new List<string>
+        {
+            "Microsoft.AspNetCore.Mvc.HttpGetAttribute",
+            "Microsoft.AspNetCore.Mvc.HttpPutAttribute",
+            "Microsoft.AspNetCore.Mvc.HttpPostAttribute",
+            "Microsoft.AspNetCore.Mvc.HttpDeleteAttribute"
+        };
+
+        private GenerateResourceWindowViewModel _viewModel;
+
         #region Constructor
 
         public GenerateResourceWindowControl()
         {
             InitializeComponent();
+            Loaded += Load;
         }
 
         #endregion
@@ -71,27 +87,84 @@ namespace SimpleIdentityServer.Vse
 
         #region Event handlers
 
-        private void Refresh(object sender, System.Windows.RoutedEventArgs e)
+        private void Load(object sender, RoutedEventArgs e)
         {
-            var project = _options.Dte2.GetSelectedProject();
-            if (project == null)
-            {
-                return;
-            }
+            _viewModel = new GenerateResourceWindowViewModel();
+            _viewModel.Version = "v1";
+            DataContext = _viewModel;
+            RefreshAvailableActions();
+        }
 
-            var classes = project.GetClasses();
-            foreach (CodeClass codeClass in classes)
+        private void Refresh(object sender, RoutedEventArgs e)
+        {
+            RefreshAvailableActions();
+        }
+        
+        private void Protect(object sender, RoutedEventArgs e)
+        {
+            foreach (var act in _viewModel.Actions)
             {
-                if (codeClass.IsDerivedFrom["Microsoft.AspNetCore.Mvc.Controller"])
+                string s = "";
+            }
+        }
+
+        #endregion
+
+        #region Private methods
+
+        private Task RefreshAvailableActions()
+        {
+            _viewModel.IsLoading = true;
+            _viewModel.Actions.Clear();
+            return Task.Run(() =>
+            {
+                var project = _options.Dte2.GetSelectedProject();
+                if (project == null)
                 {
-                    var functions = VisualStudioHelper.GetAllCodeElementsOfType(codeClass.Members, vsCMElement.vsCMElementFunction, false);
-                    foreach (CodeFunction function in functions)
+                    return;
+                }
+
+                var classes = project.GetClasses();
+                foreach (CodeClass codeClass in classes)
+                {
+                    if (codeClass.IsDerivedFrom["Microsoft.AspNetCore.Mvc.Controller"])
                     {
-                        string s = function.Name;
-                        var attributes = VisualStudioHelper.GetAllCodeElementsOfType(function.Attributes, vsCMElement.vsCMElementAttribute, false);
+                        var functions = VisualStudioHelper.GetAllCodeElementsOfType(codeClass.Members, vsCMElement.vsCMElementFunction, false);
+                        foreach (CodeFunction function in functions)
+                        {
+                            var functionName = function.Name;
+                            var attributes = VisualStudioHelper.GetAllCodeElementsOfType(function.Attributes, vsCMElement.vsCMElementAttribute, false);
+                            foreach (CodeAttribute attribute in attributes)
+                            {
+                                if (_httpAttributeFullNames.Contains(attribute.FullName))
+                                {
+                                    ExecuteRequestToUi(() =>
+                                    {
+                                        _viewModel.Actions.Add(new ControllerActionViewModel
+                                        {
+                                            Application = project.Name,
+                                            Controller = codeClass.Name,
+                                            Action = function.Name,
+                                            IsSelected = true,
+                                            DisplayName = $"{codeClass.Name}/{function.Name}"
+                                        });
+                                    });
+                                }
+                            }
+                        }
                     }
                 }
-            }
+
+                ExecuteRequestToUi(() => _viewModel.IsLoading = false);
+            });
+        }
+
+        private void ExecuteRequestToUi(Action callback)
+        {
+            Dispatcher.BeginInvoke((Action)(() =>
+            {
+                callback();
+            }));
         }
 
         #endregion

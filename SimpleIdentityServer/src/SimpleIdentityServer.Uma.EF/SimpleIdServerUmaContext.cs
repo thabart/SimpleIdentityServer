@@ -20,7 +20,7 @@ using SimpleIdentityServer.Uma.EF.Models;
 
 namespace SimpleIdentityServer.Uma.EF
 {
-    internal class SimpleIdServerUmaContext : DbContext
+    public class SimpleIdServerUmaContext : DbContext
     {
         #region Constructor
 

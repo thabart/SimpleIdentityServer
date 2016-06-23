@@ -46,5 +46,16 @@ namespace SimpleIdentityServer.UmaManager.Client
 
             public const string Value = "value";
         }
+
+        public static class AddControllerActionRequestNames
+        {
+            public const string Application = "application";
+
+            public const string Version = "version";
+
+            public const string Controller = "controller";
+
+            public const string Action = "action";
+        }
     }
 }

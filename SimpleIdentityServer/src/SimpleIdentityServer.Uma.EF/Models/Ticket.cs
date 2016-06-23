@@ -19,7 +19,7 @@ using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Uma.EF.Models
 {
-    internal class Ticket
+    public class Ticket
     {
         public string Id { get; set; }
 

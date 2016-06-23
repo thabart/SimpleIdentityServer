@@ -25,6 +25,7 @@ using SimpleIdentityServer.Oauth2Instrospection.Authentication;
 using SimpleIdentityServer.Uma.Core;
 using SimpleIdentityServer.Uma.Core.Providers;
 using SimpleIdentityServer.Uma.EF;
+using SimpleIdentityServer.Uma.EF.Extensions;
 using SimpleIdentityServer.Uma.Host.Configuration;
 
 namespace SimpleIdentityServer.Uma.Host
@@ -88,6 +89,13 @@ namespace SimpleIdentityServer.Uma.Host
             };
             app.UseAuthenticationWithIntrospection(introspectionOptions);
 
+            // Insert seed data
+            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                var simpleIdServerUmaContext = serviceScope.ServiceProvider.GetService<SimpleIdServerUmaContext>();
+                simpleIdServerUmaContext.Database.EnsureCreated();
+                simpleIdServerUmaContext.EnsureSeedData();
+            }
 
             // Enable CORS
             app.UseCors("AllowAll");

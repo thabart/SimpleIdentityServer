@@ -1,8 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <!--
   <Import Project="..\packages\Microsoft.VSSDK.BuildTools.14.2.25123\build\Microsoft.VSSDK.BuildTools.props" Condition="Exists('..\packages\Microsoft.VSSDK.BuildTools.14.2.25123\build\Microsoft.VSSDK.BuildTools.props')" />
-  -->
   <PropertyGroup>
     <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
@@ -62,6 +60,8 @@
     <Compile Include="Extensions\ProjectExtensions.cs" />
     <Compile Include="Commands\GenerateProxyCommand.cs" />
     <Compile Include="GenerateProxyCommandPackage.cs" />
+    <Compile Include="ViewModels\ControllerActionViewModel.cs" />
+    <Compile Include="ViewModels\GenerateResourceWindowViewModel.cs" />
     <Compile Include="Windows\GenerateProxyWindow.cs" />
     <Compile Include="UserControls\GenerateProxyWindowControl.xaml.cs">
       <DependentUpon>GenerateProxyWindowControl.xaml</DependentUpon>
@@ -75,7 +75,7 @@
     <Compile Include="Helpers\VisualStudioHelper.cs" />
     <Compile Include="Identifiers\Guids.cs" />
     <Compile Include="Identifiers\PkgCmdIds.cs" />
-    <Compile Include="OptionsPageGrid.cs">
+    <Compile Include="UserControls\OptionsPageGrid.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
