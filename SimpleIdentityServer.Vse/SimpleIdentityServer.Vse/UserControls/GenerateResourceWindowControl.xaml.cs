@@ -15,7 +15,9 @@
 #endregion
 
 using EnvDTE;
+using SimpleIdentityServer.UmaManager.Client;
 using SimpleIdentityServer.UmaManager.Client.DTOs.Requests;
+using SimpleIdentityServer.UmaManager.Client.Resources;
 using SimpleIdentityServer.Vse.Extensions;
 using SimpleIdentityServer.Vse.Helpers;
 using SimpleIdentityServer.Vse.ViewModels;
@@ -29,6 +31,10 @@ namespace SimpleIdentityServer.Vse
 {
     public partial class GenerateResourceWindowControl : UserControl
     {
+        #region Fields
+
+        private readonly IResourceClient _resourceClient;
+
         private Options _options;
 
         private bool _isInitialized;
@@ -45,12 +51,16 @@ namespace SimpleIdentityServer.Vse
 
         private Project _selectedProject;
 
+        #endregion
+
         #region Constructor
 
         public GenerateResourceWindowControl()
         {
             _isInitialized = false;
             InitializeComponent();
+            var factory = new IdentityServerUmaManagerClientFactory();
+            _resourceClient = factory.GetResourceClient();
             Loaded += Load;
         }
 
@@ -117,15 +127,35 @@ namespace SimpleIdentityServer.Vse
         
         private void Protect(object sender, RoutedEventArgs e)
         {
-            foreach (var act in _viewModel.Actions)
+            var uri = CheckUri();
+            if (uri == null)
             {
-                string s = "";
+                return;
             }
+
+            ProtectActions(uri);
         }
 
         #endregion
 
         #region Private methods
+
+        private async Task ProtectActions(Uri uri)
+        {
+            ExecuteRequestToUi(() => _viewModel.IsLoading = true);
+            foreach (var act in _viewModel.Actions)
+            {
+                await _resourceClient.AddControllerAction(new AddControllerActionRequest
+                {
+                    Action = act.Action,
+                    Application = act.Application,
+                    Controller = act.Controller,
+                    Version = _viewModel.Version
+                }, uri, string.Empty);
+            }
+
+            ExecuteRequestToUi(() => _viewModel.IsLoading = false);
+        }
 
         private Task RefreshAvailableActions()
         {
@@ -174,6 +204,25 @@ namespace SimpleIdentityServer.Vse
             {
                 callback();
             }));
+        }
+
+        private Uri CheckUri()
+        {
+            var url = _options.Package.Url;
+            if (string.IsNullOrWhiteSpace(url))
+            {
+                MessageBox.Show("url cannot be empty");
+                return null;
+            }
+
+            Uri uri = null;
+            if (!Uri.TryCreate(url, UriKind.Absolute, out uri))
+            {
+                MessageBox.Show($"{url} is not a well formatted url");
+                return null;
+            }
+
+            return uri;
         }
 
         #endregion
