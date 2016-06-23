@@ -49,5 +49,6 @@
         "System.Runtime.Serialization.Json": "4.0.2-*"
       }
     }
-  }
+  },
+  "userSecretsId": "aspnet-SimpleIdentityServer.Configuration.Startup-20160623091849"
 }

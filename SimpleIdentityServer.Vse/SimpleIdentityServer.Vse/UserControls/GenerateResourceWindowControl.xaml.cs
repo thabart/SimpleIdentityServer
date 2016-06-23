@@ -31,6 +31,8 @@ namespace SimpleIdentityServer.Vse
     {
         private Options _options;
 
+        private bool _isInitialized;
+
         private List<string> _httpAttributeFullNames = new List<string>
         {
             "Microsoft.AspNetCore.Mvc.HttpGetAttribute",
@@ -41,10 +43,13 @@ namespace SimpleIdentityServer.Vse
 
         private GenerateResourceWindowViewModel _viewModel;
 
+        private Project _selectedProject;
+
         #region Constructor
 
         public GenerateResourceWindowControl()
         {
+            _isInitialized = false;
             InitializeComponent();
             Loaded += Load;
         }
@@ -80,6 +85,12 @@ namespace SimpleIdentityServer.Vse
                 throw new ArgumentNullException(nameof(options.ComponentModel));
             }
 
+            _selectedProject = options.Dte2.GetSelectedProject();
+            if (_selectedProject == null)
+            {
+                throw new InvalidOperationException("Select a project before opening the panel");
+            }
+
             _options = options;
         }
 
@@ -89,10 +100,14 @@ namespace SimpleIdentityServer.Vse
 
         private void Load(object sender, RoutedEventArgs e)
         {
-            _viewModel = new GenerateResourceWindowViewModel();
-            _viewModel.Version = "v1";
-            DataContext = _viewModel;
-            RefreshAvailableActions();
+            if (!_isInitialized)
+            {
+                _viewModel = new GenerateResourceWindowViewModel();
+                _viewModel.Version = "v1";
+                DataContext = _viewModel;
+                RefreshAvailableActions();
+                _isInitialized = true;
+            }
         }
 
         private void Refresh(object sender, RoutedEventArgs e)
@@ -118,13 +133,7 @@ namespace SimpleIdentityServer.Vse
             _viewModel.Actions.Clear();
             return Task.Run(() =>
             {
-                var project = _options.Dte2.GetSelectedProject();
-                if (project == null)
-                {
-                    return;
-                }
-
-                var classes = project.GetClasses();
+                var classes = _selectedProject.GetClasses();
                 foreach (CodeClass codeClass in classes)
                 {
                     if (codeClass.IsDerivedFrom["Microsoft.AspNetCore.Mvc.Controller"])
@@ -142,7 +151,7 @@ namespace SimpleIdentityServer.Vse
                                     {
                                         _viewModel.Actions.Add(new ControllerActionViewModel
                                         {
-                                            Application = project.Name,
+                                            Application = _selectedProject.Name,
                                             Controller = codeClass.Name,
                                             Action = function.Name,
                                             IsSelected = true,

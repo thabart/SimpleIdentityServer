@@ -38,14 +38,19 @@ namespace SimpleIdentityServer.Vse
     {
         private readonly IResourceClient _resourceClient;
 
+        private bool _isInitialized;
+
         private GenerateProxyWindowViewModel _viewModel;
 
         private Options _options;
+
+        private Project _selectedProject;
 
         #region Constructor
 
         public GenerateProxyWindowControl()
         {
+            _isInitialized = false;
             var factory = new IdentityServerUmaManagerClientFactory();
             _resourceClient = factory.GetResourceClient();
             InitializeComponent();
@@ -83,6 +88,12 @@ namespace SimpleIdentityServer.Vse
                 throw new ArgumentNullException(nameof(options.ComponentModel));
             }
             
+            _selectedProject = options.Dte2.GetSelectedProject();
+            if (_selectedProject == null)
+            {
+                throw new InvalidOperationException("Select a project before opening the panel");
+            }
+
             _options = options;
         }
 
@@ -98,10 +109,14 @@ namespace SimpleIdentityServer.Vse
                 return;
             }
 
-            _viewModel = new GenerateProxyWindowViewModel();
-            _viewModel.IsLoading = true;
-            DataContext = _viewModel;
-            DisplayAllResources(uri);
+            if (!_isInitialized)
+            {
+                _viewModel = new GenerateProxyWindowViewModel();
+                _viewModel.IsLoading = true;
+                DataContext = _viewModel;
+                DisplayAllResources(uri);
+                _isInitialized = true;
+            }
         }
         
         private void Search(object sender, RoutedEventArgs e)
@@ -125,12 +140,6 @@ namespace SimpleIdentityServer.Vse
                 return;
             }
 
-            var project = _options.Dte2.GetSelectedProject();
-            if (project == null)
-            {
-                return;
-            }
-
             var resource = _viewModel.Resources.FirstOrDefault(r => r.IsSelected);
             if (resource == null)
             {
@@ -138,18 +147,18 @@ namespace SimpleIdentityServer.Vse
             }
 
             // 1. Install the nuget package
-            if (!InstallNugetPackages(project, "Microsoft.Extensions.DependencyInjection", "1.0.0-rc2-final"))
+            if (!InstallNugetPackages(_selectedProject, "Microsoft.Extensions.DependencyInjection", "1.0.0-rc2-final"))
             {
                 return;
             }
 
-            if (!InstallNugetPackages(project, "SimpleIdentityServer.Proxy"))
+            if (!InstallNugetPackages(_selectedProject, "SimpleIdentityServer.Proxy"))
             {
                 return;
             }
 
             // 2. Add the file
-            AddFile(project, uri, resource);
+            AddFile(_selectedProject, uri, resource);
         }
 
         #endregion
