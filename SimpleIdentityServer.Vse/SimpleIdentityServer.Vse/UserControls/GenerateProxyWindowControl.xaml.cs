@@ -146,19 +146,25 @@ namespace SimpleIdentityServer.Vse
                 return;
             }
 
-            // 1. Install the nuget package
-            if (!InstallNugetPackages(_selectedProject, "Microsoft.Extensions.DependencyInjection", "1.0.0-rc2-final"))
-            {
-                return;
-            }
+            InstallNugetPackages(_selectedProject, "Microsoft.Extensions.DependencyInjection", "1.0.0-rc2-final")
+                .ContinueWith((firstTask) =>
+                {
+                    if (!firstTask.Result)
+                    {
+                        return;
+                    }
 
-            if (!InstallNugetPackages(_selectedProject, "SimpleIdentityServer.Proxy"))
-            {
-                return;
-            }
+                    InstallNugetPackages(_selectedProject, "SimpleIdentityServer.Proxy")
+                        .ContinueWith((secondTask) =>
+                        {
+                            if (!secondTask.Result)
+                            {
+                                return;
+                            }
 
-            // 2. Add the file
-            AddFile(_selectedProject, uri, resource);
+                            AddFile(_selectedProject, uri, resource);
+                        });
+                });
         }
 
         #endregion
@@ -285,29 +291,32 @@ namespace SimpleIdentityServer.Vse
             return result;
         }
 
-        private bool InstallNugetPackages(
+        private Task<bool> InstallNugetPackages(
             Project project,
             string package,
             string version = null)
         {
-            try
+            var vsPackageInstallerServices = _options.ComponentModel.GetService<IVsPackageInstallerServices>();
+            var vsPackageInstaller = _options.ComponentModel.GetService<IVsPackageInstaller>();
+            return Task.Run(() =>
             {
-                var vsPackageInstallerServices = _options.ComponentModel.GetService<IVsPackageInstallerServices>();
-                if (!vsPackageInstallerServices.IsPackageInstalled(project, package))
+                try
                 {
-                    _options.Dte.StatusBar.Text = $"Install {package} Nuget package, this may takes a minute ...";
-                    var vsPackageInstaller = _options.ComponentModel.GetService<IVsPackageInstaller>();
-                    vsPackageInstaller.InstallPackage(null, project, package, version, false);
-                    _options.Dte.StatusBar.Text = $"Finished installing the {package} Nuget package";
+                    if (!vsPackageInstallerServices.IsPackageInstalled(project, package))
+                    {
+                        _options.Dte.StatusBar.Text = $"Install {package} Nuget package, this may takes a minute ...";
+                        vsPackageInstaller.InstallPackage(null, project, package, version, false);
+                        _options.Dte.StatusBar.Text = $"Finished installing the {package} Nuget package";
+                    }
                 }
-            }
-            catch
-            {
-                MessageBox.Show($"Error occured while trying to add the {package} Nuget package");
-                return false;
-            }
+                catch
+                {
+                    ExecuteRequestToUi(() => MessageBox.Show($"Error occured while trying to add the {package} Nuget package"));
+                    return false;
+                }
 
-            return true;
+                return true;
+            });
         }
 
         #endregion

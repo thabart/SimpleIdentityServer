@@ -23,6 +23,7 @@ using SimpleIdentityServer.Vse.Helpers;
 using SimpleIdentityServer.Vse.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -143,7 +144,7 @@ namespace SimpleIdentityServer.Vse
         private async Task ProtectActions(Uri uri)
         {
             ExecuteRequestToUi(() => _viewModel.IsLoading = true);
-            foreach (var act in _viewModel.Actions)
+            foreach (var act in _viewModel.Actions.Where(a => a.IsSelected))
             {
                 await _resourceClient.AddControllerAction(new AddControllerActionRequest
                 {
@@ -161,6 +162,7 @@ namespace SimpleIdentityServer.Vse
         {
             _viewModel.IsLoading = true;
             _viewModel.Actions.Clear();
+            var selectedProjectName = _selectedProject.Name;
             return Task.Run(() =>
             {
                 var classes = _selectedProject.GetClasses();
@@ -168,11 +170,24 @@ namespace SimpleIdentityServer.Vse
                 {
                     if (codeClass.IsDerivedFrom["Microsoft.AspNetCore.Mvc.Controller"])
                     {
+                        var className = codeClass.Name;
                         var functions = VisualStudioHelper.GetAllCodeElementsOfType(codeClass.Members, vsCMElement.vsCMElementFunction, false);
                         foreach (CodeFunction function in functions)
                         {
-                            var functionName = function.Name;
                             var attributes = VisualStudioHelper.GetAllCodeElementsOfType(function.Attributes, vsCMElement.vsCMElementAttribute, false);
+                            var parameters = VisualStudioHelper.GetAllCodeElementsOfType(function.Parameters, vsCMElement.vsCMElementParameter, false);
+                            var parameterNames = new List<string>();
+                            foreach (CodeParameter parameter in parameters)
+                            {
+                                parameterNames.Add(parameter.Name);
+                            }
+
+                            var functionName = function.Name;
+                            if (parameterNames.Any())
+                            {
+                                functionName = functionName+"{"+string.Join(",", parameterNames) +"}";
+                            }
+
                             foreach (CodeAttribute attribute in attributes)
                             {
                                 if (_httpAttributeFullNames.Contains(attribute.FullName))
@@ -181,11 +196,11 @@ namespace SimpleIdentityServer.Vse
                                     {
                                         _viewModel.Actions.Add(new ControllerActionViewModel
                                         {
-                                            Application = _selectedProject.Name,
-                                            Controller = codeClass.Name,
-                                            Action = function.Name,
+                                            Application = selectedProjectName,
+                                            Controller = className,
+                                            Action = functionName,
                                             IsSelected = true,
-                                            DisplayName = $"{codeClass.Name}/{function.Name}"
+                                            DisplayName = $"{className}/{functionName}"
                                         });
                                     });
                                 }
