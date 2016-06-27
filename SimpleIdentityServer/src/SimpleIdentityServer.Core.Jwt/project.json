@@ -8,7 +8,7 @@
     "projectUrl": ""
   },
   "dependencies": {
-    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-*",
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc2-final",
     "SimpleIdentityServer.Core.Common": "*"
   },
   "tooling": {
@@ -40,10 +40,9 @@
         "System.Runtime.Serialization.Primitives": "4.1.1-*",
         "System.Private.DataContractSerialization": "4.1.1-*",
         "System.Xml.XmlSerializer": "4.0.11-*",
-        "System.Security.Cryptography.Algorithms": "4.1.0-*",
         "System.Security.Cryptography.Csp": "4.0.0-*",
         "System.Security.Cryptography.Cng": "4.1.0-*",
-        "System.Security.Cryptography.OpenSsl": "4.0.0-*",
+        "System.Security.Cryptography.OpenSsl": "4.0.0-rc2-24027",
         "System.Security.Cryptography.Algorithms.Extensions": "*"
       }
     }

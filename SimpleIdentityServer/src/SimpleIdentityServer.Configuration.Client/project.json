@@ -11,8 +11,8 @@
     "defaultNamespace": "SimpleIdentityServer.Configuration.Client"
   },
   "dependencies": {
-    "Microsoft.Extensions.DependencyInjection": "1.0.0-*",
-    "Newtonsoft.Json": "8.0.4-*"
+    "Microsoft.Extensions.DependencyInjection": "1.0.0-rc2-final",
+    "Newtonsoft.Json": "8.0.4-beta1"
   },
   "frameworks": {
     "net46": {

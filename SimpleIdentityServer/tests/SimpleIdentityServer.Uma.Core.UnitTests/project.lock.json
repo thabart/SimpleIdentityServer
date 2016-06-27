@@ -978,14 +978,14 @@
           "lib/netstandard1.1/Microsoft.Net.Http.Headers.dll": {}
         }
       },
-      "Microsoft.NETCore.Platforms/1.0.1-rc2-24027": {
+      "Microsoft.NETCore.Platforms/1.0.1": {
         "type": "package",
-        "dependencies": {
-          "Microsoft.NETCore.Targets": "1.0.1-rc2-24027"
+        "compile": {
+          "lib/netstandard1.0/_._": {}
+        },
+        "runtime": {
+          "lib/netstandard1.0/_._": {}
         }
-      },
-      "Microsoft.NETCore.Targets/1.0.1-rc2-24027": {
-        "type": "package"
       },
       "Moq/4.5.9": {
         "type": "package",
@@ -1106,9 +1106,6 @@
         }
       },
       "runtime.native.System/4.0.0-rc2-24027": {
-        "type": "package"
-      },
-      "runtime.native.System.IO.Compression/4.1.0-rc2-24027": {
         "type": "package"
       },
       "runtime.native.System.Net.Http/4.0.1-rc2-24027": {
@@ -1313,11 +1310,8 @@
           "lib/net45/_._": {}
         }
       },
-      "System.IO.Compression/4.1.0-rc2-24027": {
+      "System.IO.Compression/4.1.0": {
         "type": "package",
-        "dependencies": {
-          "runtime.native.System.IO.Compression": "4.1.0-rc2-24027"
-        },
         "frameworkAssemblies": [
           "System",
           "mscorlib"
@@ -1333,9 +1327,9 @@
             "assetType": "runtime",
             "rid": "unix"
           },
-          "runtimes/win7/lib/netstandard1.3/System.IO.Compression.dll": {
+          "runtimes/win/lib/net46/System.IO.Compression.dll": {
             "assetType": "runtime",
-            "rid": "win7"
+            "rid": "win"
           }
         }
       },
@@ -1805,8 +1799,8 @@
         "type": "project",
         "framework": ".NETFramework,Version=v4.6",
         "dependencies": {
-          "Microsoft.Extensions.DependencyInjection": "1.0.0",
-          "Newtonsoft.Json": "8.0.4",
+          "Microsoft.Extensions.DependencyInjection": "1.0.0-rc2-final",
+          "Newtonsoft.Json": "8.0.4-beta1",
           "SimpleIdentityServer.Core.Common": "1.0.0",
           "SimpleIdentityServer.Core.Jwt": "1.0.0"
         },
@@ -1825,7 +1819,7 @@
         "type": "project",
         "framework": ".NETFramework,Version=v4.6",
         "dependencies": {
-          "Newtonsoft.Json": "8.0.4"
+          "Newtonsoft.Json": "8.0.4-beta1"
         },
         "frameworkAssemblies": [
           "System.Runtime",
@@ -1844,7 +1838,7 @@
         "type": "project",
         "framework": ".NETFramework,Version=v4.6",
         "dependencies": {
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc2-final",
           "SimpleIdentityServer.Core.Common": "1.0.0"
         },
         "frameworkAssemblies": [
@@ -1862,10 +1856,10 @@
         "type": "project",
         "framework": ".NETFramework,Version=v4.6",
         "dependencies": {
-          "Microsoft.AspNetCore.Mvc": "1.0.0",
-          "Microsoft.AspNetCore.WebUtilities": "1.0.0",
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
-          "Newtonsoft.Json": "8.0.4",
+          "Microsoft.AspNetCore.Mvc": "1.0.0-rc2-final",
+          "Microsoft.AspNetCore.WebUtilities": "1.0.0-rc2-final",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc2-final",
+          "Newtonsoft.Json": "8.0.4-beta1",
           "SimpleIdentityServer.Client": "1.0.0",
           "SimpleIdentityServer.Core.Jwt": "1.0.0",
           "System.IO.Compression": "4.0.0"
@@ -2520,7 +2514,7 @@
       ]
     },
     "Microsoft.Extensions.DependencyModel/1.0.0-rc2-final": {
-      "sha512": "p9cTPcAxJhjBSQ1jq1FMW6bBTm/HaR3fXPvWfDq44LzjJ/+ZmNwQEGKO27oSd2C8Fw+Gf45+HZjTFkFH6Czr/A==",
+      "sha512": "IFfLyVWxqGOA+ql+h6gvPjWbDMXClLORxgoeJab7WxpPHTcHut/5vFLu8+29iQklymlKfYefRo8tudtwjxjCRw==",
       "type": "package",
       "files": [
         "Microsoft.Extensions.DependencyModel.1.0.0-rc2-final.nupkg.sha512",
@@ -2697,25 +2691,15 @@
         "lib/netstandard1.1/Microsoft.Net.Http.Headers.xml"
       ]
     },
-    "Microsoft.NETCore.Platforms/1.0.1-rc2-24027": {
-      "sha512": "BIZpJMovdHgUbCrZR9suwwLpZMNehIkaFKiIb9X5+wPjXNHMSQ91ETSASAnEXERyU7+ptJAfJGqgr3Y9ly98MQ==",
+    "Microsoft.NETCore.Platforms/1.0.1": {
+      "sha512": "2G6OjjJzwBfNOO8myRV/nFrbTw5iA+DEm0N+qUqhrOmaVtn4pC77h38I1jsXGw5VH55+dPfQsqHD0We9sCl9FQ==",
       "type": "package",
       "files": [
-        "Microsoft.NETCore.Platforms.1.0.1-rc2-24027.nupkg.sha512",
+        "Microsoft.NETCore.Platforms.1.0.1.nupkg.sha512",
         "Microsoft.NETCore.Platforms.nuspec",
         "ThirdPartyNotices.txt",
         "dotnet_library_license.txt",
-        "runtime.json"
-      ]
-    },
-    "Microsoft.NETCore.Targets/1.0.1-rc2-24027": {
-      "sha512": "pNy4HhkgeM1kE/IqtDQLfUcMpy3NB3B/p8J/71G9Wvu2p/ARRH2hjq1TkETiqQW7ER9aFUs86wmgHyk3dtDgVQ==",
-      "type": "package",
-      "files": [
-        "Microsoft.NETCore.Targets.1.0.1-rc2-24027.nupkg.sha512",
-        "Microsoft.NETCore.Targets.nuspec",
-        "ThirdPartyNotices.txt",
-        "dotnet_library_license.txt",
+        "lib/netstandard1.0/_._",
         "runtime.json"
       ]
     },
@@ -2844,16 +2828,6 @@
         "dotnet_library_license.txt",
         "runtime.native.System.4.0.0-rc2-24027.nupkg.sha512",
         "runtime.native.System.nuspec"
-      ]
-    },
-    "runtime.native.System.IO.Compression/4.1.0-rc2-24027": {
-      "sha512": "r84dFA/jE921UfQNrFyNUAdvU//SNzdAv2eMb4YXH4DlXF0V/FM5QqYodZQkr4tVNbQM3KqIn1eIjbWcDCB7Dg==",
-      "type": "package",
-      "files": [
-        "ThirdPartyNotices.txt",
-        "dotnet_library_license.txt",
-        "runtime.native.System.IO.Compression.4.1.0-rc2-24027.nupkg.sha512",
-        "runtime.native.System.IO.Compression.nuspec"
       ]
     },
     "runtime.native.System.Net.Http/4.0.1-rc2-24027": {
@@ -3722,11 +3696,11 @@
         "ref/xamarinwatchos10/_._"
       ]
     },
-    "System.IO.Compression/4.1.0-rc2-24027": {
-      "sha512": "tDUl9OuEauxpXOcWFXLW5nPqE0GqpC4sHOq5KbruncfTsTLQp+/vX156Wm8LpdHmeC35sQmSyYeRGJQHfoPfww==",
+    "System.IO.Compression/4.1.0": {
+      "sha512": "TjnBS6eztThSzeSib+WyVbLzEdLKUcEHN69VtS3u8aAsSc18FU6xCZlNWWsEd8SKcXAE+y1sOu7VbU8sUeM0sg==",
       "type": "package",
       "files": [
-        "System.IO.Compression.4.1.0-rc2-24027.nupkg.sha512",
+        "System.IO.Compression.4.1.0.nupkg.sha512",
         "System.IO.Compression.nuspec",
         "ThirdPartyNotices.txt",
         "dotnet_library_license.txt",
@@ -3786,7 +3760,8 @@
         "ref/xamarintvos10/_._",
         "ref/xamarinwatchos10/_._",
         "runtimes/unix/lib/netstandard1.3/System.IO.Compression.dll",
-        "runtimes/win7/lib/netstandard1.3/System.IO.Compression.dll"
+        "runtimes/win/lib/net46/System.IO.Compression.dll",
+        "runtimes/win/lib/netstandard1.3/System.IO.Compression.dll"
       ]
     },
     "System.IO.FileSystem/4.0.1-rc2-24027": {

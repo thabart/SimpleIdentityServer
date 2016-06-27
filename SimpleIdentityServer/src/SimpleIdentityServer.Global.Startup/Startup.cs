@@ -131,12 +131,7 @@ namespace SimpleIdentityServer.Global.Startup
             services.AddSimpleIdentityServer(new DataSourceOptions
             {
                 DataSourceType = GetAuthorizationDataSourceType(),
-                ConnectionString = GetConnectionString(),
-                Clients = Clients.Get(),
-                JsonWebKeys = JsonWebKeys.Get(),
-                ResourceOwners = ResourceOwners.Get(),
-                Scopes = Scopes.Get(),
-                Translations = Translations.Get()
+                ConnectionString = GetConnectionString()
             }, _authorizationServerSwaggerOptions);
         }
 
@@ -145,14 +140,8 @@ namespace SimpleIdentityServer.Global.Startup
             app.UseSimpleIdentityServer(new HostingOptions
             {
                 IsDataMigrated = true,
-                IsDeveloperModeEnabled = false,
-                IsMicrosoftAuthenticationEnabled = true,
-                MicrosoftClientId = GetMicrosoftClientId(),
-                MicrosoftClientSecret = GetMicrosoftClientSecret(),
-                IsFacebookAuthenticationEnabled = true,
-                FacebookClientId = GetFacebookClientId(),
-                FacebookClientSecret = GetFacebookClientSecret()
-            }, _authorizationServerSwaggerOptions);
+                IsDeveloperModeEnabled = false
+            }, _authorizationServerSwaggerOptions, null);
         }
 
         private void ConfigureSimpleIdentityServerManagerServiceCollection(IServiceCollection services)

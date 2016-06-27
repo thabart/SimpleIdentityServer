@@ -12,7 +12,7 @@
   },
 
   "dependencies": {
-    "Newtonsoft.Json": "8.0.4-*"
+    "Newtonsoft.Json": "8.0.4-beta1"
   },
 
   "frameworks": {
