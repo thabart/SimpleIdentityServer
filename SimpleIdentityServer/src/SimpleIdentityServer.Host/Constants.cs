@@ -69,12 +69,15 @@ namespace SimpleIdentityServer.Host
             public const string Microsoft = "Microsoft";
             
             public const string Facebook = "Facebook";
+
+            public const string Adfs = "ADFS";
         }
         
         public static List<string> SupportedIdentityProviders = new List<string> 
         {
             IdentityProviderNames.Microsoft,
-            IdentityProviderNames.Facebook
+            IdentityProviderNames.Facebook,
+            IdentityProviderNames.Adfs
         };
 
         public static class RevocationRequestNames

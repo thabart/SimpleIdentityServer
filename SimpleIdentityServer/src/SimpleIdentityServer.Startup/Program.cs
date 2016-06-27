@@ -29,7 +29,10 @@ namespace SimpleIdentityServer.Startup
                 .AddEnvironmentVariables(prefix: "ASPNETCORE_")
                 .Build();
             var host = new WebHostBuilder()
-                .UseKestrel()
+                .UseKestrel(options =>
+                {
+                    options.UseHttps("SimpleIdServer.cer");
+                })
                 .UseConfiguration(configuration)
                 .UseStartup<Startup>()
                 .Build();

@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 using Serilog;
 using SimpleIdentityServer.DataAccess.SqlServer;
 using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
@@ -141,6 +142,9 @@ namespace SimpleIdentityServer.Host
                 AutomaticChallenge = true,
                 LoginPath = new PathString("/Authenticate")
             });
+
+            // 3. Protect against IFRAME attack
+            app.UseXFrame();
 
             // Check this implementation : https://github.com/aspnet/Security/blob/dev/samples/SocialSample/Startup.cs
 

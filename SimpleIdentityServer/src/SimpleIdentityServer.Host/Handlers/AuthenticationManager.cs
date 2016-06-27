@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Client;
@@ -110,6 +111,13 @@ namespace SimpleIdentityServer.Host.Handlers
                         return true;
                     }
                 }
+                else if (authProvider.Name == "ADFS")
+                {
+                    if (await EnableAdfsAuthentication(authProvider.Options, httpContext))
+                    {
+                        return true;
+                    }
+                }
             }
 
             return false;
@@ -188,6 +196,19 @@ namespace SimpleIdentityServer.Host.Handlers
             await handler.InitializeAsync(microsoftOptions, httpContext, _logger, UrlEncoder.Default);
             return await handler.HandleRequestAsync();
         }
+        
+        private async Task<bool> EnableAdfsAuthentication(List<Option> options, HttpContext httpContext)
+        {
+            var adfsOptions = ExtractAdfsOptions(options, _dataProtectionProvider);
+            if (adfsOptions == null)
+            {
+                return false;
+            }
+
+            var handler = new OAuthHandler<OAuthOptions>(new HttpClient());
+            await handler.InitializeAsync(adfsOptions, httpContext, _logger, UrlEncoder.Default);
+            return await handler.HandleRequestAsync();
+        }
 
         #endregion
 
@@ -254,6 +275,54 @@ namespace SimpleIdentityServer.Host.Handlers
             }
 
             return microsoftAccountOptions;
+        }
+
+        private static OAuthOptions ExtractAdfsOptions(List<Option> options, IDataProtectionProvider dataProtectionProvider)
+        {
+            var clientId = options.FirstOrDefault(o => o.Key == "ClientId");
+            var clientSecret = options.FirstOrDefault(o => o.Key == "ClientSecret");
+            var relyingParty = options.FirstOrDefault(o => o.Key == "RelyingParty");
+            var claimsIssuer = options.FirstOrDefault(o => o.Key == "ClaimsIssuer");
+            var authorizationEndPoint = options.FirstOrDefault(o => o.Key == "AdfsAuthorizationEndPoint");
+            var tokenEndPoint = options.FirstOrDefault(o => o.Key == "AdfsTokenEndPoint");
+            if (clientId == null 
+                || clientSecret == null
+                || relyingParty == null
+                || claimsIssuer == null
+                || authorizationEndPoint == null 
+                || tokenEndPoint == null)
+            {
+                return null;
+            }
+
+            var dataProtector = dataProtectionProvider.CreateProtector(
+                typeof(AuthenticationManager).FullName, Constants.IdentityProviderNames.Adfs, "v1");
+
+            var adfsOptions = new OAuthOptions
+            {
+                ClientId = clientId.Value,
+                ClientSecret = clientSecret.Value,
+                AuthenticationScheme = Constants.IdentityProviderNames.Adfs,
+                DisplayName = Constants.IdentityProviderNames.Adfs,
+                CallbackPath = new PathString("/oauth-callback"),
+                Events = new OAuthEvents
+                {
+                    OnRedirectToAuthorizationEndpoint = async context =>
+                    {
+                        var parameter = new Dictionary<string, string>
+                        {
+                            ["resource"] = relyingParty.Value
+                        };
+                        var query = QueryHelpers.AddQueryString(context.RedirectUri, parameter);
+                        context.Response.Redirect(query);
+                    }
+                },
+                ClaimsIssuer = claimsIssuer.Value,
+                AuthorizationEndpoint = authorizationEndPoint.Value,
+                TokenEndpoint = tokenEndPoint.Value,
+                StateDataFormat = new PropertiesDataFormat(dataProtector)
+            };
+            return adfsOptions;
         }
 
         #endregion

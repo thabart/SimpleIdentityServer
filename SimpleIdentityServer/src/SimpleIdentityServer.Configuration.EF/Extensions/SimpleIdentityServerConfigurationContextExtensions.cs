@@ -95,6 +95,50 @@ namespace SimpleIdentityServer.Configuration.EF.Extensions
                                 Value = "openid"
                             }
                         }
+                    },
+                    new AuthenticationProvider
+                    {
+                        IsEnabled = false,
+                        Name = "ADFS",
+                        Options = new List<Option>
+                        {
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "ClientId",
+                                Value = "clientid"
+                            },
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "ClientSecret",
+                                Value = "clientsecret"
+                            },
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "RelyingParty",
+                                Value = "rp"
+                            },
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "ClaimsIssuer",
+                                Value = "url://ci"
+                            },
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "AdfsAuthorizationEndPoint",
+                                Value = "https://adfs.mycompany.com/adfs/oauth2/authorize/"
+                            },
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "AdfsTokenEndPoint",
+                                Value = "https://adfs.mycompany.com/adfs/oauth2/token/"
+                            }
+                        }
                     }
                 });
             }
