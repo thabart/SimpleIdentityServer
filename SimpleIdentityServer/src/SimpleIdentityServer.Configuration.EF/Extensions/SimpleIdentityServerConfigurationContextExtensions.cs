@@ -67,6 +67,12 @@ namespace SimpleIdentityServer.Configuration.EF.Extensions
                                 Id = Guid.NewGuid().ToString(),
                                 Key = "Scope",
                                 Value = "email"
+                            },
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "Scope",
+                                Value = "public_profile"
                             }
                         }
                     },

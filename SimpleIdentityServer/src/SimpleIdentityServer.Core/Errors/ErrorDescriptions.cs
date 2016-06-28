@@ -180,5 +180,7 @@ namespace SimpleIdentityServer.Core.Errors
         public static string NoSubjectCanBeExtracted = "no subject can be extracted";
 
         public static string TheTokenDoesntExist = "the token doesn't exist";
+
+        public static string TheRoCannotBeCreated = "the resource owner cannot be created because subject is missing";
     }
 }

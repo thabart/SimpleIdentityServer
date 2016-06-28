@@ -60,74 +60,69 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 
         public bool Insert(Domains.ResourceOwner resourceOwner)
         {
-            using (var transaction = _context.Database.BeginTransaction())
+            try
             {
-                try
+                // 1. Add all the information
+                var user = new Models.ResourceOwner
                 {
-                    // 1. Add all the information
-                    var user = new Models.ResourceOwner
+                    Name = resourceOwner.Name,
+                    BirthDate = resourceOwner.BirthDate,
+                    Email = resourceOwner.Email,
+                    EmailVerified = resourceOwner.EmailVerified,
+                    FamilyName = resourceOwner.FamilyName,
+                    Gender = resourceOwner.Gender,
+                    GivenName = resourceOwner.GivenName,
+                    Locale = resourceOwner.Locale,
+                    MiddleName = resourceOwner.MiddleName,
+                    NickName = resourceOwner.NickName,
+                    Password = resourceOwner.Password,
+                    PhoneNumber = resourceOwner.PhoneNumber,
+                    PhoneNumberVerified = resourceOwner.PhoneNumberVerified,
+                    Picture = resourceOwner.Picture,
+                    PreferredUserName = resourceOwner.PreferredUserName,
+                    Profile = resourceOwner.Profile,
+                    UpdatedAt = resourceOwner.UpdatedAt,
+                    WebSite = resourceOwner.WebSite,
+                    ZoneInfo = resourceOwner.ZoneInfo,
+                    Id = resourceOwner.Id,
+                    ResourceOwnerRoles = new List<Models.ResourceOwnerRole>()
+                };
+
+                // 2. Add information about the user's address
+                if (resourceOwner.Address != null)
+                {
+                    user.Address = new Models.Address
                     {
-                        Name = resourceOwner.Name,
-                        BirthDate = resourceOwner.BirthDate,
-                        Email = resourceOwner.Email,
-                        EmailVerified = resourceOwner.EmailVerified,
-                        FamilyName = resourceOwner.FamilyName,
-                        Gender = resourceOwner.Gender,
-                        GivenName = resourceOwner.GivenName,
-                        Locale = resourceOwner.Locale,
-                        MiddleName = resourceOwner.MiddleName,
-                        NickName = resourceOwner.NickName,
-                        Password = resourceOwner.Password,
-                        PhoneNumber = resourceOwner.PhoneNumber,
-                        PhoneNumberVerified = resourceOwner.PhoneNumberVerified,
-                        Picture = resourceOwner.Picture,
-                        PreferredUserName = resourceOwner.PreferredUserName,
-                        Profile = resourceOwner.Profile,
-                        UpdatedAt = resourceOwner.UpdatedAt,
-                        WebSite = resourceOwner.WebSite,
-                        ZoneInfo = resourceOwner.ZoneInfo,
-                        Id = resourceOwner.Id,
-                        ResourceOwnerRoles = new List<Models.ResourceOwnerRole>()
+                        Country = user.Address.Country,
+                        Formatted = user.Address.Formatted,
+                        Locality = user.Address.Locality,
+                        PostalCode = user.Address.PostalCode,
+                        Region = user.Address.Region,
+                        StreetAddress = user.Address.StreetAddress
                     };
-
-                    // 2. Add information about the user's address
-                    if (resourceOwner.Address != null)
-                    {
-                        user.Address = new Models.Address
-                        {
-                            Country = user.Address.Country,
-                            Formatted = user.Address.Formatted,
-                            Locality = user.Address.Locality,
-                            PostalCode = user.Address.PostalCode,
-                            Region = user.Address.Region,
-                            StreetAddress = user.Address.StreetAddress
-                        };
-                    }
-
-                    // 3. Add all the roles
-                    if (resourceOwner.Roles != null &&
-                        resourceOwner.Roles.Any())
-                    {
-                        resourceOwner.Roles.ForEach(r =>
-                        {
-                            var resourceOwnerRole = new Models.ResourceOwnerRole
-                            {
-                                RoleName = r
-                            };
-
-                            user.ResourceOwnerRoles.Add(resourceOwnerRole);
-                        });
-                    }
-
-                    _context.ResourceOwners.Add(user);
-                    _context.SaveChangesAsync();
-                    transaction.Commit();
                 }
-                catch (Exception)
+
+                // 3. Add all the roles
+                if (resourceOwner.Roles != null &&
+                    resourceOwner.Roles.Any())
                 {
-                    transaction.Rollback();
-                    return false;
+                    resourceOwner.Roles.ForEach(r =>
+                    {
+                        var resourceOwnerRole = new Models.ResourceOwnerRole
+                        {
+                            RoleName = r
+                        };
+
+                        user.ResourceOwnerRoles.Add(resourceOwnerRole);
+                    });
                 }
+
+                _context.ResourceOwners.Add(user);
+                _context.SaveChanges();
+            }
+            catch (Exception)
+            {
+                return false;
             }
 
             return true;

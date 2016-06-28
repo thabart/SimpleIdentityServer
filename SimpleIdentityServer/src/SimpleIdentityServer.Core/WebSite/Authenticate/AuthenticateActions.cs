@@ -45,6 +45,8 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
             List<Claim> claims,
             AuthorizationParameter authorizationParameter,
             string code);
+
+        void LoginCallback(ClaimsPrincipal claimsPrincipal);
     }
 
     public class AuthenticateActions : IAuthenticateActions
@@ -57,16 +59,20 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
 
         private readonly ILocalUserAuthenticationAction _localUserAuthenticationAction;
 
+        private readonly ILoginCallbackAction _loginCallbackAction;
+
         public AuthenticateActions(
             IAuthenticateResourceOwnerOpenIdAction authenticateResourceOwnerOpenIdAction,
             ILocalOpenIdUserAuthenticationAction localOpenIdUserAuthenticationAction,
             IExternalOpenIdUserAuthenticationAction externalOpenIdUserAuthenticationAction,
-            ILocalUserAuthenticationAction localUserAuthenticationAction)
+            ILocalUserAuthenticationAction localUserAuthenticationAction,
+            ILoginCallbackAction loginCallbackAction)
         {
             _authenticateResourceOwnerOpenIdAction = authenticateResourceOwnerOpenIdAction;
             _localOpenIdUserAuthenticationAction = localOpenIdUserAuthenticationAction;
             _externalOpenIdUserAuthenticationAction = externalOpenIdUserAuthenticationAction;
             _localUserAuthenticationAction = localUserAuthenticationAction;
+            _loginCallbackAction = loginCallbackAction;
         }
 
         public ActionResult AuthenticateResourceOwnerOpenId(
@@ -146,6 +152,11 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
             return _externalOpenIdUserAuthenticationAction.Execute(claims,
                 authorizationParameter,
                 code);
+        }
+
+        public void LoginCallback(ClaimsPrincipal claimsPrincipal)
+        {
+            _loginCallbackAction.Execute(claimsPrincipal);
         }
     }
 }

@@ -23,6 +23,8 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 
         private Mock<ILocalUserAuthenticationAction> _localUserAuthenticationActionFake;
 
+        private Mock<ILoginCallbackAction> _loginCallbackActionStub;
+
         private IAuthenticateActions _authenticateActions;
 
         [Fact]
@@ -173,17 +175,32 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             Assert.True(result.First().Type == claimType && result.First().Value == claimValue);
         }
 
+        [Fact]
+        public void When_LoginCallbackIsExecuted_Then_Operation_Is_Called()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+
+            // ACT
+            _authenticateActions.LoginCallback(null);
+
+            // ASSERT
+            _loginCallbackActionStub.Verify(l => l.Execute(It.IsAny<ClaimsPrincipal>()));
+        }
+
         private void InitializeFakeObjects()
         {
             _authenticateResourceOwnerActionFake = new Mock<IAuthenticateResourceOwnerOpenIdAction>();
             _localOpenIdUserAuthenticationActionFake = new Mock<ILocalOpenIdUserAuthenticationAction>();
             _externalUserAuthenticationFake = new Mock<IExternalOpenIdUserAuthenticationAction>();
             _localUserAuthenticationActionFake = new Mock<ILocalUserAuthenticationAction>();
+            _loginCallbackActionStub = new Mock<ILoginCallbackAction>();
             _authenticateActions = new AuthenticateActions(
                 _authenticateResourceOwnerActionFake.Object,
                 _localOpenIdUserAuthenticationActionFake.Object,
                 _externalUserAuthenticationFake.Object,
-                _localUserAuthenticationActionFake.Object);
+                _localUserAuthenticationActionFake.Object,
+                _loginCallbackActionStub.Object);
         }
     }
 }

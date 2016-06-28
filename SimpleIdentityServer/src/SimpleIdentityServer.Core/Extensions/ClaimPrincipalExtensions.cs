@@ -20,6 +20,8 @@ namespace SimpleIdentityServer.Core.Extensions
 {
     public static class ClaimPrincipalExtensions
     {
+        #region Public static methods
+
         /// <summary>
         /// Returns if the user is authenticated
         /// </summary>
@@ -62,5 +64,135 @@ namespace SimpleIdentityServer.Core.Extensions
 
             return claim.Value;
         }
+
+        public static string GetName(this ClaimsPrincipal principal)
+        {
+            return GetClaimValue(principal, Jwt.Constants.StandardResourceOwnerClaimNames.Name);
+        }
+
+        public static string GetEmail(this ClaimsPrincipal principal)
+        {
+            return GetClaimValue(principal, Jwt.Constants.StandardResourceOwnerClaimNames.Email);
+        }
+
+        public static bool GetEmailVerified(this ClaimsPrincipal principal)
+        {
+            return GetBooleanClaimValue(principal, Jwt.Constants.StandardResourceOwnerClaimNames.EmailVerified);
+        }
+
+        public static string GetFamilyName(this ClaimsPrincipal principal)
+        {
+            return GetClaimValue(principal, Jwt.Constants.StandardResourceOwnerClaimNames.FamilyName);
+        }
+
+        public static string GetGender(this ClaimsPrincipal principal)
+        {
+            return GetClaimValue(principal, Jwt.Constants.StandardResourceOwnerClaimNames.Gender);
+        }
+
+        public static string GetGivenName(this ClaimsPrincipal principal)
+        {
+            return GetClaimValue(principal, Jwt.Constants.StandardResourceOwnerClaimNames.GivenName);
+        }
+
+        public static string GetLocale(this ClaimsPrincipal principal)
+        {
+            return GetClaimValue(principal, Jwt.Constants.StandardResourceOwnerClaimNames.Locale);
+        }
+
+        public static string GetMiddleName(this ClaimsPrincipal principal)
+        {
+            return GetClaimValue(principal, Jwt.Constants.StandardResourceOwnerClaimNames.MiddleName);
+        }
+
+        public static string GetNickName(this ClaimsPrincipal principal)
+        {
+            return GetClaimValue(principal, Jwt.Constants.StandardResourceOwnerClaimNames.NickName);
+        }
+
+        public static string GetPhoneNumber(this ClaimsPrincipal principal)
+        {
+            return GetClaimValue(principal, Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber);
+        }
+
+        public static bool GetPhoneNumberVerified(this ClaimsPrincipal principal)
+        {
+            return GetBooleanClaimValue(principal, Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumberVerified);
+        }
+
+        public static string GetPicture(this ClaimsPrincipal principal)
+        {
+            return GetClaimValue(principal, Jwt.Constants.StandardResourceOwnerClaimNames.Picture);
+        }
+
+        public static string GetPreferredUserName(this ClaimsPrincipal principal)
+        {
+            return GetClaimValue(principal, Jwt.Constants.StandardResourceOwnerClaimNames.PreferredUserName);
+        }
+
+        public static string GetProfile(this ClaimsPrincipal principal)
+        {
+            return GetClaimValue(principal, Jwt.Constants.StandardResourceOwnerClaimNames.Profile);
+        }
+
+        public static string GetRole(this ClaimsPrincipal principal)
+        {
+            return GetClaimValue(principal, Jwt.Constants.StandardResourceOwnerClaimNames.Role);
+        }
+
+        public static string GetWebSite(this ClaimsPrincipal principal)
+        {
+            return GetClaimValue(principal, Jwt.Constants.StandardResourceOwnerClaimNames.WebSite);
+        }
+
+        public static string GetZoneInfo(this ClaimsPrincipal principal)
+        {
+            return GetClaimValue(principal, Jwt.Constants.StandardResourceOwnerClaimNames.ZoneInfo);
+        }
+
+        public static string GetBirthDate(this ClaimsPrincipal principal)
+        {
+            return GetClaimValue(principal, Jwt.Constants.StandardResourceOwnerClaimNames.BirthDate);
+        }
+
+        #endregion
+
+        #region Private static methods
+
+        private static string GetClaimValue(ClaimsPrincipal principal, string claimName)
+        {
+            if (principal == null ||
+                principal.Identity == null)
+            {
+                return null;
+            }
+
+            var claim = principal.FindFirst(claimName);
+            if (claim == null)
+            {
+                return null;
+            }
+
+            return claim.Value;
+        }
+
+        private static bool GetBooleanClaimValue(ClaimsPrincipal principal, string claimName)
+        {
+            var result = GetClaimValue(principal, claimName);
+            if (string.IsNullOrWhiteSpace(result))
+            {
+                return false;
+            }
+
+            bool res = false;
+            if (!bool.TryParse(result, out res))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        #endregion 
     }
 }

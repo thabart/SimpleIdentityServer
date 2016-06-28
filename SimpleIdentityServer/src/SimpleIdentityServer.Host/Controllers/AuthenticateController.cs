@@ -15,15 +15,12 @@
 #endregion
 
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Authentication;
-using Microsoft.AspNetCore.Http.Features.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.Extensions.Logging;
 using SimpleIdentityServer.Api.ViewModels;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Protector;
@@ -31,15 +28,12 @@ using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.Authenticate;
 using SimpleIdentityServer.Host.DTOs.Request;
 using SimpleIdentityServer.Host.Extensions;
-using SimpleIdentityServer.Host.Handlers;
 using SimpleIdentityServer.Host.ViewModels;
 using SimpleIdentityServer.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Security.Claims;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Host.Controllers
@@ -166,15 +160,9 @@ namespace SimpleIdentityServer.Host.Controllers
                     string.Format(Core.Errors.ErrorDescriptions.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
             }
 
-            // 1. Check if the user is authenticated
+            // 1. Check if the user exists and insert it
             var authenticatedUser = this.GetAuthenticatedUser();
-            if (authenticatedUser == null ||
-                !authenticatedUser.Identity.IsAuthenticated ||
-                !(authenticatedUser.Identity is ClaimsIdentity)) {
-                  throw new IdentityServerException(
-                        Core.Errors.ErrorCodes.UnhandledExceptionCode,
-                        Core.Errors.ErrorDescriptions.TheUserNeedsToBeAuthenticated);
-            }
+            _authenticateActions.LoginCallback(authenticatedUser);
             
             // 2. Redirect to the profile
             return RedirectToAction("Index", "User");

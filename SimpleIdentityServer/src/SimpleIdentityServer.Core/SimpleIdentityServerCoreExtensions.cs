@@ -127,6 +127,7 @@ namespace SimpleIdentityServer.Core
             serviceCollection.AddTransient<IUserActions, UserActions>();
             serviceCollection.AddTransient<IRemoveConsentOperation, RemoveConsentOperation>();
             serviceCollection.AddTransient<IRevokeTokenAction, RevokeTokenAction>();
+            serviceCollection.AddTransient<ILoginCallbackAction, LoginCallbackAction>();
             return serviceCollection;
         }
     }

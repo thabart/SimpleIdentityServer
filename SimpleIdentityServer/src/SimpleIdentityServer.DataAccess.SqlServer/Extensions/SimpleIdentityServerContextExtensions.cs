@@ -636,6 +636,34 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         GrantTypes = "3",
                         ResponseTypes = "1",
                         IdTokenSignedResponseAlg = "RS256"
+                    },
+                    // Simple Identity server test client
+                    new Client
+                    {
+                        ClientId = "SimpleIdServerClient",
+                        ClientName = "Sample client",
+                        ClientSecret = "SimpleIdServerClient",
+                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
+                        LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
+                        ClientScopes = new List<ClientScope>
+                        {
+                            new ClientScope
+                            {
+                                ScopeName = "openid"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "role"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "profile"
+                            }
+                        },
+                        GrantTypes = "1",
+                        ResponseTypes = "0,1,2",
+                        IdTokenSignedResponseAlg = "RS256",
+                        RedirectionUrls = "https://localhost:5443/User/callback"
                     }
                 });
             }
