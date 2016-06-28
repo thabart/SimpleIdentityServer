@@ -5,6 +5,8 @@
 
 @{
     Layout = "~/Views/Shared/_UserLayout.cshtml";
+    ViewBag.IsEditDisplayed = false;
+    ViewBag.IsTestDisplayed = false;
     ViewBag.IsConsentDisplayed = false;
     ViewBag.IsIndexDisplayed = true;
     var identity = User.Identity as ClaimsIdentity;

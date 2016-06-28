@@ -663,7 +663,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         GrantTypes = "1",
                         ResponseTypes = "0,1,2",
                         IdTokenSignedResponseAlg = "RS256",
-                        RedirectionUrls = "https://localhost:5443/User/callback"
+                        RedirectionUrls = "https://localhost:5443/User/Callback"
                     }
                 });
             }

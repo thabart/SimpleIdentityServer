@@ -1,0 +1,56 @@
+@using SimpleIdentityServer.Host.ViewModels
+
+@model ResourceOwnerViewModel
+
+@{
+    ViewBag.Title = "Edit user";
+    ViewBag.IsEditDisplayed = true;
+    ViewBag.IsTestDisplayed = false;
+    ViewBag.IsConsentDisplayed = false;
+    ViewBag.IsIndexDisplayed = false;
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+<div class="tab-pane active" id="edit-ro">
+    <div class="col-md-8 col-md-offset-2">
+        <h1>Edit resource owner</h1>
+        <form action="@Url.Action("Edit")" method="post">
+            <!-- Display name -->
+            <fieldset class="form-group">
+                <label>Name</label>
+                <input type="text" value="@Model.Name" name="Name" class="form-control" placeholder="Your username" />
+            </fieldset>
+            <!-- Display new password -->
+            <fieldset class="form-group">
+                <label>New password</label>
+                <input type="text" name="Password" class="form-control" placeholder="Your password" />
+            </fieldset>
+            <button type="submit" class="form-control">Update</button>
+        </form>
+        <!-- Display old password -->
+        <div class="row">
+            <div class="col-md-5">
+                <label>Old password</label>
+            </div>
+            <div class="col-md-7">
+                @Model.Password
+            </div>
+        </div>
+        <!-- Display roles -->
+        <div class="row">
+            <div class="col-md-5">
+                <label>Roles</label>
+            </div>
+            <div class="col-md-7">
+                @if (Model.Roles != null && Model.Roles.Count() > 0)
+                {
+                    <p>@string.Join(",", Model.Roles)</p>
+                }
+                else
+                {
+                    <p>No roles</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>

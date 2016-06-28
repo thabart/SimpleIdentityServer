@@ -11,6 +11,12 @@
         <li class="@(ViewBag.IsConsentDisplayed ? "active": string.Empty)">
             <a href="@Url.Action("Consent")">Consents</a>
         </li>
+        <li class="@(ViewBag.IsEditDisplayed ? "active": string.Empty)">
+            <a href="@Url.Action("Edit")">Edit</a>
+        </li>
+        <li class="@(ViewBag.IsTestDisplayed ? "active": string.Empty)">
+            <a href="@Url.Action("Test")">Test</a>
+        </li>
     </ul>
 
     <div class="tab-content container">

@@ -1,0 +1,20 @@
+@using System.Security.Claims
+@using SimpleIdentityServer.Core.Jwt
+@using SimpleIdentityServer.Host.ViewModels
+@using Microsoft.AspNetCore.Http.Extensions
+
+@model List<ConsentViewModel>
+
+@{
+    ViewBag.Title = "Consents";
+    ViewBag.IsEditDisplayed = false;
+    ViewBag.IsTestDisplayed = true;
+    ViewBag.IsConsentDisplayed = false;
+    ViewBag.IsIndexDisplayed = false;
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+<!-- Display the consents -->
+<div class="tab-pane active" id="test">
+    <p>Click on the link to simulate the implicit grant flow and get an identity token <a href="https://localhost:5443/authorization?scope=openid role profile&state=75BCNvRlEGHpQRCT&redirect_uri=https://localhost:5443/User/Callback&response_type=id_token%20token&client_id=SimpleIdServerClient&nonce=nonce">Link</a></p>
+</div>

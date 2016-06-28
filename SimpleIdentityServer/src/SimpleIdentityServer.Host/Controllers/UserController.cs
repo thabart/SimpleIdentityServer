@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Core.WebSite.User;
 using SimpleIdentityServer.Host.Extensions;
@@ -23,6 +24,7 @@ using System.Linq;
 
 namespace SimpleIdentityServer.Api.Controllers
 {
+    [Authorize]
     public class UserController : Controller
     {
         private readonly IUserActions _userActions;
@@ -48,6 +50,45 @@ namespace SimpleIdentityServer.Api.Controllers
         public ActionResult Consent()
         {
             return GetConsents();
+        }
+
+        [HttpGet]
+        public ActionResult Edit()
+        {
+            var authenticatedUser = this.GetAuthenticatedUser();
+            var user = _userActions.GetUser(authenticatedUser);
+            var viewModel = new ResourceOwnerViewModel
+            {
+                Name = user.Name,
+                Password = user.Password,
+                Roles = user.Roles
+            };
+            return View(viewModel);
+        }
+
+        [HttpGet]
+        public ActionResult Test()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult Edit(UpdateResourceOwnerViewModel viewModel)
+        {
+            return RedirectToAction("Edit");
+        }
+
+        [HttpGet]
+        public ActionResult Callback()
+        {
+            var query = Request.Query;
+            var viewModel = new CallbackViewModel
+            {
+                IdentityToken = query[Core.Constants.StandardAuthorizationResponseNames.IdTokenName],
+                AccessToken = query[Core.Constants.StandardAuthorizationResponseNames.AccessTokenName],
+                State = query[Core.Constants.StandardAuthorizationResponseNames.StateName]
+            };
+            return View(viewModel);
         }
 
         [HttpPost]

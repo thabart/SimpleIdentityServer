@@ -182,5 +182,9 @@ namespace SimpleIdentityServer.Core.Errors
         public static string TheTokenDoesntExist = "the token doesn't exist";
 
         public static string TheRoCannotBeCreated = "the resource owner cannot be created because subject is missing";
+
+        public static string TheSubjectCannotBeRetrieved = "the subject cannot be retrieved";
+
+        public static string TheRoDoesntExist = "the resource owner doesn't exist";
     }
 }
