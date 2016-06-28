@@ -16,9 +16,11 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.WebSite.User;
 using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.Host.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -67,7 +69,7 @@ namespace SimpleIdentityServer.Api.Controllers
         }
 
         [HttpGet]
-        public ActionResult Test()
+        public ActionResult Simulator()
         {
             return View();
         }
@@ -75,12 +77,23 @@ namespace SimpleIdentityServer.Api.Controllers
         [HttpPost]
         public ActionResult Edit(UpdateResourceOwnerViewModel viewModel)
         {
+            if (viewModel == null)
+            {
+                throw new ArgumentNullException(nameof(viewModel));
+            }
+
+            var authenticatedUser = this.GetAuthenticatedUser();
+            var parameter = viewModel.ToParameter();
+            parameter.Id = authenticatedUser.GetSubject();
+            _userActions.UpdateUser(parameter);
             return RedirectToAction("Edit");
         }
 
         [HttpGet]
         public ActionResult Callback()
         {
+            var p = HttpContext.Request.Path;
+            var path = Request.Path;
             var query = Request.Query;
             var viewModel = new CallbackViewModel
             {

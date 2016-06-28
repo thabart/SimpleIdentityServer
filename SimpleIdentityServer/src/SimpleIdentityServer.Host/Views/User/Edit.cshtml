@@ -5,7 +5,7 @@
 @{
     ViewBag.Title = "Edit user";
     ViewBag.IsEditDisplayed = true;
-    ViewBag.IsTestDisplayed = false;
+    ViewBag.IsSimulatorDisplayed = false;
     ViewBag.IsConsentDisplayed = false;
     ViewBag.IsIndexDisplayed = false;
     Layout = "~/Views/Shared/_UserLayout.cshtml";
@@ -23,12 +23,12 @@
             <!-- Display new password -->
             <fieldset class="form-group">
                 <label>New password</label>
-                <input type="text" name="Password" class="form-control" placeholder="Your password" />
+                <input type="password" name="Password" class="form-control" placeholder="Your password" />
             </fieldset>
             <button type="submit" class="form-control">Update</button>
         </form>
         <!-- Display old password -->
-        <div class="row">
+        <div class="row" style="padding-top:20px;">
             <div class="col-md-5">
                 <label>Old password</label>
             </div>

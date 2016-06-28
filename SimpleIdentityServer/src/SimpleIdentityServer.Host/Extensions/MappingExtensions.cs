@@ -80,6 +80,15 @@ namespace SimpleIdentityServer.Host.Extensions
             return result;
         }
 
+        public static UpdateUserParameter ToParameter(this UpdateResourceOwnerViewModel updateResourceOwnerViewModel)
+        {
+            return new UpdateUserParameter
+            {
+                Name = updateResourceOwnerViewModel.Name,
+                Password = updateResourceOwnerViewModel.Password
+            };
+        }
+
         public static RevokeTokenParameter ToParameter(this RevocationRequest revocationRequest)
         {
             return new RevokeTokenParameter

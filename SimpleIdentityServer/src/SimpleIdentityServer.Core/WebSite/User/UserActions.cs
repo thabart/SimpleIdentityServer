@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.WebSite.User.Actions;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -27,6 +28,8 @@ namespace SimpleIdentityServer.Core.WebSite.User
         bool DeleteConsent(string consentId);
 
         Models.ResourceOwner GetUser(ClaimsPrincipal claimsPrincipal);
+
+        void UpdateUser(UpdateUserParameter updateUserParameter);
     }
 
     internal class UserActions : IUserActions
@@ -37,16 +40,20 @@ namespace SimpleIdentityServer.Core.WebSite.User
 
         private readonly IGetUserOperation _getUserOperation;
 
+        private readonly IUpdateUserOperation _updateUserOperation;
+
         #region Constructor
 
         public UserActions(
             IGetConsentsOperation getConsentsOperation,
             IRemoveConsentOperation removeConsentOperation,
-            IGetUserOperation getUserOperation)
+            IGetUserOperation getUserOperation,
+            IUpdateUserOperation updateUserOperation)
         {
             _getConsentsOperation = getConsentsOperation;
             _removeConsentOperation = removeConsentOperation;
             _getUserOperation = getUserOperation;
+            _updateUserOperation = updateUserOperation;
         }
 
         #endregion
@@ -66,6 +73,11 @@ namespace SimpleIdentityServer.Core.WebSite.User
         public Models.ResourceOwner GetUser(ClaimsPrincipal claimsPrincipal)
         {
             return _getUserOperation.Execute(claimsPrincipal);
+        }
+
+        public void UpdateUser(UpdateUserParameter updateUserParameter)
+        {
+            _updateUserOperation.Execute(updateUserParameter);
         }
 
         #endregion

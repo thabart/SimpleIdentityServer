@@ -129,6 +129,7 @@ namespace SimpleIdentityServer.Core
             serviceCollection.AddTransient<IRevokeTokenAction, RevokeTokenAction>();
             serviceCollection.AddTransient<ILoginCallbackAction, LoginCallbackAction>();
             serviceCollection.AddTransient<IGetUserOperation, GetUserOperation>();
+            serviceCollection.AddTransient<IUpdateUserOperation, UpdateUserOperation>();
             return serviceCollection;
         }
     }

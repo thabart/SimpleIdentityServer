@@ -145,6 +145,20 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             return user.ToDomain();
         }
 
+        public bool Update(Domains.ResourceOwner resourceOwner)
+        {
+            var record = _context.ResourceOwners.FirstOrDefault(r => r.Id == resourceOwner.Id);
+            if (record == null)
+            {
+                return false;
+            }
+
+            record.Name = resourceOwner.Name;
+            record.Password = resourceOwner.Password;
+            _context.SaveChanges();
+            return true;
+        }
+
         #endregion
     }
 }

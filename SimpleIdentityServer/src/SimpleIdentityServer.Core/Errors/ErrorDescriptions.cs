@@ -186,5 +186,7 @@ namespace SimpleIdentityServer.Core.Errors
         public static string TheSubjectCannotBeRetrieved = "the subject cannot be retrieved";
 
         public static string TheRoDoesntExist = "the resource owner doesn't exist";
+
+        public static string TheRoWithCredentialsAlreadyExists = "a resource owner with same credentials already exists";
     }
 }

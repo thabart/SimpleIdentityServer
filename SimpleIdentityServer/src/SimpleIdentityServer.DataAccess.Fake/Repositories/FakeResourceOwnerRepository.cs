@@ -3,6 +3,7 @@ using SimpleIdentityServer.Core.Repositories;
 
 using System.Linq;
 using SimpleIdentityServer.DataAccess.Fake.Extensions;
+using System;
 
 namespace SimpleIdentityServer.DataAccess.Fake.Repositories
 {
@@ -40,6 +41,11 @@ namespace SimpleIdentityServer.DataAccess.Fake.Repositories
         public bool Insert(ResourceOwner resourceOwner)
         {
             _fakeDataSource.ResourceOwners.Add(resourceOwner.ToFake());
+            return true;
+        }
+
+        public bool Update(ResourceOwner resourceOwner)
+        {
             return true;
         }
     }
