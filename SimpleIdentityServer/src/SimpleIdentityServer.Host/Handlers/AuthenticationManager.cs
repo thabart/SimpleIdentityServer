@@ -15,6 +15,7 @@
 #endregion
 
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -194,14 +195,15 @@ namespace SimpleIdentityServer.Host.Handlers
 
             var result = new FacebookOptions
             {
-                AuthenticationScheme = Constants.IdentityProviderNames.Facebook,
-                DisplayName = Constants.IdentityProviderNames.Facebook,
+                ClaimsIssuer = Constants.IdentityProviderNames.Facebook,
+                SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme,
                 AppId = clientId.Value,
                 AppSecret = clientSecret.Value,
                 StateDataFormat = new PropertiesDataFormat(dataProtector)
             };
 
-            foreach(var scope in scopes.Select(s => s.Value))
+            result.Scope.Clear();
+            foreach (var scope in scopes.Select(s => s.Value))
             {
                 result.Scope.Add(scope);
             }
@@ -229,7 +231,7 @@ namespace SimpleIdentityServer.Host.Handlers
             var microsoftAccountOptions = new OpenIdConnectOptions
             {
                 AuthenticationScheme = Constants.IdentityProviderNames.Microsoft,
-                SignInScheme = Constants.IdentityProviderNames.Cookies,
+                SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme,
                 DisplayName = Constants.IdentityProviderNames.Microsoft,
                 ClientId = clientId.Value,
                 ClientSecret = clientSecret.Value,
