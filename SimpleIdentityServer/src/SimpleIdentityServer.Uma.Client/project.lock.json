@@ -5155,7 +5155,7 @@
   "projectFileDependencyGroups": {
     "": [
       "Microsoft.Extensions.DependencyInjection >= 1.0.0-rc2-final",
-      "Newtonsoft.Json >= 8.0.4-*",
+      "Newtonsoft.Json >= 8.0.4-beta1",
       "SimpleIdentityServer.Core.Common"
     ],
     ".NETFramework,Version=v4.5": [

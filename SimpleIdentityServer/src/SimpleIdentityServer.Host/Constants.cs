@@ -71,6 +71,8 @@ namespace SimpleIdentityServer.Host
             public const string Facebook = "Facebook";
 
             public const string Adfs = "ADFS";
+
+            public const string Cookies = "Cookies";
         }
         
         public static List<string> SupportedIdentityProviders = new List<string> 

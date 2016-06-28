@@ -31,7 +31,7 @@ namespace SimpleIdentityServer.Startup
             var host = new WebHostBuilder()
                 .UseKestrel(options =>
                 {
-                    options.UseHttps("SimpleIdServer.cer");
+                    options.UseHttps("SimpleIdServer.pfx");
                 })
                 .UseConfiguration(configuration)
                 .UseStartup<Startup>()

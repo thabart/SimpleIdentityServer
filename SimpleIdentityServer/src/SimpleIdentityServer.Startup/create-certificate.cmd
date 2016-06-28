@@ -1,2 +1,3 @@
-makecert -n "CN=Lokit CA,O=AdvICT,OU=Dev" -pe -ss Root -sr LocalMachine LokitCa.cer -sky exchange -m 120 -a sha1 -len 2048 -r
-makecert -n "CN=localhost" -pe -ss My -sr LocalMachine -sky exchange -m 120 -in "Lokit CA" -is Root -ir LocalMachine SimpleIdServer.cer -a sha1 -eku 1.3.6.1.5.5.7.3.1
+makecert -n "CN=Lokit CA,O=AdvICT,OU=Dev" -cy authority -a sha1 -sv "LokitCA.pvk" -r "LokitCA.cer"
+makecert -n "CN=localhost" -ic "LokitCA.cer" -iv "LokitCA.pvk" -a sha1 -sky exchange -pe -sv "SimpleIdServer.pvk" "SimpleIdServer.cer"
+pvk2pfx -pvk "SimpleIdServer.pvk" -spc "SimpleIdServer.cer" -pfx "SimpleIdServer.pfx"

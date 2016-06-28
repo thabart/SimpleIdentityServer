@@ -17,12 +17,15 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
 using Microsoft.AspNetCore.Authentication.OAuth;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
+using Microsoft.IdentityModel.Protocols;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.IdentityModel.Tokens;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Configuration.Client;
 using SimpleIdentityServer.Configuration.Client.DTOs.Responses;
@@ -31,8 +34,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Security.Claims;
+using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 
@@ -53,25 +55,31 @@ namespace SimpleIdentityServer.Host.Handlers
 
         private readonly IDataProtectionProvider _dataProtectionProvider;
 
+        private readonly HtmlEncoder _htmlEncoder;
+
         #region Constructor
 
         public AuthenticationManager(
             ISimpleIdServerConfigurationClientFactory simpleIdServerConfigurationClientFactory,
             IIdentityServerClientFactory identityServerClientFactory,
             ILoggerFactory loggerFactory,
-            IDataProtectionProvider dataProtectionProvider)
+            IDataProtectionProvider dataProtectionProvider,
+            HtmlEncoder htmlEncoder)
         {
             _simpleIdServerConfigurationClientFactory = simpleIdServerConfigurationClientFactory;
             _identityServerClientFactory = identityServerClientFactory;
             _logger = loggerFactory.CreateLogger("authentication");
             _dataProtectionProvider = dataProtectionProvider;
+            _htmlEncoder = htmlEncoder;
         }
 
         #endregion
 
         #region Public methods
 
-        public async Task<bool> Initialize(HttpContext httpContext, AuthenticationOptions authenticationOptions)
+        public async Task<bool> Initialize(
+            HttpContext httpContext, 
+            AuthenticationOptions authenticationOptions)
         {
             if (httpContext == null)
             {
@@ -142,57 +150,14 @@ namespace SimpleIdentityServer.Host.Handlers
 
         private async Task<bool> EnableMicrosoftAuthentication(List<Option> options, HttpContext httpContext)
         {
-            var microsoftOptions = ExtractMicrosoftOptions(options, _dataProtectionProvider);
+            HttpClient httpClient = null;
+            var microsoftOptions = ExtractMicrosoftOptions(options, _dataProtectionProvider, out httpClient);
             if (microsoftOptions == null)
             {
                 return false;
             }
-
-            microsoftOptions.Events = new OAuthEvents
-            {
-                OnCreatingTicket = async context =>
-                {
-                    // 1. Fetch the user information from the user-information endpoint
-                    var request = new HttpRequestMessage(HttpMethod.Get, microsoftOptions.UserInformationEndpoint);
-                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", context.AccessToken);
-                    request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    var response = await context.Backchannel.SendAsync(request, context.HttpContext.RequestAborted);
-                    response.EnsureSuccessStatusCode();
-                    var payload = JObject.Parse(await response.Content.ReadAsStringAsync());
-
-                    // 2. Retrieve the subject
-                    var identifier = MicrosoftAccountHelper.GetId(payload);
-                    if (!string.IsNullOrWhiteSpace(identifier))
-                    {
-                        context.Identity.AddClaim(new System.Security.Claims.Claim(
-                            Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject,
-                            identifier, ClaimValueTypes.String, context.Options.ClaimsIssuer
-                        ));
-                    }
-
-                    // 3. Retrieve the name
-                    var name = MicrosoftAccountHelper.GetGivenName(payload);
-                    if (!string.IsNullOrWhiteSpace(name))
-                    {
-                        context.Identity.AddClaim(new System.Security.Claims.Claim(
-                            Core.Jwt.Constants.StandardResourceOwnerClaimNames.Name,
-                            name, ClaimValueTypes.String, context.Options.ClaimsIssuer
-                        ));
-                    }
-
-                    // 3. Retrieve the email
-                    var email = MicrosoftAccountHelper.GetEmail(payload);
-                    if (!string.IsNullOrWhiteSpace(email))
-                    {
-                        context.Identity.AddClaim(new System.Security.Claims.Claim(
-                            Core.Jwt.Constants.StandardResourceOwnerClaimNames.Email,
-                            email, ClaimValueTypes.String, context.Options.ClaimsIssuer
-                        ));
-                    }
-                }
-            };
-
-            var handler = new OAuthHandler<OAuthOptions>(new HttpClient());
+            
+            var handler = new OpenIdConnectHandler(httpClient, _htmlEncoder);
             await handler.InitializeAsync(microsoftOptions, httpContext, _logger, UrlEncoder.Default);
             return await handler.HandleRequestAsync();
         }
@@ -244,8 +209,12 @@ namespace SimpleIdentityServer.Host.Handlers
             return result;
         }
 
-        private static OAuthOptions ExtractMicrosoftOptions(List<Option> options, IDataProtectionProvider dataProtectionProvider)
+        private static OpenIdConnectOptions ExtractMicrosoftOptions(
+            List<Option> options, 
+            IDataProtectionProvider dataProtectionProvider,
+            out HttpClient httpClient)
         {
+            httpClient = null;
             var scopes = options.Where(o => o.Key == "Scope").ToList();
             var clientId = options.FirstOrDefault(o => o.Key == "ClientId");
             var clientSecret = options.FirstOrDefault(o => o.Key == "ClientSecret");
@@ -257,23 +226,28 @@ namespace SimpleIdentityServer.Host.Handlers
             var dataProtector = dataProtectionProvider.CreateProtector(
                 typeof(AuthenticationManager).FullName, Constants.IdentityProviderNames.Microsoft, "v1");
 
-            var microsoftAccountOptions = new OAuthOptions
+            var microsoftAccountOptions = new OpenIdConnectOptions
             {
                 AuthenticationScheme = Constants.IdentityProviderNames.Microsoft,
+                SignInScheme = Constants.IdentityProviderNames.Cookies,
                 DisplayName = Constants.IdentityProviderNames.Microsoft,
                 ClientId = clientId.Value,
                 ClientSecret = clientSecret.Value,
-                CallbackPath = new PathString("/signin-microsoft"),
-                AuthorizationEndpoint = MicrosoftAccountDefaults.AuthorizationEndpoint,
-                TokenEndpoint = MicrosoftAccountDefaults.TokenEndpoint,
-                UserInformationEndpoint = MicrosoftAccountDefaults.UserInformationEndpoint,
-                StateDataFormat = new PropertiesDataFormat(dataProtector)
+                StateDataFormat = new PropertiesDataFormat(dataProtector),
+                Authority = "https://login.microsoftonline.com/common/v2.0",
+                TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = false
+                }
             };
+
+            microsoftAccountOptions.Scope.Clear();
             foreach (var scope in scopes.Select(s => s.Value))
             {
                 microsoftAccountOptions.Scope.Add(scope);
             }
 
+            EnrichOpenidOptions(microsoftAccountOptions, dataProtectionProvider, out httpClient);
             return microsoftAccountOptions;
         }
 
@@ -325,6 +299,91 @@ namespace SimpleIdentityServer.Host.Handlers
             return adfsOptions;
         }
 
+        private static void EnrichOpenidOptions(
+            OpenIdConnectOptions openIdConnectOptions,
+            IDataProtectionProvider dataProtectionProvider,
+            out HttpClient backChannel)
+        {
+            if (openIdConnectOptions.StateDataFormat == null)
+            {
+                var dataProtector = dataProtectionProvider.CreateProtector(
+                    typeof(AuthenticationManager).FullName,
+                    typeof(string).FullName,
+                    openIdConnectOptions.AuthenticationScheme,
+                    "v1");
+
+                openIdConnectOptions.StateDataFormat = new PropertiesDataFormat(dataProtector);
+            }
+
+            if (openIdConnectOptions.StringDataFormat == null)
+            {
+                var dataProtector = dataProtectionProvider.CreateProtector(
+                    typeof(AuthenticationManager).FullName,
+                    typeof(string).FullName,
+                    openIdConnectOptions.AuthenticationScheme,
+                    "v1");
+
+                openIdConnectOptions.StringDataFormat = new SecureDataFormat<string>(new StringSerializer(), dataProtector);
+            }
+
+            if (openIdConnectOptions.Events == null)
+            {
+                openIdConnectOptions.Events = new OpenIdConnectEvents();
+            }
+            if (string.IsNullOrEmpty(openIdConnectOptions.TokenValidationParameters.ValidAudience) && !string.IsNullOrEmpty(openIdConnectOptions.ClientId))
+            {
+                openIdConnectOptions.TokenValidationParameters.ValidAudience = openIdConnectOptions.ClientId;
+            }
+
+            backChannel = new HttpClient(openIdConnectOptions.BackchannelHttpHandler ?? new HttpClientHandler());
+            backChannel.DefaultRequestHeaders.UserAgent.ParseAdd("Microsoft ASP.NET Core OpenIdConnect middleware");
+            backChannel.Timeout = openIdConnectOptions.BackchannelTimeout;
+            backChannel.MaxResponseContentBufferSize = 1024 * 1024 * 10; // 10 MB
+
+            if (openIdConnectOptions.ConfigurationManager == null)
+            {
+                if (openIdConnectOptions.Configuration != null)
+                {
+                    openIdConnectOptions.ConfigurationManager = new StaticConfigurationManager<OpenIdConnectConfiguration>(openIdConnectOptions.Configuration);
+                }
+                else if (!(string.IsNullOrEmpty(openIdConnectOptions.MetadataAddress) && string.IsNullOrEmpty(openIdConnectOptions.Authority)))
+                {
+                    if (string.IsNullOrEmpty(openIdConnectOptions.MetadataAddress) && !string.IsNullOrEmpty(openIdConnectOptions.Authority))
+                    {
+                        openIdConnectOptions.MetadataAddress = openIdConnectOptions.Authority;
+                        if (!openIdConnectOptions.MetadataAddress.EndsWith("/", StringComparison.Ordinal))
+                        {
+                            openIdConnectOptions.MetadataAddress += "/";
+                        }
+
+                        openIdConnectOptions.MetadataAddress += ".well-known/openid-configuration";
+                    }
+
+                    if (openIdConnectOptions.RequireHttpsMetadata && !openIdConnectOptions.MetadataAddress.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+                    {
+                        throw new InvalidOperationException("The MetadataAddress or Authority must use HTTPS unless disabled for development by setting RequireHttpsMetadata=false.");
+                    }
+
+                    openIdConnectOptions.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(openIdConnectOptions.MetadataAddress, new OpenIdConnectConfigurationRetriever(),
+                        new HttpDocumentRetriever(backChannel) { RequireHttps = openIdConnectOptions.RequireHttpsMetadata });
+                }
+            }
+        }
+
+
         #endregion
+        
+        private class StringSerializer : IDataSerializer<string>
+        {
+            public string Deserialize(byte[] data)
+            {
+                return Encoding.UTF8.GetString(data);
+            }
+
+            public byte[] Serialize(string model)
+            {
+                return Encoding.UTF8.GetBytes(model);
+            }
+        }
     }
 }

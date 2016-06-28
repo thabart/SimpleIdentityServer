@@ -29,7 +29,8 @@ namespace SimpleIdentityServer.Host.MiddleWare
         {
             "/Authenticate",
             "/Authenticate/ExternalLogin",
-            "/signin-microsoft"
+            "/signin-microsoft",
+            "/signin-oidc",
         };
 
         private readonly RequestDelegate _next;
@@ -71,7 +72,10 @@ namespace SimpleIdentityServer.Host.MiddleWare
 
         public async Task Invoke(HttpContext context)
         {        
-            if (_includedPaths.Contains(context.Request.Path))
+            if (_includedPaths.Contains(context.Request.Path) 
+                && (context.User == null ||
+                    context.User.Identity == null ||
+                    !context.User.Identity.IsAuthenticated))
             {
                 if (!await _authenticationManager.Initialize(context, _options))
                 {

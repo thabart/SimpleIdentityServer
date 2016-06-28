@@ -39,7 +39,7 @@
       "appsettings.json",
       "appsettings.azure.json",
       "appsettings.docker.json",
-      "SimpleIdServer.cer"
+      "SimpleIdServer.pfx"
     ]
   },
   "publishOptions": {
@@ -47,7 +47,7 @@
       "appsettings.json",
       "appsettings.azure.json",
       "appsettings.docker.json",
-      "SimpleIdServer.cer"
+      "SimpleIdServer.pfx"
     ]
   }
 }

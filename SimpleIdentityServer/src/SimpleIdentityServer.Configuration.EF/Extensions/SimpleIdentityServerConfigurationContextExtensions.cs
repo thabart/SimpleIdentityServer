@@ -80,19 +80,25 @@ namespace SimpleIdentityServer.Configuration.EF.Extensions
                             {
                                 Id = Guid.NewGuid().ToString(),
                                 Key = "ClientId",
-                                Value = "0000000048185530"
+                                Value = "59b073ec-cd5e-4616-bf6d-7a78312fc4a8"
                             },
                             new Option
                             {
                                 Id = Guid.NewGuid().ToString(),
                                 Key = "ClientSecret",
-                                Value = "KN12jxYIAYOr0bCLXFBcXhBrTlZyLNAZ"
+                                Value = "8NHDwaWR9pqPzQQKchNOeza"
                             },
                             new Option
                             {
                                 Id = Guid.NewGuid().ToString(),
                                 Key = "Scope",
                                 Value = "openid"
+                            },
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "Scope",
+                                Value = "profile"
                             }
                         }
                     },

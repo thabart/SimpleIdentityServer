@@ -140,7 +140,8 @@ namespace SimpleIdentityServer.Host
             {
                 AutomaticAuthenticate = true,
                 AutomaticChallenge = true,
-                LoginPath = new PathString("/Authenticate")
+                LoginPath = new PathString("/Authenticate"),
+                AuthenticationScheme = Constants.IdentityProviderNames.Cookies
             });
 
             // 3. Protect against IFRAME attack
