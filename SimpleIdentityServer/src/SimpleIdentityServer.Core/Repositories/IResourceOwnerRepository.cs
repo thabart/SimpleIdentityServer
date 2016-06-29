@@ -30,5 +30,7 @@ namespace SimpleIdentityServer.Core.Repositories
         bool Update(ResourceOwner resourceOwner);
 
         List<ResourceOwner> GetAll();
+
+        bool Delete(string subject);    
     }
 }

@@ -14,14 +14,55 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Manager.Core.Errors;
+using SimpleIdentityServer.Manager.Core.Exceptions;
+using System;
+
 namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners.Actions
 {
     public interface IDeleteResourceOwnerAction
     {
-
+        bool Execute(string subject);
     }
 
     internal class DeleteResourceOwnerAction : IDeleteResourceOwnerAction
     {
+        #region Fields
+
+        private readonly IResourceOwnerRepository _resourceOwnerRepository;
+
+        #endregion
+
+        #region Constructor
+
+        public DeleteResourceOwnerAction(IResourceOwnerRepository resourceOwnerRepository)
+        {
+            _resourceOwnerRepository = resourceOwnerRepository;
+        }
+
+        #endregion
+
+        #region Public methods
+
+        public bool Execute(string subject)
+        {
+            if (string.IsNullOrWhiteSpace(subject))
+            {
+                throw new ArgumentNullException(nameof(subject));
+            }
+
+            var resourceOwner = _resourceOwnerRepository.GetBySubject(subject);
+            if (resourceOwner == null)
+            {
+                throw new IdentityServerManagerException(ErrorCodes.InvalidRequestCode,
+                    string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, subject));
+            }
+
+            return _resourceOwnerRepository.Delete(subject);
+
+        }
+
+        #endregion
     }
 }

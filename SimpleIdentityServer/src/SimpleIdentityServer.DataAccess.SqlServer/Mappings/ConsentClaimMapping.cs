@@ -15,12 +15,15 @@
 #endregion
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using SimpleIdentityServer.DataAccess.SqlServer.Models;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
 {
     public static class ConsentClaimMapping
     {
+        #region Public static methods
+
         public static void AddConsentClaimMapping(this ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ConsentClaim>()
@@ -33,7 +36,10 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
             modelBuilder.Entity<ConsentClaim>()
                 .HasOne(c => c.Consent)
                 .WithMany(c => c.ConsentClaims)
-                .HasForeignKey(c => c.ConsentId);
+                .HasForeignKey(c => c.ConsentId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
+
+        #endregion
     }
 }

@@ -15,6 +15,7 @@
 #endregion
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using SimpleIdentityServer.DataAccess.SqlServer.Models;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
@@ -33,7 +34,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
             modelBuilder.Entity<ConsentScope>()
                 .HasOne(c => c.Scope)
                 .WithMany(c => c.ConsentScopes)
-                .HasForeignKey(c => c.ScopeName);
+                .HasForeignKey(c => c.ScopeName)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

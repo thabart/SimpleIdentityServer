@@ -29,6 +29,8 @@ namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners
         ResourceOwner GetResourceOwner(string subject);
 
         List<ResourceOwner> GetResourceOwners();
+
+        bool Delete(string subject);
     }
 
     internal class ResourceOwnerActions : IResourceOwnerActions
@@ -41,6 +43,8 @@ namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners
 
         private readonly IUpdateResourceOwnerAction _updateResourceOwnerAction;
 
+        private readonly IDeleteResourceOwnerAction _deleteResourceOwnerAction;
+
         #endregion
 
         #region Constructor
@@ -48,26 +52,39 @@ namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners
         public ResourceOwnerActions(
             IGetResourceOwnerAction getResourceOwnerAction,
             IGetResourceOwnersAction getResourceOwnersAction,
-            IUpdateResourceOwnerAction updateResourceOwnerAction)
+            IUpdateResourceOwnerAction updateResourceOwnerAction,
+            IDeleteResourceOwnerAction deleteResourceOwnerAction)
         {
-
+            _getResourceOwnerAction = getResourceOwnerAction;
+            _getResourceOwnersAction = getResourceOwnersAction;
+            _updateResourceOwnerAction = updateResourceOwnerAction;
+            _deleteResourceOwnerAction = deleteResourceOwnerAction;
         }
 
         #endregion
 
+        #region Public methods
+
         public ResourceOwner GetResourceOwner(string subject)
         {
-            throw new NotImplementedException();
+            return _getResourceOwnerAction.Execute(subject);
         }
 
         public List<ResourceOwner> GetResourceOwners()
         {
-            throw new NotImplementedException();
+            return _getResourceOwnersAction.Execute();
         }
 
         public bool UpdateResourceOwner(UpdateResourceOwnerParameter updateResourceOwnerParameter)
         {
-            throw new NotImplementedException();
+            return _updateResourceOwnerAction.Execute(updateResourceOwnerParameter);
         }
+
+        public bool Delete(string subject)
+        {
+            return _deleteResourceOwnerAction.Execute(subject);
+        }
+
+        #endregion
     }
 }

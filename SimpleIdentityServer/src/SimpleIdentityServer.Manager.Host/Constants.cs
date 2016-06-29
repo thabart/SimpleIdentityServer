@@ -29,6 +29,8 @@ namespace SimpleIdentityServer.Manager.Host
             public const string Clients = RootPath + "/clients";
 
             public const string Scopes = RootPath + "/scopes";
+
+            public const string ResourceOwners = RootPath + "/resource_owners";
         }
 
         public static class GetJwsRequestNames
@@ -95,7 +97,38 @@ namespace SimpleIdentityServer.Manager.Host
 
             public const string Password = "password";
         }
-        
+
+        public static class UpdateResourceOwnerRequestNames
+        {
+            public const string Subject = "sub";
+            public const string Roles = "roles";
+        }
+
+        public static class ResourceOwnerResponseNames
+        {
+            public const string Id = "id";
+            public const string Name = "name";
+            public const string GivenName = "given_name";
+            public const string FamilyName = "family_name";
+            public const string MiddleName = "middle_name";
+            public const string NickName = "nick_name";
+            public const string PreferredUserName = "preferred_username";
+            public const string Profile = "profile";
+            public const string WebSite = "website";
+            public const string Email = "email";
+            public const string EmailVerified = "email_verified";
+            public const string Gender = "gender";
+            public const string BirthDate = "birthdate";
+            public const string ZoneInfo = "zone";
+            public const string Locale = "locale";
+            public const string PhoneNumber = "phone";
+            public const string PhoneNumberVerified = "phone_verified";
+            public const string UpdatedAt = "updated_at";
+            public const string Password = "password";
+            public const string Roles = "roles";
+            public const string Picture = "picture";
+        }
+
         public static class ClientNames
         {
             public const string ClientId = "client_id";

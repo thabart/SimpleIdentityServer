@@ -30,8 +30,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Models
 
         public ResourceOwner ResourceOwner { get; set; }
 
-        public List<ConsentScope> ConsentScopes { get; set; }
+        public virtual List<ConsentScope> ConsentScopes { get; set; }
 
-        public List<ConsentClaim> ConsentClaims { get; set; }
+        public virtual List<ConsentClaim> ConsentClaims { get; set; }
     }
 }

@@ -15,15 +15,17 @@
 #endregion
 
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.DataAccess.SqlServer.Models
+namespace SimpleIdentityServer.Manager.Host.DTOs.Requests
 {
-    public class Role
+    [DataContract]
+    public class UpdateResourceOwnerRequest
     {
-        public string Name { get; set; }
+        [DataMember(Name = Constants.UpdateResourceOwnerRequestNames.Subject)]
+        public string Subject { get; set; }
 
-        public string Description { get; set; }
-
-        public virtual List<ResourceOwnerRole> ResourceOwnerRoles { get; set; }
+        [DataMember(Name = Constants.UpdateResourceOwnerRequestNames.Roles)]
+        public List<string> Roles { get; set; }
     }
 }

@@ -29,6 +29,15 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
     {
         #region To parameters
     
+        public static UpdateResourceOwnerParameter ToParameter(this UpdateResourceOwnerRequest request)
+        {
+            return new UpdateResourceOwnerParameter
+            {
+                Roles = request.Roles,
+                Subject = request.Subject
+            };
+        }
+
         public static GetJwsParameter ToParameter(this GetJwsRequest getJwsRequest)
         {
             return new GetJwsParameter
@@ -183,6 +192,34 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
             };
         }
 
+        public static ResourceOwnerResponse ToDto(this ResourceOwner resourceOwner)
+        {
+            return new ResourceOwnerResponse
+            {
+                BirthDate = resourceOwner.BirthDate,
+                Email = resourceOwner.Email,
+                EmailVerified = resourceOwner.EmailVerified,
+                FamilyName = resourceOwner.FamilyName,
+                Gender = resourceOwner.Gender,
+                GivenName = resourceOwner.GivenName,
+                Id = resourceOwner.Id,
+                Locale = resourceOwner.Locale,
+                MiddleName = resourceOwner.MiddleName,
+                Name = resourceOwner.Name,
+                NickName = resourceOwner.NickName,
+                Password = resourceOwner.Password,
+                PhoneNumber = resourceOwner.PhoneNumber,
+                PhoneNumberVerified = resourceOwner.PhoneNumberVerified,
+                Picture = resourceOwner.Picture,
+                PreferredUserName = resourceOwner.PreferredUserName,
+                Profile = resourceOwner.Profile,
+                Roles = resourceOwner.Roles,
+                UpdatedAt = resourceOwner.UpdatedAt,
+                WebSite = resourceOwner.WebSite,
+                ZoneInfo = resourceOwner.ZoneInfo
+            };
+        }
+
         public static ScopeResponse ToDto(this Scope scope)
         {
             return new ScopeResponse
@@ -209,6 +246,11 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
         public static List<ScopeResponse> ToDtos(this List<Scope> scopes)
         {
             return scopes.Select(s => s.ToDto()).ToList();
+        }
+
+        public static List<ResourceOwnerResponse> ToDtos(this List<ResourceOwner> resourceOwners)
+        {
+            return resourceOwners.Select(r => r.ToDto()).ToList();
         }
 
         #endregion

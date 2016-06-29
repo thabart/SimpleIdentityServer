@@ -170,6 +170,17 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                     var regRole = record.ResourceOwnerRoles.FirstOrDefault(r => r.RoleName == role);
                     if (regRole == null)
                     {
+                        if (_context.Roles.FirstOrDefault(r => r.Name == role) == null)
+                        {
+                            var newRole = new Role
+                            {
+                                Name = role,
+                                Description = role
+                            };
+
+                            _context.Roles.Add(newRole);
+                        }
+
                         regRole = new ResourceOwnerRole
                         {
                             RoleName = role,
@@ -196,6 +207,22 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
         {
             var users = _context.ResourceOwners.ToList();
             return users.Select(u => u.ToDomain()).ToList();
+        }
+
+        public bool Delete(string subject)
+        {
+            var record = _context.ResourceOwners
+               .Include(r => r.ResourceOwnerRoles)
+               .Include(r => r.Consents)
+               .FirstOrDefault(r => r.Id == subject);
+            if (record == null)
+            {
+                return false;
+            }
+
+            _context.ResourceOwners.Remove(record);
+            _context.SaveChanges();
+            return true;
         }
 
         #endregion

@@ -17,6 +17,11 @@ namespace SimpleIdentityServer.DataAccess.Fake.Repositories
             _fakeDataSource = fakeDataSource;
         }
 
+        public bool Delete(string subject)
+        {
+            return true;
+        }
+
         public List<ResourceOwner> GetAll()
         {
             return null;
