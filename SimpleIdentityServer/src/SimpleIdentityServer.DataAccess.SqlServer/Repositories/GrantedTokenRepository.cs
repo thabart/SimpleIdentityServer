@@ -22,6 +22,7 @@ using System.Linq;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 {
@@ -70,15 +71,43 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                 return null;
             }
 
+            grantedTokens = grantedTokens.OrderByDescending(g => g.CreateDateTime)
+                .ToList();
             foreach (var grantedToken in grantedTokens)
             {
-                var grantedTokenIdTokenJwsPayload = grantedToken.IdTokenPayLoad.DeserializeWithJavascript<JwsPayload>();
-                var grantedTokenUserInfoJwsPayload = grantedToken.UserInfoPayLoad.DeserializeWithJavascript<JwsPayload>();
-                if (CompareJwsPayload(idTokenJwsPayload, grantedTokenIdTokenJwsPayload) &&
-                    CompareJwsPayload(userInfoJwsPayload, grantedTokenUserInfoJwsPayload))
+                if (!string.IsNullOrWhiteSpace(grantedToken.IdTokenPayLoad) ||
+                    idTokenJwsPayload != null)
                 {
-                    return grantedToken.ToDomain();
+                    if (string.IsNullOrWhiteSpace(grantedToken.IdTokenPayLoad) ||
+                        idTokenJwsPayload == null)
+                    {
+                        continue;
+                    }
+
+                    var grantedTokenIdTokenJwsPayload = grantedToken.IdTokenPayLoad.DeserializeWithJavascript<JwsPayload>();
+                    if (!CompareJwsPayload(idTokenJwsPayload, grantedTokenIdTokenJwsPayload))
+                    {
+                        continue;
+                    }
                 }
+
+                if (!string.IsNullOrWhiteSpace(grantedToken.UserInfoPayLoad) ||
+                    userInfoJwsPayload != null)
+                {
+                    if (string.IsNullOrWhiteSpace(grantedToken.UserInfoPayLoad) ||
+                        userInfoJwsPayload == null)
+                    {
+                        continue;
+                    }
+
+                    var grantedTokenUserInfoJwsPayload = grantedToken.UserInfoPayLoad.DeserializeWithJavascript<JwsPayload>();
+                    if (!CompareJwsPayload(userInfoJwsPayload, grantedTokenUserInfoJwsPayload))
+                    {
+                        continue;
+                    }
+                }
+
+                return grantedToken.ToDomain();
             }
 
             return null;
@@ -190,8 +219,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
         {
             foreach (var record in firstJwsPayload)
             {
-                if (record.Key == Constants.StandardClaimNames.CHash ||
-                    record.Key == Constants.StandardClaimNames.AtHash)
+                if (!Constants.AllStandardResourceOwnerClaimNames.Contains(record.Key))
                 {
                     continue;
                 }
@@ -201,7 +229,10 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                     return false;
                 }
 
-                if (secondJwsPayload[record.Key] != record.Value)
+                if (!string.Equals(
+                    record.Value.ToString(),
+                    secondJwsPayload[record.Key].ToString(),
+                    StringComparison.CurrentCultureIgnoreCase))
                 {
                     return false;
                 }

@@ -159,6 +159,12 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             return true;
         }
 
+        public List<Domains.ResourceOwner> GetAll()
+        {
+            var users = _context.ResourceOwners.ToList();
+            return users.Select(u => u.ToDomain()).ToList();
+        }
+
         #endregion
     }
 }

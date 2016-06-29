@@ -4,6 +4,7 @@ using SimpleIdentityServer.Core.Repositories;
 using System.Linq;
 using SimpleIdentityServer.DataAccess.Fake.Extensions;
 using System;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.DataAccess.Fake.Repositories
 {
@@ -15,7 +16,12 @@ namespace SimpleIdentityServer.DataAccess.Fake.Repositories
         {
             _fakeDataSource = fakeDataSource;
         }
-        
+
+        public List<ResourceOwner> GetAll()
+        {
+            return null;
+        }
+
         public ResourceOwner GetBySubject(string subject)
         {
             var record = _fakeDataSource.ResourceOwners.SingleOrDefault(r => r.Id == subject);

@@ -39,6 +39,8 @@ using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.Validators;
+using SimpleIdentityServer.Core.WebSite.Account;
+using SimpleIdentityServer.Core.WebSite.Account.Actions;
 using SimpleIdentityServer.Core.WebSite.Authenticate;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
@@ -130,6 +132,9 @@ namespace SimpleIdentityServer.Core
             serviceCollection.AddTransient<ILoginCallbackAction, LoginCallbackAction>();
             serviceCollection.AddTransient<IGetUserOperation, GetUserOperation>();
             serviceCollection.AddTransient<IUpdateUserOperation, UpdateUserOperation>();
+            serviceCollection.AddTransient<IAccountActions, AccountActions>();
+            serviceCollection.AddTransient<IAddResourceOwnerAction, AddResourceOwnerAction>();
+            serviceCollection.AddTransient<IGrantedTokenHelper, GrantedTokenHelper>();
             return serviceCollection;
         }
     }

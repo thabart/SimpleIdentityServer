@@ -6,23 +6,8 @@
 
 <div class="row">
     <h1>Dashboard</h1>
-    @if (Model.IsSwaggerEnabled) {
-        <a href="@Url.Content("~/swagger/ui/index.html")">
-            <section class="col-md-3 tile"> 
-                <div class="header"></div>
-                <div class="row clicked">
-                    <div class="col-md-4 picture">
-                        <img src="@Url.Content("~/img/swagger-logo.png")" />
-                    </div>
-                    <div class="col-md-8 title">
-                        <h4>Swagger contract</h4>
-                    </div>
-                </div>
-            </section>
-        </a>
-    }
     <a href="@Url.Content("~/.well-known/openid-configuration")">
-        <section class="col-md-3 tile"> 
+        <section class="col-md-3 tile">
             <div class="header"></div>
             <div class="row clicked">
                 <div class="col-md-4 picture">
@@ -34,19 +19,6 @@
             </div>
         </section>
     </a>
-    <a href="@Url.Content("~/Authenticate")">
-        <section class="col-md-3 tile"> 
-            <div class="header"></div>
-            <div class="row clicked">
-                <div class="col-md-4 picture">
-                    <img src="@Url.Content("~/img/Unknown.png")" />
-                </div>
-                <div class="col-md-8 title">
-                    <h4>Authenticate</h4>
-                </div>
-            </div>
-        </section>
-    </a>    
     @if (User != null && User.Identity != null &&
         User.Identity.IsAuthenticated)
     {
@@ -59,6 +31,35 @@
                     </div>
                     <div class="col-md-8 title">
                         <h4>View profile</h4>
+                    </div>
+                </div>
+            </section>
+        </a>
+    }
+    else
+    {
+        <a href="@Url.Content("~/Authenticate")">
+            <section class="col-md-3 tile">
+                <div class="header"></div>
+                <div class="row clicked">
+                    <div class="col-md-4 picture">
+                        <img src="@Url.Content("~/img/Unknown.png")" />
+                    </div>
+                    <div class="col-md-8 title">
+                        <h4>Authenticate</h4>
+                    </div>
+                </div>
+            </section>
+        </a>
+        <a href="@Url.Content("~/Account/Index")">
+            <section class="col-md-3 tile">
+                <div class="header"></div>
+                <div class="row clicked">
+                    <div class="col-md-4 picture">
+                        <img src="@Url.Content("~/img/Unknown.png")" />
+                    </div>
+                    <div class="col-md-8 title">
+                        <h4>Create account</h4>
                     </div>
                 </div>
             </section>

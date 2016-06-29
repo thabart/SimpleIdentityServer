@@ -14,21 +14,14 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Models;
 using System.Collections.Generic;
 
-namespace SimpleIdentityServer.Core.Repositories
+namespace SimpleIdentityServer.Manager.Core.Parameters
 {
-    public interface IResourceOwnerRepository
+    public class UpdateResourceOwnerParameter
     {
-        ResourceOwner GetResourceOwnerByCredentials(string userName, string hashedPassword);
+        public string Subject { get; set; }
 
-        bool Insert(ResourceOwner resourceOwner);
-
-        ResourceOwner GetBySubject(string subject);
-
-        bool Update(ResourceOwner resourceOwner);
-
-        List<ResourceOwner> GetAll();
+        public List<string> Roles { get; set; }
     }
 }

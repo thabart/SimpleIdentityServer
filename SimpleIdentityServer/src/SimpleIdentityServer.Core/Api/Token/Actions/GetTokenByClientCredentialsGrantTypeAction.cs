@@ -56,6 +56,8 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
         private readonly IClientHelper _clientHelper;
 
+        private readonly IGrantedTokenHelper _grantedTokenHelper;
+
         #region Constructor
 
         public GetTokenByClientCredentialsGrantTypeAction(
@@ -67,7 +69,8 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             IGrantedTokenRepository grantedTokenRepository,
             ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
             IClientCredentialsGrantTypeParameterValidator clientCredentialsGrantTypeParameterValidator,
-            IClientHelper clientHelper)
+            IClientHelper clientHelper,
+            IGrantedTokenHelper grantedTokenHelper)
         {
             _authenticateInstructionGenerator = authenticateInstructionGenerator;
             _authenticateClient = authenticateClient;
@@ -78,6 +81,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
             _clientCredentialsGrantTypeParameterValidator = clientCredentialsGrantTypeParameterValidator;
             _clientHelper = clientHelper;
+            _grantedTokenHelper = grantedTokenHelper;
         }
 
         #endregion
@@ -139,16 +143,24 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             }
 
             // Generate token
-            var generatedToken = _grantedTokenGeneratorHelper.GenerateToken(
+            var grantedToken = _grantedTokenHelper.GetValidGrantedToken(
+                allowedTokenScopes,
                 client.ClientId,
-                allowedTokenScopes);
-            _grantedTokenRepository.Insert(generatedToken);
+                null,
+                null);
+            if (grantedToken == null)
+            {
+                grantedToken = _grantedTokenGeneratorHelper.GenerateToken(
+                    client.ClientId,
+                    allowedTokenScopes);
+                _grantedTokenRepository.Insert(grantedToken);
 
-            _simpleIdentityServerEventSource.GrantAccessToClient(client.ClientId,
-                generatedToken.AccessToken,
-                allowedTokenScopes);
+                _simpleIdentityServerEventSource.GrantAccessToClient(client.ClientId,
+                    grantedToken.AccessToken,
+                    allowedTokenScopes);
+            }
 
-            return generatedToken;
+            return grantedToken;
         }
 
         #endregion

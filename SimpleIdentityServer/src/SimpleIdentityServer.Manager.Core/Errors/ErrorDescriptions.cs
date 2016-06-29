@@ -66,5 +66,7 @@ namespace SimpleIdentityServer.Manager.Core.Errors
             "the parameter userinfo_encrypted_response_alg must be specified";
 
         public static string TheSectorIdentifierUrisCannotBeRetrieved = "the sector identifier uris cannot be retrieved";
+
+        public static string TheResourceOwnerDoesntExist = "the resource owner {0} doesn't exist";
     }
 }

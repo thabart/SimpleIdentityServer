@@ -53,6 +53,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
         private Mock<IClientHelper> _clientHelperStub;
 
+        private Mock<IGrantedTokenHelper> _grantedTokenHelperStub;
+
         private IGetTokenByClientCredentialsGrantTypeAction _getTokenByClientCredentialsGrantTypeAction;
 
         #region Exceptions
@@ -235,6 +237,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(client);
             _scopeValidatorStub.Setup(s => s.IsScopesValid(It.IsAny<string>(), It.IsAny<Client>(), out messageDescription))
                 .Returns(scopes);
+            _grantedTokenHelperStub.Setup(g => g.GetValidGrantedToken(It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<JwsPayload>(),
+                It.IsAny<JwsPayload>()))
+                .Returns((GrantedToken)null);
             _grantedTokenGeneratorHelperStub.Setup(g => g.GenerateToken(It.IsAny<string>(),
                 It.IsAny<string>(),
                 It.IsAny<JwsPayload>(),
@@ -263,6 +270,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _simpleIdentityServerEventSourceStub = new Mock<ISimpleIdentityServerEventSource>();
             _clientCredentialsGrantTypeParameterValidatorStub = new Mock<IClientCredentialsGrantTypeParameterValidator>();
             _clientHelperStub = new Mock<IClientHelper>();
+            _grantedTokenHelperStub = new Mock<IGrantedTokenHelper>();
             _getTokenByClientCredentialsGrantTypeAction = new GetTokenByClientCredentialsGrantTypeAction(
                 _authenticateInstructionGeneratorStub.Object,
                 _authenticateClientStub.Object,
@@ -272,7 +280,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 _grantedTokenRepositoryStub.Object,
                 _simpleIdentityServerEventSourceStub.Object,
                 _clientCredentialsGrantTypeParameterValidatorStub.Object,
-                _clientHelperStub.Object);
+                _clientHelperStub.Object,
+                _grantedTokenHelperStub.Object);
         }
     }
 }

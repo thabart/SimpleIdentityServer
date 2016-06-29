@@ -21,6 +21,7 @@ using SimpleIdentityServer.Manager.Core.Api.Jwe;
 using SimpleIdentityServer.Manager.Core.Api.Jwe.Actions;
 using SimpleIdentityServer.Manager.Core.Api.Jws;
 using SimpleIdentityServer.Manager.Core.Api.Jws.Actions;
+using SimpleIdentityServer.Manager.Core.Api.ResourceOwners.Actions;
 using SimpleIdentityServer.Manager.Core.Api.Scopes;
 using SimpleIdentityServer.Manager.Core.Api.Scopes.Actions;
 using SimpleIdentityServer.Manager.Core.Factories;
@@ -50,6 +51,8 @@ namespace SimpleIdentityServer.Manager.Core
             serviceCollection.AddTransient<IDeleteScopeOperation, DeleteScopeOperation>();
             serviceCollection.AddTransient<IGetScopeOperation, GetScopeOperation>();
             serviceCollection.AddTransient<IGetScopesOperation, GetScopesOperation>();
+            serviceCollection.AddTransient<IGetResourceOwnersAction, GetResourceOwnersAction>();
+            serviceCollection.AddTransient<IGetResourceOwnerAction, GetResourceOwnerAction>();
             return serviceCollection;
         }
     }

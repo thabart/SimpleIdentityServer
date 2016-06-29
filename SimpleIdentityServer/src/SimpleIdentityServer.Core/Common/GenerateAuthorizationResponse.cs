@@ -59,6 +59,8 @@ namespace SimpleIdentityServer.Core.Common
 
         private readonly IClientHelper _clientHelper;
 
+        private readonly IGrantedTokenHelper _grantedTokenHelper;
+
         public GenerateAuthorizationResponse(
             IAuthorizationCodeRepository authorizationCodeRepository,
             IParameterParserHelper parameterParserHelper,
@@ -68,7 +70,8 @@ namespace SimpleIdentityServer.Core.Common
             IConsentHelper consentHelper,
             ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
             IAuthorizationFlowHelper authorizationFlowHelper,
-            IClientHelper clientHelper)
+            IClientHelper clientHelper,
+            IGrantedTokenHelper grantedTokenHelper)
         {
             _authorizationCodeRepository = authorizationCodeRepository;
             _parameterParserHelper = parameterParserHelper;
@@ -79,6 +82,7 @@ namespace SimpleIdentityServer.Core.Common
             _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
             _authorizationFlowHelper = authorizationFlowHelper;
             _clientHelper = clientHelper;
+            _grantedTokenHelper = grantedTokenHelper;
         }
 
         #region Public methods
@@ -127,7 +131,7 @@ namespace SimpleIdentityServer.Core.Common
                 // Check if an access token has already been generated and can be reused for that :
                 // We assumed that an access token is unique for a specific client id, user information 
                 // & id token payload & for certain scopes
-                grantedToken = _grantedTokenRepository.GetToken(
+                grantedToken = _grantedTokenHelper.GetValidGrantedToken(
                     allowedTokenScopes,
                     authorizationParameter.ClientId,
                     idTokenPayload,

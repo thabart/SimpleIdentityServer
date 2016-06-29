@@ -1,4 +1,20 @@
-﻿using System;
+﻿#region copyright
+// Copyright 2015 Habart Thierry
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -35,8 +51,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
         private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSource;
 
         private Mock<IAuthorizationFlowHelper> _authorizationFlowHelperFake;
-
+                
         private Mock<IClientHelper> _clientHelperFake;
+
+        private Mock<IGrantedTokenHelper> _grantedTokenHelperStub;
 
         private IGenerateAuthorizationResponse _generateAuthorizationResponse;
 
@@ -155,7 +173,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 .Returns(idToken);
             _parameterParserHelperFake.Setup(p => p.ParseScopeParameters(It.IsAny<string>()))
                 .Returns(() => new List<string> { scope });
-            _grantedTokenRepositoryFake.Setup(r => r.GetToken(It.IsAny<string>(),
+            _grantedTokenHelperStub.Setup(r => r.GetValidGrantedToken(It.IsAny<string>(),
                 It.IsAny<string>(),
                 It.IsAny<JwsPayload>(),
                 It.IsAny<JwsPayload>()))
@@ -214,7 +232,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 .Returns(idToken);
             _parameterParserHelperFake.Setup(p => p.ParseScopeParameters(It.IsAny<string>()))
                 .Returns(() => new List<string> { scope });
-            _grantedTokenRepositoryFake.Setup(r => r.GetToken(It.IsAny<string>(),
+            _grantedTokenHelperStub.Setup(r => r.GetValidGrantedToken(It.IsAny<string>(),
                 It.IsAny<string>(),
                 It.IsAny<JwsPayload>(),
                 It.IsAny<JwsPayload>()))
@@ -387,6 +405,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             _simpleIdentityServerEventSource = new Mock<ISimpleIdentityServerEventSource>();
             _authorizationFlowHelperFake = new Mock<IAuthorizationFlowHelper>();
             _clientHelperFake = new Mock<IClientHelper>();
+            _grantedTokenHelperStub = new Mock<IGrantedTokenHelper>();
             _generateAuthorizationResponse = new GenerateAuthorizationResponse(
                 _authorizationCodeRepositoryFake.Object,
                 _parameterParserHelperFake.Object,
@@ -396,7 +415,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 _consentHelperFake.Object,
                 _simpleIdentityServerEventSource.Object,
                 _authorizationFlowHelperFake.Object,
-                _clientHelperFake.Object);
+                _clientHelperFake.Object,
+                _grantedTokenHelperStub.Object);
         }
     }
 }

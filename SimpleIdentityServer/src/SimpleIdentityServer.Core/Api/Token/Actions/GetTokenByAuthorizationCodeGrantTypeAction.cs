@@ -55,6 +55,8 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
         private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
 
+        private readonly IGrantedTokenHelper _grantedTokenHelper;
+
         #region Constructor
 
         public GetTokenByAuthorizationCodeGrantTypeAction(
@@ -66,7 +68,8 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             IAuthenticateClient authenticateClient,
             IClientHelper clientHelper,
             ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
-            IAuthenticateInstructionGenerator authenticateInstructionGenerator)
+            IAuthenticateInstructionGenerator authenticateInstructionGenerator,
+            IGrantedTokenHelper grantedTokenHelper)
         {
             _clientValidator = clientValidator;
             _authorizationCodeRepository = authorizationCodeRepository;
@@ -77,6 +80,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             _clientHelper = clientHelper;
             _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
             _authenticateInstructionGenerator = authenticateInstructionGenerator;
+            _grantedTokenHelper = grantedTokenHelper;
         }
 
         #endregion
@@ -98,7 +102,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
             // Invalide the authorization code by removing it !
             _authorizationCodeRepository.RemoveAuthorizationCode(authorizationCode.Code);
-            var grantedToken = _grantedTokenRepository.GetToken(
+            var grantedToken = _grantedTokenHelper.GetValidGrantedToken(
                 authorizationCode.Scopes,
                 authorizationCode.ClientId,
                 authorizationCode.IdTokenPayload,

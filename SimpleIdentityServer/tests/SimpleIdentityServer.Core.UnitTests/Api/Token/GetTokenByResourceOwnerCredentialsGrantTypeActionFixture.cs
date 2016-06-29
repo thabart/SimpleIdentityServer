@@ -57,6 +57,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
         private Mock<IClientHelper> _clientHelperStub;
 
+        private Mock<IGrantedTokenHelper> _grantedTokenHelperStub;
+
         private IGetTokenByResourceOwnerCredentialsGrantTypeAction _getTokenByResourceOwnerCredentialsGrantTypeAction;
 
         #region Exceptions
@@ -221,6 +223,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _jwtGeneratorFake.Setup(
                 j => j.GenerateUserInfoPayloadForScope(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
                 .Returns(() => userInformationJwsPayload);
+            _grantedTokenHelperStub.Setup(g => g.GetValidGrantedToken(It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<JwsPayload>(),
+                It.IsAny<JwsPayload>()))
+                .Returns((GrantedToken)null);
             _grantedTokenGeneratorHelperFake.Setup(g => g.GenerateToken(It.IsAny<string>(),
                 It.IsAny<string>(),
                 It.IsAny<JwsPayload>(),
@@ -250,6 +257,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _authenticateInstructionGeneratorStub = new Mock<IAuthenticateInstructionGenerator>();
             _clientRepositoryStub = new Mock<IClientRepository>();
             _clientHelperStub = new Mock<IClientHelper>();
+            _grantedTokenHelperStub = new Mock<IGrantedTokenHelper>();
 
             _getTokenByResourceOwnerCredentialsGrantTypeAction = new GetTokenByResourceOwnerCredentialsGrantTypeAction(
                 _grantedTokenRepositoryFake.Object,
@@ -261,7 +269,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 _jwtGeneratorFake.Object,
                 _authenticateInstructionGeneratorStub.Object,
                 _clientRepositoryStub.Object,
-                _clientHelperStub.Object);
+                _clientHelperStub.Object,
+                _grantedTokenHelperStub.Object);
         }
     }
 }

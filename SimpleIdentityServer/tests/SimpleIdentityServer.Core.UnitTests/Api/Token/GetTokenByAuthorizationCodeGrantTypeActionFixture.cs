@@ -53,6 +53,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
         private Mock<IAuthenticateInstructionGenerator> _authenticateInstructionGeneratorStub;
 
+        private Mock<IGrantedTokenHelper> _grantedTokenHelperStub;
+
         private IGetTokenByAuthorizationCodeGrantTypeAction _getTokenByAuthorizationCodeGrantTypeAction;
 
         #region Exceptions
@@ -343,7 +345,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns("redirectUri");
             _clientValidatorFake.Setup(c => c.ValidateClientExist(It.IsAny<string>()))
                 .Returns(client);
-            _grantedTokenRepositoryFake.Setup(g => g.GetToken(It.IsAny<string>(),
+            _grantedTokenHelperStub.Setup(g => g.GetValidGrantedToken(It.IsAny<string>(),
                 It.IsAny<string>(),
                 It.IsAny<JwsPayload>(),
                 It.IsAny<JwsPayload>()))
@@ -400,7 +402,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(3000);
             _clientValidatorFake.Setup(c => c.ValidateRedirectionUrl(It.IsAny<string>(), It.IsAny<Client>()))
                 .Returns("redirectUri");
-            _grantedTokenRepositoryFake.Setup(g => g.GetToken(It.IsAny<string>(),
+            _grantedTokenHelperStub.Setup(g => g.GetValidGrantedToken(It.IsAny<string>(),
                 It.IsAny<string>(),
                 It.IsAny<JwsPayload>(),
                 It.IsAny<JwsPayload>()))
@@ -437,6 +439,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _simpleIdentityServerConfiguratorFake = new Mock<ISimpleIdentityServerConfigurator>();
             _simpleIdentityServerEventSourceFake = new Mock<ISimpleIdentityServerEventSource>();
             _authenticateInstructionGeneratorStub = new Mock<IAuthenticateInstructionGenerator>();
+            _grantedTokenHelperStub = new Mock<IGrantedTokenHelper>();
             _getTokenByAuthorizationCodeGrantTypeAction = new GetTokenByAuthorizationCodeGrantTypeAction(
                 _clientValidatorFake.Object,
                 _authorizationCodeRepositoryFake.Object,
@@ -446,7 +449,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 _authenticateClientFake.Object,
                 _clientHelper.Object,
                 _simpleIdentityServerEventSourceFake.Object,
-                _authenticateInstructionGeneratorStub.Object); 
+                _authenticateInstructionGeneratorStub.Object,
+                _grantedTokenHelperStub.Object); 
         }
     }
 }
