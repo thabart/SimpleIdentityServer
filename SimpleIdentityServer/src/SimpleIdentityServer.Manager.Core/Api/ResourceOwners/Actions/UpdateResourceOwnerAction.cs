@@ -24,7 +24,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners.Actions
 {
     public interface IUpdateResourceOwnerAction
     {
-
+        bool Execute(UpdateResourceOwnerParameter updateResourceOwnerParameter);
     }
 
     internal class UpdateResourceOwnerAction : IUpdateResourceOwnerAction

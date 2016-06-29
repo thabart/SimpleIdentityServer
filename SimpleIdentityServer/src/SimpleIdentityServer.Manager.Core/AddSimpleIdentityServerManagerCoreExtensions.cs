@@ -53,6 +53,7 @@ namespace SimpleIdentityServer.Manager.Core
             serviceCollection.AddTransient<IGetScopesOperation, GetScopesOperation>();
             serviceCollection.AddTransient<IGetResourceOwnersAction, GetResourceOwnersAction>();
             serviceCollection.AddTransient<IGetResourceOwnerAction, GetResourceOwnerAction>();
+            serviceCollection.AddTransient<IUpdateResourceOwnerAction, UpdateResourceOwnerAction>();
             return serviceCollection;
         }
     }

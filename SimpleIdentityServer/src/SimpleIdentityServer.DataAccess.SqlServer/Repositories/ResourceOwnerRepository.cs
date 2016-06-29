@@ -14,19 +14,24 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
-using Domains = SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.DataAccess.SqlServer.Models;
+using System;
 using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using Domains = SimpleIdentityServer.Core.Models;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 {
     public sealed class ResourceOwnerRepository : IResourceOwnerRepository
     {
+        #region Fields
+
         private readonly SimpleIdentityServerContext _context;
+
+        #endregion
 
         #region Constructor
 
@@ -147,7 +152,9 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 
         public bool Update(Domains.ResourceOwner resourceOwner)
         {
-            var record = _context.ResourceOwners.FirstOrDefault(r => r.Id == resourceOwner.Id);
+            var record = _context.ResourceOwners
+                .Include(r => r.ResourceOwnerRoles)
+                .FirstOrDefault(r => r.Id == resourceOwner.Id);
             if (record == null)
             {
                 return false;
@@ -155,6 +162,32 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 
             record.Name = resourceOwner.Name;
             record.Password = resourceOwner.Password;
+            var rolesNotToBeDeleted = new List<string>();
+            if (resourceOwner.Roles != null)
+            {
+                foreach(var role in resourceOwner.Roles)
+                {
+                    var regRole = record.ResourceOwnerRoles.FirstOrDefault(r => r.RoleName == role);
+                    if (regRole == null)
+                    {
+                        regRole = new ResourceOwnerRole
+                        {
+                            RoleName = role,
+                            ResourceOwnerId = resourceOwner.Id
+                        };
+                        record.ResourceOwnerRoles.Add(regRole);
+                    }
+
+                    rolesNotToBeDeleted.Add(regRole.RoleName);
+                }
+            }
+
+            var roleNames = record.ResourceOwnerRoles.Select(r => r.RoleName).ToList();
+            foreach(var roleName in roleNames.Where(r => !rolesNotToBeDeleted.Contains(r)))
+            {
+                record.ResourceOwnerRoles.Remove(record.ResourceOwnerRoles.First(r => r.RoleName == roleName));
+            }
+
             _context.SaveChanges();
             return true;
         }

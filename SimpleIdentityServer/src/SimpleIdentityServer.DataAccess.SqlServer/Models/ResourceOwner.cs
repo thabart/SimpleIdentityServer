@@ -124,11 +124,11 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Models
         /// </summary>
         public Address Address { get; set; }
 
-        public List<ResourceOwnerRole> ResourceOwnerRoles { get; set; }
+        public virtual List<ResourceOwnerRole> ResourceOwnerRoles { get; set; }
 
         /// <summary>
         /// Gets or sets the list of consents
         /// </summary>
-        public List<Consent> Consents { get; set; } 
+        public virtual List<Consent> Consents { get; set; } 
     }
 }

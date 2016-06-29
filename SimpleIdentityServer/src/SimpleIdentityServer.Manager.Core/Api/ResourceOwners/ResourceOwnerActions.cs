@@ -14,14 +14,60 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Manager.Core.Parameters;
+using System.Collections.Generic;
+using System;
+using SimpleIdentityServer.Manager.Core.Api.ResourceOwners.Actions;
+
 namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners
 {
     public interface IResourceOwnerActions
     {
+        bool UpdateResourceOwner(UpdateResourceOwnerParameter updateResourceOwnerParameter);
 
+        ResourceOwner GetResourceOwner(string subject);
+
+        List<ResourceOwner> GetResourceOwners();
     }
 
     internal class ResourceOwnerActions : IResourceOwnerActions
     {
+        #region Fields
+
+        private readonly IGetResourceOwnerAction _getResourceOwnerAction;
+
+        private readonly IGetResourceOwnersAction _getResourceOwnersAction;
+
+        private readonly IUpdateResourceOwnerAction _updateResourceOwnerAction;
+
+        #endregion
+
+        #region Constructor
+
+        public ResourceOwnerActions(
+            IGetResourceOwnerAction getResourceOwnerAction,
+            IGetResourceOwnersAction getResourceOwnersAction,
+            IUpdateResourceOwnerAction updateResourceOwnerAction)
+        {
+
+        }
+
+        #endregion
+
+        public ResourceOwner GetResourceOwner(string subject)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<ResourceOwner> GetResourceOwners()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool UpdateResourceOwner(UpdateResourceOwnerParameter updateResourceOwnerParameter)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
