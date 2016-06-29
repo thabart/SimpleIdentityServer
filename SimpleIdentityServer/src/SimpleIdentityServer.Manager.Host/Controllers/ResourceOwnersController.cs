@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Manager.Core.Api.ResourceOwners;
 using SimpleIdentityServer.Manager.Host.DTOs.Requests;
@@ -43,6 +44,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
         #region Public methods
 
         [HttpGet]
+        [Authorize("manager")]
         public ActionResult Get()
         {
             var content = _resourceOwnerActions.GetResourceOwners().ToDtos();
@@ -50,6 +52,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize("manager")]
         public ActionResult Get(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -62,6 +65,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize("manager")]
         public ActionResult Delete(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -74,6 +78,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
         }
 
         [HttpPut]
+        [Authorize("manager")]
         public ActionResult Update([FromBody] UpdateResourceOwnerRequest updateResourceOwnerRequest)
         {
             if (updateResourceOwnerRequest == null)
