@@ -17,9 +17,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.PlatformAbstractions;
-using SimpleIdentityServer.Oauth2Instrospection.Authentication;
-using SimpleIdentityServer.UserInformation.Authentication;
 using SimpleIdentityServer.Uma.Authorization;
 using SimpleIdentityServer.UmaIntrospection.Authentication;
 using Microsoft.AspNetCore.Hosting;
