@@ -161,8 +161,9 @@ namespace SimpleIdentityServer.Vse
                             {
                                 return;
                             }
-
-                            AddFile(_selectedProject, uri, resource);
+                            
+                            AddSecurityProxy(_selectedProject, uri, resource);
+                            AddAuthProvider(_selectedProject, uri);
                         });
                 });
         }
@@ -171,7 +172,7 @@ namespace SimpleIdentityServer.Vse
 
         #region Private methods
         
-        private void AddFile(Project project, Uri uri, ResourceViewModel resource)
+        private void AddSecurityProxy(Project project, Uri uri, ResourceViewModel resource)
         {
             try
             {               
@@ -182,8 +183,39 @@ namespace SimpleIdentityServer.Vse
                 content = content.Replace("{resource_url}", resource.Name);
                 content = content.Replace("{namespace}", project.Name);
 
-                // 2. Add the file to the project
+                // 2. Add the security proxy to the project
                 var fileName = string.Format("SecurityProxy_{0}.cs", resource.Hash);
+                var path = Path.Combine(folder, fileName);
+                if (File.Exists(path))
+                {
+                    MessageBox.Show($"The file {fileName} already exists");
+                    return;
+                }
+                
+                using (var writer = new StreamWriter(path))
+                {
+                    writer.Write(content);
+                }
+
+                project.AddFileToProject(path, _options.Dte2);
+            }
+            catch
+            {
+                MessageBox.Show("Error occured while trying to add the file");
+            }
+        }
+
+        private void AddAuthProvider(Project project, Uri uri)
+        {
+            try
+            {
+                // 1. Update the content
+                var folder = project.GetRootFolder();
+                string content = GetAuthProviderContent();
+                content = content.Replace("{namespace}", project.Name);
+
+                // 2. Add the security proxy to the project
+                var fileName = "AuthProvider.cs";
                 var path = Path.Combine(folder, fileName);
                 if (File.Exists(path))
                 {
@@ -279,10 +311,20 @@ namespace SimpleIdentityServer.Vse
         
         private string GetSecurityProxyContent()
         {
+            return GetContent("SecurityProxy.cs.txt");
+        }
+
+        private string GetAuthProviderContent()
+        {
+            return GetContent("AuthProvider.cs.txt");
+        }
+
+        private string GetContent(string fileName)
+        {
             string result = null;
             var assembly = Assembly.GetExecutingAssembly().Location;
             var codeFolder = Path.Combine(Path.GetDirectoryName(assembly), "Codes");
-            var codeFile = Path.Combine(codeFolder, "SecurityProxy.cs.txt");
+            var codeFile = Path.Combine(codeFolder, fileName);
             using (var reader = new StreamReader(codeFile))
             {
                 result = reader.ReadToEnd();

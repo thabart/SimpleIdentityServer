@@ -22,66 +22,12 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
 {
     public class Startup
     {
-        private const string UmaConfigurationUrl = "http://localhost:5001/.well-known/uma-configuration";
-
-        private const string OpenIdConfigurationUrl = "http://localhost:5000/.well-known/openid-configuration";
-
-        private const string RootManageApiUrl = "http://localhost:8080/api";
-
         public void Start()
         {
-            var idToken = GetIdentityToken();
+            var idToken = AuthProvider.GetIdentityToken();
             Console.WriteLine($"Id token : {idToken}");
-            var rpt = GetRptToken(idToken);
+            var rpt = SecurityProxy.GetRptToken(idToken);
             Console.WriteLine($"Rpt token : {rpt}");
-        }
-
-        public static string GetIdentityToken()
-        {
-            var authProvider = new AuthenticationProviderFactory();
-            var options = new AuthOptions
-            {
-                OpenIdConfigurationUrl = OpenIdConfigurationUrl,
-                ClientId = "Anonymous",
-                ClientSecret = "Anonymous"
-            };
-
-
-            try
-            {
-                return authProvider.GetAuthProvider(options)
-                    .GetIdentityToken("administrator", "password", "openid", "role", "profile")
-                    .Result;
-            }
-            catch (AggregateException ex)
-            {
-                return null;
-            }
-        }
-
-        public static string GetRptToken(string identityToken)
-        {
-            var factory = new SecurityProxyFactory();
-            var proxy = factory.GetProxy(new SecurityOptions
-            {
-                ClientId = "SampleClient",
-                ClientSecret = "SampleClient",
-                UmaConfigurationUrl = UmaConfigurationUrl,
-                OpenidConfigurationUrl = OpenIdConfigurationUrl,
-                RootManageApiUrl = RootManageApiUrl
-            });
-            try
-            {
-                var result = proxy.GetRpt("resources/Apis/operation", identityToken, new List<string>
-                {
-                    "execute"
-                }).Result;
-                return result;
-            }
-            catch (AggregateException)
-            {
-                return null;
-            }
         }
     }
 }
