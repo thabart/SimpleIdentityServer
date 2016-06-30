@@ -135,6 +135,7 @@ namespace SimpleIdentityServer.Core
             serviceCollection.AddTransient<IAccountActions, AccountActions>();
             serviceCollection.AddTransient<IAddResourceOwnerAction, AddResourceOwnerAction>();
             serviceCollection.AddTransient<IGrantedTokenHelper, GrantedTokenHelper>();
+            serviceCollection.AddTransient<IConfirmUserOperation, ConfirmUserOperation>();
             return serviceCollection;
         }
     }

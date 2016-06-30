@@ -11,9 +11,12 @@
         <li class="@(ViewBag.IsConsentDisplayed ? "active": string.Empty)">
             <a href="@Url.Action("Consent")">Consents</a>
         </li>
-        <li class="@(ViewBag.IsEditDisplayed ? "active": string.Empty)">
-            <a href="@Url.Action("Edit")">Edit</a>
-        </li>
+        @if (ViewBag.IsLocalAccount)
+        {
+            <li class="@(ViewBag.IsEditDisplayed ? "active": string.Empty)">
+                <a href="@Url.Action("Edit")">Edit</a>
+            </li>
+        }
         <li class="@(ViewBag.IsSimulatorDisplayed ? "active": string.Empty)">
             <a href="@Url.Action("Simulator")">Simulator</a>
         </li>

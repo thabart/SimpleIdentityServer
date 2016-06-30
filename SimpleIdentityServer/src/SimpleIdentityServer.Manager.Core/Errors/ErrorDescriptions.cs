@@ -68,5 +68,7 @@ namespace SimpleIdentityServer.Manager.Core.Errors
         public static string TheSectorIdentifierUrisCannotBeRetrieved = "the sector identifier uris cannot be retrieved";
 
         public static string TheResourceOwnerDoesntExist = "the resource owner {0} doesn't exist";
+
+        public static string TheResourceOwnerMustBeConfirmed = "the account must be confirmed";
     }
 }

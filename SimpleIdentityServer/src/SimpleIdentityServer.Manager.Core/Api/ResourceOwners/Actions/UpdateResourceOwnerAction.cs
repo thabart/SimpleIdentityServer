@@ -62,6 +62,13 @@ namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners.Actions
                     string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, updateResourceOwnerParameter.Subject));
             }
 
+            if (!resourceOwner.IsLocalAccount)
+            {
+                throw new IdentityServerManagerException(
+                    ErrorCodes.UnhandledExceptionCode,
+                    ErrorDescriptions.TheResourceOwnerMustBeConfirmed);
+            }
+
             resourceOwner.Roles = updateResourceOwnerParameter.Roles;
             return _resourceOwnerRepository.Update(resourceOwner);
         }

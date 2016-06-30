@@ -402,7 +402,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                 {
                     new Models.ResourceOwner
                     {
-                        Id = "administrator@hotmail.be",
+                        Id = Guid.NewGuid().ToString(),
                         Name = "administrator",
                         Address = new Address
                         {
@@ -433,7 +433,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                             {
                                 RoleName = "administrator"
                             }
-                        }
+                        },
+                        IsLocalAccount = true
                     }
                 });
             }

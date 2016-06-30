@@ -258,6 +258,74 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
         }
 
         [Fact]
+        public async Task When_Role_Is_Not_Correct_Then_NotAuthorized_Is_Returned()
+        {
+            // ARRANGE
+            const string configurationUrl = "http://localhost/configuration";
+            InitializeFakeObjects();
+            var ticket = new Ticket
+            {
+                ClientId = "client_id",
+                Scopes = new List<string>
+                {
+                    "read",
+                    "create",
+                    "update"
+                }
+            };
+
+            var authorizationPolicy = new Policy
+            {
+                ClientIdsAllowed = new List<string>
+                {
+                    "client_id"
+                },
+                Scopes = new List<string>
+                {
+                    "read",
+                    "create",
+                    "update"
+                },
+                Claims = new List<Claim>
+                {
+                    new Claim
+                    {
+                        Type = "role",
+                        Value = "role1"
+                    },
+                    new Claim
+                    {
+                        Type = "role",
+                        Value = "role2"
+                    }
+                }
+            };
+            var claimTokenParameters = new List<ClaimTokenParameter>
+            {
+                new ClaimTokenParameter
+                {
+                    Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
+                    Token = "token"
+                }
+            };
+            _parametersProviderStub.Setup(p => p.GetOpenIdConfigurationUrl())
+                .Returns(configurationUrl);
+            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>()))
+                .Returns(Task.FromResult(new JwsPayload
+                {
+                    {
+                        "role", "role1,role3"
+                    }
+                }));
+
+            // ACT
+            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameters);
+
+            // ASSERT
+            Assert.True(result.Type == AuthorizationPolicyResultEnum.NotAuthorized);
+        }
+
+        [Fact]
         public async Task When_Claims_Are_Not_Corred_Then_NotAuthorized_Is_Returned()
         {
             // ARRANGE

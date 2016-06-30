@@ -426,7 +426,9 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.AuthenticationInstant, currentDateTimeOffset.ToString()),
-                new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject)
+                new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject),
+                new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Role, "role1"),
+                new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Role, "role2")
             };
             var authorizationParameter = new AuthorizationParameter
             {
@@ -468,6 +470,17 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                             nonce
                         }
                     }
+                },
+                new ClaimParameter
+                {
+                    Name = Jwt.Constants.StandardResourceOwnerClaimNames.Role,
+                    Parameters = new Dictionary<string, object>
+                    {
+                        {
+                            Constants.StandardClaimParameterValueNames.EssentialName,
+                            true
+                        }
+                    }
                 }
             };
             _clientRepositoryStub.Setup(c => c.GetAll()).Returns(FakeOpenIdAssets.GetClients());
@@ -481,9 +494,11 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             // ASSERT
             Assert.NotNull(result);
             Assert.True(result.ContainsKey(Jwt.Constants.StandardResourceOwnerClaimNames.Subject));
+            Assert.True(result.ContainsKey(Jwt.Constants.StandardResourceOwnerClaimNames.Role));
             Assert.True(result.ContainsKey(Jwt.Constants.StandardClaimNames.AuthenticationTime));
             Assert.True(result.ContainsKey(Jwt.Constants.StandardClaimNames.Nonce));
             Assert.True(result[Jwt.Constants.StandardResourceOwnerClaimNames.Subject].ToString().Equals(subject));
+            Assert.True(result[Jwt.Constants.StandardResourceOwnerClaimNames.Role].ToString().Equals("role1,role2"));
             Assert.True(long.Parse(result[Jwt.Constants.StandardClaimNames.AuthenticationTime].ToString()).Equals(currentDateTimeOffset));
         }
 

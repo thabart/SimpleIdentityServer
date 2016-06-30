@@ -13,11 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Repositories;
 
-using System.Collections.Generic;
+using SimpleIdentityServer.Core.Helpers;
+using SimpleIdentityServer.Core.Repositories;
 
 namespace SimpleIdentityServer.Core.Services
 {
@@ -27,14 +25,11 @@ namespace SimpleIdentityServer.Core.Services
 
         private readonly ISecurityHelper _securityHelper;
 
-        private List<ResourceOwner> _resourceOwners;
-
         public InMemoryUserService(
             IResourceOwnerRepository resourceOwnerRepository,
             ISecurityHelper securityHelper)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
-            _resourceOwners = new List<ResourceOwner>();
             _securityHelper = securityHelper;
         }
 
@@ -42,12 +37,11 @@ namespace SimpleIdentityServer.Core.Services
         {
             var hashedPassword = _securityHelper.ComputeHash(password);
             var user = _resourceOwnerRepository.GetResourceOwnerByCredentials(userName, hashedPassword);
-            if (user == null)
+            if (user == null || !user.IsLocalAccount)
             {
                 return null;
             }
 
-            _resourceOwners.Add(user);
             return user.Id;
         }
     }

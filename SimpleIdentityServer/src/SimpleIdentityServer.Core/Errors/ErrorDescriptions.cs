@@ -188,5 +188,7 @@ namespace SimpleIdentityServer.Core.Errors
         public static string TheRoDoesntExist = "the resource owner doesn't exist";
 
         public static string TheRoWithCredentialsAlreadyExists = "a resource owner with same credentials already exists";
+
+        public static string TheAccountHasAlreadyBeenActivated = "the accout has already been activated";
     }
 }

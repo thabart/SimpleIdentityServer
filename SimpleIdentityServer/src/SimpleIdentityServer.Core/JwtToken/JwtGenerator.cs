@@ -682,6 +682,7 @@ namespace SimpleIdentityServer.Core.JwtToken
             var openIdClaims = _claimsMapping.MapToOpenIdClaims(claimsPrincipal.Claims);
             var tmp = openIdClaims.Where(oc => claims.Contains(oc.Key))
                 .Select(oc => new { key = oc.Key, val = oc.Value });
+            var roles = new List<string>();
             foreach(var r in tmp)
             {
                 result.Add(r.key, r.val);

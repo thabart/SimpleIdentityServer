@@ -30,6 +30,8 @@ namespace SimpleIdentityServer.Core.WebSite.User
         Models.ResourceOwner GetUser(ClaimsPrincipal claimsPrincipal);
 
         void UpdateUser(UpdateUserParameter updateUserParameter);
+
+        void ConfirmUser(ClaimsPrincipal claimsPrincipal);
     }
 
     internal class UserActions : IUserActions
@@ -42,18 +44,22 @@ namespace SimpleIdentityServer.Core.WebSite.User
 
         private readonly IUpdateUserOperation _updateUserOperation;
 
+        private readonly IConfirmUserOperation _confirmUserOperation;
+
         #region Constructor
 
         public UserActions(
             IGetConsentsOperation getConsentsOperation,
             IRemoveConsentOperation removeConsentOperation,
             IGetUserOperation getUserOperation,
-            IUpdateUserOperation updateUserOperation)
+            IUpdateUserOperation updateUserOperation,
+            IConfirmUserOperation confirmUserOperation)
         {
             _getConsentsOperation = getConsentsOperation;
             _removeConsentOperation = removeConsentOperation;
             _getUserOperation = getUserOperation;
             _updateUserOperation = updateUserOperation;
+            _confirmUserOperation = confirmUserOperation;
         }
 
         #endregion
@@ -78,6 +84,11 @@ namespace SimpleIdentityServer.Core.WebSite.User
         public void UpdateUser(UpdateUserParameter updateUserParameter)
         {
             _updateUserOperation.Execute(updateUserParameter);
+        }
+
+        public void ConfirmUser(ClaimsPrincipal claimsPrincipal)
+        {
+            _confirmUserOperation.Execute(claimsPrincipal);
         }
 
         #endregion

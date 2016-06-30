@@ -29,8 +29,15 @@ namespace SimpleIdentityServer.Core.Jwt.Mapping
         public Dictionary<string, string> MapToOpenIdClaims(IEnumerable<Claim> claims)
         {
             var result = new Dictionary<string, string>();
+            var roles = new List<string>();
             foreach (var claim in claims)
             {
+                if (claim.Type == Constants.StandardResourceOwnerClaimNames.Role)
+                {
+                    roles.Add(claim.Value);
+                    continue;
+                }
+
                 if (Constants.MapWifClaimsToOpenIdClaims.ContainsKey(claim.Type))
                 {
                     result.Add(Constants.MapWifClaimsToOpenIdClaims[claim.Type], claim.Value);
@@ -41,6 +48,7 @@ namespace SimpleIdentityServer.Core.Jwt.Mapping
                 }
             }
 
+            result.Add(Jwt.Constants.StandardResourceOwnerClaimNames.Role, string.Join(",", roles));
             return result;
         }
     }

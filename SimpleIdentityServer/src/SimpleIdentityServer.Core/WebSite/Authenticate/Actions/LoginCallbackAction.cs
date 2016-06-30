@@ -101,7 +101,8 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                 Profile  = claimsPrincipal.GetProfile(),
                 WebSite = claimsPrincipal.GetWebSite(),
                 ZoneInfo = claimsPrincipal.GetZoneInfo(),
-                UpdatedAt = DateTime.Now.ConvertToUnixTimestamp()
+                UpdatedAt = DateTime.Now.ConvertToUnixTimestamp(),
+                IsLocalAccount = false
             };
 
             _resourceOwnerRepository.Insert(resourceOwner);

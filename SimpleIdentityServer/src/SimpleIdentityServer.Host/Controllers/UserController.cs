@@ -16,7 +16,7 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SimpleIdentityServer.Core.Extensions;
+using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.WebSite.User;
 using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.Host.ViewModels;
@@ -45,32 +45,41 @@ namespace SimpleIdentityServer.Api.Controllers
         [HttpGet]
         public ActionResult Index()
         {
+            var user = GetCurrentUser();
+            ViewBag.IsLocalAccount = user.IsLocalAccount;
             return View();
         }
 
         [HttpGet]
         public ActionResult Consent()
         {
+            var user = GetCurrentUser();
+            ViewBag.IsLocalAccount = user.IsLocalAccount;
             return GetConsents();
+        }
+
+        [HttpPost]
+        public ActionResult Consent(string id)
+        {
+            if (!_userActions.DeleteConsent(id))
+            {
+                ViewBag.ErrorMessage = "the consent cannot be deleted";
+                return GetConsents();
+            }
+
+            return RedirectToAction("Consent");
         }
 
         [HttpGet]
         public ActionResult Edit()
         {
-            var authenticatedUser = this.GetAuthenticatedUser();
-            var user = _userActions.GetUser(authenticatedUser);
-            var viewModel = new ResourceOwnerViewModel
+            var user = GetCurrentUser();
+            if (!user.IsLocalAccount)
             {
-                Name = user.Name,
-                Password = user.Password,
-                Roles = user.Roles
-            };
-            return View(viewModel);
-        }
+                return RedirectToAction("Index");
+            }
 
-        [HttpGet]
-        public ActionResult Simulator()
-        {
+            ViewBag.IsLocalAccount = user.IsLocalAccount;
             return View();
         }
 
@@ -82,11 +91,24 @@ namespace SimpleIdentityServer.Api.Controllers
                 throw new ArgumentNullException(nameof(viewModel));
             }
 
-            var authenticatedUser = this.GetAuthenticatedUser();
+            var user = GetCurrentUser();
+            if (!user.IsLocalAccount)
+            {
+                return RedirectToAction("Index");
+            }
+
             var parameter = viewModel.ToParameter();
-            parameter.Id = authenticatedUser.GetSubject();
+            parameter.Id = user.Id;
             _userActions.UpdateUser(parameter);
             return RedirectToAction("Edit");
+        }
+
+        [HttpGet]
+        public ActionResult Simulator()
+        {
+            var user = GetCurrentUser();
+            ViewBag.IsLocalAccount = user.IsLocalAccount;
+            return View();
         }
 
         [HttpGet]
@@ -104,16 +126,12 @@ namespace SimpleIdentityServer.Api.Controllers
             return View(viewModel);
         }
 
-        [HttpPost]
-        public ActionResult Consent(string id)
+        [HttpGet]
+        public ActionResult Confirm()
         {
-            if (!_userActions.DeleteConsent(id))
-            {
-                ViewBag.ErrorMessage = "the consent cannot be deleted";
-                return GetConsents();
-            }
-
-            return RedirectToAction("Consent");
+            var user = this.GetAuthenticatedUser();
+            _userActions.ConfirmUser(user);
+            return RedirectToAction("Index");
         }
 
         #endregion
@@ -147,6 +165,12 @@ namespace SimpleIdentityServer.Api.Controllers
             }
 
             return View(result);
+        }
+
+        private ResourceOwner GetCurrentUser()
+        {
+            var authenticatedUser = this.GetAuthenticatedUser();
+            return  _userActions.GetUser(authenticatedUser);
         }
 
         #endregion

@@ -8,7 +8,7 @@ using SimpleIdentityServer.DataAccess.SqlServer;
 namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
 {
     [DbContext(typeof(SimpleIdentityServerContext))]
-    [Migration("20160613075037_Initialize")]
+    [Migration("20160630120735_Initialize")]
     partial class Initialize
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -276,6 +276,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
 
                     b.Property<string>("GivenName");
 
+                    b.Property<bool>("IsLocalAccount");
+
                     b.Property<string>("Locale");
 
                     b.Property<string>("MiddleName");
@@ -386,7 +388,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                 {
                     b.HasOne("SimpleIdentityServer.DataAccess.SqlServer.Models.ResourceOwner")
                         .WithOne()
-                        .HasForeignKey("SimpleIdentityServer.DataAccess.SqlServer.Models.Address", "ResourceOwnerForeignKey");
+                        .HasForeignKey("SimpleIdentityServer.DataAccess.SqlServer.Models.Address", "ResourceOwnerForeignKey")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("SimpleIdentityServer.DataAccess.SqlServer.Models.ClientScope", b =>
@@ -410,7 +413,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
 
                     b.HasOne("SimpleIdentityServer.DataAccess.SqlServer.Models.ResourceOwner")
                         .WithMany()
-                        .HasForeignKey("ResourceOwnerId");
+                        .HasForeignKey("ResourceOwnerId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("SimpleIdentityServer.DataAccess.SqlServer.Models.ConsentClaim", b =>

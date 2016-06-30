@@ -109,6 +109,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                     FamilyName = table.Column<string>(nullable: true),
                     Gender = table.Column<string>(nullable: true),
                     GivenName = table.Column<string>(nullable: true),
+                    IsLocalAccount = table.Column<bool>(nullable: false),
                     Locale = table.Column<string>(nullable: true),
                     MiddleName = table.Column<string>(nullable: true),
                     Name = table.Column<string>(nullable: true),
@@ -216,7 +217,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                         column: x => x.ResourceOwnerForeignKey,
                         principalTable: "resourceOwners",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -242,7 +243,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                         column: x => x.ResourceOwnerId,
                         principalTable: "resourceOwners",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(

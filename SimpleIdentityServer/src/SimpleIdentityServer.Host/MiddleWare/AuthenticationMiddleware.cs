@@ -29,6 +29,8 @@ namespace SimpleIdentityServer.Host.MiddleWare
         {
             "/Authenticate",
             "/Authenticate/ExternalLogin",
+            "/Authenticate/OpenId",
+            "/Authenticate/LocalLoginOpenId",
             "/signin-microsoft",
             "/signin-oidc",
             "/signin-facebook"

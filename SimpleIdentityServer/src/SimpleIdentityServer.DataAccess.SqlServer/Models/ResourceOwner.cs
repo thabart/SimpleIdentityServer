@@ -117,6 +117,11 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Models
         public double UpdatedAt { get; set; }
 
         public string Password { get; set; }
+
+        /// <summary>
+        /// Gets or sets local account
+        /// </summary>
+        public bool IsLocalAccount { get; set; }
         
         /// <summary>
         /// Gets or sets the End-User's preferred postal address. The value is a JSON structure containing some or all the members defined in 

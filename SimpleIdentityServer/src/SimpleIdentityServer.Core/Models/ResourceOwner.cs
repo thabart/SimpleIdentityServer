@@ -125,6 +125,11 @@ namespace SimpleIdentityServer.Core.Models
         public string Password { get; set; }
 
         /// <summary>
+        /// Gets or sets if the resource owner is local or external
+        /// </summary>
+        public bool IsLocalAccount { get; set; }
+
+        /// <summary>
         /// Gets or sets the list of roles
         /// </summary>
         public List<string> Roles { get; set; }

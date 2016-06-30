@@ -81,6 +81,9 @@ namespace SimpleIdentityServer.Manager.Host.DTOs.Responses
 
         [DataMember(Name = Constants.ResourceOwnerResponseNames.Password)]
         public string Password { get; set; }
+        
+        [DataMember(Name = Constants.ResourceOwnerResponseNames.IsLocalAccount)]
+        public bool IsLocalAccount { get; set; }
 
         [DataMember(Name = Constants.ResourceOwnerResponseNames.Roles)]
         public List<string> Roles { get; set; }

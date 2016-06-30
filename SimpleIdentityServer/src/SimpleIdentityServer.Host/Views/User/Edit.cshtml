@@ -1,7 +1,3 @@
-@using SimpleIdentityServer.Host.ViewModels
-
-@model ResourceOwnerViewModel
-
 @{
     ViewBag.Title = "Edit user";
     ViewBag.IsEditDisplayed = true;
@@ -18,7 +14,7 @@
             <!-- Display name -->
             <fieldset class="form-group">
                 <label>Login</label>
-                <input type="text" value="@Model.Name" name="Name" class="form-control" placeholder="Your login" />
+                <input type="text" name="Name" class="form-control" placeholder="Your login" />
             </fieldset>
             <!-- Display new password -->
             <fieldset class="form-group">
@@ -27,30 +23,5 @@
             </fieldset>
             <button type="submit" class="form-control">Update</button>
         </form>
-        <!-- Display old password -->
-        <div class="row" style="padding-top:20px;">
-            <div class="col-md-5">
-                <label>Old password</label>
-            </div>
-            <div class="col-md-7">
-                @Model.Password
-            </div>
-        </div>
-        <!-- Display roles -->
-        <div class="row">
-            <div class="col-md-5">
-                <label>Roles</label>
-            </div>
-            <div class="col-md-7">
-                @if (Model.Roles != null && Model.Roles.Count() > 0)
-                {
-                    <p>@string.Join(",", Model.Roles)</p>
-                }
-                else
-                {
-                    <p>No roles</p>
-                }
-            </div>
-        </div>
     </div>
 </div>

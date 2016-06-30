@@ -71,7 +71,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                 WebSite = resourceOwner.WebSite,
                 ZoneInfo = resourceOwner.ZoneInfo,
                 Address = resourceOwner.Address == null ? null : resourceOwner.Address.ToDomain(),
-                Roles = roleNames
+                Roles = roleNames,
+                IsLocalAccount = resourceOwner.IsLocalAccount
             };
         }
 

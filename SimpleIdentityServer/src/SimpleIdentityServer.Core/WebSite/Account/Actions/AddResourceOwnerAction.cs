@@ -81,7 +81,8 @@ namespace SimpleIdentityServer.Core.WebSite.Account.Actions
             {
                 Id = Guid.NewGuid().ToString(),
                 Name = addUserParameter.Name,
-                Password = hashedPassword
+                Password = hashedPassword,
+                IsLocalAccount = true
             };
             _resourceOwnerRepository.Insert(newResourceOwner);
         }

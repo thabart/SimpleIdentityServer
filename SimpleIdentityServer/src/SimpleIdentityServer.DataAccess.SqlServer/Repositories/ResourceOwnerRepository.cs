@@ -68,7 +68,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             try
             {
                 // 1. Add all the information
-                var user = new Models.ResourceOwner
+                var user = new ResourceOwner
                 {
                     Name = resourceOwner.Name,
                     BirthDate = resourceOwner.BirthDate,
@@ -90,7 +90,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                     WebSite = resourceOwner.WebSite,
                     ZoneInfo = resourceOwner.ZoneInfo,
                     Id = resourceOwner.Id,
-                    ResourceOwnerRoles = new List<Models.ResourceOwnerRole>()
+                    ResourceOwnerRoles = new List<ResourceOwnerRole>(),
+                    IsLocalAccount = resourceOwner.IsLocalAccount
                 };
 
                 // 2. Add information about the user's address
@@ -162,6 +163,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 
             record.Name = resourceOwner.Name;
             record.Password = resourceOwner.Password;
+            record.IsLocalAccount = resourceOwner.IsLocalAccount;
             var rolesNotToBeDeleted = new List<string>();
             if (resourceOwner.Roles != null)
             {

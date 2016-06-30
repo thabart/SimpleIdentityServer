@@ -127,6 +127,7 @@ namespace SimpleIdentityServer.Manager.Host
             public const string Password = "password";
             public const string Roles = "roles";
             public const string Picture = "picture";
+            public const string IsLocalAccount = "is_localaccount";
         }
 
         public static class ClientNames

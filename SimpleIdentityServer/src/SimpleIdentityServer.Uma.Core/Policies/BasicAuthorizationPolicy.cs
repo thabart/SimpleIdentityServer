@@ -116,14 +116,35 @@ namespace SimpleIdentityServer.Uma.Core.Policies
 
                 foreach(var claim in authorizationPolicy.Claims)
                 {
-                    if (jwsPayload
-                        .FirstOrDefault(j => j.Key == claim.Type && j.Value.ToString() == claim.Value)
-                        .Equals(default(KeyValuePair<string, object>)))
+                    var payload = jwsPayload
+                        .FirstOrDefault(j => j.Key == claim.Type);
+                    if (payload.Equals(default(KeyValuePair<string, object>)))
                     {
                         return new AuthorizationPolicyResult
                         {
                             Type = AuthorizationPolicyResultEnum.NotAuthorized
                         };
+                    }
+
+                    if (claim.Type == SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Role)
+                    {
+                        if (!payload.Value.ToString().Split(',').Any(v => claim.Value == v))
+                        {
+                            return new AuthorizationPolicyResult
+                            {
+                                Type = AuthorizationPolicyResultEnum.NotAuthorized
+                            };
+                        }
+                    }
+                    else
+                    {
+                        if (payload.Value.ToString() != claim.Value)
+                        {
+                            return new AuthorizationPolicyResult
+                            {
+                                Type = AuthorizationPolicyResultEnum.NotAuthorized
+                            };
+                        }
                     }
                 }
             }

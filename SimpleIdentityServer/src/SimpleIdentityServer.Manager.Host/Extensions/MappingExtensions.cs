@@ -216,7 +216,8 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
                 Roles = resourceOwner.Roles,
                 UpdatedAt = resourceOwner.UpdatedAt,
                 WebSite = resourceOwner.WebSite,
-                ZoneInfo = resourceOwner.ZoneInfo
+                ZoneInfo = resourceOwner.ZoneInfo,
+                IsLocalAccount = resourceOwner.IsLocalAccount
             };
         }
 
