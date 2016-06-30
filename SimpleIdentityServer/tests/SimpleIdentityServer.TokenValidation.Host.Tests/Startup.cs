@@ -97,8 +97,7 @@ namespace SimpleIdentityServer.TokenValidation.Host.Tests
             // III. ENABLE UMA AUTHENTICATION
             var options = new UmaIntrospectionOptions
             {
-                EnrichWithUmaManagerInformation = true,
-                OperationUrl = "http://localhost:8080/api/operations",
+                ResourcesUrl = "http://localhost:8080/api/vs/resources",
                 UmaConfigurationUrl = "http://localhost:5001/.well-known/uma-configuration"
             };
             app.UseAuthenticationWithUmaIntrospection(options);

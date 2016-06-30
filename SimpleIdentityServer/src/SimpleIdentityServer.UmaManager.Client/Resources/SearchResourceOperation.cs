@@ -15,6 +15,7 @@
 #endregion
 
 using Newtonsoft.Json;
+using SimpleIdentityServer.UmaManager.Client.DTOs.Requests;
 using SimpleIdentityServer.UmaManager.Client.DTOs.Responses;
 using SimpleIdentityServer.UmaManager.Client.Factory;
 using System;
@@ -27,7 +28,7 @@ namespace SimpleIdentityServer.UmaManager.Client.Resources
     public interface ISearchResourceOperation
     {
         Task<List<ResourceResponse>> ExecuteAsync(
-            string query,
+            SearchResourceRequest searchResourceRequest,
             Uri uri,
             string accessToken);
     }
@@ -48,7 +49,7 @@ namespace SimpleIdentityServer.UmaManager.Client.Resources
         #region Public methods
 
         public async Task<List<ResourceResponse>> ExecuteAsync(
-            string query,
+            SearchResourceRequest searchResourceRequest,
             Uri uri,
             string accessToken)
         {
@@ -57,18 +58,26 @@ namespace SimpleIdentityServer.UmaManager.Client.Resources
                 throw new ArgumentNullException(nameof(uri));
             }
 
+            var contentRequest = new Dictionary<string, string>();
+            if (searchResourceRequest != null)
+            {
+                if (!string.IsNullOrWhiteSpace(searchResourceRequest.Url))
+                {
+                    contentRequest.Add(Constants.SearchResourceRequestNames.Url, searchResourceRequest.Url);
+                }
+
+                if (!string.IsNullOrWhiteSpace(searchResourceRequest.ResourceId))
+                {
+                    contentRequest.Add(Constants.SearchResourceRequestNames.ResourceId, searchResourceRequest.ResourceId);
+                }                
+            }
+
             var resourcesUrl = $"{uri.AbsoluteUri.TrimEnd('/')}/search";
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
                 RequestUri = new Uri(resourcesUrl),
-                Content = new FormUrlEncodedContent(new Dictionary<string, string>
-                {
-                    {
-                        "query",
-                        query
-                    }
-                })
+                Content = new FormUrlEncodedContent(contentRequest)
             };
             var httpClient = _httpClientFactory.GetHttpClient();
             var httpResult = await httpClient.SendAsync(request);

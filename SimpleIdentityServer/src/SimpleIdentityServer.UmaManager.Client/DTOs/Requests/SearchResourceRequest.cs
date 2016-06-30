@@ -14,16 +14,17 @@
 // limitations under the License.
 #endregion
 
-using System.Collections.Generic;
+using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.Uma.Common
+namespace SimpleIdentityServer.UmaManager.Client.DTOs.Requests
 {
-    public class Permission
+    [DataContract]
+    public class SearchResourceRequest
     {
-        public string ResourceSetId { get; set; }
-
-        public List<string> Scopes { get; set; }
-        
+        [DataMember(Name = Constants.SearchResourceRequestNames.Url)]
         public string Url { get; set; }
+
+        [DataMember(Name = Constants.SearchResourceRequestNames.ResourceId)]
+        public string ResourceId { get; set; }
     }
 }

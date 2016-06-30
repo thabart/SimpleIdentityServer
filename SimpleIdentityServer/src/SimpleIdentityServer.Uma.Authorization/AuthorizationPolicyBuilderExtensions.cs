@@ -25,33 +25,22 @@ namespace SimpleIdentityServer.Uma.Authorization
     {
         #region Public static methods
 
-        public static AuthorizationPolicyBuilder AddConventionalUma(this AuthorizationPolicyBuilder authorizationPolicyBuilder)
+        public static AuthorizationPolicyBuilder AddConventionalUma(
+            this AuthorizationPolicyBuilder authorizationPolicyBuilder,
+            ConventionalUmaOptions conventionalUmaOptions = null)
         {
             if (authorizationPolicyBuilder == null)
             {
                 throw new ArgumentNullException(nameof(authorizationPolicyBuilder));
             }
 
-            authorizationPolicyBuilder.Requirements.Add(new ConventionalUmaAuthorizationRequirement());
+            authorizationPolicyBuilder.Requirements.Add(new ConventionalUmaAuthorizationRequirement(conventionalUmaOptions));
             return authorizationPolicyBuilder;
         }
 
         public static AuthorizationPolicyBuilder AddResourceUma(
             this AuthorizationPolicyBuilder authorizationPolicyBuilder,
-            string resourceSetId,
-            params string[] scopes)
-        {
-            if (scopes == null)
-            {
-                throw new ArgumentNullException(nameof(scopes));
-            }
-
-            return AddResourceUma(authorizationPolicyBuilder, resourceSetId, scopes.ToList());
-        }
-
-        public static AuthorizationPolicyBuilder AddResourceUma(
-            this AuthorizationPolicyBuilder authorizationPolicyBuilder,
-            string resourceSetId,
+            string url,
             List<string> scopes)
         {
             if (authorizationPolicyBuilder == null)
@@ -59,9 +48,9 @@ namespace SimpleIdentityServer.Uma.Authorization
                 throw new ArgumentNullException(nameof(authorizationPolicyBuilder));
             }
 
-            if (string.IsNullOrWhiteSpace(resourceSetId))
+            if (string.IsNullOrWhiteSpace(url))
             {
-                throw new ArgumentNullException(nameof(resourceSetId));
+                throw new ArgumentNullException(nameof(url));
             }
 
             if (scopes == null || !scopes.Any())
@@ -69,7 +58,7 @@ namespace SimpleIdentityServer.Uma.Authorization
                 throw new ArgumentNullException(nameof(scopes));
             }
 
-            authorizationPolicyBuilder.Requirements.Add(new ResourceUmaAuthorizationRequirement(resourceSetId, scopes));
+            authorizationPolicyBuilder.Requirements.Add(new ResourceUmaAuthorizationRequirement(url, scopes));
             return authorizationPolicyBuilder;
         }
 

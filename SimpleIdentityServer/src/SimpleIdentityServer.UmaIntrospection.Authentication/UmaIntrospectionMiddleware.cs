@@ -23,6 +23,7 @@ using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Client.DTOs.Responses;
 using SimpleIdentityServer.Uma.Common;
 using SimpleIdentityServer.UmaManager.Client;
+using SimpleIdentityServer.UmaManager.Client.DTOs.Requests;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -109,15 +110,6 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
                 throw new ArgumentException($"url {_options.UmaConfigurationUrl} is not well formatted");
             }
 
-            Uri operationUri = null;
-            if (_options.EnrichWithUmaManagerInformation)
-            {
-                if (!Uri.TryCreate(_options.OperationUrl, UriKind.Absolute, out operationUri))
-                {
-                    throw new ArgumentException($"url {_options.OperationUrl} is not well formatted");
-                }
-            }
-
             // Validate RPT
             var identityServerUmaClientFactory = (IIdentityServerUmaClientFactory)_serviceProvider.GetService(typeof(IIdentityServerUmaClientFactory));
             try
@@ -148,6 +140,13 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
         {
             var claims = new List<Claim>();
             var claimsIdentity = new ClaimsIdentity(claims, "UserInformation");
+            if (context.User != null &&
+                context.User.Identity != null &&
+                context.User.Identity.IsAuthenticated)
+            {
+                claimsIdentity = context.User.Identity as ClaimsIdentity;
+            }
+
             var identityServerUmaManagerClientFactory = (IIdentityServerUmaManagerClientFactory)_serviceProvider.GetService(typeof(IIdentityServerUmaManagerClientFactory));
             foreach (var permission in permissions)
             {
@@ -156,12 +155,15 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
                     ResourceSetId = permission.ResourceSetId,
                     Scopes = permission.Scopes
                 };
-                if (_options.EnrichWithUmaManagerInformation)
+
+                var operations = await identityServerUmaManagerClientFactory.GetResourceClient()
+                    .SearchResources(new SearchResourceRequest
+                    {
+                        ResourceId = permission.ResourceSetId
+                    }, _options.ResourcesUrl, string.Empty);
+                if (operations != null && operations.Any())
                 {
-                    var operationInformation = await identityServerUmaManagerClientFactory.GetOperationClient()
-                        .Search(claimPermission.ResourceSetId, _options.OperationUrl);
-                    claimPermission.ApplicationName = operationInformation.ApplicationName;
-                    claimPermission.OperationName = operationInformation.OperationName;
+                    claimPermission.Url = operations.First().Url;
                 }
 
                 claimsIdentity.AddPermission(claimPermission);

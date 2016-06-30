@@ -19,6 +19,7 @@ using SimpleIdentityServer.Client.DTOs.Requests;
 using SimpleIdentityServer.Client.DTOs.Response;
 using SimpleIdentityServer.Client.DTOs.Responses;
 using SimpleIdentityServer.UmaManager.Client;
+using SimpleIdentityServer.UmaManager.Client.DTOs.Requests;
 using SimpleIdentityServer.UmaManager.Client.DTOs.Responses;
 using System;
 using System.Collections.Generic;
@@ -193,17 +194,20 @@ namespace SimpleIdentityServer.Proxy
                 .ResolveAsync(_securityOptions.OpenidConfigurationUrl);
         }
 
-        private async Task<ResourceResponse> GetResource(string query)
+        private async Task<ResourceResponse> GetResource(string req)
         {
             var url = $"{_securityOptions.RootManageApiUrl.TrimEnd('/')}/vs/resources";
             var resources = await _identityServerUmaManagerClientFactory.GetResourceClient()
-                .SearchResources(query, new Uri(url), string.Empty);
+                .SearchResources(new SearchResourceRequest
+                {
+                    Url = req
+                }, new Uri(url), string.Empty);
             if (resources == null)
             {
                 throw new InvalidOperationException("the resource doesn't exist");
             }
 
-            var resource = resources.FirstOrDefault(r => r.Url == query);
+            var resource = resources.FirstOrDefault(r => r.Url == req);
             if (resource == null)
             {
                 throw new InvalidOperationException("the resource doesn't exist");

@@ -17,6 +17,7 @@
 using EnvDTE;
 using NuGet.VisualStudio;
 using SimpleIdentityServer.UmaManager.Client;
+using SimpleIdentityServer.UmaManager.Client.DTOs.Requests;
 using SimpleIdentityServer.UmaManager.Client.DTOs.Responses;
 using SimpleIdentityServer.UmaManager.Client.Resources;
 using SimpleIdentityServer.Vse.Extensions;
@@ -236,11 +237,14 @@ namespace SimpleIdentityServer.Vse
             }
         }
                 
-        private async Task SearchResources(string query, Uri uri)
+        private async Task SearchResources(string url, Uri uri)
         {
             await DisplayResources(() =>
             {
-                return _resourceClient.SearchResources(query, uri, string.Empty);
+                return _resourceClient.SearchResources(new SearchResourceRequest
+                {
+                    Url = url
+                }, uri, string.Empty);
             });
         }
 

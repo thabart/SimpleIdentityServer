@@ -23,9 +23,7 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
     {
         public string UmaConfigurationUrl { get; set; }
 
-        public string OperationUrl { get; set; }
-
-        public bool EnrichWithUmaManagerInformation { get; set; }
+        public string ResourcesUrl { get; set; }
 
         public IIdentityServerUmaClientFactory IdentityServerUmaClientFactory { get; set; }
 

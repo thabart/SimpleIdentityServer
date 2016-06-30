@@ -25,17 +25,17 @@ namespace SimpleIdentityServer.Uma.Authorization
 {
     public class ResourceUmaAuthorizationRequirement : AuthorizationHandler<ResourceUmaAuthorizationRequirement>, IAuthorizationRequirement
     {
-        private readonly string _resourceSetId;
+        private readonly string _url;
 
         private readonly List<string> _scopes;
 
         #region Constructor
 
-        public ResourceUmaAuthorizationRequirement(string resourceSetId, List<string> scopes)
+        public ResourceUmaAuthorizationRequirement(string url, List<string> scopes)
         {
-            if (string.IsNullOrWhiteSpace(resourceSetId))
+            if (string.IsNullOrWhiteSpace(url))
             {
-                throw new ArgumentNullException(nameof(resourceSetId));
+                throw new ArgumentNullException(nameof(url));
             }
 
             if (scopes == null || !scopes.Any())
@@ -43,7 +43,7 @@ namespace SimpleIdentityServer.Uma.Authorization
                 throw new ArgumentNullException(nameof(scopes));
             }
 
-            _resourceSetId = resourceSetId;
+            _url = url;
             _scopes = scopes;
         }
 
@@ -65,7 +65,7 @@ namespace SimpleIdentityServer.Uma.Authorization
             }
 
             var permissions = claimsIdentity.GetPermissions();
-            if (permissions.Any(p => string.Equals(p.ResourceSetId, _resourceSetId, StringComparison.OrdinalIgnoreCase) &&
+            if (permissions.Any(p => string.Equals(p.Url, _url, StringComparison.OrdinalIgnoreCase) &&
                 _scopes.All(s => p.Scopes.Any(sc => string.Equals(sc, s, StringComparison.OrdinalIgnoreCase)))))
             {
                 context.Succeed(requirement);

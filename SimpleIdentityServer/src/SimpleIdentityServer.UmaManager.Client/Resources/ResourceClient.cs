@@ -43,12 +43,12 @@ namespace SimpleIdentityServer.UmaManager.Client.Resources
             string accessToken);
 
         Task<List<ResourceResponse>> SearchResources(
-            string query,
+            SearchResourceRequest searchResourceRequest,
             Uri uri,
             string accessToken);
 
         Task<List<ResourceResponse>> SearchResources(
-            string query,
+            SearchResourceRequest searchResourceRequest,
             string url,
             string accessToken);
 
@@ -121,19 +121,19 @@ namespace SimpleIdentityServer.UmaManager.Client.Resources
         }
 
         public async Task<List<ResourceResponse>> SearchResources(
-            string query,
+            SearchResourceRequest searchResourceRequest,
             Uri uri,
             string accessToken)
         {
-            return await _searchResourceOperation.ExecuteAsync(query, uri, accessToken);
+            return await _searchResourceOperation.ExecuteAsync(searchResourceRequest, uri, accessToken);
         }
 
         public async Task<List<ResourceResponse>> SearchResources(
-            string query,
+            SearchResourceRequest searchResourceRequest,
             string url,
             string accessToken)
         {
-            return await _searchResourceOperation.ExecuteAsync(query, TryGetUri(url), accessToken);
+            return await _searchResourceOperation.ExecuteAsync(searchResourceRequest, TryGetUri(url), accessToken);
         }
 
         public async Task<bool> AddControllerAction(AddControllerActionRequest request, Uri uri, string accessToken)

@@ -14,9 +14,7 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Proxy;
 using System;
-using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Uma.Core.IntegrationTests
 {

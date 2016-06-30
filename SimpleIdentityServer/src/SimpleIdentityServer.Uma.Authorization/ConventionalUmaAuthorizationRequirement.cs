@@ -15,20 +15,25 @@
 #endregion
 
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using SimpleIdentityServer.Uma.Common;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Security.Claims;
 
 namespace SimpleIdentityServer.Uma.Authorization
 {
     public class ConventionalUmaAuthorizationRequirement : AuthorizationHandler<ConventionalUmaAuthorizationRequirement>, IAuthorizationRequirement
     {
+        private readonly ConventionalUmaOptions _conventionalUmaOptions;
+
         #region Constructor
 
-        public ConventionalUmaAuthorizationRequirement()
+        public ConventionalUmaAuthorizationRequirement(ConventionalUmaOptions conventionalUmaOptions)
         {
-
+            _conventionalUmaOptions = conventionalUmaOptions;
         }
 
         #endregion
@@ -49,20 +54,53 @@ namespace SimpleIdentityServer.Uma.Authorization
                 return;
             }
 
-            var routes = resource.RouteData.Values;
-            object controller = null;
-            object action = null;
-            if (!routes.TryGetValue("action", out action) || !routes.TryGetValue("controller", out controller))
+            var controllerActionDescriptor = resource.ActionDescriptor as ControllerActionDescriptor;
+            if (controllerActionDescriptor == null)
             {
                 return;
             }
 
+            var projectName = controllerActionDescriptor.ControllerTypeInfo.Assembly.GetName().Name;
+            var version = "v1";
+            var controllerName = controllerActionDescriptor.ControllerTypeInfo.Name;
+            var actionName = GetActionName(controllerActionDescriptor.MethodInfo);
+            if (_conventionalUmaOptions != null)
+            {
+                if (!string.IsNullOrWhiteSpace(_conventionalUmaOptions.ProductName))
+                {
+                    projectName = _conventionalUmaOptions.ProductName;
+                }
+
+                if (!string.IsNullOrWhiteSpace(_conventionalUmaOptions.Version))
+                {
+                    version = _conventionalUmaOptions.Version;
+                }
+            }
+
+            var expectedUrl = $"resources/Apis/{projectName}/{version}/{controllerName}/{actionName}";
             var permissions = claimsIdentity.GetPermissions();
-            if (permissions.Any(p => string.Equals(p.ApplicationName, controller.ToString(), StringComparison.OrdinalIgnoreCase)
-                && string.Equals(p.OperationName, action.ToString(), StringComparison.OrdinalIgnoreCase)))
+            if (permissions.Any(p => string.Equals(expectedUrl, p.Url, StringComparison.CurrentCultureIgnoreCase) 
+                && p.Scopes.Any(s => s == "execute")))
             {
                 context.Succeed(requirement);
             }
+        }
+
+        private static string GetActionName(MethodInfo methodInfo)
+        {
+            var actionName = methodInfo.Name;
+            var parameterNames = new List<string>();
+            foreach(var parameter in  methodInfo.GetParameters())
+            {
+                parameterNames.Add(parameter.Name);
+            }
+
+            if (parameterNames.Any())
+            {
+                actionName = actionName + "{" + string.Join(",", parameterNames) + "}";
+            }
+
+            return actionName;
         }
 
         #endregion

@@ -57,5 +57,12 @@ namespace SimpleIdentityServer.UmaManager.Client
 
             public const string Action = "action";
         }
+
+        public static class SearchResourceRequestNames
+        {
+            public const string Url = "url";
+
+            public const string ResourceId = "resource_id";
+        }
     }
 }

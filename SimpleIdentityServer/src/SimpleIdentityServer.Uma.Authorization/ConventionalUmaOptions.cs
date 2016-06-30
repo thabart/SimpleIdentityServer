@@ -14,16 +14,12 @@
 // limitations under the License.
 #endregion
 
-using System.Collections.Generic;
-
-namespace SimpleIdentityServer.Uma.Common
+namespace SimpleIdentityServer.Uma.Authorization
 {
-    public class Permission
+    public class ConventionalUmaOptions
     {
-        public string ResourceSetId { get; set; }
+        public string ProductName { get; set; }
 
-        public List<string> Scopes { get; set; }
-        
-        public string Url { get; set; }
+        public string Version { get; set; }
     }
 }

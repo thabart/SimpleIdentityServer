@@ -39,7 +39,7 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
             {
                 var result = proxy.GetRpt("{resource_url}", new List<string>
                 {
-                    "execute",
+                    "read",
                     "write",
                     "execute"
                 }).Result;
@@ -56,19 +56,18 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
             var factory = new SecurityProxyFactory();
             var proxy = factory.GetProxy(new SecurityOptions
             {
-                ClientId = "<replace by your client id>",
-                ClientSecret = "<replace by your client secret>",
+                ClientId = "SampleClient",
+                ClientSecret = "SampleClient",
                 UmaConfigurationUrl = "http://localhost:5001/.well-known/uma-configuration",
                 OpenidConfigurationUrl = "http://localhost:5000/.well-known/openid-configuration",
                 RootManageApiUrl = "http://localhost:8080/api"
             });
             try
             {
-                var result = proxy.GetRpt("{resource_url}", idToken, new List<string>
+                var result = proxy.GetRpt("resources/Apis/SimpleIdentityServer.TokenValidation.Host.Tests/v1/ValuesController/Get", idToken, new List<string>
                 {
-                    "execute",
-                    "write",
-                    "execute"
+                    "read",
+                    "write"
                 }).Result;
                 return result;
             }
