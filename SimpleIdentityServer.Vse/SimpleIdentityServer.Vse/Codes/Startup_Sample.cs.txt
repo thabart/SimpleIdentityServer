@@ -68,7 +68,7 @@ namespace {namespace}
             var options = new UmaIntrospectionOptions
             {
                 ResourcesUrl = "{resource_url}",
-                UmaConfigurationUrl = "http://localhost:5001/.well-known/uma-configuration"
+                UmaConfigurationUrl = "http://localhost:5445/.well-known/uma-configuration"
             };
             app.UseAuthenticationWithUmaIntrospection(options);
 

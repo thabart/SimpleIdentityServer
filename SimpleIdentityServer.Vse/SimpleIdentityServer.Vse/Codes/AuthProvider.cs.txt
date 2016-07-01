@@ -21,7 +21,7 @@ namespace {namespace}
 {
     public class AuthProvider
     {
-        private const string OpenIdConfigurationUrl = "http://localhost:5000/.well-known/openid-configuration";
+        private const string OpenIdConfigurationUrl = "https://localhost:5443/.well-known/openid-configuration";
 
         #region Public static methods
 

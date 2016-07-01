@@ -29,9 +29,9 @@ namespace {namespace}
             {
                 ClientId = "<replace by your client id>",
                 ClientSecret = "<replace by your client secret>",
-                UmaConfigurationUrl = "http://localhost:5001/.well-known/uma-configuration",
-                OpenidConfigurationUrl = "http://localhost:5000/.well-known/openid-configuration",
-                RootManageApiUrl = "http://localhost:8080/api"
+                UmaConfigurationUrl = "https://localhost:5445/.well-known/uma-configuration",
+                OpenidConfigurationUrl = "https://localhost:5443/.well-known/openid-configuration",
+                RootManageApiUrl = "https://localhost:5444/api"
             });
             try
             {

@@ -15,7 +15,6 @@
 #endregion
 
 using Microsoft.VisualStudio.Shell;
-using System;
 using System.ComponentModel;
 
 namespace SimpleIdentityServer.Vse
@@ -24,7 +23,7 @@ namespace SimpleIdentityServer.Vse
     {
         #region Private fields
 
-        private string _url = "http://localhost:8080/api/vs/resources";
+        private string _url = "https://localhost:5444/api/vs/resources";
 
         #endregion
 
