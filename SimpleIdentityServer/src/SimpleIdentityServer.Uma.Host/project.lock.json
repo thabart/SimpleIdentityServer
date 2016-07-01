@@ -790,6 +790,19 @@
           "lib/netstandard1.3/Microsoft.AspNetCore.Server.Kestrel.dll": {}
         }
       },
+      "Microsoft.AspNetCore.Server.Kestrel.Https/1.0.0-rc2-final": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.AspNetCore.Server.Kestrel": "1.0.0-rc2-final",
+          "System.Net.Security": "4.0.0-rc2-24027"
+        },
+        "compile": {
+          "lib/netstandard1.3/Microsoft.AspNetCore.Server.Kestrel.Https.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard1.3/Microsoft.AspNetCore.Server.Kestrel.Https.dll": {}
+        }
+      },
       "Microsoft.AspNetCore.StaticFiles/1.0.0-rc2-final": {
         "type": "package",
         "dependencies": {
@@ -4800,6 +4813,18 @@
           "lib/net451/Microsoft.AspNetCore.Server.Kestrel.dll": {}
         }
       },
+      "Microsoft.AspNetCore.Server.Kestrel.Https/1.0.0-rc2-final": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.AspNetCore.Server.Kestrel": "1.0.0-rc2-final"
+        },
+        "compile": {
+          "lib/net451/Microsoft.AspNetCore.Server.Kestrel.Https.dll": {}
+        },
+        "runtime": {
+          "lib/net451/Microsoft.AspNetCore.Server.Kestrel.Https.dll": {}
+        }
+      },
       "Microsoft.AspNetCore.StaticFiles/1.0.0-rc2-final": {
         "type": "package",
         "dependencies": {
@@ -6848,6 +6873,18 @@
         "lib/netstandard1.3/Microsoft.AspNetCore.Server.Kestrel.xml"
       ]
     },
+    "Microsoft.AspNetCore.Server.Kestrel.Https/1.0.0-rc2-final": {
+      "sha512": "eQtoCSpseO0nDxEiJpZM1GZo7kRM4gm5HdR0VuKtyJUuORIxiW05LvUp+PS5i+Sj9/84T01HVvoqnG3kGcHQ2g==",
+      "type": "package",
+      "files": [
+        "Microsoft.AspNetCore.Server.Kestrel.Https.1.0.0-rc2-final.nupkg.sha512",
+        "Microsoft.AspNetCore.Server.Kestrel.Https.nuspec",
+        "lib/net451/Microsoft.AspNetCore.Server.Kestrel.Https.dll",
+        "lib/net451/Microsoft.AspNetCore.Server.Kestrel.Https.xml",
+        "lib/netstandard1.3/Microsoft.AspNetCore.Server.Kestrel.Https.dll",
+        "lib/netstandard1.3/Microsoft.AspNetCore.Server.Kestrel.Https.xml"
+      ]
+    },
     "Microsoft.AspNetCore.StaticFiles/1.0.0-rc2-final": {
       "sha512": "MOv6HHX1C/62ljMsl/MK9hlG+f/9k3+kR6CHHaf2gqTXMb3qOf3gfthiTQIESTh66JxC7ZcFVCKdNKuodlXsgA==",
       "type": "package",
@@ -7221,7 +7258,7 @@
       ]
     },
     "Microsoft.Extensions.Configuration.CommandLine/1.0.0-rc2-final": {
-      "sha512": "GDPsxWdy07XGYn5hUZ4Hj+Av98BX/0eE8e89H+Bx5uOTiU9pVNWqUGCc9/MK4enGvfVcoCZaD1IKqBJV5aEVJQ==",
+      "sha512": "EZVw8Dgm6U9UL1BrBmw/5WGEy25VjtswkUnWM0wkdX2TNGNYec5mFuStQmt+FV7XRa6AG28yAFRLilA2whqFcw==",
       "type": "package",
       "files": [
         "Microsoft.Extensions.Configuration.CommandLine.1.0.0-rc2-final.nupkg.sha512",
@@ -7303,7 +7340,7 @@
       ]
     },
     "Microsoft.Extensions.DependencyModel/1.0.0-rc2-final": {
-      "sha512": "p9cTPcAxJhjBSQ1jq1FMW6bBTm/HaR3fXPvWfDq44LzjJ/+ZmNwQEGKO27oSd2C8Fw+Gf45+HZjTFkFH6Czr/A==",
+      "sha512": "IFfLyVWxqGOA+ql+h6gvPjWbDMXClLORxgoeJab7WxpPHTcHut/5vFLu8+29iQklymlKfYefRo8tudtwjxjCRw==",
       "type": "package",
       "files": [
         "Microsoft.Extensions.DependencyModel.1.0.0-rc2-final.nupkg.sha512",
@@ -15173,6 +15210,7 @@
       "Microsoft.AspNetCore.Mvc.TagHelpers >= 1.0.0-rc2-final",
       "Microsoft.AspNetCore.Server.IISIntegration >= 1.0.0-rc2-final",
       "Microsoft.AspNetCore.Server.Kestrel >= 1.0.0-rc2-final",
+      "Microsoft.AspNetCore.Server.Kestrel.Https >= 1.0.0-rc2-final",
       "Microsoft.AspNetCore.StaticFiles >= 1.0.0-rc2-final",
       "Microsoft.Extensions.Configuration.CommandLine >= 1.0.0-rc2-final",
       "Microsoft.Extensions.Configuration.Json >= 1.0.0-rc2-final",

@@ -29,7 +29,10 @@ namespace SimpleIdentityServer.Uma.Host
                 .AddEnvironmentVariables(prefix: "ASPNETCORE_")
                 .Build();
             var host = new WebHostBuilder()
-                .UseKestrel()
+                .UseKestrel(options =>
+                {
+                    options.UseHttps("SimpleIdServer.pfx");
+                })
                 .UseConfiguration(configuration)
                 .UseStartup<Startup>()
                 .Build();
