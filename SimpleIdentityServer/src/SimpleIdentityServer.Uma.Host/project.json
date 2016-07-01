@@ -48,7 +48,8 @@
           "type": "platform",
           "version": "1.0.0-rc2-3002702"
         },
-        "System.Runtime.Serialization.Json": "4.0.2-*"
+        "System.Runtime.Serialization.Json": "4.0.2-*",
+        "System.Threading.Tasks.Extensions": "4.0.0-rc2-24027"
       }
     }
   }
