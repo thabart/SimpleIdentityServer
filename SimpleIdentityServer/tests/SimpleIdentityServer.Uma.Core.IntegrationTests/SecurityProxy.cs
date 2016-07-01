@@ -66,8 +66,7 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
             {
                 var result = proxy.GetRpt("resources/Apis/SimpleIdentityServer.TokenValidation.Host.Tests/v1/ValuesController/Get", idToken, new List<string>
                 {
-                    "read",
-                    "write"
+                    "execute"
                 }).Result;
                 return result;
             }

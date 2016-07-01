@@ -15,6 +15,7 @@
 #endregion
 
 using EnvDTE;
+using NuGet.VisualStudio;
 using SimpleIdentityServer.UmaManager.Client;
 using SimpleIdentityServer.UmaManager.Client.DTOs.Requests;
 using SimpleIdentityServer.UmaManager.Client.Resources;
@@ -23,7 +24,9 @@ using SimpleIdentityServer.Vse.Helpers;
 using SimpleIdentityServer.Vse.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -125,7 +128,7 @@ namespace SimpleIdentityServer.Vse
         {
             RefreshAvailableActions();
         }
-        
+
         private void Protect(object sender, RoutedEventArgs e)
         {
             var uri = CheckUri();
@@ -134,7 +137,24 @@ namespace SimpleIdentityServer.Vse
                 return;
             }
 
+            // 1. Add the nuget packages
+            InstallNugetPackages(_selectedProject, "Microsoft.Extensions.DependencyInjection", "1.0.0-rc2-final")
+                .ContinueWith((firstTask) =>
+                {
+                    if (!firstTask.Result)
+                    {
+                        return;
+                    }
+
+                    InstallNugetPackages(_selectedProject, "SimpleIdentityServer.UmaIntrospection.Authentication");
+                    InstallNugetPackages(_selectedProject, "SimpleIdentityServer.Uma.Authorization");
+                });
+
+            // 2. Protect the actions
             ProtectActions(uri);
+
+            // 3. Add file
+            AddStartup(_selectedProject, uri);
         }
 
         #endregion
@@ -160,6 +180,11 @@ namespace SimpleIdentityServer.Vse
 
         private Task RefreshAvailableActions()
         {
+            if (_selectedProject == null)
+            {
+                return Task.FromResult(0);
+            }
+
             _viewModel.IsLoading = true;
             _viewModel.Actions.Clear();
             var selectedProjectName = _selectedProject.Name;
@@ -238,6 +263,85 @@ namespace SimpleIdentityServer.Vse
             }
 
             return uri;
+        }
+
+        private Task<bool> InstallNugetPackages(
+            Project project,
+            string package,
+            string version = null)
+        {
+            var vsPackageInstallerServices = _options.ComponentModel.GetService<IVsPackageInstallerServices>();
+            var vsPackageInstaller = _options.ComponentModel.GetService<IVsPackageInstaller>();
+            return Task.Run(() =>
+            {
+                try
+                {
+                    if (!vsPackageInstallerServices.IsPackageInstalled(project, package))
+                    {
+                        _options.Dte.StatusBar.Text = $"Install {package} Nuget package, this may takes a minute ...";
+                        vsPackageInstaller.InstallPackage(null, project, package, version, false);
+                        _options.Dte.StatusBar.Text = $"Finished installing the {package} Nuget package";
+                    }
+                }
+                catch
+                {
+                    ExecuteRequestToUi(() => MessageBox.Show($"Error occured while trying to add the {package} Nuget package"));
+                    return false;
+                }
+
+                return true;
+            });
+        }
+
+        private void AddStartup(Project project, Uri uri)
+        {
+            try
+            {
+                // 1. Update the content
+                var folder = project.GetRootFolder();
+                string content = GetStartup();
+                content = content.Replace("{namespace}", project.Name);
+                content = content.Replace("{resource_url}", uri.AbsoluteUri);
+
+                // 2. Add the security proxy to the project
+                var fileName = "Startup_Sample.cs";
+                var path = Path.Combine(folder, fileName);
+                if (File.Exists(path))
+                {
+                    MessageBox.Show($"The file {fileName} already exists");
+                    return;
+                }
+
+                using (var writer = new StreamWriter(path))
+                {
+                    writer.Write(content);
+                }
+
+                project.AddFileToProject(path, _options.Dte2);
+            }
+            catch
+            {
+                MessageBox.Show("Error occured while trying to add the file");
+            }
+        }
+
+        private string GetStartup()
+        {
+            return GetContent("Startup_Sample.cs.txt");
+        }
+
+        private string GetContent(string fileName)
+        {
+            string result = null;
+            var assembly = Assembly.GetExecutingAssembly().Location;
+            var codeFolder = Path.Combine(Path.GetDirectoryName(assembly), "Codes");
+            var codeFile = Path.Combine(codeFolder, fileName);
+            using (var reader = new StreamReader(codeFile))
+            {
+                result = reader.ReadToEnd();
+            }
+
+            return result;
         }
 
         #endregion

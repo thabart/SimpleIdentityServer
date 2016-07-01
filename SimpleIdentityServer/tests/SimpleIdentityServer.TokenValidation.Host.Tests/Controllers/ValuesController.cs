@@ -21,16 +21,22 @@ using System.Collections.Generic;
 namespace SimpleIdentityServer.TokenValidation.Host.Tests.Controllers
 {
     [Route("values")]
+    [Authorize("uma")]
     public class ValuesController : Controller
     {
         [HttpGet]
-        [Authorize("uma")]
         public List<string> Get()
         {
             return new List<string>
             {
                 "test"
             };
+        }
+
+        [HttpGet("{id}")]
+        public string Get(string id)
+        {
+            return "test";
         }
     }
 }

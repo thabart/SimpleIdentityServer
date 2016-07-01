@@ -59,6 +59,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="Codes\Startup_Sample.cs.txt">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Compile Include="Extensions\Dte2Extensions.cs" />
     <Compile Include="Extensions\ProjectExtensions.cs" />
     <Compile Include="Commands\GenerateProxyCommand.cs" />

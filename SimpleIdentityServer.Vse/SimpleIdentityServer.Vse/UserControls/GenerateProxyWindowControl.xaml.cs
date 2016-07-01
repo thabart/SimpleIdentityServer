@@ -163,8 +163,8 @@ namespace SimpleIdentityServer.Vse
                                 return;
                             }
                             
-                            AddSecurityProxy(_selectedProject, uri, resource);
-                            AddAuthProvider(_selectedProject, uri);
+                            AddSecurityProxy(_selectedProject, resource);
+                            AddAuthProvider(_selectedProject);
                         });
                 });
         }
@@ -173,7 +173,7 @@ namespace SimpleIdentityServer.Vse
 
         #region Private methods
         
-        private void AddSecurityProxy(Project project, Uri uri, ResourceViewModel resource)
+        private void AddSecurityProxy(Project project, ResourceViewModel resource)
         {
             try
             {               
@@ -206,7 +206,7 @@ namespace SimpleIdentityServer.Vse
             }
         }
 
-        private void AddAuthProvider(Project project, Uri uri)
+        private void AddAuthProvider(Project project)
         {
             try
             {
