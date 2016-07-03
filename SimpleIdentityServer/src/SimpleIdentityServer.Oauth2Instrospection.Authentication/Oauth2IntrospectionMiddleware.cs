@@ -63,7 +63,16 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
 
             _next = next;
             _options = options.Value;
-            _httpClient = new HttpClient(_options.BackChannelHttpHandler ?? new HttpClientHandler());
+            var handler = _options.BackChannelHttpHandler;
+            if (handler == null)
+            {
+                handler = new HttpClientHandler();
+#if NETSTANDARD
+                handler.ServerCertificateCustomValidationCallback = delegate { return true; };
+#endif
+            }
+
+            _httpClient = new HttpClient(handler);
 
             var nullAuthenticationBuilder = app.New();
             var nullAuthenticationOptions = new NullAuthenticationOptions
@@ -76,9 +85,9 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
             _nullAuthenticationNext = nullAuthenticationBuilder.Build();
         }
 
-        #endregion
+#endregion
 
-        #region Public methods
+#region Public methods
 
         public async Task Invoke(HttpContext context)
         {
@@ -108,9 +117,9 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
             await _nullAuthenticationNext(context);
         }
 
-        #endregion
+#endregion
 
-        #region Private methods
+#region Private methods
 
         private string GetAccessToken(string authorizationValue)
         {
@@ -167,9 +176,9 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
             return JsonConvert.DeserializeObject<IntrospectionResponse>(content);
         }
 
-        #endregion
+#endregion
 
-        #region Private static methods
+#region Private static methods
         
         private static ClaimsPrincipal CreateClaimPrincipal(IntrospectionResponse introspectionResponse)
         {
@@ -197,6 +206,6 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
             return new ClaimsPrincipal(claimsIdentity);
         }
 
-        #endregion
+#endregion
     }
 }
