@@ -28,10 +28,10 @@
         "System.Runtime.Serialization": "4.0.0.0"
       }
     },
-    "netstandard1.5": {
+    "netstandard1.6": {
       "dependencies": {
-        "System.Net.Http": "4.0.1-*",
-        "System.Runtime.Serialization.Primitives": "4.1.1-*"
+        "System.Net.Http": "4.1.0",
+        "System.Runtime.Serialization.Primitives": "4.1.1"
       }
     }
   }

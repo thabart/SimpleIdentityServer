@@ -8,7 +8,7 @@
     "licenseUrl": ""
   },
   "dependencies": {
-    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc2-final",
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
     "SimpleIdentityServer.Core.Jwt": "*",
     "SimpleIdentityServer.Core": "*"
   },
@@ -24,6 +24,6 @@
         "System.IdentityModel": ""
       }
     },
-    "netstandard1.5": { }
+    "netstandard1.6": { }
   }
 }

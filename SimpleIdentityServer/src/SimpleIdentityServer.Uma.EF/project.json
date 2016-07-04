@@ -8,22 +8,22 @@
     "projectUrl": ""
   },
   "dependencies": {
-    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc2-final",
-    "Microsoft.EntityFrameworkCore.Sqlite": "1.0.0-rc2-final",
-    "Microsoft.EntityFrameworkCore.SqlServer": "1.0.0-rc2-final",
-    "Npgsql.EntityFrameworkCore.PostgreSQL": "1.0.0-rc2-release1",
-    "Microsoft.Extensions.Configuration.Json": "1.0.0-rc2-final",
-    "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0-rc2-final",
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
+    "Microsoft.EntityFrameworkCore.Sqlite": "1.0.0",
+    "Microsoft.EntityFrameworkCore.SqlServer": "1.0.0",
+    "Npgsql.EntityFrameworkCore.PostgreSQL": "1.0.0",
+    "Microsoft.Extensions.Configuration.Json": "1.0.0",
+    "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0",
     "Microsoft.EntityFrameworkCore.Tools": {
       "type": "build",
-      "version": "1.0.0-preview1-final"
+      "version": "1.0.0-preview2-final"
     },
     "SimpleIdentityServer.Uma.Core": "*"
   },
   "tools": {
     "Microsoft.EntityFrameworkCore.Tools": {
       "imports": [ "dnxcore50", "portable-net451+win8" ],
-      "version": "1.0.0-preview1-final"
+      "version": "1.0.0-preview2-final"
     }
   },
   "frameworks": {
@@ -33,7 +33,7 @@
       "dependencies": {
         "Microsoft.NETCore.App": {
           "type": "platform",
-          "version": "1.0.0-rc2-3002702"
+          "version": "1.0.0"
         }
       }
     }
