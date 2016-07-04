@@ -27,11 +27,8 @@ namespace SimpleIdentityServer.Configuration.EF.Extensions
 
         public static void EnsureSeedData(this SimpleIdentityServerConfigurationContext context)
         {
-            if (context.AllMigrationsApplied())
-            {
-                InsertAuthenticationProviders(context);
-                context.SaveChanges();
-            }
+            InsertAuthenticationProviders(context);
+            context.SaveChanges();
         }
 
         #endregion

@@ -25,11 +25,8 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
 
         public static void EnsureSeedData(this SimpleIdServerUmaContext context)
         {
-            if (context.AllMigrationsApplied())
-            {
-                InsertResources(context);
-                context.SaveChanges();
-            }
+            InsertResources(context);
+            context.SaveChanges();
         }
 
         #endregion

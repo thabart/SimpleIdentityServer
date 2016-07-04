@@ -30,17 +30,14 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
 
         public static void EnsureSeedData(this SimpleIdentityServerContext context)
         {
-            if (context.AllMigrationsApplied())
-            {
-                InsertRoles(context);
-                InsertClaims(context);
-                InsertScopes(context);
-                InsertTranslations(context);
-                InsertResourceOwners(context);
-                InsertJsonWebKeys(context);
-                InsertClients(context);
-                context.SaveChanges();
-            }
+            InsertRoles(context);
+            InsertClaims(context);
+            InsertScopes(context);
+            InsertTranslations(context);
+            InsertResourceOwners(context);
+            InsertJsonWebKeys(context);
+            InsertClients(context);
+            context.SaveChanges();
         }
 
         #endregion
