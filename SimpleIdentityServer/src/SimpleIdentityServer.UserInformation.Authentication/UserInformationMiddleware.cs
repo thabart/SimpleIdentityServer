@@ -27,7 +27,7 @@ using Microsoft.AspNetCore.Builder;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using Microsoft.Extensions.Options;
-#if NETSTANDARD1_5
+#if NETSTANDARD1_6
 using curl_sharp;
 #endif
 

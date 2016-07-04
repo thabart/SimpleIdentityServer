@@ -11,8 +11,8 @@
     "defaultNamespace": "SimpleIdentityServer.Client"
   },
   "dependencies": {
-    "Microsoft.Extensions.DependencyInjection": "1.0.0-rc2-final",
-    "Newtonsoft.Json": "8.0.4-beta1",
+    "Microsoft.Extensions.DependencyInjection": "1.0.0",
+    "Newtonsoft.Json": "9.0.1",
     "SimpleIdentityServer.Core.Common": "*",
     "SimpleIdentityServer.Core.Jwt": "*"
   },
@@ -30,10 +30,10 @@
         "System.Runtime.Serialization": ""
       }
     },
-    "netstandard1.5": {
+    "netstandard1.6": {
       "dependencies": {
-        "System.Net.Http": "4.0.1-*",
-        "System.Runtime.Serialization.Primitives": "4.1.1-*"
+        "System.Net.Http": "4.1.0",
+        "System.Runtime.Serialization.Primitives": "4.1.1"
       }
     }
   }

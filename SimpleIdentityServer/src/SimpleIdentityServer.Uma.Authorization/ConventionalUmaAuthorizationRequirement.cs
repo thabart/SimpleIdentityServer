@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Authorization
 {
@@ -40,24 +41,24 @@ namespace SimpleIdentityServer.Uma.Authorization
 
         #region Protected methods
 
-        protected override void Handle(AuthorizationContext context, ConventionalUmaAuthorizationRequirement requirement)
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, ConventionalUmaAuthorizationRequirement requirement)
         {
             var resource = context.Resource as Microsoft.AspNetCore.Mvc.Filters.AuthorizationFilterContext;
             if (context.User == null || resource == null)
             {
-                return;
+                return Task.FromResult(0);
             }
 
             var claimsIdentity = context.User.Identity as ClaimsIdentity;
             if (claimsIdentity == null)
             {
-                return;
+                return Task.FromResult(0);
             }
 
             var controllerActionDescriptor = resource.ActionDescriptor as ControllerActionDescriptor;
             if (controllerActionDescriptor == null)
             {
-                return;
+                return Task.FromResult(0);
             }
 
             var projectName = controllerActionDescriptor.ControllerTypeInfo.Assembly.GetName().Name;
@@ -84,6 +85,8 @@ namespace SimpleIdentityServer.Uma.Authorization
             {
                 context.Succeed(requirement);
             }
+
+            return Task.FromResult(0);
         }
 
         private static string GetActionName(MethodInfo methodInfo)

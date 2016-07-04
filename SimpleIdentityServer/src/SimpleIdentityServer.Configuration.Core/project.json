@@ -8,10 +8,10 @@
     "projectUrl": ""
   },
   "dependencies": {
-    "Microsoft.AspNetCore.Mvc.Core": "1.0.0-rc2-final",
-    "Newtonsoft.Json": "8.0.4-beta1",
-    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc2-final",
-    "System.Runtime.Serialization.Primitives": "4.1.1-rc2-24027"
+    "Microsoft.AspNetCore.Mvc.Core": "1.0.0",
+    "Newtonsoft.Json": "9.0.1",
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
+    "System.Runtime.Serialization.Primitives": "4.1.1"
   },
   "tooling": {
     "defaultNamespace": "SimpleIdentityServer.Configuration.Core"
@@ -24,9 +24,9 @@
         "System.Runtime": "4.0.20.0"
       }
     },
-    "netstandard1.5": {
+    "netstandard1.6": {
       "dependencies": {
-        "System.Runtime.Serialization.Json": "4.0.2-*"
+        "System.Runtime.Serialization.Json": "4.0.2"
       }
     }
   }

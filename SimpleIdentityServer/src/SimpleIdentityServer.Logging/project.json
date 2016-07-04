@@ -8,7 +8,7 @@
     "licenseUrl": ""
   },
   "dependencies": {
-    "Serilog": "2.0.0-*"
+    "Serilog": "2.0.0"
   },
   "tooling": {
     "defaultNamespace": "SimpleIdentityServer.Logging"
@@ -18,7 +18,7 @@
     "net46": { },
     "netstandard1.5": {
       "dependencies": {
-        "System.Diagnostics.Tracing": "4.1.0-*"
+        "System.Diagnostics.Tracing": "4.1.0"
       }
     }
   }

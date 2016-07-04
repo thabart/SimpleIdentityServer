@@ -11,12 +11,12 @@
     "defaultNamespace": "SimpleIdentityServer.DataAccess.Fake"
   },
   "dependencies": {
-    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc2-final",
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
     "SimpleIdentityServer.Core.Jwt": "*",
     "SimpleIdentityServer.Core": "*"
   },
   "frameworks": {
     "net46": { },
-    "netstandard1.5": { }
+    "netstandard1.6": { }
   }
 }

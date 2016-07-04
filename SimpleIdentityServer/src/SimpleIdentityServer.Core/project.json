@@ -8,7 +8,7 @@
     "projectUrl": ""
   },
   "dependencies": {
-    "Microsoft.AspNetCore.Mvc": "1.0.0-rc2-final",
+    "Microsoft.AspNetCore.Mvc": "1.0.0",
     "SimpleIdentityServer.Core.Jwt": "*",
     "SimpleIdentityServer.Logging": "*"
   },
@@ -21,7 +21,7 @@
         "System.Net.Http": "4.0.0.0"
       }
     },
-    "netstandard1.5": {
+    "netstandard1.6": {
       "dependencies": {
       }
     }

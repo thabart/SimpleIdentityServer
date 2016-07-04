@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Authorization
 {
@@ -51,17 +52,17 @@ namespace SimpleIdentityServer.Uma.Authorization
 
         #region Protected methods
 
-        protected override void Handle(AuthorizationContext context, ResourceUmaAuthorizationRequirement requirement)
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, ResourceUmaAuthorizationRequirement requirement)
         {
             if (context.User == null)
             {
-                return;
+                return Task.FromResult(0);
             }
 
             var claimsIdentity = context.User.Identity as ClaimsIdentity;
             if (claimsIdentity == null)
             {
-                return;
+                return Task.FromResult(0);
             }
 
             var permissions = claimsIdentity.GetPermissions();
@@ -70,6 +71,8 @@ namespace SimpleIdentityServer.Uma.Authorization
             {
                 context.Succeed(requirement);
             }
+
+            return Task.FromResult(0);
         }
 
         #endregion

@@ -110,6 +110,12 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
                 throw new ArgumentException($"url {_options.UmaConfigurationUrl} is not well formatted");
             }
 
+            Uri resourceUrl = null;
+            if (!Uri.TryCreate(_options.ResourcesUrl, UriKind.Absolute, out resourceUrl))
+            {
+                throw new ArgumentException($"url {_options.ResourcesUrl} is not well formatted");
+            }
+
             // Validate RPT
             var identityServerUmaClientFactory = (IIdentityServerUmaClientFactory)_serviceProvider.GetService(typeof(IIdentityServerUmaClientFactory));
             try

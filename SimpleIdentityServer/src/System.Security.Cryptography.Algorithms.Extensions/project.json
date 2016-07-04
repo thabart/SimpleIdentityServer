@@ -11,17 +11,17 @@
     "defaultNamespace": "System.Security.Cryptography"
   },
   "frameworks": {
-    "netstandard1.5": {
+    "netstandard1.6": {
       "dependencies": {		
-		    "NETStandard.Library": "1.5.0-rc2-24027",
-        "System.Collections": "4.0.11-rc2-24027",
-        "System.Collections.NonGeneric":  "4.0.1-rc2-24027",
-        "System.Diagnostics.Contracts": "4.0.1-rc2-24027",
-        "System.Security.Cryptography.Algorithms": "4.1.0-rc2-24027",
-        "System.Runtime.Extensions": "4.1.0-rc2-24027",
-        "System.Security.Cryptography.Csp": "4.0.0-rc2-24027",
-        "System.Security.Cryptography.Cng": "4.1.0-rc2-24027",
-		    "Newtonsoft.Json": "8.0.4-beta1"
+		"NETStandard.Library": "1.6.0",
+        "System.Collections": "4.0.11",
+        "System.Collections.NonGeneric":  "4.0.1",
+        "System.Diagnostics.Contracts": "4.0.1",
+        "System.Security.Cryptography.Algorithms": "4.2.0",
+        "System.Runtime.Extensions": "4.1.0",
+        "System.Security.Cryptography.Csp": "4.0.0",
+        "System.Security.Cryptography.Cng": "4.2.0",
+		"Newtonsoft.Json": "9.0.1"
       }
     }
   }
