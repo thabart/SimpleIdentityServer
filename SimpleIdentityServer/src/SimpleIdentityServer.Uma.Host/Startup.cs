@@ -74,6 +74,7 @@ namespace SimpleIdentityServer.Uma.Host
             var introspectionUrl = Configuration["AuthorizationServerUrl"] + "/introspect";
             var clientId = Configuration["ClientId"];
             var clientSecret = Configuration["ClientSecret"];
+            var isDataMigrated = Configuration["DATA_MIGRATED"] == null ? false : bool.Parse(Configuration["DATA_MIGRATED"]);
             loggerFactory.AddConsole();
             loggerFactory.AddDebug();
 
@@ -90,11 +91,14 @@ namespace SimpleIdentityServer.Uma.Host
             app.UseAuthenticationWithIntrospection(introspectionOptions);
 
             // Insert seed data
-            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            if (isDataMigrated)
             {
-                var simpleIdServerUmaContext = serviceScope.ServiceProvider.GetService<SimpleIdServerUmaContext>();
-                simpleIdServerUmaContext.Database.EnsureCreated();
-                simpleIdServerUmaContext.EnsureSeedData();
+                using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+                {
+                    var simpleIdServerUmaContext = serviceScope.ServiceProvider.GetService<SimpleIdServerUmaContext>();
+                    simpleIdServerUmaContext.Database.EnsureCreated();
+                    simpleIdServerUmaContext.EnsureSeedData();
+                }
             }
 
             // Enable CORS

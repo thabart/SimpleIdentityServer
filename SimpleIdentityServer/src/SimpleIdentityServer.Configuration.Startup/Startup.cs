@@ -71,15 +71,19 @@ namespace SimpleIdentityServer.Configuration.Startup
             var introspectionUrl = Configuration["AuthorizationServerUrl"] + "/introspect";
             var clientId = Configuration["ClientId"];
             var clientSecret = Configuration["ClientSecret"];
+            var isDataMigrated = Configuration["DATA_MIGRATED"] == null ? false : bool.Parse(Configuration["DATA_MIGRATED"]);
             loggerFactory.AddConsole();
             loggerFactory.AddDebug();
 
             // Ensure data are inserted
-            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            if (isDataMigrated)
             {
-                var simpleIdentityServerContext = serviceScope.ServiceProvider.GetService<SimpleIdentityServerConfigurationContext>();
-                simpleIdentityServerContext.Database.EnsureCreated();
-                simpleIdentityServerContext.EnsureSeedData();
+                using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+                {
+                    var simpleIdentityServerContext = serviceScope.ServiceProvider.GetService<SimpleIdentityServerConfigurationContext>();
+                    simpleIdentityServerContext.Database.EnsureCreated();
+                    simpleIdentityServerContext.EnsureSeedData();
+                }
             }
 
             // Display status code page
