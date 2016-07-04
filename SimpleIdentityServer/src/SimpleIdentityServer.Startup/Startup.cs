@@ -108,6 +108,7 @@ namespace SimpleIdentityServer.Startup
             var clientSecret = Configuration["ClientSecret"];
             var configurationUrl = Configuration["ConfigurationUrl"];
             var isDataMigrated = Configuration["DATA_MIGRATED"] == null ? false : bool.Parse(Configuration["DATA_MIGRATED"]);
+            var authServer = Configuration["AuthServerUrl"];
             app.UseCors("AllowAll");
             app.UseSimpleIdentityServer(new HostingOptions
             {
@@ -117,7 +118,8 @@ namespace SimpleIdentityServer.Startup
             {
                 ClientId = clientId,
                 ClientSecret = clientSecret,
-                ConfigurationUrl = configurationUrl
+                ConfigurationUrl = configurationUrl,
+                AuthorizationServerUrl = authServer
             }, loggerFactory);
         }
 

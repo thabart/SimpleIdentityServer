@@ -92,11 +92,10 @@ namespace SimpleIdentityServer.Host.Handlers
                 throw new ArgumentNullException(nameof(authenticationOptions));
             }
 
-            var url = httpContext.Request.GetAbsoluteUriWithVirtualPath();
             var grantedToken = await _identityServerClientFactory.CreateTokenClient()
                 .UseClientSecretPostAuth(authenticationOptions.ClientId, authenticationOptions.ClientSecret)
                 .UseClientCredentials("display_configuration")
-                .ExecuteAsync(url + "/" + Constants.EndPoints.Token);
+                .ResolveAsync(authenticationOptions.AuthorizationServerUrl);
             var authProviders = await _simpleIdServerConfigurationClientFactory.GetAuthProviderClient()
                 .GetAuthProvidersByResolving(authenticationOptions.ConfigurationUrl, grantedToken.AccessToken);
             foreach(var authProvider in authProviders)
