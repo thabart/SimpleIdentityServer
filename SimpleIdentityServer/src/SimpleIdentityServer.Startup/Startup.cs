@@ -58,7 +58,6 @@ namespace SimpleIdentityServer.Startup
             var isSqlServer = bool.Parse(Configuration["isSqlServer"]);
             var isSqlLite = bool.Parse(Configuration["isSqlLite"]);
             var isPostgre = bool.Parse(Configuration["isPostgre"]);
-            var isDataMigrated = Configuration["DATA_MIGRATED"] == null ? false : bool.Parse(Configuration["DATA_MIGRATED"]);
             // Add the dependencies needed to enable CORS
             services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
                 .AllowAnyMethod()
@@ -108,6 +107,7 @@ namespace SimpleIdentityServer.Startup
             var clientId = Configuration["ClientId"];
             var clientSecret = Configuration["ClientSecret"];
             var configurationUrl = Configuration["ConfigurationUrl"];
+            var isDataMigrated = Configuration["DATA_MIGRATED"] == null ? false : bool.Parse(Configuration["DATA_MIGRATED"]);
             app.UseCors("AllowAll");
             app.UseSimpleIdentityServer(new HostingOptions
             {
