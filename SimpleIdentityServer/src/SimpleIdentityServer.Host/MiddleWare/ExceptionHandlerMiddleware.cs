@@ -69,14 +69,18 @@ namespace SimpleIdentityServer.Host.MiddleWare
                 if (identityServerException == null)
                 {
                     identityServerException = new IdentityServerException(ErrorCodes.UnhandledExceptionCode, exception.Message);
+                    simpleIdentityServerEventSource.Failure(exception);
+                }
+                else
+                {
+                    var code = identityServerException.Code;
+                    var message = identityServerException.Message;
+                    var state = identityServerExceptionWithState == null
+                        ? string.Empty
+                        : identityServerExceptionWithState.State;
+                    simpleIdentityServerEventSource.OpenIdFailure(code, message, state);
                 }
 
-                var code = identityServerException.Code;
-                var message = identityServerException.Message;
-                var state = identityServerExceptionWithState == null
-                    ? string.Empty
-                    : identityServerExceptionWithState.State;
-                simpleIdentityServerEventSource.OpenIdFailure(code, message, state);
                 context.Response.Clear();
                 if (identityServerExceptionWithState != null)
                 {

@@ -14,7 +14,8 @@
 // limitations under the License.
 #endregion
 
-using Serilog;
+using Microsoft.Extensions.Logging;
+using System;
 
 namespace SimpleIdentityServer.Logging
 {
@@ -151,6 +152,8 @@ namespace SimpleIdentityServer.Logging
 
         void Failure(string message);
 
+        void Failure(Exception exception);
+
         void Info(string message);
 
         #region Events linked to the registration process
@@ -170,9 +173,9 @@ namespace SimpleIdentityServer.Logging
                 
         #region Constructor
 
-        public SimpleIdentityServerEventSource(ILogger logger)
+        public SimpleIdentityServerEventSource(ILoggerFactory loggerFactory)
         {
-            _logger = logger;
+            _logger = loggerFactory.CreateLogger<SimpleIdentityServerEventSource>();
         }
 
         #endregion
@@ -185,7 +188,7 @@ namespace SimpleIdentityServer.Logging
             string scope, 
             string individualClaims)
         {
-            _logger.Information($"Start the authorization process for the client : {clientId}, response type : {responseType}, scope : {scope} and claims : {individualClaims}");
+            _logger.LogInformation($"Start the authorization process for the client : {clientId}, response type : {responseType}, scope : {scope} and claims : {individualClaims}");
         }
 
         public void StartAuthorizationCodeFlow(
@@ -193,12 +196,12 @@ namespace SimpleIdentityServer.Logging
             string scope,
             string individualClaims)
         {
-            _logger.Information($"Start the authorization code flow for the client : {clientId}, scope : {scope} and claims : {individualClaims}");
+            _logger.LogInformation($"Start the authorization code flow for the client : {clientId}, scope : {scope} and claims : {individualClaims}");
         }
 
         public void StartProcessingAuthorizationRequest(string jsonAuthorizationRequest)
         {
-            _logger.Information($"Start processing the authorization request : {jsonAuthorizationRequest}");
+            _logger.LogInformation($"Start processing the authorization request : {jsonAuthorizationRequest}");
         }
 
         public void EndProcessingAuthorizationRequest(
@@ -206,14 +209,14 @@ namespace SimpleIdentityServer.Logging
             string actionType,
             string actionName)
         {
-            _logger.Information($"End processing the authorization request, request : {jsonAuthorizationRequest}, action type : {actionType} and action name : {actionName}");
+            _logger.LogInformation($"End processing the authorization request, request : {jsonAuthorizationRequest}, action type : {actionType} and action name : {actionName}");
         }
 
         public void StartGeneratingAuthorizationResponseToClient(
             string clientId,
             string responseTypes)
         {
-            _logger.Information($"Start to generate an authorization response for the client {clientId}, response types : {responseTypes}");
+            _logger.LogInformation($"Start to generate an authorization response for the client {clientId}, response types : {responseTypes}");
         }
 
         public void GrantAuthorizationCodeToClient(
@@ -221,19 +224,19 @@ namespace SimpleIdentityServer.Logging
             string authorizationCode,
             string scopes)
         {
-            _logger.Information($"Grant authorization code to the client {clientId}, authorization code : {authorizationCode} and scopes : {scopes}");
+            _logger.LogInformation($"Grant authorization code to the client {clientId}, authorization code : {authorizationCode} and scopes : {scopes}");
         }
 
         public void EndGeneratingAuthorizationResponseToClient(
             string clientId,
             string parameters)
         {
-            _logger.Information($"Finished to generate the authorization response for the client {clientId}, parameters : {parameters}");
+            _logger.LogInformation($"Finished to generate the authorization response for the client {clientId}, parameters : {parameters}");
         }
 
         public void EndAuthorizationCodeFlow(string clientId, string actionType, string actionName)
         {
-            _logger.Information($"End of the authorization code flow, client : {clientId}, action type : {actionType}, action name : {actionName}");
+            _logger.LogInformation($"End of the authorization code flow, client : {clientId}, action type : {actionType}, action name : {actionName}");
         }
 
         public void EndAuthorization(
@@ -241,7 +244,7 @@ namespace SimpleIdentityServer.Logging
             string actionName,
             string parameters)
         {
-            _logger.Information($"End the authorization process, action type : {actionType}, action name : {actionName} and parameters : {parameters}");
+            _logger.LogInformation($"End the authorization process, action type : {actionType}, action name : {actionName} and parameters : {parameters}");
         }
 
         public void StartImplicitFlow(
@@ -249,7 +252,7 @@ namespace SimpleIdentityServer.Logging
             string scope, 
             string individualClaims)
         {
-            _logger.Information($"Start the implicit flow, client : {clientId}, scope : {scope} and claims : {individualClaims}");
+            _logger.LogInformation($"Start the implicit flow, client : {clientId}, scope : {scope} and claims : {individualClaims}");
         }
 
         public void EndImplicitFlow(
@@ -257,7 +260,7 @@ namespace SimpleIdentityServer.Logging
             string actionType, 
             string actionName)
         {
-            _logger.Information($"End the implicit flow, client : {clientId}, action type : {actionType} and action name : {actionName}");
+            _logger.LogInformation($"End the implicit flow, client : {clientId}, action type : {actionType} and action name : {actionName}");
         }
 
         public void StartHybridFlow(
@@ -265,12 +268,12 @@ namespace SimpleIdentityServer.Logging
             string scope, 
             string individualClaims)
         {
-            _logger.Information($"Start the hybrid flow, client : {clientId}, scope : {scope} and claims : {individualClaims}");
+            _logger.LogInformation($"Start the hybrid flow, client : {clientId}, scope : {scope} and claims : {individualClaims}");
         }
 
         public void EndHybridFlow(string clientId, string actionType, string actionName)
         {
-            _logger.Information($"End the hybrid flow : {clientId}, action type : {actionType} and action name : {actionName}");
+            _logger.LogInformation($"End the hybrid flow : {clientId}, action type : {actionType} and action name : {actionName}");
         }
 
         #endregion
@@ -279,68 +282,68 @@ namespace SimpleIdentityServer.Logging
         
         public void StartGetTokenByResourceOwnerCredentials(string clientId, string userName, string password)
         {
-            _logger.Information($"Start resource owner credentials grant-type, client : {clientId}, user name : {userName}, password : {password}");
+            _logger.LogInformation($"Start resource owner credentials grant-type, client : {clientId}, user name : {userName}, password : {password}");
         }
 
         public void EndGetTokenByResourceOwnerCredentials(string accessToken, string identityToken)
         {
-            _logger.Information($"End of the resource owner credentials grant-type, access token : {accessToken}, identity token : {identityToken}");
+            _logger.LogInformation($"End of the resource owner credentials grant-type, access token : {accessToken}, identity token : {identityToken}");
         }
 
         public void StartGetTokenByAuthorizationCode(
             string clientId, 
             string authorizationCode)
         {
-            _logger.Information($"Start authorization code grant-type, client : {clientId} and authorization code : {authorizationCode}");
+            _logger.LogInformation($"Start authorization code grant-type, client : {clientId} and authorization code : {authorizationCode}");
         }
 
         public void EndGetTokenByAuthorizationCode(string accessToken, string identityToken)
         {
-            _logger.Information($"End of the authorization code grant-type, access token : {accessToken}, identity token : {identityToken}");
+            _logger.LogInformation($"End of the authorization code grant-type, access token : {accessToken}, identity token : {identityToken}");
         }
 
         public void StartToAuthenticateTheClient(string clientId, 
             string authenticationType)
         {
-            _logger.Information($"Start to authenticate the client, client : {clientId}, authentication type : {authenticationType}");
+            _logger.LogInformation($"Start to authenticate the client, client : {clientId}, authentication type : {authenticationType}");
         }
         
         public void FinishToAuthenticateTheClient(string clientId,
             string authenticationType)
         {
-            _logger.Information($"Finish to authenticate the client, client : {clientId}, authentication type : {authenticationType}");
+            _logger.LogInformation($"Finish to authenticate the client, client : {clientId}, authentication type : {authenticationType}");
         }
 
         public void StartGetTokenByRefreshToken(
             string clientId, 
             string refreshToken)
         {
-            _logger.Information($"Start refresh token grant-type, client : {clientId}, refresh token : {refreshToken}");
+            _logger.LogInformation($"Start refresh token grant-type, client : {clientId}, refresh token : {refreshToken}");
         }
         
         public void EndGetTokenByRefreshToken(string accessToken, string identityToken)
         {
-            _logger.Information($"End refresh token grant-type, access token : {accessToken}, identity token : {identityToken}");
+            _logger.LogInformation($"End refresh token grant-type, access token : {accessToken}, identity token : {identityToken}");
         }
 
         public void StartGetTokenByClientCredentials(string scope)
         {
-            _logger.Information($"Start get token by client credentials, scope : {scope}");
+            _logger.LogInformation($"Start get token by client credentials, scope : {scope}");
         }
 
         public void EndGetTokenByClientCredentials(string clientId, string scope)
         {
-            _logger.Information($"End get token by client credentials, client : {clientId}, scope : {scope}");
+            _logger.LogInformation($"End get token by client credentials, client : {clientId}, scope : {scope}");
         }
         
         public void StartRevokeToken(string token)
         {
-            _logger.Information($"Start revoking token, token : {token}");
+            _logger.LogInformation($"Start revoking token, token : {token}");
         }
 
         public void EndRevokeToken(string token)
         {
-            _logger.Information($"End revoking token, token : {token}");
+            _logger.LogInformation($"End revoking token, token : {token}");
         }
 
         #endregion
@@ -351,17 +354,23 @@ namespace SimpleIdentityServer.Logging
             string description, 
             string state)
         {
-            _logger.Error($"Something goes wrong in the open-id process, code : {code}, description : {description}, state : {state}");
+            _logger.LogError($"Something goes wrong in the open-id process, code : {code}, description : {description}, state : {state}");
         }
         
         public void Failure(string message)
         {
-            _logger.Error($"Something goes wrong, code : {message}");
+            _logger.LogError($"Something goes wrong, code : {message}");
+        }
+
+        public void Failure(Exception exception)
+        {
+            var evtId = new EventId(1, "Error");
+            _logger.LogError(evtId, exception, "an error occured");
         }
 
         public void Info(string message)
         {
-            _logger.Information(message);
+            _logger.LogInformation(message);
         }
 
         #endregion
@@ -372,31 +381,31 @@ namespace SimpleIdentityServer.Logging
             string accessToken,
             string scopes)
         {
-            _logger.Information($"Grant access to the client {clientId}, access token : {accessToken}, scopes : {scopes}");
+            _logger.LogInformation($"Grant access to the client {clientId}, access token : {accessToken}, scopes : {scopes}");
         }
 
         public void AuthenticateResourceOwner(string subject)
         {
-            _logger.Information($"The resource owner is authenticated {subject}");
+            _logger.LogInformation($"The resource owner is authenticated {subject}");
         }
         
         public void GiveConsent(string subject,
             string clientId,
             string consentId)
         {
-            _logger.Information($"The consent has been given by the resource owner, subject : {subject}, client id : {clientId}, consent id : {consentId}");
+            _logger.LogInformation($"The consent has been given by the resource owner, subject : {subject}, client id : {clientId}, consent id : {consentId}");
         }
 
         public void StartRegistration(string clientName)
         {
-            _logger.Information($"Start the registration process, client name : {clientName}");
+            _logger.LogInformation($"Start the registration process, client name : {clientName}");
         }
 
         public void EndRegistration(
             string clientId,
             string clientName)
         {
-            _logger.Information($"End the registration process, client id : {clientId}, client name : {clientName}");
+            _logger.LogInformation($"End the registration process, client id : {clientId}, client name : {clientName}");
         }
 
         #endregion

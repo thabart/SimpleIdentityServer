@@ -21,6 +21,9 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Serilog;
+using Serilog.Events;
+using Serilog.Formatting.Json;
+using Serilog.Sinks.RollingFile;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Configuration.Client;
 using SimpleIdentityServer.Core;
@@ -154,13 +157,25 @@ namespace SimpleIdentityServer.Host
                         "SimpleIdentityServer.Host"
                 ));
             });
-            
+
             // Configure SeriLog pipeline
+            Func<LogEvent, bool> serilogFilter = (e) =>
+            {
+                var ctx = e.Properties["SourceContext"];
+                var contextValue = ctx.ToString()
+                    .TrimStart('"')
+                    .TrimEnd('"');
+                return contextValue.StartsWith("SimpleIdentityServer") ||
+                    e.Level == LogEventLevel.Error ||
+                    e.Level == LogEventLevel.Fatal;
+            };
+
             var logger = new LoggerConfiguration()
                 .MinimumLevel.Information()
                 .Enrich.FromLogContext()
                 .WriteTo.ColoredConsole()
-                // .WriteTo.RollingFile("log-{Date}.txt")
+                .WriteTo.RollingFile("log-{Date}.txt")
+                .Filter.ByIncludingOnly(serilogFilter)
                 .CreateLogger();
             Log.Logger = logger;
             services.AddLogging();
