@@ -138,7 +138,7 @@ namespace SimpleIdentityServer.Vse
             }
 
             // 1. Add the nuget packages
-            InstallNugetPackages(_selectedProject, "Microsoft.Extensions.DependencyInjection", "1.0.0-rc2-final")
+            InstallNugetPackages(_selectedProject, "Microsoft.Extensions.DependencyInjection", "1.0.0")
                 .ContinueWith((firstTask) =>
                 {
                     if (!firstTask.Result)
