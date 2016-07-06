@@ -22,6 +22,8 @@ using SimpleIdentityServer.Manager.Core.Errors;
 using SimpleIdentityServer.Manager.Core.Exceptions;
 using SimpleIdentityServer.Manager.Core.Parameters;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SimpleIdentityServer.Manager.Core.Api.Clients.Actions
 {
@@ -75,6 +77,12 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients.Actions
             }
 
             client.ClientId = existedClient.ClientId;
+            client.AllowedScopes = updateClientParameter.AllowedScopes == null 
+                ? new List<Scope>() 
+                : updateClientParameter.AllowedScopes.Select(s => new Scope
+            {
+                Name = s
+            }).ToList();
             return _clientRepository.UpdateClient(client);
         }
 

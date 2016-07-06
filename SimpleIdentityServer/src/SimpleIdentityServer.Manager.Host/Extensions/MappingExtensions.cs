@@ -115,7 +115,8 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
                 TosUri = updateClientRequest.TosUri,
                 UserInfoEncryptedResponseAlg = updateClientRequest.UserInfoEncryptedResponseAlg,
                 UserInfoEncryptedResponseEnc = updateClientRequest.UserInfoEncryptedResponseEnc,
-                UserInfoSignedResponseAlg = updateClientRequest.UserInfoSignedResponseAlg
+                UserInfoSignedResponseAlg = updateClientRequest.UserInfoSignedResponseAlg,
+                AllowedScopes = updateClientRequest.AllowedScopes == null ? new List<string>() : updateClientRequest.AllowedScopes
             };
         }
 

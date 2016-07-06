@@ -119,5 +119,8 @@ namespace SimpleIdentityServer.Manager.Host.DTOs.Requests
 
         [DataMember(Name = Constants.ClientNames.RequestUris)]
         public List<string> RequestUris { get; set; }
+
+        [DataMember(Name = Constants.ClientNames.AllowedScopes)]
+        public List<string> AllowedScopes { get; set; }
     }
 }

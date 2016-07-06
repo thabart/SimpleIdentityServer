@@ -199,6 +199,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                         ? string.Empty
                         : ConcatListOfIntegers(client.ResponseTypes.Select(r => (int)r).ToList());
                     var connectedClient = _context.Clients
+                        .Include(c => c.ClientScopes)
                         .FirstOrDefault(c => c.ClientId == client.ClientId);
                     connectedClient.ClientName = client.ClientName;
                     connectedClient.ClientUri = client.ClientUri;
@@ -210,7 +211,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                     connectedClient.IdTokenEncryptedResponseEnc = client.IdTokenEncryptedResponseEnc;
                     connectedClient.IdTokenSignedResponseAlg = client.IdTokenSignedResponseAlg;
                     connectedClient.InitiateLoginUri = client.InitiateLoginUri;
-                    // connectedClient.JsonWebKeys
                     connectedClient.JwksUri = client.JwksUri;
                     connectedClient.LogoUri = client.LogoUri;
                     connectedClient.PolicyUri = client.PolicyUri;
@@ -223,12 +223,37 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                     connectedClient.ResponseTypes = responseTypes;
                     connectedClient.SectorIdentifierUri = client.SectorIdentifierUri;
                     connectedClient.SubjectType = client.SubjectType;
-                    connectedClient.TokenEndPointAuthMethod = (Models.TokenEndPointAuthenticationMethods)client.TokenEndPointAuthMethod;
+                    connectedClient.TokenEndPointAuthMethod = (TokenEndPointAuthenticationMethods)client.TokenEndPointAuthMethod;
                     connectedClient.TokenEndPointAuthSigningAlg = client.TokenEndPointAuthSigningAlg;
                     connectedClient.TosUri = client.TosUri;
                     connectedClient.UserInfoEncryptedResponseAlg = client.UserInfoEncryptedResponseAlg;
                     connectedClient.UserInfoEncryptedResponseEnc = client.UserInfoEncryptedResponseEnc;
                     connectedClient.UserInfoSignedResponseAlg = client.UserInfoSignedResponseAlg;
+                    var scopesNotToBeDeleted = new List<string>();
+                    if (client.AllowedScopes != null)
+                    {
+                        foreach(var scope in client.AllowedScopes)
+                        {
+                            var record = connectedClient.ClientScopes.FirstOrDefault(c => c.ScopeName == scope.Name);
+                            if (record == null)
+                            {
+                                record = new ClientScope
+                                {
+                                    ClientId = connectedClient.ClientId,
+                                    ScopeName = scope.Name
+                                };
+                            }
+
+                            scopesNotToBeDeleted.Add(record.ScopeName);
+                        }
+                    }
+
+                    var scopeNames = connectedClient.ClientScopes.Select(o => o.ScopeName).ToList();
+                    foreach (var scopeName in scopeNames.Where(id => !scopesNotToBeDeleted.Contains(id)))
+                    {
+                        connectedClient.ClientScopes.Remove(connectedClient.ClientScopes.First(s => s.ScopeName == scopeName));
+                    }
+
                     _context.SaveChanges();
                     translation.Commit();
                 }
