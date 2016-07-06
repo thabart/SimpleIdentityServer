@@ -39,5 +39,8 @@ namespace SimpleIdentityServer.Uma.Host.DTOs.Requests
 
         [DataMember(Name = Constants.PolicyNames.Script)]
         public string Script { get; set; }
+
+        [DataMember(Name = Constants.PolicyNames.ConditionsLinked)]
+        public bool ConditionsLinked { get; set; }
     }
 }

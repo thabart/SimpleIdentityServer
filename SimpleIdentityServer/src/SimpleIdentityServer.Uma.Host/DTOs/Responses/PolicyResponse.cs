@@ -43,5 +43,8 @@ namespace SimpleIdentityServer.Uma.Host.DTOs.Responses
 
         [DataMember(Name = Constants.PolicyNames.ResourceSetIds)]
         public List<string> ResourceSetIds { get; set; }
+
+        [DataMember(Name = Constants.PolicyNames.ConditionsLinked)]
+        public bool ConditionsLinked { get; set; }
     }
 }

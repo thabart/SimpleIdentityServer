@@ -114,7 +114,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                     "read",
                     "create",
                     "update"
-                }
+                },
+                AreConditionsLinked = true
             };
             
             // ACT
@@ -163,7 +164,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                     {
                         Type = "email"
                     }
-                }
+                },
+                AreConditionsLinked = true
             };
             var claimTokenParameters = new List<ClaimTokenParameter>
             {
@@ -235,7 +237,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                     {
                         Type = "email"
                     }
-                }
+                },
+                AreConditionsLinked = true
             };
             var claimTokenParameters = new List<ClaimTokenParameter>
             {
@@ -298,7 +301,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                         Type = "role",
                         Value = "role2"
                     }
-                }
+                },
+                AreConditionsLinked = true
             };
             var claimTokenParameters = new List<ClaimTokenParameter>
             {
@@ -366,7 +370,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                         Type = "email",
                         Value = "email"
                     }
-                }
+                },
+                AreConditionsLinked = true
             };
             var claimTokenParameters = new List<ClaimTokenParameter>
             {
@@ -383,6 +388,165 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                 {
                     {
                         "name", "bad_name"
+                    }
+                }));
+
+            // ACT
+            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameters);
+
+            // ASSERT
+            Assert.True(result.Type == AuthorizationPolicyResultEnum.NotAuthorized);
+        }
+
+        [Fact]
+        public async Task When_Client_And_Claims_Are_Null_Then_NotAuthorized_Is_Returned()
+        {
+            // ARRANGE
+            const string configurationUrl = "http://localhost/configuration";
+            InitializeFakeObjects();
+            var ticket = new Ticket
+            {
+                ClientId = "client_id",
+                Scopes = new List<string>
+                {
+                    "read",
+                    "create",
+                    "update"
+                }
+            };
+
+            var authorizationPolicy = new Policy
+            {
+                Scopes = new List<string>
+                {
+                    "read",
+                    "create",
+                    "update"
+                },
+                AreConditionsLinked = true
+            };
+            var claimTokenParameters = new List<ClaimTokenParameter>
+            {
+                new ClaimTokenParameter
+                {
+                    Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
+                    Token = "token"
+                }
+            };
+            _parametersProviderStub.Setup(p => p.GetOpenIdConfigurationUrl())
+                .Returns(configurationUrl);
+            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>()))
+                .Returns(Task.FromResult(new JwsPayload
+                {
+                    {
+                        "name", "bad_name"
+                    }
+                }));
+
+            // ACT
+            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameters);
+
+            // ASSERT
+            Assert.True(result.Type == AuthorizationPolicyResultEnum.NotAuthorized);
+        }
+
+        [Fact]
+        public async Task When_Conditions_Are_Not_Linked_And_Client_Is_Not_Allowed_Then_NotAuthorized_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var ticket = new Ticket
+            {
+                ClientId = "invalid_client_id",
+                Scopes = new List<string>
+                {
+                    "read",
+                    "create",
+                    "update"
+                }
+            };
+
+            var authorizationPolicy = new Policy
+            {
+                ClientIdsAllowed = new List<string>
+                {
+                    "client_id"
+                },
+                Scopes = new List<string>
+                {
+                    "read",
+                    "create",
+                    "update"
+                },
+                AreConditionsLinked = false
+            };
+
+            // ACT
+            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, null);
+
+            // ASSERT
+            Assert.True(result.Type == AuthorizationPolicyResultEnum.NotAuthorized);
+        }
+
+        [Fact]
+        public async Task When_Conditions_Are_Not_Linked_And_Role_Is_Not_Valid_Then_NotAuthorized_Is_Returned()
+        {
+            // ARRANGE
+            const string configurationUrl = "http://localhost/configuration";
+            InitializeFakeObjects();
+            var ticket = new Ticket
+            {
+                ClientId = "client_id",
+                Scopes = new List<string>
+                {
+                    "read",
+                    "create",
+                    "update"
+                }
+            };
+
+            var authorizationPolicy = new Policy
+            {
+                ClientIdsAllowed = new List<string>
+                {
+                    "not_allowed"
+                },
+                Scopes = new List<string>
+                {
+                    "read",
+                    "create",
+                    "update"
+                },
+                Claims = new List<Claim>
+                {
+                    new Claim
+                    {
+                        Type = "role",
+                        Value = "role1"
+                    },
+                    new Claim
+                    {
+                        Type = "role",
+                        Value = "role2"
+                    }
+                },
+                AreConditionsLinked = false
+            };
+            var claimTokenParameters = new List<ClaimTokenParameter>
+            {
+                new ClaimTokenParameter
+                {
+                    Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
+                    Token = "token"
+                }
+            };
+            _parametersProviderStub.Setup(p => p.GetOpenIdConfigurationUrl())
+                .Returns(configurationUrl);
+            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>()))
+                .Returns(Task.FromResult(new JwsPayload
+                {
+                    {
+                        "role", "role1,role3"
                     }
                 }));
 
@@ -422,7 +586,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                     "read",
                     "create",
                     "update"
-                }
+                },
+                AreConditionsLinked = true
             };
 
             // ACT
@@ -457,7 +622,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                 Scopes = new List<string>
                 {
                     "create"
-                }
+                },
+                AreConditionsLinked = true
             };
 
             // ACT

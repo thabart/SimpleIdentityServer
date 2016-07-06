@@ -40,5 +40,7 @@ namespace SimpleIdentityServer.Uma.Core.Models
         public List<string> ResourceSetIds { get; set; }
 
         public List<Claim> Claims { get; set; }
+
+        public bool AreConditionsLinked { get; set; }
     }
 }

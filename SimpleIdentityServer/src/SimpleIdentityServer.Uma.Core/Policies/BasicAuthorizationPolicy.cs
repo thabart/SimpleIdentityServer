@@ -83,10 +83,27 @@ namespace SimpleIdentityServer.Uma.Core.Policies
                 };
             }
 
-            // 2. Check the client is authorized
-            if (authorizationPolicy.ClientIdsAllowed == null ||
-                !authorizationPolicy.ClientIdsAllowed.Any() ||
-                !authorizationPolicy.ClientIdsAllowed.Contains(validTicket.ClientId))
+            // 2. Check clients are correct
+            var clientAuthorizationResult = CheckClients(authorizationPolicy, validTicket);
+            if (clientAuthorizationResult != null &&
+                clientAuthorizationResult.Type != AuthorizationPolicyResultEnum.Authorized 
+                && authorizationPolicy.AreConditionsLinked)
+            {
+                return clientAuthorizationResult;
+            }
+
+            // 3. Check claims are correct
+            var claimAuthorizationResult = await CheckClaims(authorizationPolicy, claimTokenParameters);
+            if (claimAuthorizationResult != null
+                && claimAuthorizationResult.Type != AuthorizationPolicyResultEnum.Authorized
+                && authorizationPolicy.AreConditionsLinked)
+            {
+                return claimAuthorizationResult;
+            }
+
+            // 4. If both result are null then not authorized
+            if (clientAuthorizationResult == null &&
+                claimAuthorizationResult == null)
             {
                 return new AuthorizationPolicyResult
                 {
@@ -94,62 +111,21 @@ namespace SimpleIdentityServer.Uma.Core.Policies
                 };
             }
 
-            // 3. Check the resource owner is authorized
-            if (authorizationPolicy.Claims != null &&
-                authorizationPolicy.Claims.Any())
+            // 5. Check at least one condition is correct
+            if (!(clientAuthorizationResult != null && clientAuthorizationResult.Type == AuthorizationPolicyResultEnum.Authorized ||
+                claimAuthorizationResult != null && claimAuthorizationResult.Type == AuthorizationPolicyResultEnum.Authorized ||
+                authorizationPolicy.AreConditionsLinked))
             {
-                if (claimTokenParameters == null ||
-                    !claimTokenParameters.Any(c => c.Format == IdTokenType))
+                if (clientAuthorizationResult.Type != AuthorizationPolicyResultEnum.Authorized)
                 {
-                    return GetNeedInfoResult(authorizationPolicy.Claims);
+                    return clientAuthorizationResult;
                 }
 
-                var idToken = claimTokenParameters.First(c => c.Format == IdTokenType);
-                var jwsPayload = await _jwtTokenParser.UnSign(idToken.Token);
-                if (jwsPayload == null)
-                {
-                    return new AuthorizationPolicyResult
-                    {
-                        Type = AuthorizationPolicyResultEnum.NotAuthorized
-                    };
-                }
-
-                foreach(var claim in authorizationPolicy.Claims)
-                {
-                    var payload = jwsPayload
-                        .FirstOrDefault(j => j.Key == claim.Type);
-                    if (payload.Equals(default(KeyValuePair<string, object>)))
-                    {
-                        return new AuthorizationPolicyResult
-                        {
-                            Type = AuthorizationPolicyResultEnum.NotAuthorized
-                        };
-                    }
-
-                    if (claim.Type == SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Role)
-                    {
-                        if (!payload.Value.ToString().Split(',').Any(v => claim.Value == v))
-                        {
-                            return new AuthorizationPolicyResult
-                            {
-                                Type = AuthorizationPolicyResultEnum.NotAuthorized
-                            };
-                        }
-                    }
-                    else
-                    {
-                        if (payload.Value.ToString() != claim.Value)
-                        {
-                            return new AuthorizationPolicyResult
-                            {
-                                Type = AuthorizationPolicyResultEnum.NotAuthorized
-                            };
-                        }
-                    }
-                }
+                return claimAuthorizationResult;
             }
 
-            // 4. Check the resource owner consent is needed
+
+            // 6. Check the resource owner consent is needed
             if (authorizationPolicy.IsResourceOwnerConsentNeeded && 
                 !validTicket.IsAuthorizedByRo)
             {
@@ -201,6 +177,97 @@ namespace SimpleIdentityServer.Uma.Core.Policies
                         requestingPartyClaims
                     }
                 }
+            };
+        }
+
+        private async Task<AuthorizationPolicyResult> CheckClaims(
+            Policy authorizationPolicy,
+            List<ClaimTokenParameter> claimTokenParameters)
+        {
+            if (authorizationPolicy.Claims == null ||
+                !authorizationPolicy.Claims.Any())
+            {
+                return null;
+            }
+
+
+            if (claimTokenParameters == null ||
+                !claimTokenParameters.Any(c => c.Format == IdTokenType))
+            {
+                return GetNeedInfoResult(authorizationPolicy.Claims);
+            }
+
+            var idToken = claimTokenParameters.First(c => c.Format == IdTokenType);
+            var jwsPayload = await _jwtTokenParser.UnSign(idToken.Token);
+            if (jwsPayload == null)
+            {
+                return new AuthorizationPolicyResult
+                {
+                    Type = AuthorizationPolicyResultEnum.NotAuthorized
+                };
+            }
+
+            foreach (var claim in authorizationPolicy.Claims)
+            {
+                var payload = jwsPayload
+                    .FirstOrDefault(j => j.Key == claim.Type);
+                if (payload.Equals(default(KeyValuePair<string, object>)))
+                {
+                    return new AuthorizationPolicyResult
+                    {
+                        Type = AuthorizationPolicyResultEnum.NotAuthorized
+                    };
+                }
+
+                if (claim.Type == SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Role)
+                {
+                    if (!payload.Value.ToString().Split(',').Any(v => claim.Value == v))
+                    {
+                        return new AuthorizationPolicyResult
+                        {
+                            Type = AuthorizationPolicyResultEnum.NotAuthorized
+                        };
+                    }
+                }
+                else
+                {
+                    if (payload.Value.ToString() != claim.Value)
+                    {
+                        return new AuthorizationPolicyResult
+                        {
+                            Type = AuthorizationPolicyResultEnum.NotAuthorized
+                        };
+                    }
+                }
+            }
+
+            return new AuthorizationPolicyResult
+            {
+                Type = AuthorizationPolicyResultEnum.Authorized
+            };
+        }
+
+        private AuthorizationPolicyResult CheckClients(
+            Policy authorizationPolicy,
+            Ticket validTicket)
+        {
+            if (authorizationPolicy.ClientIdsAllowed == null ||
+                !authorizationPolicy.ClientIdsAllowed.Any())
+            {
+                return null;
+            }
+
+            if (!authorizationPolicy.ClientIdsAllowed.Contains(validTicket.ClientId))
+            {
+                return new AuthorizationPolicyResult
+                {
+                    Type = AuthorizationPolicyResultEnum.NotAuthorized
+                };
+            }
+
+            return new AuthorizationPolicyResult
+            {
+                Type = AuthorizationPolicyResultEnum.Authorized
             };
         }
 

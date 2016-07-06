@@ -100,6 +100,7 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
             record.Scopes = model.Scopes;
             record.Script = model.Script;
             record.Claims = model.Claims;
+            record.AreConditionsLinked = policy.AreConditionsLinked;
             _simpleIdServerUmaContext.SaveChanges();
             return true;
         }

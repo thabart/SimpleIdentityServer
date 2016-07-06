@@ -38,5 +38,7 @@ namespace SimpleIdentityServer.Uma.Core.Parameters
         public string Script { get; set; }
 
         public List<string> ResourceSetIds { get; set; }
+
+        public bool AreConditionsLinked { get; set; }
     }
 }

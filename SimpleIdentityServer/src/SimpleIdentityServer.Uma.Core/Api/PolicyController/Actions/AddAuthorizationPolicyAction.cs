@@ -112,7 +112,8 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
                 ClientIdsAllowed = addPolicyParameter.ClientIdsAllowed,
                 Scopes = addPolicyParameter.Scopes,
                 IsResourceOwnerConsentNeeded = addPolicyParameter.IsResourceOwnerConsentNeeded,
-                Claims = claims
+                Claims = claims,
+                AreConditionsLinked = addPolicyParameter.AreConditionsLinked
             };
             _repositoryExceptionHelper.HandleException(
                 ErrorDescriptions.ThePolicyCannotBeInserted,

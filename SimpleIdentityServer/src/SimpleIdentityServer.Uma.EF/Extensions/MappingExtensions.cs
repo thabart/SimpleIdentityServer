@@ -98,7 +98,8 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
                 ClientIdsAllowed = GetList(policy.ClientIdsAllowed),
                 Scopes = GetList(policy.Scopes),
                 ResourceSetIds = resourceSetIds,
-                Claims = claims
+                Claims = claims,
+                AreConditionsLinked = policy.AreConditionsLinked
             };
         }
 
@@ -171,7 +172,8 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
                 IsResourceOwnerConsentNeeded = policy.IsResourceOwnerConsentNeeded,
                 ClientIdsAllowed = GetConcatenatedList(policy.ClientIdsAllowed),
                 Scopes = GetConcatenatedList(policy.Scopes),
-                Claims = serializedClaims
+                Claims = serializedClaims,
+                AreConditionsLinked = policy.AreConditionsLinked
             };
         }
 

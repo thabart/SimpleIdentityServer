@@ -13,12 +13,14 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
             modelBuilder
-                .HasAnnotation("ProductVersion", "1.0.0-rc2-20901")
+                .HasAnnotation("ProductVersion", "1.0.0-rtm-21431")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("SimpleIdentityServer.Uma.EF.Models.Policy", b =>
                 {
                     b.Property<string>("Id");
+
+                    b.Property<bool>("AreConditionsLinked");
 
                     b.Property<string>("Claims");
 
@@ -115,26 +117,26 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
 
             modelBuilder.Entity("SimpleIdentityServer.Uma.EF.Models.ResourceSet", b =>
                 {
-                    b.HasOne("SimpleIdentityServer.Uma.EF.Models.Policy")
-                        .WithMany()
+                    b.HasOne("SimpleIdentityServer.Uma.EF.Models.Policy", "Policy")
+                        .WithMany("ResourceSets")
                         .HasForeignKey("PolicyId");
                 });
 
             modelBuilder.Entity("SimpleIdentityServer.Uma.EF.Models.Rpt", b =>
                 {
-                    b.HasOne("SimpleIdentityServer.Uma.EF.Models.ResourceSet")
-                        .WithMany()
+                    b.HasOne("SimpleIdentityServer.Uma.EF.Models.ResourceSet", "ResourceSet")
+                        .WithMany("Rpts")
                         .HasForeignKey("ResourceSetId");
 
-                    b.HasOne("SimpleIdentityServer.Uma.EF.Models.Ticket")
-                        .WithMany()
+                    b.HasOne("SimpleIdentityServer.Uma.EF.Models.Ticket", "Ticket")
+                        .WithMany("Rpts")
                         .HasForeignKey("TicketId");
                 });
 
             modelBuilder.Entity("SimpleIdentityServer.Uma.EF.Models.Ticket", b =>
                 {
-                    b.HasOne("SimpleIdentityServer.Uma.EF.Models.ResourceSet")
-                        .WithMany()
+                    b.HasOne("SimpleIdentityServer.Uma.EF.Models.ResourceSet", "ResourceSet")
+                        .WithMany("Tickets")
                         .HasForeignKey("ResourceSetId");
                 });
         }

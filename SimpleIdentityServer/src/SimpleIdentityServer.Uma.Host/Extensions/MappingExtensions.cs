@@ -120,7 +120,8 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
                 ResourceSetIds = postPolicy.ResourceSetIds,
                 Scopes = postPolicy.Scopes,
                 Script = postPolicy.Script,
-                Claims = claims
+                Claims = claims,
+                AreConditionsLinked = postPolicy.ConditionsLinked
             };
         }
 
@@ -144,7 +145,8 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
                 PolicyId = putPolicy.PolicyId,
                 ClientIdsAllowed = putPolicy.ClientIdsAllowed,
                 IsResourceOwnerConsentNeeded = putPolicy.IsResourceOwnerConsentNeeded,
-                Claims = claims
+                Claims = claims,
+                AreConditionsLinked = putPolicy.ConditionsLinked
             };
         }
 
@@ -186,7 +188,8 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
                 ResourceSetIds = policy.ResourceSetIds,
                 Scopes = policy.Scopes,
                 Claims = claims,
-                Script = policy.Script
+                Script = policy.Script,
+                ConditionsLinked = policy.AreConditionsLinked
             };
         }
 

@@ -66,6 +66,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
             policy.Scopes = updatePolicyParameter.Scopes;
             policy.IsResourceOwnerConsentNeeded = updatePolicyParameter.IsResourceOwnerConsentNeeded;
             policy.Script = updatePolicyParameter.Script;
+            policy.AreConditionsLinked = updatePolicyParameter.AreConditionsLinked;
             if (updatePolicyParameter.Claims != null)
             {
                 policy.Claims = updatePolicyParameter.Claims.Select(c => new Models.Claim

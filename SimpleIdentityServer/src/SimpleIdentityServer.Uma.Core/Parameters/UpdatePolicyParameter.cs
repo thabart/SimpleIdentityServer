@@ -31,5 +31,7 @@ namespace SimpleIdentityServer.Uma.Core.Parameters
         public string Script { get; set; }
 
         public List<AddClaimParameter> Claims { get; set; }
+
+        public bool AreConditionsLinked { get; set; }
     }
 }
