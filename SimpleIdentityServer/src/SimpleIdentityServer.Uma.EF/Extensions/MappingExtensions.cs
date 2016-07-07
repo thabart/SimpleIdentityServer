@@ -77,29 +77,36 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
 
         public static Domain.Policy ToDomain(this Model.Policy policy)
         {
-            var resourceSetIds = new List<string>();
-            if (policy.ResourceSets != null &&
-                policy.ResourceSets.Any())
+            var rules = new List<Domain.PolicyRule>();
+            if (policy.Rules != null)
             {
-                resourceSetIds = policy.ResourceSets.Select(p => p.Id).ToList();
-            }
-
-            var claims = new List<Domain.Claim>();
-            if (!string.IsNullOrWhiteSpace(policy.Claims))
-            {
-                claims = JsonConvert.DeserializeObject<List<Domain.Claim>>(policy.Claims);
+                rules = policy.Rules.Select(r => r.ToDomain()).ToList();
             }
 
             return new Domain.Policy
             {
                 Id = policy.Id,
-                Script = policy.Script,
-                IsResourceOwnerConsentNeeded = policy.IsResourceOwnerConsentNeeded,
-                ClientIdsAllowed = GetList(policy.ClientIdsAllowed),
-                Scopes = GetList(policy.Scopes),
-                ResourceSetIds = resourceSetIds,
-                Claims = claims,
-                AreConditionsLinked = policy.AreConditionsLinked
+                Rules = rules
+            };
+        }
+
+        public static Domain.PolicyRule ToDomain(this Model.PolicyRule policyRule)
+        {
+            var claims = new List<Domain.Claim>();
+            if (policyRule.Claims != null &&
+                policyRule.Claims.Any())
+            {
+                claims = JsonConvert.DeserializeObject<List<Domain.Claim>>(policyRule.Claims);
+            }
+
+            return new Domain.PolicyRule
+            {
+                Id = policyRule.Id,
+                ClientIdsAllowed = GetList(policyRule.ClientIdsAllowed),
+                Scopes = GetList(policyRule.Scopes),
+                IsResourceOwnerConsentNeeded = policyRule.IsResourceOwnerConsentNeeded,
+                Script = policyRule.Script,
+                Claims = claims
             };
         }
 
@@ -158,22 +165,36 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
 
         public static Model.Policy ToModel(this Domain.Policy policy)
         {
-            var serializedClaims = string.Empty;
-            if (policy.Claims != null &&
-                policy.Claims.Any())
+            var rules = new List<Model.PolicyRule>();
+            if (policy.Rules != null)
             {
-                serializedClaims = JsonConvert.SerializeObject(policy.Claims);
+                rules = policy.Rules.Select(r => r.ToModel()).ToList();
             }
 
             return new Model.Policy
             {
                 Id = policy.Id,
-                Script = policy.Script,
-                IsResourceOwnerConsentNeeded = policy.IsResourceOwnerConsentNeeded,
-                ClientIdsAllowed = GetConcatenatedList(policy.ClientIdsAllowed),
-                Scopes = GetConcatenatedList(policy.Scopes),
-                Claims = serializedClaims,
-                AreConditionsLinked = policy.AreConditionsLinked
+                Rules = rules
+            };
+        }
+
+        public static Model.PolicyRule ToModel(this Domain.PolicyRule policyRule)
+        {
+            var claims = string.Empty;
+            if (policyRule.Claims != null && 
+                policyRule.Claims.Any())
+            {
+                claims = JsonConvert.SerializeObject(policyRule.Claims);
+            }
+
+            return new Model.PolicyRule
+            {
+                Id = policyRule.Id,
+                ClientIdsAllowed = GetConcatenatedList(policyRule.ClientIdsAllowed),
+                Scopes = GetConcatenatedList(policyRule.Scopes),
+                IsResourceOwnerConsentNeeded = policyRule.IsResourceOwnerConsentNeeded,
+                Script = policyRule.Script,
+                Claims = claims
             };
         }
 
@@ -181,7 +202,7 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
 
         #region Private methods
 
-        private static List<string> GetList(string concatenatedList)
+        public static List<string> GetList(string concatenatedList)
         {
 
             var scopes = new List<string>();
@@ -193,7 +214,7 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
             return scopes;
         }
 
-        private static string GetConcatenatedList(List<string> list)
+        public static string GetConcatenatedList(List<string> list)
         {
             var concatenatedList = string.Empty;
             if (list != null &&

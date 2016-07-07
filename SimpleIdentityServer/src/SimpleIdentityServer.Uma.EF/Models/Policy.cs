@@ -32,8 +32,8 @@ namespace SimpleIdentityServer.Uma.EF.Models
 
         public string Claims { get; set; }
 
-        public bool AreConditionsLinked { get; set; }
-
         public virtual ICollection<ResourceSet> ResourceSets { get; set; }
+
+        public virtual ICollection<PolicyRule> Rules { get; set; }
     }
 }

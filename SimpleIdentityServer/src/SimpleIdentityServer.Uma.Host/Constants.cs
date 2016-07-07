@@ -108,19 +108,24 @@ namespace SimpleIdentityServer.Uma.Host
         {
             public const string Id = "id";
 
-            public const string ClientIdsAllowed = "allowed_clients";
+            public const string ResourceSetIds = "resource_set_ids";
 
-            public const string Scopes = "scopes";
+            public const string Rules = "rules";
+        }
+
+        public static class PolicyRuleNames
+        {
+            public const string Id = "id";
+
+            public const string ClientIdsAllowed = "allowed_clients";
 
             public const string IsResourceOwnerConsentNeeded = "consent_needed";
 
+            public const string Scopes = "scopes";
+
             public const string Script = "script";
 
-            public const string ResourceSetIds = "resource_set_ids";
-
             public const string Claims = "claims";
-
-            public const string ConditionsLinked = "conditions_linked";
         }
 
         public static class AddPolicyResponseNames

@@ -14,11 +14,14 @@
 // limitations under the License.
 #endregion
 
-using System;
+using SimpleIdentityServer.Uma.Core.Errors;
+using SimpleIdentityServer.Uma.Core.Exceptions;
+using SimpleIdentityServer.Uma.Core.Helpers;
+using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Repositories;
-using SimpleIdentityServer.Uma.Core.Helpers;
-using SimpleIdentityServer.Uma.Core.Errors;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
@@ -54,6 +57,13 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
                 throw new ArgumentNullException(nameof(updatePolicyParameter));
             }
 
+            if (updatePolicyParameter.Rules == null ||
+                !updatePolicyParameter.Rules.Any())
+            {
+                throw new BaseUmaException(ErrorCodes.InvalidRequestCode,
+                        string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddPolicyParameterNames.Rules));
+            }
+
             var policy = _repositoryExceptionHelper.HandleException(
                 string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, updatePolicyParameter.PolicyId),
                 () => _policyRepository.GetPolicy(updatePolicyParameter.PolicyId));
@@ -62,18 +72,28 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
                 return false;
             }
 
-            policy.ClientIdsAllowed = updatePolicyParameter.ClientIdsAllowed;
-            policy.Scopes = updatePolicyParameter.Scopes;
-            policy.IsResourceOwnerConsentNeeded = updatePolicyParameter.IsResourceOwnerConsentNeeded;
-            policy.Script = updatePolicyParameter.Script;
-            policy.AreConditionsLinked = updatePolicyParameter.AreConditionsLinked;
-            if (updatePolicyParameter.Claims != null)
+            policy.Rules = new List<PolicyRule>();
+            foreach (var ruleParameter in updatePolicyParameter.Rules)
             {
-                policy.Claims = updatePolicyParameter.Claims.Select(c => new Models.Claim
+                var claims = new List<Claim>();
+                if (ruleParameter.Claims != null)
                 {
-                    Type = c.Type,
-                    Value = c.Value
-                }).ToList();
+                    claims = ruleParameter.Claims.Select(c => new Claim
+                    {
+                        Type = c.Type,
+                        Value = c.Value
+                    }).ToList();
+                }
+
+                policy.Rules.Add(new PolicyRule
+                {
+                    Id = ruleParameter.Id,
+                    ClientIdsAllowed = ruleParameter.ClientIdsAllowed,
+                    IsResourceOwnerConsentNeeded = ruleParameter.IsResourceOwnerConsentNeeded,
+                    Scopes = ruleParameter.Scopes,
+                    Script = ruleParameter.Script,
+                    Claims = claims
+                });
             }
 
             return _repositoryExceptionHelper.HandleException(

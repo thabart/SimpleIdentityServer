@@ -14,29 +14,24 @@
 // limitations under the License.
 #endregion
 
-using System.Collections.Generic;
-
-namespace SimpleIdentityServer.Uma.Core.Parameters
+namespace SimpleIdentityServer.Uma.EF.Models
 {
-    public class UpdatePolicyRuleParameter
+    public class PolicyRule
     {
         public string Id { get; set; }
 
-        public List<string> ClientIdsAllowed { get; set; }
+        public string ClientIdsAllowed { get; set; }
 
-        public List<string> Scopes { get; set; }
-
-        public string Script { get; set; }
+        public string Scopes { get; set; }
 
         public bool IsResourceOwnerConsentNeeded { get; set; }
 
-        public List<AddClaimParameter> Claims { get; set; }
-    }
+        public string Script { get; set; }
 
-    public class UpdatePolicyParameter
-    {
+        public string Claims { get; set; }
+
         public string PolicyId { get; set; }
 
-        public List<UpdatePolicyRuleParameter> Rules { get; set; }
+        public virtual Policy Policy { get; set; }
     }
 }

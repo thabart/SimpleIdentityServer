@@ -69,6 +69,13 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
                         string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddPolicyParameterNames.ResourceSetIds));
             }
 
+            if (addPolicyParameter.Rules == null ||
+                !addPolicyParameter.Rules.Any())
+            {
+                throw new BaseUmaException(ErrorCodes.InvalidRequestCode,
+                        string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddPolicyParameterNames.Rules));
+            }
+
             var resourceSets = new List<ResourceSet>();
             foreach (var resourceSetId in addPolicyParameter.ResourceSetIds)
             {
@@ -81,8 +88,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
                         string.Format(ErrorDescriptions.TheResourceSetDoesntExist, resourceSetId));
                 }
 
-                if (addPolicyParameter.Scopes != null &&
-                    !addPolicyParameter.Scopes.All(s => resourceSet.Scopes.Contains(s)))
+                if (addPolicyParameter.Rules.Any(r => r.Scopes != null && !r.Scopes.All(s => resourceSet.Scopes.Contains(s))))
                 {
                     throw new BaseUmaException(ErrorCodes.InvalidScope,
                         ErrorDescriptions.OneOrMoreScopesDontBelongToAResourceSet);
@@ -91,29 +97,35 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
                 resourceSets.Add(resourceSet);
             }
 
-            var claims = new List<Claim>();
-            if (addPolicyParameter.Claims != null)
+            var rules = new List<PolicyRule>();
+            foreach(var ruleParameter in addPolicyParameter.Rules)
             {
-                foreach(var claimParameter in addPolicyParameter.Claims)
+                var claims = new List<Claim>();
+                if (ruleParameter.Claims != null)
                 {
-                    claims.Add(new Claim
+                    claims = ruleParameter.Claims.Select(c => new Claim
                     {
-                        Type = claimParameter.Type,
-                        Value = claimParameter.Value
-                    });
+                        Type = c.Type,
+                        Value = c.Value
+                    }).ToList();
                 }
+
+                rules.Add(new PolicyRule
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    IsResourceOwnerConsentNeeded = ruleParameter.IsResourceOwnerConsentNeeded,
+                    ClientIdsAllowed = ruleParameter.ClientIdsAllowed,
+                    Scopes = ruleParameter.Scopes,
+                    Script = ruleParameter.Script,
+                    Claims = claims
+                });
             }
 
             // Insert policy
             var policy = new Policy
             {
                 Id = Guid.NewGuid().ToString(),
-                Script = addPolicyParameter.Script,
-                ClientIdsAllowed = addPolicyParameter.ClientIdsAllowed,
-                Scopes = addPolicyParameter.Scopes,
-                IsResourceOwnerConsentNeeded = addPolicyParameter.IsResourceOwnerConsentNeeded,
-                Claims = claims,
-                AreConditionsLinked = addPolicyParameter.AreConditionsLinked
+                Rules = rules
             };
             _repositoryExceptionHelper.HandleException(
                 ErrorDescriptions.ThePolicyCannotBeInserted,

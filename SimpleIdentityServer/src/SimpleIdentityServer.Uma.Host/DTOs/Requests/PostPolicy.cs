@@ -30,27 +30,31 @@ namespace SimpleIdentityServer.Uma.Host.DTOs.Requests
     }
 
     [DataContract]
-    public class PostPolicy
+    public class PostPolicyRule
     {
-        [DataMember(Name = Constants.PolicyNames.ClientIdsAllowed)]
+        [DataMember(Name = Constants.PolicyRuleNames.ClientIdsAllowed)]
         public List<string> ClientIdsAllowed { get; set; }
 
-        [DataMember(Name = Constants.PolicyNames.Scopes)]
+        [DataMember(Name = Constants.PolicyRuleNames.Scopes)]
         public List<string> Scopes { get; set; }
 
-        [DataMember(Name = Constants.PolicyNames.Claims)]
+        [DataMember(Name = Constants.PolicyRuleNames.Claims)]
         public List<PostClaim> Claims { get; set; }
 
-        [DataMember(Name = Constants.PolicyNames.IsResourceOwnerConsentNeeded)]
+        [DataMember(Name = Constants.PolicyRuleNames.IsResourceOwnerConsentNeeded)]
         public bool IsResourceOwnerConsentNeeded { get; set; }
 
-        [DataMember(Name = Constants.PolicyNames.Script)]
+        [DataMember(Name = Constants.PolicyRuleNames.Script)]
         public string Script { get; set; }
+    }
 
+    [DataContract]
+    public class PostPolicy
+    {
         [DataMember(Name = Constants.PolicyNames.ResourceSetIds)]
         public List<string> ResourceSetIds { get; set; }
-        
-        [DataMember(Name = Constants.PolicyNames.ConditionsLinked)]
-        public bool ConditionsLinked { get; set; }
+
+        [DataMember(Name = Constants.PolicyNames.Rules)]
+        public List<PostPolicyRule> Rules { get; set; }
     }
 }

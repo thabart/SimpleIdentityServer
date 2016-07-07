@@ -14,29 +14,26 @@
 // limitations under the License.
 #endregion
 
-using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+using SimpleIdentityServer.Uma.EF.Models;
 
-namespace SimpleIdentityServer.Uma.Core.Parameters
+namespace SimpleIdentityServer.Uma.EF.Mappings
 {
-    public class UpdatePolicyRuleParameter
+    internal static class PolicyRuleMappings
     {
-        public string Id { get; set; }
+        #region Public static methods
 
-        public List<string> ClientIdsAllowed { get; set; }
+        public static void AddPolicyRuleMappings(this ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<PolicyRule>()
+                .ToTable("PolicyRules")
+                .HasKey(p => p.Id);
+            modelBuilder.Entity<PolicyRule>()
+                .HasOne(p => p.Policy)
+                .WithMany(p => p.Rules)
+                .HasForeignKey(p => p.PolicyId);
+        }
 
-        public List<string> Scopes { get; set; }
-
-        public string Script { get; set; }
-
-        public bool IsResourceOwnerConsentNeeded { get; set; }
-
-        public List<AddClaimParameter> Claims { get; set; }
-    }
-
-    public class UpdatePolicyParameter
-    {
-        public string PolicyId { get; set; }
-
-        public List<UpdatePolicyRuleParameter> Rules { get; set; }
+        #endregion
     }
 }

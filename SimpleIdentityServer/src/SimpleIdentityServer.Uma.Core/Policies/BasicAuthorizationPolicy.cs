@@ -74,6 +74,37 @@ namespace SimpleIdentityServer.Uma.Core.Policies
                 throw new ArgumentNullException(nameof(authorizationPolicy));
             }
 
+            if (authorizationPolicy.Rules == null ||
+                !authorizationPolicy.Rules.Any())
+            {
+                return new AuthorizationPolicyResult
+                {
+                    Type = AuthorizationPolicyResultEnum.Authorized
+                };
+            }
+
+            AuthorizationPolicyResult result = null;
+            foreach (var rule in authorizationPolicy.Rules)
+            {
+                result = await ExecuteAuthorizationPolicyRule(validTicket, rule, claimTokenParameters);
+                if (result.Type == AuthorizationPolicyResultEnum.Authorized)
+                {
+                    return result;
+                }
+            }
+
+            return result;
+        }
+
+        #endregion
+
+        #region Private methods
+
+        private async Task<AuthorizationPolicyResult> ExecuteAuthorizationPolicyRule(
+            Ticket validTicket,
+            PolicyRule authorizationPolicy,
+            List<ClaimTokenParameter> claimTokenParameters)
+        {
             // 1. Check can access to the scope
             if (validTicket.Scopes.Any(s => !authorizationPolicy.Scopes.Contains(s)))
             {
@@ -86,8 +117,7 @@ namespace SimpleIdentityServer.Uma.Core.Policies
             // 2. Check clients are correct
             var clientAuthorizationResult = CheckClients(authorizationPolicy, validTicket);
             if (clientAuthorizationResult != null &&
-                clientAuthorizationResult.Type != AuthorizationPolicyResultEnum.Authorized 
-                && authorizationPolicy.AreConditionsLinked)
+                clientAuthorizationResult.Type != AuthorizationPolicyResultEnum.Authorized)
             {
                 return clientAuthorizationResult;
             }
@@ -95,38 +125,13 @@ namespace SimpleIdentityServer.Uma.Core.Policies
             // 3. Check claims are correct
             var claimAuthorizationResult = await CheckClaims(authorizationPolicy, claimTokenParameters);
             if (claimAuthorizationResult != null
-                && claimAuthorizationResult.Type != AuthorizationPolicyResultEnum.Authorized
-                && authorizationPolicy.AreConditionsLinked)
+                && claimAuthorizationResult.Type != AuthorizationPolicyResultEnum.Authorized)
             {
                 return claimAuthorizationResult;
             }
 
-            // 4. If both result are null then not authorized
-            if (clientAuthorizationResult == null &&
-                claimAuthorizationResult == null)
-            {
-                return new AuthorizationPolicyResult
-                {
-                    Type = AuthorizationPolicyResultEnum.NotAuthorized
-                };
-            }
-
-            // 5. Check at least one condition is correct
-            if (!(clientAuthorizationResult != null && clientAuthorizationResult.Type == AuthorizationPolicyResultEnum.Authorized ||
-                claimAuthorizationResult != null && claimAuthorizationResult.Type == AuthorizationPolicyResultEnum.Authorized ||
-                authorizationPolicy.AreConditionsLinked))
-            {
-                if (clientAuthorizationResult.Type != AuthorizationPolicyResultEnum.Authorized)
-                {
-                    return clientAuthorizationResult;
-                }
-
-                return claimAuthorizationResult;
-            }
-
-
-            // 6. Check the resource owner consent is needed
-            if (authorizationPolicy.IsResourceOwnerConsentNeeded && 
+            // 4. Check the resource owner consent is needed
+            if (authorizationPolicy.IsResourceOwnerConsentNeeded &&
                 !validTicket.IsAuthorizedByRo)
             {
                 return new AuthorizationPolicyResult
@@ -134,16 +139,12 @@ namespace SimpleIdentityServer.Uma.Core.Policies
                     Type = AuthorizationPolicyResultEnum.RequestSubmitted
                 };
             }
-            
+
             return new AuthorizationPolicyResult
             {
                 Type = AuthorizationPolicyResultEnum.Authorized
             };
         }
-
-        #endregion
-
-        #region Private methods
 
         private AuthorizationPolicyResult GetNeedInfoResult(List<Claim> claims)
         {
@@ -181,7 +182,7 @@ namespace SimpleIdentityServer.Uma.Core.Policies
         }
 
         private async Task<AuthorizationPolicyResult> CheckClaims(
-            Policy authorizationPolicy,
+            PolicyRule authorizationPolicy,
             List<ClaimTokenParameter> claimTokenParameters)
         {
             if (authorizationPolicy.Claims == null ||
@@ -248,7 +249,7 @@ namespace SimpleIdentityServer.Uma.Core.Policies
         }
 
         private AuthorizationPolicyResult CheckClients(
-            Policy authorizationPolicy,
+            PolicyRule authorizationPolicy,
             Ticket validTicket)
         {
             if (authorizationPolicy.ClientIdsAllowed == null ||

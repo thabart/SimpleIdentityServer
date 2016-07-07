@@ -65,6 +65,29 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
         }
 
         [Fact]
+        public void When_Passing_No_Rules_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            const string resourceSetId = "resource_set_id";
+            var addPolicyParameter = new AddPolicyParameter
+            {
+                ResourceSetIds = new List<string>
+                {
+                    resourceSetId
+                }
+            };
+            _repositoryExceptionHelper.Setup(r => r.HandleException(string.Format(ErrorDescriptions.TheResourceSetCannotBeRetrieved, resourceSetId), It.IsAny<Func<ResourceSet>>()))
+                .Returns(() => null);
+
+            // ACT & ASSERTS
+            var exception = Assert.Throws<BaseUmaException>(() => _addAuthorizationPolicyAction.Execute(addPolicyParameter));
+            Assert.NotNull(exception);
+            Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
+            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddPolicyParameterNames.Rules));
+        }
+
+        [Fact]
         public void When_ResourceSetId_Doesnt_Exist_Then_Exception_Is_Thrown()
         {
             // ARRANGE
@@ -76,13 +99,19 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
                 {
                     resourceSetId
                 },
-                Scopes = new List<string>
+                Rules = new List<AddPolicyRuleParameter>
                 {
-                    "invalid_scope"
-                },
-                ClientIdsAllowed = new List<string>
-                {
-                    "client_id"
+                    new AddPolicyRuleParameter
+                    {
+                        Scopes = new List<string>
+                        {
+                            "invalid_scope"
+                        },
+                        ClientIdsAllowed = new List<string>
+                        {
+                            "client_id"
+                        }
+                    }
                 }
             };
             _repositoryExceptionHelper.Setup(r => r.HandleException(string.Format(ErrorDescriptions.TheResourceSetCannotBeRetrieved, resourceSetId), It.IsAny<Func<ResourceSet>>()))
@@ -107,13 +136,19 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
                 {
                     resourceSetId
                 },
-                Scopes = new List<string>
+                Rules = new List<AddPolicyRuleParameter>
                 {
-                    "invalid_scope"
-                },
-                ClientIdsAllowed = new List<string>
-                {
-                    "client_id"
+                    new AddPolicyRuleParameter
+                    {
+                        Scopes = new List<string>
+                        {
+                            "invalid_scope"
+                        },
+                        ClientIdsAllowed = new List<string>
+                        {
+                            "client_id"
+                        }
+                    }
                 }
             };
             var resourceSet = new ResourceSet
@@ -149,22 +184,29 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
                 {
                     resourceSetId
                 },
-                Scopes = new List<string>
+                Rules = new List<AddPolicyRuleParameter>
                 {
-                    "scope"
-                },
-                ClientIdsAllowed = new List<string>
-                {
-                    "client_id"
-                },
-                Claims = new List<AddClaimParameter>
-                {
-                    new AddClaimParameter
+                    new AddPolicyRuleParameter
                     {
-                        Type = "type",
-                        Value = "value"
+                        Scopes = new List<string>
+                        {
+                            "scope"
+                        },
+                        ClientIdsAllowed = new List<string>
+                        {
+                            "client_id"
+                        },
+                        Claims = new List<AddClaimParameter>
+                        {
+                            new AddClaimParameter
+                            {
+                                Type = "type",
+                                Value = "value"
+                            }
+                        }
                     }
                 }
+
             };
             var resourceSet = new ResourceSet
             {

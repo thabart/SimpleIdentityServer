@@ -53,6 +53,7 @@ namespace SimpleIdentityServer.Uma.EF
             modelBuilder.AddTicketMappings();
             modelBuilder.AddRptMappings();
             modelBuilder.AddPolicyMappings();
+            modelBuilder.AddPolicyRuleMappings();
             base.OnModelCreating(modelBuilder);
         }
 

@@ -13,7 +13,6 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(nullable: false),
-                    AreConditionsLinked = table.Column<bool>(nullable: false),
                     Claims = table.Column<string>(nullable: true),
                     ClientIdsAllowed = table.Column<string>(nullable: true),
                     IsResourceOwnerConsentNeeded = table.Column<bool>(nullable: false),
@@ -36,6 +35,29 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Scopes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PolicyRules",
+                columns: table => new
+                {
+                    Id = table.Column<string>(nullable: false),
+                    Claims = table.Column<string>(nullable: true),
+                    ClientIdsAllowed = table.Column<string>(nullable: true),
+                    IsResourceOwnerConsentNeeded = table.Column<bool>(nullable: false),
+                    PolicyId = table.Column<string>(nullable: true),
+                    Scopes = table.Column<string>(nullable: true),
+                    Script = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PolicyRules", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PolicyRules_Policies_PolicyId",
+                        column: x => x.PolicyId,
+                        principalTable: "Policies",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -111,6 +133,11 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_PolicyRules_PolicyId",
+                table: "PolicyRules",
+                column: "PolicyId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ResourceSets_PolicyId",
                 table: "ResourceSets",
                 column: "PolicyId");
@@ -133,6 +160,9 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "PolicyRules");
+
             migrationBuilder.DropTable(
                 name: "Rpts");
 

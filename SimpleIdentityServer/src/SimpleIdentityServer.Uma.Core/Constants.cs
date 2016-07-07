@@ -34,6 +34,11 @@ namespace SimpleIdentityServer.Uma.Core
         {
             public const string ResourceSetIds = "resource_set_ids";
 
+            public const string Rules = "rules";
+        }
+
+        public static class AddPolicyRuleParameterNames
+        {
             public const string Script = "script";
 
             public const string Scopes = "scopes";

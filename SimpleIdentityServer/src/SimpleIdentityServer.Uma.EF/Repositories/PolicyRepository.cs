@@ -15,9 +15,11 @@
 #endregion
 
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.EF.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -54,6 +56,7 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
         {
             var policy = _simpleIdServerUmaContext.Policies
                 .Include(p => p.ResourceSets)
+                .Include(p => p.Rules)
                 .FirstOrDefault(p => p.Id == id);
             if (policy == null)
             {
@@ -74,6 +77,7 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
         public bool DeletePolicy(string id)
         {
             var policy = _simpleIdServerUmaContext.Policies
+                .Include(p => p.Rules)
                 .FirstOrDefault(p => p.Id == id);
             if (policy == null)
             {
@@ -100,7 +104,42 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
             record.Scopes = model.Scopes;
             record.Script = model.Script;
             record.Claims = model.Claims;
-            record.AreConditionsLinked = policy.AreConditionsLinked;
+            var rulesNotToBeDeleted = new List<string>();
+            if (policy.Rules != null)
+            {
+                foreach(var ru in policy.Rules)
+                {
+                    var rule = record.Rules.FirstOrDefault(r => r.Id == ru.Id);
+                    if (rule == null)
+                    {
+                        rule = new Models.PolicyRule
+                        {
+                            Id = Guid.NewGuid().ToString(),
+                            PolicyId = policy.Id
+                        };
+                        record.Rules.Add(rule);                   
+                    }
+
+                    rule.IsResourceOwnerConsentNeeded = ru.IsResourceOwnerConsentNeeded;
+                    rule.Script = ru.Script;
+                    rule.ClientIdsAllowed = MappingExtensions.GetConcatenatedList(ru.ClientIdsAllowed);
+                    rule.Scopes = MappingExtensions.GetConcatenatedList(ru.Scopes);
+                    if (ru.Claims != null &&
+                        ru.Claims.Any())
+                    {
+                        rule.Claims = JsonConvert.SerializeObject(ru.Claims);
+                    }
+
+                    rulesNotToBeDeleted.Add(rule.Id);
+                }
+            }
+
+            var ruleIds = record.Rules.Select(o => o.Id).ToList();
+            foreach (var ruleId in ruleIds.Where(id => !rulesNotToBeDeleted.Contains(id)))
+            {
+                record.Rules.Remove(record.Rules.First(o => o.Id == ruleId));
+            }
+
             _simpleIdServerUmaContext.SaveChanges();
             return true;
         }

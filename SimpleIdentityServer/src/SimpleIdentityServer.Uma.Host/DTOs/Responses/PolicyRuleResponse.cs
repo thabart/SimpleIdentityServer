@@ -14,13 +14,14 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Uma.Host.DTOs.Requests;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.Uma.Host.DTOs.Requests
+namespace SimpleIdentityServer.Uma.Host.DTOs.Responses
 {
     [DataContract]
-    public class PutPolicyRule
+    public class PolicyRuleResponse
     {
         [DataMember(Name = Constants.PolicyRuleNames.Id)]
         public string Id { get; set; }
@@ -39,15 +40,5 @@ namespace SimpleIdentityServer.Uma.Host.DTOs.Requests
 
         [DataMember(Name = Constants.PolicyRuleNames.Script)]
         public string Script { get; set; }
-    }
-
-    [DataContract]
-    public class PutPolicy
-    {
-        [DataMember(Name = Constants.PolicyNames.Id)]
-        public string PolicyId { get; set; }
-
-        [DataMember(Name = Constants.PolicyNames.Rules)]
-        public List<PutPolicyRule> Rules { get; set; }
     }
 }

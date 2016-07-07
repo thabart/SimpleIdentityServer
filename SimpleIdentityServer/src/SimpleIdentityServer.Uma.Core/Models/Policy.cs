@@ -25,7 +25,7 @@ namespace SimpleIdentityServer.Uma.Core.Models
         public string Value { get; set; }
     }
 
-    public class Policy
+    public class PolicyRule
     {
         public string Id { get; set; }
 
@@ -33,14 +33,19 @@ namespace SimpleIdentityServer.Uma.Core.Models
 
         public List<string> Scopes { get; set; }
 
+        public List<Claim> Claims { get; set; }
+
         public bool IsResourceOwnerConsentNeeded { get; set; }
 
         public string Script { get; set; }
+    }
 
+    public class Policy
+    {
+        public string Id { get; set; }
+
+        public List<PolicyRule> Rules { get; set; }
+        
         public List<string> ResourceSetIds { get; set; }
-
-        public List<Claim> Claims { get; set; }
-
-        public bool AreConditionsLinked { get; set; }
     }
 }

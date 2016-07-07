@@ -14,7 +14,6 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Uma.Host.DTOs.Requests;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
@@ -26,25 +25,10 @@ namespace SimpleIdentityServer.Uma.Host.DTOs.Responses
         [DataMember(Name = Constants.PolicyNames.Id)]
         public string Id { get; set; }
 
-        [DataMember(Name = Constants.PolicyNames.ClientIdsAllowed)]
-        public List<string> ClientIdsAllowed { get; set; }
-
-        [DataMember(Name = Constants.PolicyNames.Scopes)]
-        public List<string> Scopes { get; set; }
-
-        [DataMember(Name = Constants.PolicyNames.Claims)]
-        public List<PostClaim> Claims { get; set; }
-
-        [DataMember(Name = Constants.PolicyNames.IsResourceOwnerConsentNeeded)]
-        public bool IsResourceOwnerConsentNeeded { get; set; }
-
-        [DataMember(Name = Constants.PolicyNames.Script)]
-        public string Script { get; set; }
-
         [DataMember(Name = Constants.PolicyNames.ResourceSetIds)]
         public List<string> ResourceSetIds { get; set; }
 
-        [DataMember(Name = Constants.PolicyNames.ConditionsLinked)]
-        public bool ConditionsLinked { get; set; }
+        [DataMember(Name = Constants.PolicyNames.Rules)]
+        public List<string> Rules { get; set; }
     }
 }

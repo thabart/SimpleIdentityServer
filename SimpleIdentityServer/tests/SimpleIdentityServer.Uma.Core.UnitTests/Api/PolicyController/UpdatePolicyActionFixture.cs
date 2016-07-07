@@ -17,6 +17,7 @@
 using Moq;
 using SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions;
 using SimpleIdentityServer.Uma.Core.Errors;
+using SimpleIdentityServer.Uma.Core.Exceptions;
 using SimpleIdentityServer.Uma.Core.Helpers;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Parameters;
@@ -47,6 +48,26 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
             Assert.Throws<ArgumentNullException>(() => _updatePolicyAction.Execute(null));
         }
 
+        [Fact]
+        public void When_Rules_Are_Not_Passed_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            var updatePolicyParameter = new UpdatePolicyParameter
+            {
+                PolicyId = "not_valid_policy_id"
+            };
+            InitializeFakeObjects();
+            _repositoryExceptionHelperStub.Setup(r => r.HandleException(
+                string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, updatePolicyParameter.PolicyId),
+                It.IsAny<Func<Policy>>())).Returns(() => null);
+
+            // ACT & ASSERTS
+            var exception = Assert.Throws<BaseUmaException>(() => _updatePolicyAction.Execute(updatePolicyParameter));
+            Assert.NotNull(exception);
+            Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
+            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddPolicyParameterNames.Rules));
+        }
+
         #endregion
 
         #region Happy paths
@@ -57,7 +78,11 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
             // ARRANGE
             var updatePolicyParameter = new UpdatePolicyParameter
             {
-                PolicyId = "not_valid_policy_id"
+                PolicyId = "not_valid_policy_id",
+                Rules = new List<UpdatePolicyRuleParameter>
+                {
+                    new UpdatePolicyRuleParameter()
+                }
             };
             InitializeFakeObjects();
             _repositoryExceptionHelperStub.Setup(r => r.HandleException(
@@ -78,14 +103,21 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
             var updatePolicyParameter = new UpdatePolicyParameter
             {
                 PolicyId = "valid_policy_id",
-                Claims = new List<AddClaimParameter>
+                Rules = new List<UpdatePolicyRuleParameter>
                 {
-                    new AddClaimParameter
+                    new UpdatePolicyRuleParameter
                     {
-                        Type = "type",
-                        Value = "value"
+                        Claims = new List<AddClaimParameter>
+                        {
+                            new AddClaimParameter
+                            {
+                                Type = "type",
+                                Value = "value"
+                            }
+                        }
                     }
                 }
+
             };
             InitializeFakeObjects();
             _repositoryExceptionHelperStub.Setup(r => r.HandleException(

@@ -20,8 +20,6 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
                 {
                     b.Property<string>("Id");
 
-                    b.Property<bool>("AreConditionsLinked");
-
                     b.Property<string>("Claims");
 
                     b.Property<string>("ClientIdsAllowed");
@@ -35,6 +33,29 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Policies");
+                });
+
+            modelBuilder.Entity("SimpleIdentityServer.Uma.EF.Models.PolicyRule", b =>
+                {
+                    b.Property<string>("Id");
+
+                    b.Property<string>("Claims");
+
+                    b.Property<string>("ClientIdsAllowed");
+
+                    b.Property<bool>("IsResourceOwnerConsentNeeded");
+
+                    b.Property<string>("PolicyId");
+
+                    b.Property<string>("Scopes");
+
+                    b.Property<string>("Script");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PolicyId");
+
+                    b.ToTable("PolicyRules");
                 });
 
             modelBuilder.Entity("SimpleIdentityServer.Uma.EF.Models.ResourceSet", b =>
@@ -113,6 +134,13 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
                     b.HasIndex("ResourceSetId");
 
                     b.ToTable("Tickets");
+                });
+
+            modelBuilder.Entity("SimpleIdentityServer.Uma.EF.Models.PolicyRule", b =>
+                {
+                    b.HasOne("SimpleIdentityServer.Uma.EF.Models.Policy", "Policy")
+                        .WithMany("Rules")
+                        .HasForeignKey("PolicyId");
                 });
 
             modelBuilder.Entity("SimpleIdentityServer.Uma.EF.Models.ResourceSet", b =>
