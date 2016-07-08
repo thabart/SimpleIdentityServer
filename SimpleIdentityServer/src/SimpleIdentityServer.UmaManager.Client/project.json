@@ -22,6 +22,9 @@
       "frameworkAssemblies": {
         "System.Net.Http": "4.0.0.0",
         "System.Runtime.Serialization": "4.0.0.0"
+      },
+      "buildOptions": {
+        "define": [ "NET" ]
       }
     },
     "net45": {
@@ -32,6 +35,9 @@
           "type": "build",
           "version": ""
         }
+      },
+      "buildOptions": {
+        "define": [ "NET" ]
       }
     },
     "netstandard1.6": {

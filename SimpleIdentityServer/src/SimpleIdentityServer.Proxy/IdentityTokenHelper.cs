@@ -23,7 +23,6 @@ using SimpleIdentityServer.Core.Jwt.Encrypt;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using System;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Proxy
@@ -59,6 +58,8 @@ namespace SimpleIdentityServer.Proxy
 
         private readonly IDiscoveryClient _discoveryClient;
 
+        private readonly IHttpClientFactory _httpClientFactory;
+
         #endregion
 
         #region Constructor
@@ -72,6 +73,7 @@ namespace SimpleIdentityServer.Proxy
             _jwsParser = (IJwsParser)serviceProvider.GetService(typeof(IJwsParser));
             _jsonWebKeyConverter = (IJsonWebKeyConverter)serviceProvider.GetService(typeof(IJsonWebKeyConverter));
             _discoveryClient = new IdentityServerClientFactory().CreateDiscoveryClient();
+            _httpClientFactory = new HttpClientFactory();
         }
 
         #endregion
@@ -185,7 +187,7 @@ namespace SimpleIdentityServer.Proxy
                     return null;
                 }
 
-                var httpClient = new HttpClient();
+                var httpClient = _httpClientFactory.GetHttpClient();
                 httpClient.BaseAddress = uri;
                 var request = await httpClient.GetAsync(uri.AbsoluteUri).ConfigureAwait(false);
                 try

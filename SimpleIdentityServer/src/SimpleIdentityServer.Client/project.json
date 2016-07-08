@@ -22,12 +22,18 @@
       "frameworkAssemblies": {
         "System.Net.Http": "",
         "System.Runtime.Serialization": ""
+      },
+      "buildOptions": {
+        "define": [ "NET" ]
       }
     },
     "net45": {
       "frameworkAssemblies": {
         "System.Net.Http": "",
         "System.Runtime.Serialization": ""
+      },
+      "buildOptions": {
+        "define": ["NET"]
       }
     },
     "netstandard1.6": {
