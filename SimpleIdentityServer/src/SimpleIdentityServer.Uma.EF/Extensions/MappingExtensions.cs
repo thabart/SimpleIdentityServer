@@ -78,15 +78,23 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
         public static Domain.Policy ToDomain(this Model.Policy policy)
         {
             var rules = new List<Domain.PolicyRule>();
+            var resourceSetIds = new List<string>();
             if (policy.Rules != null)
             {
                 rules = policy.Rules.Select(r => r.ToDomain()).ToList();
             }
 
+            if (policy.ResourceSets != null)
+            {
+                resourceSetIds = policy.ResourceSets.Select(r => r.Id).ToList();
+            }
+
+
             return new Domain.Policy
             {
                 Id = policy.Id,
-                Rules = rules
+                Rules = rules,
+                ResourceSetIds = resourceSetIds
             };
         }
 

@@ -14,6 +14,8 @@
 // limitations under the License.
 #endregion
 
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 
 namespace SimpleIdentityServer.Core.Extensions
@@ -52,10 +54,20 @@ namespace SimpleIdentityServer.Core.Extensions
                 return null;
             }
 
-            var claim = principal.FindFirst(Jwt.Constants.StandardResourceOwnerClaimNames.Subject);
+            return principal.Claims.GetSubject();            
+        }
+
+        public static string GetSubject(this IEnumerable<Claim> claims)
+        {
+            if (claims == null)
+            {
+                return null;
+            }
+
+            var claim = claims.FirstOrDefault(c => c.Type == Jwt.Constants.StandardResourceOwnerClaimNames.Subject);
             if (claim == null)
             {
-                claim = principal.FindFirst(ClaimTypes.NameIdentifier);
+                claim = claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
                 if (claim == null)
                 {
                     return null;

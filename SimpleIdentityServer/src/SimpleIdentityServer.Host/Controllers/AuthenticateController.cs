@@ -100,6 +100,13 @@ namespace SimpleIdentityServer.Host.Controllers
         [HttpPost]
         public ActionResult LocalLogin(AuthorizeViewModel authorizeViewModel)
         {
+            var authenticatedUser = this.GetAuthenticatedUser();
+            if (authenticatedUser != null &&
+                authenticatedUser.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "User");
+            }
+
             if (authorizeViewModel == null)
             {
                 throw new ArgumentNullException(nameof(authorizeViewModel));
@@ -278,7 +285,7 @@ namespace SimpleIdentityServer.Host.Controllers
                 throw new ArgumentNullException("code");
             }
 
-            // 1. Persist the request code into a cookie
+            // 1. Persist the request code into a cookie & fix the space problems
             var cookieValue = Guid.NewGuid().ToString();
             var cookieName = string.Format(ExternalAuthenticateCookieName, cookieValue);
             Response.Cookies.Append(cookieName, code, 
@@ -341,8 +348,7 @@ namespace SimpleIdentityServer.Host.Controllers
             var claims = claimsIdentity.Claims.ToList();
             
             // 6. Continue the open-id flow
-            var decodedRequest = _encoder.Decode(request);
-            var authorizationRequest = _dataProtector.Unprotect<AuthorizationRequest>(decodedRequest);
+            var authorizationRequest = _dataProtector.Unprotect<AuthorizationRequest>(request);
             var actionResult = _authenticateActions.ExternalOpenIdUserAuthentication(
                 claims,
                 authorizationRequest.ToParameter(),
@@ -355,8 +361,7 @@ namespace SimpleIdentityServer.Host.Controllers
 
             return RedirectToAction("OpenId", "Authenticate", new { code = code });
         }
-
-
+        
         #endregion
 
         #endregion

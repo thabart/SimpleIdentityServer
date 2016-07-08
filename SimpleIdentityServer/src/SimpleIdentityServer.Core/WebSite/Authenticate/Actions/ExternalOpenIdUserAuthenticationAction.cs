@@ -25,6 +25,7 @@ using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Extensions;
 
 namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 {
@@ -76,22 +77,22 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                 throw new ArgumentNullException("code");
             }
 
-            var subjectClaim = claims.FirstOrDefault(r => r.Type == Jwt.Constants.StandardResourceOwnerClaimNames.Subject);
+            var subjectClaim = claims.GetSubject();
             var nameClaim = claims.FirstOrDefault(r => r.Type == Jwt.Constants.StandardResourceOwnerClaimNames.Name);
             var givenNameClaim = claims.FirstOrDefault(r => r.Type == Jwt.Constants.StandardResourceOwnerClaimNames.GivenName);
             var familyNameClaim = claims.FirstOrDefault(r => r.Type == Jwt.Constants.StandardResourceOwnerClaimNames.FamilyName);
-            if (subjectClaim == null)
+            if (string.IsNullOrWhiteSpace(subjectClaim))
             {
                 throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode,
                     ErrorDescriptions.NoSubjectCanBeExtracted);
             }
 
-            var resourceOwner = _resourceOwnerRepository.GetBySubject(subjectClaim.Value);
+            var resourceOwner = _resourceOwnerRepository.GetBySubject(subjectClaim);
             if (resourceOwner == null)
             {
                 resourceOwner = new ResourceOwner
                 {
-                    Id = subjectClaim.Value,
+                    Id = subjectClaim,
                     Name = nameClaim == null ? string.Empty : nameClaim.Value,
                     GivenName = givenNameClaim == null ? string.Empty : givenNameClaim.Value,
                     FamilyName = familyNameClaim == null ? string.Empty : familyNameClaim.Value,
