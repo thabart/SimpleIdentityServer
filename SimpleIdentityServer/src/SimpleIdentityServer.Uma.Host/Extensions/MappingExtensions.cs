@@ -203,6 +203,7 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
             {
                 Id = policy.Id,
                 ResourceSetIds = policy.ResourceSetIds,
+                Rules = rules
             };
         }
 

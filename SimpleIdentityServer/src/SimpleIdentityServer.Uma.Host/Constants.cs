@@ -117,7 +117,7 @@ namespace SimpleIdentityServer.Uma.Host
         {
             public const string Id = "id";
 
-            public const string ClientIdsAllowed = "allowed_clients";
+            public const string ClientIdsAllowed = "clients";
 
             public const string IsResourceOwnerConsentNeeded = "consent_needed";
 

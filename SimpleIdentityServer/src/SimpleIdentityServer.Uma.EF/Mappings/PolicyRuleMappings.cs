@@ -15,6 +15,7 @@
 #endregion
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using SimpleIdentityServer.Uma.EF.Models;
 
 namespace SimpleIdentityServer.Uma.EF.Mappings
@@ -31,7 +32,8 @@ namespace SimpleIdentityServer.Uma.EF.Mappings
             modelBuilder.Entity<PolicyRule>()
                 .HasOne(p => p.Policy)
                 .WithMany(p => p.Rules)
-                .HasForeignKey(p => p.PolicyId);
+                .HasForeignKey(p => p.PolicyId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
 
         #endregion

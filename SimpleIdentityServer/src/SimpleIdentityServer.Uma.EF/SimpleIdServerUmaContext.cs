@@ -42,6 +42,8 @@ namespace SimpleIdentityServer.Uma.EF
 
         public virtual DbSet<Policy> Policies { get; set; }
 
+        public virtual DbSet<PolicyRule> PolicyRules { get; set; }
+
         #endregion
 
         #region Protected methods

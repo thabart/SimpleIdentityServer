@@ -29,6 +29,6 @@ namespace SimpleIdentityServer.Uma.Host.DTOs.Responses
         public List<string> ResourceSetIds { get; set; }
 
         [DataMember(Name = Constants.PolicyNames.Rules)]
-        public List<string> Rules { get; set; }
+        public List<PolicyRuleResponse> Rules { get; set; }
     }
 }

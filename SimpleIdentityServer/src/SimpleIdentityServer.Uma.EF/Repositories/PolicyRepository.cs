@@ -99,11 +99,6 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
             }
 
             var model = policy.ToModel();
-            record.ClientIdsAllowed = model.ClientIdsAllowed;
-            record.IsResourceOwnerConsentNeeded = model.IsResourceOwnerConsentNeeded;
-            record.Scopes = model.Scopes;
-            record.Script = model.Script;
-            record.Claims = model.Claims;
             var rulesNotToBeDeleted = new List<string>();
             if (policy.Rules != null)
             {
@@ -137,7 +132,9 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
             var ruleIds = record.Rules.Select(o => o.Id).ToList();
             foreach (var ruleId in ruleIds.Where(id => !rulesNotToBeDeleted.Contains(id)))
             {
-                record.Rules.Remove(record.Rules.First(o => o.Id == ruleId));
+                var removedRule = record.Rules.First(o => o.Id == ruleId);
+                record.Rules.Remove(removedRule);
+                _simpleIdServerUmaContext.PolicyRules.Remove(removedRule);
             }
 
             _simpleIdServerUmaContext.SaveChanges();

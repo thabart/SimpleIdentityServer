@@ -21,17 +21,7 @@ namespace SimpleIdentityServer.Uma.EF.Models
     public class Policy
     {
         public string Id { get; set; }
-
-        public string ClientIdsAllowed { get; set; }
-
-        public string Scopes { get; set; }
-
-        public bool IsResourceOwnerConsentNeeded { get; set; }
-
-        public string Script { get; set; }
-
-        public string Claims { get; set; }
-
+        
         public virtual ICollection<ResourceSet> ResourceSets { get; set; }
 
         public virtual ICollection<PolicyRule> Rules { get; set; }

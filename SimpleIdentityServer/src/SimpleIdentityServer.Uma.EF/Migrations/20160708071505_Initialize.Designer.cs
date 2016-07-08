@@ -8,7 +8,7 @@ using SimpleIdentityServer.Uma.EF;
 namespace SimpleIdentityServer.Uma.EF.Migrations
 {
     [DbContext(typeof(SimpleIdServerUmaContext))]
-    [Migration("20160707143102_Initialize")]
+    [Migration("20160708071505_Initialize")]
     partial class Initialize
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -20,16 +20,6 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
             modelBuilder.Entity("SimpleIdentityServer.Uma.EF.Models.Policy", b =>
                 {
                     b.Property<string>("Id");
-
-                    b.Property<string>("Claims");
-
-                    b.Property<string>("ClientIdsAllowed");
-
-                    b.Property<bool>("IsResourceOwnerConsentNeeded");
-
-                    b.Property<string>("Scopes");
-
-                    b.Property<string>("Script");
 
                     b.HasKey("Id");
 

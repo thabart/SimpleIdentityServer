@@ -20,16 +20,6 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
                 {
                     b.Property<string>("Id");
 
-                    b.Property<string>("Claims");
-
-                    b.Property<string>("ClientIdsAllowed");
-
-                    b.Property<bool>("IsResourceOwnerConsentNeeded");
-
-                    b.Property<string>("Scopes");
-
-                    b.Property<string>("Script");
-
                     b.HasKey("Id");
 
                     b.ToTable("Policies");

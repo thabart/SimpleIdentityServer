@@ -12,12 +12,7 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
                 name: "Policies",
                 columns: table => new
                 {
-                    Id = table.Column<string>(nullable: false),
-                    Claims = table.Column<string>(nullable: true),
-                    ClientIdsAllowed = table.Column<string>(nullable: true),
-                    IsResourceOwnerConsentNeeded = table.Column<bool>(nullable: false),
-                    Scopes = table.Column<string>(nullable: true),
-                    Script = table.Column<string>(nullable: true)
+                    Id = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
