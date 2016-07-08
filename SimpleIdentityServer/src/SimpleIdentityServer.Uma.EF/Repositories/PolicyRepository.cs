@@ -119,12 +119,7 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
                     rule.Script = ru.Script;
                     rule.ClientIdsAllowed = MappingExtensions.GetConcatenatedList(ru.ClientIdsAllowed);
                     rule.Scopes = MappingExtensions.GetConcatenatedList(ru.Scopes);
-                    if (ru.Claims != null &&
-                        ru.Claims.Any())
-                    {
-                        rule.Claims = JsonConvert.SerializeObject(ru.Claims);
-                    }
-
+                    rule.Claims = JsonConvert.SerializeObject(ru.Claims == null ? new List<Claim>() : ru.Claims);
                     rulesNotToBeDeleted.Add(rule.Id);
                 }
             }
