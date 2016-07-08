@@ -11,6 +11,7 @@
     "defaultNamespace": "SimpleIdentityServer.Proxy"
   },
   "dependencies": {
+    "SimpleIdentityServer.Core.Jwt": "*",
     "SimpleIdentityServer.Uma.Client": "*",
     "SimpleIdentityServer.Client": "*",
     "SimpleIdentityServer.UmaManager.Client": "*"

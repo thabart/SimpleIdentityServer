@@ -242,6 +242,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                                     ClientId = connectedClient.ClientId,
                                     ScopeName = scope.Name
                                 };
+                                connectedClient.ClientScopes.Add(record);
                             }
 
                             scopesNotToBeDeleted.Add(record.ScopeName);

@@ -10,3 +10,5 @@ dotnet pack --output feed SimpleIdentityServer.Uma.Authorization
 dotnet pack --output feed SimpleIdentityServer.Uma.Common
 dotnet pack --output feed SimpleIdentityServer.Authentication.Common
 dotnet pack --output feed System.Security.Cryptography.Algorithms.Extensions
+dotnet pack --output feed SimpleIdentityServer.Oauth2Instrospection.Authentication
+dotnet pack --output feed SimpleIdentityServer.UserInformation.Authentication
