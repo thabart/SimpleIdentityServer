@@ -35,7 +35,8 @@ namespace SimpleIdentityServer.Host.MiddleWare
             "/Authenticate/ExternalLoginOpenId",
             "/signin-microsoft",
             "/signin-oidc",
-            "/signin-facebook"
+            "/signin-facebook",
+            "/signin-adfs"
         };
 
         private readonly RequestDelegate _next;
