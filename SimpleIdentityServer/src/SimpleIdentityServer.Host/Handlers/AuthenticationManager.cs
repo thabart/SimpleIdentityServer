@@ -16,7 +16,7 @@
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
@@ -30,7 +30,6 @@ using Microsoft.IdentityModel.Tokens;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Configuration.Client;
 using SimpleIdentityServer.Configuration.Client.DTOs.Responses;
-using SimpleIdentityServer.Host.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -80,7 +79,7 @@ namespace SimpleIdentityServer.Host.Handlers
         #region Public methods
 
         public async Task<bool> Initialize(
-            HttpContext httpContext, 
+            HttpContext httpContext,
             AuthenticationOptions authenticationOptions)
         {
             if (httpContext == null)
@@ -99,7 +98,7 @@ namespace SimpleIdentityServer.Host.Handlers
                 .ResolveAsync(authenticationOptions.AuthorizationServerUrl);
             var authProviders = await _simpleIdServerConfigurationClientFactory.GetAuthProviderClient()
                 .GetAuthProvidersByResolving(authenticationOptions.ConfigurationUrl, grantedToken.AccessToken);
-            foreach(var authProvider in authProviders)
+            foreach (var authProvider in authProviders)
             {
                 if (!authProvider.IsEnabled)
                 {
@@ -134,6 +133,21 @@ namespace SimpleIdentityServer.Host.Handlers
                         return true;
                     }
                 }
+                else if (authProvider.Name == "Google")
+                {
+                    if (await EnableGoogleAuthentication(authProvider.Options, httpContext))
+                    {
+                        return true;
+                    }
+                }
+                else if (authProvider.Name == "Twitter")
+                {
+
+                }
+                else if (authProvider.Name == "GitHub")
+                {
+
+                }
             }
 
             return false;
@@ -164,12 +178,12 @@ namespace SimpleIdentityServer.Host.Handlers
             {
                 return false;
             }
-            
+
             var handler = new OpenIdConnectHandler(httpClient, _htmlEncoder);
             await handler.InitializeAsync(microsoftOptions, httpContext, _logger, UrlEncoder.Default);
             return await handler.HandleRequestAsync();
         }
-        
+
         private async Task<bool> EnableAdfsAuthentication(List<Option> options, HttpContext httpContext)
         {
             var adfsOptions = ExtractAdfsOptions(options, _dataProtectionProvider);
@@ -196,11 +210,26 @@ namespace SimpleIdentityServer.Host.Handlers
             return await handler.HandleRequestAsync();
         }
 
+        private async Task<bool> EnableGoogleAuthentication(List<Option> options, HttpContext httpContext)
+        {
+            var googleOptions = ExtractGoogleOptions(options, _dataProtectionProvider);
+            if (googleOptions == null)
+            {
+                return false;
+            }
+
+            var handler = new GoogleHandler(new HttpClient());
+            await handler.InitializeAsync(googleOptions, httpContext, _logger, UrlEncoder.Default);
+            return await handler.HandleRequestAsync();
+        }
+
         #endregion
 
         #region Extract options
 
-        private static FacebookOptions ExtractFacebookOptions(List<Option> options, IDataProtectionProvider dataProtectionProvider)
+        private static FacebookOptions ExtractFacebookOptions(
+            List<Option> options, 
+            IDataProtectionProvider dataProtectionProvider)
         {
             var scopes = options.Where(o => o.Key == "Scope").ToList();
             var clientId = options.FirstOrDefault(o => o.Key == "ClientId");
@@ -231,8 +260,36 @@ namespace SimpleIdentityServer.Host.Handlers
             return result;
         }
 
+        public static GoogleOptions ExtractGoogleOptions(
+            List<Option> options,
+            IDataProtectionProvider dataProtectionProvider)
+        {
+            var clientId = options.FirstOrDefault(o => o.Key == "ClientId");
+            var clientSecret = options.FirstOrDefault(o => o.Key == "ClientSecret");
+            if (clientId == null ||
+                clientSecret == null)
+            {
+                return null;
+            }
+
+
+            var dataProtector = dataProtectionProvider.CreateProtector(
+                typeof(AuthenticationManager).FullName, Constants.IdentityProviderNames.Google, "v1");
+            var googleOptions = new GoogleOptions
+            {
+                ClaimsIssuer = Constants.IdentityProviderNames.Google,
+                AuthenticationScheme = Constants.IdentityProviderNames.Google,
+                SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme,
+                ClientId = clientId.Value,
+                ClientSecret = clientSecret.Value,
+                StateDataFormat = new PropertiesDataFormat(dataProtector)
+            };
+
+            return googleOptions;
+        }
+
         private static OpenIdConnectOptions ExtractMicrosoftOptions(
-            List<Option> options, 
+            List<Option> options,
             IDataProtectionProvider dataProtectionProvider,
             out HttpClient httpClient)
         {
@@ -244,7 +301,7 @@ namespace SimpleIdentityServer.Host.Handlers
             {
                 return null;
             }
-                        
+
             var dataProtector = dataProtectionProvider.CreateProtector(
                 typeof(AuthenticationManager).FullName, Constants.IdentityProviderNames.Microsoft, "v1");
 
@@ -272,8 +329,10 @@ namespace SimpleIdentityServer.Host.Handlers
             EnrichOpenidOptions(microsoftAccountOptions, dataProtectionProvider, out httpClient);
             return microsoftAccountOptions;
         }
-
-        private static OAuthOptions ExtractAdfsOptions(List<Option> options, IDataProtectionProvider dataProtectionProvider)
+        
+        private static OAuthOptions ExtractAdfsOptions(
+            List<Option> options, 
+            IDataProtectionProvider dataProtectionProvider)
         {
             var clientId = options.FirstOrDefault(o => o.Key == "ClientId");
             var clientSecret = options.FirstOrDefault(o => o.Key == "ClientSecret");
@@ -413,6 +472,28 @@ namespace SimpleIdentityServer.Host.Handlers
                         new HttpDocumentRetriever(backChannel) { RequireHttps = openIdConnectOptions.RequireHttpsMetadata });
                 }
             }
+        }
+
+        private static void EnrichOauthOptions(
+            OAuthOptions oauthOptions,
+            IDataProtectionProvider dataProtectionProvider,
+            out HttpClient backChannel)
+        {
+            if (oauthOptions.StateDataFormat == null)
+            {
+                var dataProtector = dataProtectionProvider.CreateProtector(
+                    typeof(AuthenticationManager).FullName,
+                    typeof(string).FullName,
+                    oauthOptions.AuthenticationScheme,
+                    "v1");
+
+                oauthOptions.StateDataFormat = new PropertiesDataFormat(dataProtector);
+            }
+            
+            backChannel = new HttpClient(oauthOptions.BackchannelHttpHandler ?? new HttpClientHandler());
+            backChannel.DefaultRequestHeaders.UserAgent.ParseAdd("Microsoft ASP.NET Core OAuth middleware");
+            backChannel.Timeout = oauthOptions.BackchannelTimeout;
+            backChannel.MaxResponseContentBufferSize = 1024 * 1024 * 10; // 10 MB
         }
 
         #endregion

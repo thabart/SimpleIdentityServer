@@ -149,26 +149,46 @@ namespace SimpleIdentityServer.Configuration.EF.Extensions
                             }
                         }
                     },
-					new AuthenticationProvider 
-					{
-					    IsEnabled = true,
+					new AuthenticationProvider
+                    {
+                        IsEnabled = true,
                         Name = "EID",
-						Options = new List<Option>
-						{
-							new Option
-							{
-								Id = Guid.NewGuid().ToString(),
-								Key = "IdPEndpoint",
-								Value = "https://www.e-contract.be/eid-idp/protocol/ws-federation/auth-ident"
-							},
-							new Option
-							{
-								Id = Guid.NewGuid().ToString(),
-								Key = "Realm",
-								Value = "urn://idserver"
-							}
-						}
-					}
+                        Options = new List<Option>
+                        {
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "IdPEndpoint",
+                                Value = "https://www.e-contract.be/eid-idp/protocol/ws-federation/auth-ident"
+                            },
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "Realm",
+                                Value = "urn://idserver"
+                            }
+                        }
+                    },
+                    new AuthenticationProvider
+                    {
+                        IsEnabled = true,
+                        Name = "Google",
+                        Options = new List<Option>
+                        {
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "ClientId",
+                                Value = "636126285787-755svbmi6j75t54e00lk58fi1t1qs4c6.apps.googleusercontent.com"
+                            },
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "ClientSecret",
+                                Value = "l-3B1I0hGNc-0S4NSdkIw2yE"
+                            }
+                        }
+                    }
                 });
             }
         }

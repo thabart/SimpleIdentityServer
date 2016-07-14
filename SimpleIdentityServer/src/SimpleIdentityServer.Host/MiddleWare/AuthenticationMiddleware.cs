@@ -36,7 +36,8 @@ namespace SimpleIdentityServer.Host.MiddleWare
             "/signin-microsoft",
             "/signin-oidc",
             "/signin-facebook",
-            "/signin-adfs"
+            "/signin-adfs",
+            "/signin-google"
         };
 
         private readonly RequestDelegate _next;

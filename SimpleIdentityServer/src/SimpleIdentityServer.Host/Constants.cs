@@ -70,6 +70,8 @@ namespace SimpleIdentityServer.Host
             
             public const string Facebook = "Facebook";
 
+            public const string Google = "Google";
+
             public const string Adfs = "ADFS";
 
             public const string Cookies = "Cookies";
@@ -82,7 +84,8 @@ namespace SimpleIdentityServer.Host
             IdentityProviderNames.Microsoft,
             IdentityProviderNames.Facebook,
             IdentityProviderNames.Adfs,
-            IdentityProviderNames.Eid
+            IdentityProviderNames.Eid,
+            IdentityProviderNames.Google
         };
 
         public static class RevocationRequestNames

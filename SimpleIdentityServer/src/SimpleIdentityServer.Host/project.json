@@ -14,6 +14,7 @@
     "Microsoft.AspNetCore.Identity": "1.0.0",
     "Microsoft.AspNetCore.Authentication.Facebook": "1.0.0",
     "Microsoft.AspNetCore.Authentication.MicrosoftAccount": "1.0.0",
+    "Microsoft.AspNetCore.Authentication.Google": "1.0.0",
     "Microsoft.AspNetCore.Authentication.Cookies": "1.0.0",
     "Microsoft.AspNetCore.Authentication.JwtBearer": "1.0.0",
     "Microsoft.AspNetCore.Authentication.OpenIdConnect": "1.0.0",
