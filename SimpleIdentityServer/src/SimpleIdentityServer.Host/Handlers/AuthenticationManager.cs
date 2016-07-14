@@ -340,7 +340,7 @@ namespace SimpleIdentityServer.Host.Handlers
                 AutomaticChallenge = true,
                 AutomaticAuthenticate = true,
                 DisplayName = "Belg. eid card",
-                RedirectPath = new PathString("/api/clients")
+                RedirectPath = new PathString("/Authenticate/LoginCallback")
             };
         }
 

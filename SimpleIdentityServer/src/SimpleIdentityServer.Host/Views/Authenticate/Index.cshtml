@@ -34,7 +34,7 @@
                 {
                     foreach (var loginProvider in loginProviders)
                     {
-                        <button type="submit" class="btn btn-default" id="@loginProvider.AuthenticationScheme" name="provider" value="@loginProvider.AuthenticationScheme" title="Log in using your @loginProvider.DisplayName account">@loginProvider.DisplayName</button>                      
+                        <button type="submit" class="btn btn-default" id="@loginProvider.AuthenticationScheme" name="provider" value="@loginProvider.AuthenticationScheme" title="Log in using your @loginProvider.AuthenticationScheme account">@loginProvider.AuthenticationScheme</button>                      
                     }
                 }
             }
