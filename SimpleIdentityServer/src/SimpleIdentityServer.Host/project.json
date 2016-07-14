@@ -40,7 +40,8 @@
     "SimpleIdentityServer.DataAccess.SqlServer": "*",
     "SimpleIdentityServer.RateLimitation": "*",
     "SimpleIdentityServer.Configuration.Client": "*",
-    "SimpleIdentityServer.Client": "*"
+    "SimpleIdentityServer.Client": "*",
+    "WsFederation": "*"
   },
   "frameworks": {
     "net46": {

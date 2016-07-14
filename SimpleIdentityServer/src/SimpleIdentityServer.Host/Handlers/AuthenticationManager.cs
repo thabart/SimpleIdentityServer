@@ -38,6 +38,7 @@ using System.Net.Http;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using WsFederation;
 
 namespace SimpleIdentityServer.Host.Handlers
 {
@@ -126,6 +127,13 @@ namespace SimpleIdentityServer.Host.Handlers
                         return true;
                     }
                 }
+                else if (authProvider.Name == "EID")
+                {
+                    if (await EnableEidAuthentication(authProvider.Options, httpContext))
+                    {
+                        return true;
+                    }
+                }
             }
 
             return false;
@@ -172,6 +180,19 @@ namespace SimpleIdentityServer.Host.Handlers
 
             var handler = new OAuthHandler<OAuthOptions>(new HttpClient());
             await handler.InitializeAsync(adfsOptions, httpContext, _logger, UrlEncoder.Default);
+            return await handler.HandleRequestAsync();
+        }
+
+        private async Task<bool> EnableEidAuthentication(List<Option> options, HttpContext httpContext)
+        {
+            var eidOptions = ExtractEidOptions(options);
+            if (eidOptions == null)
+            {
+                return false;
+            }
+
+            var handler = new WsFedAuthenticationHandler();
+            await handler.InitializeAsync(eidOptions, httpContext, _logger, UrlEncoder.Default);
             return await handler.HandleRequestAsync();
         }
 
@@ -300,6 +321,29 @@ namespace SimpleIdentityServer.Host.Handlers
             return adfsOptions;
         }
 
+        private static WsFedAuthenticationOptions ExtractEidOptions(List<Option> options)
+        {
+            var idEndPoint = options.FirstOrDefault(o => o.Key == "IdPEndpoint");
+            var realm = options.FirstOrDefault(o => o.Key == "Realm");
+            if (idEndPoint == null ||
+                realm == null)
+            {
+                return null;
+            }
+
+            return new WsFedAuthenticationOptions
+            {
+                IdPEndpoint = idEndPoint.Value,
+                Realm = realm.Value,
+                AuthenticationScheme = Constants.IdentityProviderNames.Eid,
+                SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme,
+                AutomaticChallenge = true,
+                AutomaticAuthenticate = true,
+                DisplayName = "Belg. eid card",
+                RedirectPath = new PathString("/api/clients")
+            };
+        }
+
         private static void EnrichOpenidOptions(
             OpenIdConnectOptions openIdConnectOptions,
             IDataProtectionProvider dataProtectionProvider,
@@ -370,7 +414,6 @@ namespace SimpleIdentityServer.Host.Handlers
                 }
             }
         }
-
 
         #endregion
         

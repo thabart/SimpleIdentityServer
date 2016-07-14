@@ -73,13 +73,16 @@ namespace SimpleIdentityServer.Host
             public const string Adfs = "ADFS";
 
             public const string Cookies = "Cookies";
+
+            public const string Eid = "EID";
         }
         
         public static List<string> SupportedIdentityProviders = new List<string> 
         {
             IdentityProviderNames.Microsoft,
             IdentityProviderNames.Facebook,
-            IdentityProviderNames.Adfs
+            IdentityProviderNames.Adfs,
+            IdentityProviderNames.Eid
         };
 
         public static class RevocationRequestNames

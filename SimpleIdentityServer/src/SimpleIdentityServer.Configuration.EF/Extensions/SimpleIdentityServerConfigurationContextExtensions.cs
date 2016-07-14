@@ -148,7 +148,27 @@ namespace SimpleIdentityServer.Configuration.EF.Extensions
                                 Value = "https://adfs.mycompany.com/adfs/oauth2/token/"
                             }
                         }
-                    }
+                    },
+					new AuthenticationProvider 
+					{
+					    IsEnabled = true,
+                        Name = "EID",
+						Options = new List<Option>
+						{
+							new Option
+							{
+								Id = Guid.NewGuid().ToString(),
+								Key = "IdPEndpoint",
+								Value = "https://www.e-contract.be/eid-idp/protocol/ws-federation/auth-ident"
+							},
+							new Option
+							{
+								Id = Guid.NewGuid().ToString(),
+								Key = "Realm",
+								Value = "urn://idserver"
+							}
+						}
+					}
                 });
             }
         }
