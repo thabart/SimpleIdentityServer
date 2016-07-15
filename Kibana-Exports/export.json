@@ -1,0 +1,114 @@
+[
+  {
+    "_id": "Authorization-Dashboard",
+    "_type": "dashboard",
+    "_source": {
+      "title": "Authorization Dashboard",
+      "hits": 0,
+      "description": "",
+      "panelsJSON": "[{\"col\":1,\"columns\":[\"@timestamp\",\"fields.Id\",\"fields.Message\",\"fields.Task\"],\"id\":\"Auth-Logs\",\"panelIndex\":1,\"row\":1,\"size_x\":11,\"size_y\":3,\"sort\":[\"@timestamp\",\"desc\"],\"type\":\"search\"},{\"col\":9,\"id\":\"Authorization-FailuresCounter\",\"panelIndex\":2,\"row\":4,\"size_x\":3,\"size_y\":2,\"type\":\"visualization\"},{\"col\":9,\"columns\":[\"fields.Id\",\"fields.Message\"],\"id\":\"Authorization-Failures\",\"panelIndex\":3,\"row\":6,\"size_x\":3,\"size_y\":2,\"sort\":[\"@timestamp\",\"desc\"],\"type\":\"search\"},{\"id\":\"Granted-Tokens\",\"type\":\"visualization\",\"panelIndex\":4,\"size_x\":8,\"size_y\":4,\"col\":1,\"row\":4}]",
+      "optionsJSON": "{\"darkTheme\":true}",
+      "uiStateJSON": "{}",
+      "version": 1,
+      "timeRestore": false,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"filter\":[{\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"*\"}}}]}"
+      }
+    }
+  },
+  {
+    "_id": "Auth-Logs",
+    "_type": "search",
+    "_source": {
+      "title": "Authorization Logs",
+      "description": "",
+      "hits": 0,
+      "columns": [
+        "@timestamp",
+        "fields.Id",
+        "fields.Message",
+        "fields.Task"
+      ],
+      "sort": [
+        "@timestamp",
+        "desc"
+      ],
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\n  \"index\": \"simpleidserver-*\",\n  \"query\": {\n    \"query_string\": {\n      \"analyze_wildcard\": true,\n      \"query\": \"*\"\n    }\n  },\n  \"filter\": [],\n  \"highlight\": {\n    \"pre_tags\": [\n      \"@kibana-highlighted-field@\"\n    ],\n    \"post_tags\": [\n      \"@/kibana-highlighted-field@\"\n    ],\n    \"fields\": {\n      \"*\": {}\n    },\n    \"require_field_match\": false,\n    \"fragment_size\": 2147483647\n  }\n}"
+      }
+    }
+  },
+  {
+    "_id": "Authorization-Failures",
+    "_type": "search",
+    "_source": {
+      "title": "Authorization Failures",
+      "description": "",
+      "hits": 0,
+      "columns": [
+        "fields.Id",
+        "fields.Message"
+      ],
+      "sort": [
+        "@timestamp",
+        "desc"
+      ],
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"simpleidserver-*\",\"filter\":[],\"highlight\":{\"pre_tags\":[\"@kibana-highlighted-field@\"],\"post_tags\":[\"@/kibana-highlighted-field@\"],\"fields\":{\"*\":{}},\"require_field_match\":false,\"fragment_size\":2147483647},\"query\":{\"query_string\":{\"query\":\"fields.Task:Failure\",\"analyze_wildcard\":true}}}"
+      }
+    }
+  },
+  {
+    "_id": "Granted-Token",
+    "_type": "search",
+    "_source": {
+      "title": "Granted Token",
+      "description": "",
+      "hits": 0,
+      "columns": [
+        "fields.Id",
+        "fields.Message"
+      ],
+      "sort": [
+        "@timestamp",
+        "desc"
+      ],
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"simpleidserver-*\",\"filter\":[],\"highlight\":{\"pre_tags\":[\"@kibana-highlighted-field@\"],\"post_tags\":[\"@/kibana-highlighted-field@\"],\"fields\":{\"*\":{}},\"require_field_match\":false,\"fragment_size\":2147483647},\"query\":{\"query_string\":{\"query\":\"fields.Id:30\",\"analyze_wildcard\":true}}}"
+      }
+    }
+  },
+  {
+    "_id": "Authorization-FailuresCounter",
+    "_type": "visualization",
+    "_source": {
+      "title": "Authorization FailuresCounter",
+      "visState": "{\"title\":\"New Visualization\",\"type\":\"metric\",\"params\":{\"handleNoResults\":true,\"fontSize\":60},\"aggs\":[{\"id\":\"1\",\"type\":\"count\",\"schema\":\"metric\",\"params\":{\"customLabel\":\"Number of failures\"}}],\"listeners\":{}}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "savedSearchId": "Authorization-Failures",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"filter\":[]}"
+      }
+    }
+  },
+  {
+    "_id": "Granted-Tokens",
+    "_type": "visualization",
+    "_source": {
+      "title": "Granted Tokens",
+      "visState": "{\"title\":\"New Visualization\",\"type\":\"histogram\",\"params\":{\"shareYAxis\":true,\"addTooltip\":true,\"addLegend\":true,\"scale\":\"linear\",\"mode\":\"stacked\",\"times\":[],\"addTimeMarker\":false,\"defaultYExtents\":false,\"setYExtents\":false,\"yAxis\":{}},\"aggs\":[{\"id\":\"1\",\"type\":\"count\",\"schema\":\"metric\",\"params\":{\"customLabel\":\"New granted tokens\"}},{\"id\":\"2\",\"type\":\"date_histogram\",\"schema\":\"segment\",\"params\":{\"field\":\"@timestamp\",\"interval\":\"h\",\"customInterval\":\"2h\",\"min_doc_count\":1,\"extended_bounds\":{}}}],\"listeners\":{}}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "savedSearchId": "Granted-Token",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"filter\":[]}"
+      }
+    }
+  }
+]

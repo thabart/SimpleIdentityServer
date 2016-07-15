@@ -169,8 +169,19 @@ namespace SimpleIdentityServer.Logging
     
     public class SimpleIdentityServerEventSource : ISimpleIdentityServerEventSource
     {
+        private static class Tasks
+        {
+            public const string Authorization = "Authorization";
+            public const string Token = "Token";
+            public const string Failure = "Failure";
+            public const string Information = "Info";
+            public const string Other = "Other";
+        }
+
         private readonly ILogger _logger;
-                
+
+        private const string MessagePattern = "{Id} : {Task}, {Message}";
+
         #region Constructor
 
         public SimpleIdentityServerEventSource(ILoggerFactory loggerFactory)
@@ -188,7 +199,14 @@ namespace SimpleIdentityServer.Logging
             string scope, 
             string individualClaims)
         {
-            _logger.LogInformation($"Start the authorization process for the client : {clientId}, response type : {responseType}, scope : {scope} and claims : {individualClaims}");
+            var evt = new Event
+            {
+                Id = 1,
+                Task = Tasks.Authorization,
+                Message = $"Start the authorization process for the client : {clientId}, response type : {responseType}, scope : {scope} and claims : {individualClaims}"
+            };
+
+            LogInformation(evt);
         }
 
         public void StartAuthorizationCodeFlow(
@@ -196,12 +214,26 @@ namespace SimpleIdentityServer.Logging
             string scope,
             string individualClaims)
         {
-            _logger.LogInformation($"Start the authorization code flow for the client : {clientId}, scope : {scope} and claims : {individualClaims}");
+            var evt = new Event
+            {
+                Id = 2,
+                Task = Tasks.Authorization,
+                Message = $"Start the authorization code flow for the client : {clientId}, scope : {scope} and claims : {individualClaims}"
+            };
+
+            LogInformation(evt);
         }
 
         public void StartProcessingAuthorizationRequest(string jsonAuthorizationRequest)
         {
-            _logger.LogInformation($"Start processing the authorization request : {jsonAuthorizationRequest}");
+            var evt = new Event
+            {
+                Id = 3,
+                Task = Tasks.Authorization,
+                Message = $"Start processing the authorization request : {jsonAuthorizationRequest}"
+            };
+
+            LogInformation(evt);
         }
 
         public void EndProcessingAuthorizationRequest(
@@ -209,14 +241,28 @@ namespace SimpleIdentityServer.Logging
             string actionType,
             string actionName)
         {
-            _logger.LogInformation($"End processing the authorization request, request : {jsonAuthorizationRequest}, action type : {actionType} and action name : {actionName}");
+            var evt = new Event
+            {
+                Id = 4,
+                Task = Tasks.Authorization,
+                Message = $"End processing the authorization request, request : {jsonAuthorizationRequest}, action type : {actionType} and action name : {actionName}"
+            };
+
+            LogInformation(evt);
         }
 
         public void StartGeneratingAuthorizationResponseToClient(
             string clientId,
             string responseTypes)
         {
-            _logger.LogInformation($"Start to generate an authorization response for the client {clientId}, response types : {responseTypes}");
+            var evt = new Event
+            {
+                Id = 5,
+                Task = Tasks.Authorization,
+                Message = $"Start to generate an authorization response for the client {clientId}, response types : {responseTypes}"
+            };
+
+            LogInformation(evt);
         }
 
         public void GrantAuthorizationCodeToClient(
@@ -224,19 +270,39 @@ namespace SimpleIdentityServer.Logging
             string authorizationCode,
             string scopes)
         {
-            _logger.LogInformation($"Grant authorization code to the client {clientId}, authorization code : {authorizationCode} and scopes : {scopes}");
+            var evt = new Event
+            {
+                Id = 6,
+                Task = Tasks.Authorization,
+                Message = $"Grant authorization code to the client {clientId}, authorization code : {authorizationCode} and scopes : {scopes}"
+            };
+            LogInformation(evt);
         }
 
         public void EndGeneratingAuthorizationResponseToClient(
             string clientId,
             string parameters)
         {
-            _logger.LogInformation($"Finished to generate the authorization response for the client {clientId}, parameters : {parameters}");
+            var evt = new Event
+            {
+                Id = 7,
+                Task = Tasks.Authorization,
+                Message = $"Finished to generate the authorization response for the client {clientId}, parameters : {parameters}"
+            };
+
+            LogInformation(evt);
         }
 
         public void EndAuthorizationCodeFlow(string clientId, string actionType, string actionName)
         {
-            _logger.LogInformation($"End of the authorization code flow, client : {clientId}, action type : {actionType}, action name : {actionName}");
+            var evt = new Event
+            {
+                Id = 8,
+                Task = Tasks.Authorization,
+                Message = $"End of the authorization code flow, client : {clientId}, action type : {actionType}, action name : {actionName}"
+            };
+
+            LogInformation(evt);
         }
 
         public void EndAuthorization(
@@ -244,7 +310,14 @@ namespace SimpleIdentityServer.Logging
             string actionName,
             string parameters)
         {
-            _logger.LogInformation($"End the authorization process, action type : {actionType}, action name : {actionName} and parameters : {parameters}");
+            var evt = new Event
+            {
+                Id = 9,
+                Task = Tasks.Authorization,
+                Message = $"End the authorization process, action type : {actionType}, action name : {actionName} and parameters : {parameters}"
+            };
+
+            LogInformation(evt);
         }
 
         public void StartImplicitFlow(
@@ -252,7 +325,14 @@ namespace SimpleIdentityServer.Logging
             string scope, 
             string individualClaims)
         {
-            _logger.LogInformation($"Start the implicit flow, client : {clientId}, scope : {scope} and claims : {individualClaims}");
+            var evt = new Event
+            {
+                Id = 10,
+                Task = Tasks.Authorization,
+                Message = $"Start the implicit flow, client : {clientId}, scope : {scope} and claims : {individualClaims}"
+            };
+
+            LogInformation(evt);
         }
 
         public void EndImplicitFlow(
@@ -260,7 +340,14 @@ namespace SimpleIdentityServer.Logging
             string actionType, 
             string actionName)
         {
-            _logger.LogInformation($"End the implicit flow, client : {clientId}, action type : {actionType} and action name : {actionName}");
+            var evt = new Event
+            {
+                Id = 11,
+                Task = Tasks.Authorization,
+                Message = $"End the implicit flow, client : {clientId}, action type : {actionType} and action name : {actionName}"
+            };
+
+            LogInformation(evt);
         }
 
         public void StartHybridFlow(
@@ -268,12 +355,26 @@ namespace SimpleIdentityServer.Logging
             string scope, 
             string individualClaims)
         {
-            _logger.LogInformation($"Start the hybrid flow, client : {clientId}, scope : {scope} and claims : {individualClaims}");
+            var evt = new Event
+            {
+                Id = 12,
+                Task = Tasks.Authorization,
+                Message = $"Start the hybrid flow, client : {clientId}, scope : {scope} and claims : {individualClaims}"
+            };
+
+            LogInformation(evt);
         }
 
         public void EndHybridFlow(string clientId, string actionType, string actionName)
         {
-            _logger.LogInformation($"End the hybrid flow : {clientId}, action type : {actionType} and action name : {actionName}");
+            var evt = new Event
+            {
+                Id = 13,
+                Task = Tasks.Authorization,
+                Message = $"End the hybrid flow : {clientId}, action type : {actionType} and action name : {actionName}"
+            };
+
+            LogInformation(evt);
         }
 
         #endregion
@@ -282,68 +383,150 @@ namespace SimpleIdentityServer.Logging
         
         public void StartGetTokenByResourceOwnerCredentials(string clientId, string userName, string password)
         {
-            _logger.LogInformation($"Start resource owner credentials grant-type, client : {clientId}, user name : {userName}, password : {password}");
+            var evt = new Event
+            {
+                Id = 14,
+                Task = Tasks.Token,
+                Message = $"Start resource owner credentials grant-type, client : {clientId}, user name : {userName}, password : {password}"
+            };
+
+            LogInformation(evt);
         }
 
         public void EndGetTokenByResourceOwnerCredentials(string accessToken, string identityToken)
         {
-            _logger.LogInformation($"End of the resource owner credentials grant-type, access token : {accessToken}, identity token : {identityToken}");
+            var evt = new Event
+            {
+                Id = 15,
+                Task = Tasks.Token,
+                Message = $"End of the resource owner credentials grant-type, access token : {accessToken}, identity token : {identityToken}"
+            };
+
+            LogInformation(evt);
         }
 
         public void StartGetTokenByAuthorizationCode(
             string clientId, 
             string authorizationCode)
         {
-            _logger.LogInformation($"Start authorization code grant-type, client : {clientId} and authorization code : {authorizationCode}");
+            var evt = new Event
+            {
+                Id = 16,
+                Task = Tasks.Token,
+                Message = $"Start authorization code grant-type, client : {clientId} and authorization code : {authorizationCode}"
+            };
+
+            LogInformation(evt);
         }
 
         public void EndGetTokenByAuthorizationCode(string accessToken, string identityToken)
         {
-            _logger.LogInformation($"End of the authorization code grant-type, access token : {accessToken}, identity token : {identityToken}");
+            var evt = new Event
+            {
+                Id = 17,
+                Task = Tasks.Token,
+                Message = $"End of the authorization code grant-type, access token : {accessToken}, identity token : {identityToken}"
+            };
+
+            LogInformation(evt);
         }
 
         public void StartToAuthenticateTheClient(string clientId, 
             string authenticationType)
         {
-            _logger.LogInformation($"Start to authenticate the client, client : {clientId}, authentication type : {authenticationType}");
+            var evt = new Event
+            {
+                Id = 18,
+                Task = Tasks.Token,
+                Message = $"Start to authenticate the client, client : {clientId}, authentication type : {authenticationType}"
+            };
+
+            LogInformation(evt);
         }
         
         public void FinishToAuthenticateTheClient(string clientId,
             string authenticationType)
         {
-            _logger.LogInformation($"Finish to authenticate the client, client : {clientId}, authentication type : {authenticationType}");
+            var evt = new Event
+            {
+                Id = 19,
+                Task = Tasks.Token,
+                Message = $"Finish to authenticate the client, client : {clientId}, authentication type : {authenticationType}"
+            };
+
+            LogInformation(evt);
         }
 
         public void StartGetTokenByRefreshToken(
             string clientId, 
             string refreshToken)
         {
-            _logger.LogInformation($"Start refresh token grant-type, client : {clientId}, refresh token : {refreshToken}");
+            var evt = new Event
+            {
+                Id = 20,
+                Task = Tasks.Token,
+                Message = $"Start refresh token grant-type, client : {clientId}, refresh token : {refreshToken}"
+            };
+
+            LogInformation(evt);
         }
         
         public void EndGetTokenByRefreshToken(string accessToken, string identityToken)
         {
-            _logger.LogInformation($"End refresh token grant-type, access token : {accessToken}, identity token : {identityToken}");
+            var evt = new Event
+            {
+                Id = 21,
+                Task = Tasks.Token,
+                Message = $"End refresh token grant-type, access token : {accessToken}, identity token : {identityToken}"
+            };
+
+            LogInformation(evt);
         }
 
         public void StartGetTokenByClientCredentials(string scope)
         {
-            _logger.LogInformation($"Start get token by client credentials, scope : {scope}");
+            var evt = new Event
+            {
+                Id = 22,
+                Task = Tasks.Token,
+                Message = $"Start get token by client credentials, scope : {scope}"
+            };
+
+            LogInformation(evt);
         }
 
         public void EndGetTokenByClientCredentials(string clientId, string scope)
         {
-            _logger.LogInformation($"End get token by client credentials, client : {clientId}, scope : {scope}");
+            var evt = new Event
+            {
+                Id = 23,
+                Task = Tasks.Token,
+                Message = $"End get token by client credentials, client : {clientId}, scope : {scope}"
+            };
+
+            LogInformation(evt);
         }
         
         public void StartRevokeToken(string token)
         {
-            _logger.LogInformation($"Start revoking token, token : {token}");
+            var evt = new Event
+            {
+                Id = 24,
+                Task = Tasks.Token,
+                Message = $"Start revoking token, token : {token}"
+            };
+            LogInformation(evt);
         }
 
         public void EndRevokeToken(string token)
         {
-            _logger.LogInformation($"End revoking token, token : {token}");
+            var evt = new Event
+            {
+                Id = 25,
+                Task = Tasks.Token,
+                Message = $"End revoking token, token : {token}"
+            };
+            LogInformation(evt);
         }
 
         #endregion
@@ -354,23 +537,50 @@ namespace SimpleIdentityServer.Logging
             string description, 
             string state)
         {
-            _logger.LogError($"Something goes wrong in the open-id process, code : {code}, description : {description}, state : {state}");
+            var evt = new Event
+            {
+                Id = 26,
+                Task = Tasks.Failure,
+                Message = $"Something goes wrong in the open-id process, code : {code}, description : {description}, state : {state}"
+            };
+
+            LogError(evt);
         }
         
         public void Failure(string message)
         {
-            _logger.LogError($"Something goes wrong, code : {message}");
+            var evt = new Event
+            {
+                Id = 27,
+                Task = Tasks.Failure,
+                Message = $"Something goes wrong, code : {message}"
+            };
+
+            LogError(evt);
         }
 
         public void Failure(Exception exception)
         {
-            var evtId = new EventId(1, "Error");
-            _logger.LogError(evtId, exception, "an error occured");
+            var evt = new Event
+            {
+                Id = 28,
+                Task = Tasks.Failure,
+                Message = "an error occured"
+            };
+
+            LogError(evt, new EventId(28), exception);
         }
 
         public void Info(string message)
         {
-            _logger.LogInformation(message);
+            var evt = new Event
+            {
+                Id = 29,
+                Task = Tasks.Information,
+                Message = message
+            };
+
+            LogInformation(evt);
         }
 
         #endregion
@@ -381,31 +591,80 @@ namespace SimpleIdentityServer.Logging
             string accessToken,
             string scopes)
         {
-            _logger.LogInformation($"Grant access to the client {clientId}, access token : {accessToken}, scopes : {scopes}");
+            var evt = new Event
+            {
+                Id = 30,
+                Task = Tasks.Other,
+                Message = $"Grant access to the client {clientId}, access token : {accessToken}, scopes : {scopes}"
+            };
+            LogInformation(evt);
         }
 
         public void AuthenticateResourceOwner(string subject)
         {
-            _logger.LogInformation($"The resource owner is authenticated {subject}");
+            var evt = new Event
+            {
+                Id = 31,
+                Task = Tasks.Other,
+                Message = $"The resource owner is authenticated {subject}"
+            };
+            LogInformation(evt);
         }
         
         public void GiveConsent(string subject,
             string clientId,
             string consentId)
         {
-            _logger.LogInformation($"The consent has been given by the resource owner, subject : {subject}, client id : {clientId}, consent id : {consentId}");
+            var evt = new Event
+            {
+                Id = 32,
+                Task = Tasks.Other,
+                Message = $"The consent has been given by the resource owner, subject : {subject}, client id : {clientId}, consent id : {consentId}"
+            };
+            LogInformation(evt);
         }
 
         public void StartRegistration(string clientName)
         {
-            _logger.LogInformation($"Start the registration process, client name : {clientName}");
+            var evt = new Event
+            {
+                Id = 33,
+                Task = Tasks.Other,
+                Message = $"Start the registration process, client name : {clientName}"
+            };
+            LogInformation(evt);
         }
 
         public void EndRegistration(
             string clientId,
             string clientName)
         {
-            _logger.LogInformation($"End the registration process, client id : {clientId}, client name : {clientName}");
+            var evt = new Event
+            {
+                Id = 34,
+                Task = Tasks.Other,
+                Message = $"End the registration process, client id : {clientId}, client name : {clientName}"
+            };
+            LogInformation(evt);
+        }
+
+        #endregion
+
+        #region Private methods
+        
+        private void LogInformation(Event evt)
+        {
+            _logger.LogInformation(MessagePattern, evt.Id, evt.Task, evt.Message);
+        }
+
+        private void LogError(Event evt)
+        {
+            _logger.LogError(MessagePattern, evt.Id, evt.Task, evt.Message);
+        }
+
+        private void LogError(Event evt, EventId evtId, Exception ex)
+        {
+            _logger.LogError(evtId, ex, MessagePattern, evt.Id, evt.Task, evt.Message);
         }
 
         #endregion

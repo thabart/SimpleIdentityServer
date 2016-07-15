@@ -35,6 +35,7 @@
     "Serilog.Extensions.Logging": "1.0.0",
     "Serilog.Sinks.ColoredConsole": "2.0.0",
     "Serilog.Sinks.RollingFile": "2.0.0",
+    "Serilog.Sinks.ElasticSearch": "*",
     "SimpleIdentityServer.Core": "*",
     "SimpleIdentityServer.Core.Jwt": "*",
     "SimpleIdentityServer.DataAccess.Fake": "*",

@@ -23,6 +23,8 @@ using Microsoft.Extensions.FileProviders;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Json;
+using Serilog.Sinks.ElasticSearch;
+using Serilog.Sinks.ElasticSearch.Sinks;
 using Serilog.Sinks.RollingFile;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Configuration.Client;
@@ -62,6 +64,53 @@ namespace SimpleIdentityServer.Host
         /// </summary>
         public string ConnectionString { get; set;}
     }
+
+    public sealed class LoggingOptions
+    {
+        public FileLogOptions FileLogOptions { get; set; }
+
+        public ElasticsearchOptions ElasticsearchOptions { get; set; }
+    }
+
+    public sealed class FileLogOptions
+    {
+        #region Constructor
+
+        public FileLogOptions()
+        {
+            PathFormat = "log-{Date}.txt";
+        }
+
+        #endregion
+
+        #region Properties
+
+        public bool IsEnabled { get; set; }
+
+        public string PathFormat { get; set; }
+
+        #endregion
+    }
+
+    public sealed class ElasticsearchOptions
+    {
+        #region Constructor
+
+        public ElasticsearchOptions()
+        {
+            Url = "http://localhost:9200";
+        }
+
+        #endregion
+
+        #region Properties
+
+        public bool IsEnabled { get; set; }
+
+        public string Url { get; set; }
+
+        #endregion
+    }
         
     public static class ServiceCollectionExtensions 
     {
@@ -70,7 +119,8 @@ namespace SimpleIdentityServer.Host
         public static void AddSimpleIdentityServer(
             this IServiceCollection serviceCollection,
             Action<DataSourceOptions> dataSourceCallback,
-            Action<SwaggerOptions> swaggerCallback) 
+            Action<SwaggerOptions> swaggerCallback,
+            Action<LoggingOptions> loggingOptionsCallback) 
         {
             if (dataSourceCallback == null)
             {
@@ -81,20 +131,29 @@ namespace SimpleIdentityServer.Host
             {
                 throw new ArgumentNullException(nameof(swaggerCallback));
             }
+
+            if (loggingOptionsCallback == null)
+            {
+                throw new ArgumentNullException(nameof(loggingOptionsCallback));
+            }
             
             var dataSourceOptions = new DataSourceOptions();
             var swaggerOptions = new SwaggerOptions();
+            var loggingOptions = new LoggingOptions();
             dataSourceCallback(dataSourceOptions);
             swaggerCallback(swaggerOptions);
+            loggingOptionsCallback(loggingOptions);
             serviceCollection.AddSimpleIdentityServer(
                 dataSourceOptions,
-                swaggerOptions);
+                swaggerOptions,
+                loggingOptions);
         }
         
         public static void AddSimpleIdentityServer(
             this IServiceCollection serviceCollection, 
             DataSourceOptions dataSourceOptions,
-            SwaggerOptions swaggerOptions) 
+            SwaggerOptions swaggerOptions,
+            LoggingOptions loggingOptions) 
         {
             if (dataSourceOptions == null) {
                 throw new ArgumentNullException(nameof(dataSourceOptions));
@@ -102,6 +161,11 @@ namespace SimpleIdentityServer.Host
             
             if (swaggerOptions == null) {
                 throw new ArgumentNullException(nameof(swaggerOptions));
+            }
+
+            if (loggingOptions == null)
+            {
+                throw new ArgumentNullException(nameof(loggingOptions));
             }
 
             if (dataSourceOptions.DataSourceType == DataSourceTypes.SqlServer)
@@ -119,7 +183,10 @@ namespace SimpleIdentityServer.Host
                 serviceCollection.AddSimpleIdentityServerPostgre(dataSourceOptions.ConnectionString);
             }
             
-            ConfigureSimpleIdentityServer(serviceCollection, swaggerOptions);
+            ConfigureSimpleIdentityServer(
+                serviceCollection, 
+                swaggerOptions,
+                loggingOptions);
         }
         
         #endregion
@@ -133,7 +200,8 @@ namespace SimpleIdentityServer.Host
         /// <param name="swaggerOptions"></param>
         private static void ConfigureSimpleIdentityServer(
             IServiceCollection services,
-            SwaggerOptions swaggerOptions) 
+            SwaggerOptions swaggerOptions,
+            LoggingOptions loggingOptions) 
         {
             services.AddSimpleIdentityServerCore();
             services.AddSimpleIdentityServerJwt();
@@ -173,14 +241,28 @@ namespace SimpleIdentityServer.Host
             var logger = new LoggerConfiguration()
                 .MinimumLevel.Information()
                 .Enrich.FromLogContext()
-                .WriteTo.ColoredConsole()
-                .WriteTo.RollingFile("log-{Date}.txt")
-                .Filter.ByIncludingOnly(serilogFilter)
+                .WriteTo.ColoredConsole();
+            if (loggingOptions.FileLogOptions != null &&
+                loggingOptions.FileLogOptions.IsEnabled)
+            {
+                logger.WriteTo.RollingFile(loggingOptions.FileLogOptions.PathFormat);
+            }
+
+            if (loggingOptions.ElasticsearchOptions != null &&
+                loggingOptions.ElasticsearchOptions.IsEnabled)
+            {
+                logger.WriteTo.Elasticsearch(new ElasticsearchSinkOptions
+                {
+                    Url = loggingOptions.ElasticsearchOptions.Url
+                });
+            }
+        
+            var log = logger.Filter.ByIncludingOnly(serilogFilter)
                 .CreateLogger();
-            Log.Logger = logger;
+            Log.Logger = log;
             services.AddLogging();
             services.AddTransient<ISimpleIdentityServerEventSource, SimpleIdentityServerEventSource>();
-            services.AddSingleton<ILogger>(logger);
+            services.AddSingleton<ILogger>(log);
             services.AddSingleton<ISimpleIdServerConfigurationClientFactory>(new SimpleIdServerConfigurationClientFactory());
             services.AddSingleton<IIdentityServerClientFactory>(new IdentityServerClientFactory());
             services.AddTransient<IAuthenticationManager, AuthenticationManager>();
