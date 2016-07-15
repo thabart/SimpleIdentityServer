@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authentication.Twitter;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
@@ -142,7 +143,10 @@ namespace SimpleIdentityServer.Host.Handlers
                 }
                 else if (authProvider.Name == "Twitter")
                 {
-
+                    if (await EnableTwitterAuthentication(authProvider.Options, httpContext))
+                    {
+                        return true;
+                    }
                 }
                 else if (authProvider.Name == "GitHub")
                 {
@@ -223,6 +227,19 @@ namespace SimpleIdentityServer.Host.Handlers
             return await handler.HandleRequestAsync();
         }
 
+        private async Task<bool> EnableTwitterAuthentication(List<Option> options, HttpContext httpContext)
+        {
+            var twitterOptions = ExtractTwitterOptions(options, _dataProtectionProvider);
+            if (twitterOptions == null)
+            {
+                return false;
+            }
+
+            var handler = new TwitterHandler(new HttpClient());
+            await handler.InitializeAsync(twitterOptions, httpContext, _logger, UrlEncoder.Default);
+            return await handler.HandleRequestAsync();
+        }
+
         #endregion
 
         #region Extract options
@@ -286,6 +303,34 @@ namespace SimpleIdentityServer.Host.Handlers
             };
 
             return googleOptions;
+        }
+
+        private static TwitterOptions ExtractTwitterOptions(
+            List<Option> options,
+            IDataProtectionProvider dataProtectionProvider)
+        {
+            var clientId = options.FirstOrDefault(o => o.Key == "ClientId");
+            var clientSecret = options.FirstOrDefault(o => o.Key == "ClientSecret");
+            if (clientId == null ||
+                clientSecret == null)
+            {
+                return null;
+            }
+
+            var dataProtector = dataProtectionProvider.CreateProtector(
+                typeof(AuthenticationManager).FullName, Constants.IdentityProviderNames.Twitter, "v1");
+            var twitterOptions = new TwitterOptions
+            {
+                ClaimsIssuer = Constants.IdentityProviderNames.Twitter,
+                AuthenticationScheme = Constants.IdentityProviderNames.Twitter,
+                SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme,
+                ConsumerKey = clientId.Value,
+                ConsumerSecret = clientSecret.Value,
+                StateDataFormat = new SecureDataFormat<RequestToken>(
+                    new RequestTokenSerializer(),
+                    dataProtector)
+            };
+            return twitterOptions;
         }
 
         private static OpenIdConnectOptions ExtractMicrosoftOptions(

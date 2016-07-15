@@ -77,6 +77,8 @@ namespace SimpleIdentityServer.Host
             public const string Cookies = "Cookies";
 
             public const string Eid = "EID";
+
+            public const string Twitter = "Twitter";
         }
         
         public static List<string> SupportedIdentityProviders = new List<string> 
@@ -85,7 +87,8 @@ namespace SimpleIdentityServer.Host
             IdentityProviderNames.Facebook,
             IdentityProviderNames.Adfs,
             IdentityProviderNames.Eid,
-            IdentityProviderNames.Google
+            IdentityProviderNames.Google,
+            IdentityProviderNames.Twitter
         };
 
         public static class RevocationRequestNames

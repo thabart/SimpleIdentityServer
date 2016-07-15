@@ -188,6 +188,26 @@ namespace SimpleIdentityServer.Configuration.EF.Extensions
                                 Value = "l-3B1I0hGNc-0S4NSdkIw2yE"
                             }
                         }
+                    },
+                    new AuthenticationProvider
+                    {
+                        IsEnabled = true,
+                        Name = "Twitter",
+                        Options = new List<Option>
+                        {
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "ClientId",
+                                Value = "g8so3MHsMdklZ8NHau1VfOcXB"
+                            },
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "ClientSecret",
+                                Value = "Flxp1fR3XLVj2gsVpwSigJRy80sBdNUPum3CZUkeyyKwbzvlJz"
+                            }
+                        }
                     }
                 });
             }
