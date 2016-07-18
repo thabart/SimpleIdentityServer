@@ -256,7 +256,7 @@ namespace SimpleIdentityServer.Host.Handlers
                 return false;
             }
             
-            var handler = new OAuthHandler<OAuthOptions>(httpClient);
+            var handler = new GitHubAuthenticationHandler(httpClient);
             await handler.InitializeAsync(githubOptions, httpContext, _logger, UrlEncoder.Default);
             return await handler.HandleRequestAsync();
         }
@@ -355,7 +355,7 @@ namespace SimpleIdentityServer.Host.Handlers
             return twitterOptions;
         }
 
-        public static OAuthOptions ExtractGithubOptions(
+        public static GitHubAuthenticationOptions ExtractGithubOptions(
             List<Option> options,
             IDataProtectionProvider dataProtectionProvider,
             out HttpClient httpClient)
@@ -369,67 +369,14 @@ namespace SimpleIdentityServer.Host.Handlers
                 return null;
             }
 
-            var githubOptions = new OAuthOptions
+            var githubOptions = new GitHubAuthenticationOptions
             {
                 AuthenticationScheme = Constants.IdentityProviderNames.Github,
                 DisplayName = Constants.IdentityProviderNames.Github,
                 SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme,
                 ClientId = clientId.Value,
                 ClientSecret = clientSecret.Value,
-                CallbackPath = new PathString("/signin-github"),
-                AuthorizationEndpoint = "https://github.com/login/oauth/authorize",
-                TokenEndpoint = "https://github.com/login/oauth/access_token",
-                UserInformationEndpoint = "https://api.github.com/user",
-                ClaimsIssuer = Constants.IdentityProviderNames.Github,
-                Events = new OAuthEvents
-                {
-                    OnCreatingTicket = async context =>
-                    {
-                        var request = new HttpRequestMessage
-                        {
-                            Method = HttpMethod.Get,
-                            RequestUri = new Uri(context.Options.UserInformationEndpoint)
-                        };
-                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", context.AccessToken);
-                        request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                        var response = await context.Backchannel.SendAsync(request, context.HttpContext.RequestAborted);
-                        response.EnsureSuccessStatusCode();
-
-                        var user = JObject.Parse(await response.Content.ReadAsStringAsync());
-
-                        var identifier = user.Value<string>("id");
-                        if (!string.IsNullOrEmpty(identifier))
-                        {
-                            context.Identity.AddClaim(new Claim(
-                                Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, identifier,
-                                ClaimValueTypes.String, context.Options.ClaimsIssuer));
-                        }
-
-                        var userName = user.Value<string>("login");
-                        if (!string.IsNullOrEmpty(userName))
-                        {
-                            context.Identity.AddClaim(new Claim(
-                                Core.Jwt.Constants.StandardResourceOwnerClaimNames.Name, userName,
-                                ClaimValueTypes.String, context.Options.ClaimsIssuer));
-                        }
-
-                        var email = user.Value<string>("email");
-                        if (!string.IsNullOrEmpty(email))
-                        {
-                            context.Identity.AddClaim(new Claim(
-                                Core.Jwt.Constants.StandardResourceOwnerClaimNames.Email, email,
-                                ClaimValueTypes.Email, context.Options.ClaimsIssuer));
-                        }
-
-                        var link = user.Value<string>("url");
-                        if (!string.IsNullOrEmpty(link))
-                        {
-                            context.Identity.AddClaim(new Claim(
-                                Core.Jwt.Constants.StandardResourceOwnerClaimNames.WebSite, link,
-                                ClaimValueTypes.String, context.Options.ClaimsIssuer));
-                        }
-                    }
-                }
+                ClaimsIssuer = Constants.IdentityProviderNames.Github
             };
             EnrichOauthOptions(githubOptions, dataProtectionProvider, out httpClient);
             return githubOptions;
