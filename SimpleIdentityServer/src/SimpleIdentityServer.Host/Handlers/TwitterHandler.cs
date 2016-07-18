@@ -106,7 +106,7 @@ namespace SimpleIdentityServer.Host.Handlers
             var identity = new ClaimsIdentity(new[]
             {
                 new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, accessToken.UserId, ClaimValueTypes.String, Options.ClaimsIssuer),
-                new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Name, accessToken.ScreenName, ClaimValueTypes.String, Options.ClaimsIssuer),
+                // new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Name, accessToken.ScreenName, ClaimValueTypes.String, Options.ClaimsIssuer),
                 new Claim("urn:twitter:userid", accessToken.UserId, ClaimValueTypes.String, Options.ClaimsIssuer),
                 new Claim("urn:twitter:screenname", accessToken.ScreenName, ClaimValueTypes.String, Options.ClaimsIssuer)
             },
@@ -381,11 +381,29 @@ namespace SimpleIdentityServer.Host.Handlers
             var result = JObject.Parse(responseText);
 
             var email = result.Value<string>("email");
+            var name = result.Value<string>("name");
+            var picture = result.Value<string>("profile_image_url_https");
+            var website = result.Value<string>("url");
             if (!string.IsNullOrEmpty(email))
             {
                 identity.AddClaim(new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Email, email, ClaimValueTypes.Email, Options.ClaimsIssuer));
             }
 
+            if (!string.IsNullOrEmpty(name))
+            {
+                identity.AddClaim(new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Name, name));
+            }
+
+            if (!string.IsNullOrEmpty(picture))
+            {
+                identity.AddClaim(new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Picture, picture));
+            }
+
+            if (!string.IsNullOrEmpty(website))
+            {
+                identity.AddClaim(new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.WebSite, website));
+            }
+            
             return result;
         }
         

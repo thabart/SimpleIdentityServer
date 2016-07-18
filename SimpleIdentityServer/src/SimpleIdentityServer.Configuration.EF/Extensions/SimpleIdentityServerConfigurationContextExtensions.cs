@@ -208,6 +208,26 @@ namespace SimpleIdentityServer.Configuration.EF.Extensions
                                 Value = "Flxp1fR3XLVj2gsVpwSigJRy80sBdNUPum3CZUkeyyKwbzvlJz"
                             }
                         }
+                    },
+                    new AuthenticationProvider
+                    {
+                        IsEnabled = true,
+                        Name = "Github",
+                        Options = new List<Option>
+                        {
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "ClientId",
+                                Value = "e03f5eb28418ee141944"
+                            },
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "ClientSecret",
+                                Value = "1ca11063515064b7c2638924280ca026f9713f5b"
+                            }
+                        }
                     }
                 });
             }
