@@ -63,6 +63,10 @@ namespace SimpleIdentityServer.UmaManager.Client
             public const string Url = "url";
 
             public const string ResourceId = "resource_id";
+
+            public const string IsExactUrl = "exact_url";
+
+            public const string AuthorizationPolicy = "authorization_policy";
         }
     }
 }

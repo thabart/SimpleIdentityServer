@@ -2,7 +2,7 @@
   "profiles": {
     "SimpleIdentityServer.TokenValidation.Host.Tests": {
       "commandName": "Project",
-      "commandLineArgs": "--server.urls=http://*:5003"
+      "commandLineArgs": "--server.urls=http://*:5105"
     }
   }
 }

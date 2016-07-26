@@ -26,5 +26,11 @@ namespace SimpleIdentityServer.UmaManager.Client.DTOs.Requests
 
         [DataMember(Name = Constants.SearchResourceRequestNames.ResourceId)]
         public string ResourceId { get; set; }
+
+        [DataMember(Name = Constants.SearchResourceRequestNames.IsExactUrl)]
+        public bool IsExactUrl { get; set; }
+
+        [DataMember(Name = Constants.SearchResourceRequestNames.AuthorizationPolicy)]
+        public string AuthorizationPolicy { get; set; }
     }
 }

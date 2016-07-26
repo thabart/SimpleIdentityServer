@@ -162,17 +162,49 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
                     Scopes = permission.Scopes
                 };
 
-                var operations = await identityServerUmaManagerClientFactory.GetResourceClient()
+                var resourceClient = identityServerUmaManagerClientFactory.GetResourceClient();
+                var operations = await resourceClient
                     .SearchResources(new SearchResourceRequest
                     {
                         ResourceId = permission.ResourceSetId
                     }, _options.ResourcesUrl, string.Empty);
+                var authorizationPolicy = string.Empty;
                 if (operations != null && operations.Any())
                 {
-                    claimPermission.Url = operations.First().Url;
+                    var operation = operations.First();
+                    claimPermission.Url = operation.Url;
+                    authorizationPolicy = operation.AuthorizationPolicy;
                 }
-
+                
                 claimsIdentity.AddPermission(claimPermission);
+
+                // Include sub resources
+                if (_options.IncludeSubResources && !string.IsNullOrWhiteSpace(authorizationPolicy))
+                {
+                    var subResources = await resourceClient
+                        .SearchResources(new SearchResourceRequest
+                        {
+                            IsExactUrl = true,
+                            AuthorizationPolicy = authorizationPolicy,
+                            Url = claimPermission.Url
+                        }, _options.ResourcesUrl, string.Empty);
+                    if (subResources != null &&
+                        subResources.Any())
+                    {
+                        var newPermissions = subResources
+                            .Where(r => r.ResourceSetId != permission.ResourceSetId)
+                            .Select(r => new Permission
+                            {
+                                ResourceSetId = r.ResourceSetId,
+                                Url = r.Url,
+                                Scopes = r.Policy != null ? r.Policy.Scopes : new List<string>()
+                            });
+                        foreach(var newPermission in newPermissions)
+                        {
+                            claimsIdentity.AddPermission(newPermission);
+                        }
+                    }
+                }
             }
 
             context.User = new ClaimsPrincipal(claimsIdentity);
