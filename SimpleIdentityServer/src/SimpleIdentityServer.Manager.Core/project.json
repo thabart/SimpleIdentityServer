@@ -22,6 +22,9 @@
       "frameworkAssemblies": {
         "System.Net.Http": "",
         "System.IdentityModel": ""
+      },
+      "buildOptions": {
+        "define": [ "NET" ]
       }
     },
     "netstandard1.6": { }
