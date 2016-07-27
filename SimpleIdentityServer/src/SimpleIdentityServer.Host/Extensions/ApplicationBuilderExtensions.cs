@@ -48,8 +48,6 @@ namespace SimpleIdentityServer.Host
     {
         public string ConfigurationUrl { get; set; }
 
-        public string AuthorizationServerUrl { get; set; }
-
         public string ClientId { get; set; }
 
         public string ClientSecret { get; set; }

@@ -32,6 +32,7 @@ using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Configuration.Client;
 using SimpleIdentityServer.Configuration.Client.DTOs.Responses;
+using SimpleIdentityServer.Host.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -97,10 +98,11 @@ namespace SimpleIdentityServer.Host.Handlers
                 throw new ArgumentNullException(nameof(authenticationOptions));
             }
 
+            var url = httpContext.Request.GetAbsoluteUriWithVirtualPath();
             var grantedToken = await _identityServerClientFactory.CreateTokenClient()
                 .UseClientSecretPostAuth(authenticationOptions.ClientId, authenticationOptions.ClientSecret)
                 .UseClientCredentials("display_configuration")
-                .ResolveAsync(authenticationOptions.AuthorizationServerUrl);
+                .ExecuteAsync(url + "/" + Constants.EndPoints.Token);
             var authProviders = await _simpleIdServerConfigurationClientFactory.GetAuthProviderClient()
                 .GetAuthProvidersByResolving(authenticationOptions.ConfigurationUrl, grantedToken.AccessToken);
             foreach (var authProvider in authProviders)
