@@ -14,6 +14,9 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.UmaManager.Client.DTOs.Requests;
+using System.Collections.Generic;
+
 namespace SimpleIdentityServer.UmaManager.Client
 {
     public static class Constants
@@ -58,6 +61,22 @@ namespace SimpleIdentityServer.UmaManager.Client
             public const string Action = "action";
         }
 
+        public static Dictionary<AuthorizationPolicyFilters, string> MappingAuthorizationPolicyFiltersToNames = new Dictionary<AuthorizationPolicyFilters, string>
+        {
+            {
+                AuthorizationPolicyFilters.All,
+                "all"
+            },
+            {
+                AuthorizationPolicyFilters.NotRoot,
+                "not_root"
+            },
+            {
+                AuthorizationPolicyFilters.Root,
+                "root"
+            }
+        };
+
         public static class SearchResourceRequestNames
         {
             public const string Url = "url";
@@ -67,6 +86,8 @@ namespace SimpleIdentityServer.UmaManager.Client
             public const string IsExactUrl = "exact_url";
 
             public const string AuthorizationPolicy = "authorization_policy";
+
+            public const string AuthorizationPolicyFilter = "authorization_policy_filter";
         }
     }
 }

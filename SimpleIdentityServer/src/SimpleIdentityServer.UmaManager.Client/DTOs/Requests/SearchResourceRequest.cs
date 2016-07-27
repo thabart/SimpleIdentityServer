@@ -18,6 +18,13 @@ using System.Runtime.Serialization;
 
 namespace SimpleIdentityServer.UmaManager.Client.DTOs.Requests
 {
+    public enum AuthorizationPolicyFilters
+    {
+        All,
+        Root,
+        NotRoot
+    }
+
     [DataContract]
     public class SearchResourceRequest
     {
@@ -32,5 +39,8 @@ namespace SimpleIdentityServer.UmaManager.Client.DTOs.Requests
 
         [DataMember(Name = Constants.SearchResourceRequestNames.AuthorizationPolicy)]
         public string AuthorizationPolicy { get; set; }
+
+        [DataMember(Name = Constants.SearchResourceRequestNames.AuthorizationPolicyFilter)]
+        public AuthorizationPolicyFilters AuthorizationPolicyFilter { get; set; }
     }
 }

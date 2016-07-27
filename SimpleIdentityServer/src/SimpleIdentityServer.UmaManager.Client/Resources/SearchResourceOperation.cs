@@ -61,6 +61,8 @@ namespace SimpleIdentityServer.UmaManager.Client.Resources
             var contentRequest = new Dictionary<string, string>();
             if (searchResourceRequest != null)
             {
+                contentRequest.Add(Constants.SearchResourceRequestNames.IsExactUrl, searchResourceRequest.IsExactUrl.ToString());
+                contentRequest.Add(Constants.SearchResourceRequestNames.AuthorizationPolicyFilter, Constants.MappingAuthorizationPolicyFiltersToNames[searchResourceRequest.AuthorizationPolicyFilter]);
                 if (!string.IsNullOrWhiteSpace(searchResourceRequest.Url))
                 {
                     contentRequest.Add(Constants.SearchResourceRequestNames.Url, searchResourceRequest.Url);
@@ -69,7 +71,12 @@ namespace SimpleIdentityServer.UmaManager.Client.Resources
                 if (!string.IsNullOrWhiteSpace(searchResourceRequest.ResourceId))
                 {
                     contentRequest.Add(Constants.SearchResourceRequestNames.ResourceId, searchResourceRequest.ResourceId);
-                }                
+                }
+                
+                if (!string.IsNullOrWhiteSpace(searchResourceRequest.AuthorizationPolicy))
+                {
+                    contentRequest.Add(Constants.SearchResourceRequestNames.AuthorizationPolicy, searchResourceRequest.AuthorizationPolicy);
+                }
             }
 
             var resourcesUrl = $"{uri.AbsoluteUri.TrimEnd('/')}/search";

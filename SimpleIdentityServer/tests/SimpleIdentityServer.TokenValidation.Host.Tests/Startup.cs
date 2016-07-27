@@ -21,6 +21,7 @@ using SimpleIdentityServer.Uma.Authorization;
 using SimpleIdentityServer.UmaIntrospection.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Builder;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.TokenValidation.Host.Tests
 {
@@ -57,8 +58,13 @@ namespace SimpleIdentityServer.TokenValidation.Host.Tests
             services.AddAuthorization(options =>
             {
                 // Add conventional uma authorization
-                options.AddPolicy("uma", policy => policy.AddConventionalUma());
-                // options.AddPolicy("resourceSet", policy => policy.AddResourceUma("<GUID>", "<read>","<update>"));
+                // options.AddPolicy("uma", policy => policy.AddConventionalUma());
+                options.AddPolicy("uma", policy => policy.AddResourceUma("resources/Apis/folder/fodler2", new List<string>
+                {
+                    "read",
+                    "write",
+                    "execute"
+                }));
             });
 
             services.AddAuthentication();
@@ -97,8 +103,8 @@ namespace SimpleIdentityServer.TokenValidation.Host.Tests
             // III. ENABLE UMA AUTHENTICATION
             var options = new UmaIntrospectionOptions
             {
-                ResourcesUrl = "http://localhost:8080/api/vs/resources",
-                UmaConfigurationUrl = "http://localhost:5001/.well-known/uma-configuration",
+                ResourcesUrl = "https://localhost:5444/api/vs/resources",
+                UmaConfigurationUrl = "https://localhost:5445/.well-known/uma-configuration",
                 IncludeSubResources = true
             };
             app.UseAuthenticationWithUmaIntrospection(options);

@@ -29,15 +29,15 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
             var factory = new SecurityProxyFactory();
             var proxy = factory.GetProxy(new SecurityOptions
             {
-                ClientId = "<replace by your client id>",
-                ClientSecret = "<replace by your client secret>",
-                UmaConfigurationUrl = "http://localhost:5001/.well-known/uma-configuration",
-                OpenidConfigurationUrl = "http://localhost:5000/.well-known/openid-configuration",
-                RootManageApiUrl = "http://localhost:8080/api"
+                ClientId = "SampleClient",
+                ClientSecret = "SampleClient",
+                UmaConfigurationUrl = "https://localhost:5445/.well-known/uma-configuration",
+                OpenidConfigurationUrl = "https://localhost:5443/.well-known/openid-configuration",
+                RootManageApiUrl = "https://localhost:5444/api"
             });
             try
             {
-                var result = proxy.GetRpt("{resource_url}", new List<string>
+                var result = proxy.GetRpt("resources/Apis/folder", new List<string>
                 {
                     "read",
                     "write",
@@ -45,7 +45,7 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
                 }).Result;
                 return result;
             }
-            catch (AggregateException)
+            catch (AggregateException ex)
             {
                 return null;
             }

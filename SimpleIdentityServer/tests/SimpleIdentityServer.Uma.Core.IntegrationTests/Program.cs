@@ -24,6 +24,7 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
 
         public static void Main(string[] args)
         {
+            // 08b4dbd5-17d8-40eb-9885-2424c6fccb19
             var startup = new Startup();
             startup.Start();
             Console.ReadLine();

@@ -178,7 +178,7 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
                 
                 claimsIdentity.AddPermission(claimPermission);
 
-                // Include sub resources
+                // Include sub resources with same authorization policy
                 if (_options.IncludeSubResources && !string.IsNullOrWhiteSpace(authorizationPolicy))
                 {
                     var subResources = await resourceClient
@@ -197,7 +197,7 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
                             {
                                 ResourceSetId = r.ResourceSetId,
                                 Url = r.Url,
-                                Scopes = r.Policy != null ? r.Policy.Scopes : new List<string>()
+                                Scopes = permission.Scopes
                             });
                         foreach(var newPermission in newPermissions)
                         {
