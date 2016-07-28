@@ -29,10 +29,6 @@ namespace SimpleIdentityServer.Uma.EF.Mappings
                 .ToTable("ResourceSets")
                 .HasKey(r => r.Id);
             modelBuilder.Entity<ResourceSet>()
-                .HasOne(r => r.Policy)
-                .WithMany(p => p.ResourceSets)
-                .HasForeignKey(r => r.PolicyId);
-            modelBuilder.Entity<ResourceSet>()
                 .HasMany(r => r.Tickets)
                 .WithOne(t => t.ResourceSet)
                 .HasForeignKey(t => t.ResourceSetId);

@@ -8,7 +8,7 @@ using SimpleIdentityServer.Uma.EF;
 namespace SimpleIdentityServer.Uma.EF.Migrations
 {
     [DbContext(typeof(SimpleIdServerUmaContext))]
-    [Migration("20160708071505_Initialize")]
+    [Migration("20160728112149_Initialize")]
     partial class Initialize
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,21 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Policies");
+                });
+
+            modelBuilder.Entity("SimpleIdentityServer.Uma.EF.Models.PolicyResource", b =>
+                {
+                    b.Property<string>("PolicyId");
+
+                    b.Property<string>("ResourceSetId");
+
+                    b.HasKey("PolicyId", "ResourceSetId");
+
+                    b.HasIndex("PolicyId");
+
+                    b.HasIndex("ResourceSetId");
+
+                    b.ToTable("PolicyResource");
                 });
 
             modelBuilder.Entity("SimpleIdentityServer.Uma.EF.Models.PolicyRule", b =>
@@ -57,8 +72,6 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
 
                     b.Property<string>("Name");
 
-                    b.Property<string>("PolicyId");
-
                     b.Property<string>("Scopes");
 
                     b.Property<string>("Type");
@@ -66,8 +79,6 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
                     b.Property<string>("Uri");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("PolicyId");
 
                     b.ToTable("ResourceSets");
                 });
@@ -127,18 +138,25 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
                     b.ToTable("Tickets");
                 });
 
+            modelBuilder.Entity("SimpleIdentityServer.Uma.EF.Models.PolicyResource", b =>
+                {
+                    b.HasOne("SimpleIdentityServer.Uma.EF.Models.Policy", "Policy")
+                        .WithMany("PolicyResources")
+                        .HasForeignKey("PolicyId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("SimpleIdentityServer.Uma.EF.Models.ResourceSet", "ResourceSet")
+                        .WithMany("PolicyResources")
+                        .HasForeignKey("ResourceSetId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("SimpleIdentityServer.Uma.EF.Models.PolicyRule", b =>
                 {
                     b.HasOne("SimpleIdentityServer.Uma.EF.Models.Policy", "Policy")
                         .WithMany("Rules")
-                        .HasForeignKey("PolicyId");
-                });
-
-            modelBuilder.Entity("SimpleIdentityServer.Uma.EF.Models.ResourceSet", b =>
-                {
-                    b.HasOne("SimpleIdentityServer.Uma.EF.Models.Policy", "Policy")
-                        .WithMany("ResourceSets")
-                        .HasForeignKey("PolicyId");
+                        .HasForeignKey("PolicyId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("SimpleIdentityServer.Uma.EF.Models.Rpt", b =>

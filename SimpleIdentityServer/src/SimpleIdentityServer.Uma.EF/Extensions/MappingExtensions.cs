@@ -28,6 +28,9 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
 
         public static Domain.ResourceSet ToDomain(this Model.ResourceSet resourceSet)
         {
+            var policyIds = resourceSet.PolicyResources != null ?
+                resourceSet.PolicyResources.Select(p => p.ResourceSetId)
+                .ToList() : new List<string>();
             return new Domain.ResourceSet
             {
                 IconUri = resourceSet.IconUri,
@@ -36,7 +39,7 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
                 Id = resourceSet.Id,
                 Type = resourceSet.Type,
                 Uri = resourceSet.Uri,
-                AuthorizationPolicyId = resourceSet.PolicyId
+                AuthorizationPolicyIds = policyIds
             };
         }
 
@@ -84,11 +87,12 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
                 rules = policy.Rules.Select(r => r.ToDomain()).ToList();
             }
 
-            if (policy.ResourceSets != null)
+            if (policy.PolicyResources != null)
             {
-                resourceSetIds = policy.ResourceSets.Select(r => r.Id).ToList();
+                resourceSetIds = policy.PolicyResources
+                    .Select(r => r.ResourceSetId)
+                    .ToList();
             }
-
 
             return new Domain.Policy
             {
@@ -124,15 +128,23 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
 
         public static Model.ResourceSet ToModel(this Domain.ResourceSet resourceSet)
         {
+            var policyIds = resourceSet.AuthorizationPolicyIds != null ?
+                resourceSet.AuthorizationPolicyIds.Select(p =>
+                    new Model.PolicyResource
+                    {
+                        ResourceSetId = resourceSet.Id,
+                        PolicyId = p
+                    }).ToList()
+                : new List<Model.PolicyResource>();
             return new Model.ResourceSet
             {
+                Id = resourceSet.Id,
                 IconUri = resourceSet.IconUri,
                 Name = resourceSet.Name,
                 Scopes = GetConcatenatedList(resourceSet.Scopes),
-                Id = resourceSet.Id,
                 Type = resourceSet.Type,
                 Uri = resourceSet.Uri,
-                PolicyId = resourceSet.AuthorizationPolicyId
+                PolicyResources = policyIds
             };
         }
 
@@ -174,15 +186,26 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
         public static Model.Policy ToModel(this Domain.Policy policy)
         {
             var rules = new List<Model.PolicyRule>();
+            var resources = new List<Model.PolicyResource>();
             if (policy.Rules != null)
             {
                 rules = policy.Rules.Select(r => r.ToModel()).ToList();
             }
 
+            if (policy.ResourceSetIds != null)
+            {
+                resources = policy.ResourceSetIds.Select(r => new Model.PolicyResource
+                {
+                    PolicyId = policy.Id,
+                    ResourceSetId = r
+                }).ToList();
+            }
+
             return new Model.Policy
             {
                 Id = policy.Id,
-                Rules = rules
+                Rules = rules,
+                PolicyResources = resources
             };
         }
 

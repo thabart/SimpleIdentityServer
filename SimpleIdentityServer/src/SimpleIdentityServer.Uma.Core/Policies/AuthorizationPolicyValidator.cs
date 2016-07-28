@@ -21,6 +21,7 @@ using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Policies
@@ -79,8 +80,8 @@ namespace SimpleIdentityServer.Uma.Core.Policies
                     string.Format(ErrorDescriptions.TheResourceSetDoesntExist, validTicket.ResourceSetId));
             }
 
-            var authorizationPolicy = _policyRepository.GetPolicy(resourceSet.AuthorizationPolicyId);
-            if (authorizationPolicy == null)
+            if (resourceSet.AuthorizationPolicyIds == null ||
+                !resourceSet.AuthorizationPolicyIds.Any())
             {
                 return new AuthorizationPolicyResult
                 {
@@ -88,7 +89,25 @@ namespace SimpleIdentityServer.Uma.Core.Policies
                 };
             }
 
-            return await _basicAuthorizationPolicy.Execute(validTicket, authorizationPolicy, claimTokenParameters);
+            foreach(var authorizationPolicyId in resourceSet.AuthorizationPolicyIds)
+            {
+                var authorizationPolicy = _policyRepository.GetPolicy(authorizationPolicyId);
+                if (authorizationPolicy == null)
+                {
+                    continue;
+                }
+
+                var result = await _basicAuthorizationPolicy.Execute(validTicket, authorizationPolicy, claimTokenParameters);
+                if (result.Type != AuthorizationPolicyResultEnum.Authorized)
+                {
+                    return result;
+                }
+            }
+
+            return new AuthorizationPolicyResult
+            {
+                Type = AuthorizationPolicyResultEnum.Authorized
+            };            
         }
 
         #endregion

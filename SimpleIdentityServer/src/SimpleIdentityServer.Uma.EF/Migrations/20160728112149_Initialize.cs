@@ -20,6 +20,22 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ResourceSets",
+                columns: table => new
+                {
+                    Id = table.Column<string>(nullable: false),
+                    IconUri = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(nullable: true),
+                    Scopes = table.Column<string>(nullable: true),
+                    Type = table.Column<string>(nullable: true),
+                    Uri = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ResourceSets", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Scopes",
                 columns: table => new
                 {
@@ -52,30 +68,31 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
                         column: x => x.PolicyId,
                         principalTable: "Policies",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "ResourceSets",
+                name: "PolicyResource",
                 columns: table => new
                 {
-                    Id = table.Column<string>(nullable: false),
-                    IconUri = table.Column<string>(nullable: true),
-                    Name = table.Column<string>(nullable: true),
-                    PolicyId = table.Column<string>(nullable: true),
-                    Scopes = table.Column<string>(nullable: true),
-                    Type = table.Column<string>(nullable: true),
-                    Uri = table.Column<string>(nullable: true)
+                    PolicyId = table.Column<string>(nullable: false),
+                    ResourceSetId = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ResourceSets", x => x.Id);
+                    table.PrimaryKey("PK_PolicyResource", x => new { x.PolicyId, x.ResourceSetId });
                     table.ForeignKey(
-                        name: "FK_ResourceSets_Policies_PolicyId",
+                        name: "FK_PolicyResource_Policies_PolicyId",
                         column: x => x.PolicyId,
                         principalTable: "Policies",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PolicyResource_ResourceSets_ResourceSetId",
+                        column: x => x.ResourceSetId,
+                        principalTable: "ResourceSets",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -128,13 +145,18 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_PolicyRules_PolicyId",
-                table: "PolicyRules",
+                name: "IX_PolicyResource_PolicyId",
+                table: "PolicyResource",
                 column: "PolicyId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ResourceSets_PolicyId",
-                table: "ResourceSets",
+                name: "IX_PolicyResource_ResourceSetId",
+                table: "PolicyResource",
+                column: "ResourceSetId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PolicyRules_PolicyId",
+                table: "PolicyRules",
                 column: "PolicyId");
 
             migrationBuilder.CreateIndex(
@@ -156,6 +178,9 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "PolicyResource");
+
+            migrationBuilder.DropTable(
                 name: "PolicyRules");
 
             migrationBuilder.DropTable(
@@ -165,13 +190,13 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
                 name: "Scopes");
 
             migrationBuilder.DropTable(
+                name: "Policies");
+
+            migrationBuilder.DropTable(
                 name: "Tickets");
 
             migrationBuilder.DropTable(
                 name: "ResourceSets");
-
-            migrationBuilder.DropTable(
-                name: "Policies");
         }
     }
 }

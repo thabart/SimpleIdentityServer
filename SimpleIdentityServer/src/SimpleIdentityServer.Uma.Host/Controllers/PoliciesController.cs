@@ -17,6 +17,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Uma.Core.Api.PolicyController;
+using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Host.DTOs.Requests;
 using SimpleIdentityServer.Uma.Host.DTOs.Responses;
 using SimpleIdentityServer.Uma.Host.Extensions;
@@ -68,6 +69,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             return new OkObjectResult(policies);
         }
 
+        // Partial update
         [HttpPut]
         [Authorize("UmaProtection")]
         public ActionResult PutPolicy([FromBody] PutPolicy putPolicy)
@@ -78,6 +80,33 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             }
 
             var isPolicyExists = _policyActions.UpdatePolicy(putPolicy.ToParameter());
+            if (!isPolicyExists)
+            {
+                return GetNotFoundPolicy();
+            }
+
+            return new StatusCodeResult((int)HttpStatusCode.NoContent);
+        }
+        
+        [HttpPost("{id}/resources")]
+        [Authorize("UmaProtection")]
+        public ActionResult PostAddResourceSet(string id, [FromBody] PostAddResourceSet postAddResourceSet)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            if (postAddResourceSet == null)
+            {
+                throw new ArgumentNullException(nameof(postAddResourceSet));
+            }
+
+            var isPolicyExists = _policyActions.AddResourceSet(new AddResourceSetParameter
+            {
+                PolicyId = id,
+                ResourceSets = postAddResourceSet.ResourceSets
+            });
             if (!isPolicyExists)
             {
                 return GetNotFoundPolicy();

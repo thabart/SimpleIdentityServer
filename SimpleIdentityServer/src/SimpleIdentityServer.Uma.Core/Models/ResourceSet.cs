@@ -28,10 +28,10 @@ namespace SimpleIdentityServer.Uma.Core.Models
         
         public string Type { get; set; }
         
-        public List<string> Scopes { get; set; }
-        
         public string IconUri { get; set; }
 
-        public string AuthorizationPolicyId { get; set; }
+        public List<string> Scopes { get; set; }
+
+        public List<string> AuthorizationPolicyIds { get; set; }
     }
 }

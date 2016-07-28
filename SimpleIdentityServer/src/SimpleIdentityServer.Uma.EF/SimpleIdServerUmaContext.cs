@@ -56,6 +56,7 @@ namespace SimpleIdentityServer.Uma.EF
             modelBuilder.AddRptMappings();
             modelBuilder.AddPolicyMappings();
             modelBuilder.AddPolicyRuleMappings();
+            modelBuilder.AddPolicyResourceMappings();
             base.OnModelCreating(modelBuilder);
         }
 

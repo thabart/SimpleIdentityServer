@@ -121,6 +121,7 @@ namespace SimpleIdentityServer.Uma.Core
             serviceCollection.AddTransient<IGetFrontendCodeAction, GetFrontendCodeAction>();
             serviceCollection.AddTransient<IIdentityServerClientFactory, IdentityServerClientFactory>();
             serviceCollection.AddTransient<IJwtTokenParser, JwtTokenParser>();
+            serviceCollection.AddTransient<IAddResourceSetToPolicyAction, AddResourceSetToPolicyAction>();
             serviceCollection.AddSimpleIdentityServerJwt();
             serviceCollection.AddSingleton(umaServerOptions);
         }

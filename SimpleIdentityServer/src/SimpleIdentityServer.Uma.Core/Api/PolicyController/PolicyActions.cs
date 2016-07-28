@@ -32,6 +32,8 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController
         bool UpdatePolicy(UpdatePolicyParameter updatePolicyParameter);
 
         List<string> GetPolicies();
+
+        bool AddResourceSet(AddResourceSetParameter addResourceSetParameter);
     }
 
     internal class PolicyActions : IPolicyActions
@@ -46,6 +48,8 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController
 
         private readonly IUpdatePolicyAction _updatePolicyAction;
 
+        private readonly IAddResourceSetToPolicyAction _addResourceSetAction;
+
         #region  Constructor
 
         public PolicyActions(
@@ -53,13 +57,15 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController
             IGetAuthorizationPolicyAction getAuthorizationPolicyAction,
             IDeleteAuthorizationPolicyAction deleteAuthorizationPolicyAction,
             IGetAuthorizationPoliciesAction getAuthorizationPoliciesAction,
-            IUpdatePolicyAction updatePolicyAction)
+            IUpdatePolicyAction updatePolicyAction,
+            IAddResourceSetToPolicyAction addResourceSetAction)
         {
             _addAuthorizationPolicyAction = addAuthorizationPolicyAction;
             _getAuthorizationPolicyAction = getAuthorizationPolicyAction;
             _deleteAuthorizationPolicyAction = deleteAuthorizationPolicyAction;
             _getAuthorizationPoliciesAction = getAuthorizationPoliciesAction;
             _updatePolicyAction = updatePolicyAction;
+            _addResourceSetAction = addResourceSetAction;
         }
 
         #endregion
@@ -89,6 +95,11 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController
         public bool UpdatePolicy(UpdatePolicyParameter updatePolicyParameter)
         {
             return _updatePolicyAction.Execute(updatePolicyParameter);
+        }
+
+        public bool AddResourceSet(AddResourceSetParameter addResourceSetParameter)
+        {
+            return _addResourceSetAction.Execute(addResourceSetParameter);
         }
 
         #endregion

@@ -55,7 +55,7 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
         public Policy GetPolicy(string id)
         {
             var policy = _simpleIdServerUmaContext.Policies
-                .Include(p => p.ResourceSets)
+                .Include(p => p.PolicyResources)
                 .Include(p => p.Rules)
                 .FirstOrDefault(p => p.Id == id);
             if (policy == null)
@@ -98,7 +98,6 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
                 return false;
             }
 
-            var model = policy.ToModel();
             var rulesNotToBeDeleted = new List<string>();
             if (policy.Rules != null)
             {
@@ -130,6 +129,33 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
                 var removedRule = record.Rules.First(o => o.Id == ruleId);
                 record.Rules.Remove(removedRule);
                 _simpleIdServerUmaContext.PolicyRules.Remove(removedRule);
+            }
+
+            var resourceSetIdsNotToBeDeleted = new List<string>();
+            if (policy.ResourceSetIds != null)
+            {
+                foreach(var resourceSetId in policy.ResourceSetIds)
+                {
+                    var policyResource = record.PolicyResources.FirstOrDefault(p => p.ResourceSetId == resourceSetId);
+                    if (policyResource == null)
+                    {
+                        policyResource = new Models.PolicyResource
+                        {
+                            ResourceSetId = resourceSetId,
+                            PolicyId = policy.Id
+                        };
+                        record.PolicyResources.Add(policyResource);
+                    }
+
+                    resourceSetIdsNotToBeDeleted.Add(policyResource.ResourceSetId);
+                }
+            }
+
+            var resourceSetIds = record.PolicyResources.Select(o => o.ResourceSetId).ToList();
+            foreach (var resourceSetId in resourceSetIds.Where(id => !resourceSetIdsNotToBeDeleted.Contains(id)))
+            {
+                var removedResource = record.PolicyResources.First(o => o.ResourceSetId == resourceSetId);
+                record.PolicyResources.Remove(removedResource);
             }
 
             _simpleIdServerUmaContext.SaveChanges();

@@ -76,6 +76,11 @@ namespace SimpleIdentityServer.Uma.Host
             public const string PolicyEndPoint = "policy_endpoint";
         }
 
+        public static class PostAddResourceSetNames
+        {
+            public const string ResourceSets = "resources";
+        }
+
         public static class AuthorizationResponseNames
         {
             public const string Rpt = "rpt";

@@ -81,7 +81,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             var ticket = new Ticket();
             var resourceSet = new ResourceSet
             {
-                AuthorizationPolicyId = "authorization_policy_id"
+                AuthorizationPolicyIds = new List<string> { "authorization_policy_id" }
             };
             InitializeFakeObjects();
             _resourceSetRepositoryStub.Setup(r => r.GetResourceSetById(It.IsAny<string>()))
@@ -103,7 +103,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             var ticket = new Ticket();
             var resourceSet = new ResourceSet
             {
-                AuthorizationPolicyId = "authorization_policy_id"
+                AuthorizationPolicyIds = new List<string> { "authorization_policy_id" }
             };
             var policy = new Policy();
             InitializeFakeObjects();

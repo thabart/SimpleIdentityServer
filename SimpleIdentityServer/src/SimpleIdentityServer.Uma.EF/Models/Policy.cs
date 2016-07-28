@@ -22,7 +22,7 @@ namespace SimpleIdentityServer.Uma.EF.Models
     {
         public string Id { get; set; }
         
-        public virtual ICollection<ResourceSet> ResourceSets { get; set; }
+        public virtual ICollection<PolicyResource> PolicyResources{ get; set; }
 
         public virtual ICollection<PolicyRule> Rules { get; set; }
     }

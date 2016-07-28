@@ -76,7 +76,6 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
                         string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddPolicyParameterNames.Rules));
             }
 
-            var resourceSets = new List<ResourceSet>();
             foreach (var resourceSetId in addPolicyParameter.ResourceSetIds)
             {
                 var resourceSet = _repositoryExceptionHelper.HandleException(
@@ -93,8 +92,6 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
                     throw new BaseUmaException(ErrorCodes.InvalidScope,
                         ErrorDescriptions.OneOrMoreScopesDontBelongToAResourceSet);
                 }
-
-                resourceSets.Add(resourceSet);
             }
 
             var rules = new List<PolicyRule>();
@@ -125,20 +122,13 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
             var policy = new Policy
             {
                 Id = Guid.NewGuid().ToString(),
-                Rules = rules
+                Rules = rules,
+                ResourceSetIds = addPolicyParameter.ResourceSetIds
             };
+
             _repositoryExceptionHelper.HandleException(
                 ErrorDescriptions.ThePolicyCannotBeInserted,
                 () => _policyRepository.AddPolicy(policy));
-
-            // Update resource set
-            foreach(var resourceSet in resourceSets)
-            {
-                resourceSet.AuthorizationPolicyId = policy.Id;
-                _repositoryExceptionHelper.HandleException(
-                    string.Format(ErrorDescriptions.TheResourceSetCannotBeUpdated, resourceSet.Id),
-                    () => _resourceSetRepository.UpdateResource(resourceSet));
-            }
 
             return policy.Id;
         }

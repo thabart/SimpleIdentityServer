@@ -24,11 +24,10 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
         public void Start()
         {
             // IdTokenParser.ParseIdToken("eyJhbGciOiJSUzI1NiIsImtpZCI6IjEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2xvY2FsaG9zdDo1NDQzIiwiYXVkIjpbIkFub255bW91cyIsIlNpbXBsZUlkU2VydmVyQ2xpZW50IiwiaHR0cHM6Ly9sb2NhbGhvc3Q6NTQ0MyJdLCJleHAiOjE0NzA5NzM5ODguMCwiaWF0IjoxNDY3OTczOTg4LjAsIm5vbmNlIjoibm9uY2UiLCJhY3IiOiJvcGVuaWQucGFwZS5hdXRoX2xldmVsLm5zLnBhc3N3b3JkPTEiLCJhbXIiOlsicGFzc3dvcmQiXSwiYXpwIjoiU2ltcGxlSWRTZXJ2ZXJDbGllbnQiLCJzdWIiOiJBQUFBQUFBQUFBQUFBQUFBQUFBQUFINFJrdEZxeTFobW5xNUY4dE9QUnNBIiwicm9sZSI6IiIsIm5hbWUiOiJ0aGllcnJ5IGhhYmFydCIsInByZWZlcnJlZF91c2VybmFtZSI6ImhhYmFydGhpZXJyeUBob3RtYWlsLmZyIiwiYXRfaGFzaCI6IlhuQnBVZjJzTGRKXy0zcTNvTEF0UmcifQ.ZXlVOK2y73kD3_k0jTc_tBBTI_aEILBtasuLDmGcigelERK5YDZ3_wBLTWY0_ndlIGadFAfuNf4R657IBzYv7LsYs8ywZ6bgO-sl-sRrwnNbCC-uV2eCpDdWzgVBaZFg9cz92_oFEQsfCDPEgHMGipQ_41SyXIdsrJLFIur8Pec");
-            /*
+            
             var idToken = AuthProvider.GetIdentityToken();
             Console.WriteLine($"Id token : {idToken}");
-            */
-            var rpt = SecurityProxy.GetRptToken();
+            var rpt = SecurityProxy.GetRptToken(idToken);
             Console.WriteLine($"Rpt token : {rpt}");
         }
     }

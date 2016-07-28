@@ -32,12 +32,10 @@ namespace SimpleIdentityServer.Uma.EF.Models
         
         public string IconUri { get; set; }
 
-        public string PolicyId { get; set; }
-
         public virtual ICollection<Ticket> Tickets { get; set; }
 
         public virtual ICollection<Rpt> Rpts { get; set; }
 
-        public virtual Policy Policy { get; set; }
+        public virtual ICollection<PolicyResource> PolicyResources { get; set; }
     }
 }
