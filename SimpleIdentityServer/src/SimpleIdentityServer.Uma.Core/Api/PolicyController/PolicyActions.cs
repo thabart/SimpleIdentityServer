@@ -18,6 +18,7 @@ using SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Parameters;
 using System.Collections.Generic;
+using System;
 
 namespace SimpleIdentityServer.Uma.Core.Api.PolicyController
 {
@@ -34,6 +35,8 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController
         List<string> GetPolicies();
 
         bool AddResourceSet(AddResourceSetParameter addResourceSetParameter);
+
+        bool DeleteResourceSet(string id, string resourceId);
     }
 
     internal class PolicyActions : IPolicyActions
@@ -50,6 +53,8 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController
 
         private readonly IAddResourceSetToPolicyAction _addResourceSetAction;
 
+        private readonly IDeleteResourcePolicyAction _deleteResourcePolicyAction;
+
         #region  Constructor
 
         public PolicyActions(
@@ -58,7 +63,8 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController
             IDeleteAuthorizationPolicyAction deleteAuthorizationPolicyAction,
             IGetAuthorizationPoliciesAction getAuthorizationPoliciesAction,
             IUpdatePolicyAction updatePolicyAction,
-            IAddResourceSetToPolicyAction addResourceSetAction)
+            IAddResourceSetToPolicyAction addResourceSetAction,
+            IDeleteResourcePolicyAction deleteResourcePolicyAction)
         {
             _addAuthorizationPolicyAction = addAuthorizationPolicyAction;
             _getAuthorizationPolicyAction = getAuthorizationPolicyAction;
@@ -66,6 +72,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController
             _getAuthorizationPoliciesAction = getAuthorizationPoliciesAction;
             _updatePolicyAction = updatePolicyAction;
             _addResourceSetAction = addResourceSetAction;
+            _deleteResourcePolicyAction = deleteResourcePolicyAction;
         }
 
         #endregion
@@ -100,6 +107,11 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController
         public bool AddResourceSet(AddResourceSetParameter addResourceSetParameter)
         {
             return _addResourceSetAction.Execute(addResourceSetParameter);
+        }
+
+        public bool DeleteResourceSet(string id, string resourceId)
+        {
+            return _deleteResourcePolicyAction.Execute(id, resourceId);
         }
 
         #endregion

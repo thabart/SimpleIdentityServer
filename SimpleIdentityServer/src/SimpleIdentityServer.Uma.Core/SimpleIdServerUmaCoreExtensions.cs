@@ -122,6 +122,7 @@ namespace SimpleIdentityServer.Uma.Core
             serviceCollection.AddTransient<IIdentityServerClientFactory, IdentityServerClientFactory>();
             serviceCollection.AddTransient<IJwtTokenParser, JwtTokenParser>();
             serviceCollection.AddTransient<IAddResourceSetToPolicyAction, AddResourceSetToPolicyAction>();
+            serviceCollection.AddTransient<IDeleteResourcePolicyAction, DeleteResourcePolicyAction>();
             serviceCollection.AddSimpleIdentityServerJwt();
             serviceCollection.AddSingleton(umaServerOptions);
         }

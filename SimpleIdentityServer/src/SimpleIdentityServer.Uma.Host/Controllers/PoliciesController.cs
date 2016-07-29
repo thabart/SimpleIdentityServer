@@ -115,6 +115,29 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             return new StatusCodeResult((int)HttpStatusCode.NoContent);
         }
 
+        [HttpDelete("{id}/resources/{resourceId}")]
+        [Authorize("UmaProtection")]
+        public ActionResult DeleteResourceSet(string id, string resourceId)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            if (string.IsNullOrWhiteSpace(resourceId))
+            {
+                throw new ArgumentNullException(nameof(resourceId));
+            }
+
+            var isPolicyExists = _policyActions.DeleteResourceSet(id, resourceId);
+            if (!isPolicyExists)
+            {
+                return GetNotFoundPolicy();
+            }
+
+            return new StatusCodeResult((int)HttpStatusCode.NoContent);
+        }
+
         [HttpPost]
         [Authorize("UmaProtection")]
         public ActionResult PostPolicy([FromBody] PostPolicy postPolicy)
