@@ -58,19 +58,19 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
             {
                 ClientId = "SampleClient",
                 ClientSecret = "SampleClient",
-                UmaConfigurationUrl = "http://localhost:5001/.well-known/uma-configuration",
-                OpenidConfigurationUrl = "http://localhost:5000/.well-known/openid-configuration",
-                RootManageApiUrl = "http://localhost:8080/api"
+                UmaConfigurationUrl = "https://localhost:5445/.well-known/uma-configuration",
+                OpenidConfigurationUrl = "https://localhost:5443/.well-known/openid-configuration",
+                RootManageApiUrl = "https://localhost:5444/api"
             });
             try
             {
-                var result = proxy.GetRpt("resources/Apis/SimpleIdentityServer.TokenValidation.Host.Tests/v1/ValuesController/Get", idToken, new List<string>
+                var result = proxy.GetRpt("resources/WebSite", idToken, new List<string>
                 {
                     "execute"
                 }).Result;
                 return result;
             }
-            catch (AggregateException)
+            catch (AggregateException ex)
             {
                 return null;
             }

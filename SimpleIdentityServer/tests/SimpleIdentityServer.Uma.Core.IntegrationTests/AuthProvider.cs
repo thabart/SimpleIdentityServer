@@ -21,7 +21,7 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
 {
     public class AuthProvider
     {
-        private const string OpenIdConfigurationUrl = "http://localhost:5000/.well-known/openid-configuration";
+        private const string OpenIdConfigurationUrl = "https://localhost:5443/.well-known/openid-configuration";
 
         #region Public static methods
 
@@ -42,7 +42,7 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
                     .GetIdentityToken("admi", "admi", "openid", "role", "profile")
                     .Result;
             }
-            catch (AggregateException)
+            catch (AggregateException ex)
             {
                 return null;
             }

@@ -185,7 +185,7 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
                         .SearchResources(new SearchResourceRequest
                         {
                             IsExactUrl = true,
-                            AuthorizationPolicy = authorizationPolicy,
+                            AuthorizationPolicyFilter = AuthorizationPolicyFilters.NotRoot,
                             Url = claimPermission.Url
                         }, _options.ResourcesUrl, string.Empty);
                     if (subResources != null &&
