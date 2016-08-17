@@ -8,13 +8,13 @@ using SimpleIdentityServer.DataAccess.SqlServer;
 namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
 {
     [DbContext(typeof(SimpleIdentityServerContext))]
-    [Migration("20160630120735_Initialize")]
+    [Migration("20160817143042_Initialize")]
     partial class Initialize
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
-                .HasAnnotation("ProductVersion", "1.0.0-rc2-20901")
+                .HasAnnotation("ProductVersion", "1.0.0-rtm-21431")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("SimpleIdentityServer.DataAccess.SqlServer.Models.Address", b =>
@@ -37,7 +37,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ResourceOwnerForeignKey");
+                    b.HasIndex("ResourceOwnerForeignKey")
+                        .IsUnique();
 
                     b.ToTable("addresses");
                 });
@@ -154,6 +155,17 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                     b.HasIndex("ScopeName");
 
                     b.ToTable("clientScopes");
+                });
+
+            modelBuilder.Entity("SimpleIdentityServer.DataAccess.SqlServer.Models.Configuration", b =>
+                {
+                    b.Property<string>("Key");
+
+                    b.Property<string>("Value");
+
+                    b.HasKey("Key");
+
+                    b.ToTable("configuration");
                 });
 
             modelBuilder.Entity("SimpleIdentityServer.DataAccess.SqlServer.Models.Consent", b =>
@@ -386,92 +398,92 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
 
             modelBuilder.Entity("SimpleIdentityServer.DataAccess.SqlServer.Models.Address", b =>
                 {
-                    b.HasOne("SimpleIdentityServer.DataAccess.SqlServer.Models.ResourceOwner")
-                        .WithOne()
+                    b.HasOne("SimpleIdentityServer.DataAccess.SqlServer.Models.ResourceOwner", "ResourceOwner")
+                        .WithOne("Address")
                         .HasForeignKey("SimpleIdentityServer.DataAccess.SqlServer.Models.Address", "ResourceOwnerForeignKey")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("SimpleIdentityServer.DataAccess.SqlServer.Models.ClientScope", b =>
                 {
-                    b.HasOne("SimpleIdentityServer.DataAccess.SqlServer.Models.Client")
-                        .WithMany()
+                    b.HasOne("SimpleIdentityServer.DataAccess.SqlServer.Models.Client", "Client")
+                        .WithMany("ClientScopes")
                         .HasForeignKey("ClientId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("SimpleIdentityServer.DataAccess.SqlServer.Models.Scope")
-                        .WithMany()
+                    b.HasOne("SimpleIdentityServer.DataAccess.SqlServer.Models.Scope", "Scope")
+                        .WithMany("ClientScopes")
                         .HasForeignKey("ScopeName")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("SimpleIdentityServer.DataAccess.SqlServer.Models.Consent", b =>
                 {
-                    b.HasOne("SimpleIdentityServer.DataAccess.SqlServer.Models.Client")
-                        .WithMany()
+                    b.HasOne("SimpleIdentityServer.DataAccess.SqlServer.Models.Client", "Client")
+                        .WithMany("Consents")
                         .HasForeignKey("ClientId");
 
-                    b.HasOne("SimpleIdentityServer.DataAccess.SqlServer.Models.ResourceOwner")
-                        .WithMany()
+                    b.HasOne("SimpleIdentityServer.DataAccess.SqlServer.Models.ResourceOwner", "ResourceOwner")
+                        .WithMany("Consents")
                         .HasForeignKey("ResourceOwnerId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("SimpleIdentityServer.DataAccess.SqlServer.Models.ConsentClaim", b =>
                 {
-                    b.HasOne("SimpleIdentityServer.DataAccess.SqlServer.Models.Claim")
-                        .WithMany()
+                    b.HasOne("SimpleIdentityServer.DataAccess.SqlServer.Models.Claim", "Claim")
+                        .WithMany("ConsentClaims")
                         .HasForeignKey("ClaimCode")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("SimpleIdentityServer.DataAccess.SqlServer.Models.Consent")
-                        .WithMany()
+                    b.HasOne("SimpleIdentityServer.DataAccess.SqlServer.Models.Consent", "Consent")
+                        .WithMany("ConsentClaims")
                         .HasForeignKey("ConsentId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("SimpleIdentityServer.DataAccess.SqlServer.Models.ConsentScope", b =>
                 {
-                    b.HasOne("SimpleIdentityServer.DataAccess.SqlServer.Models.Consent")
-                        .WithMany()
+                    b.HasOne("SimpleIdentityServer.DataAccess.SqlServer.Models.Consent", "Consent")
+                        .WithMany("ConsentScopes")
                         .HasForeignKey("ConsentId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("SimpleIdentityServer.DataAccess.SqlServer.Models.Scope")
-                        .WithMany()
+                    b.HasOne("SimpleIdentityServer.DataAccess.SqlServer.Models.Scope", "Scope")
+                        .WithMany("ConsentScopes")
                         .HasForeignKey("ScopeName")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("SimpleIdentityServer.DataAccess.SqlServer.Models.JsonWebKey", b =>
                 {
-                    b.HasOne("SimpleIdentityServer.DataAccess.SqlServer.Models.Client")
-                        .WithMany()
+                    b.HasOne("SimpleIdentityServer.DataAccess.SqlServer.Models.Client", "Client")
+                        .WithMany("JsonWebKeys")
                         .HasForeignKey("ClientId");
                 });
 
             modelBuilder.Entity("SimpleIdentityServer.DataAccess.SqlServer.Models.ResourceOwnerRole", b =>
                 {
-                    b.HasOne("SimpleIdentityServer.DataAccess.SqlServer.Models.ResourceOwner")
-                        .WithMany()
+                    b.HasOne("SimpleIdentityServer.DataAccess.SqlServer.Models.ResourceOwner", "ResourceOwner")
+                        .WithMany("ResourceOwnerRoles")
                         .HasForeignKey("ResourceOwnerId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("SimpleIdentityServer.DataAccess.SqlServer.Models.Role")
-                        .WithMany()
+                    b.HasOne("SimpleIdentityServer.DataAccess.SqlServer.Models.Role", "Role")
+                        .WithMany("ResourceOwnerRoles")
                         .HasForeignKey("RoleName")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("SimpleIdentityServer.DataAccess.SqlServer.Models.ScopeClaim", b =>
                 {
-                    b.HasOne("SimpleIdentityServer.DataAccess.SqlServer.Models.Claim")
-                        .WithMany()
+                    b.HasOne("SimpleIdentityServer.DataAccess.SqlServer.Models.Claim", "Claim")
+                        .WithMany("ScopeClaims")
                         .HasForeignKey("ClaimCode")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("SimpleIdentityServer.DataAccess.SqlServer.Models.Scope")
-                        .WithMany()
+                    b.HasOne("SimpleIdentityServer.DataAccess.SqlServer.Models.Scope", "Scope")
+                        .WithMany("ScopeClaims")
                         .HasForeignKey("ScopeName")
                         .OnDelete(DeleteBehavior.Cascade);
                 });

@@ -18,6 +18,7 @@ using System;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Models;
 using System.Text;
+using SimpleIdentityServer.Core.Repositories;
 
 namespace SimpleIdentityServer.Core.Helpers
 {
@@ -30,22 +31,55 @@ namespace SimpleIdentityServer.Core.Helpers
             JwsPayload idTokenPayload = null);
     }
 
-    // TODO : rename to granted token factory
     public class GrantedTokenGeneratorHelper : IGrantedTokenGeneratorHelper
     {
+        #region Fields
+
+        private readonly IConfigurationRepository _configurationRepository;
+
+        #endregion
+
+        #region Constructor
+
+        public GrantedTokenGeneratorHelper(IConfigurationRepository configurationRepository)
+        {
+            _configurationRepository = configurationRepository;
+        }
+
+        #endregion
+
+        #region Public methods
+
         public GrantedToken GenerateToken(
             string clientId,
             string scope,
             JwsPayload userInformationPayload = null,
             JwsPayload idTokenPayload = null)
         {
+            if (string.IsNullOrWhiteSpace(clientId))
+            {
+                throw new ArgumentNullException(nameof(clientId));
+            }
+
+            if (string.IsNullOrWhiteSpace(scope))
+            {
+                throw new ArgumentNullException(nameof(scope));
+            }
+
+            var configuration = _configurationRepository.Get(Constants.ConfigurationNames.ExpirationTimeName);
+            int expiresIn = 0;
+            if (configuration == null || !int.TryParse(configuration.Value, out expiresIn))
+            {
+                expiresIn = 3600;
+            }
+
             var accessTokenId = Encoding.UTF8.GetBytes(Guid.NewGuid().ToString());
             var refreshTokenId = Encoding.UTF8.GetBytes(Guid.NewGuid().ToString());
             return new GrantedToken
             {
                 AccessToken = Convert.ToBase64String(accessTokenId),
                 RefreshToken = Convert.ToBase64String(refreshTokenId),
-                ExpiresIn = 3600,
+                ExpiresIn = expiresIn,
                 TokenType = Constants.StandardTokenTypes.Bearer,
                 CreateDateTime = DateTime.UtcNow,
                 // IDS
@@ -55,5 +89,7 @@ namespace SimpleIdentityServer.Core.Helpers
                 ClientId = clientId
             };
         }
+
+        #endregion
     }
 }

@@ -79,6 +79,18 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "configuration",
+                columns: table => new
+                {
+                    Key = table.Column<string>(nullable: false),
+                    Value = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_configuration", x => x.Key);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "grantedTokens",
                 columns: table => new
                 {
@@ -146,7 +158,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                 columns: table => new
                 {
                     Name = table.Column<string>(nullable: false),
-                    Description = table.Column<string>(nullable: true),
+                    Description = table.Column<string>(maxLength: 255, nullable: true),
                     IsDisplayedInConsent = table.Column<bool>(nullable: false),
                     IsExposed = table.Column<bool>(nullable: false),
                     IsOpenIdScope = table.Column<bool>(nullable: false),
@@ -161,7 +173,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                 name: "translations",
                 columns: table => new
                 {
-                    Code = table.Column<string>(nullable: false),
+                    Code = table.Column<string>(maxLength: 255, nullable: false),
                     LanguageTag = table.Column<string>(nullable: false),
                     Value = table.Column<string>(nullable: true)
                 },
@@ -369,7 +381,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_addresses_ResourceOwnerForeignKey",
                 table: "addresses",
-                column: "ResourceOwnerForeignKey");
+                column: "ResourceOwnerForeignKey",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_clientScopes_ClientId",
@@ -447,6 +460,9 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
 
             migrationBuilder.DropTable(
                 name: "clientScopes");
+
+            migrationBuilder.DropTable(
+                name: "configuration");
 
             migrationBuilder.DropTable(
                 name: "consentClaims");

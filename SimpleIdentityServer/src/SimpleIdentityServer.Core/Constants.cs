@@ -40,6 +40,11 @@ namespace SimpleIdentityServer.Core
             public static string OpenIdPreferredCustomAuthLevel = "openid.pape.preferred_auth_levels";
         }
 
+        public static class ConfigurationNames
+        {
+            public const string ExpirationTimeName = "ExpirationTime";
+        }
+
         public static class StandardAuthorizationResponseNames
         {
             public static string IdTokenName = "id_token";

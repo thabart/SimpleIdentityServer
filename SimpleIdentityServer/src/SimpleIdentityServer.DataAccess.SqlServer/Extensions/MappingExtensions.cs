@@ -39,6 +39,15 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
             };
         }
 
+        public static Domain.Configuration ToDomain(this Model.Configuration configuration)
+        {
+            return new Domain.Configuration
+            {
+                Key = configuration.Key,
+                Value = configuration.Value
+            };
+        }
+
         public static Domain.ResourceOwner ToDomain(this Model.ResourceOwner resourceOwner)
         {
             var roleNames = new List<string>();
