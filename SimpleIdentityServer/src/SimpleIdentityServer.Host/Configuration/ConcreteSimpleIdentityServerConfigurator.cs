@@ -94,11 +94,11 @@ namespace SimpleIdentityServer.Host.Configuration
                     .Result;
                 if (setting == null || !double.TryParse(setting.Value, out result))
                 {
-                    return result;
+                    return defaultValue;
                 }
 
 
-                return defaultValue;
+                return result;
             }
             catch
             {
