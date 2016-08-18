@@ -62,8 +62,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
 
         public virtual DbSet<Role> Roles { get; set; }
 
-        public virtual DbSet<Configuration> Configurations { get; set; }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.AddAddressMapping();
@@ -82,7 +80,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
             modelBuilder.AddClientScopeMapping();
             modelBuilder.AddRoleMapping();
             modelBuilder.AddResourceOwnerRoleMapping();
-            modelBuilder.AddConfigurationMappings();
             base.OnModelCreating(modelBuilder);
         }
     }

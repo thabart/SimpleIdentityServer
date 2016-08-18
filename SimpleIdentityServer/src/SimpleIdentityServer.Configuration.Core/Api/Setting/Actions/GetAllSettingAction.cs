@@ -14,38 +14,38 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Configuration.Core.Repositories;
 using System.Collections.Generic;
 
-namespace SimpleIdentityServer.Manager.Core.Api.Configuration.Actions
+namespace SimpleIdentityServer.Configuration.Core.Api.Setting.Actions
 {
-    public interface IGetAllConfigurationAction
+    public interface IGetAllSettingAction
     {
-        List<SimpleIdentityServer.Core.Models.Configuration> Execute();
+        List<Models.Setting> Execute();
     }
 
-    internal class GetAllConfigurationAction : IGetAllConfigurationAction
+    internal class GetAllSettingAction : IGetAllSettingAction
     {
         #region Fields
 
-        private readonly IConfigurationRepository _configurationRepository;
+        private readonly ISettingRepository _settingRepository;
 
         #endregion
 
         #region Constructor
 
-        public GetAllConfigurationAction(IConfigurationRepository configurationRepository)
+        public GetAllSettingAction(ISettingRepository settingRepository)
         {
-            _configurationRepository = configurationRepository;
+            _settingRepository = settingRepository;
         }
 
         #endregion
 
         #region Public methods
 
-        public List<SimpleIdentityServer.Core.Models.Configuration> Execute()
+        public List<Models.Setting> Execute()
         {
-            return _configurationRepository.GetAll();
+            return _settingRepository.GetAll();
         }
 
         #endregion

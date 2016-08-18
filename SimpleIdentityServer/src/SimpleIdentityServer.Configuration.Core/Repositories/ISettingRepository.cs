@@ -14,17 +14,20 @@
 // limitations under the License.
 #endregion
 
-using System.Runtime.Serialization;
+using System.Collections.Generic;
 
-namespace SimpleIdentityServer.Configuration.Startup.DTOs.Responses
+namespace SimpleIdentityServer.Configuration.Core.Repositories
 {
-    [DataContract]
-    public class ConfigurationResponse
+    public interface ISettingRepository
     {
-        [DataMember(Name = Constants.ConfigurationResponseNames.AuthProviderEndPoint)]
-        public string AuthProviderEndPoint { get; set; }
+        List<Models.Setting> GetAll();
 
-        [DataMember(Name = Constants.ConfigurationResponseNames.SettingEndPoint)]
-        public string SettingEndPoint { get; set; }
+        Models.Setting Get(string key);
+
+        bool Insert(Models.Setting configuration);
+
+        bool Remove(string key);
+
+        bool Update(Models.Setting configuration);
     }
 }

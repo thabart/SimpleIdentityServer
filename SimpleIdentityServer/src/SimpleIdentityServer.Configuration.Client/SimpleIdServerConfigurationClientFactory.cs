@@ -18,12 +18,14 @@ using System;
 using SimpleIdentityServer.Configuration.Client.AuthProvider;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Configuration.Client.Factory;
+using SimpleIdentityServer.Configuration.Client.Setting;
 
 namespace SimpleIdentityServer.Configuration.Client
 {
     public interface ISimpleIdServerConfigurationClientFactory
     {
         IAuthProviderClient GetAuthProviderClient();
+        ISettingClient GetSettingClient();
     }
 
     public class SimpleIdServerConfigurationClientFactory : ISimpleIdServerConfigurationClientFactory
@@ -55,6 +57,12 @@ namespace SimpleIdentityServer.Configuration.Client
             return configurationClient;
         }
 
+        public ISettingClient GetSettingClient()
+        {
+            var settingClient = (ISettingClient)_serviceProvider.GetService(typeof(ISettingClient));
+            return settingClient;
+        }
+
         #endregion
 
         #region Private static methods
@@ -63,6 +71,7 @@ namespace SimpleIdentityServer.Configuration.Client
         {
             // Register clients
             serviceCollection.AddTransient<IAuthProviderClient, AuthProviderClient>();
+            serviceCollection.AddTransient<ISettingClient, SettingClient>();
             
             // Regsiter factories
             serviceCollection.AddTransient<IHttpClientFactory, HttpClientFactory>();
@@ -73,6 +82,10 @@ namespace SimpleIdentityServer.Configuration.Client
             serviceCollection.AddTransient<IGetAuthProviderOperation, GetAuthProviderOperation>();
             serviceCollection.AddTransient<IGetAuthProvidersOperation, GetAuthProvidersOperation>();
             serviceCollection.AddTransient<IGetConfigurationOperation, GetConfigurationOperation>();
+            serviceCollection.AddTransient<IDeleteSettingOperation, DeleteSettingOperation>();
+            serviceCollection.AddTransient<IGetSettingOperation, GetSettingOperation>();
+            serviceCollection.AddTransient<IGetSettingsOperation, GetSettingsOperation>();
+            serviceCollection.AddTransient<IUpdateSettingOperation, UpdateSettingOperation>();
         }
 
         #endregion

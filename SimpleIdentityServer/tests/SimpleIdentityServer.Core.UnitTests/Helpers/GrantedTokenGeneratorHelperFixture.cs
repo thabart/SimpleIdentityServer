@@ -15,8 +15,8 @@
 #endregion
 
 using Moq;
+using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Repositories;
 using System;
 using Xunit;
 
@@ -26,7 +26,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
     {
         #region Fields
 
-        private Mock<IConfigurationRepository> _configurationRepository;
+        private Mock<ISimpleIdentityServerConfigurator> _simpleIdentityServerConfiguratorStub;
 
         private IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
 
@@ -52,33 +52,12 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
         #region Happy paths
 
         [Fact]
-        public void When_NoExpiration_Time_Is_Retrieved_Then_3600_Is_Set()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            _configurationRepository.Setup(c => c.Get(It.IsAny<string>()))
-                .Returns(() => null);
-
-            // ACT
-            var result = _grantedTokenGeneratorHelper.GenerateToken("client_id", "scope");
-
-            // ASSERT
-            Assert.NotNull(result);
-            Assert.True(result.ExpiresIn == 3600);
-        }
-
-        [Fact]
         public void When_ExpirationTime_Is_Set_Then_ExpiresInProperty_Is_Set()
         {
             // ARRANGE
             InitializeFakeObjects();
-            var configuration = new Models.Configuration
-            {
-                Key = "ExpirationTime",
-                Value = "3700"
-            };
-            _configurationRepository.Setup(c => c.Get(It.IsAny<string>()))
-                .Returns(configuration);
+            _simpleIdentityServerConfiguratorStub.Setup(c => c.GetTokenValidityPeriodInSeconds())
+                .Returns(3700);
 
             // ACT
             var result = _grantedTokenGeneratorHelper.GenerateToken("client_id", "scope");
@@ -94,8 +73,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
 
         private void InitializeFakeObjects()
         {
-            _configurationRepository = new Mock<IConfigurationRepository>();
-            _grantedTokenGeneratorHelper = new GrantedTokenGeneratorHelper(_configurationRepository.Object);
+            _simpleIdentityServerConfiguratorStub = new Mock<ISimpleIdentityServerConfigurator>();
+            _grantedTokenGeneratorHelper = new GrantedTokenGeneratorHelper(_simpleIdentityServerConfiguratorStub.Object);
         }
 
         #endregion

@@ -38,15 +38,6 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
             };
         }
 
-        public static UpdateConfigurationParameter ToParameter(this UpdateConfigurationRequest request)
-        {
-            return new UpdateConfigurationParameter
-            {
-                Key = request.Key,
-                Value = request.Value
-            };
-        }
-
         public static GetJwsParameter ToParameter(this GetJwsRequest getJwsRequest)
         {
             return new GetJwsParameter
@@ -231,15 +222,6 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
             };
         }
 
-        public static ConfigurationResponse ToDto(this Configuration configuration)
-        {
-            return new ConfigurationResponse
-            {
-                Key = configuration.Key,
-                Value = configuration.Value
-            };
-        }
-
         public static ScopeResponse ToDto(this Scope scope)
         {
             return new ScopeResponse
@@ -271,11 +253,6 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
         public static List<ResourceOwnerResponse> ToDtos(this List<ResourceOwner> resourceOwners)
         {
             return resourceOwners.Select(r => r.ToDto()).ToList();
-        }
-
-        public static List<ConfigurationResponse> ToDtos(this List<Configuration> configurations)
-        {
-            return configurations.Select(c => c.ToDto()).ToList();
         }
 
         #endregion

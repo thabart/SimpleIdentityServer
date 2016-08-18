@@ -55,6 +55,7 @@ namespace SimpleIdentityServer.Configuration.EF
         private static void RegisterServices(IServiceCollection serviceCollection)
         {
             serviceCollection.AddTransient<IAuthenticationProviderRepository, AuthenticationProviderRepository>();
+            serviceCollection.AddTransient<ISettingRepository, SettingRepository>();
         }
 
         #endregion

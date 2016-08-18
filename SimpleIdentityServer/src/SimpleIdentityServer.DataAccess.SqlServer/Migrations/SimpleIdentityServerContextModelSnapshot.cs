@@ -156,17 +156,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                     b.ToTable("clientScopes");
                 });
 
-            modelBuilder.Entity("SimpleIdentityServer.DataAccess.SqlServer.Models.Configuration", b =>
-                {
-                    b.Property<string>("Key");
-
-                    b.Property<string>("Value");
-
-                    b.HasKey("Key");
-
-                    b.ToTable("configuration");
-                });
-
             modelBuilder.Entity("SimpleIdentityServer.DataAccess.SqlServer.Models.Consent", b =>
                 {
                     b.Property<int>("Id")

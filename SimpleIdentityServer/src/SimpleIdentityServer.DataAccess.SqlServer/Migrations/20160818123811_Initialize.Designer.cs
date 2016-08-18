@@ -8,7 +8,7 @@ using SimpleIdentityServer.DataAccess.SqlServer;
 namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
 {
     [DbContext(typeof(SimpleIdentityServerContext))]
-    [Migration("20160817143042_Initialize")]
+    [Migration("20160818123811_Initialize")]
     partial class Initialize
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -155,17 +155,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                     b.HasIndex("ScopeName");
 
                     b.ToTable("clientScopes");
-                });
-
-            modelBuilder.Entity("SimpleIdentityServer.DataAccess.SqlServer.Models.Configuration", b =>
-                {
-                    b.Property<string>("Key");
-
-                    b.Property<string>("Value");
-
-                    b.HasKey("Key");
-
-                    b.ToTable("configuration");
                 });
 
             modelBuilder.Entity("SimpleIdentityServer.DataAccess.SqlServer.Models.Consent", b =>

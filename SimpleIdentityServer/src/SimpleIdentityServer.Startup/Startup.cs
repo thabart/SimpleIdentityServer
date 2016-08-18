@@ -21,7 +21,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SimpleIdentityServer.Host;
-using SimpleIdentityServer.Host.Configuration;
 using SimpleIdentityServer.RateLimitation.Configuration;
 using System.Collections.Generic;
 
@@ -58,6 +57,7 @@ namespace SimpleIdentityServer.Startup
             var isSqlServer = bool.Parse(Configuration["isSqlServer"]);
             var isSqlLite = bool.Parse(Configuration["isSqlLite"]);
             var isPostgre = bool.Parse(Configuration["isPostgre"]);
+            var configurationUrl = Configuration["ConfigurationUrl"];
             var loggingOptions = new LoggingOptions
             {
                 ElasticsearchOptions = new ElasticsearchOptions
@@ -109,7 +109,7 @@ namespace SimpleIdentityServer.Startup
             {
                 DataSourceType = dataSourceType,
                 ConnectionString = connectionString
-            }, _swaggerOptions, loggingOptions);
+            }, _swaggerOptions, loggingOptions, configurationUrl);
 
             services.AddLogging();
         }

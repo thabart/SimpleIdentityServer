@@ -14,9 +14,9 @@
 // limitations under the License.
 #endregion
 
-namespace SimpleIdentityServer.DataAccess.SqlServer.Models
+namespace SimpleIdentityServer.Configuration.EF.Models
 {
-    public class Configuration
+    public class Setting
     {
         public string Key { get; set; }
 

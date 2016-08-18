@@ -13,7 +13,7 @@ namespace SimpleIdentityServer.Configuration.EF.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
             modelBuilder
-                .HasAnnotation("ProductVersion", "1.0.0-rc2-20901")
+                .HasAnnotation("ProductVersion", "1.0.0-rtm-21431")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("SimpleIdentityServer.Configuration.EF.Models.AuthenticationProvider", b =>
@@ -44,10 +44,21 @@ namespace SimpleIdentityServer.Configuration.EF.Migrations
                     b.ToTable("Options");
                 });
 
+            modelBuilder.Entity("SimpleIdentityServer.Configuration.EF.Models.Setting", b =>
+                {
+                    b.Property<string>("Key");
+
+                    b.Property<string>("Value");
+
+                    b.HasKey("Key");
+
+                    b.ToTable("setting");
+                });
+
             modelBuilder.Entity("SimpleIdentityServer.Configuration.EF.Models.Option", b =>
                 {
-                    b.HasOne("SimpleIdentityServer.Configuration.EF.Models.AuthenticationProvider")
-                        .WithMany()
+                    b.HasOne("SimpleIdentityServer.Configuration.EF.Models.AuthenticationProvider", "AuthenticationProvider")
+                        .WithMany("Options")
                         .HasForeignKey("AuthenticationProviderId");
                 });
         }

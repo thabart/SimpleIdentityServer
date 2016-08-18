@@ -15,21 +15,21 @@
 #endregion
 
 using Moq;
-using SimpleIdentityServer.Core.Repositories;
-using SimpleIdentityServer.Manager.Core.Api.Configuration.Actions;
-using SimpleIdentityServer.Manager.Core.Parameters;
+using SimpleIdentityServer.Configuration.Core.Api.Setting.Actions;
+using SimpleIdentityServer.Configuration.Core.Parameters;
+using SimpleIdentityServer.Configuration.Core.Repositories;
 using System;
 using Xunit;
 
-namespace SimpleIdentityServer.Manager.Core.Tests.Api.Configuration
+namespace SimpleIdentityServer.Configuration.Core.Tests.Api.Setting
 {
-    public class UpdateConfigurationActionFixture
+    public class UpdateSettingActionFixture
     {
         #region Fields
 
-        private Mock<IConfigurationRepository> _configurationRepositoryStub;
+        private Mock<ISettingRepository> _settingRepositoryStub;
 
-        private IUpdateConfigurationAction _updateConfigurationAction;
+        private IUpdateSettingAction _updateSettingAction;
 
         #endregion
 
@@ -42,8 +42,8 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Configuration
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            Assert.Throws<ArgumentNullException>(() => _updateConfigurationAction.Execute(null));
-            Assert.Throws<ArgumentNullException>(() => _updateConfigurationAction.Execute(new UpdateConfigurationParameter()));
+            Assert.Throws<ArgumentNullException>(() => _updateSettingAction.Execute(null));
+            Assert.Throws<ArgumentNullException>(() => _updateSettingAction.Execute(new UpdateSettingParameter()));
         }
 
         #endregion
@@ -51,20 +51,20 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Configuration
         #region Happy path
 
         [Fact]
-        public void When_Configuration_Is_Updated_Then_Operation_Is_Called()
+        public void When_Setting_Is_Updated_Then_Operation_Is_Called()
         {
             // ARRANGE
             const string key = "configuration_key";
             InitializeFakeObjects();
 
             // ACT
-            _updateConfigurationAction.Execute(new UpdateConfigurationParameter
+            _updateSettingAction.Execute(new UpdateSettingParameter
             {
                 Key = key
             });
 
             // ASSERT
-            _configurationRepositoryStub.Verify(c => c.Update(It.IsAny<SimpleIdentityServer.Core.Models.Configuration>()));
+            _settingRepositoryStub.Verify(c => c.Update(It.IsAny<Models.Setting>()));
         }
 
         #endregion
@@ -74,8 +74,8 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Configuration
 
         private void InitializeFakeObjects()
         {
-            _configurationRepositoryStub = new Mock<IConfigurationRepository>();
-            _updateConfigurationAction = new UpdateConfigurationAction(_configurationRepositoryStub.Object);
+            _settingRepositoryStub = new Mock<ISettingRepository>();
+            _updateSettingAction = new UpdateSettingAction(_settingRepositoryStub.Object);
         }
 
         #endregion

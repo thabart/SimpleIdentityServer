@@ -31,8 +31,10 @@ namespace SimpleIdentityServer.Configuration.Startup.Controllers
             var absoluteUrl = HttpContext.Request.GetAbsoluteUriWithVirtualPath().TrimEnd('/');
             var result = new ConfigurationResponse
             {
-                AuthProviderEndPoint = absoluteUrl + '/' + Constants.RouteValues.AuthProvider
+                AuthProviderEndPoint = absoluteUrl + '/' + Constants.RouteValues.AuthProvider,
+                SettingEndPoint = absoluteUrl + '/' + Constants.RouteValues.Setting
             };
+
             return new OkObjectResult(result);
         }
 

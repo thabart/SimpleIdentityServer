@@ -14,43 +14,43 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Configuration.Core.Repositories;
 using System;
 
-namespace SimpleIdentityServer.Manager.Core.Api.Configuration.Actions
+namespace SimpleIdentityServer.Configuration.Core.Api.Setting.Actions
 {
-    public interface IGetConfigurationAction
+    public interface IDeleteSettingAction
     {
-        SimpleIdentityServer.Core.Models.Configuration Execute(string key);
+        bool Execute(string key);
     }
 
-    internal class GetConfigurationAction : IGetConfigurationAction
+    internal class DeleteSettingAction : IDeleteSettingAction
     {
         #region Fields
 
-        private readonly IConfigurationRepository _configurationRepository;
+        private readonly ISettingRepository _settingRepository;
 
         #endregion
 
         #region Constructor
 
-        public GetConfigurationAction(IConfigurationRepository configurationRepository)
+        public DeleteSettingAction(ISettingRepository settingRepository)
         {
-            _configurationRepository = configurationRepository;
+            _settingRepository = settingRepository;
         }
 
         #endregion
 
         #region Public methods
 
-        public SimpleIdentityServer.Core.Models.Configuration Execute(string key)
+        public bool Execute(string key)
         {
             if (string.IsNullOrWhiteSpace(key))
             {
                 throw new ArgumentNullException(nameof(key));
             }
 
-            return _configurationRepository.Get(key);
+            return _settingRepository.Remove(key);
         }
 
         #endregion

@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Configuration.Core;
 using SimpleIdentityServer.Configuration.EF.Models;
 using System;
 using System.Collections.Generic;
@@ -28,6 +29,7 @@ namespace SimpleIdentityServer.Configuration.EF.Extensions
         public static void EnsureSeedData(this SimpleIdentityServerConfigurationContext context)
         {
             InsertAuthenticationProviders(context);
+            InsertSettings(context);
             context.SaveChanges();
         }
 
@@ -228,6 +230,26 @@ namespace SimpleIdentityServer.Configuration.EF.Extensions
                                 Value = "1ca11063515064b7c2638924280ca026f9713f5b"
                             }
                         }
+                    }
+                });
+            }
+        }
+
+        private static void InsertSettings(SimpleIdentityServerConfigurationContext context)
+        {
+            if (!context.Settings.Any())
+            {
+                context.Settings.AddRange(new[] 
+                {
+                     new Setting
+                    {
+                        Key = Constants.SettingNames.ExpirationTimeName,
+                        Value = "3600"
+                    },
+                    new Setting
+                    {
+                        Key = Constants.SettingNames.AuthorizationCodeExpirationTimeName,
+                        Value = "3600"
                     }
                 });
             }

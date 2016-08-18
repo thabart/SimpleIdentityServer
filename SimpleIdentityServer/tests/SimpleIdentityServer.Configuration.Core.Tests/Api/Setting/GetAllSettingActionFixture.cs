@@ -15,22 +15,22 @@
 #endregion
 
 using Moq;
-using SimpleIdentityServer.Core.Repositories;
-using SimpleIdentityServer.Manager.Core.Api.Configuration.Actions;
+using SimpleIdentityServer.Configuration.Core.Api.Setting.Actions;
+using SimpleIdentityServer.Configuration.Core.Repositories;
 using Xunit;
 
-namespace SimpleIdentityServer.Manager.Core.Tests.Api.Configuration
+namespace SimpleIdentityServer.Configuration.Core.Tests.Api.Setting
 {
-    public class GetConfigurationsActionFixture
+    public class GetAllSettingActionFixture
     {
         #region Fields
 
-        private Mock<IConfigurationRepository> _configurationRepositoryStub;
+        private Mock<ISettingRepository> _settingRepositoryStub;
 
-        private IGetAllConfigurationAction _getAllConfigurationAction;
+        private IGetAllSettingAction _getAllSettingAction;
 
-        #endregion
-
+        #endregion       
+        
         #region Happy path
 
         [Fact]
@@ -40,10 +40,10 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Configuration
             InitializeFakeObjects();
 
             // ACT
-            _getAllConfigurationAction.Execute();
+            _getAllSettingAction.Execute();
 
             // ASSERT
-            _configurationRepositoryStub.Verify(c => c.GetAll());
+            _settingRepositoryStub.Verify(c => c.GetAll());
         }
 
         #endregion
@@ -52,8 +52,8 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Configuration
 
         private void InitializeFakeObjects()
         {
-            _configurationRepositoryStub = new Mock<IConfigurationRepository>();
-            _getAllConfigurationAction = new GetAllConfigurationAction(_configurationRepositoryStub.Object);
+            _settingRepositoryStub = new Mock<ISettingRepository>();
+            _getAllSettingAction = new GetAllSettingAction(_settingRepositoryStub.Object);
         }
 
         #endregion

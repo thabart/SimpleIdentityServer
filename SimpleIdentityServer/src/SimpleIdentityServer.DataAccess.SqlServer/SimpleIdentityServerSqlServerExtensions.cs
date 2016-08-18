@@ -73,7 +73,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
             serviceCollection.AddTransient<IConsentRepository, ConsentRepository>();
             serviceCollection.AddTransient<IGrantedTokenRepository, GrantedTokenRepository>();
             serviceCollection.AddTransient<IJsonWebKeyRepository, JsonWebKeyRepository>();
-            serviceCollection.AddTransient<IConfigurationRepository, ConfigurationRepository>();
         }
 
         #endregion

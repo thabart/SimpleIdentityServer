@@ -17,6 +17,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Configuration.Core.Api.AuthProvider;
 using SimpleIdentityServer.Configuration.Core.Api.AuthProvider.Actions;
+using SimpleIdentityServer.Configuration.Core.Api.Setting;
+using SimpleIdentityServer.Configuration.Core.Api.Setting.Actions;
 
 namespace SimpleIdentityServer.Configuration.Core
 {
@@ -31,6 +33,11 @@ namespace SimpleIdentityServer.Configuration.Core
             serviceCollection.AddTransient<IGetAuthenticationProviders, GetAuthenticationProviders>();
             serviceCollection.AddTransient<IActivateAuthenticationProvider, ActivateAuthenticationProvider>();
             serviceCollection.AddTransient<IUpdateAuthenticationProvider, UpdateAuthenticationProvider>();
+            serviceCollection.AddTransient<IGetSettingAction, GetSettingAction>();
+            serviceCollection.AddTransient<IDeleteSettingAction, DeleteSettingAction>();
+            serviceCollection.AddTransient<IGetAllSettingAction, GetAllSettingAction>();
+            serviceCollection.AddTransient<IUpdateSettingAction, UpdateSettingAction>();
+            serviceCollection.AddTransient<ISettingActions, SettingActions>();
             return serviceCollection;
         }
 

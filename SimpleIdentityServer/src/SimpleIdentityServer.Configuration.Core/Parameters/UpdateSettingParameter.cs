@@ -14,17 +14,16 @@
 // limitations under the License.
 #endregion
 
-using System.Runtime.Serialization;
-
-namespace SimpleIdentityServer.Manager.Host.DTOs.Requests
+namespace SimpleIdentityServer.Configuration.Core.Parameters
 {
-    [DataContract]
-    public class UpdateConfigurationRequest
+    public class UpdateSettingParameter
     {
-        [DataMember(Name = Constants.ConfigurationResponseNames.Key)]
+        #region Properties
+
         public string Key { get; set; }
 
-        [DataMember(Name = Constants.ConfigurationResponseNames.Value)]
         public string Value { get; set; }
+
+        #endregion
     }
 }

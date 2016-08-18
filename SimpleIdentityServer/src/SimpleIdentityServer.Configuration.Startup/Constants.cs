@@ -21,8 +21,8 @@ namespace SimpleIdentityServer.Configuration.Startup
         public static class RouteValues
         {
             public const string AuthProvider = "authproviders";
-
             public const string Configuration = "configuration";
+            public const string Setting = "settings";
         }
 
         public static class ErrorResponseNames
@@ -35,6 +35,13 @@ namespace SimpleIdentityServer.Configuration.Startup
         public static class ConfigurationResponseNames
         {
             public const string AuthProviderEndPoint = "authprovider_endpoint";
+            public const string SettingEndPoint = "setting_endpoint";
+        }
+
+        public static class SettingResponseNames
+        {
+            public const string Key = "key";
+            public const string Value = "value";
         }
     }
 }

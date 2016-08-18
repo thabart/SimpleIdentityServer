@@ -37,7 +37,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
             InsertResourceOwners(context);
             InsertJsonWebKeys(context);
             InsertClients(context);
-            InsertConfigurations(context);
             context.SaveChanges();
         }
 
@@ -664,18 +663,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         IdTokenSignedResponseAlg = "RS256",
                         RedirectionUrls = "https://localhost:5443/User/Callback"
                     }
-                });
-            }
-        }
-
-        public static void InsertConfigurations(SimpleIdentityServerContext context)
-        {
-            if (!context.Configurations.Any())
-            {
-                context.Configurations.Add(new Configuration
-                {
-                    Key = Constants.ConfigurationNames.ExpirationTimeName,
-                    Value = "3600"
                 });
             }
         }

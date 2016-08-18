@@ -16,28 +16,29 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SimpleIdentityServer.Manager.Core.Api.Configuration;
-using SimpleIdentityServer.Manager.Host.DTOs.Requests;
-using SimpleIdentityServer.Manager.Host.DTOs.Responses;
-using SimpleIdentityServer.Manager.Host.Extensions;
+using SimpleIdentityServer.Configuration.Core.Api.Setting;
+using SimpleIdentityServer.Configuration.Startup.DTOs.Requests;
+using SimpleIdentityServer.Configuration.Startup.DTOs.Responses;
+using SimpleIdentityServer.Configuration.Startup.Extensions;
 using System;
 using System.Collections.Generic;
 
-namespace SimpleIdentityServer.Manager.Host.Controllers
+namespace SimpleIdentityServer.Configuration.Startup.Controllers
 {
-    public class ConfigurationController : Controller
+    [Route(Constants.RouteValues.Setting)]
+    public class SettingController : Controller
     {
         #region Fields
 
-        private readonly IConfigurationActions _configurationActions;
+        private readonly ISettingActions _settingActions;
 
         #endregion
 
         #region Constructor
 
-        public ConfigurationController(IConfigurationActions configurationActions)
+        public SettingController(ISettingActions settingActions)
         {
-            _configurationActions = configurationActions;
+            _settingActions = settingActions;
         }
 
         #endregion
@@ -45,14 +46,12 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
         #region Actions
 
         [HttpGet]
-        [Authorize("manager")]
-        public List<ConfigurationResponse> GetAll()
+        public List<SettingResponse> GetAll()
         {
-            return _configurationActions.GetConfigurations().ToDtos();
+            return _settingActions.GetSettings().ToDtos();
         }
 
         [HttpGet("{id}")]
-        [Authorize("manager")]
         public ActionResult Get(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -60,7 +59,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                 throw new ArgumentNullException(nameof(id));
             }
 
-            var configuration = _configurationActions.GetConfiguration(id);
+            var configuration = _settingActions.GetSetting(id);
             if (configuration == null)
             {
                 return new NotFoundResult();
@@ -70,7 +69,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize("manager")]
+        [Authorize("manage")]
         public ActionResult Delete(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -78,7 +77,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                 throw new ArgumentNullException(nameof(id));
             }
 
-            if (!_configurationActions.DeleteConfiguration(id))
+            if (!_settingActions.DeleteSetting(id))
             {
                 return new NotFoundResult();
             }
@@ -87,15 +86,15 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
         }
 
         [HttpPut]
-        [Authorize("manager")]
-        public ActionResult Put([FromBody] UpdateConfigurationRequest updateConfigurationRequest)
+        [Authorize("manage")]
+        public ActionResult Put([FromBody] UpdateSettingRequest updateSettingRequest)
         {
-            if (updateConfigurationRequest == null)
+            if (updateSettingRequest == null)
             {
-                throw new ArgumentNullException(nameof(updateConfigurationRequest));
+                throw new ArgumentNullException(nameof(updateSettingRequest));
             }
 
-            if(!_configurationActions.UpdateConfiguration(updateConfigurationRequest.ToParameter()))
+            if (!_settingActions.UpdateSetting(updateSettingRequest.ToParameter()))
             {
                 return new NotFoundResult();
             }

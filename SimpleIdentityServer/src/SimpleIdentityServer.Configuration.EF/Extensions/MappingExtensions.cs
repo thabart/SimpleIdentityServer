@@ -51,6 +51,15 @@ namespace SimpleIdentityServer.Configuration.EF.Extensions
             };
         }
 
+        public static Domain.Setting ToDomain(this Model.Setting setting)
+        {
+            return new Domain.Setting
+            {
+                Key = setting.Key,
+                Value = setting.Value
+            };
+        }
+
         #endregion
 
         #region To model
@@ -78,6 +87,15 @@ namespace SimpleIdentityServer.Configuration.EF.Extensions
                 IsEnabled = authenticationProvider.IsEnabled,
                 Name = authenticationProvider.Name,
                 Options = options
+            };
+        }
+
+        public static Model.Setting ToModel(this Domain.Setting setting)
+        {
+            return new Model.Setting
+            {
+                Key = setting.Key,
+                Value = setting.Value
             };
         }
 

@@ -130,12 +130,6 @@ namespace SimpleIdentityServer.Manager.Host
             public const string IsLocalAccount = "is_localaccount";
         }
 
-        public static class ConfigurationResponseNames
-        {
-            public const string Key = "key";
-            public const string Value = "value";
-        }
-
         public static class ClientNames
         {
             public const string ClientId = "client_id";

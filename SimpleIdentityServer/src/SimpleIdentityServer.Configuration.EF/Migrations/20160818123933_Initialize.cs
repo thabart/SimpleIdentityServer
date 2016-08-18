@@ -21,6 +21,18 @@ namespace SimpleIdentityServer.Configuration.EF.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "setting",
+                columns: table => new
+                {
+                    Key = table.Column<string>(nullable: false),
+                    Value = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_setting", x => x.Key);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Options",
                 columns: table => new
                 {
@@ -50,6 +62,9 @@ namespace SimpleIdentityServer.Configuration.EF.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Options");
+
+            migrationBuilder.DropTable(
+                name: "setting");
 
             migrationBuilder.DropTable(
                 name: "AuthenticationProviders");

@@ -34,6 +34,8 @@ namespace SimpleIdentityServer.Configuration.EF
 
         public virtual DbSet<AuthenticationProvider> AuthenticationProviders { get; set; }
 
+        public virtual DbSet<Setting> Settings { get; set; }
+
         #endregion
 
         #region Protected methods
@@ -42,6 +44,7 @@ namespace SimpleIdentityServer.Configuration.EF
         {
             modelBuilder.AddAuthenticationProviderMappings();
             modelBuilder.AddOptionMappings();
+            modelBuilder.AddSettingMappings();
             base.OnModelCreating(modelBuilder);
         }
 

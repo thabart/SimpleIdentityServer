@@ -35,5 +35,11 @@ namespace SimpleIdentityServer.Configuration.Core
 
             public const string Value = "value";
         }
+
+        public static class SettingNames
+        {
+            public const string ExpirationTimeName = "TokenExpirationTime";
+            public const string AuthorizationCodeExpirationTimeName = "AuthorizationCodeExpirationTime";
+        }
     }
 }

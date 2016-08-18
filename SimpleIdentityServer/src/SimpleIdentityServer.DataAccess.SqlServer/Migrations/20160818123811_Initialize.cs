@@ -79,18 +79,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "configuration",
-                columns: table => new
-                {
-                    Key = table.Column<string>(nullable: false),
-                    Value = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_configuration", x => x.Key);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "grantedTokens",
                 columns: table => new
                 {
@@ -460,9 +448,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
 
             migrationBuilder.DropTable(
                 name: "clientScopes");
-
-            migrationBuilder.DropTable(
-                name: "configuration");
 
             migrationBuilder.DropTable(
                 name: "consentClaims");

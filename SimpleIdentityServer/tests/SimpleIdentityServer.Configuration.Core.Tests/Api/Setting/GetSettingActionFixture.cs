@@ -15,20 +15,20 @@
 #endregion
 
 using Moq;
-using SimpleIdentityServer.Core.Repositories;
-using SimpleIdentityServer.Manager.Core.Api.Configuration.Actions;
+using SimpleIdentityServer.Configuration.Core.Api.Setting.Actions;
+using SimpleIdentityServer.Configuration.Core.Repositories;
 using System;
 using Xunit;
 
-namespace SimpleIdentityServer.Manager.Core.Tests.Api.Configuration
+namespace SimpleIdentityServer.Configuration.Core.Tests.Api.Setting
 {
-    public class DeleteConfigurationActionFixture
+    public class GetSettingActionFixture
     {
         #region Fields
 
-        private Mock<IConfigurationRepository> _configurationRepositoryStub;
+        private Mock<ISettingRepository> _settingRepositoryStub;
 
-        private IDeleteConfigurationAction _deleteConfigurationAction;
+        private IGetSettingAction _getSettingAction;
 
         #endregion
 
@@ -41,8 +41,8 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Configuration
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            Assert.Throws<ArgumentNullException>(() => _deleteConfigurationAction.Execute(null));
-            Assert.Throws<ArgumentNullException>(() => _deleteConfigurationAction.Execute(string.Empty));
+            Assert.Throws<ArgumentNullException>(() => _getSettingAction.Execute(null));
+            Assert.Throws<ArgumentNullException>(() => _getSettingAction.Execute(string.Empty));
         }
 
         #endregion
@@ -50,17 +50,17 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Configuration
         #region Happy path
 
         [Fact]
-        public void When_Configuration_Is_Removed_Then_Operation_Is_Called()
+        public void When_Setting_Is_Gotten_Then_Operation_Is_Called()
         {
             // ARRANGE
             const string key = "configuration_key";
             InitializeFakeObjects();
 
             // ACT
-            _deleteConfigurationAction.Execute(key);
+            _getSettingAction.Execute(key);
 
             // ASSERT
-            _configurationRepositoryStub.Verify(c => c.Remove(key));
+            _settingRepositoryStub.Verify(c => c.Get(key));
         }
 
         #endregion
@@ -69,8 +69,8 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Configuration
 
         private void InitializeFakeObjects()
         {
-            _configurationRepositoryStub = new Mock<IConfigurationRepository>();
-            _deleteConfigurationAction = new DeleteConfigurationAction(_configurationRepositoryStub.Object);
+            _settingRepositoryStub = new Mock<ISettingRepository>();
+            _getSettingAction = new GetSettingAction(_settingRepositoryStub.Object);
         }
 
         #endregion

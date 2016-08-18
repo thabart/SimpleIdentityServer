@@ -23,5 +23,8 @@ namespace SimpleIdentityServer.Configuration.Client.DTOs.Responses
     {
         [DataMember(Name = Constants.ConfigurationResponseNames.AuthProviderEndPoint)]
         public string AuthProviderEndPoint { get; set; }
+
+        [DataMember(Name = Constants.ConfigurationResponseNames.SettingEndPoint)]
+        public string SettingEndPoint { get; set; }
     }
 }

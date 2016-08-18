@@ -120,7 +120,8 @@ namespace SimpleIdentityServer.Host
             this IServiceCollection serviceCollection,
             Action<DataSourceOptions> dataSourceCallback,
             Action<SwaggerOptions> swaggerCallback,
-            Action<LoggingOptions> loggingOptionsCallback) 
+            Action<LoggingOptions> loggingOptionsCallback,
+            string configurationUrl) 
         {
             if (dataSourceCallback == null)
             {
@@ -136,6 +137,11 @@ namespace SimpleIdentityServer.Host
             {
                 throw new ArgumentNullException(nameof(loggingOptionsCallback));
             }
+
+            if (string.IsNullOrWhiteSpace(configurationUrl))
+            {
+                throw new ArgumentNullException(nameof(configurationUrl));
+            }
             
             var dataSourceOptions = new DataSourceOptions();
             var swaggerOptions = new SwaggerOptions();
@@ -146,14 +152,16 @@ namespace SimpleIdentityServer.Host
             serviceCollection.AddSimpleIdentityServer(
                 dataSourceOptions,
                 swaggerOptions,
-                loggingOptions);
+                loggingOptions,
+                configurationUrl);
         }
         
         public static void AddSimpleIdentityServer(
             this IServiceCollection serviceCollection, 
             DataSourceOptions dataSourceOptions,
             SwaggerOptions swaggerOptions,
-            LoggingOptions loggingOptions) 
+            LoggingOptions loggingOptions,
+            string configurationUrl) 
         {
             if (dataSourceOptions == null) {
                 throw new ArgumentNullException(nameof(dataSourceOptions));
@@ -166,6 +174,11 @@ namespace SimpleIdentityServer.Host
             if (loggingOptions == null)
             {
                 throw new ArgumentNullException(nameof(loggingOptions));
+            }
+
+            if (string.IsNullOrWhiteSpace(configurationUrl))
+            {
+                throw new ArgumentNullException(nameof(configurationUrl));
             }
 
             if (dataSourceOptions.DataSourceType == DataSourceTypes.SqlServer)
@@ -186,7 +199,8 @@ namespace SimpleIdentityServer.Host
             ConfigureSimpleIdentityServer(
                 serviceCollection, 
                 swaggerOptions,
-                loggingOptions);
+                loggingOptions,
+                configurationUrl);
         }
         
         #endregion
@@ -201,7 +215,8 @@ namespace SimpleIdentityServer.Host
         private static void ConfigureSimpleIdentityServer(
             IServiceCollection services,
             SwaggerOptions swaggerOptions,
-            LoggingOptions loggingOptions) 
+            LoggingOptions loggingOptions,
+            string configurationUrl) 
         {
             services.AddSimpleIdentityServerCore();
             services.AddSimpleIdentityServerJwt();
@@ -211,6 +226,10 @@ namespace SimpleIdentityServer.Host
             services.AddTransient<IResourceOwnerService, InMemoryUserService>();
             services.AddTransient<IRedirectInstructionParser, RedirectInstructionParser>();
             services.AddTransient<IActionResultParser, ActionResultParser>();
+            services.AddSingleton(new ConfigurationParameters
+            {
+                ConfigurationUrl = configurationUrl
+            });
             services.AddTransient<ISimpleIdentityServerConfigurator, ConcreteSimpleIdentityServerConfigurator>();
             services.AddDataProtection();
             services.AddSingleton<SwaggerOptions>(swaggerOptions);

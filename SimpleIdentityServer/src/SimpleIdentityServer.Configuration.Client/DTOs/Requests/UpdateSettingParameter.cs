@@ -14,22 +14,18 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.EntityFrameworkCore;
-using SimpleIdentityServer.DataAccess.SqlServer.Models;
+using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
+namespace SimpleIdentityServer.Configuration.Client.DTOs.Requests
 {
-    public static class ConfigurationMappings
+    [DataContract]
+    public class UpdateSettingParameter
     {
-        #region Public static methods
+        [DataMember(Name = Constants.SettingResponseNames.Key)]
+        public string Key { get; set; }
 
-        public static void AddConfigurationMappings(this ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<Configuration>()
-                .ToTable("configuration")
-                .HasKey(a => a.Key);
-        }
 
-        #endregion
+        [DataMember(Name = Constants.SettingResponseNames.Value)]
+        public string Value { get; set; }
     }
 }

@@ -14,22 +14,20 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Repositories;
-using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
-using System.Collections.Generic;
 using System.Linq;
-using SimpleIdentityServer.Core.Models;
-using System;
+using SimpleIdentityServer.Configuration.Core.Repositories;
+using System.Collections.Generic;
+using SimpleIdentityServer.Configuration.EF.Extensions;
 
-namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
+namespace SimpleIdentityServer.Configuration.EF.Repositories
 {
-    public class ConfigurationRepository : IConfigurationRepository
+    public class SettingRepository : ISettingRepository
     {
-        private readonly SimpleIdentityServerContext _context;
+        private readonly SimpleIdentityServerConfigurationContext _context;
 
         #region Constructor
 
-        public ConfigurationRepository(SimpleIdentityServerContext context)
+        public SettingRepository(SimpleIdentityServerConfigurationContext context)
         {
             _context = context;
         }
@@ -38,18 +36,18 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 
         #region Public methods
 
-        public List<Core.Models.Configuration> GetAll()
+        public List<Core.Models.Setting> GetAll()
         {
-            return _context.Configurations.Select(c => c.ToDomain()).ToList();
+            return _context.Settings.Select(c => c.ToDomain()).ToList();
         }
 
-        public Core.Models.Configuration Get(string key)
+        public Core.Models.Setting Get(string key)
         {
-            var configuration = _context.Configurations.FirstOrDefault(c => c.Key == key);
+            var configuration = _context.Settings.FirstOrDefault(c => c.Key == key);
             return configuration == null ? null : configuration.ToDomain();
         }
 
-        public bool Insert(Core.Models.Configuration configuration)
+        public bool Insert(Core.Models.Setting configuration)
         {
             if (configuration == null)
             {
@@ -58,10 +56,10 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 
             try
             {
-                _context.Configurations.Add(new Models.Configuration
+                _context.Settings.Add(new Models.Setting
                 {
                     Key = configuration.Key,
-                    Value  = configuration.Value
+                    Value = configuration.Value
                 });
                 _context.SaveChanges();
                 return true;
@@ -81,13 +79,13 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 
             try
             {
-                var configuration = _context.Configurations.FirstOrDefault(c => c.Key == key);
+                var configuration = _context.Settings.FirstOrDefault(c => c.Key == key);
                 if (configuration == null)
                 {
                     return false;
                 }
 
-                _context.Configurations.Remove(configuration);
+                _context.Settings.Remove(configuration);
                 _context.SaveChanges();
                 return true;
             }
@@ -97,7 +95,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             }
         }
 
-        public bool Update(Configuration conf)
+        public bool Update(Core.Models.Setting conf)
         {
             if (conf == null || string.IsNullOrWhiteSpace(conf.Key))
             {
@@ -106,7 +104,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 
             try
             {
-                var configuration = _context.Configurations.FirstOrDefault(c => c.Key == conf.Key);
+                var configuration = _context.Settings.FirstOrDefault(c => c.Key == conf.Key);
                 configuration.Value = conf.Value;
                 _context.SaveChanges();
                 return true;
