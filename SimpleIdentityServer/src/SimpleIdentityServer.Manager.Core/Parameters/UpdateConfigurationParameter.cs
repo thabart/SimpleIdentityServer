@@ -14,23 +14,15 @@
 // limitations under the License.
 #endregion
 
-using System.Collections.Generic;
-
-namespace SimpleIdentityServer.Core.Repositories
+namespace SimpleIdentityServer.Manager.Core.Parameters
 {
-    public interface IConfigurationRepository
+    public class UpdateConfigurationParameter
     {
-        #region Public methods
+        #region Properties
 
-        List<Models.Configuration> GetAll();
+        public string Key { get; set; }
 
-        Models.Configuration Get(string key);
-
-        bool Insert(Models.Configuration configuration);
-
-        bool Remove(string key);
-
-        bool Update(Models.Configuration configuration);
+        public string Value { get; set; }
 
         #endregion
     }

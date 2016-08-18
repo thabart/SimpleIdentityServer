@@ -17,6 +17,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Manager.Core.Api.Clients;
 using SimpleIdentityServer.Manager.Core.Api.Clients.Actions;
+using SimpleIdentityServer.Manager.Core.Api.Configuration;
+using SimpleIdentityServer.Manager.Core.Api.Configuration.Actions;
 using SimpleIdentityServer.Manager.Core.Api.Jwe;
 using SimpleIdentityServer.Manager.Core.Api.Jwe.Actions;
 using SimpleIdentityServer.Manager.Core.Api.Jws;
@@ -57,6 +59,11 @@ namespace SimpleIdentityServer.Manager.Core
             serviceCollection.AddTransient<IUpdateResourceOwnerAction, UpdateResourceOwnerAction>();
             serviceCollection.AddTransient<IResourceOwnerActions, ResourceOwnerActions>();
             serviceCollection.AddTransient<IDeleteResourceOwnerAction, DeleteResourceOwnerAction>();
+            serviceCollection.AddTransient<IGetConfigurationAction, GetConfigurationAction>();
+            serviceCollection.AddTransient<IDeleteConfigurationAction, DeleteConfigurationAction>();
+            serviceCollection.AddTransient<IGetAllConfigurationAction, GetAllConfigurationAction>();
+            serviceCollection.AddTransient<IUpdateConfigurationAction, UpdateConfigurationAction>();
+            serviceCollection.AddTransient<IConfigurationActions, ConfigurationActions>();
             return serviceCollection;
         }
     }

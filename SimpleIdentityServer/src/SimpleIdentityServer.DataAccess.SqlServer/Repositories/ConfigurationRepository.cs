@@ -18,6 +18,8 @@ using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
 using System.Collections.Generic;
 using System.Linq;
+using SimpleIdentityServer.Core.Models;
+using System;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 {
@@ -86,6 +88,26 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                 }
 
                 _context.Configurations.Remove(configuration);
+                _context.SaveChanges();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public bool Update(Configuration conf)
+        {
+            if (conf == null || string.IsNullOrWhiteSpace(conf.Key))
+            {
+                return false;
+            }
+
+            try
+            {
+                var configuration = _context.Configurations.FirstOrDefault(c => c.Key == conf.Key);
+                configuration.Value = conf.Value;
                 _context.SaveChanges();
                 return true;
             }

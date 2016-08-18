@@ -14,24 +14,17 @@
 // limitations under the License.
 #endregion
 
-using System.Collections.Generic;
+using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.Core.Repositories
+namespace SimpleIdentityServer.Manager.Host.DTOs.Requests
 {
-    public interface IConfigurationRepository
+    [DataContract]
+    public class UpdateConfigurationRequest
     {
-        #region Public methods
+        [DataMember(Name = Constants.ConfigurationResponseNames.Key)]
+        public string Key { get; set; }
 
-        List<Models.Configuration> GetAll();
-
-        Models.Configuration Get(string key);
-
-        bool Insert(Models.Configuration configuration);
-
-        bool Remove(string key);
-
-        bool Update(Models.Configuration configuration);
-
-        #endregion
+        [DataMember(Name = Constants.ConfigurationResponseNames.Value)]
+        public string Value { get; set; }
     }
 }
