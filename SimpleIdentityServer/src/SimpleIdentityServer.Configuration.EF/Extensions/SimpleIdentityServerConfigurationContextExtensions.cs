@@ -147,7 +147,7 @@ namespace SimpleIdentityServer.Configuration.EF.Extensions
                         Type = 1,
                         Name = "Google",
                         CallbackPath = "/signin-google",
-                        Code = "code",
+                        Code = "using SimpleIdentityServer.Core.Jwt;\r\nusing System.Collections.Generic;\r\n\r\nnamespace Parser\r\n{\r\n    public class GoogleClaimsParser\r\n    {\r\n        private readonly Dictionary<string, string> _mappingFacebookClaimToOpenId = new Dictionary<string, string>\r\n        {\r\n            {\r\n                \"id\",\r\n                Constants.StandardResourceOwnerClaimNames.Subject\r\n            },\r\n            {\r\n                \"displayName\",\r\n                Constants.StandardResourceOwnerClaimNames.Name\r\n            },\r\n            {\r\n                \"name.givenName\",\r\n                Constants.StandardResourceOwnerClaimNames.GivenName\r\n            },\r\n            {\r\n                \"name.familyName\",\r\n                Constants.StandardResourceOwnerClaimNames.FamilyName\r\n            },\r\n            {\r\n                \"url\",\r\n                Constants.StandardResourceOwnerClaimNames.WebSite\r\n            },\r\n            {\r\n                \"emails.value\",\r\n                Constants.StandardResourceOwnerClaimNames.Email\r\n            }\r\n        };\r\n\r\n        public Dictionary<string, object> Process(Dictionary<string, object> claims)\r\n        {\r\n            var result = new Dictionary<string, object>();\r\n            foreach (var claim in claims)\r\n            {\r\n                string key = claim.Key;\r\n                foreach(var mapping in _mappingFacebookClaimToOpenId)\r\n                {\r\n                    var val = GetValue(claim, mapping);\r\n                    if (val != null)\r\n                    {\r\n                        result.Add(mapping.Value, val);\r\n                        break;\r\n                    }\r\n                }\r\n            }\r\n\r\n            return result;\r\n        }\r\n\r\n        private string GetValue(\r\n            KeyValuePair<string, object> claim,\r\n            KeyValuePair<string, string> mapping,\r\n            int indice = 0)\r\n        {\r\n            var splitted = mapping.Key.Split('.');\r\n            if (splitted.Length < 1 ||\r\n                splitted.Length <= indice ||\r\n                splitted[indice] != claim.Key)\r\n            {\r\n                return null;\r\n            }\r\n\r\n            var dic = claim.Value as Dictionary<string, object>;\r\n            if (dic == null)\r\n            {\r\n                return claim.Value.ToString();\r\n            }\r\n\r\n            indice = indice + 1;\r\n            foreach (var record in dic)\r\n            {\r\n                var val = GetValue(record, mapping, indice);\r\n                if (val != null)\r\n                {\r\n                    return val;\r\n                }\r\n            }\r\n\r\n            return null;         \r\n        }\r\n    }\r\n}\r\n",
                         ClassName = "GoogleClaimsParser",
                         Namespace = "Parser",
                         Options = new List<Option>
@@ -201,7 +201,143 @@ namespace SimpleIdentityServer.Configuration.EF.Extensions
                                 Value = "email"
                             }
                         }
-                    }/*
+                    },
+                    new AuthenticationProvider
+                    {
+                        IsEnabled = true,
+                        Type = 1,
+                        Name = "Github",
+                        CallbackPath = "/signin-github",
+                        Code = "using SimpleIdentityServer.Core.Jwt;\r\nusing System.Collections.Generic;\r\n\r\nnamespace Parser\r\n{\r\n    public class GitHubClaimsParser\r\n    {\r\n        private readonly Dictionary<string, string> _mappingFacebookClaimToOpenId = new Dictionary<string, string>\r\n        {\r\n            {\r\n                \"id\",\r\n                Constants.StandardResourceOwnerClaimNames.Subject\r\n            },\r\n            {\r\n                \"name\",\r\n                Constants.StandardResourceOwnerClaimNames.Name\r\n            },\r\n            {\r\n                \"avatar_url\",\r\n                Constants.StandardResourceOwnerClaimNames.Picture\r\n            },\r\n            {\r\n                \"updated_at\",\r\n                Constants.StandardResourceOwnerClaimNames.UpdatedAt\r\n            },\r\n            {\r\n                \"email\",\r\n                Constants.StandardResourceOwnerClaimNames.Email\r\n            }\r\n        };\r\n\r\n        public Dictionary<string, object> Process(Dictionary<string, object> claims)\r\n        {\r\n            var result = new Dictionary<string, object>();\r\n            foreach (var claim in claims)\r\n            {\r\n                string key = claim.Key;\r\n                if (_mappingFacebookClaimToOpenId.ContainsKey(claim.Key))\r\n                {\r\n                    key = _mappingFacebookClaimToOpenId[claim.Key];\r\n                }\r\n\r\n                result.Add(key, claim.Value);\r\n            }\r\n\r\n            return result;\r\n        }\r\n    }\r\n}\r\n",
+                        ClassName = "GitHubClaimsParser",
+                        Namespace = "Parser",
+                        Options = new List<Option>
+                        {
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "ClientId",
+                                Value = "e03f5eb28418ee141944"
+                            },
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "ClientSecret",
+                                Value = "1ca11063515064b7c2638924280ca026f9713f5b"
+                            },
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "AuthorizationEndpoint",
+                                Value = "https://github.com/login/oauth/authorize"
+                            },
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "TokenEndpoint",
+                                Value = "https://github.com/login/oauth/access_token"
+                            },
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "UserInformationEndpoint",
+                                Value = "https://api.github.com/user"
+                            }
+                        }
+                    },
+                    new AuthenticationProvider
+                    {
+                        IsEnabled = true,
+                        Type = 1,
+                        Name = "Linkedin",
+                        CallbackPath = "/signin-linkedin",
+                        Code = "code",
+                        ClassName = "LinkedinClaimsParser",
+                        Namespace = "Parser",
+                        Options = new List<Option>
+                        {
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "ClientId",
+                                Value = "77ral6nw4t8ivj"
+                            },
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "ClientSecret",
+                                Value = "FSJMGgpGEKbirIGJ"
+                            },
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "AuthorizationEndpoint",
+                                Value = "https://www.linkedin.com/oauth/v2/authorization"
+                            },
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "TokenEndpoint",
+                                Value = "https://www.linkedin.com/oauth/v2/accessToken"
+                            },
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "UserInformationEndpoint",
+                                Value = "https://api.linkedin.com/v1/people/~?format=json"
+                            },
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "Scope",
+                                Value = "r_basicprofile"
+                            }
+                        }
+                    }
+                    /*
+                    new AuthenticationProvider
+                    {
+                        IsEnabled = true,
+                        Name = "Twitter",
+                        Type = 1,
+                        Code = "code",
+                        CallbackPath = "/signin-twitter",
+                        ClassName = "TwitterClaimsParser",
+                        Namespace = "Parser",
+                        Options = new List<Option>
+                        {
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "ClientId",
+                                Value = "g8so3MHsMdklZ8NHau1VfOcXB"
+                            },
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "ClientSecret",
+                                Value = "Flxp1fR3XLVj2gsVpwSigJRy80sBdNUPum3CZUkeyyKwbzvlJz"
+                            },
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "AuthorizationEndpoint",
+                                Value = "https://api.twitter.com/oauth/authorize"
+                            },
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "TokenEndpoint",
+                                Value = "https://api.twitter.com/oauth2/token"
+                            },
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "UserInformationEndpoint",
+                                Value = "https://api.twitter.com/1.1/account/verify_credentials.json"
+                            }
+                        }
+                    },
                     new AuthenticationProvider
                     {
                         IsEnabled = false,
@@ -265,47 +401,7 @@ namespace SimpleIdentityServer.Configuration.EF.Extensions
                                 Value = "urn://idserver"
                             }
                         }
-                    },
-                    new AuthenticationProvider
-                    {
-                        IsEnabled = true,
-                        Name = "Twitter",
-                        Options = new List<Option>
-                        {
-                            new Option
-                            {
-                                Id = Guid.NewGuid().ToString(),
-                                Key = "ClientId",
-                                Value = "g8so3MHsMdklZ8NHau1VfOcXB"
-                            },
-                            new Option
-                            {
-                                Id = Guid.NewGuid().ToString(),
-                                Key = "ClientSecret",
-                                Value = "Flxp1fR3XLVj2gsVpwSigJRy80sBdNUPum3CZUkeyyKwbzvlJz"
-                            }
-                        }
-                    },
-                    new AuthenticationProvider
-                    {
-                        IsEnabled = true,
-                        Name = "Github",
-                        Options = new List<Option>
-                        {
-                            new Option
-                            {
-                                Id = Guid.NewGuid().ToString(),
-                                Key = "ClientId",
-                                Value = "e03f5eb28418ee141944"
-                            },
-                            new Option
-                            {
-                                Id = Guid.NewGuid().ToString(),
-                                Key = "ClientSecret",
-                                Value = "1ca11063515064b7c2638924280ca026f9713f5b"
-                            }
-                        }
-                    }*/
+                    },*/
                 });
             }
         }

@@ -193,19 +193,6 @@ namespace SimpleIdentityServer.Host.Handlers
             return await handler.HandleRequestAsync();
         }
 
-        private async Task<bool> EnableGoogleAuthentication(List<Option> options, HttpContext httpContext)
-        {
-            var googleOptions = ExtractGoogleOptions(options, _dataProtectionProvider);
-            if (googleOptions == null)
-            {
-                return false;
-            }
-
-            var handler = new GoogleHandler(new HttpClient());
-            await handler.InitializeAsync(googleOptions, httpContext, _logger, UrlEncoder.Default);
-            return await handler.HandleRequestAsync();
-        }
-
         private async Task<bool> EnableTwitterAuthentication(List<Option> options, HttpContext httpContext)
         {
             var twitterOptions = ExtractTwitterOptions(options, _dataProtectionProvider);
@@ -216,20 +203,6 @@ namespace SimpleIdentityServer.Host.Handlers
 
             var handler = new TwitterHandler(new HttpClient());
             await handler.InitializeAsync(twitterOptions, httpContext, _logger, UrlEncoder.Default);
-            return await handler.HandleRequestAsync();
-        }
-
-        public async Task<bool> EnableGithubAuthentication(List<Option> options, HttpContext httpContext)
-        {
-            HttpClient httpClient = null;
-            var githubOptions = ExtractGithubOptions(options, _dataProtectionProvider, out httpClient);
-            if (githubOptions == null)
-            {
-                return false;
-            }
-            
-            var handler = new GitHubAuthenticationHandler(httpClient);
-            await handler.InitializeAsync(githubOptions, httpContext, _logger, UrlEncoder.Default);
             return await handler.HandleRequestAsync();
         }
 
@@ -287,10 +260,13 @@ namespace SimpleIdentityServer.Host.Handlers
                     OnCreatingTicket = async context =>
                     {
                         var endpoint = QueryHelpers.AddQueryString(context.Options.UserInformationEndpoint, "access_token", context.AccessToken);
-                        var response = await context.Backchannel.GetAsync(endpoint, context.HttpContext.RequestAborted);
+                        var request = new HttpRequestMessage(HttpMethod.Get, endpoint);
+                        request.Headers.Add("User-Agent", "SimpleIdentityServer");
+                        request.Headers.Add("Authorization", "Bearer " + context.AccessToken);
+                        var response = await context.Backchannel.SendAsync(request, context.HttpContext.RequestAborted);
                         response.EnsureSuccessStatusCode();
                         var payload = JObject.Parse(await response.Content.ReadAsStringAsync());
-                        var dic = payload.ToObject<Dictionary<string, object>>();
+                        var dic = GetChildrenByReflection(payload);
                         var claims = _claimsParser.Parse(nameSpace, className, code, dic);
                         foreach(var claim in claims)
                         {
@@ -402,34 +378,6 @@ namespace SimpleIdentityServer.Host.Handlers
             return openIdOptions;
         }
 
-        public static GoogleOptions ExtractGoogleOptions(
-            List<Option> options,
-            IDataProtectionProvider dataProtectionProvider)
-        {
-            var clientId = options.FirstOrDefault(o => o.Key == "ClientId");
-            var clientSecret = options.FirstOrDefault(o => o.Key == "ClientSecret");
-            if (clientId == null ||
-                clientSecret == null)
-            {
-                return null;
-            }
-
-
-            var dataProtector = dataProtectionProvider.CreateProtector(
-                typeof(AuthenticationManager).FullName, Constants.IdentityProviderNames.Google, "v1");
-            var googleOptions = new GoogleOptions
-            {
-                ClaimsIssuer = Constants.IdentityProviderNames.Google,
-                AuthenticationScheme = Constants.IdentityProviderNames.Google,
-                SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme,
-                ClientId = clientId.Value,
-                ClientSecret = clientSecret.Value,
-                StateDataFormat = new PropertiesDataFormat(dataProtector)
-            };
-
-            return googleOptions;
-        }
-
         private static TwitterOptions ExtractTwitterOptions(
             List<Option> options,
             IDataProtectionProvider dataProtectionProvider)
@@ -457,33 +405,6 @@ namespace SimpleIdentityServer.Host.Handlers
                 RetrieveUserDetails = true
             };
             return twitterOptions;
-        }
-
-        public static GitHubAuthenticationOptions ExtractGithubOptions(
-            List<Option> options,
-            IDataProtectionProvider dataProtectionProvider,
-            out HttpClient httpClient)
-        {
-            httpClient = null;
-            var clientId = options.FirstOrDefault(o => o.Key == "ClientId");
-            var clientSecret = options.FirstOrDefault(o => o.Key == "ClientSecret");
-            if (clientId == null ||
-                clientSecret == null)
-            {
-                return null;
-            }
-
-            var githubOptions = new GitHubAuthenticationOptions
-            {
-                AuthenticationScheme = Constants.IdentityProviderNames.Github,
-                DisplayName = Constants.IdentityProviderNames.Github,
-                SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme,
-                ClientId = clientId.Value,
-                ClientSecret = clientSecret.Value,
-                ClaimsIssuer = Constants.IdentityProviderNames.Github
-            };
-            EnrichOauthOptions(githubOptions, dataProtectionProvider, out httpClient);
-            return githubOptions;
         }
                 
         private static OAuthOptions ExtractAdfsOptions(
@@ -558,102 +479,28 @@ namespace SimpleIdentityServer.Host.Handlers
                 RedirectPath = new PathString("/Authenticate/LoginCallback")
             };
         }
-
-        private static void EnrichOpenidOptions(
-            OpenIdConnectOptions openIdConnectOptions,
-            IDataProtectionProvider dataProtectionProvider,
-            out HttpClient backChannel)
-        {
-            if (openIdConnectOptions.StateDataFormat == null)
-            {
-                var dataProtector = dataProtectionProvider.CreateProtector(
-                    typeof(AuthenticationManager).FullName,
-                    typeof(string).FullName,
-                    openIdConnectOptions.AuthenticationScheme,
-                    "v1");
-
-                openIdConnectOptions.StateDataFormat = new PropertiesDataFormat(dataProtector);
-            }
-
-            if (openIdConnectOptions.StringDataFormat == null)
-            {
-                var dataProtector = dataProtectionProvider.CreateProtector(
-                    typeof(AuthenticationManager).FullName,
-                    typeof(string).FullName,
-                    openIdConnectOptions.AuthenticationScheme,
-                    "v1");
-
-                openIdConnectOptions.StringDataFormat = new SecureDataFormat<string>(new StringSerializer(), dataProtector);
-            }
-
-            if (openIdConnectOptions.Events == null)
-            {
-                openIdConnectOptions.Events = new OpenIdConnectEvents();
-            }
-            if (string.IsNullOrEmpty(openIdConnectOptions.TokenValidationParameters.ValidAudience) && !string.IsNullOrEmpty(openIdConnectOptions.ClientId))
-            {
-                openIdConnectOptions.TokenValidationParameters.ValidAudience = openIdConnectOptions.ClientId;
-            }
-
-            backChannel = new HttpClient(openIdConnectOptions.BackchannelHttpHandler ?? new HttpClientHandler());
-            backChannel.DefaultRequestHeaders.UserAgent.ParseAdd("Microsoft ASP.NET Core OpenIdConnect middleware");
-            backChannel.Timeout = openIdConnectOptions.BackchannelTimeout;
-            backChannel.MaxResponseContentBufferSize = 1024 * 1024 * 10; // 10 MB
-
-            if (openIdConnectOptions.ConfigurationManager == null)
-            {
-                if (openIdConnectOptions.Configuration != null)
-                {
-                    openIdConnectOptions.ConfigurationManager = new StaticConfigurationManager<OpenIdConnectConfiguration>(openIdConnectOptions.Configuration);
-                }
-                else if (!(string.IsNullOrEmpty(openIdConnectOptions.MetadataAddress) && string.IsNullOrEmpty(openIdConnectOptions.Authority)))
-                {
-                    if (string.IsNullOrEmpty(openIdConnectOptions.MetadataAddress) && !string.IsNullOrEmpty(openIdConnectOptions.Authority))
-                    {
-                        openIdConnectOptions.MetadataAddress = openIdConnectOptions.Authority;
-                        if (!openIdConnectOptions.MetadataAddress.EndsWith("/", StringComparison.Ordinal))
-                        {
-                            openIdConnectOptions.MetadataAddress += "/";
-                        }
-
-                        openIdConnectOptions.MetadataAddress += ".well-known/openid-configuration";
-                    }
-
-                    if (openIdConnectOptions.RequireHttpsMetadata && !openIdConnectOptions.MetadataAddress.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
-                    {
-                        throw new InvalidOperationException("The MetadataAddress or Authority must use HTTPS unless disabled for development by setting RequireHttpsMetadata=false.");
-                    }
-
-                    openIdConnectOptions.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(openIdConnectOptions.MetadataAddress, new OpenIdConnectConfigurationRetriever(),
-                        new HttpDocumentRetriever(backChannel) { RequireHttps = openIdConnectOptions.RequireHttpsMetadata });
-                }
-            }
-        }
-
-        private static void EnrichOauthOptions(
-            OAuthOptions oauthOptions,
-            IDataProtectionProvider dataProtectionProvider,
-            out HttpClient backChannel)
-        {
-            if (oauthOptions.StateDataFormat == null)
-            {
-                var dataProtector = dataProtectionProvider.CreateProtector(
-                    typeof(AuthenticationManager).FullName,
-                    typeof(string).FullName,
-                    oauthOptions.AuthenticationScheme,
-                    "v1");
-
-                oauthOptions.StateDataFormat = new PropertiesDataFormat(dataProtector);
-            }
-            
-            backChannel = new HttpClient(oauthOptions.BackchannelHttpHandler ?? new HttpClientHandler());
-            backChannel.DefaultRequestHeaders.UserAgent.ParseAdd("Microsoft ASP.NET Core OAuth middleware");
-            backChannel.Timeout = oauthOptions.BackchannelTimeout;
-            backChannel.MaxResponseContentBufferSize = 1024 * 1024 * 10; // 10 MB
-        }
-
-        #endregion
         
+        #endregion
+
+        private static Dictionary<string, object> GetChildrenByReflection(JObject jArr)
+        {
+            var result = new Dictionary<string, object>();
+            foreach (KeyValuePair<string, JToken> kvp in jArr)
+            {
+                var obj = kvp.Value as JObject;
+                if (kvp.Value is JObject)
+                {
+                    result.Add(kvp.Key, GetChildrenByReflection(obj));
+                }
+                else
+                {
+                    result.Add(kvp.Key, kvp.Value);
+                }
+            }
+
+            return result;
+        }
+
         private class StringSerializer : IDataSerializer<string>
         {
             public string Deserialize(byte[] data)

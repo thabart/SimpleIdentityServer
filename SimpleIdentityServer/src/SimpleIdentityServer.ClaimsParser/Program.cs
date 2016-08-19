@@ -42,9 +42,30 @@ namespace SimpleIdentityServer.ClaimsParser
 
         public static void Main(string[] args)
         {
-            ParseGoogleClaims();
+            ParseGitHubClaims();
+            // ParseGoogleClaims();
             // ParseFacebookClaims();
             Console.ReadLine();
+        }
+
+        static void ParseGitHubClaims()
+        {
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "GitHubClaimsParser.cs");
+            var code = File.ReadAllText(filePath);
+            var jObj = JObject.Parse(@"{
+                'id':'thabart', 
+                'name': 'name',
+                'avatar_url': 'avatar_url',
+                'updated_at': 'updated_at',
+                'email': 'email'
+            }");
+
+            var claims = jObj.ToObject<Dictionary<string, object>>();
+            var result = CreateClaimsParser("GitHubClaimsParser", code, claims);
+            foreach (var record in result)
+            {
+                Console.WriteLine(record.Type + " " + record.Value);
+            }
         }
 
         static void ParseGoogleClaims()
@@ -53,47 +74,25 @@ namespace SimpleIdentityServer.ClaimsParser
             var code = File.ReadAllText(filePath);
             var jObj = JObject.Parse(@"{
                 'id':'thabart', 
-                'name2': {
-                    'familyName': 'Habart'
-                },
+                'displayName': 'displayName',
                 'name': {
-                    'familyName': {
-                        'name': 'coucou'
-                    }
+                    'givenName': 'givenName',
+                    'familyName': 'familyName'
+                },
+                'url': 'url',
+                'emails': {
+                    'value': 'email',
+                    'type': 'personnal'
                 }
             }");
 
-            var dic = GetChildrenByReflection(jObj);
-
-            var claims = jObj.ToObject<Dictionary<string, object>>();
-
-            var parser = new Parser.GoogleClaimsParser();
-            parser.Process(claims);
-
+            var claims = GetChildrenByReflection(jObj);
+            
             var result = CreateClaimsParser("GoogleClaimsParser", code, claims);
             foreach (var record in result)
             {
                 Console.WriteLine(record.Type + " " + record.Value);
             }
-        }
-
-        static Dictionary<string, object> GetChildrenByReflection(JObject jArr)
-        {
-            var result = new Dictionary<string, object>();
-            foreach (KeyValuePair<string, JToken> kvp in jArr)
-            {
-                var obj = kvp.Value as JObject;
-                if (kvp.Value is JObject)
-                {
-                    result.Add(kvp.Key, GetChildrenByReflection(obj));
-                }
-                else
-                {
-                    result.Add(kvp.Key, kvp.Value);
-                }
-            }
-
-            return result;
         }
 
         static void ParseFacebookClaims()
@@ -117,6 +116,25 @@ namespace SimpleIdentityServer.ClaimsParser
             {
                 Console.WriteLine(record.Type + " " + record.Value);
             }
+        }
+
+        static Dictionary<string, object> GetChildrenByReflection(JObject jArr)
+        {
+            var result = new Dictionary<string, object>();
+            foreach (KeyValuePair<string, JToken> kvp in jArr)
+            {
+                var obj = kvp.Value as JObject;
+                if (kvp.Value is JObject)
+                {
+                    result.Add(kvp.Key, GetChildrenByReflection(obj));
+                }
+                else
+                {
+                    result.Add(kvp.Key, kvp.Value);
+                }
+            }
+
+            return result;
         }
 
         static List<Claim> CreateClaimsParser(string className, string code, Dictionary<string, object> claims)

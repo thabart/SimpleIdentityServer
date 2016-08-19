@@ -32,14 +32,7 @@ namespace SimpleIdentityServer.Host.MiddleWare
             "/Authenticate/OpenId",
             "/Authenticate/LocalLoginOpenId",
             "/Authenticate/LocalLogin",
-            "/Authenticate/ExternalLoginOpenId",
-            "/signin-microsoft",
-            "/signin-oidc",
-            "/signin-facebook",
-            "/signin-adfs",
-            "/signin-google",
-            "/signin-twitter",
-            "/signin-github"
+            "/Authenticate/ExternalLoginOpenId"
         };
 
         private readonly RequestDelegate _next;
@@ -81,7 +74,8 @@ namespace SimpleIdentityServer.Host.MiddleWare
 
         public async Task Invoke(HttpContext context)
         {        
-            if (_includedPaths.Contains(context.Request.Path) 
+            if ((_includedPaths.Contains(context.Request.Path) 
+                || context.Request.Path.Value.StartsWith("/signin-"))
                 && (context.User == null ||
                     context.User.Identity == null ||
                     !context.User.Identity.IsAuthenticated))
