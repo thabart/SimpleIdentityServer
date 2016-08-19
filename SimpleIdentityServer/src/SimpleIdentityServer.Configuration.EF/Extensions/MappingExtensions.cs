@@ -47,7 +47,12 @@ namespace SimpleIdentityServer.Configuration.EF.Extensions
             {
                 IsEnabled = authenticationProvider.IsEnabled,
                 Name = authenticationProvider.Name,
-                Options = options
+                Options = options,
+                CallbackPath = authenticationProvider.CallbackPath,
+                ClassName = authenticationProvider.ClassName,
+                Code = authenticationProvider.Code,
+                Namespace = authenticationProvider.Namespace,
+                Type = authenticationProvider.Type
             };
         }
 
@@ -86,7 +91,12 @@ namespace SimpleIdentityServer.Configuration.EF.Extensions
             {
                 IsEnabled = authenticationProvider.IsEnabled,
                 Name = authenticationProvider.Name,
-                Options = options
+                Options = options,
+                CallbackPath = authenticationProvider.CallbackPath,
+                ClassName = authenticationProvider.ClassName,
+                Code = authenticationProvider.Code,
+                Namespace = authenticationProvider.Namespace,
+                Type = authenticationProvider.Type
             };
         }
 

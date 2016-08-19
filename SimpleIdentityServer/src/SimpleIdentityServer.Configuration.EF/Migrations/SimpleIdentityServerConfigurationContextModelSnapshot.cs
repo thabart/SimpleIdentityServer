@@ -20,7 +20,17 @@ namespace SimpleIdentityServer.Configuration.EF.Migrations
                 {
                     b.Property<string>("Name");
 
+                    b.Property<string>("CallbackPath");
+
+                    b.Property<string>("ClassName");
+
+                    b.Property<string>("Code");
+
                     b.Property<bool>("IsEnabled");
+
+                    b.Property<string>("Namespace");
+
+                    b.Property<int>("Type");
 
                     b.HasKey("Name");
 

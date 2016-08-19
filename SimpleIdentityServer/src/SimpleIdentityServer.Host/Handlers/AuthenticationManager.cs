@@ -16,7 +16,6 @@
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authentication.Twitter;
@@ -33,13 +32,11 @@ using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Configuration.Client;
 using SimpleIdentityServer.Configuration.Client.DTOs.Responses;
 using SimpleIdentityServer.Host.Extensions;
+using SimpleIdentityServer.Host.Parsers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -62,6 +59,8 @@ namespace SimpleIdentityServer.Host.Handlers
 
         private readonly IDataProtectionProvider _dataProtectionProvider;
 
+        private readonly IClaimsParser _claimsParser;
+
         private readonly HtmlEncoder _htmlEncoder;
 
         #region Constructor
@@ -71,13 +70,15 @@ namespace SimpleIdentityServer.Host.Handlers
             IIdentityServerClientFactory identityServerClientFactory,
             ILoggerFactory loggerFactory,
             IDataProtectionProvider dataProtectionProvider,
-            HtmlEncoder htmlEncoder)
+            HtmlEncoder htmlEncoder,
+            IClaimsParser claimsParser)
         {
             _simpleIdServerConfigurationClientFactory = simpleIdServerConfigurationClientFactory;
             _identityServerClientFactory = identityServerClientFactory;
             _logger = loggerFactory.CreateLogger("authentication");
             _dataProtectionProvider = dataProtectionProvider;
             _htmlEncoder = htmlEncoder;
+            _claimsParser = claimsParser;
         }
 
         #endregion
@@ -112,51 +113,16 @@ namespace SimpleIdentityServer.Host.Handlers
                     continue;
                 }
 
-                if (authProvider.Name == "Facebook")
+                if (authProvider.Type == AuthenticationProviderResponseTypes.OAUTH2)
                 {
-                    if (await EnableFacebookAuthentication(authProvider.Options, httpContext))
+                    if (await EnableOauth2IdentityProvider(authProvider, httpContext))
                     {
                         return true;
                     }
                 }
-                else if (authProvider.Name == "Microsoft")
+                else if (authProvider.Type == AuthenticationProviderResponseTypes.OPENID)
                 {
-                    if (await EnableMicrosoftAuthentication(authProvider.Options, httpContext))
-                    {
-                        return true;
-                    }
-                }
-                else if (authProvider.Name == "ADFS")
-                {
-                    if (await EnableAdfsAuthentication(authProvider.Options, httpContext))
-                    {
-                        return true;
-                    }
-                }
-                else if (authProvider.Name == "EID")
-                {
-                    if (await EnableEidAuthentication(authProvider.Options, httpContext))
-                    {
-                        return true;
-                    }
-                }
-                else if (authProvider.Name == "Google")
-                {
-                    if (await EnableGoogleAuthentication(authProvider.Options, httpContext))
-                    {
-                        return true;
-                    }
-                }
-                else if (authProvider.Name == "Twitter")
-                {
-                    if (await EnableTwitterAuthentication(authProvider.Options, httpContext))
-                    {
-                        return true;
-                    }
-                }
-                else if (authProvider.Name == "Github")
-                {
-                    if (await EnableGithubAuthentication(authProvider.Options, httpContext))
+                    if (await EnableOpenIdIdentityProvider(authProvider, httpContext))
                     {
                         return true;
                     }
@@ -170,30 +136,34 @@ namespace SimpleIdentityServer.Host.Handlers
 
         #region Enable authentication methods
 
-        private async Task<bool> EnableFacebookAuthentication(List<Option> options, HttpContext context)
+        private async Task<bool> EnableOauth2IdentityProvider(
+            AuthenticationProviderResponse authProvider, 
+            HttpContext context)
         {
-            var option = ExtractFacebookOptions(options, _dataProtectionProvider);
+            var option = ExtractOAuthOptions(authProvider, _dataProtectionProvider);
             if (option == null)
             {
                 return false;
             }
 
-            var handler = new FacebookHandler(new HttpClient());
+            var handler = new OAuthHandler<OAuthOptions>(new HttpClient());
             await handler.InitializeAsync(option, context, _logger, UrlEncoder.Default);
             return await handler.HandleRequestAsync();
         }
 
-        private async Task<bool> EnableMicrosoftAuthentication(List<Option> options, HttpContext httpContext)
+        private async Task<bool> EnableOpenIdIdentityProvider(
+            AuthenticationProviderResponse authProvider,
+            HttpContext context)
         {
-            HttpClient httpClient = null;
-            var microsoftOptions = ExtractMicrosoftOptions(options, _dataProtectionProvider, out httpClient);
-            if (microsoftOptions == null)
+            HttpClient httpClient;
+            var option = ExtractOpenIdConfiguration(authProvider, _dataProtectionProvider, out httpClient);
+            if (option == null)
             {
                 return false;
             }
 
             var handler = new OpenIdConnectHandler(httpClient, _htmlEncoder);
-            await handler.InitializeAsync(microsoftOptions, httpContext, _logger, UrlEncoder.Default);
+            await handler.InitializeAsync(option, context, _logger, UrlEncoder.Default);
             return await handler.HandleRequestAsync();
         }
 
@@ -267,37 +237,169 @@ namespace SimpleIdentityServer.Host.Handlers
 
         #region Extract options
 
-        private static FacebookOptions ExtractFacebookOptions(
-            List<Option> options, 
+        /// <summary>
+        /// Extract OAUTH Options
+        /// </summary>
+        /// <param name="authProvider"></param>
+        /// <param name="dataProtectionProvider"></param>
+        /// <returns></returns>
+        private OAuthOptions ExtractOAuthOptions(
+            AuthenticationProviderResponse authProvider,
             IDataProtectionProvider dataProtectionProvider)
         {
-            var scopes = options.Where(o => o.Key == "Scope").ToList();
-            var clientId = options.FirstOrDefault(o => o.Key == "ClientId");
-            var clientSecret = options.FirstOrDefault(o => o.Key == "ClientSecret");
-            if (clientId == null || clientSecret == null || scopes == null || !scopes.Any())
+            var clientId = authProvider.Options.FirstOrDefault(o => o.Key == "ClientId");
+            var clientSecret = authProvider.Options.FirstOrDefault(o => o.Key == "ClientSecret");
+            var authorizationEndPoint = authProvider.Options.FirstOrDefault(o => o.Key == "AuthorizationEndpoint");
+            var tokenEndpoint = authProvider.Options.FirstOrDefault(o => o.Key == "TokenEndpoint");
+            var userInformationEndpoint = authProvider.Options.FirstOrDefault(o => o.Key == "UserInformationEndpoint");
+            var code = authProvider.Code;
+            var nameSpace = authProvider.Namespace;
+            var className = authProvider.ClassName;
+
+            var scopes = authProvider.Options.Where(o => o.Key == "Scope").ToList();
+            if (clientId == null || 
+                clientSecret == null ||
+                string.IsNullOrWhiteSpace(code) ||
+                string.IsNullOrWhiteSpace(nameSpace) ||
+                string.IsNullOrWhiteSpace(className))
             {
                 return null;
             }
 
             var dataProtector = dataProtectionProvider.CreateProtector(
                 typeof(AuthenticationManager).FullName, Constants.IdentityProviderNames.Microsoft, "v1");
-
-            var result = new FacebookOptions
+            
+            var result = new OAuthOptions
             {
-                ClaimsIssuer = Constants.IdentityProviderNames.Facebook,
+                ClientId = clientId.Value,
+                ClientSecret = clientSecret.Value,
+                AuthenticationScheme  = authProvider.Name,
+                DisplayName = authProvider.Name,
+                ClaimsIssuer = authProvider.Name,
                 SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme,
-                AppId = clientId.Value,
-                AppSecret = clientSecret.Value,
-                StateDataFormat = new PropertiesDataFormat(dataProtector)
+                CallbackPath = new PathString(authProvider.CallbackPath),
+                AuthorizationEndpoint = authorizationEndPoint.Value,
+                TokenEndpoint = tokenEndpoint.Value,
+                UserInformationEndpoint = userInformationEndpoint.Value,
+                StateDataFormat = new PropertiesDataFormat(dataProtector),                
+                Events = new OAuthEvents
+                {
+                    OnCreatingTicket = async context =>
+                    {
+                        var endpoint = QueryHelpers.AddQueryString(context.Options.UserInformationEndpoint, "access_token", context.AccessToken);
+                        var response = await context.Backchannel.GetAsync(endpoint, context.HttpContext.RequestAborted);
+                        response.EnsureSuccessStatusCode();
+                        var payload = JObject.Parse(await response.Content.ReadAsStringAsync());
+                        var dic = payload.ToObject<Dictionary<string, object>>();
+                        var claims = _claimsParser.Parse(nameSpace, className, code, dic);
+                        foreach(var claim in claims)
+                        {
+                            context.Identity.AddClaim(claim);
+                        }
+                    }
+                }
             };
 
             result.Scope.Clear();
-            foreach (var scope in scopes.Select(s => s.Value))
+            if (scopes != null)
             {
-                result.Scope.Add(scope);
+                foreach (var scope in scopes.Select(s => s.Value))
+                {
+                    result.Scope.Add(scope);
+                }
             }
 
             return result;
+        }
+        
+        /// <summary>
+        /// Extract OPENID configuration
+        /// </summary>
+        /// <param name="options"></param>
+        /// <param name="dataProtectionProvider"></param>
+        /// <param name="httpClient"></param>
+        /// <returns></returns>
+        private OpenIdConnectOptions ExtractOpenIdConfiguration(
+            AuthenticationProviderResponse authProvider,
+            IDataProtectionProvider dataProtectionProvider,
+            out HttpClient httpClient)
+        {
+            httpClient = null;
+            var scopes = authProvider.Options.Where(o => o.Key == "Scope").ToList();
+            var clientId = authProvider.Options.FirstOrDefault(o => o.Key == "ClientId");
+            var clientSecret = authProvider.Options.FirstOrDefault(o => o.Key == "ClientSecret");
+            var wellKnownConfiguration = authProvider.Options.Find(o => o.Key == "WellKnownConfigurationEndPoint");
+            var code = authProvider.Code;
+            var nameSpace = authProvider.Namespace;
+            var className = authProvider.ClassName;
+            if (clientId == null || 
+                clientSecret == null ||
+                wellKnownConfiguration == null ||
+                string.IsNullOrWhiteSpace(code) ||
+                string.IsNullOrWhiteSpace(nameSpace) ||
+                string.IsNullOrWhiteSpace(className))
+            {
+                return null;
+            }
+
+            httpClient = new HttpClient(new HttpClientHandler());
+            httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Microsoft ASP.NET Core OpenIdConnect middleware");
+            httpClient.MaxResponseContentBufferSize = 1024 * 1024 * 10;
+
+            var dataProtector = dataProtectionProvider.CreateProtector(
+                typeof(AuthenticationManager).FullName, Constants.IdentityProviderNames.Microsoft, "v1");
+
+            var openIdOptions = new OpenIdConnectOptions
+            {
+                AuthenticationScheme = Constants.IdentityProviderNames.Microsoft,
+                SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme,
+                DisplayName = Constants.IdentityProviderNames.Microsoft,
+                ClientId = clientId.Value,
+                ClientSecret = clientSecret.Value,
+                CallbackPath = new PathString(authProvider.CallbackPath),
+                StateDataFormat = new PropertiesDataFormat(dataProtector),
+                StringDataFormat = new SecureDataFormat<string>(new StringSerializer(), dataProtector),
+                MetadataAddress = wellKnownConfiguration.Value,
+                Events = new OpenIdConnectEvents
+                {
+                    OnAuthorizationCodeReceived = async context =>
+                    {
+                        string s = "";
+                    },
+                    OnTicketReceived = async context =>
+                    {
+                        string s = "";
+                    },
+                    OnUserInformationReceived = async context =>
+                    {
+                        string s = "";
+                    },
+                    OnMessageReceived = async context =>
+                    {
+                        string s = "";
+                    }
+                },
+                TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = false,
+                    ValidateAudience = true,
+                    ValidAudience = clientId.Value
+                },
+                ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(wellKnownConfiguration.Value,
+                        new OpenIdConnectConfigurationRetriever(),
+                        new HttpDocumentRetriever(httpClient) { RequireHttps = true })
+            };
+
+            openIdOptions.Scope.Clear();
+            if (scopes != null)
+            {
+                foreach (var scope in scopes.Select(s => s.Value))
+                {
+                    openIdOptions.Scope.Add(scope);
+                }
+            }
+
+            return openIdOptions;
         }
 
         public static GoogleOptions ExtractGoogleOptions(
@@ -383,49 +485,7 @@ namespace SimpleIdentityServer.Host.Handlers
             EnrichOauthOptions(githubOptions, dataProtectionProvider, out httpClient);
             return githubOptions;
         }
-
-        private static OpenIdConnectOptions ExtractMicrosoftOptions(
-            List<Option> options,
-            IDataProtectionProvider dataProtectionProvider,
-            out HttpClient httpClient)
-        {
-            httpClient = null;
-            var scopes = options.Where(o => o.Key == "Scope").ToList();
-            var clientId = options.FirstOrDefault(o => o.Key == "ClientId");
-            var clientSecret = options.FirstOrDefault(o => o.Key == "ClientSecret");
-            if (clientId == null || clientSecret == null || scopes == null || !scopes.Any())
-            {
-                return null;
-            }
-
-            var dataProtector = dataProtectionProvider.CreateProtector(
-                typeof(AuthenticationManager).FullName, Constants.IdentityProviderNames.Microsoft, "v1");
-
-            var microsoftAccountOptions = new OpenIdConnectOptions
-            {
-                AuthenticationScheme = Constants.IdentityProviderNames.Microsoft,
-                SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme,
-                DisplayName = Constants.IdentityProviderNames.Microsoft,
-                ClientId = clientId.Value,
-                ClientSecret = clientSecret.Value,
-                StateDataFormat = new PropertiesDataFormat(dataProtector),
-                Authority = "https://login.microsoftonline.com/common/v2.0",
-                TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = false
-                }
-            };
-
-            microsoftAccountOptions.Scope.Clear();
-            foreach (var scope in scopes.Select(s => s.Value))
-            {
-                microsoftAccountOptions.Scope.Add(scope);
-            }
-
-            EnrichOpenidOptions(microsoftAccountOptions, dataProtectionProvider, out httpClient);
-            return microsoftAccountOptions;
-        }
-        
+                
         private static OAuthOptions ExtractAdfsOptions(
             List<Option> options, 
             IDataProtectionProvider dataProtectionProvider)

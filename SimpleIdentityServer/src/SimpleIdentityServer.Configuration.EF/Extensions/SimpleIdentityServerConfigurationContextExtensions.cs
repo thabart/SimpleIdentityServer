@@ -46,7 +46,12 @@ namespace SimpleIdentityServer.Configuration.EF.Extensions
                     new AuthenticationProvider
                     {
                         IsEnabled = true,
+                        Type = 1,
                         Name = "Facebook",
+                        CallbackPath = "/signin-facebook",
+                        Code = "using SimpleIdentityServer.Core.Jwt;\r\nusing System.Collections.Generic;\r\n\r\nnamespace Parser\r\n{\r\n    public class FacebookClaimsParser\r\n    {\r\n        private readonly Dictionary<string, string> _mappingFacebookClaimToOpenId = new Dictionary<string, string>\r\n        {\r\n            {\r\n                \"id\",\r\n                Constants.StandardResourceOwnerClaimNames.Subject\r\n            },\r\n            {\r\n                \"name\",\r\n                Constants.StandardResourceOwnerClaimNames.Name\r\n            },\r\n            {\r\n                \"first_name\",\r\n                Constants.StandardResourceOwnerClaimNames.GivenName\r\n            },\r\n            {\r\n                \"last_name\",\r\n                Constants.StandardResourceOwnerClaimNames.FamilyName\r\n            },\r\n            {\r\n                \"gender\",\r\n                Constants.StandardResourceOwnerClaimNames.Gender\r\n            },\r\n            {\r\n                \"locale\",\r\n                Constants.StandardResourceOwnerClaimNames.Locale\r\n            },\r\n            {\r\n                \"picture\",\r\n                Constants.StandardResourceOwnerClaimNames.Picture\r\n            },\r\n            {\r\n                \"updated_at\",\r\n                Constants.StandardResourceOwnerClaimNames.UpdatedAt\r\n            },\r\n            {\r\n                \"email\",\r\n                Constants.StandardResourceOwnerClaimNames.Email\r\n            },\r\n            {\r\n                \"birthday\",\r\n                Constants.StandardResourceOwnerClaimNames.BirthDate\r\n            },\r\n            {\r\n                \"link\",\r\n                Constants.StandardResourceOwnerClaimNames.WebSite\r\n            }\r\n        };\r\n\r\n        public Dictionary<string, object> Process(Dictionary<string, object> claims)\r\n        {\r\n            var result = new Dictionary<string, object>();\r\n            foreach(var claim in claims)\r\n            {\r\n                string key = claim.Key;\r\n                if (_mappingFacebookClaimToOpenId.ContainsKey(claim.Key))\r\n                {\r\n                    key = _mappingFacebookClaimToOpenId[claim.Key];\r\n                }\r\n\r\n                result.Add(key, claim.Value);\r\n            }\r\n\r\n            return result;\r\n        }\r\n    }\r\n}",
+                        ClassName = "FacebookClaimsParser",
+                        Namespace = "Parser",
                         Options = new List<Option>
                         {
                             new Option
@@ -60,6 +65,24 @@ namespace SimpleIdentityServer.Configuration.EF.Extensions
                                 Id = Guid.NewGuid().ToString(),
                                 Key = "ClientSecret",
                                 Value = "12e0f33817634c0a650c0121d05e53eb"
+                            },
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "AuthorizationEndpoint",
+                                Value = "https://www.facebook.com/v2.6/dialog/oauth"
+                            },
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "TokenEndpoint",
+                                Value = "https://graph.facebook.com/v2.6/oauth/access_token"
+                            },
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "UserInformationEndpoint",
+                                Value = "https://graph.facebook.com/v2.6/me"
                             },
                             new Option
                             {
@@ -78,7 +101,12 @@ namespace SimpleIdentityServer.Configuration.EF.Extensions
                     new AuthenticationProvider
                     {
                         IsEnabled = true,
+                        Type = 2,
                         Name = "Microsoft",
+                        CallbackPath = "/signin-microsoft",
+                        Code = "code",
+                        ClassName = "MicrosoftClaimsParser",
+                        Namespace = "Parser",
                         Options = new List<Option>
                         {
                             new Option
@@ -96,6 +124,12 @@ namespace SimpleIdentityServer.Configuration.EF.Extensions
                             new Option
                             {
                                 Id = Guid.NewGuid().ToString(),
+                                Key = "WellKnownConfigurationEndPoint",
+                                Value = "https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration"
+                            },
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
                                 Key = "Scope",
                                 Value = "openid"
                             },
@@ -107,6 +141,67 @@ namespace SimpleIdentityServer.Configuration.EF.Extensions
                             }
                         }
                     },
+                    new AuthenticationProvider
+                    {
+                        IsEnabled = true,
+                        Type = 1,
+                        Name = "Google",
+                        CallbackPath = "/signin-google",
+                        Code = "code",
+                        ClassName = "GoogleClaimsParser",
+                        Namespace = "Parser",
+                        Options = new List<Option>
+                        {
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "ClientId",
+                                Value = "636126285787-755svbmi6j75t54e00lk58fi1t1qs4c6.apps.googleusercontent.com"
+                            },
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "ClientSecret",
+                                Value = "l-3B1I0hGNc-0S4NSdkIw2yE"
+                            },
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "AuthorizationEndpoint",
+                                Value = "https://accounts.google.com/o/oauth2/auth"
+                            },
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "TokenEndpoint",
+                                Value = "https://www.googleapis.com/oauth2/v4/token"
+                            },
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "UserInformationEndpoint",
+                                Value = "https://www.googleapis.com/plus/v1/people/me"
+                            },
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "Scope",
+                                Value = "openid"
+                            },
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "Scope",
+                                Value = "profile"
+                            },
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "Scope",
+                                Value = "email"
+                            }
+                        }
+                    }/*
                     new AuthenticationProvider
                     {
                         IsEnabled = false,
@@ -174,26 +269,6 @@ namespace SimpleIdentityServer.Configuration.EF.Extensions
                     new AuthenticationProvider
                     {
                         IsEnabled = true,
-                        Name = "Google",
-                        Options = new List<Option>
-                        {
-                            new Option
-                            {
-                                Id = Guid.NewGuid().ToString(),
-                                Key = "ClientId",
-                                Value = "636126285787-755svbmi6j75t54e00lk58fi1t1qs4c6.apps.googleusercontent.com"
-                            },
-                            new Option
-                            {
-                                Id = Guid.NewGuid().ToString(),
-                                Key = "ClientSecret",
-                                Value = "l-3B1I0hGNc-0S4NSdkIw2yE"
-                            }
-                        }
-                    },
-                    new AuthenticationProvider
-                    {
-                        IsEnabled = true,
                         Name = "Twitter",
                         Options = new List<Option>
                         {
@@ -230,7 +305,7 @@ namespace SimpleIdentityServer.Configuration.EF.Extensions
                                 Value = "1ca11063515064b7c2638924280ca026f9713f5b"
                             }
                         }
-                    }
+                    }*/
                 });
             }
         }

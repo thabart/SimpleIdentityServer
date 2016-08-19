@@ -21,18 +21,19 @@ namespace SimpleIdentityServer.Configuration.Core
         public static class AuthProviderResponseNames
         {
             public const string Name = "name";
-
             public const string IsEnabled = "is_enabled";
-
             public const string Options = "options";
+            public const string Type = "type";
+            public const string CallbackPath = "callback";
+            public const string Code = "code";
+            public const string ClassName = "class_name";
+            public const string Namespace = "namespace";
         }
 
         public static class OptionResponseNames
         {
             public const string Id = "_id";
-
             public const string Key = "key";
-
             public const string Value = "value";
         }
 

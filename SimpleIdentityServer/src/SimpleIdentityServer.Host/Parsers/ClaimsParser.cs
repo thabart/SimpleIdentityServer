@@ -19,117 +19,61 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Core.Jwt;
-using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+#if CORE
 using System.Runtime.Loader;
+#endif
 using System.Security.Claims;
 
-namespace SimpleIdentityServer.ClaimsParser
+namespace SimpleIdentityServer.Host.Parsers
 {
-    class Program
+    public interface IClaimsParser
     {
+        List<Claim> Parse(
+            string nameSpace,
+            string className,
+            string code,
+            Dictionary<string, object> claims);
+    }
+
+    public class ClaimsParser : IClaimsParser
+    {
+        #region Fields
+
         private static readonly List<string> _arrNames = new List<string>
         {
-            Constants.StandardResourceOwnerClaimNames.Role
+            Core.Jwt.Constants.StandardResourceOwnerClaimNames.Role
         };
 
-        #region Public static methods
+        #endregion
 
-        public static void Main(string[] args)
+        #region Public methods
+
+        public List<Claim> Parse(
+            string nameSpace, 
+            string className, 
+            string code, 
+            Dictionary<string, object> claims)
         {
-            ParseGoogleClaims();
-            // ParseFacebookClaims();
-            Console.ReadLine();
-        }
+            code = code.Replace(@"\n", "")
+                .Replace(@"\t", "")
+                .Replace(@"\r", "")
+                .Replace(@"\f", "")
+                .Replace(@"\v", "")
+                .Replace(@"\", "");
 
-        static void ParseGoogleClaims()
-        {
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "GoogleClaimsParser.cs");
-            var code = File.ReadAllText(filePath);
-            var jObj = JObject.Parse(@"{
-                'id':'thabart', 
-                'name2': {
-                    'familyName': 'Habart'
-                },
-                'name': {
-                    'familyName': {
-                        'name': 'coucou'
-                    }
-                }
-            }");
-
-            var dic = GetChildrenByReflection(jObj);
-
-            var claims = jObj.ToObject<Dictionary<string, object>>();
-
-            var parser = new Parser.GoogleClaimsParser();
-            parser.Process(claims);
-
-            var result = CreateClaimsParser("GoogleClaimsParser", code, claims);
-            foreach (var record in result)
-            {
-                Console.WriteLine(record.Type + " " + record.Value);
-            }
-        }
-
-        static Dictionary<string, object> GetChildrenByReflection(JObject jArr)
-        {
-            var result = new Dictionary<string, object>();
-            foreach (KeyValuePair<string, JToken> kvp in jArr)
-            {
-                var obj = kvp.Value as JObject;
-                if (kvp.Value is JObject)
-                {
-                    result.Add(kvp.Key, GetChildrenByReflection(obj));
-                }
-                else
-                {
-                    result.Add(kvp.Key, kvp.Value);
-                }
-            }
-
-            return result;
-        }
-
-        static void ParseFacebookClaims()
-        {
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "FacebookClaimsParser.cs");
-            var code = File.ReadAllText(filePath);
-            var jObj = JObject.Parse(@"{
-                'id':'thabart', 
-                'name':'name', 
-                'first_name':'first_name', 
-                'last_name':'last_name',
-                'gender':'gender',
-                'email':'email',
-                'specific':'specific',
-                'role':['firstrole', 'secondrole']
-            }");
-            var claims = jObj.ToObject<Dictionary<string, object>>();
-            var parser = new Parser.FacebookClaimsParser();
-            var result = CreateClaimsParser("FacebookClaimsParser", code, claims);
-            foreach(var record in result)
-            {
-                Console.WriteLine(record.Type + " " + record.Value);
-            }
-        }
-
-        static List<Claim> CreateClaimsParser(string className, string code, Dictionary<string, object> claims)
-        {
             var syntaxTree = CSharpSyntaxTree.ParseText(code);
             var assemblyName = Path.GetRandomFileName();
             var references = new List<MetadataReference>
             {
-                MetadataReference.CreateFromFile(typeof(Object).GetTypeInfo().Assembly.Location),
+                MetadataReference.CreateFromFile(typeof(object).GetTypeInfo().Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(Enumerable).GetTypeInfo().Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(JwsPayload).GetTypeInfo().Assembly.Location)
             };
-            
+
             var location = GetAssemblyLocation("System.Runtime");
             if (!string.IsNullOrWhiteSpace(location))
             {
@@ -152,9 +96,14 @@ namespace SimpleIdentityServer.ClaimsParser
                 }
 
                 ms.Seek(0, SeekOrigin.Begin);
-                var assembly = AssemblyLoadContext.Default.LoadFromStream(ms);
-                var type = assembly.GetType("Parser."+ className);
-                var instance = assembly.CreateInstance("Parser."+ className);
+                Assembly assembly = null;
+#if NET
+                assembly = Assembly.Load(ms.ToArray());
+#else
+                assembly = AssemblyLoadContext.Default.LoadFromStream(ms);
+#endif
+                var type = assembly.GetType(nameSpace+"."+ className);
+                var instance = assembly.CreateInstance(nameSpace + "." + className);
                 var meth = type.GetMember("Process").First() as MethodInfo;
                 var res = meth.Invoke(instance, new[] { claims }) as Dictionary<string, object>;
                 if (res == null)
@@ -167,7 +116,7 @@ namespace SimpleIdentityServer.ClaimsParser
                 {
                     if (_arrNames.Contains(record.Key))
                     {
-                        foreach(var arrayRecord in GetArray(record.Value))
+                        foreach (var arrayRecord in GetArray(record.Value))
                         {
                             cls.Add(new Claim(record.Key, arrayRecord));
                         }
@@ -181,6 +130,10 @@ namespace SimpleIdentityServer.ClaimsParser
                 return cls;
             }
         }
+
+        #endregion
+
+        #region Private methods
 
         private static string GetAssemblyLocation(string name)
         {

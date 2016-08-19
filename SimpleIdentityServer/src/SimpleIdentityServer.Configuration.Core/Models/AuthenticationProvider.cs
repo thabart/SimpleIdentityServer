@@ -28,6 +28,22 @@ namespace SimpleIdentityServer.Configuration.Core.Models
         [DataMember(Name = Constants.AuthProviderResponseNames.IsEnabled)]
         public bool IsEnabled { get; set; }
 
+        // 1 : OAUTH2
+        [DataMember(Name = Constants.AuthProviderResponseNames.Type)]
+        public int Type { get; set; }
+
+        [DataMember(Name = Constants.AuthProviderResponseNames.CallbackPath)]
+        public string CallbackPath { get; set; }
+
+        [DataMember(Name = Constants.AuthProviderResponseNames.Code)]
+        public string Code { get; set; }
+
+        [DataMember(Name = Constants.AuthProviderResponseNames.ClassName)]
+        public string ClassName { get; set; }
+
+        [DataMember(Name = Constants.AuthProviderResponseNames.Namespace)]
+        public string Namespace { get; set; }
+
         [DataMember(Name = Constants.AuthProviderResponseNames.Options)]
         public List<Option> Options { get; set; }
     }

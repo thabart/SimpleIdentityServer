@@ -22,10 +22,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Serilog;
 using Serilog.Events;
-using Serilog.Formatting.Json;
 using Serilog.Sinks.ElasticSearch;
 using Serilog.Sinks.ElasticSearch.Sinks;
-using Serilog.Sinks.RollingFile;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Configuration.Client;
 using SimpleIdentityServer.Core;
@@ -43,8 +41,8 @@ using SimpleIdentityServer.RateLimitation;
 using System;
 using System.Reflection;
 
-namespace SimpleIdentityServer.Host 
-{    
+namespace SimpleIdentityServer.Host
+{
     public enum DataSourceTypes 
     {
         SqlServer,
@@ -230,6 +228,7 @@ namespace SimpleIdentityServer.Host
             {
                 ConfigurationUrl = configurationUrl
             });
+            services.AddTransient<IClaimsParser, ClaimsParser>();
             services.AddTransient<ISimpleIdentityServerConfigurator, ConcreteSimpleIdentityServerConfigurator>();
             services.AddDataProtection();
             services.AddSingleton<SwaggerOptions>(swaggerOptions);

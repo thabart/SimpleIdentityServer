@@ -50,15 +50,22 @@
     "net46": {
       "frameworkAssemblies": {
         "System.Web": "4.0.0.0"
+      },
+      "buildOptions": {
+        "define": [ "NET" ]
       }
     },
     "netcoreapp1.0": {
       "dependencies": {
         "Microsoft.AspNet.WebUtilities": "1.0.0-*",
         "System.Reflection": "4.1.0",
-        "System.IO": "4.1.0"
+        "System.IO": "4.1.0",
+        "System.Runtime.Loader": "4.0.0"
       },
-      "imports": [ "dnxcore50", "portable-net451+win8" ]
+      "imports": [ "dnxcore50", "portable-net451+win8" ],
+      "buildOptions": {
+        "define": [ "CORE" ]
+      }
     }
   },
   "buildOptions": {

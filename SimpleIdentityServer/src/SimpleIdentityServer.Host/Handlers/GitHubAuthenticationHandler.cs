@@ -137,7 +137,6 @@ namespace SimpleIdentityServer.Host.Handlers
             }
 
             var payload = JObject.Parse(await response.Content.ReadAsStringAsync());
-
             identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, GitHubAuthenticationHelper.GetIdentifier(payload), Options.ClaimsIssuer));
             identity.AddClaim(new Claim(ClaimTypes.Name, GitHubAuthenticationHelper.GetLogin(payload), Options.ClaimsIssuer));
             identity.AddClaim(new Claim(ClaimTypes.Email, GitHubAuthenticationHelper.GetEmail(payload), Options.ClaimsIssuer));

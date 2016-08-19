@@ -13,7 +13,12 @@ namespace SimpleIdentityServer.Configuration.EF.Migrations
                 columns: table => new
                 {
                     Name = table.Column<string>(nullable: false),
-                    IsEnabled = table.Column<bool>(nullable: false)
+                    CallbackPath = table.Column<string>(nullable: true),
+                    ClassName = table.Column<string>(nullable: true),
+                    Code = table.Column<string>(nullable: true),
+                    IsEnabled = table.Column<bool>(nullable: false),
+                    Namespace = table.Column<string>(nullable: true),
+                    Type = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {

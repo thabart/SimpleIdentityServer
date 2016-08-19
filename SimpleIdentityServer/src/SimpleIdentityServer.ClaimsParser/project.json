@@ -22,7 +22,8 @@
       "type": "platform",
       "version": "1.0.0"
     },
-    "SimpleIdentityServer.Core.Jwt": "*"
+    "SimpleIdentityServer.Core.Jwt": "*",
+    "SimpleIdentityServer.Core.Common": "*"
   },
   "frameworks": {
     "netcoreapp1.0": {

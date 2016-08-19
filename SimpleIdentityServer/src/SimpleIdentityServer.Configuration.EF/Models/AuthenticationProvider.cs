@@ -24,6 +24,16 @@ namespace SimpleIdentityServer.Configuration.EF.Models
 
         public bool IsEnabled { get; set; }
 
+        public int Type { get; set; }
+
+        public string CallbackPath { get; set; }
+
+        public string Code { get; set; }
+
+        public string ClassName { get; set; }
+
+        public string Namespace { get; set; }
+
         public virtual List<Option> Options { get; set; }
     }
 }
