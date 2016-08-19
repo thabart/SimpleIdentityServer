@@ -1,0 +1,32 @@
+{
+  "version": "1.0.0-*",
+  "description": "SimpleIdentityServer.ClaimsParser",
+  "authors": [ "" ],
+  "packOptions": {
+    "tags": [ "" ],
+    "licenseUrl": "",
+    "projectUrl": ""
+  },
+  "buildOptions": {
+    "emitEntryPoint": true
+  },
+  "tooling": {
+    "defaultNamespace": "SimpleIdentityServer.ClaimsParser"
+  },
+  "dependencies": {
+    "Microsoft.CodeAnalysis.CSharp": "2.0.0-beta3",
+    "System.Runtime.Loader": "4.0.0",
+    "System.Security.Claims": "4.0.1",
+    "Newtonsoft.Json": "9.0.1",
+    "Microsoft.NETCore.App": {
+      "type": "platform",
+      "version": "1.0.0"
+    },
+    "SimpleIdentityServer.Core.Jwt": "*"
+  },
+  "frameworks": {
+    "netcoreapp1.0": {
+      "imports": "dnxcore50"
+    }
+  }
+}
