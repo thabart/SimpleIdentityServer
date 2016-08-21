@@ -293,6 +293,31 @@ namespace SimpleIdentityServer.Configuration.EF.Extensions
                                 Value = "r_basicprofile"
                             }
                         }
+                    },
+                    new AuthenticationProvider
+                    {
+                        IsEnabled = true,
+                        Type = 3,
+                        Name = "Eid",
+                        CallbackPath = "/signin-eid",
+                        Code = "code",
+                        ClassName = "EidClaimsParser",
+                        Namespace = "Parser",
+                        Options = new List<Option>
+                        {
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "IdPEndpoint",
+                                Value = "https://www.e-contract.be/eid-idp/protocol/ws-federation/auth-ident"
+                            },
+                            new Option
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Key = "Realm",
+                                Value = "urn://idserver"
+                            }
+                        }
                     }
                     /*
                     new AuthenticationProvider

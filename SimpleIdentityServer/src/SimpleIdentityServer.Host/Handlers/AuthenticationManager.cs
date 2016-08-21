@@ -18,7 +18,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Authentication.Twitter;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
@@ -113,19 +112,23 @@ namespace SimpleIdentityServer.Host.Handlers
                     continue;
                 }
 
-                if (authProvider.Type == AuthenticationProviderResponseTypes.OAUTH2)
+                var result = false;
+                switch(authProvider.Type)
                 {
-                    if (await EnableOauth2IdentityProvider(authProvider, httpContext))
-                    {
-                        return true;
-                    }
+                    case AuthenticationProviderResponseTypes.OAUTH2:
+                        result = await EnableOauth2IdentityProvider(authProvider, httpContext);
+                        break;
+                    case AuthenticationProviderResponseTypes.OPENID:
+                        result = await EnableOpenIdIdentityProvider(authProvider, httpContext);
+                        break;
+                    case AuthenticationProviderResponseTypes.WSFED:
+                        result = await EnableWsFederationAuthentication(authProvider, httpContext);
+                        break;                    
                 }
-                else if (authProvider.Type == AuthenticationProviderResponseTypes.OPENID)
+
+                if (result)
                 {
-                    if (await EnableOpenIdIdentityProvider(authProvider, httpContext))
-                    {
-                        return true;
-                    }
+                    return true;
                 }
             }
 
@@ -167,22 +170,11 @@ namespace SimpleIdentityServer.Host.Handlers
             return await handler.HandleRequestAsync();
         }
 
-        private async Task<bool> EnableAdfsAuthentication(List<Option> options, HttpContext httpContext)
+        private async Task<bool> EnableWsFederationAuthentication(
+            AuthenticationProviderResponse authProvider,
+            HttpContext httpContext)
         {
-            var adfsOptions = ExtractAdfsOptions(options, _dataProtectionProvider);
-            if (adfsOptions == null)
-            {
-                return false;
-            }
-
-            var handler = new OAuthHandler<OAuthOptions>(new HttpClient());
-            await handler.InitializeAsync(adfsOptions, httpContext, _logger, UrlEncoder.Default);
-            return await handler.HandleRequestAsync();
-        }
-
-        private async Task<bool> EnableEidAuthentication(List<Option> options, HttpContext httpContext)
-        {
-            var eidOptions = ExtractEidOptions(options);
+            var eidOptions = ExtractWsFederationOptions(authProvider);
             if (eidOptions == null)
             {
                 return false;
@@ -192,7 +184,8 @@ namespace SimpleIdentityServer.Host.Handlers
             await handler.InitializeAsync(eidOptions, httpContext, _logger, UrlEncoder.Default);
             return await handler.HandleRequestAsync();
         }
-
+        
+        /*                
         private async Task<bool> EnableTwitterAuthentication(List<Option> options, HttpContext httpContext)
         {
             var twitterOptions = ExtractTwitterOptions(options, _dataProtectionProvider);
@@ -205,6 +198,7 @@ namespace SimpleIdentityServer.Host.Handlers
             await handler.InitializeAsync(twitterOptions, httpContext, _logger, UrlEncoder.Default);
             return await handler.HandleRequestAsync();
         }
+        */
 
         #endregion
 
@@ -378,6 +372,44 @@ namespace SimpleIdentityServer.Host.Handlers
             return openIdOptions;
         }
 
+        /// <summary>
+        /// Extract WS-Federation configuration
+        /// </summary>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        private static WsFedAuthenticationOptions ExtractWsFederationOptions(
+            AuthenticationProviderResponse authProvider)
+        {
+            var idEndPoint = authProvider.Options.FirstOrDefault(o => o.Key == "IdPEndpoint");
+            var realm = authProvider.Options.FirstOrDefault(o => o.Key == "Realm");
+            if (idEndPoint == null ||
+                realm == null)
+            {
+                return null;
+            }
+
+            return new WsFedAuthenticationOptions
+            {
+                IdPEndpoint = idEndPoint.Value,
+                Realm = realm.Value,
+                AuthenticationScheme = authProvider.Name,
+                DisplayName = authProvider.Name,
+                SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme,
+                AutomaticChallenge = true,
+                AutomaticAuthenticate = true,
+                RedirectPath = new PathString("/Authenticate/LoginCallback"),
+                Events =
+                {
+                    OnClaimsReceived = xmlNode =>
+                    {
+                        // Parse and returns the claims
+                        return null;
+                    }
+                }
+            };
+        }
+
+        /*
         private static TwitterOptions ExtractTwitterOptions(
             List<Option> options,
             IDataProtectionProvider dataProtectionProvider)
@@ -406,80 +438,8 @@ namespace SimpleIdentityServer.Host.Handlers
             };
             return twitterOptions;
         }
+        */
                 
-        private static OAuthOptions ExtractAdfsOptions(
-            List<Option> options, 
-            IDataProtectionProvider dataProtectionProvider)
-        {
-            var clientId = options.FirstOrDefault(o => o.Key == "ClientId");
-            var clientSecret = options.FirstOrDefault(o => o.Key == "ClientSecret");
-            var relyingParty = options.FirstOrDefault(o => o.Key == "RelyingParty");
-            var claimsIssuer = options.FirstOrDefault(o => o.Key == "ClaimsIssuer");
-            var authorizationEndPoint = options.FirstOrDefault(o => o.Key == "AdfsAuthorizationEndPoint");
-            var tokenEndPoint = options.FirstOrDefault(o => o.Key == "AdfsTokenEndPoint");
-            if (clientId == null 
-                || clientSecret == null
-                || relyingParty == null
-                || claimsIssuer == null
-                || authorizationEndPoint == null 
-                || tokenEndPoint == null)
-            {
-                return null;
-            }
-
-            var dataProtector = dataProtectionProvider.CreateProtector(
-                typeof(AuthenticationManager).FullName, Constants.IdentityProviderNames.Adfs, "v1");
-
-            var adfsOptions = new OAuthOptions
-            {
-                ClientId = clientId.Value,
-                ClientSecret = clientSecret.Value,
-                AuthenticationScheme = Constants.IdentityProviderNames.Adfs,
-                DisplayName = Constants.IdentityProviderNames.Adfs,
-                CallbackPath = new PathString("/oauth-callback"),
-                Events = new OAuthEvents
-                {
-                    OnRedirectToAuthorizationEndpoint = async context =>
-                    {
-                        var parameter = new Dictionary<string, string>
-                        {
-                            ["resource"] = relyingParty.Value
-                        };
-                        var query = QueryHelpers.AddQueryString(context.RedirectUri, parameter);
-                        context.Response.Redirect(query);
-                    }
-                },
-                ClaimsIssuer = claimsIssuer.Value,
-                AuthorizationEndpoint = authorizationEndPoint.Value,
-                TokenEndpoint = tokenEndPoint.Value,
-                StateDataFormat = new PropertiesDataFormat(dataProtector)
-            };
-            return adfsOptions;
-        }
-
-        private static WsFedAuthenticationOptions ExtractEidOptions(List<Option> options)
-        {
-            var idEndPoint = options.FirstOrDefault(o => o.Key == "IdPEndpoint");
-            var realm = options.FirstOrDefault(o => o.Key == "Realm");
-            if (idEndPoint == null ||
-                realm == null)
-            {
-                return null;
-            }
-
-            return new WsFedAuthenticationOptions
-            {
-                IdPEndpoint = idEndPoint.Value,
-                Realm = realm.Value,
-                AuthenticationScheme = Constants.IdentityProviderNames.Eid,
-                SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme,
-                AutomaticChallenge = true,
-                AutomaticAuthenticate = true,
-                DisplayName = "Belg. eid card",
-                RedirectPath = new PathString("/Authenticate/LoginCallback")
-            };
-        }
-        
         #endregion
 
         private static Dictionary<string, object> GetChildrenByReflection(JObject jArr)

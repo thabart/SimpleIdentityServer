@@ -22,7 +22,8 @@ namespace SimpleIdentityServer.Configuration.Client.DTOs.Responses
     public enum AuthenticationProviderResponseTypes : int
     {
         OAUTH2 = 1,
-        OPENID = 2
+        OPENID = 2,
+        WSFED = 3
     }
 
     [DataContract]

@@ -119,28 +119,35 @@ namespace WsFederation
                     else
                     {
                         claims = new List<Claim>();
-                        foreach (XmlNode child in assertionNode.ChildNodes)
+                        if (Options.Events.OnClaimsReceived != null)
                         {
-                            if (child.Name == "saml2:Subject" || child.Name == "saml:Subject")
+                            claims = Options.Events.OnClaimsReceived(assertionNode);
+                        }
+                        else
+                        {
+                            foreach (XmlNode child in assertionNode.ChildNodes)
                             {
-                                claims.Add(new Claim("sub", child.InnerText));
-                            }
-
-                            if (child.Name == "saml2:AttributeStatement"
-                                || child.Name == "saml:AttributeStatement")
-                            {
-                                foreach (XmlNode attribute in child.ChildNodes)
+                                if (child.Name == "saml2:Subject" || child.Name == "saml:Subject")
                                 {
-                                    var id = string.Empty;
-                                    foreach (XmlAttribute metadata in attribute.Attributes)
-                                    {
-                                        if (metadata.Name == "Name")
-                                        {
-                                            id = metadata.Value;
-                                        }
-                                    }
+                                    claims.Add(new Claim("sub", child.InnerText));
+                                }
 
-                                    claims.Add(ToClaim(id, attribute.InnerText));
+                                if (child.Name == "saml2:AttributeStatement"
+                                    || child.Name == "saml:AttributeStatement")
+                                {
+                                    foreach (XmlNode attribute in child.ChildNodes)
+                                    {
+                                        var id = string.Empty;
+                                        foreach (XmlAttribute metadata in attribute.Attributes)
+                                        {
+                                            if (metadata.Name == "Name")
+                                            {
+                                                id = metadata.Value;
+                                            }
+                                        }
+
+                                        claims.Add(ToClaim(id, attribute.InnerText));
+                                    }
                                 }
                             }
                         }
