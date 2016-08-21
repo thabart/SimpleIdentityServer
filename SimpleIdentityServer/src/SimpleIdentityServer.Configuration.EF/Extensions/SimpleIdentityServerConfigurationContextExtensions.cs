@@ -251,7 +251,7 @@ namespace SimpleIdentityServer.Configuration.EF.Extensions
                         Type = 1,
                         Name = "Linkedin",
                         CallbackPath = "/signin-linkedin",
-                        Code = "code",
+                        Code = "using SimpleIdentityServer.Core.Jwt;\r\nusing System.Collections.Generic;\r\n\r\nnamespace Parser\r\n{\r\n    public class LinkedinClaimsParser\r\n    {\r\n        private readonly Dictionary<string, string> _mappingLinkedinClaimsToOpenId = new Dictionary<string, string>\r\n        {\r\n            {\r\n                \"id\",\r\n                Constants.StandardResourceOwnerClaimNames.Subject\r\n            },\r\n            {\r\n                \"firstName\",\r\n                Constants.StandardResourceOwnerClaimNames.GivenName\r\n            },\r\n            {\r\n                \"lastName\",\r\n                Constants.StandardResourceOwnerClaimNames.FamilyName\r\n            }\r\n        };\r\n\r\n        public Dictionary<string, object> Process(Dictionary<string, object> claims)\r\n        {\r\n            var result = new Dictionary<string, object>();\r\n            foreach (var claim in claims)\r\n            {\r\n                string key = claim.Key;\r\n                if (_mappingLinkedinClaimsToOpenId.ContainsKey(claim.Key))\r\n                {\r\n                    key = _mappingLinkedinClaimsToOpenId[claim.Key];\r\n                }\r\n\r\n                result.Add(key, claim.Value);\r\n            }\r\n\r\n            return result;\r\n        }\r\n    }\r\n}\r\n",
                         ClassName = "LinkedinClaimsParser",
                         Namespace = "Parser",
                         Options = new List<Option>

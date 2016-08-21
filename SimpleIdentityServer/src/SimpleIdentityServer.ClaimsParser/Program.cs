@@ -21,8 +21,6 @@ using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Core.Jwt;
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -37,15 +35,38 @@ namespace SimpleIdentityServer.ClaimsParser
         {
             Constants.StandardResourceOwnerClaimNames.Role
         };
-
-        #region Public static methods
-
+        
         public static void Main(string[] args)
         {
-            ParseGitHubClaims();
+            ParseLinkedinClaims();
+            // ParseGitHubClaims();
             // ParseGoogleClaims();
             // ParseFacebookClaims();
             Console.ReadLine();
+        }
+
+        #region Parsers
+
+        static void ParseLinkedinClaims()
+        {
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "LinkedinClaimsParser.cs");
+            var code = File.ReadAllText(filePath);
+            var jObj = JObject.Parse(@"{
+              'firstName': 'Thierry',
+              'headline': '.NET Developer',
+              'id': 'EELymzTB4O',
+              'lastName': 'Habart',
+              'siteStandardProfileRequest': {
+                'url': 'https://www.linkedin.com/profile/view?id=AAoAAAm7LEEBScvxCiD011irayzh8Rhys9NBf2Q&authType=name&authToken=0UeJ&trk=api*a4561433*s4626863*'
+              }
+            }");
+
+            var claims = GetChildrenByReflection(jObj);
+            var result = CreateClaimsParser("LinkedinClaimsParser", code, claims);
+            foreach (var record in result)
+            {
+                Console.WriteLine(record.Type + " " + record.Value);
+            }
         }
 
         static void ParseGitHubClaims()
@@ -117,6 +138,10 @@ namespace SimpleIdentityServer.ClaimsParser
                 Console.WriteLine(record.Type + " " + record.Value);
             }
         }
+
+        #endregion
+
+        #region Helpers
 
         static Dictionary<string, object> GetChildrenByReflection(JObject jArr)
         {
