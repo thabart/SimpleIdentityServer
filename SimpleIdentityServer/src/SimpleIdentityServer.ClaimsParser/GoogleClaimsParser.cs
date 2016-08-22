@@ -1,5 +1,7 @@
-﻿using SimpleIdentityServer.Core.Jwt;
+﻿using Newtonsoft.Json.Linq;
+using SimpleIdentityServer.Core.Jwt;
 using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace Parser
 {
@@ -33,10 +35,10 @@ namespace Parser
             }
         };
 
-        public Dictionary<string, object> Process(Dictionary<string, object> claims)
+        public List<Claim> Process(JObject jObj)
         {
-            var result = new Dictionary<string, object>();
-            foreach (var claim in claims)
+            var result = new List<Claim>();
+            foreach (var claim in jObj)
             {
                 string key = claim.Key;
                 foreach(var mapping in _mappingFacebookClaimToOpenId)
@@ -44,7 +46,7 @@ namespace Parser
                     var val = GetValue(claim, mapping);
                     if (val != null)
                     {
-                        result.Add(mapping.Value, val);
+                        result.Add(new Claim(mapping.Value, val));
                         break;
                     }
                 }
@@ -54,7 +56,7 @@ namespace Parser
         }
 
         private string GetValue(
-            KeyValuePair<string, object> claim,
+            KeyValuePair<string, JToken> claim,
             KeyValuePair<string, string> mapping,
             int indice = 0)
         {
@@ -66,7 +68,7 @@ namespace Parser
                 return null;
             }
 
-            var dic = claim.Value as Dictionary<string, object>;
+            var dic = claim.Value as JObject;
             if (dic == null)
             {
                 return claim.Value.ToString();

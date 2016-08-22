@@ -260,8 +260,7 @@ namespace SimpleIdentityServer.Host.Handlers
                         var response = await context.Backchannel.SendAsync(request, context.HttpContext.RequestAborted);
                         response.EnsureSuccessStatusCode();
                         var payload = JObject.Parse(await response.Content.ReadAsStringAsync());
-                        var dic = GetChildrenByReflection(payload);
-                        var claims = _claimsParser.Parse(nameSpace, className, code, dic);
+                        var claims = _claimsParser.Parse(nameSpace, className, code, payload);
                         foreach(var claim in claims)
                         {
                             context.Identity.AddClaim(claim);
@@ -299,15 +298,9 @@ namespace SimpleIdentityServer.Host.Handlers
             var clientId = authProvider.Options.FirstOrDefault(o => o.Key == "ClientId");
             var clientSecret = authProvider.Options.FirstOrDefault(o => o.Key == "ClientSecret");
             var wellKnownConfiguration = authProvider.Options.Find(o => o.Key == "WellKnownConfigurationEndPoint");
-            var code = authProvider.Code;
-            var nameSpace = authProvider.Namespace;
-            var className = authProvider.ClassName;
             if (clientId == null || 
                 clientSecret == null ||
-                wellKnownConfiguration == null ||
-                string.IsNullOrWhiteSpace(code) ||
-                string.IsNullOrWhiteSpace(nameSpace) ||
-                string.IsNullOrWhiteSpace(className))
+                wellKnownConfiguration == null)
             {
                 return null;
             }
@@ -330,25 +323,6 @@ namespace SimpleIdentityServer.Host.Handlers
                 StateDataFormat = new PropertiesDataFormat(dataProtector),
                 StringDataFormat = new SecureDataFormat<string>(new StringSerializer(), dataProtector),
                 MetadataAddress = wellKnownConfiguration.Value,
-                Events = new OpenIdConnectEvents
-                {
-                    OnAuthorizationCodeReceived = async context =>
-                    {
-                        string s = "";
-                    },
-                    OnTicketReceived = async context =>
-                    {
-                        string s = "";
-                    },
-                    OnUserInformationReceived = async context =>
-                    {
-                        string s = "";
-                    },
-                    OnMessageReceived = async context =>
-                    {
-                        string s = "";
-                    }
-                },
                 TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = false,
@@ -377,13 +351,19 @@ namespace SimpleIdentityServer.Host.Handlers
         /// </summary>
         /// <param name="options"></param>
         /// <returns></returns>
-        private static WsFedAuthenticationOptions ExtractWsFederationOptions(
+        private WsFedAuthenticationOptions ExtractWsFederationOptions(
             AuthenticationProviderResponse authProvider)
         {
             var idEndPoint = authProvider.Options.FirstOrDefault(o => o.Key == "IdPEndpoint");
             var realm = authProvider.Options.FirstOrDefault(o => o.Key == "Realm");
+            var code = authProvider.Code;
+            var nameSpace = authProvider.Namespace;
+            var className = authProvider.ClassName;
             if (idEndPoint == null ||
-                realm == null)
+                realm == null ||
+                string.IsNullOrWhiteSpace(code) ||
+                string.IsNullOrWhiteSpace(nameSpace) ||
+                string.IsNullOrWhiteSpace(className))
             {
                 return null;
             }
@@ -400,11 +380,7 @@ namespace SimpleIdentityServer.Host.Handlers
                 RedirectPath = new PathString("/Authenticate/LoginCallback"),
                 Events =
                 {
-                    OnClaimsReceived = xmlNode =>
-                    {
-                        // Parse and returns the claims
-                        return null;
-                    }
+                    OnClaimsReceived = xmlNode => _claimsParser.Parse(nameSpace, className, code, xmlNode)
                 }
             };
         }
@@ -441,25 +417,6 @@ namespace SimpleIdentityServer.Host.Handlers
         */
                 
         #endregion
-
-        private static Dictionary<string, object> GetChildrenByReflection(JObject jArr)
-        {
-            var result = new Dictionary<string, object>();
-            foreach (KeyValuePair<string, JToken> kvp in jArr)
-            {
-                var obj = kvp.Value as JObject;
-                if (kvp.Value is JObject)
-                {
-                    result.Add(kvp.Key, GetChildrenByReflection(obj));
-                }
-                else
-                {
-                    result.Add(kvp.Key, kvp.Value);
-                }
-            }
-
-            return result;
-        }
 
         private class StringSerializer : IDataSerializer<string>
         {

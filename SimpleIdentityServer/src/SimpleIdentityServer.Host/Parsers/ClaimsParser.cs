@@ -23,6 +23,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System;
+using System.Collections;
+using System.Xml;
 #if CORE
 using System.Runtime.Loader;
 #endif
@@ -36,7 +39,13 @@ namespace SimpleIdentityServer.Host.Parsers
             string nameSpace,
             string className,
             string code,
-            Dictionary<string, object> claims);
+            JObject jObj);
+
+        List<Claim> Parse(
+            string nameSpace,
+            string className,
+            string code,
+            XmlNode node);
     }
 
     public class ClaimsParser : IClaimsParser
@@ -53,10 +62,34 @@ namespace SimpleIdentityServer.Host.Parsers
         #region Public methods
 
         public List<Claim> Parse(
-            string nameSpace, 
-            string className, 
-            string code, 
-            Dictionary<string, object> claims)
+            string nameSpace,
+            string className,
+            string code,
+            JObject jObj)
+        {
+            var assembly = CreateParser(className, code);
+            var type = assembly.GetType("Parser." + className);
+            var instance = assembly.CreateInstance("Parser." + className);
+            var meth = type.GetMember("Process").First() as MethodInfo;
+            var res = meth.Invoke(instance, new[] { jObj }) as List<Claim>;
+            return res;
+        }
+
+        public List<Claim> Parse(string nameSpace, string className, string code, XmlNode node)
+        {
+            var assembly = CreateParser(className, code);
+            var type = assembly.GetType("Parser." + className);
+            var instance = assembly.CreateInstance("Parser." + className);
+            var meth = type.GetMember("Process").First() as MethodInfo;
+            var res = meth.Invoke(instance, new[] { node }) as List<Claim>;
+            return res;
+        }
+
+        #endregion
+
+        #region Private static methods
+
+        private static Assembly CreateParser(string className, string code)
         {
             code = code.Replace(@"\n", "")
                 .Replace(@"\t", "")
@@ -69,16 +102,19 @@ namespace SimpleIdentityServer.Host.Parsers
             var assemblyName = Path.GetRandomFileName();
             var references = new List<MetadataReference>
             {
-                MetadataReference.CreateFromFile(typeof(object).GetTypeInfo().Assembly.Location),
+                MetadataReference.CreateFromFile(typeof(Object).GetTypeInfo().Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(Enumerable).GetTypeInfo().Assembly.Location),
-                MetadataReference.CreateFromFile(typeof(JwsPayload).GetTypeInfo().Assembly.Location)
+                MetadataReference.CreateFromFile(typeof(JwsPayload).GetTypeInfo().Assembly.Location),
+                MetadataReference.CreateFromFile(typeof(XmlNode).GetTypeInfo().Assembly.Location),
+                MetadataReference.CreateFromFile(typeof(IEnumerable).GetTypeInfo().Assembly.Location),
+                MetadataReference.CreateFromFile(typeof(ClaimTypes).GetTypeInfo().Assembly.Location),
+                MetadataReference.CreateFromFile(typeof(JObject).GetTypeInfo().Assembly.Location)
             };
-
-            var location = GetAssemblyLocation("System.Runtime");
-            if (!string.IsNullOrWhiteSpace(location))
-            {
-                references.Add(MetadataReference.CreateFromFile(location));
-            }
+            
+            var assemblyPath = Path.GetDirectoryName(typeof(object).GetTypeInfo().Assembly.Location);
+            references.Add(MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "mscorlib.dll")));
+            references.Add(MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Runtime.dll")));
+            references.Add(MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.IO.dll")));
 
             var compilation = CSharpCompilation.Create(
                 assemblyName,
@@ -102,71 +138,8 @@ namespace SimpleIdentityServer.Host.Parsers
 #else
                 assembly = AssemblyLoadContext.Default.LoadFromStream(ms);
 #endif
-                var type = assembly.GetType(nameSpace+"."+ className);
-                var instance = assembly.CreateInstance(nameSpace + "." + className);
-                var meth = type.GetMember("Process").First() as MethodInfo;
-                var res = meth.Invoke(instance, new[] { claims }) as Dictionary<string, object>;
-                if (res == null)
-                {
-                    return null;
-                }
-
-                var cls = new List<Claim>();
-                foreach (var record in res)
-                {
-                    if (_arrNames.Contains(record.Key))
-                    {
-                        foreach (var arrayRecord in GetArray(record.Value))
-                        {
-                            cls.Add(new Claim(record.Key, arrayRecord));
-                        }
-
-                        continue;
-                    }
-
-                    cls.Add(new Claim(record.Key, record.Value.ToString()));
-                }
-
-                return cls;
+                return assembly;
             }
-        }
-
-        #endregion
-
-        #region Private methods
-
-        private static string GetAssemblyLocation(string name)
-        {
-            var referenced = Assembly
-                .GetEntryAssembly()
-                .GetReferencedAssemblies();
-            var assemblyName = Assembly
-                .GetEntryAssembly()
-                .GetReferencedAssemblies()
-                .FirstOrDefault(r => r.Name == name);
-            if (assemblyName == null)
-            {
-                return null;
-            }
-
-            return Assembly.Load(assemblyName).Location;
-        }
-
-        private static string[] GetArray(object obj)
-        {
-            var arr = obj as object[];
-            var jArr = obj as JArray;
-            if (arr != null)
-            {
-                return arr.Select(c => c.ToString()).ToArray();
-            }
-
-            if (jArr != null)
-            {
-                return jArr.Select(c => c.ToString()).ToArray();
-            }
-
-            return new string[0];
         }
 
         #endregion

@@ -20,12 +20,14 @@ using Microsoft.CodeAnalysis.Emit;
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Core.Jwt;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
 using System.Security.Claims;
+using System.Xml;
 
 namespace SimpleIdentityServer.ClaimsParser
 {
@@ -38,14 +40,44 @@ namespace SimpleIdentityServer.ClaimsParser
         
         public static void Main(string[] args)
         {
+            Console.WriteLine("=== EID ===");
+            ParseEidClaims();
+            Console.WriteLine("=== Linkedin ===");
             ParseLinkedinClaims();
-            // ParseGitHubClaims();
-            // ParseGoogleClaims();
-            // ParseFacebookClaims();
+            Console.WriteLine("=== GitHub ===");
+            ParseGitHubClaims();
+            Console.WriteLine("=== Google ===");
+            ParseGoogleClaims();
+            Console.WriteLine("=== Facebook ===");
+            ParseFacebookClaims();
             Console.ReadLine();
         }
 
         #region Parsers
+
+        static void ParseEidClaims()
+        {
+            var document = new XmlDocument();
+            document.LoadXml(@"<saml:Assertion xmlns:saml='urn:oasis:names:tc:SAML:2.0:assertion'>
+                <saml:Issuer>
+                    http://idp.example.com/metadata.php
+                </saml:Issuer>
+                <saml:Subject>_ce3d2948b4cf20146dee0a0b3dd6f69b6cf86f62d7</saml:Subject>
+                <saml:AttributeStatement>
+                  <saml:Attribute Name='http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'>
+                    <saml:AttributeValue>test@example.com</saml:AttributeValue>
+                  </saml:Attribute>
+                </saml:AttributeStatement>
+              </saml:Assertion>");
+            var assertionNode = document.DocumentElement;
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "EidClaimsParser.cs");
+            var code = File.ReadAllText(filePath);
+            var result = GetWsFederationClaims("EidClaimsParser", code, assertionNode);
+            foreach (var record in result)
+            {
+                Console.WriteLine(record.Type + " " + record.Value);
+            }
+        }
 
         static void ParseLinkedinClaims()
         {
@@ -60,9 +92,8 @@ namespace SimpleIdentityServer.ClaimsParser
                 'url': 'https://www.linkedin.com/profile/view?id=AAoAAAm7LEEBScvxCiD011irayzh8Rhys9NBf2Q&authType=name&authToken=0UeJ&trk=api*a4561433*s4626863*'
               }
             }");
-
-            var claims = GetChildrenByReflection(jObj);
-            var result = CreateClaimsParser("LinkedinClaimsParser", code, claims);
+            
+            var result = GetOAuthClaims("LinkedinClaimsParser", code, jObj);
             foreach (var record in result)
             {
                 Console.WriteLine(record.Type + " " + record.Value);
@@ -81,8 +112,7 @@ namespace SimpleIdentityServer.ClaimsParser
                 'email': 'email'
             }");
 
-            var claims = jObj.ToObject<Dictionary<string, object>>();
-            var result = CreateClaimsParser("GitHubClaimsParser", code, claims);
+            var result = GetOAuthClaims("GitHubClaimsParser", code, jObj);
             foreach (var record in result)
             {
                 Console.WriteLine(record.Type + " " + record.Value);
@@ -106,10 +136,8 @@ namespace SimpleIdentityServer.ClaimsParser
                     'type': 'personnal'
                 }
             }");
-
-            var claims = GetChildrenByReflection(jObj);
-            
-            var result = CreateClaimsParser("GoogleClaimsParser", code, claims);
+                        
+            var result = GetOAuthClaims("GoogleClaimsParser", code, jObj);
             foreach (var record in result)
             {
                 Console.WriteLine(record.Type + " " + record.Value);
@@ -130,9 +158,8 @@ namespace SimpleIdentityServer.ClaimsParser
                 'specific':'specific',
                 'role':['firstrole', 'secondrole']
             }");
-            var claims = jObj.ToObject<Dictionary<string, object>>();
             var parser = new Parser.FacebookClaimsParser();
-            var result = CreateClaimsParser("FacebookClaimsParser", code, claims);
+            var result = GetOAuthClaims("FacebookClaimsParser", code, jObj);
             foreach(var record in result)
             {
                 Console.WriteLine(record.Type + " " + record.Value);
@@ -143,26 +170,27 @@ namespace SimpleIdentityServer.ClaimsParser
 
         #region Helpers
 
-        static Dictionary<string, object> GetChildrenByReflection(JObject jArr)
+        static List<Claim> GetWsFederationClaims(string className, string code, XmlNode node)
         {
-            var result = new Dictionary<string, object>();
-            foreach (KeyValuePair<string, JToken> kvp in jArr)
-            {
-                var obj = kvp.Value as JObject;
-                if (kvp.Value is JObject)
-                {
-                    result.Add(kvp.Key, GetChildrenByReflection(obj));
-                }
-                else
-                {
-                    result.Add(kvp.Key, kvp.Value);
-                }
-            }
-
-            return result;
+            var assembly = CreateParser(className, code);
+            var type = assembly.GetType("Parser." + className);
+            var instance = assembly.CreateInstance("Parser." + className);
+            var meth = type.GetMember("Process").First() as MethodInfo;
+            var res = meth.Invoke(instance, new[] { node }) as List<Claim>;
+            return res;
         }
 
-        static List<Claim> CreateClaimsParser(string className, string code, Dictionary<string, object> claims)
+        static List<Claim> GetOAuthClaims(string className, string code, JObject jObj)
+        {
+            var assembly = CreateParser(className, code);
+            var type = assembly.GetType("Parser." + className);
+            var instance = assembly.CreateInstance("Parser." + className);
+            var meth = type.GetMember("Process").First() as MethodInfo;
+            var res = meth.Invoke(instance, new[] { jObj }) as List<Claim>;
+            return res;
+        }
+
+        static Assembly CreateParser(string className, string code)
         {
             var syntaxTree = CSharpSyntaxTree.ParseText(code);
             var assemblyName = Path.GetRandomFileName();
@@ -170,14 +198,17 @@ namespace SimpleIdentityServer.ClaimsParser
             {
                 MetadataReference.CreateFromFile(typeof(Object).GetTypeInfo().Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(Enumerable).GetTypeInfo().Assembly.Location),
-                MetadataReference.CreateFromFile(typeof(JwsPayload).GetTypeInfo().Assembly.Location)
+                MetadataReference.CreateFromFile(typeof(JwsPayload).GetTypeInfo().Assembly.Location),
+                MetadataReference.CreateFromFile(typeof(XmlNode).GetTypeInfo().Assembly.Location),
+                MetadataReference.CreateFromFile(typeof(IEnumerable).GetTypeInfo().Assembly.Location),
+                MetadataReference.CreateFromFile(typeof(ClaimTypes).GetTypeInfo().Assembly.Location),
+                MetadataReference.CreateFromFile(typeof(JObject).GetTypeInfo().Assembly.Location)
             };
-            
-            var location = GetAssemblyLocation("System.Runtime");
-            if (!string.IsNullOrWhiteSpace(location))
-            {
-                references.Add(MetadataReference.CreateFromFile(location));
-            }
+
+            var assemblyPath = Path.GetDirectoryName(typeof(object).GetTypeInfo().Assembly.Location);
+            references.Add(MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "mscorlib.dll")));
+            references.Add(MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Runtime.dll")));
+            references.Add(MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.IO.dll")));
 
             var compilation = CSharpCompilation.Create(
                 assemblyName,
@@ -196,67 +227,8 @@ namespace SimpleIdentityServer.ClaimsParser
 
                 ms.Seek(0, SeekOrigin.Begin);
                 var assembly = AssemblyLoadContext.Default.LoadFromStream(ms);
-                var type = assembly.GetType("Parser."+ className);
-                var instance = assembly.CreateInstance("Parser."+ className);
-                var meth = type.GetMember("Process").First() as MethodInfo;
-                var res = meth.Invoke(instance, new[] { claims }) as Dictionary<string, object>;
-                if (res == null)
-                {
-                    return null;
-                }
-
-                var cls = new List<Claim>();
-                foreach (var record in res)
-                {
-                    if (_arrNames.Contains(record.Key))
-                    {
-                        foreach(var arrayRecord in GetArray(record.Value))
-                        {
-                            cls.Add(new Claim(record.Key, arrayRecord));
-                        }
-
-                        continue;
-                    }
-
-                    cls.Add(new Claim(record.Key, record.Value.ToString()));
-                }
-
-                return cls;
+                return assembly;
             }
-        }
-
-        private static string GetAssemblyLocation(string name)
-        {
-            var referenced = Assembly
-                .GetEntryAssembly()
-                .GetReferencedAssemblies();
-            var assemblyName = Assembly
-                .GetEntryAssembly()
-                .GetReferencedAssemblies()
-                .FirstOrDefault(r => r.Name == name);
-            if (assemblyName == null)
-            {
-                return null;
-            }
-
-            return Assembly.Load(assemblyName).Location;
-        }
-
-        private static string[] GetArray(object obj)
-        {
-            var arr = obj as object[];
-            var jArr = obj as JArray;
-            if (arr != null)
-            {
-                return arr.Select(c => c.ToString()).ToArray();
-            }
-
-            if (jArr != null)
-            {
-                return jArr.Select(c => c.ToString()).ToArray();
-            }
-
-            return new string[0];
         }
 
         #endregion
