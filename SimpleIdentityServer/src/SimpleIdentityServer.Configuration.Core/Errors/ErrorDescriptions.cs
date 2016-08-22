@@ -19,7 +19,7 @@ namespace SimpleIdentityServer.Configuration.Core.Errors
     public static class ErrorDescriptions
     {
         public const string InternalErrorOccurred = "an internal error occured";
-
         public const string TheAuthenticationProviderDoesntExist = "the authentication provider doesn't exist";
+        public const string TheAuthenticationProviderAlreadyExists = "the authentication provider {0} already exists";
     }
 }

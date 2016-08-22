@@ -27,5 +27,7 @@ namespace SimpleIdentityServer.Configuration.Core.Repositories
         Task<AuthenticationProvider> GetAuthenticationProvider(string name);
 
         Task<bool> UpdateAuthenticationProvider(AuthenticationProvider authenticationProvider);
+
+        Task<bool> AddAuthenticationProvider(AuthenticationProvider authenticationProvider);
     }
 }

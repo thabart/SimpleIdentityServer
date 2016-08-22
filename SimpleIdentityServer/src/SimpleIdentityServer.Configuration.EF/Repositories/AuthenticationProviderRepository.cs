@@ -87,6 +87,11 @@ namespace SimpleIdentityServer.Configuration.EF.Repositories
                 }
 
                 record.IsEnabled = authenticationProvider.IsEnabled;
+                record.CallbackPath = authenticationProvider.CallbackPath;
+                record.ClassName = authenticationProvider.ClassName;
+                record.Code = authenticationProvider.Code;
+                record.Namespace = authenticationProvider.Namespace;
+                record.Type = authenticationProvider.Type;
                 var optsNotToBeDeleted = new List<string>();
                 if (authenticationProvider.Options != null)
                 {
@@ -121,7 +126,21 @@ namespace SimpleIdentityServer.Configuration.EF.Repositories
                 await _simpleIdentityServerConfigurationContext.SaveChangesAsync();
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> AddAuthenticationProvider(AuthenticationProvider authenticationProvider)
+        {
+            try
+            {
+                _simpleIdentityServerConfigurationContext.AuthenticationProviders.Add(authenticationProvider.ToModel());
+                await _simpleIdentityServerConfigurationContext.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
             {
                 return false;
             }

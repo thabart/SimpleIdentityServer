@@ -38,6 +38,7 @@ namespace SimpleIdentityServer.Configuration.Core
             serviceCollection.AddTransient<IGetAllSettingAction, GetAllSettingAction>();
             serviceCollection.AddTransient<IUpdateSettingAction, UpdateSettingAction>();
             serviceCollection.AddTransient<ISettingActions, SettingActions>();
+            serviceCollection.AddTransient<IAddAuthenticationProviderAction, AddAuthenticationProviderAction>();
             return serviceCollection;
         }
 

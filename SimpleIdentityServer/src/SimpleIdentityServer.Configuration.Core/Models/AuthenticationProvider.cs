@@ -29,6 +29,8 @@ namespace SimpleIdentityServer.Configuration.Core.Models
         public bool IsEnabled { get; set; }
 
         // 1 : OAUTH2
+        // 2 : OPENID
+        // 3 : WSFEDERATION
         [DataMember(Name = Constants.AuthProviderResponseNames.Type)]
         public int Type { get; set; }
 

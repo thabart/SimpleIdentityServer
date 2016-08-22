@@ -94,6 +94,18 @@ namespace SimpleIdentityServer.Configuration.Startup.Controllers
             return await _authProviderActions.UpdateAuthenticationProvider(authenticationProvider);
         }
 
+        [HttpPost]
+        [Authorize("manage")]
+        public async Task<ActionResult> Add([FromBody] AuthenticationProvider authenticationProvider)
+        {
+            if (authenticationProvider == null)
+            {
+                throw new ArgumentNullException(nameof(authenticationProvider));
+            }
+
+            return await _authProviderActions.AddAuthenticationProvider(authenticationProvider);
+        }
+
         #endregion
     }
 }

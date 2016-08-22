@@ -32,6 +32,8 @@ namespace SimpleIdentityServer.Configuration.Core.Api.AuthProvider
         Task<ActionResult> DisableAuthenticationProvider(string name);
 
         Task<ActionResult> UpdateAuthenticationProvider(AuthenticationProvider authenticationProvider);
+
+        Task<ActionResult> AddAuthenticationProvider(AuthenticationProvider authenticationProvider);
     }
 
     internal class AuthProviderActions : IAuthProviderActions
@@ -44,18 +46,22 @@ namespace SimpleIdentityServer.Configuration.Core.Api.AuthProvider
 
         private readonly IUpdateAuthenticationProvider _updateAuthenticationProvider;
 
+        private readonly IAddAuthenticationProviderAction _addAuthenticationProviderAction;
+
         #region Constructor
 
         public AuthProviderActions(
             IGetAuthenticationProvider getAuthenticationProvider,
             IGetAuthenticationProviders getAuthenticationProviders,
             IActivateAuthenticationProvider activateAuthenticationProvider,
-            IUpdateAuthenticationProvider updateAuthenticationProvider)
+            IUpdateAuthenticationProvider updateAuthenticationProvider,
+            IAddAuthenticationProviderAction addAuthenticationProviderAction)
         {
             _getAuthenticationProvider = getAuthenticationProvider;
             _getAuthenticationProviders = getAuthenticationProviders;
             _activateAuthenticationProvider = activateAuthenticationProvider;
             _updateAuthenticationProvider = updateAuthenticationProvider;
+            _addAuthenticationProviderAction = addAuthenticationProviderAction;
         }
 
         #endregion
@@ -85,6 +91,11 @@ namespace SimpleIdentityServer.Configuration.Core.Api.AuthProvider
         public async Task<ActionResult> UpdateAuthenticationProvider(AuthenticationProvider authenticationProvider)
         {
             return await _updateAuthenticationProvider.ExecuteAsync(authenticationProvider);
+        }
+
+        public async Task<ActionResult> AddAuthenticationProvider(AuthenticationProvider authenticationProvider)
+        {
+            return await _addAuthenticationProviderAction.ExecuteAsync(authenticationProvider);
         }
 
         #endregion
