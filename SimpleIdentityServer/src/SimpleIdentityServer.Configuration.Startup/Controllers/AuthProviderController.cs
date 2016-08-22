@@ -106,6 +106,18 @@ namespace SimpleIdentityServer.Configuration.Startup.Controllers
             return await _authProviderActions.AddAuthenticationProvider(authenticationProvider);
         }
 
+        [HttpDelete("{id}")]
+        [Authorize("manage")]
+        public async Task<ActionResult> Remove(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            return await _authProviderActions.DeleteAuthenticationProvider(id);
+        }
+
         #endregion
     }
 }

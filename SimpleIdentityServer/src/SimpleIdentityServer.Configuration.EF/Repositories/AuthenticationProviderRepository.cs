@@ -146,6 +146,26 @@ namespace SimpleIdentityServer.Configuration.EF.Repositories
             }
         }
 
+        public async Task<bool> RemoveAuthenticationProvider(string name)
+        {
+            try
+            {
+                var result = await _simpleIdentityServerConfigurationContext.AuthenticationProviders.FirstOrDefaultAsync(a => a.Name == name);
+                if (result == null)
+                {
+                    return false;
+                }
+
+                _simpleIdentityServerConfigurationContext.AuthenticationProviders.Remove(result);
+                await _simpleIdentityServerConfigurationContext.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
         #endregion
     }
 }
