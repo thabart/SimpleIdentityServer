@@ -90,9 +90,17 @@ namespace SimpleIdentityServer.Core.Authenticate
             {
                 case TokenEndPointAuthenticationMethods.client_secret_basic:
                     client = _clientSecretBasicAuthentication.AuthenticateClient(instruction, client);
+                    if (client == null)
+                    {
+                        errorMessage = ErrorDescriptions.TheClientCannotBeAuthenticatedWithSecretBasic;
+                    }
                     break;
                 case TokenEndPointAuthenticationMethods.client_secret_post:
                     client = _clientSecretPostAuthentication.AuthenticateClient(instruction, client);
+                    if (client == null)
+                    {
+                        errorMessage = ErrorDescriptions.TheClientCannotBeAuthenticatedWithSecretPost;
+                    }
                     break;
                 case TokenEndPointAuthenticationMethods.client_secret_jwt:
                     client = _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwt(instruction,

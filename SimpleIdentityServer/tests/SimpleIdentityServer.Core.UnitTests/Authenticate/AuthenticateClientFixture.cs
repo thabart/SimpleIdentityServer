@@ -1,12 +1,10 @@
-﻿using System;
-
-using Moq;
-
+﻿using Moq;
 using SimpleIdentityServer.Core.Authenticate;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
+using System;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Authenticate
