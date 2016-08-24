@@ -59,8 +59,9 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
         {
             try
             {
-
-                var resourceSet = _simpeIdServerUmaContext.ResourceSets.FirstOrDefault(r => r.Id == id);
+                var resourceSet = _simpeIdServerUmaContext.ResourceSets
+                    .Include(r => r.PolicyResources)
+                    .FirstOrDefault(r => r.Id == id);
                 if (resourceSet == null)
                 {
                     return null;

@@ -29,7 +29,7 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
         public static Domain.ResourceSet ToDomain(this Model.ResourceSet resourceSet)
         {
             var policyIds = resourceSet.PolicyResources != null ?
-                resourceSet.PolicyResources.Select(p => p.ResourceSetId)
+                resourceSet.PolicyResources.Select(p => p.PolicyId)
                 .ToList() : new List<string>();
             return new Domain.ResourceSet
             {
