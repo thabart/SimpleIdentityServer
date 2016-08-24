@@ -31,7 +31,7 @@ namespace SimpleIdentityServer.Vse
 
         [Category("Configuration")]
         [DisplayName("URL")]
-        [Description("Manager API url")]
+        [Description("URL used to create resources")]
         public string Url
         {
             get { return _url; }

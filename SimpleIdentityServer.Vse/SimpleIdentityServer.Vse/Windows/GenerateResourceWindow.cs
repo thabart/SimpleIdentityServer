@@ -28,7 +28,7 @@ namespace SimpleIdentityServer.Vse
 
         public GenerateResourceWindow() : base(null)
         {
-            Caption = "GenerateResourceCommand";
+            Caption = "Generate resource(s)";
             Content = new GenerateResourceWindowControl();
         }
 
