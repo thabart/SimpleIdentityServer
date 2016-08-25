@@ -104,8 +104,7 @@ namespace SimpleIdentityServer.TokenValidation.Host.Tests
             var options = new UmaIntrospectionOptions
             {
                 ResourcesUrl = "https://localhost:5444/api/vs/resources",
-                UmaConfigurationUrl = "https://localhost:5445/.well-known/uma-configuration",
-                IncludeSubResources = true
+                UmaConfigurationUrl = "https://localhost:5445/.well-known/uma-configuration"
             };
             app.UseAuthenticationWithUmaIntrospection(options);
 

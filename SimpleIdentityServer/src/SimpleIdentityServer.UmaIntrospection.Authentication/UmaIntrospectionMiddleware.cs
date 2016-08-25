@@ -168,43 +168,13 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
                     {
                         ResourceId = permission.ResourceSetId
                     }, _options.ResourcesUrl, string.Empty);
-                var authorizationPolicy = string.Empty;
                 if (operations != null && operations.Any())
                 {
                     var operation = operations.First();
                     claimPermission.Url = operation.Url;
-                    authorizationPolicy = operation.AuthorizationPolicy;
                 }
                 
                 claimsIdentity.AddPermission(claimPermission);
-
-                // Include sub resources with same authorization policy
-                if (_options.IncludeSubResources && !string.IsNullOrWhiteSpace(authorizationPolicy))
-                {
-                    var subResources = await resourceClient
-                        .SearchResources(new SearchResourceRequest
-                        {
-                            IsExactUrl = true,
-                            AuthorizationPolicyFilter = AuthorizationPolicyFilters.NotRoot,
-                            Url = claimPermission.Url
-                        }, _options.ResourcesUrl, string.Empty);
-                    if (subResources != null &&
-                        subResources.Any())
-                    {
-                        var newPermissions = subResources
-                            .Where(r => r.ResourceSetId != permission.ResourceSetId)
-                            .Select(r => new Permission
-                            {
-                                ResourceSetId = r.ResourceSetId,
-                                Url = r.Url,
-                                Scopes = permission.Scopes
-                            });
-                        foreach(var newPermission in newPermissions)
-                        {
-                            claimsIdentity.AddPermission(newPermission);
-                        }
-                    }
-                }
             }
 
             context.User = new ClaimsPrincipal(claimsIdentity);

@@ -25,8 +25,6 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
 
         public string ResourcesUrl { get; set; }
 
-        public bool IncludeSubResources { get; set; }
-
         public IIdentityServerUmaClientFactory IdentityServerUmaClientFactory { get; set; }
 
         public IIdentityServerUmaManagerClientFactory IdentityServerUmaManagerClientFactory { get; set; }
