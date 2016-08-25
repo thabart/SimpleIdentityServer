@@ -77,6 +77,16 @@ namespace SimpleIdentityServer.Client
             return result;
         }
 
+        /// <summary>
+        /// Create user information client
+        /// </summary>
+        /// <returns></returns>
+        public IUserInfoClient CreateUserInfoClient()
+        {
+            var result = (IUserInfoClient)_serviceProvider.GetService(typeof(IUserInfoClient));
+            return result;
+        }
+
         #region Private static methods
 
         private static void RegisterDependencies(IServiceCollection serviceCollection)
@@ -87,6 +97,7 @@ namespace SimpleIdentityServer.Client
             serviceCollection.AddTransient<ITokenClient, TokenClient>();
             serviceCollection.AddTransient<IDiscoveryClient, DiscoveryClient>();
             serviceCollection.AddTransient<IJwksClient, JwksClient>();
+            serviceCollection.AddTransient<IUserInfoClient, UserInfoClient>();
 
             // Register operations
             serviceCollection.AddTransient<IGetDiscoveryOperation, GetDiscoveryOperation>();

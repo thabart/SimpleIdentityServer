@@ -59,9 +59,7 @@ namespace SimpleIdentityServer.Core.Api.Registration.Actions
             }
 
             _simpleIdentityServerEventSource.StartRegistration(registrationParameter.ClientName);
-
             var client = _generateClientFromRegistrationRequest.Execute(registrationParameter);
-
             client.AllowedScopes = new List<Scope>
             {
                 Constants.StandardScopes.OpenId,
@@ -70,7 +68,6 @@ namespace SimpleIdentityServer.Core.Api.Registration.Actions
                 Constants.StandardScopes.Email,
                 Constants.StandardScopes.Phone
             };
-
             var clientId = Guid.NewGuid().ToString();
             if (string.IsNullOrWhiteSpace(client.ClientName))
             {

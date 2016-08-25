@@ -108,8 +108,7 @@ namespace SimpleIdentityServer.Core.Validators
                 foreach(var redirectUri in parameter.RedirectUris)
                 {
                     var uri = new Uri(redirectUri);
-                    if (uri.Scheme != "https" ||
-                        string.Compare(uri.Host, localhost, StringComparison.CurrentCultureIgnoreCase) == 0)
+                    if (uri.Scheme != "https")
                     {
                         throw new IdentityServerException(
                             ErrorCodes.InvalidRedirectUri,
