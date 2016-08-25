@@ -31,7 +31,6 @@ namespace SimpleIdentityServer.Proxy
     public interface ISecurityProxy
     {
         Task<string> GetRpt(string resourceUrl,
-            string identityToken,
             List<string> permissions);
 
         Task<string> GetRpt(string resourceUrl,
@@ -39,6 +38,18 @@ namespace SimpleIdentityServer.Proxy
             params string[] permissions);
 
         Task<string> GetRpt(string resourceUrl,
+            string identityToken,
+            List<string> permissions);
+
+        Task<string> GetRpt(string resourceUrl,
+            string umaProtectionToken,
+            string umaAuthorizationToken,
+            List<string> permissions);
+
+        Task<string> GetRpt(string resourceUrl,
+            string identityToken,
+            string umaProtectionToken,
+            string umaAuthorizationToken,
             List<string> permissions);
     }
 
@@ -91,9 +102,11 @@ namespace SimpleIdentityServer.Proxy
                 return resp.Rpt;
             });
 
-            return await CommonGetRpt(resourceUrl, permissions, callback);
+            var tokens = await GetAccessTokens();
+            return await CommonGetRpt(resourceUrl, permissions, tokens.Value, tokens.Key, callback);
         }
-        
+
+        /// <returns></returns>
         public async Task<string> GetRpt(string resourceUrl, 
             string identityToken,
             params string[] permissions)
@@ -102,8 +115,8 @@ namespace SimpleIdentityServer.Proxy
             {
                 throw new ArgumentNullException(nameof(permissions));
             }
-
-            return await GetRpt(resourceUrl, identityToken, permissions.ToList());
+            
+            return await GetRpt(resourceUrl, permissions.ToList());
         }
 
         public async Task<string> GetRpt(string resourceUrl,
@@ -129,26 +142,86 @@ namespace SimpleIdentityServer.Proxy
                 return resp.Rpt;
             });
 
-            return await CommonGetRpt(resourceUrl, permissions, callback);
+            var tokens = await GetAccessTokens();
+            return await CommonGetRpt(resourceUrl, permissions, tokens.Value, tokens.Key, callback);
         }
+
+        public async Task<string> GetRpt(string resourceUrl,
+            string umaProtectionToken,
+            string umaAuthorizationToken,
+            List<string> permissions)
+        {
+            if (string.IsNullOrWhiteSpace(umaProtectionToken))
+            {
+                throw new ArgumentNullException(nameof(umaProtectionToken));
+            }
+
+            if (string.IsNullOrWhiteSpace(umaAuthorizationToken))
+            {
+                throw new ArgumentNullException(nameof(umaAuthorizationToken));
+            }
+
+            Func<string, string, Task<string>> callback = new Func<string, string, Task<string>>(async (t, a) => {
+                AuthorizationResponse resp = null;
+                try
+                {
+                    resp = await GetAuthorization(t, a);
+                }
+                catch
+                {
+                    throw new InvalidOperationException("you're not allowed to access to the resource");
+                }
+
+                return resp.Rpt;
+            });
+
+            return await CommonGetRpt(resourceUrl, permissions, umaAuthorizationToken, umaProtectionToken, callback);
+        }
+
+        public async Task<string> GetRpt(string resourceUrl,
+            string identityToken,
+            string umaProtectionToken,
+            string umaAuthorizationToken,
+            List<string> permissions)
+        {
+            if (string.IsNullOrWhiteSpace(identityToken))
+            {
+                throw new ArgumentNullException(nameof(identityToken));
+            }
+
+            if (string.IsNullOrWhiteSpace(umaProtectionToken))
+            {
+                throw new ArgumentNullException(nameof(umaProtectionToken));
+            }
+
+            if (string.IsNullOrWhiteSpace(umaAuthorizationToken))
+            {
+                throw new ArgumentNullException(nameof(umaAuthorizationToken));
+            }
+
+            Func<string, string, Task<string>> callback = new Func<string, string, Task<string>>(async (t, a) => {
+                AuthorizationResponse resp = null;
+                try
+                {
+                    resp = await GetAuthorization(t, a, identityToken);
+                }
+                catch
+                {
+                    throw new InvalidOperationException("you're not allowed to access to the resource");
+                }
+
+                return resp.Rpt;
+            });
+
+            return await CommonGetRpt(resourceUrl, permissions, umaAuthorizationToken, umaProtectionToken, callback);
+        }        
 
         #endregion
 
         #region Private methods
 
-        private async Task<string> CommonGetRpt(string resourceUrl,
-            List<string> permissions,
-            Func<string, string, Task<string>> callback)
+        private async Task<KeyValuePair<string, string>> GetAccessTokens()
         {
-            if (string.IsNullOrWhiteSpace(resourceUrl))
-            {
-                throw new ArgumentNullException(nameof(resourceUrl));
-            }
-
-            if (permissions == null || !permissions.Any())
-            {
-                throw new ArgumentNullException(nameof(permissions));
-            }
 
             GrantedToken umaProtectionToken = null,
                 umaAuthorizationToken = null;
@@ -170,20 +243,39 @@ namespace SimpleIdentityServer.Proxy
                 throw new InvalidOperationException($"Access token valid for {UmaAuthorizationScope} cannot be retrieved. Client is either invalid or is not allowed to access");
             }
 
+            return new KeyValuePair<string, string>(umaProtectionToken.AccessToken, umaAuthorizationToken.AccessToken);
+        }
+
+        private async Task<string> CommonGetRpt(string resourceUrl,
+            List<string> permissions,
+            string umaAuthorizationToken,
+            string umaProtectionToken,
+            Func<string, string, Task<string>> callback)
+        {
+            if (string.IsNullOrWhiteSpace(resourceUrl))
+            {
+                throw new ArgumentNullException(nameof(resourceUrl));
+            }
+
+            if (permissions == null || !permissions.Any())
+            {
+                throw new ArgumentNullException(nameof(permissions));
+            }
+
             // 1. Get resource
             var resource = await GetResource(resourceUrl);
             // 2. Get permission
             AddPermissionResponse permission;
             try
             {
-                permission = await AddPermission(resource.ResourceSetId, permissions, umaProtectionToken.AccessToken);
+                permission = await AddPermission(resource.ResourceSetId, permissions, umaProtectionToken);
             }
             catch
             {
                 throw new InvalidOperationException("Either the access token is wrong, resource id doesn't exist or permissions are not correct");
             }
 
-            return await callback(permission.TicketId, umaAuthorizationToken.AccessToken);
+            return await callback(permission.TicketId, umaAuthorizationToken);
         }
 
         private Task<GrantedToken> GetGrantedToken(string scope)

@@ -58,7 +58,7 @@ namespace {namespace}
                 ClientSecret = "<replace by your client secret>",
                 UmaConfigurationUrl = "http://localhost:5001/.well-known/uma-configuration",
                 OpenidConfigurationUrl = "http://localhost:5000/.well-known/openid-configuration",
-                RootManageApiUrl = "http://localhost:8080/api"
+                RootManageApiUrl = "https://localhost:5444/api"
             });
             try
             {
@@ -71,6 +71,32 @@ namespace {namespace}
                 return result;
             }
             catch (AggregateException)
+            {
+                return null;
+            }
+        }
+
+		public static async Task<string> GetRptToken(
+            string idToken,
+            string umaProtectionToken,
+            string umaAuthorizationToken)
+        {
+            var factory = new SecurityProxyFactory();
+            var proxy = factory.GetProxy(new SecurityOptions
+            {
+                UmaConfigurationUrl = "https://localhost:5445/.well-known/uma-configuration",
+                OpenidConfigurationUrl = "https://localhost:5443/.well-known/openid-configuration",
+                RootManageApiUrl = "https://localhost:5444/api"
+            });
+            try
+            {
+                var result = await proxy.GetRpt("{resource_url}", idToken, umaProtectionToken, umaAuthorizationToken, new List<string>
+                {
+                    "execute"
+                });
+                return result;
+            }
+            catch (Exception ex)
             {
                 return null;
             }

@@ -76,6 +76,33 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
             }
         }
 
+        public static string GetRptToken(string idToken,
+            string umaProtectionToken,
+            string umaAuthorizationToken)
+        {
+            var factory = new SecurityProxyFactory();
+            var proxy = factory.GetProxy(new SecurityOptions
+            {
+                ClientId = "5ae7ff7a-0ece-4c18-a5a6-33a451ad77a8",
+                ClientSecret = "7a2c8de2-e7c7-456f-9a0c-310a3caa8df7",
+                UmaConfigurationUrl = "https://localhost:5445/.well-known/uma-configuration",
+                OpenidConfigurationUrl = "https://localhost:5443/.well-known/openid-configuration",
+                RootManageApiUrl = "https://localhost:5444/api"
+            });
+            try
+            {
+                var result = proxy.GetRpt("resources/Apis/ClientApi/v1/ClientsController/Get", idToken, umaProtectionToken, umaAuthorizationToken, new List<string>
+                {
+                    "execute"
+                }).Result;
+                return result;
+            }
+            catch (AggregateException ex)
+            {
+                return null;
+            }
+        }
+
         #endregion
     }
 }

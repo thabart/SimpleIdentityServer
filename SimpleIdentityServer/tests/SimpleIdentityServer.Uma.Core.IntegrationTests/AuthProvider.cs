@@ -39,7 +39,7 @@ namespace SimpleIdentityServer.Uma.Core.IntegrationTests
             try
             {
                 return authProvider.GetAuthProvider(options)
-                    .GetIdentityToken("admi", "admi", "openid", "role", "profile")
+                    .GetIdentityToken("administrator", "password", "openid", "role", "profile")
                     .Result;
             }
             catch (AggregateException ex)
