@@ -377,6 +377,7 @@ namespace SimpleIdentityServer.Host.Handlers
                 SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme,
                 AutomaticChallenge = true,
                 AutomaticAuthenticate = true,
+                CallbackPath = new PathString(authProvider.CallbackPath),
                 RedirectPath = new PathString("/Authenticate/LoginCallback"),
                 Events =
                 {

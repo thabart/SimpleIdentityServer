@@ -97,6 +97,7 @@ namespace WsFederation
                     document.LoadXml(xml);
 
                     var nsMan = new XmlNamespaceManager(document.NameTable);
+                    // Parse SAML2 response
                     nsMan.AddNamespace("trust", "http://docs.oasis-open.org/ws-sx/ws-trust/200512");
                     nsMan.AddNamespace("saml2", "urn:oasis:names:tc:SAML:2.0:assertion");
                     var parentNodes = "trust:RequestSecurityTokenResponseCollection/trust:RequestSecurityTokenResponse/trust:RequestedSecurityToken/";
@@ -104,6 +105,20 @@ namespace WsFederation
                     if (assertionNode == null)
                     {
                         assertionNode = document.SelectSingleNode(parentNodes + "saml2:Assertion", nsMan);
+                    }
+
+                    // Parse SAML response
+                    if (assertionNode == null)
+                    {
+                        nsMan = new XmlNamespaceManager(document.NameTable);
+                        nsMan.AddNamespace("saml", "urn:oasis:names:tc:SAML:1.0:assertion");
+                        nsMan.AddNamespace("t", "http://schemas.xmlsoap.org/ws/2005/02/trust");
+                        parentNodes = "t:RequestSecurityTokenResponse/t:RequestedSecurityToken/";
+                        assertionNode = document.SelectSingleNode(parentNodes + "saml:EncryptedAssertion", nsMan);
+                        if (assertionNode == null)
+                        {
+                            assertionNode = document.SelectSingleNode(parentNodes + "saml:Assertion", nsMan);
+                        }
                     }
 
                     if (assertionNode == null)

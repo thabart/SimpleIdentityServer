@@ -40,6 +40,7 @@ namespace SimpleIdentityServer.ClaimsParser
         
         public static void Main(string[] args)
         {
+            /*
             Console.WriteLine("=== EID ===");
             ParseEidClaims();
             Console.WriteLine("=== Linkedin ===");
@@ -50,10 +51,38 @@ namespace SimpleIdentityServer.ClaimsParser
             ParseGoogleClaims();
             Console.WriteLine("=== Facebook ===");
             ParseFacebookClaims();
+            */
+            Console.WriteLine("=== AUTH0 WS-FEDERATION ===");
+            ParseAuth0WsFederation();
             Console.ReadLine();
         }
 
         #region Parsers
+
+        static void ParseAuth0WsFederation()
+        {
+            var document = new XmlDocument();
+            document.LoadXml(@"<saml:Assertion xmlns:saml='urn: oasis:names:tc:SAML:1.0:assertion'>
+                                <saml:Conditions NotBefore='2016-08-30T08:56:51.567Z' NotOnOrAfter='2016-08-30T16:56:51.567Z'>
+                                    <saml:AudienceRestrictionCondition>
+                                        <saml:Audience>urn:dVJFEWakRN8w9g4H6nnZP01REE185okh</saml:Audience>
+                                    </saml:AudienceRestrictionCondition>
+                                </saml:Conditions>
+                                <saml:AttributeStatement>
+                                    <saml:Attribute AttributeName='nameidentifier'>
+                                        <saml:AttributeValue>auth0|57c542a4f13883ab75f75823</saml:AttributeValue>
+                                    </saml:Attribute>
+                                </saml:AttributeStatement>
+                            </saml:Assertion>");
+            var assertionNode = document.DocumentElement;
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Auth0WsFederationParser.cs");
+            var code = File.ReadAllText(filePath);
+            var result = GetWsFederationClaims("Auth0WsFederationParser", code, assertionNode);
+            foreach (var record in result)
+            {
+                Console.WriteLine(record.Type + " " + record.Value);
+            }
+        }
 
         static void ParseEidClaims()
         {
