@@ -17,29 +17,6 @@
     }
   },
   {
-    "_id": "Auth-Logs",
-    "_type": "search",
-    "_source": {
-      "title": "Authorization Logs",
-      "description": "",
-      "hits": 0,
-      "columns": [
-        "@timestamp",
-        "fields.Id",
-        "fields.Message",
-        "fields.Task"
-      ],
-      "sort": [
-        "@timestamp",
-        "desc"
-      ],
-      "version": 1,
-      "kibanaSavedObjectMeta": {
-        "searchSourceJSON": "{\n  \"index\": \"simpleidserver-*\",\n  \"query\": {\n    \"query_string\": {\n      \"analyze_wildcard\": true,\n      \"query\": \"*\"\n    }\n  },\n  \"filter\": [],\n  \"highlight\": {\n    \"pre_tags\": [\n      \"@kibana-highlighted-field@\"\n    ],\n    \"post_tags\": [\n      \"@/kibana-highlighted-field@\"\n    ],\n    \"fields\": {\n      \"*\": {}\n    },\n    \"require_field_match\": false,\n    \"fragment_size\": 2147483647\n  }\n}"
-      }
-    }
-  },
-  {
     "_id": "Authorization-Failures",
     "_type": "search",
     "_source": {
@@ -82,17 +59,25 @@
     }
   },
   {
-    "_id": "Authorization-FailuresCounter",
-    "_type": "visualization",
+    "_id": "Auth-Logs",
+    "_type": "search",
     "_source": {
-      "title": "Authorization FailuresCounter",
-      "visState": "{\"title\":\"New Visualization\",\"type\":\"metric\",\"params\":{\"handleNoResults\":true,\"fontSize\":60},\"aggs\":[{\"id\":\"1\",\"type\":\"count\",\"schema\":\"metric\",\"params\":{\"customLabel\":\"Number of failures\"}}],\"listeners\":{}}",
-      "uiStateJSON": "{}",
+      "title": "Authorization Logs",
       "description": "",
-      "savedSearchId": "Authorization-Failures",
+      "hits": 0,
+      "columns": [
+        "@timestamp",
+        "fields.Id",
+        "fields.Message",
+        "fields.Task"
+      ],
+      "sort": [
+        "@timestamp",
+        "desc"
+      ],
       "version": 1,
       "kibanaSavedObjectMeta": {
-        "searchSourceJSON": "{\"filter\":[]}"
+        "searchSourceJSON": "{\"index\":\"simpleidserver-*\",\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"*\"}},\"filter\":[],\"highlight\":{\"pre_tags\":[\"@kibana-highlighted-field@\"],\"post_tags\":[\"@/kibana-highlighted-field@\"],\"fields\":{\"*\":{}},\"require_field_match\":false,\"fragment_size\":2147483647}}"
       }
     }
   },
@@ -108,6 +93,21 @@
       "version": 1,
       "kibanaSavedObjectMeta": {
         "searchSourceJSON": "{\"filter\":[]}"
+      }
+    }
+  },
+  {
+    "_id": "Authorization-FailuresCounter",
+    "_type": "visualization",
+    "_source": {
+      "title": "Number of failures",
+      "visState": "{\n  \"title\": \"New Visualization\",\n  \"type\": \"metric\",\n  \"params\": {\n    \"handleNoResults\": true,\n    \"fontSize\": 60\n  },\n  \"aggs\": [\n    {\n      \"id\": \"1\",\n      \"type\": \"count\",\n      \"schema\": \"metric\",\n      \"params\": {\n        \"customLabel\": \"Number of failures\"\n      }\n    }\n  ],\n  \"listeners\": {}\n}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "savedSearchId": "Authorization-Failures",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\n  \"filter\": []\n}"
       }
     }
   }
