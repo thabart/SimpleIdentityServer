@@ -130,7 +130,7 @@ namespace SimpleIdentityServer.Host.Controllers
                         ExpiresUtc = DateTime.UtcNow.AddDays(7),
                         IsPersistent = false
                     });
-
+                _simpleIdentityServerEventSource.AuthenticateResourceOwner(claimsIdentity.Name);
                 return RedirectToAction("Index", "User");
             }
             catch (Exception exception)
@@ -258,6 +258,7 @@ namespace SimpleIdentityServer.Host.Controllers
                         ExpiresUtc = DateTime.UtcNow.AddDays(7)
                     }
                 ).Wait();
+                _simpleIdentityServerEventSource.AuthenticateResourceOwner(claimsIdentity.Name);
 
                 // 6. Redirect the user agent
                 var result = this.CreateRedirectionFromActionResult(actionResult,

@@ -22,8 +22,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Serilog;
 using Serilog.Events;
-using Serilog.Sinks.ElasticSearch;
-using Serilog.Sinks.ElasticSearch.Sinks;
+using Serilog.Sinks.Elasticsearch;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Configuration.Client;
 using SimpleIdentityServer.Core;
@@ -269,9 +268,9 @@ namespace SimpleIdentityServer.Host
             if (loggingOptions.ElasticsearchOptions != null &&
                 loggingOptions.ElasticsearchOptions.IsEnabled)
             {
-                logger.WriteTo.Elasticsearch(new ElasticsearchSinkOptions
+                logger.WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(loggingOptions.ElasticsearchOptions.Url))
                 {
-                    Url = loggingOptions.ElasticsearchOptions.Url
+                    AutoRegisterTemplate = true
                 });
             }
         

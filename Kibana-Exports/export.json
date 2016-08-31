@@ -1,12 +1,12 @@
 [
   {
-    "_id": "Authorization-Dashboard",
+    "_id": "Failures",
     "_type": "dashboard",
     "_source": {
-      "title": "Authorization Dashboard",
+      "title": "Failures",
       "hits": 0,
       "description": "",
-      "panelsJSON": "[{\"col\":1,\"columns\":[\"@timestamp\",\"fields.Id\",\"fields.Message\",\"fields.Task\"],\"id\":\"Auth-Logs\",\"panelIndex\":1,\"row\":1,\"size_x\":11,\"size_y\":3,\"sort\":[\"@timestamp\",\"desc\"],\"type\":\"search\"},{\"col\":9,\"id\":\"Authorization-FailuresCounter\",\"panelIndex\":2,\"row\":4,\"size_x\":3,\"size_y\":2,\"type\":\"visualization\"},{\"col\":9,\"columns\":[\"fields.Id\",\"fields.Message\"],\"id\":\"Authorization-Failures\",\"panelIndex\":3,\"row\":6,\"size_x\":3,\"size_y\":2,\"sort\":[\"@timestamp\",\"desc\"],\"type\":\"search\"},{\"id\":\"Granted-Tokens\",\"type\":\"visualization\",\"panelIndex\":4,\"size_x\":8,\"size_y\":4,\"col\":1,\"row\":4}]",
+      "panelsJSON": "[{\"col\":1,\"id\":\"navigation\",\"panelIndex\":1,\"row\":1,\"size_x\":3,\"size_y\":2,\"type\":\"visualization\"},{\"col\":4,\"columns\":[\"fields.Id\",\"fields.Operation\"],\"id\":\"Failures\",\"panelIndex\":2,\"row\":1,\"size_x\":9,\"size_y\":2,\"sort\":[\"@timestamp\",\"desc\"],\"type\":\"search\"},{\"id\":\"Failures-counter\",\"type\":\"visualization\",\"panelIndex\":3,\"size_x\":3,\"size_y\":2,\"col\":1,\"row\":3}]",
       "optionsJSON": "{\"darkTheme\":true}",
       "uiStateJSON": "{}",
       "version": 1,
@@ -17,10 +17,99 @@
     }
   },
   {
-    "_id": "Authorization-Failures",
+    "_id": "Tokens",
+    "_type": "dashboard",
+    "_source": {
+      "title": "Tokens",
+      "hits": 0,
+      "description": "",
+      "panelsJSON": "[{\"id\":\"navigation\",\"type\":\"visualization\",\"panelIndex\":1,\"size_x\":2,\"size_y\":3,\"col\":1,\"row\":1},{\"id\":\"Granted-tokens\",\"type\":\"visualization\",\"panelIndex\":2,\"size_x\":10,\"size_y\":3,\"col\":3,\"row\":1},{\"id\":\"Revocations-counter\",\"type\":\"visualization\",\"panelIndex\":3,\"size_x\":3,\"size_y\":2,\"col\":1,\"row\":4}]",
+      "optionsJSON": "{\"darkTheme\":true}",
+      "uiStateJSON": "{}",
+      "version": 1,
+      "timeRestore": false,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"filter\":[{\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"*\"}}}]}"
+      }
+    }
+  },
+  {
+    "_id": "Logs",
+    "_type": "dashboard",
+    "_source": {
+      "title": "Logs",
+      "hits": 0,
+      "description": "",
+      "panelsJSON": "[{\"col\":1,\"id\":\"navigation\",\"panelIndex\":1,\"row\":1,\"size_x\":3,\"size_y\":4,\"type\":\"visualization\"},{\"id\":\"Logs\",\"type\":\"search\",\"panelIndex\":2,\"size_x\":9,\"size_y\":4,\"col\":4,\"row\":1,\"columns\":[\"fields.Id\",\"fields.Message\"],\"sort\":[\"@timestamp\",\"desc\"]}]",
+      "optionsJSON": "{\"darkTheme\":true}",
+      "uiStateJSON": "{}",
+      "version": 1,
+      "timeRestore": false,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"filter\":[{\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"*\"}}}]}"
+      }
+    }
+  },
+  {
+    "_id": "Authorizations",
+    "_type": "dashboard",
+    "_source": {
+      "title": "Authorizations",
+      "hits": 0,
+      "description": "",
+      "panelsJSON": "[{\"col\":1,\"id\":\"navigation\",\"panelIndex\":1,\"row\":1,\"size_x\":2,\"size_y\":3,\"type\":\"visualization\"},{\"id\":\"Authorizations\",\"type\":\"visualization\",\"panelIndex\":2,\"size_x\":10,\"size_y\":3,\"col\":3,\"row\":1}]",
+      "optionsJSON": "{\"darkTheme\":true}",
+      "uiStateJSON": "{}",
+      "version": 1,
+      "timeRestore": false,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"filter\":[{\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"*\"}}}]}"
+      }
+    }
+  },
+  {
+    "_id": "Users",
+    "_type": "dashboard",
+    "_source": {
+      "title": "Users",
+      "hits": 0,
+      "description": "",
+      "panelsJSON": "[{\"col\":1,\"id\":\"navigation\",\"panelIndex\":1,\"row\":1,\"size_x\":3,\"size_y\":4,\"type\":\"visualization\"},{\"id\":\"Authenticated-users\",\"type\":\"visualization\",\"panelIndex\":2,\"size_x\":8,\"size_y\":4,\"col\":4,\"row\":1},{\"id\":\"Authenticated-users-counter\",\"type\":\"visualization\",\"panelIndex\":3,\"size_x\":3,\"size_y\":2,\"col\":1,\"row\":5}]",
+      "optionsJSON": "{\"darkTheme\":true}",
+      "uiStateJSON": "{}",
+      "version": 1,
+      "timeRestore": false,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"filter\":[{\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"*\"}}}]}"
+      }
+    }
+  },
+  {
+    "_id": "Failures",
     "_type": "search",
     "_source": {
-      "title": "Authorization Failures",
+      "title": "Failures",
+      "description": "",
+      "hits": 0,
+      "columns": [
+        "@timestamp",
+        "fields.Message"
+      ],
+      "sort": [
+        "@timestamp",
+        "desc"
+      ],
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"simpleidserver-*\",\"filter\":[],\"highlight\":{\"pre_tags\":[\"@kibana-highlighted-field@\"],\"post_tags\":[\"@/kibana-highlighted-field@\"],\"fields\":{\"*\":{}},\"require_field_match\":false,\"fragment_size\":2147483647},\"query\":{\"query_string\":{\"query\":\"fields.Id:26 OR fields.Id:27 OR fields.Id:28\",\"analyze_wildcard\":true}}}"
+      }
+    }
+  },
+  {
+    "_id": "Revocations",
+    "_type": "search",
+    "_source": {
+      "title": "Revocations",
       "description": "",
       "hits": 0,
       "columns": [
@@ -33,15 +122,76 @@
       ],
       "version": 1,
       "kibanaSavedObjectMeta": {
-        "searchSourceJSON": "{\"index\":\"simpleidserver-*\",\"filter\":[],\"highlight\":{\"pre_tags\":[\"@kibana-highlighted-field@\"],\"post_tags\":[\"@/kibana-highlighted-field@\"],\"fields\":{\"*\":{}},\"require_field_match\":false,\"fragment_size\":2147483647},\"query\":{\"query_string\":{\"query\":\"fields.Task:Failure\",\"analyze_wildcard\":true}}}"
+        "searchSourceJSON": "{\"index\":\"simpleidserver-*\",\"filter\":[],\"highlight\":{\"pre_tags\":[\"@kibana-highlighted-field@\"],\"post_tags\":[\"@/kibana-highlighted-field@\"],\"fields\":{\"*\":{}},\"require_field_match\":false,\"fragment_size\":2147483647},\"query\":{\"query_string\":{\"query\":\"fields.Id:25\",\"analyze_wildcard\":true}}}"
       }
     }
   },
   {
-    "_id": "Granted-Token",
+    "_id": "Granted-tokens",
     "_type": "search",
     "_source": {
-      "title": "Granted Token",
+      "title": "Granted tokens",
+      "description": "",
+      "hits": 0,
+      "columns": [
+        "fields.Id",
+        "fields.Operation"
+      ],
+      "sort": [
+        "@timestamp",
+        "desc"
+      ],
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"simpleidserver-*\",\"filter\":[],\"highlight\":{\"pre_tags\":[\"@kibana-highlighted-field@\"],\"post_tags\":[\"@/kibana-highlighted-field@\"],\"fields\":{\"*\":{}},\"require_field_match\":false,\"fragment_size\":2147483647},\"query\":{\"query_string\":{\"query\":\"fields.Id:15 OR fields.Id:17 OR fields.Id:21 OR fields.Id:23\",\"analyze_wildcard\":true}}}"
+      }
+    }
+  },
+  {
+    "_id": "Granted-authorizations",
+    "_type": "search",
+    "_source": {
+      "title": "Granted authorizations",
+      "description": "",
+      "hits": 0,
+      "columns": [
+        "_source"
+      ],
+      "sort": [
+        "@timestamp",
+        "desc"
+      ],
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"simpleidserver-*\",\"query\":{\"query_string\":{\"query\":\"fields.Id:2 OR fields.Id:11 OR fields.Id:13\",\"analyze_wildcard\":true}},\"filter\":[],\"highlight\":{\"pre_tags\":[\"@kibana-highlighted-field@\"],\"post_tags\":[\"@/kibana-highlighted-field@\"],\"fields\":{\"*\":{}},\"require_field_match\":false,\"fragment_size\":2147483647}}"
+      }
+    }
+  },
+  {
+    "_id": "Authenticated-Users",
+    "_type": "search",
+    "_source": {
+      "title": "Authenticated Users",
+      "description": "",
+      "hits": 0,
+      "columns": [
+        "_source"
+      ],
+      "sort": [
+        "@timestamp",
+        "desc"
+      ],
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"simpleidserver-*\",\"query\":{\"query_string\":{\"query\":\"fields.Id:31\",\"analyze_wildcard\":true}},\"filter\":[],\"highlight\":{\"pre_tags\":[\"@kibana-highlighted-field@\"],\"post_tags\":[\"@/kibana-highlighted-field@\"],\"fields\":{\"*\":{}},\"require_field_match\":false,\"fragment_size\":2147483647}}"
+      }
+    }
+  },
+  {
+    "_id": "Logs",
+    "_type": "search",
+    "_source": {
+      "title": "Logs",
       "description": "",
       "hits": 0,
       "columns": [
@@ -54,42 +204,19 @@
       ],
       "version": 1,
       "kibanaSavedObjectMeta": {
-        "searchSourceJSON": "{\"index\":\"simpleidserver-*\",\"filter\":[],\"highlight\":{\"pre_tags\":[\"@kibana-highlighted-field@\"],\"post_tags\":[\"@/kibana-highlighted-field@\"],\"fields\":{\"*\":{}},\"require_field_match\":false,\"fragment_size\":2147483647},\"query\":{\"query_string\":{\"query\":\"fields.Id:30\",\"analyze_wildcard\":true}}}"
+        "searchSourceJSON": "{\"index\":\"simpleidserver-*\",\"filter\":[],\"highlight\":{\"pre_tags\":[\"@kibana-highlighted-field@\"],\"post_tags\":[\"@/kibana-highlighted-field@\"],\"fields\":{\"*\":{}},\"require_field_match\":false,\"fragment_size\":2147483647},\"query\":{\"query_string\":{\"query\":\"*\",\"analyze_wildcard\":true}}}"
       }
     }
   },
   {
-    "_id": "Auth-Logs",
-    "_type": "search",
-    "_source": {
-      "title": "Authorization Logs",
-      "description": "",
-      "hits": 0,
-      "columns": [
-        "@timestamp",
-        "fields.Id",
-        "fields.Message",
-        "fields.Task"
-      ],
-      "sort": [
-        "@timestamp",
-        "desc"
-      ],
-      "version": 1,
-      "kibanaSavedObjectMeta": {
-        "searchSourceJSON": "{\"index\":\"simpleidserver-*\",\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"*\"}},\"filter\":[],\"highlight\":{\"pre_tags\":[\"@kibana-highlighted-field@\"],\"post_tags\":[\"@/kibana-highlighted-field@\"],\"fields\":{\"*\":{}},\"require_field_match\":false,\"fragment_size\":2147483647}}"
-      }
-    }
-  },
-  {
-    "_id": "Granted-Tokens",
+    "_id": "Revocations-counter",
     "_type": "visualization",
     "_source": {
-      "title": "Granted Tokens",
-      "visState": "{\"title\":\"New Visualization\",\"type\":\"histogram\",\"params\":{\"shareYAxis\":true,\"addTooltip\":true,\"addLegend\":true,\"scale\":\"linear\",\"mode\":\"stacked\",\"times\":[],\"addTimeMarker\":false,\"defaultYExtents\":false,\"setYExtents\":false,\"yAxis\":{}},\"aggs\":[{\"id\":\"1\",\"type\":\"count\",\"schema\":\"metric\",\"params\":{\"customLabel\":\"New granted tokens\"}},{\"id\":\"2\",\"type\":\"date_histogram\",\"schema\":\"segment\",\"params\":{\"field\":\"@timestamp\",\"interval\":\"h\",\"customInterval\":\"2h\",\"min_doc_count\":1,\"extended_bounds\":{}}}],\"listeners\":{}}",
+      "title": "Revocations counter",
+      "visState": "{\"title\":\"New Visualization\",\"type\":\"metric\",\"params\":{\"handleNoResults\":true,\"fontSize\":60},\"aggs\":[{\"id\":\"1\",\"type\":\"count\",\"schema\":\"metric\",\"params\":{\"customLabel\":\"Number of revocations\"}}],\"listeners\":{}}",
       "uiStateJSON": "{}",
       "description": "",
-      "savedSearchId": "Granted-Token",
+      "savedSearchId": "Revocations",
       "version": 1,
       "kibanaSavedObjectMeta": {
         "searchSourceJSON": "{\"filter\":[]}"
@@ -97,17 +224,91 @@
     }
   },
   {
-    "_id": "Authorization-FailuresCounter",
+    "_id": "Failures-counter",
     "_type": "visualization",
     "_source": {
-      "title": "Number of failures",
-      "visState": "{\n  \"title\": \"New Visualization\",\n  \"type\": \"metric\",\n  \"params\": {\n    \"handleNoResults\": true,\n    \"fontSize\": 60\n  },\n  \"aggs\": [\n    {\n      \"id\": \"1\",\n      \"type\": \"count\",\n      \"schema\": \"metric\",\n      \"params\": {\n        \"customLabel\": \"Number of failures\"\n      }\n    }\n  ],\n  \"listeners\": {}\n}",
+      "title": "Failures counter",
+      "visState": "{\"title\":\"New Visualization\",\"type\":\"metric\",\"params\":{\"handleNoResults\":true,\"fontSize\":60},\"aggs\":[{\"id\":\"1\",\"type\":\"count\",\"schema\":\"metric\",\"params\":{\"customLabel\":\"Number of failures\"}}],\"listeners\":{}}",
       "uiStateJSON": "{}",
       "description": "",
-      "savedSearchId": "Authorization-Failures",
+      "savedSearchId": "Failures",
       "version": 1,
       "kibanaSavedObjectMeta": {
-        "searchSourceJSON": "{\n  \"filter\": []\n}"
+        "searchSourceJSON": "{\"filter\":[]}"
+      }
+    }
+  },
+  {
+    "_id": "Granted-tokens",
+    "_type": "visualization",
+    "_source": {
+      "title": "Granted tokens",
+      "visState": "{\"title\":\"New Visualization\",\"type\":\"pie\",\"params\":{\"shareYAxis\":true,\"addTooltip\":true,\"addLegend\":true,\"isDonut\":false},\"aggs\":[{\"id\":\"1\",\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"fields.Operation.raw\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\"}}],\"listeners\":{}}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "savedSearchId": "Granted-tokens",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"filter\":[]}"
+      }
+    }
+  },
+  {
+    "_id": "Authenticated-users",
+    "_type": "visualization",
+    "_source": {
+      "title": "Authenticated users",
+      "visState": "{\"title\":\"New Visualization\",\"type\":\"line\",\"params\":{\"shareYAxis\":true,\"addTooltip\":true,\"addLegend\":true,\"showCircles\":true,\"smoothLines\":false,\"interpolate\":\"linear\",\"scale\":\"linear\",\"drawLinesBetweenPoints\":true,\"radiusRatio\":9,\"times\":[],\"addTimeMarker\":false,\"defaultYExtents\":false,\"setYExtents\":false,\"yAxis\":{}},\"aggs\":[{\"id\":\"1\",\"type\":\"count\",\"schema\":\"metric\",\"params\":{\"customLabel\":\"Authenticated users\"}},{\"id\":\"2\",\"type\":\"date_histogram\",\"schema\":\"segment\",\"params\":{\"field\":\"@timestamp\",\"interval\":\"auto\",\"customInterval\":\"2h\",\"min_doc_count\":1,\"extended_bounds\":{}}}],\"listeners\":{}}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "savedSearchId": "Authenticated-Users",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"filter\":[]}"
+      }
+    }
+  },
+  {
+    "_id": "Authorizations",
+    "_type": "visualization",
+    "_source": {
+      "title": "Authorizations",
+      "visState": "{\"aggs\":[{\"id\":\"1\",\"params\":{},\"schema\":\"metric\",\"type\":\"count\"},{\"id\":\"2\",\"params\":{\"field\":\"fields.Operation.raw\",\"order\":\"desc\",\"orderBy\":\"1\",\"size\":5},\"schema\":\"segment\",\"type\":\"terms\"}],\"listeners\":{},\"params\":{\"addLegend\":true,\"addTooltip\":true,\"isDonut\":false,\"shareYAxis\":true},\"title\":\"New Visualization\",\"type\":\"pie\"}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "savedSearchId": "Granted-authorizations",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"filter\":[]}"
+      }
+    }
+  },
+  {
+    "_id": "Authenticated-users-counter",
+    "_type": "visualization",
+    "_source": {
+      "title": "Authenticated users counter",
+      "visState": "{\"title\":\"New Visualization\",\"type\":\"metric\",\"params\":{\"handleNoResults\":true,\"fontSize\":60},\"aggs\":[{\"id\":\"1\",\"type\":\"count\",\"schema\":\"metric\",\"params\":{\"customLabel\":\"Number of authenticated users\"}}],\"listeners\":{}}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "savedSearchId": "Authenticated-Users",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"filter\":[]}"
+      }
+    }
+  },
+  {
+    "_id": "navigation",
+    "_type": "visualization",
+    "_source": {
+      "title": "navigation",
+      "visState": "{\"title\":\"navigation\",\"type\":\"markdown\",\"params\":{\"markdown\":\"###Pages:\\n\\n[Tokens](/#/dashboard/Tokens)\\n\\n[Authorizations](/#/dashboard/Authorizations)\\n\\n[Users](/#/dashboard/Users)\\n\\n[Failures](/#/dashboard/Failures)\\n\\n[Logs](/#/dashboard/Logs)\"},\"aggs\":[],\"listeners\":{}}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"query\":{\"query_string\":{\"query\":\"*\",\"analyze_wildcard\":true}},\"filter\":[]}"
       }
     }
   }

@@ -25,7 +25,6 @@ using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
-using SimpleIdentityServer.Logging;
 
 namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 {
@@ -57,18 +56,14 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 
         private readonly IAuthenticateHelper _authenticateHelper;
 
-        private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
-
         public LocalOpenIdUserAuthenticationAction(
             IResourceOwnerService resourceOwnerService,
             IResourceOwnerRepository resourceOwnerRepository,
-            IAuthenticateHelper authenticateHelper,
-            ISimpleIdentityServerEventSource simpleIdentityServerEventSource)
+            IAuthenticateHelper authenticateHelper)
         {
             _resourceOwnerService = resourceOwnerService;
             _resourceOwnerRepository = resourceOwnerRepository;
             _authenticateHelper = authenticateHelper;
-            _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
         }
 
         #region Public methods
@@ -107,7 +102,6 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                 throw new IdentityServerAuthenticationException("the resource owner credentials are not correct");
             }
 
-            _simpleIdentityServerEventSource.AuthenticateResourceOwner(subject);
             var resourceOwner = _resourceOwnerRepository.GetBySubject(subject);
             claims = resourceOwner.ToClaims();
             claims.Add(new Claim(ClaimTypes.AuthenticationInstant,

@@ -180,7 +180,7 @@ namespace SimpleIdentityServer.Logging
 
         private readonly ILogger _logger;
 
-        private const string MessagePattern = "{Id} : {Task}, {Message}";
+        private const string MessagePattern = "{Id} : {Task}, {Message} : {Operation}";
 
         #region Constructor
 
@@ -218,7 +218,8 @@ namespace SimpleIdentityServer.Logging
             {
                 Id = 2,
                 Task = Tasks.Authorization,
-                Message = $"Start the authorization code flow for the client : {clientId}, scope : {scope} and claims : {individualClaims}"
+                Message = $"Start the authorization code flow for the client : {clientId}, scope : {scope} and claims : {individualClaims}",
+                Operation = "authorization code"
             };
 
             LogInformation(evt);
@@ -299,7 +300,8 @@ namespace SimpleIdentityServer.Logging
             {
                 Id = 8,
                 Task = Tasks.Authorization,
-                Message = $"End of the authorization code flow, client : {clientId}, action type : {actionType}, action name : {actionName}"
+                Message = $"End of the authorization code flow, client : {clientId}, action type : {actionType}, action name : {actionName}",
+                Operation = "authorization code"
             };
 
             LogInformation(evt);
@@ -329,7 +331,8 @@ namespace SimpleIdentityServer.Logging
             {
                 Id = 10,
                 Task = Tasks.Authorization,
-                Message = $"Start the implicit flow, client : {clientId}, scope : {scope} and claims : {individualClaims}"
+                Message = $"Start the implicit flow, client : {clientId}, scope : {scope} and claims : {individualClaims}",
+                Operation = "implicit"
             };
 
             LogInformation(evt);
@@ -344,7 +347,8 @@ namespace SimpleIdentityServer.Logging
             {
                 Id = 11,
                 Task = Tasks.Authorization,
-                Message = $"End the implicit flow, client : {clientId}, action type : {actionType} and action name : {actionName}"
+                Message = $"End the implicit flow, client : {clientId}, action type : {actionType} and action name : {actionName}",
+                Operation = "implicit"
             };
 
             LogInformation(evt);
@@ -359,7 +363,8 @@ namespace SimpleIdentityServer.Logging
             {
                 Id = 12,
                 Task = Tasks.Authorization,
-                Message = $"Start the hybrid flow, client : {clientId}, scope : {scope} and claims : {individualClaims}"
+                Message = $"Start the hybrid flow, client : {clientId}, scope : {scope} and claims : {individualClaims}",
+                Operation = "hybrid"
             };
 
             LogInformation(evt);
@@ -371,7 +376,8 @@ namespace SimpleIdentityServer.Logging
             {
                 Id = 13,
                 Task = Tasks.Authorization,
-                Message = $"End the hybrid flow : {clientId}, action type : {actionType} and action name : {actionName}"
+                Message = $"End the hybrid flow : {clientId}, action type : {actionType} and action name : {actionName}",
+                Operation = "hybrid"
             };
 
             LogInformation(evt);
@@ -387,7 +393,8 @@ namespace SimpleIdentityServer.Logging
             {
                 Id = 14,
                 Task = Tasks.Token,
-                Message = $"Start resource owner credentials grant-type, client : {clientId}, user name : {userName}, password : {password}"
+                Message = $"Start resource owner credentials grant-type, client : {clientId}, user name : {userName}, password : {password}",
+                Operation = "resource owner credentials"
             };
 
             LogInformation(evt);
@@ -399,7 +406,8 @@ namespace SimpleIdentityServer.Logging
             {
                 Id = 15,
                 Task = Tasks.Token,
-                Message = $"End of the resource owner credentials grant-type, access token : {accessToken}, identity token : {identityToken}"
+                Message = $"End of the resource owner credentials grant-type, access token : {accessToken}, identity token : {identityToken}",
+                Operation = "resource owner credentials"
             };
 
             LogInformation(evt);
@@ -413,7 +421,8 @@ namespace SimpleIdentityServer.Logging
             {
                 Id = 16,
                 Task = Tasks.Token,
-                Message = $"Start authorization code grant-type, client : {clientId} and authorization code : {authorizationCode}"
+                Message = $"Start authorization code grant-type, client : {clientId} and authorization code : {authorizationCode}",
+                Operation = "authorization code"
             };
 
             LogInformation(evt);
@@ -425,7 +434,8 @@ namespace SimpleIdentityServer.Logging
             {
                 Id = 17,
                 Task = Tasks.Token,
-                Message = $"End of the authorization code grant-type, access token : {accessToken}, identity token : {identityToken}"
+                Message = $"End of the authorization code grant-type, access token : {accessToken}, identity token : {identityToken}",
+                Operation = "authorization code"
             };
 
             LogInformation(evt);
@@ -465,7 +475,8 @@ namespace SimpleIdentityServer.Logging
             {
                 Id = 20,
                 Task = Tasks.Token,
-                Message = $"Start refresh token grant-type, client : {clientId}, refresh token : {refreshToken}"
+                Message = $"Start refresh token grant-type, client : {clientId}, refresh token : {refreshToken}",
+                Operation = "refresh token"
             };
 
             LogInformation(evt);
@@ -477,7 +488,8 @@ namespace SimpleIdentityServer.Logging
             {
                 Id = 21,
                 Task = Tasks.Token,
-                Message = $"End refresh token grant-type, access token : {accessToken}, identity token : {identityToken}"
+                Message = $"End refresh token grant-type, access token : {accessToken}, identity token : {identityToken}",
+                Operation = "refresh token"
             };
 
             LogInformation(evt);
@@ -489,7 +501,8 @@ namespace SimpleIdentityServer.Logging
             {
                 Id = 22,
                 Task = Tasks.Token,
-                Message = $"Start get token by client credentials, scope : {scope}"
+                Message = $"Start get token by client credentials, scope : {scope}",
+                Operation = "client credentials"
             };
 
             LogInformation(evt);
@@ -501,7 +514,8 @@ namespace SimpleIdentityServer.Logging
             {
                 Id = 23,
                 Task = Tasks.Token,
-                Message = $"End get token by client credentials, client : {clientId}, scope : {scope}"
+                Message = $"End get token by client credentials, client : {clientId}, scope : {scope}",
+                Operation = "client credentials"
             };
 
             LogInformation(evt);
@@ -654,17 +668,17 @@ namespace SimpleIdentityServer.Logging
         
         private void LogInformation(Event evt)
         {
-            _logger.LogInformation(MessagePattern, evt.Id, evt.Task, evt.Message);
+            _logger.LogInformation(MessagePattern, evt.Id, evt.Task, evt.Message, evt.Operation);
         }
 
         private void LogError(Event evt)
         {
-            _logger.LogError(MessagePattern, evt.Id, evt.Task, evt.Message);
+            _logger.LogError(MessagePattern, evt.Id, evt.Task, evt.Message, evt.Operation);
         }
 
         private void LogError(Event evt, EventId evtId, Exception ex)
         {
-            _logger.LogError(evtId, ex, MessagePattern, evt.Id, evt.Task, evt.Message);
+            _logger.LogError(evtId, ex, MessagePattern, evt.Id, evt.Task, evt.Message, evt.Operation);
         }
 
         #endregion

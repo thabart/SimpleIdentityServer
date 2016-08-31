@@ -29,6 +29,11 @@ namespace SimpleIdentityServer.Logging
         public string Task { get; set; }
 
         /// <summary>
+        /// Operation
+        /// </summary>
+        public string Operation { get; set; }
+
+        /// <summary>
         /// Message displayed
         /// </summary>
         public string Message { get; set; }

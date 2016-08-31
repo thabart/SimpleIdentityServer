@@ -1,6 +1,6 @@
 {
   "version": "1.0.0-*",
-  "description": "Serilog.Sinks.ElasticSearch Class Library",
+  "description": "Serilog.Sinks.RabbitMQ Class Library",
   "authors": [ "thierry habart" ],
   "packOptions": {
     "tags": [ "" ],
@@ -8,21 +8,17 @@
     "projectUrl": ""
   },
   "tooling": {
-    "defaultNamespace": "Serilog.Sinks.ElasticSearch"
+    "defaultNamespace": "Serilog.Sinks.RabbitMQ"
   },
 
   "dependencies": {
     "Serilog": "2.0.0",
-    "Serilog.Sinks.PeriodicBatching": "2.0.0",
-    "Serilog.Sinks.RollingFile": "2.0.0",
-    "Elasticsearch.Net": "2.4.1"
+    "RabbitMQ.Client": "4.0.1",
+    "Serilog.Sinks.PeriodicBatching": "2.0.0"
   },
 
   "frameworks": {
     "net46": {
-      "buildOptions": {
-        "define": [ ]
-      },
       "frameworkAssemblies": {
         "System.Runtime.Serialization": "4.0.0.0",
         "System.Web.Extensions": "4.0.0.0",
@@ -40,13 +36,6 @@
         "System.Runtime.Extensions": "4.1.0",
         "System.Xml.XmlDocument": "4.0.1",
         "System.Xml.XPath.XmlDocument": "4.0.1"
-      },
-      "buildOptions": {
-        "define": [
-          "DOTNETCORE",
-          "NO_SERIALIZATION",
-          "NO_TIMER"
-        ]
       }
     }
   }

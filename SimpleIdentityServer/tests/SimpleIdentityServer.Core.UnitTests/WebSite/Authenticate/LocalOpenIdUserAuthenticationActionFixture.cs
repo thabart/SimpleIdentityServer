@@ -10,7 +10,6 @@ using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
-using SimpleIdentityServer.Logging;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
@@ -23,8 +22,6 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryFake;
 
         private Mock<IAuthenticateHelper> _authenticateHelperFake;
-
-        private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSourceFake;
 
         private ILocalOpenIdUserAuthenticationAction _localUserAuthenticationAction;
 
@@ -82,9 +79,6 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
                 authorizationParameter, 
                 null, 
                 out returnedClaims);
-
-            // ASSERT
-            _simpleIdentityServerEventSourceFake.Verify(s => s.AuthenticateResourceOwner(subject));
             
             // Specify the resource owner authentication date
             Assert.True(returnedClaims.Any(r => r.Type == ClaimTypes.AuthenticationInstant || 
@@ -96,12 +90,10 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             _resourceOwnerServiceFake = new Mock<IResourceOwnerService>();
             _resourceOwnerRepositoryFake = new Mock<IResourceOwnerRepository>();
             _authenticateHelperFake = new Mock<IAuthenticateHelper>();
-            _simpleIdentityServerEventSourceFake = new Mock<ISimpleIdentityServerEventSource>();
             _localUserAuthenticationAction = new LocalOpenIdUserAuthenticationAction(
                 _resourceOwnerServiceFake.Object,
                 _resourceOwnerRepositoryFake.Object,
-                _authenticateHelperFake.Object,
-                _simpleIdentityServerEventSourceFake.Object);
+                _authenticateHelperFake.Object);
         }
     }
 }

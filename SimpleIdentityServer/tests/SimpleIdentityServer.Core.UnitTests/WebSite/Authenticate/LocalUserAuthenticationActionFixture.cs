@@ -8,7 +8,6 @@ using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;
-using SimpleIdentityServer.Logging;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
@@ -16,9 +15,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
     public sealed class LocalUserAuthenticationActionFixture
     {
         private Mock<IResourceOwnerService> _resourceOwnerServiceStub;
-
-        private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSourceStub;
-
+        
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
 
         private ILocalUserAuthenticationAction _localUserAuthenticationAction;
@@ -85,10 +82,8 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
         {
             _resourceOwnerServiceStub = new Mock<IResourceOwnerService>();
             _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
-            _simpleIdentityServerEventSourceStub = new Mock<ISimpleIdentityServerEventSource>();
             _localUserAuthenticationAction = new LocalUserAuthenticationAction(
                 _resourceOwnerServiceStub.Object,
-                _simpleIdentityServerEventSourceStub.Object,
                 _resourceOwnerRepositoryStub.Object);
             
         }

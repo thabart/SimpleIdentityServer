@@ -24,7 +24,6 @@ using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Services;
-using SimpleIdentityServer.Logging;
 
 namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 {
@@ -37,19 +36,15 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
     {
         private readonly IResourceOwnerService _resourceOwnerService;
 
-        private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
-
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
 
         #region Constructor
 
         public LocalUserAuthenticationAction(
             IResourceOwnerService resourceOwnerService,
-            ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
             IResourceOwnerRepository resourceOwnerRepository)
         {
             _resourceOwnerService = resourceOwnerService;
-            _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
             _resourceOwnerRepository = resourceOwnerRepository;
         }
 
@@ -70,8 +65,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
             {
                 throw new IdentityServerAuthenticationException(ErrorDescriptions.TheResourceOwnerCredentialsAreNotCorrect);
             }
-
-            _simpleIdentityServerEventSource.AuthenticateResourceOwner(subject);
+            
             var resourceOwner = _resourceOwnerRepository.GetBySubject(subject);
             var claims = resourceOwner.ToClaims();
             claims.Add(new Claim(ClaimTypes.AuthenticationInstant,
