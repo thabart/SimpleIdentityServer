@@ -67,6 +67,7 @@ namespace {namespace}
             // Enable Uma authentication
             var options = new UmaIntrospectionOptions
             {
+				OpenIdWellKnownConfigurationUrl = "https://localhost:5443/.well-known/openid-configuration",
                 ResourcesUrl = "{resource_url}",
                 UmaConfigurationUrl = "http://localhost:5445/.well-known/uma-configuration"
             };

@@ -21,56 +21,28 @@ using System.Collections.Generic;
 namespace {namespace}
 {
     public class SecurityProxy_{hash}
-    {
-        public static string GetRptToken()
+    {	
+        public static async Task<string> GetRptToken(
+            string umaProtectionToken,
+            string umaAuthorizationToken,
+            string resourceToken)
         {
             var factory = new SecurityProxyFactory();
             var proxy = factory.GetProxy(new SecurityOptions
             {
-                ClientId = "<replace by your client id>",
-                ClientSecret = "<replace by your client secret>",
                 UmaConfigurationUrl = "https://localhost:5445/.well-known/uma-configuration",
                 OpenidConfigurationUrl = "https://localhost:5443/.well-known/openid-configuration",
                 RootManageApiUrl = "https://localhost:5444/api"
             });
             try
             {
-                var result = proxy.GetRpt("{resource_url}", new List<string>
+                var result = await proxy.GetRpt("{resource_url}", umaProtectionToken, umaAuthorizationToken, resourceToken, new List<string>
                 {
-                    "execute",
-                    "write",
                     "execute"
-                }).Result;
+                });
                 return result;
             }
-            catch (AggregateException)
-            {
-                return null;
-            }
-        }
-
-        public static string GetRptToken(string idToken)
-        {
-            var factory = new SecurityProxyFactory();
-            var proxy = factory.GetProxy(new SecurityOptions
-            {
-                ClientId = "<replace by your client id>",
-                ClientSecret = "<replace by your client secret>",
-                UmaConfigurationUrl = "http://localhost:5001/.well-known/uma-configuration",
-                OpenidConfigurationUrl = "http://localhost:5000/.well-known/openid-configuration",
-                RootManageApiUrl = "https://localhost:5444/api"
-            });
-            try
-            {
-                var result = proxy.GetRpt("{resource_url}", idToken, new List<string>
-                {
-                    "execute",
-                    "write",
-                    "execute"
-                }).Result;
-                return result;
-            }
-            catch (AggregateException)
+            catch (Exception ex)
             {
                 return null;
             }
@@ -79,7 +51,8 @@ namespace {namespace}
 		public static async Task<string> GetRptToken(
             string idToken,
             string umaProtectionToken,
-            string umaAuthorizationToken)
+            string umaAuthorizationToken,
+			string resourceToken)
         {
             var factory = new SecurityProxyFactory();
             var proxy = factory.GetProxy(new SecurityOptions
@@ -90,7 +63,7 @@ namespace {namespace}
             });
             try
             {
-                var result = await proxy.GetRpt("{resource_url}", idToken, umaProtectionToken, umaAuthorizationToken, new List<string>
+                var result = await proxy.GetRpt("{resource_url}", idToken, umaProtectionToken, umaAuthorizationToken, resourceToken, new List<string>
                 {
                     "execute"
                 });
