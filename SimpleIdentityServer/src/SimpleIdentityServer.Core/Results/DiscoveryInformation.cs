@@ -107,6 +107,9 @@ namespace SimpleIdentityServer.Core.Results
         [DataMember(Name = "revocation_endpoint")]
         public string RevocationEndPoint { get; set; }
 
+        [DataMember(Name = "introspection_endpoint")]
+        public string IntrospectionEndPoint { get; set; }
+
         /// <summary>
         /// Gets or sets the list of scupported scopes.
         /// </summary>

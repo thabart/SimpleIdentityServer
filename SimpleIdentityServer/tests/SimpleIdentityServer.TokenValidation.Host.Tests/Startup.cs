@@ -103,6 +103,7 @@ namespace SimpleIdentityServer.TokenValidation.Host.Tests
             // III. ENABLE UMA AUTHENTICATION
             var options = new UmaIntrospectionOptions
             {
+                OpenIdWellKnownConfigurationUrl = "https://localhost:5443/.well-known/openid-configuration",
                 ResourcesUrl = "https://localhost:5444/api/vs/resources",
                 UmaConfigurationUrl = "https://localhost:5445/.well-known/uma-configuration"
             };

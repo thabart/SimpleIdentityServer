@@ -25,6 +25,8 @@ namespace SimpleIdentityServer.Vse
 
         private string _url = "https://localhost:5444/api/vs/resources";
 
+        private string _wellKnownConfigurationEdp = "https://localhost:5443/.well-known/openid-configuration";
+
         #endregion
 
         #region Public properties
@@ -36,6 +38,15 @@ namespace SimpleIdentityServer.Vse
         {
             get { return _url; }
             set { _url = value; }
+        }
+
+        [Category("Configuration")]
+        [DisplayName("Well known configuration")]
+        [Description("Well known configuration endpoint")]
+        public string WellKnownConfigurationEdp
+        {
+            get { return _wellKnownConfigurationEdp; }
+            set { _wellKnownConfigurationEdp = value; }
         }
 
         #endregion

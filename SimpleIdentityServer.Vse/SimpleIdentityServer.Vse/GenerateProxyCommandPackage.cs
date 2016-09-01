@@ -67,6 +67,15 @@ namespace SimpleIdentityServer.Vse
             }
         }
 
+        public string WellKnownConfigurationEdp
+        {
+            get
+            {
+                var page = (OptionsPageGrid)GetDialogPage(typeof(OptionsPageGrid));
+                return page.WellKnownConfigurationEdp;
+            }
+        }
+
         #endregion
 
         #region Package Members

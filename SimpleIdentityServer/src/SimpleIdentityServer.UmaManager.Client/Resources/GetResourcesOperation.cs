@@ -60,6 +60,7 @@ namespace SimpleIdentityServer.UmaManager.Client.Resources
                 Method = HttpMethod.Get,
                 RequestUri = uri
             };
+            request.Headers.Add("Authorization", "Bearer " + accessToken);
             var httpClient = _httpClientFactory.GetHttpClient();
             var httpResult = await httpClient.SendAsync(request);
             httpResult.EnsureSuccessStatusCode();

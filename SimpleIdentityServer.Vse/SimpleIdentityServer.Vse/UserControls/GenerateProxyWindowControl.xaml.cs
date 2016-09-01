@@ -16,6 +16,8 @@
 
 using EnvDTE;
 using NuGet.VisualStudio;
+using SimpleIdentityServer.Client;
+using SimpleIdentityServer.Client.Selectors;
 using SimpleIdentityServer.UmaManager.Client;
 using SimpleIdentityServer.UmaManager.Client.DTOs.Requests;
 using SimpleIdentityServer.UmaManager.Client.DTOs.Responses;
@@ -39,6 +41,8 @@ namespace SimpleIdentityServer.Vse
     {
         private readonly IResourceClient _resourceClient;
 
+        private readonly IClientAuthSelector _clientAuthSelector;
+
         private bool _isInitialized;
 
         private GenerateProxyWindowViewModel _viewModel;
@@ -53,6 +57,8 @@ namespace SimpleIdentityServer.Vse
         {
             _isInitialized = false;
             var factory = new IdentityServerUmaManagerClientFactory();
+            var identityServerClientFactory = new IdentityServerClientFactory();
+            _clientAuthSelector = identityServerClientFactory.CreateTokenClient();
             _resourceClient = factory.GetResourceClient();
             InitializeComponent();
             Loaded += Load;
@@ -239,21 +245,37 @@ namespace SimpleIdentityServer.Vse
                 
         private async Task SearchResources(string url, Uri uri)
         {
-            await DisplayResources(() =>
+            var accessToken = await GetAccessToken();
+            if (!string.IsNullOrWhiteSpace(accessToken))
             {
-                return _resourceClient.SearchResources(new SearchResourceRequest
+                await DisplayResources(() =>
                 {
-                    Url = url
-                }, uri, string.Empty);
-            });
+                    return _resourceClient.SearchResources(new SearchResourceRequest
+                    {
+                        Url = url
+                    }, uri, accessToken);
+                });
+            }
+            else
+            {
+                MessageBox.Show("An error occured while trying to retrieve the access token");
+            }
         }
 
         private async Task DisplayAllResources(Uri uri)
         {
-            await DisplayResources(() =>
+            var accessToken = await GetAccessToken();
+            if (!string.IsNullOrWhiteSpace(accessToken))
             {
-                return _resourceClient.GetResources(uri, string.Empty);
-            });
+                await DisplayResources(() =>
+                {
+                    return _resourceClient.GetResources(uri, accessToken);
+                });
+            }
+            else
+            {
+                MessageBox.Show("An error occured while trying to retrieve the access token");
+            }
         }
 
         private async Task DisplayResources(Func<Task<List<ResourceResponse>>> callback)
@@ -363,6 +385,27 @@ namespace SimpleIdentityServer.Vse
 
                 return true;
             });
+        }
+
+        private async Task<string> GetAccessToken()
+        {
+            var url = _options.Package.WellKnownConfigurationEdp;
+            try
+            {
+                var response = await _clientAuthSelector.UseClientSecretPostAuth(Constants.ClientId, Constants.ClientSecret)
+                    .UseClientCredentials(Constants.Scope)
+                    .ResolveAsync(url);
+                if (response == null)
+                {
+                    return null;
+                }
+
+                return response.AccessToken;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         #endregion

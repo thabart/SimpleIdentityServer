@@ -225,6 +225,15 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         IsOpenIdScope = false,
                         IsDisplayedInConsent = true,
                         Type = ScopeType.ProtectedApi
+                    },
+                    // Scope needed by the visual studio extension
+                    new Scope
+                    {
+                        Name = "website_api",
+                        Description = "Access to the website api",
+                        IsOpenIdScope = false,
+                        IsDisplayedInConsent = true,
+                        Type = ScopeType.ProtectedApi
                     }
                 });
             }
@@ -587,6 +596,27 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         GrantTypes = "3",
                         ResponseTypes = "1",
                         IdTokenSignedResponseAlg = "RS256"
+                    },
+                    // Visual studio extension
+                    new Client
+                    {
+                        ClientId = "VisualStudioExtension",
+                        ClientName = "VisualStudioExtension",
+                        ClientSecret = "VisualStudioExtension",
+                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
+                        LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
+                        PolicyUri = "http://openid.net",
+                        TosUri = "http://openid.net",
+                        ClientScopes = new List<ClientScope>
+                        {
+                            new ClientScope
+                            {
+                                ScopeName = "website_api"
+                            }
+                        },
+                        GrantTypes = "3",
+                        ResponseTypes = "1"
+
                     },
                     // SimpleIdentity server : needs to interact with the configuration server to retrieve his configuration
                     new Client

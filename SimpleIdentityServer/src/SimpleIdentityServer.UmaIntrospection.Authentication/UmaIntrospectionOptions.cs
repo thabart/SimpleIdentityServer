@@ -23,10 +23,24 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
     {
         public string UmaConfigurationUrl { get; set; }
 
+        public string OpenIdWellKnownConfigurationUrl { get; set; }
+
         public string ResourcesUrl { get; set; }
+
+        public string ClientId { get; set; }
+
+        public string ClientSecret { get; set; }
 
         public IIdentityServerUmaClientFactory IdentityServerUmaClientFactory { get; set; }
 
         public IIdentityServerUmaManagerClientFactory IdentityServerUmaManagerClientFactory { get; set; }
+
+        public IIdentityServerClientFactory IdentityServerClientFactory { get; set; }
+
+        public UmaIntrospectionOptions()
+        {
+            ClientId = "VisualStudioExtension";
+            ClientSecret = "VisualStudioExtension";
+        }
     }
 }

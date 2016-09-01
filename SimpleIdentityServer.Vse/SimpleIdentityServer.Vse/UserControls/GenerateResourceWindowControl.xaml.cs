@@ -16,6 +16,8 @@
 
 using EnvDTE;
 using NuGet.VisualStudio;
+using SimpleIdentityServer.Client;
+using SimpleIdentityServer.Client.Selectors;
 using SimpleIdentityServer.UmaManager.Client;
 using SimpleIdentityServer.UmaManager.Client.DTOs.Requests;
 using SimpleIdentityServer.UmaManager.Client.Resources;
@@ -38,6 +40,8 @@ namespace SimpleIdentityServer.Vse
         #region Fields
 
         private readonly IResourceClient _resourceClient;
+
+        private readonly IClientAuthSelector _clientAuthSelector;
 
         private Options _options;
 
@@ -64,6 +68,8 @@ namespace SimpleIdentityServer.Vse
             _isInitialized = false;
             InitializeComponent();
             var factory = new IdentityServerUmaManagerClientFactory();
+            var identityServerClientFactory = new IdentityServerClientFactory();
+            _clientAuthSelector = identityServerClientFactory.CreateTokenClient();
             _resourceClient = factory.GetResourceClient();
             Loaded += Load;
         }
@@ -164,18 +170,26 @@ namespace SimpleIdentityServer.Vse
         private async Task ProtectActions(Uri uri)
         {
             ExecuteRequestToUi(() => _viewModel.IsLoading = true);
-            foreach (var act in _viewModel.Actions.Where(a => a.IsSelected))
+            var accessToken = await GetAccessToken();
+            if (!string.IsNullOrWhiteSpace(accessToken))
             {
-                await _resourceClient.AddControllerAction(new AddControllerActionRequest
+                foreach (var act in _viewModel.Actions.Where(a => a.IsSelected))
                 {
-                    Action = act.Action,
-                    Application = act.Application,
-                    Controller = act.Controller,
-                    Version = _viewModel.Version
-                }, uri, string.Empty);
-            }
+                    await _resourceClient.AddControllerAction(new AddControllerActionRequest
+                    {
+                        Action = act.Action,
+                        Application = act.Application,
+                        Controller = act.Controller,
+                        Version = _viewModel.Version
+                    }, uri, accessToken);
+                }
 
-            ExecuteRequestToUi(() => _viewModel.IsLoading = false);
+                ExecuteRequestToUi(() => _viewModel.IsLoading = false);
+            }
+            else
+            {
+                MessageBox.Show("An error occured while trying to retrieve the access token");
+            }
         }
 
         private Task RefreshAvailableActions()
@@ -342,6 +356,27 @@ namespace SimpleIdentityServer.Vse
             }
 
             return result;
+        }
+                
+        private async Task<string> GetAccessToken()
+        {
+            var url = _options.Package.WellKnownConfigurationEdp;
+            try
+            {
+                var response = await _clientAuthSelector.UseClientSecretPostAuth(Constants.ClientId, Constants.ClientSecret)
+                    .UseClientCredentials(Constants.Scope)
+                    .ResolveAsync(url);
+                if (response == null)
+                {
+                    return null;
+                }
+
+                return response.AccessToken;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         #endregion

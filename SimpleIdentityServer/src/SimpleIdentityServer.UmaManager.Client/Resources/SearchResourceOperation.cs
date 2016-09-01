@@ -86,6 +86,7 @@ namespace SimpleIdentityServer.UmaManager.Client.Resources
                 RequestUri = new Uri(resourcesUrl),
                 Content = new FormUrlEncodedContent(contentRequest)
             };
+            request.Headers.Add("Authorization", "Bearer " + accessToken);
             var httpClient = _httpClientFactory.GetHttpClient();
             var httpResult = await httpClient.SendAsync(request);
             httpResult.EnsureSuccessStatusCode();

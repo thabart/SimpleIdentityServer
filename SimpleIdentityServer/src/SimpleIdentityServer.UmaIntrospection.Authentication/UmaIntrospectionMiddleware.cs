@@ -153,6 +153,12 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
                 claimsIdentity = context.User.Identity as ClaimsIdentity;
             }
 
+            var accessToken = await GetAccessToken();
+            if (string.IsNullOrWhiteSpace(accessToken))
+            {
+                return;
+            }
+
             var identityServerUmaManagerClientFactory = (IIdentityServerUmaManagerClientFactory)_serviceProvider.GetService(typeof(IIdentityServerUmaManagerClientFactory));
             foreach (var permission in permissions)
             {
@@ -167,7 +173,7 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
                     .SearchResources(new SearchResourceRequest
                     {
                         ResourceId = permission.ResourceSetId
-                    }, _options.ResourcesUrl, string.Empty);
+                    }, _options.ResourcesUrl, accessToken);
                 if (operations != null && operations.Any())
                 {
                     var operation = operations.First();
@@ -178,6 +184,28 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
             }
 
             context.User = new ClaimsPrincipal(claimsIdentity);
+        }
+
+        private async Task<string> GetAccessToken()
+        {
+            try
+            {
+                var serverClientFactory = (IIdentityServerClientFactory)_serviceProvider.GetService(typeof(IIdentityServerClientFactory));
+                var response = await serverClientFactory.CreateTokenClient()
+                    .UseClientSecretPostAuth(_options.ClientId, _options.ClientSecret)
+                    .UseClientCredentials("website_api")
+                    .ResolveAsync(_options.OpenIdWellKnownConfigurationUrl);
+                if (response == null)
+                {
+                    return null;
+                }
+
+                return response.AccessToken;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         #endregion
@@ -221,6 +249,15 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
             else
             {
                 serviceCollection.AddTransient<IIdentityServerUmaManagerClientFactory, IdentityServerUmaManagerClientFactory>();
+            }
+
+            if (options.IdentityServerClientFactory != null)
+            {
+                serviceCollection.AddSingleton(options.IdentityServerClientFactory);
+            }
+            else
+            {
+                serviceCollection.AddTransient<IIdentityServerClientFactory, IdentityServerClientFactory>();
             }
         }
 

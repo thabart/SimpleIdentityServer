@@ -50,6 +50,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             // TODO : implement the session management : http://openid.net/specs/openid-connect-session-1_0.html
             var checkSessionIframe = issuer + "/" + Constants.EndPoints.CheckSession;
             var endSessionEndPoint = issuer + "/" + Constants.EndPoints.EndSession;
+            var introspectionEndPoint = issuer + "/" + Constants.EndPoints.Introspection;
 
             var result = _discoveryActions.CreateDiscoveryInformation();
             result.Issuer = issuer;
@@ -59,6 +60,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             result.JwksUri = jwksUri;
             result.RegistrationEndPoint = registrationEndPoint;
             result.RevocationEndPoint = revocationEndPoint;
+            result.IntrospectionEndPoint = introspectionEndPoint;
             result.Version = "1.0";
 
             result.CheckSessionEndPoint = checkSessionIframe;

@@ -14,14 +14,12 @@
 // limitations under the License.
 #endregion
 
-namespace SimpleIdentityServer.Proxy
+namespace SimpleIdentityServer.Vse
 {
-    public class SecurityOptions
+    public static class Constants
     {
-        public string OpenidConfigurationUrl { get; set; }
-
-        public string UmaConfigurationUrl { get; set; }
-
-        public string RootManageApiUrl { get; set; }
+        public const string ClientId = "VisualStudioExtension";
+        public const string ClientSecret = "VisualStudioExtension";
+        public const string Scope = "website_api";
     }
 }
