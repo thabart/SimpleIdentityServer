@@ -502,7 +502,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
                         LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
                         PolicyUri = "http://openid.net",
-                        TosUri = "http://openid.net"
+                        TosUri = "http://openid.net",
+                        ApplicationType = ApplicationTypes.web
                     },
                     // Open Id manager API : needs to interact with the introspection endpoint.
                     new Client
@@ -513,7 +514,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
                         LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
                         PolicyUri = "http://openid.net",
-                        TosUri = "http://openid.net"
+                        TosUri = "http://openid.net",
+                        ApplicationType = ApplicationTypes.web
                     },
                     // UMA API : needs to interact with the introspection endpoint.
                     new Client
@@ -524,7 +526,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
                         LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
                         PolicyUri = "http://openid.net",
-                        TosUri = "http://openid.net"
+                        TosUri = "http://openid.net",
+                        ApplicationType = ApplicationTypes.web
                     },
                     // Anonymous client
                     new Client
@@ -554,9 +557,10 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         GrantTypes = "4",
                         ResponseTypes = "0,1,2",
                         IdTokenSignedResponseAlg = "RS256",
-                        RedirectionUrls = "http://localhost:4200/callback"
+                        RedirectionUrls = "http://localhost:4200/callback",
+                        ApplicationType = ApplicationTypes.web
                     },
-                    // Manager website : 
+                    // Manager website API
                     new Client
                     {
                         ClientId = "ManagerWebSiteApi",
@@ -595,7 +599,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         },
                         GrantTypes = "3",
                         ResponseTypes = "1",
-                        IdTokenSignedResponseAlg = "RS256"
+                        IdTokenSignedResponseAlg = "RS256",
+                        ApplicationType = ApplicationTypes.web
                     },
                     // Visual studio extension
                     new Client
@@ -615,7 +620,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                             }
                         },
                         GrantTypes = "3",
-                        ResponseTypes = "1"
+                        ResponseTypes = "1",
+                        ApplicationType = ApplicationTypes.native
 
                     },
                     // SimpleIdentity server : needs to interact with the configuration server to retrieve his configuration
@@ -636,9 +642,10 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         },
                         GrantTypes = "3",
                         ResponseTypes = "1",
-                        IdTokenSignedResponseAlg = "RS256"
+                        IdTokenSignedResponseAlg = "RS256",
+                        ApplicationType = ApplicationTypes.web
                     },
-                    // Manager website : 
+                    // Manager website 
                     new Client
                     {
                         ClientId = "SampleClient",
@@ -663,13 +670,14 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         },
                         GrantTypes = "3",
                         ResponseTypes = "1",
-                        IdTokenSignedResponseAlg = "RS256"
+                        IdTokenSignedResponseAlg = "RS256",
+                        ApplicationType = ApplicationTypes.web
                     },
                     // Simple Identity server test client
                     new Client
                     {
                         ClientId = "SimpleIdServerClient",
-                        ClientName = "Sample client",
+                        ClientName = "Simple Identity Server Client",
                         ClientSecret = "SimpleIdServerClient",
                         TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
                         LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
@@ -691,7 +699,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         GrantTypes = "1",
                         ResponseTypes = "0,1,2",
                         IdTokenSignedResponseAlg = "RS256",
-                        RedirectionUrls = "https://localhost:5443/User/Callback"
+                        RedirectionUrls = "https://localhost:5443/User/Callback",
+                        ApplicationType = ApplicationTypes.web
                     }
                 });
             }
