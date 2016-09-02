@@ -108,6 +108,7 @@ namespace SimpleIdentityServer.Api.Controllers
         {
             var user = GetCurrentUser();
             ViewBag.IsLocalAccount = user.IsLocalAccount;
+            ViewBag.Url = string.Format("{0}://{1}", HttpContext.Request.Scheme, HttpContext.Request.Host.Value);
             return View();
         }
 
