@@ -14,23 +14,12 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNetCore.Builder;
-using System;
+using SimpleIdentityServer.Logging;
 
 namespace SimpleIdentityServer.Configuration.Startup.Middleware
 {
-    public static class UseExceptionHandlerExtensions
+    public class ExceptionHandlerMiddlewareOptions
     {
-        public static IApplicationBuilder UseSimpleIdentityServerManagerExceptionHandler(
-            this IApplicationBuilder applicationBuilder,
-            ExceptionHandlerMiddlewareOptions options)
-        {
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-
-            return applicationBuilder.UseMiddleware<ExceptionHandlerMiddleware>(options);
-        }
+        public IConfigurationEventSource ConfigurationEventSource { get; set; }
     }
 }

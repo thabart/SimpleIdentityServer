@@ -28,17 +28,26 @@ namespace SimpleIdentityServer.Configuration.Startup.Middleware
     {
         private readonly RequestDelegate _next;
 
+        private readonly ExceptionHandlerMiddlewareOptions _options;
+
         #region Constructor
 
         public ExceptionHandlerMiddleware(
-            RequestDelegate next)
+            RequestDelegate next,
+            ExceptionHandlerMiddlewareOptions options)
         {
             if (next == null)
             {
                 throw new ArgumentNullException(nameof(next));
             }
 
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
             _next = next;
+            _options = options;
         }
 
         #endregion
@@ -59,6 +68,7 @@ namespace SimpleIdentityServer.Configuration.Startup.Middleware
                     identityServerManagerException = new IdentityConfigurationException(ErrorCodes.UnhandledExceptionCode, exception.Message);
                 }
 
+                _options.ConfigurationEventSource.Failure(identityServerManagerException);
                 var errorResponse = new ErrorResponse
                 {
                     Code = identityServerManagerException.Code,

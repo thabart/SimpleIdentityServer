@@ -17,6 +17,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Configuration.Core.Repositories;
+using SimpleIdentityServer.Logging;
 using System;
 using System.Threading.Tasks;
 
@@ -33,13 +34,18 @@ namespace SimpleIdentityServer.Configuration.Core.Api.AuthProvider.Actions
 
         private readonly IAuthenticationProviderRepository _authenticationProviderRepository;
 
+        private readonly IConfigurationEventSource _configurationEventSource;
+
         #endregion
 
         #region Constructor
 
-        public RemoveAuthenticationProviderAction(IAuthenticationProviderRepository authenticationProviderRepository)
+        public RemoveAuthenticationProviderAction(
+            IAuthenticationProviderRepository authenticationProviderRepository,
+            IConfigurationEventSource configurationEventSource)
         {
             _authenticationProviderRepository = authenticationProviderRepository;
+            _configurationEventSource = configurationEventSource;
         }
 
         #endregion
@@ -48,6 +54,7 @@ namespace SimpleIdentityServer.Configuration.Core.Api.AuthProvider.Actions
 
         public async Task<ActionResult> ExecuteAsync(string name)
         {
+            _configurationEventSource.StartToRemoveAuthenticationProvider(name);
             if (string.IsNullOrWhiteSpace(name))
             {
                 throw new ArgumentNullException(nameof(name));
@@ -64,6 +71,7 @@ namespace SimpleIdentityServer.Configuration.Core.Api.AuthProvider.Actions
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
 
+            _configurationEventSource.FinishToRemoveAuthenticationProvider(name);
             return new NoContentResult();
         }
 

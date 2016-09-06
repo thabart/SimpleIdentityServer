@@ -16,10 +16,12 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using SimpleIdentityServer.Configuration.Core.Errors;
 using SimpleIdentityServer.Configuration.Core.Exceptions;
 using SimpleIdentityServer.Configuration.Core.Models;
 using SimpleIdentityServer.Configuration.Core.Repositories;
+using SimpleIdentityServer.Logging;
 using System;
 using System.Threading.Tasks;
 
@@ -36,13 +38,18 @@ namespace SimpleIdentityServer.Configuration.Core.Api.AuthProvider.Actions
 
         private readonly IAuthenticationProviderRepository _authenticationProviderRepository;
 
+        private readonly IConfigurationEventSource _configurationEventSource;
+
         #endregion
 
         #region Constructor
 
-        public AddAuthenticationProviderAction(IAuthenticationProviderRepository authenticationProviderRepository)
+        public AddAuthenticationProviderAction(
+            IAuthenticationProviderRepository authenticationProviderRepository,
+            IConfigurationEventSource configurationEventSource)
         {
             _authenticationProviderRepository = authenticationProviderRepository;
+            _configurationEventSource = configurationEventSource;
         }
 
         #endregion
@@ -51,6 +58,8 @@ namespace SimpleIdentityServer.Configuration.Core.Api.AuthProvider.Actions
 
         public async Task<ActionResult> ExecuteAsync(AuthenticationProvider authenticationProvider)
         {
+            var json = authenticationProvider == null ? string.Empty : JsonConvert.SerializeObject(authenticationProvider);
+            _configurationEventSource.StartToAddAuthenticationProvider(json);
             if (authenticationProvider == null)
             {
                 throw new ArgumentNullException(nameof(authenticationProvider));
@@ -79,6 +88,7 @@ namespace SimpleIdentityServer.Configuration.Core.Api.AuthProvider.Actions
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
 
+            _configurationEventSource.FinishToAddAuthenticationProvider(json);
             return new NoContentResult();
         }
 

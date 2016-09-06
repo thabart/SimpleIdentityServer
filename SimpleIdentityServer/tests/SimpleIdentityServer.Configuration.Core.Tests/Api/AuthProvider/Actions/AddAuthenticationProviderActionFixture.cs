@@ -22,6 +22,7 @@ using SimpleIdentityServer.Configuration.Core.Errors;
 using SimpleIdentityServer.Configuration.Core.Exceptions;
 using SimpleIdentityServer.Configuration.Core.Models;
 using SimpleIdentityServer.Configuration.Core.Repositories;
+using SimpleIdentityServer.Logging;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -31,6 +32,8 @@ namespace SimpleIdentityServer.Configuration.Core.Tests.Api.AuthProvider.Actions
     public class AddAuthenticationProviderActionFixture
     {
         private Mock<IAuthenticationProviderRepository> _authenticationProviderRepository;
+
+        private Mock<IConfigurationEventSource> _configurationEventSourceStub;
 
         private IAddAuthenticationProviderAction _addAuthenticationProviderAction;
 
@@ -132,7 +135,10 @@ namespace SimpleIdentityServer.Configuration.Core.Tests.Api.AuthProvider.Actions
         private void InitializeFakeObjects()
         {
             _authenticationProviderRepository = new Mock<IAuthenticationProviderRepository>();
-            _addAuthenticationProviderAction = new AddAuthenticationProviderAction(_authenticationProviderRepository.Object);
+            _configurationEventSourceStub = new Mock<IConfigurationEventSource>();
+            _addAuthenticationProviderAction = new AddAuthenticationProviderAction(
+                _authenticationProviderRepository.Object,
+                _configurationEventSourceStub.Object);
         }
 
         #endregion

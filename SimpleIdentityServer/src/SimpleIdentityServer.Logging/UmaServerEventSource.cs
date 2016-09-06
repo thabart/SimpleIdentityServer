@@ -432,7 +432,7 @@ namespace SimpleIdentityServer.Uma.Logging
                 Message = "an error occured"
             };
 
-            LogError(evt, new EventId(28), exception);
+            LogError(evt, new EventId(999), exception);
         }
 
         #region Private methods

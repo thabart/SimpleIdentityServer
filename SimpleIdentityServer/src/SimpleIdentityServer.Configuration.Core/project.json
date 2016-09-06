@@ -11,7 +11,8 @@
     "Microsoft.AspNetCore.Mvc.Core": "1.0.0",
     "Newtonsoft.Json": "9.0.1",
     "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
-    "System.Runtime.Serialization.Primitives": "4.1.1"
+    "System.Runtime.Serialization.Primitives": "4.1.1",
+    "SimpleIdentityServer.Logging": "*"
   },
   "tooling": {
     "defaultNamespace": "SimpleIdentityServer.Configuration.Core"

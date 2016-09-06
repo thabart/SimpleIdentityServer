@@ -19,11 +19,16 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Serilog;
+using Serilog.Events;
+using Serilog.Sinks.Elasticsearch;
 using SimpleIdentityServer.Configuration.Core;
 using SimpleIdentityServer.Configuration.EF;
 using SimpleIdentityServer.Configuration.EF.Extensions;
 using SimpleIdentityServer.Configuration.Startup.Middleware;
+using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Oauth2Instrospection.Authentication;
+using System;
 
 namespace SimpleIdentityServer.Configuration.Startup
 {
@@ -72,8 +77,6 @@ namespace SimpleIdentityServer.Configuration.Startup
             var clientId = Configuration["ClientId"];
             var clientSecret = Configuration["ClientSecret"];
             var isDataMigrated = Configuration["DATA_MIGRATED"] == null ? false : bool.Parse(Configuration["DATA_MIGRATED"]);
-            loggerFactory.AddConsole();
-            loggerFactory.AddDebug();
 
             // Ensure data are inserted
             if (isDataMigrated)
@@ -86,6 +89,9 @@ namespace SimpleIdentityServer.Configuration.Startup
                 }
             }
 
+            // Enable serilog
+            loggerFactory.AddSerilog();
+
             // Display status code page
             app.UseStatusCodePages();
 
@@ -93,7 +99,10 @@ namespace SimpleIdentityServer.Configuration.Startup
             app.UseCors("AllowAll");
 
             // Enable custom exception handler
-            app.UseSimpleIdentityServerManagerExceptionHandler();
+            app.UseSimpleIdentityServerManagerExceptionHandler(new ExceptionHandlerMiddlewareOptions
+            {
+                ConfigurationEventSource = app.ApplicationServices.GetService<ConfigurationEventSource>()
+            });
 
             // Enable authentication
             var introspectionOptions = new Oauth2IntrospectionOptions
@@ -119,6 +128,8 @@ namespace SimpleIdentityServer.Configuration.Startup
         {
             var isSqlServer = bool.Parse(Configuration["isSqlServer"]);
             var isPostgre = bool.Parse(Configuration["isPostgre"]);
+            var isLogFileEnabled = bool.Parse(Configuration["Log:File:Enabled"]);
+            var isElasticSearchEnabled = bool.Parse(Configuration["Log:Elasticsearch:Enabled"]);
             var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
             services.AddSimpleIdentityServerConfiguration();
             if (isSqlServer)
@@ -129,6 +140,41 @@ namespace SimpleIdentityServer.Configuration.Startup
             {
                 services.AddSimpleIdentityServerPostgre(connectionString);
             }
+
+            var logger = new LoggerConfiguration()
+                .MinimumLevel.Information()
+                .Enrich.FromLogContext()
+                .WriteTo.ColoredConsole();
+            if (isLogFileEnabled)
+            {
+                logger.WriteTo.RollingFile(Configuration["Log:File:PathFormat"]);
+            }
+
+            if (isElasticSearchEnabled)
+            {
+                logger.WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(Configuration["Log:Elasticsearch:Url"]))
+                {
+                    AutoRegisterTemplate = true,
+                    IndexFormat = "configuration-{0:yyyy.MM.dd}",
+                    TemplateName = "configuration-events-template"
+                });
+            }
+
+            Func<LogEvent, bool> serilogFilter = (e) =>
+            {
+                var ctx = e.Properties["SourceContext"];
+                var contextValue = ctx.ToString()
+                    .TrimStart('"')
+                    .TrimEnd('"');
+                return contextValue.StartsWith("SimpleIdentityServer.") ||
+                    e.Level == LogEventLevel.Error ||
+                    e.Level == LogEventLevel.Fatal;
+            };
+            var log = logger.Filter.ByIncludingOnly(serilogFilter)
+                .CreateLogger();
+            Log.Logger = log;
+            services.AddLogging();
+            services.AddTransient<IConfigurationEventSource, ConfigurationEventSource>();
         }
 
         #endregion

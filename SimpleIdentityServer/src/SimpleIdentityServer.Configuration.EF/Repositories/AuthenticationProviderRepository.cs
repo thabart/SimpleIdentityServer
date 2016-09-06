@@ -18,6 +18,7 @@ using Microsoft.EntityFrameworkCore;
 using SimpleIdentityServer.Configuration.Core.Models;
 using SimpleIdentityServer.Configuration.Core.Repositories;
 using SimpleIdentityServer.Configuration.EF.Extensions;
+using SimpleIdentityServer.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,11 +30,16 @@ namespace SimpleIdentityServer.Configuration.EF.Repositories
     {
         private readonly SimpleIdentityServerConfigurationContext _simpleIdentityServerConfigurationContext;
 
+        private readonly IConfigurationEventSource _configurationEventSource;
+
         #region Constructor
 
-        public AuthenticationProviderRepository(SimpleIdentityServerConfigurationContext simpleIdentityServerConfigurationContext)
+        public AuthenticationProviderRepository(
+            SimpleIdentityServerConfigurationContext simpleIdentityServerConfigurationContext,
+            IConfigurationEventSource configurationEventSource)
         {
             _simpleIdentityServerConfigurationContext = simpleIdentityServerConfigurationContext;
+            _configurationEventSource = configurationEventSource;
         }
 
         #endregion
@@ -48,8 +54,9 @@ namespace SimpleIdentityServer.Configuration.EF.Repositories
                 var result = await authProviders.ToListAsync();
                 return result.Select(r => r.ToDomain()).ToList();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _configurationEventSource.Failure(ex);
                 return null;
             }
         }
@@ -67,8 +74,9 @@ namespace SimpleIdentityServer.Configuration.EF.Repositories
 
                 return result.ToDomain();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _configurationEventSource.Failure(ex);
                 return null;
             }
         }
@@ -126,8 +134,9 @@ namespace SimpleIdentityServer.Configuration.EF.Repositories
                 await _simpleIdentityServerConfigurationContext.SaveChangesAsync();
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _configurationEventSource.Failure(ex);
                 return false;
             }
         }
@@ -140,8 +149,9 @@ namespace SimpleIdentityServer.Configuration.EF.Repositories
                 await _simpleIdentityServerConfigurationContext.SaveChangesAsync();
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _configurationEventSource.Failure(ex);
                 return false;
             }
         }
@@ -160,8 +170,9 @@ namespace SimpleIdentityServer.Configuration.EF.Repositories
                 await _simpleIdentityServerConfigurationContext.SaveChangesAsync();
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _configurationEventSource.Failure(ex);
                 return false;
             }
         }

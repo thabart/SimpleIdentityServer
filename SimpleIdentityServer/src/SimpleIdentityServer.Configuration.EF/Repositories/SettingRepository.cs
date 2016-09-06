@@ -18,6 +18,8 @@ using System.Linq;
 using SimpleIdentityServer.Configuration.Core.Repositories;
 using System.Collections.Generic;
 using SimpleIdentityServer.Configuration.EF.Extensions;
+using SimpleIdentityServer.Logging;
+using System;
 
 namespace SimpleIdentityServer.Configuration.EF.Repositories
 {
@@ -25,11 +27,16 @@ namespace SimpleIdentityServer.Configuration.EF.Repositories
     {
         private readonly SimpleIdentityServerConfigurationContext _context;
 
+        private readonly IConfigurationEventSource _configurationEventSource;
+
         #region Constructor
 
-        public SettingRepository(SimpleIdentityServerConfigurationContext context)
+        public SettingRepository(
+            SimpleIdentityServerConfigurationContext context,
+            IConfigurationEventSource configurationEventSource)
         {
             _context = context;
+            _configurationEventSource = configurationEventSource;
         }
 
         #endregion
@@ -64,8 +71,9 @@ namespace SimpleIdentityServer.Configuration.EF.Repositories
                 _context.SaveChanges();
                 return true;
             }
-            catch
+            catch(Exception ex)
             {
+                _configurationEventSource.Failure(ex);
                 return false;
             }
         }
@@ -89,8 +97,9 @@ namespace SimpleIdentityServer.Configuration.EF.Repositories
                 _context.SaveChanges();
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
+                _configurationEventSource.Failure(ex);
                 return false;
             }
         }
@@ -109,8 +118,9 @@ namespace SimpleIdentityServer.Configuration.EF.Repositories
                 _context.SaveChanges();
                 return true;
             }
-            catch
+            catch(Exception ex)
             {
+                _configurationEventSource.Failure(ex);
                 return false;
             }
         }
