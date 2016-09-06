@@ -20,6 +20,7 @@ using SimpleIdentityServer.Uma.Core.Errors;
 using SimpleIdentityServer.Uma.Core.Helpers;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Repositories;
+using SimpleIdentityServer.Uma.Logging;
 using System;
 using Xunit;
 
@@ -30,6 +31,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
         private Mock<IPolicyRepository> _policyRepositoryStub;
                 
         private Mock<IRepositoryExceptionHelper> _repositoryExceptionHelperStub;
+
+        private Mock<IUmaServerEventSource> _umaServerEventSourceStub;
 
         private IDeleteAuthorizationPolicyAction _deleteAuthorizationPolicyAction;
 
@@ -90,9 +93,11 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
         {
             _policyRepositoryStub = new Mock<IPolicyRepository>();
             _repositoryExceptionHelperStub = new Mock<IRepositoryExceptionHelper>();
+            _umaServerEventSourceStub = new Mock<IUmaServerEventSource>();
             _deleteAuthorizationPolicyAction = new DeleteAuthorizationPolicyAction(
                 _policyRepositoryStub.Object,
-                _repositoryExceptionHelperStub.Object);
+                _repositoryExceptionHelperStub.Object,
+                _umaServerEventSourceStub.Object);
         }
     }
 }

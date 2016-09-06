@@ -16,13 +16,13 @@
 
 using Moq;
 using SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions;
-using SimpleIdentityServer.Uma.Core.Configuration;
 using SimpleIdentityServer.Uma.Core.Errors;
 using SimpleIdentityServer.Uma.Core.Exceptions;
 using SimpleIdentityServer.Uma.Core.Helpers;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Repositories;
+using SimpleIdentityServer.Uma.Logging;
 using System;
 using System.Collections.Generic;
 using Xunit;
@@ -36,6 +36,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PermissionController.Actio
         private Mock<ITicketRepository> _ticketRepositortStub;
 
         private Mock<IRepositoryExceptionHelper> _repositoryExceptionHelperStub;
+
+        private Mock<IUmaServerEventSource> _umaServerEventSourceStub;
 
         private UmaServerOptions _umaServerOptions;
 
@@ -208,12 +210,14 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PermissionController.Actio
             _resourceSetRepositoryStub = new Mock<IResourceSetRepository>();
             _ticketRepositortStub = new Mock<ITicketRepository>();
             _repositoryExceptionHelperStub = new Mock<IRepositoryExceptionHelper>();
+            _umaServerEventSourceStub = new Mock<IUmaServerEventSource>();
             _umaServerOptions = new UmaServerOptions();
             _addPermissionAction = new AddPermissionAction(
                 _resourceSetRepositoryStub.Object,
                 _ticketRepositortStub.Object,
                 _repositoryExceptionHelperStub.Object,
-                _umaServerOptions);
+                _umaServerOptions,
+                _umaServerEventSourceStub.Object);
         }
     }
 }

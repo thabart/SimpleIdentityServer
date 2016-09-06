@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using Newtonsoft.Json;
 using SimpleIdentityServer.Uma.Core.Errors;
 using SimpleIdentityServer.Uma.Core.Exceptions;
 using SimpleIdentityServer.Uma.Core.Helpers;
@@ -22,6 +23,7 @@ using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Policies;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.Core.Responses;
+using SimpleIdentityServer.Uma.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,6 +51,8 @@ namespace SimpleIdentityServer.Uma.Core.Api.Authorization.Actions
 
         private readonly IRepositoryExceptionHelper _repositoryExceptionHelper;
 
+        private readonly IUmaServerEventSource _umaServerEventSource;
+
         #region Constructor
 
         public GetAuthorizationAction(
@@ -56,13 +60,15 @@ namespace SimpleIdentityServer.Uma.Core.Api.Authorization.Actions
             IAuthorizationPolicyValidator authorizationPolicyValidator,
             UmaServerOptions umaServerOptions,
             IRptRepository rptRepository,
-            IRepositoryExceptionHelper repositoryExceptionHelper)
+            IRepositoryExceptionHelper repositoryExceptionHelper,
+            IUmaServerEventSource umaServerEventSource)
         {
             _ticketRepository = ticketRepository;
             _authorizationPolicyValidator = authorizationPolicyValidator;
             _umaServerOptions = umaServerOptions;
             _rptRepository = rptRepository;
             _repositoryExceptionHelper = repositoryExceptionHelper;
+            _umaServerEventSource = umaServerEventSource;
         }
 
         #endregion
@@ -73,6 +79,8 @@ namespace SimpleIdentityServer.Uma.Core.Api.Authorization.Actions
             GetAuthorizationActionParameter getAuthorizationActionParameter,
             IEnumerable<System.Security.Claims.Claim> claims)
         {
+            var json = getAuthorizationActionParameter == null ? string.Empty : JsonConvert.SerializeObject(getAuthorizationActionParameter);
+            _umaServerEventSource.StartGettingAuthorization(json);
             if (getAuthorizationActionParameter == null)
             {
                 throw new ArgumentNullException(nameof(getAuthorizationActionParameter));
@@ -110,11 +118,13 @@ namespace SimpleIdentityServer.Uma.Core.Api.Authorization.Actions
                     ErrorDescriptions.TheTicketIsExpired);
             }
 
+            _umaServerEventSource.CheckAuthorizationPolicy(json);
             var authorizationResult = await _authorizationPolicyValidator.IsAuthorized(ticket,
                 clientId,
                 getAuthorizationActionParameter.ClaimTokenParameters);
             if (authorizationResult.Type != AuthorizationPolicyResultEnum.Authorized)
             {
+                _umaServerEventSource.RequestIsNotAuthorized(json);
                 return new AuthorizationResponse
                 {
                     AuthorizationPolicyResult = authorizationResult.Type,
@@ -134,6 +144,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Authorization.Actions
             _repositoryExceptionHelper.HandleException(
                 ErrorDescriptions.TheRptCannotBeInserted,
                 () => _rptRepository.InsertRpt(rpt));
+            _umaServerEventSource.RequestIsAuthorized(json);
             return new AuthorizationResponse
             {
                 AuthorizationPolicyResult = AuthorizationPolicyResultEnum.Authorized,

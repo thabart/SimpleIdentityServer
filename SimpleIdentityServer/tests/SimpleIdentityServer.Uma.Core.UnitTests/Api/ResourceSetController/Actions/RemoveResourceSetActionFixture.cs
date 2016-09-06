@@ -6,8 +6,8 @@ using SimpleIdentityServer.Uma.Core.Errors;
 using SimpleIdentityServer.Uma.Core.Exceptions;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Repositories;
+using SimpleIdentityServer.Uma.Logging;
 using System;
-using System.Net;
 using Xunit;
 
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Actions
@@ -15,6 +15,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
     public class RemoveResourceSetActionFixture
     {
         private Mock<IResourceSetRepository> _resourceSetRepositoryStub;
+
+        private Mock<IUmaServerEventSource> _umaServerEventSourceStub;
 
         private IDeleteResourceSetAction _deleteResourceSetAction;
 
@@ -93,7 +95,10 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
         private void InitializeFakeObjects()
         {
             _resourceSetRepositoryStub = new Mock<IResourceSetRepository>();
-            _deleteResourceSetAction = new DeleteResourceSetAction(_resourceSetRepositoryStub.Object);
+            _umaServerEventSourceStub = new Mock<IUmaServerEventSource>();
+            _deleteResourceSetAction = new DeleteResourceSetAction(
+                _resourceSetRepositoryStub.Object,
+                _umaServerEventSourceStub.Object);
         }
 
         #endregion

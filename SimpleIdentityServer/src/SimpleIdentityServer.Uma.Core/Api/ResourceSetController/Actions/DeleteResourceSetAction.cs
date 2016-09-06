@@ -17,6 +17,7 @@
 using SimpleIdentityServer.Uma.Core.Errors;
 using SimpleIdentityServer.Uma.Core.Exceptions;
 using SimpleIdentityServer.Uma.Core.Repositories;
+using SimpleIdentityServer.Uma.Logging;
 using System;
 using System.Net;
 
@@ -38,11 +39,16 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
     {
         private readonly IResourceSetRepository _resourceSetRepository;
 
+        private readonly IUmaServerEventSource _umaServerEventSource;
+
         #region Constructor
 
-        public DeleteResourceSetAction(IResourceSetRepository resourceSetRepository)
+        public DeleteResourceSetAction(
+            IResourceSetRepository resourceSetRepository,
+            IUmaServerEventSource umaServerEventSource)
         {
             _resourceSetRepository = resourceSetRepository;
+            _umaServerEventSource = umaServerEventSource;
         }
 
         #endregion
@@ -51,6 +57,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
 
         public bool Execute(string resourceSetId)
         {
+            _umaServerEventSource.StartToRemoveResourceSet(resourceSetId);
             if (string.IsNullOrWhiteSpace(resourceSetId))
             {
                 throw new ArgumentNullException(nameof(resourceSetId));
@@ -69,6 +76,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
                     string.Format(ErrorDescriptions.TheResourceSetCannotBeRemoved, resourceSetId));
             }
 
+            _umaServerEventSource.FinishToRemoveResourceSet(resourceSetId);
             return true;
         }
 

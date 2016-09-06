@@ -3,6 +3,24 @@
   "version": 2,
   "targets": {
     ".NETCoreApp,Version=v1.0": {
+      "Elasticsearch.Net/2.4.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.CSharp": "4.0.1",
+          "NETStandard.Library": "1.6.0",
+          "System.Collections.Specialized": "4.0.1",
+          "System.ComponentModel.TypeConverter": "4.1.0",
+          "System.Dynamic.Runtime": "4.0.11",
+          "System.Reflection.TypeExtensions": "4.1.0",
+          "System.Runtime.Serialization.Primitives": "4.1.1"
+        },
+        "compile": {
+          "lib/netstandard1.3/Elasticsearch.Net.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard1.3/Elasticsearch.Net.dll": {}
+        }
+      },
       "Libuv/1.9.0": {
         "type": "package",
         "dependencies": {
@@ -1967,6 +1985,100 @@
           }
         }
       },
+      "Serilog/2.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.CSharp": "4.0.1",
+          "System.Collections": "4.0.11",
+          "System.Dynamic.Runtime": "4.0.11",
+          "System.Globalization": "4.0.11",
+          "System.Linq": "4.1.0",
+          "System.Reflection": "4.1.0",
+          "System.Reflection.Extensions": "4.0.1",
+          "System.Runtime": "4.1.0",
+          "System.Runtime.Extensions": "4.1.0",
+          "System.Text.RegularExpressions": "4.1.0",
+          "System.Threading": "4.0.11"
+        },
+        "compile": {
+          "lib/netstandard1.3/Serilog.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard1.3/Serilog.dll": {}
+        }
+      },
+      "Serilog.Extensions.Logging/1.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Logging.Abstractions": "1.0.0",
+          "Serilog": "2.0.0",
+          "System.Threading": "4.0.11"
+        },
+        "compile": {
+          "lib/netstandard1.3/Serilog.Extensions.Logging.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard1.3/Serilog.Extensions.Logging.dll": {}
+        }
+      },
+      "Serilog.Sinks.ColoredConsole/2.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Serilog": "2.0.0",
+          "System.Console": "4.0.0"
+        },
+        "compile": {
+          "lib/netstandard1.3/Serilog.Sinks.ColoredConsole.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard1.3/Serilog.Sinks.ColoredConsole.dll": {}
+        }
+      },
+      "Serilog.Sinks.File/2.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Serilog": "2.0.0",
+          "System.IO": "4.1.0",
+          "System.IO.FileSystem": "4.0.1",
+          "System.IO.FileSystem.Primitives": "4.0.1"
+        },
+        "compile": {
+          "lib/netstandard1.3/Serilog.Sinks.File.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard1.3/Serilog.Sinks.File.dll": {}
+        }
+      },
+      "Serilog.Sinks.PeriodicBatching/2.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Serilog": "2.0.0",
+          "System.Collections.Concurrent": "4.0.12",
+          "System.Threading.Thread": "4.0.0"
+        },
+        "compile": {
+          "lib/netstandard1.3/Serilog.Sinks.PeriodicBatching.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard1.3/Serilog.Sinks.PeriodicBatching.dll": {}
+        }
+      },
+      "Serilog.Sinks.RollingFile/2.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Serilog": "2.0.0",
+          "Serilog.Sinks.File": "2.0.0",
+          "System.IO": "4.1.0",
+          "System.IO.FileSystem.Primitives": "4.0.1",
+          "System.Runtime.InteropServices": "4.1.0"
+        },
+        "compile": {
+          "lib/netstandard1.3/Serilog.Sinks.RollingFile.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard1.3/Serilog.Sinks.RollingFile.dll": {}
+        }
+      },
       "SQLite/3.12.2": {
         "type": "package",
         "dependencies": {
@@ -2105,7 +2217,7 @@
           "System.Threading": "4.0.11"
         },
         "compile": {
-          "ref/netstandard1.3/_._": {}
+          "ref/netstandard1.3/System.Collections.Specialized.dll": {}
         },
         "runtime": {
           "lib/netstandard1.3/System.Collections.Specialized.dll": {}
@@ -4101,7 +4213,7 @@
           "System.Xml.ReaderWriter": "4.0.11"
         },
         "compile": {
-          "ref/netstandard1.3/_._": {}
+          "ref/netstandard1.3/System.Xml.XPath.dll": {}
         },
         "runtime": {
           "lib/netstandard1.3/System.Xml.XPath.dll": {}
@@ -4125,6 +4237,48 @@
         },
         "runtime": {
           "lib/netstandard1.3/System.Xml.XPath.XDocument.dll": {}
+        }
+      },
+      "System.Xml.XPath.XmlDocument/4.0.1": {
+        "type": "package",
+        "dependencies": {
+          "System.Collections": "4.0.11",
+          "System.Globalization": "4.0.11",
+          "System.IO": "4.1.0",
+          "System.Resources.ResourceManager": "4.0.1",
+          "System.Runtime": "4.1.0",
+          "System.Runtime.Extensions": "4.1.0",
+          "System.Threading": "4.0.11",
+          "System.Xml.ReaderWriter": "4.0.11",
+          "System.Xml.XPath": "4.0.1",
+          "System.Xml.XmlDocument": "4.0.1"
+        },
+        "compile": {
+          "ref/netstandard1.3/System.Xml.XPath.XmlDocument.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard1.3/System.Xml.XPath.XmlDocument.dll": {}
+        }
+      },
+      "Serilog.Sinks.ElasticSearch/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v1.6",
+        "dependencies": {
+          "Elasticsearch.Net": "2.4.1",
+          "Serilog": "2.0.0",
+          "Serilog.Sinks.PeriodicBatching": "2.0.0",
+          "Serilog.Sinks.RollingFile": "2.0.0",
+          "System.IO": "4.1.0",
+          "System.Runtime.Extensions": "4.1.0",
+          "System.Runtime.Serialization.Json": "4.0.2",
+          "System.Xml.XPath.XmlDocument": "4.0.1",
+          "System.Xml.XmlDocument": "4.0.1"
+        },
+        "compile": {
+          "netstandard1.6/Serilog.Sinks.ElasticSearch.dll": {}
+        },
+        "runtime": {
+          "netstandard1.6/Serilog.Sinks.ElasticSearch.dll": {}
         }
       },
       "SimpleIdentityServer.Authentication.Common/1.0.0": {
@@ -4202,6 +4356,20 @@
           "netstandard1.6/SimpleIdentityServer.Core.Jwt.dll": {}
         }
       },
+      "SimpleIdentityServer.Logging/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v1.5",
+        "dependencies": {
+          "Microsoft.Extensions.Logging": "1.0.0",
+          "System.Diagnostics.Tracing": "4.1.0"
+        },
+        "compile": {
+          "netstandard1.5/SimpleIdentityServer.Logging.dll": {}
+        },
+        "runtime": {
+          "netstandard1.5/SimpleIdentityServer.Logging.dll": {}
+        }
+      },
       "SimpleIdentityServer.Oauth2Instrospection.Authentication/1.0.0": {
         "type": "project",
         "framework": ".NETStandard,Version=v1.6",
@@ -4230,6 +4398,7 @@
           "Newtonsoft.Json": "9.0.1",
           "SimpleIdentityServer.Client": "1.0.0",
           "SimpleIdentityServer.Core.Jwt": "1.0.0",
+          "SimpleIdentityServer.Logging": "1.0.0",
           "System.IO.Compression": "4.1.0",
           "System.Net.Http": "4.1.0"
         },
@@ -4283,6 +4452,15 @@
       }
     },
     ".NETFramework,Version=v4.6": {
+      "Elasticsearch.Net/2.4.1": {
+        "type": "package",
+        "compile": {
+          "lib/net46/Elasticsearch.Net.dll": {}
+        },
+        "runtime": {
+          "lib/net46/Elasticsearch.Net.dll": {}
+        }
+      },
       "Libuv/1.9.0": {
         "type": "package",
         "dependencies": {
@@ -5749,6 +5927,78 @@
           "lib/net45/Remotion.Linq.dll": {}
         }
       },
+      "Serilog/2.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/net45/Serilog.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Serilog.dll": {}
+        }
+      },
+      "Serilog.Extensions.Logging/1.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Logging.Abstractions": "1.0.0",
+          "Serilog": "2.0.0",
+          "System.Runtime": "4.0.0"
+        },
+        "compile": {
+          "lib/net45/Serilog.Extensions.Logging.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Serilog.Extensions.Logging.dll": {}
+        }
+      },
+      "Serilog.Sinks.ColoredConsole/2.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Serilog": "2.0.0"
+        },
+        "compile": {
+          "lib/net45/Serilog.Sinks.ColoredConsole.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Serilog.Sinks.ColoredConsole.dll": {}
+        }
+      },
+      "Serilog.Sinks.File/2.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Serilog": "2.0.0"
+        },
+        "compile": {
+          "lib/net45/Serilog.Sinks.File.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Serilog.Sinks.File.dll": {}
+        }
+      },
+      "Serilog.Sinks.PeriodicBatching/2.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Serilog": "2.0.0"
+        },
+        "compile": {
+          "lib/net45/Serilog.Sinks.PeriodicBatching.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Serilog.Sinks.PeriodicBatching.dll": {}
+        }
+      },
+      "Serilog.Sinks.RollingFile/2.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Serilog": "2.0.0",
+          "Serilog.Sinks.File": "2.0.0"
+        },
+        "compile": {
+          "lib/net45/Serilog.Sinks.RollingFile.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Serilog.Sinks.RollingFile.dll": {}
+        }
+      },
       "SQLite/3.12.2": {
         "type": "package",
         "dependencies": {
@@ -6487,6 +6737,28 @@
           "lib/net46/System.Xml.XPath.XDocument.dll": {}
         }
       },
+      "Serilog.Sinks.ElasticSearch/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.6",
+        "dependencies": {
+          "Elasticsearch.Net": "2.4.1",
+          "Serilog": "2.0.0",
+          "Serilog.Sinks.PeriodicBatching": "2.0.0",
+          "Serilog.Sinks.RollingFile": "2.0.0"
+        },
+        "frameworkAssemblies": [
+          "System.Runtime",
+          "System.Runtime.Serialization",
+          "System.Web.Extensions",
+          "System.Xml"
+        ],
+        "compile": {
+          "net46/Serilog.Sinks.ElasticSearch.dll": {}
+        },
+        "runtime": {
+          "net46/Serilog.Sinks.ElasticSearch.dll": {}
+        }
+      },
       "SimpleIdentityServer.Authentication.Common/1.0.0": {
         "type": "project",
         "framework": ".NETFramework,Version=v4.6",
@@ -6564,6 +6836,22 @@
           "net46/SimpleIdentityServer.Core.Jwt.dll": {}
         }
       },
+      "SimpleIdentityServer.Logging/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.6",
+        "dependencies": {
+          "Microsoft.Extensions.Logging": "1.0.0"
+        },
+        "frameworkAssemblies": [
+          "System.Runtime"
+        ],
+        "compile": {
+          "net46/SimpleIdentityServer.Logging.dll": {}
+        },
+        "runtime": {
+          "net46/SimpleIdentityServer.Logging.dll": {}
+        }
+      },
       "SimpleIdentityServer.Oauth2Instrospection.Authentication/1.0.0": {
         "type": "project",
         "framework": ".NETFramework,Version=v4.6",
@@ -6594,7 +6882,8 @@
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
           "Newtonsoft.Json": "9.0.1",
           "SimpleIdentityServer.Client": "1.0.0",
-          "SimpleIdentityServer.Core.Jwt": "1.0.0"
+          "SimpleIdentityServer.Core.Jwt": "1.0.0",
+          "SimpleIdentityServer.Logging": "1.0.0"
         },
         "frameworkAssemblies": [
           "System.IO.Compression",
@@ -6630,6 +6919,26 @@
     }
   },
   "libraries": {
+    "Elasticsearch.Net/2.4.1": {
+      "sha512": "/J+3VFpR+adDX55a4hXVmwMCb0QN/gRfwmeTAz5svd95gL/Lql7/rdMNeUF1CcePbzOavvK728GpBOb3hB9Zcw==",
+      "type": "package",
+      "path": "Elasticsearch.Net/2.4.1",
+      "files": [
+        "Elasticsearch.Net.2.4.1.nupkg.sha512",
+        "Elasticsearch.Net.nuspec",
+        "lib/net45/Elasticsearch.Net.XML",
+        "lib/net45/Elasticsearch.Net.dll",
+        "lib/net45/Elasticsearch.Net.pdb",
+        "lib/net45/Elasticsearch.Net.pdb.srcsrv",
+        "lib/net46/Elasticsearch.Net.XML",
+        "lib/net46/Elasticsearch.Net.dll",
+        "lib/net46/Elasticsearch.Net.pdb",
+        "lib/net46/Elasticsearch.Net.pdb.srcsrv",
+        "lib/netstandard1.3/Elasticsearch.Net.dll",
+        "lib/netstandard1.3/Elasticsearch.Net.pdb",
+        "lib/netstandard1.3/Elasticsearch.Net.pdb.srcsrv"
+      ]
+    },
     "Libuv/1.9.0": {
       "sha512": "9Q7AaqtQhS8JDSIvRBt6ODSLWDBI4c8YxNxyCQemWebBFUtBbc6M5Vi5Gz1ZyIUlTW3rZK9bIr5gnVyv0z7a2Q==",
       "type": "package",
@@ -8165,7 +8474,7 @@
       ]
     },
     "runtime.native.System.Net.Http/4.0.1": {
-      "sha512": "ca8oLM6d3QzlVwzoqm+4hhgFgosxhs8AZMZvPTUIfO4B2VK5N6fi6+QPNbWOPKHW8Ue5Bm7ePWnnBzgcIFVfPw==",
+      "sha512": "Nh0UPZx2Vifh8r+J+H2jxifZUD3sBrmolgiFWJd2yiNrxO0xTa6bAw3YwRn1VOiSen/tUXMS31ttNItCZ6lKuA==",
       "type": "package",
       "path": "runtime.native.System.Net.Http/4.0.1",
       "files": [
@@ -8177,7 +8486,7 @@
       ]
     },
     "runtime.native.System.Net.Security/4.0.1": {
-      "sha512": "vui4RD/cI1Qi3eJROPk2fJTVVjF7E99ITtJpquAe6eA9LbU4bOwLa7FL3sCdXPUYPbIt3sLdheYiz2i9U8AOtw==",
+      "sha512": "UmRrwjv9kmEAhHmIDnWtoSIg0WOUhNR3B3VAt70vBCiYP3zmvoomdcQlhR3VGFKrItGOLhmdATSlocJlRBUL/Q==",
       "type": "package",
       "path": "runtime.native.System.Net.Security/4.0.1",
       "files": [
@@ -8221,6 +8530,84 @@
         "runtime.win7-x86.runtime.native.System.Data.SqlClient.sni.4.0.1.nupkg.sha512",
         "runtime.win7-x86.runtime.native.System.Data.SqlClient.sni.nuspec",
         "runtimes/win7-x86/native/sni.dll"
+      ]
+    },
+    "Serilog/2.0.0": {
+      "sha512": "PKR/FMxfHOhX1p3Qs54Uv9dJEC09sI91cVz39Jt/2f/BpCYHTt9F1RpogSJTFU9xxW6j9FHd+P7aBcC0qMeuqg==",
+      "type": "package",
+      "path": "Serilog/2.0.0",
+      "files": [
+        "Serilog.2.0.0.nupkg.sha512",
+        "Serilog.nuspec",
+        "lib/net45/Serilog.dll",
+        "lib/net45/Serilog.xml",
+        "lib/netstandard1.0/Serilog.dll",
+        "lib/netstandard1.0/Serilog.xml",
+        "lib/netstandard1.3/Serilog.dll",
+        "lib/netstandard1.3/Serilog.xml"
+      ]
+    },
+    "Serilog.Extensions.Logging/1.0.0": {
+      "sha512": "tWoaaep4wuMj4FrTxafWb3VbF3w0Le9OnFN3OP4emDg3wJk82tGzSnw4HPnaRu9tpO/qSVMH3zRm3FDjJQP1XQ==",
+      "type": "package",
+      "path": "Serilog.Extensions.Logging/1.0.0",
+      "files": [
+        "Serilog.Extensions.Logging.1.0.0.nupkg.sha512",
+        "Serilog.Extensions.Logging.nuspec",
+        "lib/net45/Serilog.Extensions.Logging.dll",
+        "lib/net45/Serilog.Extensions.Logging.xml",
+        "lib/netstandard1.3/Serilog.Extensions.Logging.dll",
+        "lib/netstandard1.3/Serilog.Extensions.Logging.xml"
+      ]
+    },
+    "Serilog.Sinks.ColoredConsole/2.0.0": {
+      "sha512": "pAH8MO/6oPPToCnwKpSAszIVF0tPpYjKLNhAJlTxAinpcRjPrKT/1bGTW/ZqoCluVyZQl5eg1gIxEkhHEd6Uww==",
+      "type": "package",
+      "path": "Serilog.Sinks.ColoredConsole/2.0.0",
+      "files": [
+        "Serilog.Sinks.ColoredConsole.2.0.0.nupkg.sha512",
+        "Serilog.Sinks.ColoredConsole.nuspec",
+        "lib/net45/Serilog.Sinks.ColoredConsole.dll",
+        "lib/netstandard1.3/Serilog.Sinks.ColoredConsole.dll"
+      ]
+    },
+    "Serilog.Sinks.File/2.0.0": {
+      "sha512": "atGnXIHSM5Lg9E14mXc1Yf8CuKnNSaenW+ZPVCrM1O/+lXwl3BgZ6ZXvLE1n4XF71ZU1U9dx/Yg47ci90QbjrQ==",
+      "type": "package",
+      "path": "Serilog.Sinks.File/2.0.0",
+      "files": [
+        "Serilog.Sinks.File.2.0.0.nupkg.sha512",
+        "Serilog.Sinks.File.nuspec",
+        "lib/net45/Serilog.Sinks.File.dll",
+        "lib/net45/Serilog.Sinks.File.xml",
+        "lib/netstandard1.3/Serilog.Sinks.File.dll",
+        "lib/netstandard1.3/Serilog.Sinks.File.xml"
+      ]
+    },
+    "Serilog.Sinks.PeriodicBatching/2.0.0": {
+      "sha512": "gfG5MaAKdGw0CFPdoXV9I0m+s5CbUxihFeiRMD/nSPzP/S8Lmop0McQhz8o1tKBU/7SkM1UOjWsBdv5LObDBOg==",
+      "type": "package",
+      "path": "Serilog.Sinks.PeriodicBatching/2.0.0",
+      "files": [
+        "Serilog.Sinks.PeriodicBatching.2.0.0.nupkg.sha512",
+        "Serilog.Sinks.PeriodicBatching.nuspec",
+        "lib/net45/Serilog.Sinks.PeriodicBatching.dll",
+        "lib/net45/Serilog.Sinks.PeriodicBatching.xml",
+        "lib/netstandard1.1/Serilog.Sinks.PeriodicBatching.dll",
+        "lib/netstandard1.1/Serilog.Sinks.PeriodicBatching.xml",
+        "lib/netstandard1.3/Serilog.Sinks.PeriodicBatching.dll",
+        "lib/netstandard1.3/Serilog.Sinks.PeriodicBatching.xml"
+      ]
+    },
+    "Serilog.Sinks.RollingFile/2.0.0": {
+      "sha512": "G2JE6h38OyPWvQXqT8rTf/+LWxUa7T8cbsiuWbk63Tahbbx7TvH4iw5WwhIhptWddpJnrO4xPB46wXn1boVM5Q==",
+      "type": "package",
+      "path": "Serilog.Sinks.RollingFile/2.0.0",
+      "files": [
+        "Serilog.Sinks.RollingFile.2.0.0.nupkg.sha512",
+        "Serilog.Sinks.RollingFile.nuspec",
+        "lib/net45/Serilog.Sinks.RollingFile.dll",
+        "lib/netstandard1.3/Serilog.Sinks.RollingFile.dll"
       ]
     },
     "SQLite/3.12.2": {
@@ -11915,7 +12302,7 @@
       ]
     },
     "System.Security.Cryptography.Cng/4.2.0": {
-      "sha512": "MvosdrBaNilM9HAB5BM1THLYvr7+RXeq2zBqA3rlZFqv8nEmJJiBoS4zwuqg7LrYEDIcEVWuWUMpckqJSJWXmQ==",
+      "sha512": "cUJ2h+ZvONDe28Szw3st5dOHdjndhJzQ2WObDEXAWRPEQBtVItVoxbXM/OEsTthl3cNn2dk2k0I3y45igCQcLw==",
       "type": "package",
       "path": "System.Security.Cryptography.Cng/4.2.0",
       "files": [
@@ -13131,6 +13518,46 @@
         "ref/xamarinwatchos10/_._"
       ]
     },
+    "System.Xml.XPath.XmlDocument/4.0.1": {
+      "sha512": "Zm2BdeanuncYs3NhCj4c9e1x3EXFzFBVv2wPEc/Dj4ZbI9R8ecLSR5frAsx4zJCPBtKQreQ7Q/KxJEohJZbfzA==",
+      "type": "package",
+      "path": "System.Xml.XPath.XmlDocument/4.0.1",
+      "files": [
+        "System.Xml.XPath.XmlDocument.4.0.1.nupkg.sha512",
+        "System.Xml.XPath.XmlDocument.nuspec",
+        "ThirdPartyNotices.txt",
+        "dotnet_library_license.txt",
+        "lib/MonoAndroid10/_._",
+        "lib/MonoTouch10/_._",
+        "lib/netstandard1.3/System.Xml.XPath.XmlDocument.dll",
+        "lib/xamarinios10/_._",
+        "lib/xamarinmac20/_._",
+        "lib/xamarintvos10/_._",
+        "lib/xamarinwatchos10/_._",
+        "ref/MonoAndroid10/_._",
+        "ref/MonoTouch10/_._",
+        "ref/netstandard1.3/System.Xml.XPath.XmlDocument.dll",
+        "ref/netstandard1.3/System.Xml.XPath.XmlDocument.xml",
+        "ref/netstandard1.3/de/System.Xml.XPath.XmlDocument.xml",
+        "ref/netstandard1.3/es/System.Xml.XPath.XmlDocument.xml",
+        "ref/netstandard1.3/fr/System.Xml.XPath.XmlDocument.xml",
+        "ref/netstandard1.3/it/System.Xml.XPath.XmlDocument.xml",
+        "ref/netstandard1.3/ja/System.Xml.XPath.XmlDocument.xml",
+        "ref/netstandard1.3/ko/System.Xml.XPath.XmlDocument.xml",
+        "ref/netstandard1.3/ru/System.Xml.XPath.XmlDocument.xml",
+        "ref/netstandard1.3/zh-hans/System.Xml.XPath.XmlDocument.xml",
+        "ref/netstandard1.3/zh-hant/System.Xml.XPath.XmlDocument.xml",
+        "ref/xamarinios10/_._",
+        "ref/xamarinmac20/_._",
+        "ref/xamarintvos10/_._",
+        "ref/xamarinwatchos10/_._"
+      ]
+    },
+    "Serilog.Sinks.ElasticSearch/1.0.0": {
+      "type": "project",
+      "path": "../Serilog.Sinks.ElasticSearch/project.json",
+      "msbuildProject": "../Serilog.Sinks.ElasticSearch/Serilog.Sinks.ElasticSearch.xproj"
+    },
     "SimpleIdentityServer.Authentication.Common/1.0.0": {
       "type": "project",
       "path": "../SimpleIdentityServer.Authentication.Common/project.json",
@@ -13150,6 +13577,11 @@
       "type": "project",
       "path": "../SimpleIdentityServer.Core.Jwt/project.json",
       "msbuildProject": "../SimpleIdentityServer.Core.Jwt/SimpleIdentityServer.Core.Jwt.xproj"
+    },
+    "SimpleIdentityServer.Logging/1.0.0": {
+      "type": "project",
+      "path": "../SimpleIdentityServer.Logging/project.json",
+      "msbuildProject": "../SimpleIdentityServer.Logging/SimpleIdentityServer.Logging.xproj"
     },
     "SimpleIdentityServer.Oauth2Instrospection.Authentication/1.0.0": {
       "type": "project",
@@ -13192,6 +13624,10 @@
       "Microsoft.Extensions.Logging.Console >= 1.0.0",
       "Microsoft.Extensions.Logging.Debug >= 1.0.0",
       "Microsoft.Extensions.Primitives >= 1.0.0",
+      "Serilog.Extensions.Logging >= 1.0.0",
+      "Serilog.Sinks.ColoredConsole >= 2.0.0",
+      "Serilog.Sinks.ElasticSearch",
+      "Serilog.Sinks.RollingFile >= 2.0.0",
       "SimpleIdentityServer.Oauth2Instrospection.Authentication",
       "SimpleIdentityServer.Uma.Core",
       "SimpleIdentityServer.Uma.EF"

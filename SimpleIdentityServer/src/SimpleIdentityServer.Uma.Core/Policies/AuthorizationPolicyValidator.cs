@@ -19,6 +19,7 @@ using SimpleIdentityServer.Uma.Core.Exceptions;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Repositories;
+using SimpleIdentityServer.Uma.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,16 +43,20 @@ namespace SimpleIdentityServer.Uma.Core.Policies
 
         private readonly IResourceSetRepository _resourceSetRepository;
 
+        private readonly IUmaServerEventSource _umaServerEventSource;
+
         #region Constructor
 
         public AuthorizationPolicyValidator(
             IPolicyRepository policyRepository,
             IBasicAuthorizationPolicy basicAuthorizationPolicy,
-            IResourceSetRepository resourceSetRepository)
+            IResourceSetRepository resourceSetRepository,
+            IUmaServerEventSource umaServerEventSource)
         {
             _policyRepository = policyRepository;
             _basicAuthorizationPolicy = basicAuthorizationPolicy;
             _resourceSetRepository = resourceSetRepository;
+            _umaServerEventSource = umaServerEventSource;
         }
 
         #endregion
@@ -100,6 +105,7 @@ namespace SimpleIdentityServer.Uma.Core.Policies
                 var result = await _basicAuthorizationPolicy.Execute(validTicket, authorizationPolicy, claimTokenParameters);
                 if (result.Type != AuthorizationPolicyResultEnum.Authorized)
                 {
+                    _umaServerEventSource.AuthorizationPolicyFailed(authorizationPolicy.Id);
                     return result;
                 }
             }

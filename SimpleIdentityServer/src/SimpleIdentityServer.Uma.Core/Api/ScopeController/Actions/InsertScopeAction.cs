@@ -14,12 +14,14 @@
 // limitations under the License.
 #endregion
 
+using Newtonsoft.Json;
 using SimpleIdentityServer.Uma.Core.Errors;
 using SimpleIdentityServer.Uma.Core.Exceptions;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.Core.Validators;
+using SimpleIdentityServer.Uma.Logging;
 using System;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions
@@ -35,14 +37,18 @@ namespace SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions
 
         private readonly IScopeParameterValidator _scopeParameterValidator;
 
+        private readonly IUmaServerEventSource _umaServerEventSource;
+
         #region Constructor
 
         public InsertScopeAction(
             IScopeRepository scopeRepository,
-            IScopeParameterValidator scopeParameterValidator)
+            IScopeParameterValidator scopeParameterValidator,
+            IUmaServerEventSource umaServerEventSource)
         {
             _scopeRepository = scopeRepository;
             _scopeParameterValidator = scopeParameterValidator;
+            _umaServerEventSource = umaServerEventSource;
         }
 
         #endregion
@@ -51,6 +57,8 @@ namespace SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions
 
         public bool Execute(AddScopeParameter addScopeParameter)
         {
+            var json = addScopeParameter == null ? string.Empty : JsonConvert.SerializeObject(addScopeParameter);
+            _umaServerEventSource.StartToAddScope(json);
             if (addScopeParameter == null)
             {
                 throw new ArgumentNullException(nameof(addScopeParameter));
@@ -85,6 +93,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions
             try
             {
                 _scopeRepository.InsertScope(scope);
+                _umaServerEventSource.FinishToAddScope(json);
                 return true;
             }
             catch(Exception ex)

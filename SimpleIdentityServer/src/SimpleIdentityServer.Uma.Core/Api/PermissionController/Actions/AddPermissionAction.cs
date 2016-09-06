@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using Newtonsoft.Json;
 using SimpleIdentityServer.Uma.Core.Configuration;
 using SimpleIdentityServer.Uma.Core.Errors;
 using SimpleIdentityServer.Uma.Core.Exceptions;
@@ -21,6 +22,7 @@ using SimpleIdentityServer.Uma.Core.Helpers;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Repositories;
+using SimpleIdentityServer.Uma.Logging;
 using System;
 using System.Linq;
 
@@ -43,18 +45,22 @@ namespace SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions
 
         private readonly UmaServerOptions _umaServerOptions;
 
+        private readonly IUmaServerEventSource _umaServerEventSource;
+
         #region Constructor
 
         public AddPermissionAction(
             IResourceSetRepository resourceSetRepository,
             ITicketRepository ticketRepository,
             IRepositoryExceptionHelper repositoryExceptionHelper,
-            UmaServerOptions umaServerOptions)
+            UmaServerOptions umaServerOptions,
+            IUmaServerEventSource umaServerEventSource)
         {
             _resourceSetRepository = resourceSetRepository;
             _ticketRepository = ticketRepository;
             _repositoryExceptionHelper = repositoryExceptionHelper;
             _umaServerOptions = umaServerOptions;
+            _umaServerEventSource = umaServerEventSource;
         }
 
         #endregion
@@ -65,6 +71,8 @@ namespace SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions
             AddPermissionParameter addPermissionParameter,
             string clientId)
         {
+            var json = addPermissionParameter == null ? string.Empty : JsonConvert.SerializeObject(addPermissionParameter);
+            _umaServerEventSource.StartAddPermission(json);
             if (addPermissionParameter == null)
             {
                 throw new ArgumentNullException(nameof(addPermissionParameter));
@@ -90,6 +98,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions
             var newTicket = _repositoryExceptionHelper.HandleException(
                 string.Format(ErrorDescriptions.TheTicketCannotBeInserted, addPermissionParameter.ResourceSetId),
                 () => _ticketRepository.InsertTicket(ticket));
+            _umaServerEventSource.FinishAddPermission(json);
             return newTicket.Id;
         }
 

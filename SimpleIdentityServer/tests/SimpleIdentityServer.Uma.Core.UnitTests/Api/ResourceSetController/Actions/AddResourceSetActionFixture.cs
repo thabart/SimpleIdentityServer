@@ -25,6 +25,7 @@ using SimpleIdentityServer.Uma.Core.Validators;
 using System;
 using System.Collections.Generic;
 using Xunit;
+using SimpleIdentityServer.Uma.Logging;
 
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Actions
 {
@@ -33,6 +34,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
         private Mock<IResourceSetRepository> _resourceSetRepositoryStub;
 
         private Mock<IResourceSetParameterValidator> _resourceSetParameterValidatorStub;
+
+        private Mock<IUmaServerEventSource> _umaServerEventSourceStub;
 
         private IAddResourceSetAction _addResourceSetAction;
 
@@ -104,9 +107,11 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
         {
             _resourceSetRepositoryStub = new Mock<IResourceSetRepository>();
             _resourceSetParameterValidatorStub = new Mock<IResourceSetParameterValidator>();
+            _umaServerEventSourceStub = new Mock<IUmaServerEventSource>();
             _addResourceSetAction = new AddResourceSetAction(
                 _resourceSetRepositoryStub.Object,
-                _resourceSetParameterValidatorStub.Object);
+                _resourceSetParameterValidatorStub.Object,
+                _umaServerEventSourceStub.Object);
         }
     }
 }

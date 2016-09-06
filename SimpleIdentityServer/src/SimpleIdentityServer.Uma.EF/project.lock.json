@@ -4169,6 +4169,20 @@
           "netstandard1.6/SimpleIdentityServer.Core.Jwt.dll": {}
         }
       },
+      "SimpleIdentityServer.Logging/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v1.5",
+        "dependencies": {
+          "Microsoft.Extensions.Logging": "1.0.0",
+          "System.Diagnostics.Tracing": "4.1.0"
+        },
+        "compile": {
+          "netstandard1.5/SimpleIdentityServer.Logging.dll": {}
+        },
+        "runtime": {
+          "netstandard1.5/SimpleIdentityServer.Logging.dll": {}
+        }
+      },
       "SimpleIdentityServer.Uma.Core/1.0.0": {
         "type": "project",
         "framework": ".NETStandard,Version=v1.6",
@@ -4179,6 +4193,7 @@
           "Newtonsoft.Json": "9.0.1",
           "SimpleIdentityServer.Client": "1.0.0",
           "SimpleIdentityServer.Core.Jwt": "1.0.0",
+          "SimpleIdentityServer.Logging": "1.0.0",
           "System.IO.Compression": "4.1.0",
           "System.Net.Http": "4.1.0"
         },
@@ -6107,6 +6122,22 @@
           "net46/SimpleIdentityServer.Core.Jwt.dll": {}
         }
       },
+      "SimpleIdentityServer.Logging/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.6",
+        "dependencies": {
+          "Microsoft.Extensions.Logging": "1.0.0"
+        },
+        "frameworkAssemblies": [
+          "System.Runtime"
+        ],
+        "compile": {
+          "net46/SimpleIdentityServer.Logging.dll": {}
+        },
+        "runtime": {
+          "net46/SimpleIdentityServer.Logging.dll": {}
+        }
+      },
       "SimpleIdentityServer.Uma.Core/1.0.0": {
         "type": "project",
         "framework": ".NETFramework,Version=v4.6",
@@ -6116,7 +6147,8 @@
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
           "Newtonsoft.Json": "9.0.1",
           "SimpleIdentityServer.Client": "1.0.0",
-          "SimpleIdentityServer.Core.Jwt": "1.0.0"
+          "SimpleIdentityServer.Core.Jwt": "1.0.0",
+          "SimpleIdentityServer.Logging": "1.0.0"
         },
         "frameworkAssemblies": [
           "System.IO.Compression",
@@ -7675,7 +7707,7 @@
       ]
     },
     "runtime.native.System.Net.Http/4.0.1": {
-      "sha512": "ca8oLM6d3QzlVwzoqm+4hhgFgosxhs8AZMZvPTUIfO4B2VK5N6fi6+QPNbWOPKHW8Ue5Bm7ePWnnBzgcIFVfPw==",
+      "sha512": "Nh0UPZx2Vifh8r+J+H2jxifZUD3sBrmolgiFWJd2yiNrxO0xTa6bAw3YwRn1VOiSen/tUXMS31ttNItCZ6lKuA==",
       "type": "package",
       "path": "runtime.native.System.Net.Http/4.0.1",
       "files": [
@@ -7687,7 +7719,7 @@
       ]
     },
     "runtime.native.System.Net.Security/4.0.1": {
-      "sha512": "vui4RD/cI1Qi3eJROPk2fJTVVjF7E99ITtJpquAe6eA9LbU4bOwLa7FL3sCdXPUYPbIt3sLdheYiz2i9U8AOtw==",
+      "sha512": "UmRrwjv9kmEAhHmIDnWtoSIg0WOUhNR3B3VAt70vBCiYP3zmvoomdcQlhR3VGFKrItGOLhmdATSlocJlRBUL/Q==",
       "type": "package",
       "path": "runtime.native.System.Net.Security/4.0.1",
       "files": [
@@ -11418,7 +11450,7 @@
       ]
     },
     "System.Security.Cryptography.Cng/4.2.0": {
-      "sha512": "MvosdrBaNilM9HAB5BM1THLYvr7+RXeq2zBqA3rlZFqv8nEmJJiBoS4zwuqg7LrYEDIcEVWuWUMpckqJSJWXmQ==",
+      "sha512": "cUJ2h+ZvONDe28Szw3st5dOHdjndhJzQ2WObDEXAWRPEQBtVItVoxbXM/OEsTthl3cNn2dk2k0I3y45igCQcLw==",
       "type": "package",
       "path": "System.Security.Cryptography.Cng/4.2.0",
       "files": [
@@ -12645,6 +12677,11 @@
       "type": "project",
       "path": "../SimpleIdentityServer.Core.Jwt/project.json",
       "msbuildProject": "../SimpleIdentityServer.Core.Jwt/SimpleIdentityServer.Core.Jwt.xproj"
+    },
+    "SimpleIdentityServer.Logging/1.0.0": {
+      "type": "project",
+      "path": "../SimpleIdentityServer.Logging/project.json",
+      "msbuildProject": "../SimpleIdentityServer.Logging/SimpleIdentityServer.Logging.xproj"
     },
     "SimpleIdentityServer.Uma.Core/1.0.0": {
       "type": "project",

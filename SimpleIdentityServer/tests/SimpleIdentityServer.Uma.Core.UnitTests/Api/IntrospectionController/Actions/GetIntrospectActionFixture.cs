@@ -21,6 +21,7 @@ using SimpleIdentityServer.Uma.Core.Exceptions;
 using SimpleIdentityServer.Uma.Core.Extensions;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Repositories;
+using SimpleIdentityServer.Uma.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,6 +34,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.IntrospectionController.Ac
         private Mock<IRptRepository> _rptRepositoryStub;
 
         private Mock<ITicketRepository> _ticketRepositoryStub;
+
+        private Mock<IUmaServerEventSource> _umaServerEventSourceStub;
 
         private IGetIntrospectAction _getIntrospectAction;
 
@@ -206,9 +209,11 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.IntrospectionController.Ac
         {
             _rptRepositoryStub = new Mock<IRptRepository>();
             _ticketRepositoryStub = new Mock<ITicketRepository>();
+            _umaServerEventSourceStub = new Mock<IUmaServerEventSource>();
             _getIntrospectAction = new GetIntrospectAction(
                 _rptRepositoryStub.Object,
-                _ticketRepositoryStub.Object);
+                _ticketRepositoryStub.Object,
+                _umaServerEventSourceStub.Object);
         }
     }
 }

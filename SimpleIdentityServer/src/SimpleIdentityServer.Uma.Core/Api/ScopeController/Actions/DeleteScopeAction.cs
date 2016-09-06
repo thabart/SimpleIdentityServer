@@ -18,6 +18,7 @@ using SimpleIdentityServer.Uma.Core.Errors;
 using SimpleIdentityServer.Uma.Core.Exceptions;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Repositories;
+using SimpleIdentityServer.Uma.Logging;
 using System;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions
@@ -31,11 +32,16 @@ namespace SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions
     {
         private readonly IScopeRepository _scopeRepository;
 
+        private readonly IUmaServerEventSource _umaServerEventSource;
+
         #region Constructor
 
-        public DeleteScopeAction(IScopeRepository scopeRepository)
+        public DeleteScopeAction(
+            IScopeRepository scopeRepository,
+            IUmaServerEventSource umaServerEventSource)
         {
             _scopeRepository = scopeRepository;
+            _umaServerEventSource = umaServerEventSource;
         }
 
         #endregion
@@ -44,6 +50,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions
 
         public bool Execute(string scopeId)
         {
+            _umaServerEventSource.StartToRemoveScope(scopeId);
             if (string.IsNullOrWhiteSpace(scopeId))
             {
                 throw new ArgumentNullException(nameof(scopeId));
@@ -69,6 +76,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions
             try
             {
                 _scopeRepository.DeleteScope(scopeId);
+                _umaServerEventSource.FinishToRemoveScope(scopeId);
                 return true;
             }
             catch (Exception ex)

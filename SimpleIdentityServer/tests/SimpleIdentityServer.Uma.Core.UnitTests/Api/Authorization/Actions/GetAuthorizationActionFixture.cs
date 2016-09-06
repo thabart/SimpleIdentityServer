@@ -23,6 +23,7 @@ using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Policies;
 using SimpleIdentityServer.Uma.Core.Repositories;
+using SimpleIdentityServer.Uma.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -41,6 +42,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.Authorization.Actions
         private Mock<IRptRepository> _rptRepositoryStub;
 
         private Mock<IRepositoryExceptionHelper> _repositoryExceptionHandlerStub;
+
+        private Mock<IUmaServerEventSource> _umaServerEventSourceStub;
 
         private IGetAuthorizationAction _getAuthorizationAction;
 
@@ -257,12 +260,14 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.Authorization.Actions
            _umaServerOptionsStub = new Mock<UmaServerOptions>();
             _rptRepositoryStub = new Mock<IRptRepository>();
             _repositoryExceptionHandlerStub = new Mock<IRepositoryExceptionHelper>();
+            _umaServerEventSourceStub = new Mock<IUmaServerEventSource>();
             _getAuthorizationAction = new GetAuthorizationAction(
                 _ticketRepositoryStub.Object,
                 _authorizationPolicyValidatorStub.Object,
                 _umaServerOptionsStub.Object,
                 _rptRepositoryStub.Object,
-                _repositoryExceptionHandlerStub.Object);
+                _repositoryExceptionHandlerStub.Object,
+                _umaServerEventSourceStub.Object);
         }
     }
 }

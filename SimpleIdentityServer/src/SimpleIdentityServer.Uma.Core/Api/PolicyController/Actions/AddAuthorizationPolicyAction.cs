@@ -14,12 +14,14 @@
 // limitations under the License.
 #endregion
 
+using Newtonsoft.Json;
 using SimpleIdentityServer.Uma.Core.Errors;
 using SimpleIdentityServer.Uma.Core.Exceptions;
 using SimpleIdentityServer.Uma.Core.Helpers;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Repositories;
+using SimpleIdentityServer.Uma.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,16 +41,20 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
 
         private readonly IRepositoryExceptionHelper _repositoryExceptionHelper;
 
+        private readonly IUmaServerEventSource _umaServerEventSource;
+
         #region Constructor
 
         public AddAuthorizationPolicyAction(
             IPolicyRepository policyRepository,
             IResourceSetRepository resourceSetRepository,
-            IRepositoryExceptionHelper repositoryExceptionHelper)
+            IRepositoryExceptionHelper repositoryExceptionHelper,
+            IUmaServerEventSource umaServerEventSource)
         {
             _policyRepository = policyRepository;
             _resourceSetRepository = resourceSetRepository;
             _repositoryExceptionHelper = repositoryExceptionHelper;
+            _umaServerEventSource = umaServerEventSource;
         }
 
         #endregion
@@ -57,6 +63,8 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
 
         public string Execute(AddPolicyParameter addPolicyParameter)
         {
+            var json = addPolicyParameter == null ? string.Empty : JsonConvert.SerializeObject(addPolicyParameter);
+            _umaServerEventSource.StartAddingAuthorizationPolicy(json);
             if (addPolicyParameter == null)
             {
                 throw new ArgumentNullException(nameof(addPolicyParameter));
@@ -129,7 +137,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
             _repositoryExceptionHelper.HandleException(
                 ErrorDescriptions.ThePolicyCannotBeInserted,
                 () => _policyRepository.AddPolicy(policy));
-
+            _umaServerEventSource.FinishToAddAuthorizationPolicy(JsonConvert.SerializeObject(policy));
             return policy.Id;
         }
 

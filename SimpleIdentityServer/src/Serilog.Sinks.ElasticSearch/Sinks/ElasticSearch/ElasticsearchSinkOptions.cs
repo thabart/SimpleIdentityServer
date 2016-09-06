@@ -134,7 +134,7 @@ namespace Serilog.Sinks.Elasticsearch
         /// </summary>
         protected ElasticsearchSinkOptions()
         {
-            this.IndexFormat = "simpleidserver-{0:yyyy.MM.dd}";
+            this.IndexFormat = "serilog-{0:yyyy.MM.dd}";
             this.TypeName = "logevent";
             this.Period = TimeSpan.FromSeconds(2);
             this.BatchPostingLimit = 50;

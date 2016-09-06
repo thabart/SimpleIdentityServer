@@ -17,6 +17,7 @@
 using SimpleIdentityServer.Uma.Core.Errors;
 using SimpleIdentityServer.Uma.Core.Helpers;
 using SimpleIdentityServer.Uma.Core.Repositories;
+using SimpleIdentityServer.Uma.Logging;
 using System;
 
 namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
@@ -32,14 +33,18 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
 
         private readonly IRepositoryExceptionHelper _repositoryExceptionHelper;
 
+        private readonly IUmaServerEventSource _umaServerEventSource;
+
         #region Constructor
 
         public DeleteAuthorizationPolicyAction(
             IPolicyRepository policyRepository,
-            IRepositoryExceptionHelper repositoryExceptionHelper)
+            IRepositoryExceptionHelper repositoryExceptionHelper,
+            IUmaServerEventSource umaServerEventSource)
         {
             _policyRepository = policyRepository;
             _repositoryExceptionHelper = repositoryExceptionHelper;
+            _umaServerEventSource = umaServerEventSource;
         }
 
         #endregion
@@ -48,6 +53,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
         
         public bool Execute(string policyId)
         {
+            _umaServerEventSource.StartToRemoveAuthorizationPolicy(policyId);
             if (string.IsNullOrWhiteSpace(policyId))
             {
                 throw new ArgumentNullException(nameof(policyId));
@@ -64,6 +70,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
             _repositoryExceptionHelper.HandleException(
                 string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeUpdated, policyId),
                 () => _policyRepository.DeletePolicy(policyId));
+            _umaServerEventSource.FinishToRemoveAuthorizationPolicy(policyId);
             return true;
         }
 

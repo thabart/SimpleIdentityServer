@@ -21,6 +21,8 @@ using SimpleIdentityServer.Uma.Core.Errors;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.Core.Validators;
+using SimpleIdentityServer.Uma.Logging;
+using Newtonsoft.Json;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
 {
@@ -35,20 +37,26 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
 
         private readonly IResourceSetParameterValidator _resourceSetParameterValidator;
 
+        private readonly IUmaServerEventSource _umaServerEventSource;
+
         #region Constructor
 
         public AddResourceSetAction(
             IResourceSetRepository resourceSetRepository,
-            IResourceSetParameterValidator resourceSetParameterValidator)
+            IResourceSetParameterValidator resourceSetParameterValidator,
+            IUmaServerEventSource umaServerEventSource)
         {
             _resourceSetRepository = resourceSetRepository;
             _resourceSetParameterValidator = resourceSetParameterValidator;
+            _umaServerEventSource = umaServerEventSource;
         }
         
         #endregion
     
         public string Execute(AddResouceSetParameter addResourceSetParameter)
         {
+            var json = addResourceSetParameter == null ? string.Empty : JsonConvert.SerializeObject(addResourceSetParameter);
+            _umaServerEventSource.StartToAddResourceSet(json);
             if (addResourceSetParameter == null)
             {
                 throw new ArgumentNullException(nameof(addResourceSetParameter));
@@ -71,6 +79,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
                     ErrorDescriptions.TheResourceSetCannotBeInserted);
             }
 
+            _umaServerEventSource.FinishToAddResourceSet(JsonConvert.SerializeObject(result));
             return result.Id;
         }
     }

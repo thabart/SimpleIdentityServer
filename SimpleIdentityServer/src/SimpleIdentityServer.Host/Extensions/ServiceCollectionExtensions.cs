@@ -270,7 +270,8 @@ namespace SimpleIdentityServer.Host
             {
                 logger.WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(loggingOptions.ElasticsearchOptions.Url))
                 {
-                    AutoRegisterTemplate = true
+                    AutoRegisterTemplate = true,
+                    IndexFormat = "simpleidserver-{0:yyyy.MM.dd}"
                 });
             }
         

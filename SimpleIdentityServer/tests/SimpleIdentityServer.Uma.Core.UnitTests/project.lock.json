@@ -863,6 +863,20 @@
           "lib/netstandard1.0/Microsoft.Extensions.Localization.Abstractions.dll": {}
         }
       },
+      "Microsoft.Extensions.Logging/1.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
+          "Microsoft.Extensions.Logging.Abstractions": "1.0.0",
+          "System.Threading": "4.0.11"
+        },
+        "compile": {
+          "lib/netstandard1.1/Microsoft.Extensions.Logging.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard1.1/Microsoft.Extensions.Logging.dll": {}
+        }
+      },
       "Microsoft.Extensions.Logging.Abstractions/1.0.0": {
         "type": "package",
         "dependencies": {
@@ -1880,6 +1894,22 @@
           "net46/SimpleIdentityServer.Core.Jwt.dll": {}
         }
       },
+      "SimpleIdentityServer.Logging/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.6",
+        "dependencies": {
+          "Microsoft.Extensions.Logging": "1.0.0"
+        },
+        "frameworkAssemblies": [
+          "System.Runtime"
+        ],
+        "compile": {
+          "net46/SimpleIdentityServer.Logging.dll": {}
+        },
+        "runtime": {
+          "net46/SimpleIdentityServer.Logging.dll": {}
+        }
+      },
       "SimpleIdentityServer.Uma.Core/1.0.0": {
         "type": "project",
         "framework": ".NETFramework,Version=v4.6",
@@ -1889,7 +1919,8 @@
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
           "Newtonsoft.Json": "9.0.1",
           "SimpleIdentityServer.Client": "1.0.0",
-          "SimpleIdentityServer.Core.Jwt": "1.0.0"
+          "SimpleIdentityServer.Core.Jwt": "1.0.0",
+          "SimpleIdentityServer.Logging": "1.0.0"
         },
         "frameworkAssemblies": [
           "System.IO.Compression",
@@ -2673,6 +2704,17 @@
         "Microsoft.Extensions.Localization.Abstractions.nuspec",
         "lib/netstandard1.0/Microsoft.Extensions.Localization.Abstractions.dll",
         "lib/netstandard1.0/Microsoft.Extensions.Localization.Abstractions.xml"
+      ]
+    },
+    "Microsoft.Extensions.Logging/1.0.0": {
+      "sha512": "0mDuASVrd/nMeBYIJSK+9lT3TSmWxUXP/ipVB1pF1ApMN5fqGCckPTNwmOfT4Z9wPkXGnhbwFTGrxZvbzTWxOg==",
+      "type": "package",
+      "path": "Microsoft.Extensions.Logging/1.0.0",
+      "files": [
+        "Microsoft.Extensions.Logging.1.0.0.nupkg.sha512",
+        "Microsoft.Extensions.Logging.nuspec",
+        "lib/netstandard1.1/Microsoft.Extensions.Logging.dll",
+        "lib/netstandard1.1/Microsoft.Extensions.Logging.xml"
       ]
     },
     "Microsoft.Extensions.Logging.Abstractions/1.0.0": {
@@ -5632,6 +5674,11 @@
       "type": "project",
       "path": "../../src/SimpleIdentityServer.Core.Jwt/project.json",
       "msbuildProject": "../../src/SimpleIdentityServer.Core.Jwt/SimpleIdentityServer.Core.Jwt.xproj"
+    },
+    "SimpleIdentityServer.Logging/1.0.0": {
+      "type": "project",
+      "path": "../../src/SimpleIdentityServer.Logging/project.json",
+      "msbuildProject": "../../src/SimpleIdentityServer.Logging/SimpleIdentityServer.Logging.xproj"
     },
     "SimpleIdentityServer.Uma.Core/1.0.0": {
       "type": "project",

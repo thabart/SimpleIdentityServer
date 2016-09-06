@@ -20,6 +20,7 @@ using SimpleIdentityServer.Uma.Core.Errors;
 using SimpleIdentityServer.Uma.Core.Exceptions;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Repositories;
+using SimpleIdentityServer.Uma.Logging;
 using System;
 using Xunit;
 
@@ -28,6 +29,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ScopeController.Actions
     public class DeleteScopeActionFixture
     {
         private Mock<IScopeRepository> _scopeRepositoryStub;
+
+        private Mock<IUmaServerEventSource> _umaServerEventSourceStub;
 
         private IDeleteScopeAction _deleteScopeAction;
 
@@ -135,7 +138,10 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ScopeController.Actions
         private void InitializeFakeObjects()
         {
             _scopeRepositoryStub = new Mock<IScopeRepository>();
-            _deleteScopeAction = new DeleteScopeAction(_scopeRepositoryStub.Object);
+            _umaServerEventSourceStub = new Mock<IUmaServerEventSource>();
+            _deleteScopeAction = new DeleteScopeAction(
+                _scopeRepositoryStub.Object,
+                _umaServerEventSourceStub.Object);
         }
 
         #endregion

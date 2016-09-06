@@ -30,17 +30,26 @@ namespace SimpleIdentityServer.Uma.Host.Middlewares
 
         private readonly RequestDelegate _next;
 
+        private readonly ExceptionHandlerMiddlewareOptions _options;
+
         #region Constructor
 
         public ExceptionHandlerMiddleware(
-            RequestDelegate next)
+            RequestDelegate next,
+            ExceptionHandlerMiddlewareOptions options)
         {
             if (next == null)
             {
                 throw new ArgumentNullException(nameof(next));
             }
 
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
             _next = next;
+            _options = options;
         }
 
         #endregion
@@ -61,6 +70,7 @@ namespace SimpleIdentityServer.Uma.Host.Middlewares
                     identityServerException = new BaseUmaException(UnhandledExceptionCode, exception.Message);
                 }
 
+                _options.UmaEventSource.Failure(identityServerException);
                 var code = identityServerException.Code;
                 var message = identityServerException.Message;
                 var error = new ErrorResponse();

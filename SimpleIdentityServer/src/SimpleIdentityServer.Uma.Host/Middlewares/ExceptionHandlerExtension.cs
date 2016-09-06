@@ -15,6 +15,7 @@
 #endregion
 
 using Microsoft.AspNetCore.Builder;
+using System;
 
 namespace SimpleIdentityServer.Uma.Host.Middlewares
 {
@@ -22,10 +23,16 @@ namespace SimpleIdentityServer.Uma.Host.Middlewares
     {
         #region Public static methods
 
-        public static IApplicationBuilder UseExceptionHandler(
-            this IApplicationBuilder applicationBuilder)
+        public static IApplicationBuilder UseUmaExceptionHandler(
+            this IApplicationBuilder applicationBuilder,
+            ExceptionHandlerMiddlewareOptions options)
         {
-            return applicationBuilder.UseMiddleware<ExceptionHandlerMiddleware>();
+            if (options == null)
+            {
+                throw new ArgumentNullException("options");
+            }
+
+            return applicationBuilder.UseMiddleware<ExceptionHandlerMiddleware>(options);
         }
 
         #endregion

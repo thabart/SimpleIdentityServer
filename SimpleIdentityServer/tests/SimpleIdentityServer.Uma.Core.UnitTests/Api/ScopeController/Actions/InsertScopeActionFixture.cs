@@ -22,6 +22,7 @@ using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.Core.Validators;
+using SimpleIdentityServer.Uma.Logging;
 using System;
 using Xunit;
 
@@ -32,6 +33,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ScopeController.Actions
         private Mock<IScopeRepository> _scopeRepositoryStub;
 
         private Mock<IScopeParameterValidator> _scopeParameterValidator;
+
+        private Mock<IUmaServerEventSource> _umaServerEventSourceStub;
 
         private IInsertScopeAction _insertScopeAction;
 
@@ -135,8 +138,10 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ScopeController.Actions
         {
             _scopeRepositoryStub = new Mock<IScopeRepository>();
             _scopeParameterValidator = new Mock<IScopeParameterValidator>();
+            _umaServerEventSourceStub = new Mock<IUmaServerEventSource>();
             _insertScopeAction = new InsertScopeAction(_scopeRepositoryStub.Object,
-                _scopeParameterValidator.Object);
+                _scopeParameterValidator.Object,
+                _umaServerEventSourceStub.Object);
         }
     }
 }
