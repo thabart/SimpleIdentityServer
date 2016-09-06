@@ -15,6 +15,7 @@
 #endregion
 
 using SimpleIdentityServer.Configuration.Core.Repositories;
+using SimpleIdentityServer.Logging;
 using System;
 
 namespace SimpleIdentityServer.Configuration.Core.Api.Setting.Actions
@@ -30,13 +31,18 @@ namespace SimpleIdentityServer.Configuration.Core.Api.Setting.Actions
 
         private readonly ISettingRepository _settingRepository;
 
+        private readonly IConfigurationEventSource _configurationEventSource;
+
         #endregion
 
         #region Constructor
 
-        public DeleteSettingAction(ISettingRepository settingRepository)
+        public DeleteSettingAction(
+            ISettingRepository settingRepository,
+            IConfigurationEventSource configurationEventSource)
         {
             _settingRepository = settingRepository;
+            _configurationEventSource = configurationEventSource;
         }
 
         #endregion
@@ -45,12 +51,19 @@ namespace SimpleIdentityServer.Configuration.Core.Api.Setting.Actions
 
         public bool Execute(string key)
         {
+            _configurationEventSource.StartToDropSetting(key);
             if (string.IsNullOrWhiteSpace(key))
             {
                 throw new ArgumentNullException(nameof(key));
             }
 
-            return _settingRepository.Remove(key);
+            var result = _settingRepository.Remove(key);
+            if (result)
+            {
+                _configurationEventSource.FinishToDropSetting(key);
+            }
+
+            return result;
         }
 
         #endregion

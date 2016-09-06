@@ -17,6 +17,7 @@
 using Moq;
 using SimpleIdentityServer.Configuration.Core.Api.Setting.Actions;
 using SimpleIdentityServer.Configuration.Core.Repositories;
+using SimpleIdentityServer.Logging;
 using System;
 using Xunit;
 
@@ -27,6 +28,8 @@ namespace SimpleIdentityServer.Configuration.Core.Tests.Api.Setting
         #region Fields
 
         private Mock<ISettingRepository> _settingRepositoryStub;
+
+        private Mock<IConfigurationEventSource> _configurationEventSource;
 
         private IDeleteSettingAction _deleteSettingAction;
 
@@ -70,7 +73,10 @@ namespace SimpleIdentityServer.Configuration.Core.Tests.Api.Setting
         private void InitializeFakeObjects()
         {
             _settingRepositoryStub = new Mock<ISettingRepository>();
-            _deleteSettingAction = new DeleteSettingAction(_settingRepositoryStub.Object);
+            _configurationEventSource = new Mock<IConfigurationEventSource>();
+            _deleteSettingAction = new DeleteSettingAction(
+                _settingRepositoryStub.Object,
+                _configurationEventSource.Object);
         }
 
         #endregion

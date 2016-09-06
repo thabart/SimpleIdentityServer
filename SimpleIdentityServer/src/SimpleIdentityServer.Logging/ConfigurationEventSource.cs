@@ -37,6 +37,14 @@ namespace SimpleIdentityServer.Logging
 
         #endregion
 
+        #region Events linked to settings
+
+        void StartToDropSetting(string name);
+
+        void FinishToDropSetting(string name);
+
+        #endregion
+
         void Failure(string message);
 
         void Failure(Exception exception);
@@ -47,6 +55,7 @@ namespace SimpleIdentityServer.Logging
         private static class Tasks
         {
             public const string AuthenticationProvider = "AuthenticationProvider";
+            public const string Setting = "Setting";
             public const string Failure = "Failure";
         }
 
@@ -138,6 +147,34 @@ namespace SimpleIdentityServer.Logging
                 Id = 6,
                 Task = Tasks.AuthenticationProvider,
                 Message = $"Finish to remove authentication provider {name}"
+            };
+
+            LogInformation(evt);
+        }
+
+        #endregion
+
+        #region Events linkeds to settings
+
+        public void StartToDropSetting(string name)
+        {
+            var evt = new Event
+            {
+                Id = 7,
+                Task = Tasks.Setting,
+                Message = $"Start to remove setting {name}"
+            };
+
+            LogInformation(evt);
+        }
+
+        public void FinishToDropSetting(string name)
+        {
+            var evt = new Event
+            {
+                Id = 8,
+                Task = Tasks.Setting,
+                Message = $"Finish to remove setting {name}"
             };
 
             LogInformation(evt);
