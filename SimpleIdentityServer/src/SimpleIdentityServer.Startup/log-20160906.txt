@@ -1,0 +1,980 @@
+﻿2016-09-06 16:09:42.505 +02:00 [Error] ConnectionFilter.OnConnection
+System.AggregateException: One or more errors occurred. ---> System.IO.IOException: Received an unexpected EOF or 0 bytes from the transport stream.
+   at System.Net.Security.SslState.InternalEndProcessAuthentication(LazyAsyncResult lazyResult)
+   at System.Net.Security.SslState.EndProcessAuthentication(IAsyncResult result)
+   at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at Microsoft.AspNetCore.Server.Kestrel.Https.HttpsConnectionFilter.<OnConnectionAsync>d__3.MoveNext()
+   --- End of inner exception stack trace ---
+---> (Inner Exception #0) System.IO.IOException: Received an unexpected EOF or 0 bytes from the transport stream.
+   at System.Net.Security.SslState.InternalEndProcessAuthentication(LazyAsyncResult lazyResult)
+   at System.Net.Security.SslState.EndProcessAuthentication(IAsyncResult result)
+   at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at Microsoft.AspNetCore.Server.Kestrel.Https.HttpsConnectionFilter.<OnConnectionAsync>d__3.MoveNext()<---
+
+2016-09-06 16:13:15.807 +02:00 [Error] ConnectionFilter.OnConnection
+System.AggregateException: One or more errors occurred. ---> System.IO.IOException: Received an unexpected EOF or 0 bytes from the transport stream.
+   at System.Net.Security.SslState.InternalEndProcessAuthentication(LazyAsyncResult lazyResult)
+   at System.Net.Security.SslState.EndProcessAuthentication(IAsyncResult result)
+   at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at Microsoft.AspNetCore.Server.Kestrel.Https.HttpsConnectionFilter.<OnConnectionAsync>d__3.MoveNext()
+   --- End of inner exception stack trace ---
+---> (Inner Exception #0) System.IO.IOException: Received an unexpected EOF or 0 bytes from the transport stream.
+   at System.Net.Security.SslState.InternalEndProcessAuthentication(LazyAsyncResult lazyResult)
+   at System.Net.Security.SslState.EndProcessAuthentication(IAsyncResult result)
+   at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at Microsoft.AspNetCore.Server.Kestrel.Https.HttpsConnectionFilter.<OnConnectionAsync>d__3.MoveNext()<---
+
+2016-09-06 16:14:40.500 +02:00 [Information] 14 : "Token", "Start resource owner credentials grant-type, client : , user name : administrator, password : password" : "resource owner credentials"
+2016-09-06 16:14:40.514 +02:00 [Information] 29 : "Info", "the client cannot be authenticated" : null
+2016-09-06 16:14:45.377 +02:00 [Information] 30 : "Other", "Grant access to the client Anonymous, access token : YjUwNTQ2MmQtYWQxOS00ZDBmLWFkMmUtMzVjYjZjMTkwZmQ3, scopes : openid role profile" : null
+2016-09-06 16:14:45.384 +02:00 [Information] 15 : "Token", "End of the resource owner credentials grant-type, access token : YjUwNTQ2MmQtYWQxOS00ZDBmLWFkMmUtMzVjYjZjMTkwZmQ3, identity token : eyJhbGciOiJSUzI1NiIsImtpZCI6IjEiLCJ0eXAiOiJKV1QifQ.eyJzdWIiOiI0MTUzYTNkMi1iYjI0LTQ3ZjgtOGI1Zi1lZGNmMzYyM2ExZWIiLCJyb2xlIjoiYWRtaW5pc3RyYXRvcixtYXJrZXRpbmcsb3RoZXIiLCJiaXJ0aGRhdGUiOiIxOTg5LTEwLTA3IiwiZmFtaWx5X25hbWUiOiJoYWJhcnQiLCJnZW5kZXIiOiJNIiwiZ2l2ZW5fbmFtZSI6IkhhYmFydCBUaGllcnJ5IiwibG9jYWxlIjoiZnItRlIiLCJtaWRkbGVfbmFtZSI6IlRoaWVycnkiLCJuYW1lIjoiYWRtaW5pc3RyYXRvciIsIm5pY2tuYW1lIjoiVGl0aSIsInBpY3R1cmUiOiJodHRwczovL3VwbG9hZC53aWtpbWVkaWEub3JnL3dpa2lwZWRpYS9jb21tb25zL3RodW1iLzUvNTgvU2hpYmFfaW51X3RhaWtpLmpwZy8yMjBweC1TaGliYV9pbnVfdGFpa2kuanBnIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiVGhpZXJyeSIsInByb2ZpbGUiOiJodHRwOi8vbG9jYWxob3N0L3Byb2ZpbGUiLCJ3ZWJzaXRlIjoiaHR0cHM6Ly9naXRodWIuY29tL3RoYWJhcnQiLCJ6b25laW5mbyI6IkV1cm9wZS9QYXJpcyIsInVwZGF0ZWRfYXQiOiIxNDcxNTI1MDEwIn0.vIe3rmq_TiWK1cTlNejTuzpmZ-eQ-DFr7yt4Z095WVL-c-b5LwNMiashXUbI0e3TDQWvhUeDM1MjCQWsCMwIH-kjrFf4XCnIM6xx2Po_hyJnLKfd98--u4EwlIhDTVCCYk-rVYF8pM9iCxBRI_dSIr4uQ430yZcdjeujDBt0WN8" : "resource owner credentials"
+2016-09-06 16:18:39.797 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:18:39.805 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:18:51.939 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:18:51.947 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:18:52.031 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : openid_manager" : "client credentials"
+2016-09-06 16:18:52.032 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : uma_protection" : "client credentials"
+2016-09-06 16:18:52.032 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : uma_protection" : "client credentials"
+2016-09-06 16:18:52.053 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:18:52.055 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:18:52.061 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:18:52.062 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:18:52.071 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:18:52.075 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:18:52.220 +02:00 [Information] 30 : "Other", "Grant access to the client ManagerWebSiteApi, access token : YWE0NDlkZDctNTA3Mi00ZWViLTkyNTAtMDhiMTUzOWZmY2Uz, scopes : openid_manager" : null
+2016-09-06 16:18:52.223 +02:00 [Information] 30 : "Other", "Grant access to the client ManagerWebSiteApi, access token : ZGJmODlkZGItMGM4My00MmQwLTg2YmMtMDQ4ZGM5MzNkNWNj, scopes : uma_protection" : null
+2016-09-06 16:18:52.238 +02:00 [Information] 30 : "Other", "Grant access to the client ManagerWebSiteApi, access token : YjUyNGYzZTEtYWE5Ni00YWZlLWEyYTEtZDEyNjVlYmEzNDc1, scopes : uma_protection" : null
+2016-09-06 16:18:52.253 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : openid_manager" : "client credentials"
+2016-09-06 16:18:52.303 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : uma_protection" : "client credentials"
+2016-09-06 16:18:52.357 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : uma_protection" : "client credentials"
+2016-09-06 16:18:52.704 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:18:52.713 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:18:53.764 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 16:18:53.764 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 16:18:53.776 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 16:18:53.783 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 16:19:09.710 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:19:09.716 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:19:09.767 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : uma_protection" : "client credentials"
+2016-09-06 16:19:09.778 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:19:09.784 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:19:09.792 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : uma_protection" : "client credentials"
+2016-09-06 16:19:09.826 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 16:19:09.833 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 16:19:11.874 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:19:11.881 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:19:11.944 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : uma_protection" : "client credentials"
+2016-09-06 16:19:11.944 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : openid_manager" : "client credentials"
+2016-09-06 16:19:11.957 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:19:11.961 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:19:11.963 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:19:11.970 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:19:11.978 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : uma_protection" : "client credentials"
+2016-09-06 16:19:11.983 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : openid_manager" : "client credentials"
+2016-09-06 16:19:12.017 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:19:12.019 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 16:19:12.024 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:19:12.030 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 16:19:14.776 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:19:14.783 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:19:14.839 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : uma_protection" : "client credentials"
+2016-09-06 16:19:14.851 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:19:14.856 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:19:14.864 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : uma_protection" : "client credentials"
+2016-09-06 16:19:14.895 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 16:19:14.902 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 16:19:15.039 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:19:15.040 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:19:15.045 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:19:15.051 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:19:15.121 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:19:15.127 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:21:46.009 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:21:46.016 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:21:47.278 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:21:47.285 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:21:47.953 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:21:47.959 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:21:48.906 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:21:48.912 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:21:50.973 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:21:50.979 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:21:51.894 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:21:51.901 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:21:51.965 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : uma_protection" : "client credentials"
+2016-09-06 16:21:51.966 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : openid_manager" : "client credentials"
+2016-09-06 16:21:51.967 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : uma_protection" : "client credentials"
+2016-09-06 16:21:51.977 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:21:51.983 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:21:51.987 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:21:51.988 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:21:51.994 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:21:52.001 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:21:52.008 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : uma_protection" : "client credentials"
+2016-09-06 16:21:52.014 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : openid_manager" : "client credentials"
+2016-09-06 16:21:52.020 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : uma_protection" : "client credentials"
+2016-09-06 16:21:52.061 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:21:52.068 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:21:52.068 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 16:21:52.068 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 16:21:52.081 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 16:21:52.088 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 16:22:06.484 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:22:06.490 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:22:06.596 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:22:06.603 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:22:08.077 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:22:08.085 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:22:08.149 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : uma_protection" : "client credentials"
+2016-09-06 16:22:08.151 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : uma_protection" : "client credentials"
+2016-09-06 16:22:08.151 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : openid_manager" : "client credentials"
+2016-09-06 16:22:08.159 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:22:08.166 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:22:08.170 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:22:08.171 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:22:08.176 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:22:08.189 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : uma_protection" : "client credentials"
+2016-09-06 16:22:08.193 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:22:08.201 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : uma_protection" : "client credentials"
+2016-09-06 16:22:08.214 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : openid_manager" : "client credentials"
+2016-09-06 16:22:08.232 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 16:22:08.240 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 16:22:08.244 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:22:08.246 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 16:22:08.253 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:22:08.259 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 16:22:19.723 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:22:19.729 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:22:20.586 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:22:20.592 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:22:20.639 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : openid_manager" : "client credentials"
+2016-09-06 16:22:20.650 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:22:20.656 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:22:20.663 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : openid_manager" : "client credentials"
+2016-09-06 16:22:20.682 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:22:20.688 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:22:23.012 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:22:23.019 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:22:23.792 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:22:23.800 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:22:23.851 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : openid_manager" : "client credentials"
+2016-09-06 16:22:23.862 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:22:23.867 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:22:23.873 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : openid_manager" : "client credentials"
+2016-09-06 16:22:23.891 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:22:23.896 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:22:42.306 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:22:42.312 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:22:42.416 +02:00 [Information] 33 : "Other", "Start the registration process, client name : " : null
+2016-09-06 16:22:42.563 +02:00 [Information] 34 : "Other", "End the registration process, client id : b3be2902-533e-498e-8450-dc9d306c9015, client name : Unknown b3be2902-533e-498e-8450-dc9d306c9015" : null
+2016-09-06 16:22:42.644 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:22:42.644 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:22:42.650 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:22:42.654 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:22:42.730 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : openid_manager" : "client credentials"
+2016-09-06 16:22:42.740 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:22:42.746 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:22:42.752 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : openid_manager" : "client credentials"
+2016-09-06 16:22:42.770 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:22:42.776 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:22:44.901 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:22:44.906 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:22:44.954 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : openid_manager" : "client credentials"
+2016-09-06 16:22:44.966 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:22:44.974 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:22:44.981 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : openid_manager" : "client credentials"
+2016-09-06 16:22:45.001 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:22:45.007 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:22:47.523 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:22:47.523 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:22:47.528 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:22:47.533 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:22:47.579 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : openid_manager" : "client credentials"
+2016-09-06 16:22:47.579 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : openid_manager" : "client credentials"
+2016-09-06 16:22:47.593 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:22:47.596 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:22:47.598 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:22:47.603 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:22:47.609 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : openid_manager" : "client credentials"
+2016-09-06 16:22:47.614 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : openid_manager" : "client credentials"
+2016-09-06 16:22:47.631 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:22:47.640 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:22:47.644 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:22:47.652 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:23:32.045 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:23:32.051 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:23:32.105 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : openid_manager" : "client credentials"
+2016-09-06 16:23:32.115 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:23:32.120 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:23:32.126 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : openid_manager" : "client credentials"
+2016-09-06 16:23:32.146 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:23:32.151 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:23:35.806 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:23:35.811 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:23:35.824 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:23:35.830 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:23:35.884 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : openid_manager" : "client credentials"
+2016-09-06 16:23:35.886 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : openid_manager" : "client credentials"
+2016-09-06 16:23:35.894 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:23:35.899 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:23:35.900 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:23:35.904 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:23:35.914 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : openid_manager" : "client credentials"
+2016-09-06 16:23:35.918 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : openid_manager" : "client credentials"
+2016-09-06 16:23:35.939 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:23:35.941 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:23:35.945 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:23:35.950 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:23:42.288 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:23:42.294 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:23:42.343 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : openid_manager" : "client credentials"
+2016-09-06 16:23:42.356 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:23:42.361 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:23:42.368 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : openid_manager" : "client credentials"
+2016-09-06 16:23:42.384 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:23:42.389 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:23:42.503 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:23:42.508 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:23:43.366 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:23:43.372 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:23:44.175 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:23:44.180 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:23:45.731 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:23:45.736 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:23:47.214 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:23:47.219 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:23:47.339 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : uma_protection" : "client credentials"
+2016-09-06 16:23:47.340 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : openid_manager" : "client credentials"
+2016-09-06 16:23:47.355 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:23:47.360 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:23:47.360 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:23:47.363 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:23:47.368 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : uma_protection" : "client credentials"
+2016-09-06 16:23:47.375 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : openid_manager" : "client credentials"
+2016-09-06 16:23:47.382 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : uma_protection" : "client credentials"
+2016-09-06 16:23:47.396 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:23:47.399 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:23:47.405 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:23:47.408 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 16:23:47.419 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:23:47.425 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : uma_protection" : "client credentials"
+2016-09-06 16:23:47.427 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 16:23:47.502 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 16:23:47.511 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 16:24:05.856 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:24:05.863 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:24:05.924 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : uma_protection" : "client credentials"
+2016-09-06 16:24:05.936 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:24:05.941 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:24:05.949 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : uma_protection" : "client credentials"
+2016-09-06 16:24:05.977 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 16:24:05.983 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 16:24:06.128 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:24:06.128 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:24:06.133 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:24:06.138 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:24:08.370 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:24:08.376 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:24:08.496 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:24:08.500 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:24:10.890 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:24:10.895 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:24:10.958 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : uma_protection" : "client credentials"
+2016-09-06 16:24:10.959 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : openid_manager" : "client credentials"
+2016-09-06 16:24:10.960 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : uma_protection" : "client credentials"
+2016-09-06 16:24:10.970 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:24:10.975 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:24:10.980 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:24:10.980 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:24:10.986 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:24:10.992 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : uma_protection" : "client credentials"
+2016-09-06 16:24:10.996 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:24:11.003 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : openid_manager" : "client credentials"
+2016-09-06 16:24:11.011 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : uma_protection" : "client credentials"
+2016-09-06 16:24:11.032 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:24:11.034 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 16:24:11.039 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:24:11.045 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 16:24:11.054 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 16:24:11.060 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 16:24:27.984 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:24:27.989 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:24:28.845 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:24:28.850 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:24:29.699 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:24:29.704 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:24:29.754 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : openid_manager" : "client credentials"
+2016-09-06 16:24:29.765 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:24:29.771 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:24:29.777 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : openid_manager" : "client credentials"
+2016-09-06 16:24:29.793 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:24:29.798 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:24:32.873 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:24:32.880 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:24:32.936 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : openid_manager" : "client credentials"
+2016-09-06 16:24:32.948 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:24:32.953 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:24:32.961 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : openid_manager" : "client credentials"
+2016-09-06 16:24:32.990 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:24:32.997 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:25:48.746 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : uma_authorization uma_protection website_api" : "client credentials"
+2016-09-06 16:25:48.756 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : b3be2902-533e-498e-8450-dc9d306c9015, authentication type : client_secret_basic" : null
+2016-09-06 16:25:48.765 +02:00 [Error] 26 : "Failure", "Something goes wrong in the open-id process, code : invalid_client, description : the client cannot be authenticated with secret basic, state : " : null
+2016-09-06 16:26:12.891 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : uma_authorization uma_protection website_api" : "client credentials"
+2016-09-06 16:26:12.903 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : b3be2902-533e-498e-8450-dc9d306c9015, authentication type : client_secret_basic" : null
+2016-09-06 16:26:12.911 +02:00 [Error] 26 : "Failure", "Something goes wrong in the open-id process, code : invalid_client, description : the client cannot be authenticated with secret basic, state : " : null
+2016-09-06 16:26:58.807 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:26:58.812 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:26:58.859 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : display_configuration" : "client credentials"
+2016-09-06 16:26:58.868 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:26:58.874 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:26:58.927 +02:00 [Information] 30 : "Other", "Grant access to the client ManagerWebSiteApi, access token : MWMwNDQxNmQtMzMyNy00M2Q2LThhOTgtNzhiMDNhM2M2NmJm, scopes : display_configuration" : null
+2016-09-06 16:26:58.933 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : display_configuration" : "client credentials"
+2016-09-06 16:26:59.072 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Configuration, authentication type : client_secret_post" : null
+2016-09-06 16:26:59.077 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Configuration, authentication type : client_secret_post" : null
+2016-09-06 16:27:00.642 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:27:00.648 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:27:01.711 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:27:01.716 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:27:02.770 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:27:02.776 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:27:03.643 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:27:03.649 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:27:04.452 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:27:04.457 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:27:04.510 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : openid_manager" : "client credentials"
+2016-09-06 16:27:04.520 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:27:04.526 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:27:04.532 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : openid_manager" : "client credentials"
+2016-09-06 16:27:04.553 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:27:04.558 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:27:07.356 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:27:07.362 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:27:07.410 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : openid_manager" : "client credentials"
+2016-09-06 16:27:07.420 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:27:07.426 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:27:07.432 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : openid_manager" : "client credentials"
+2016-09-06 16:27:07.462 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:27:07.469 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:27:09.471 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:27:09.478 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:27:09.479 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:27:09.483 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:27:09.610 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : openid_manager" : "client credentials"
+2016-09-06 16:27:09.616 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : openid_manager" : "client credentials"
+2016-09-06 16:27:09.622 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:27:09.626 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:27:09.627 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:27:09.632 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : openid_manager" : "client credentials"
+2016-09-06 16:27:09.635 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:27:09.652 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : openid_manager" : "client credentials"
+2016-09-06 16:27:09.658 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:27:09.667 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:27:09.676 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:27:09.681 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:27:32.833 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:27:32.837 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:27:33.844 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : openid_manager" : "client credentials"
+2016-09-06 16:27:33.855 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:27:33.861 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:27:33.867 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : openid_manager" : "client credentials"
+2016-09-06 16:27:33.888 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:27:33.895 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:27:38.844 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:27:38.850 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:27:38.892 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : openid_manager" : "client credentials"
+2016-09-06 16:27:38.905 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:27:38.910 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:27:38.918 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : openid_manager" : "client credentials"
+2016-09-06 16:27:38.936 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:27:38.942 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:28:02.722 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:28:02.727 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:28:02.771 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : openid_manager" : "client credentials"
+2016-09-06 16:28:02.781 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:28:02.787 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 16:28:02.794 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : openid_manager" : "client credentials"
+2016-09-06 16:28:02.811 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:28:02.817 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 16:28:25.433 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : uma_authorization uma_protection website_api" : "client credentials"
+2016-09-06 16:28:25.444 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : b3be2902-533e-498e-8450-dc9d306c9015, authentication type : client_secret_basic" : null
+2016-09-06 16:28:25.448 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : b3be2902-533e-498e-8450-dc9d306c9015, authentication type : client_secret_basic" : null
+2016-09-06 16:28:25.492 +02:00 [Information] 30 : "Other", "Grant access to the client b3be2902-533e-498e-8450-dc9d306c9015, access token : NWU2MzZjNjMtYWQ5Ni00M2MxLTlmMzgtYzEyM2ViODYzZDg3, scopes : uma_authorization uma_protection website_api" : null
+2016-09-06 16:28:25.497 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : b3be2902-533e-498e-8450-dc9d306c9015, scope : uma_authorization uma_protection website_api" : "client credentials"
+2016-09-06 16:28:33.884 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:28:33.889 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 16:28:34.145 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 16:28:34.151 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 16:28:35.321 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 16:28:35.327 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:07:46.197 +02:00 [Error] ConnectionFilter.OnConnection
+System.AggregateException: One or more errors occurred. ---> System.IO.IOException: Received an unexpected EOF or 0 bytes from the transport stream.
+   at System.Net.Security.SslState.InternalEndProcessAuthentication(LazyAsyncResult lazyResult)
+   at System.Net.Security.SslState.EndProcessAuthentication(IAsyncResult result)
+   at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at Microsoft.AspNetCore.Server.Kestrel.Https.HttpsConnectionFilter.<OnConnectionAsync>d__3.MoveNext()
+   --- End of inner exception stack trace ---
+---> (Inner Exception #0) System.IO.IOException: Received an unexpected EOF or 0 bytes from the transport stream.
+   at System.Net.Security.SslState.InternalEndProcessAuthentication(LazyAsyncResult lazyResult)
+   at System.Net.Security.SslState.EndProcessAuthentication(IAsyncResult result)
+   at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at Microsoft.AspNetCore.Server.Kestrel.Https.HttpsConnectionFilter.<OnConnectionAsync>d__3.MoveNext()<---
+
+2016-09-06 17:10:32.132 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:10:32.140 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:10:33.111 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:10:33.117 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:10:33.190 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : openid_manager" : "client credentials"
+2016-09-06 17:10:33.202 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 17:10:33.209 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 17:10:33.235 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : openid_manager" : "client credentials"
+2016-09-06 17:10:33.456 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 17:10:33.464 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 17:10:46.272 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:10:46.278 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:10:46.882 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:10:46.888 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:10:48.873 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:10:48.882 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:10:48.946 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : uma_protection" : "client credentials"
+2016-09-06 17:10:48.950 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : uma_protection" : "client credentials"
+2016-09-06 17:10:48.950 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : uma_protection" : "client credentials"
+2016-09-06 17:10:48.961 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 17:10:48.968 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 17:10:48.975 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 17:10:48.977 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 17:10:48.982 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 17:10:48.988 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : uma_protection" : "client credentials"
+2016-09-06 17:10:48.991 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 17:10:48.998 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : uma_protection" : "client credentials"
+2016-09-06 17:10:49.031 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : uma_protection" : "client credentials"
+2016-09-06 17:10:50.275 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:10:50.280 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:10:51.331 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:10:51.336 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:10:51.345 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:10:51.355 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:10:57.540 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:10:57.548 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:11:13.556 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:11:13.563 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:11:15.636 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:11:15.642 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:19:56.655 +02:00 [Error] ConnectionFilter.OnConnection
+System.AggregateException: One or more errors occurred. ---> System.IO.IOException: Received an unexpected EOF or 0 bytes from the transport stream.
+   at System.Net.Security.SslState.InternalEndProcessAuthentication(LazyAsyncResult lazyResult)
+   at System.Net.Security.SslState.EndProcessAuthentication(IAsyncResult result)
+   at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at Microsoft.AspNetCore.Server.Kestrel.Https.HttpsConnectionFilter.<OnConnectionAsync>d__3.MoveNext()
+   --- End of inner exception stack trace ---
+---> (Inner Exception #0) System.IO.IOException: Received an unexpected EOF or 0 bytes from the transport stream.
+   at System.Net.Security.SslState.InternalEndProcessAuthentication(LazyAsyncResult lazyResult)
+   at System.Net.Security.SslState.EndProcessAuthentication(IAsyncResult result)
+   at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at Microsoft.AspNetCore.Server.Kestrel.Https.HttpsConnectionFilter.<OnConnectionAsync>d__3.MoveNext()<---
+
+2016-09-06 17:20:01.524 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : uma_authorization uma_protection website_api" : "client credentials"
+2016-09-06 17:20:01.718 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : b3be2902-533e-498e-8450-dc9d306c9015, authentication type : client_secret_basic" : null
+2016-09-06 17:20:01.729 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : b3be2902-533e-498e-8450-dc9d306c9015, authentication type : client_secret_basic" : null
+2016-09-06 17:20:01.800 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : b3be2902-533e-498e-8450-dc9d306c9015, scope : uma_authorization uma_protection website_api" : "client credentials"
+2016-09-06 17:20:04.682 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:20:04.687 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:20:08.256 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:20:08.261 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:20:11.785 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:20:11.788 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:20:13.773 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:20:13.778 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:20:13.797 +02:00 [Error] 26 : "Failure", "Something goes wrong in the open-id process, code : invalid_token, description : the token is not valid, state : " : null
+2016-09-06 17:20:17.610 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : website_api" : "client credentials"
+2016-09-06 17:20:17.626 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : VisualStudioExtension, authentication type : client_secret_post" : null
+2016-09-06 17:20:17.630 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : VisualStudioExtension, authentication type : client_secret_post" : null
+2016-09-06 17:20:19.849 +02:00 [Information] 30 : "Other", "Grant access to the client VisualStudioExtension, access token : ZmJiNTRhM2UtYzNkMy00ZjlhLTgzMDEtYzFjOWVjYmZmYmI1, scopes : website_api" : null
+2016-09-06 17:20:19.854 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : VisualStudioExtension, scope : website_api" : "client credentials"
+2016-09-06 17:20:19.992 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : uma_authorization uma_protection website_api" : "client credentials"
+2016-09-06 17:20:20.010 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : uma_authorization uma_protection website_api" : "client credentials"
+2016-09-06 17:20:20.012 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : b3be2902-533e-498e-8450-dc9d306c9015, authentication type : client_secret_basic" : null
+2016-09-06 17:20:20.018 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : b3be2902-533e-498e-8450-dc9d306c9015, authentication type : client_secret_basic" : null
+2016-09-06 17:20:20.022 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : b3be2902-533e-498e-8450-dc9d306c9015, authentication type : client_secret_basic" : null
+2016-09-06 17:20:20.023 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : b3be2902-533e-498e-8450-dc9d306c9015, scope : uma_authorization uma_protection website_api" : "client credentials"
+2016-09-06 17:20:20.028 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : b3be2902-533e-498e-8450-dc9d306c9015, authentication type : client_secret_basic" : null
+2016-09-06 17:20:20.041 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : b3be2902-533e-498e-8450-dc9d306c9015, scope : uma_authorization uma_protection website_api" : "client credentials"
+2016-09-06 17:20:20.070 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:20:20.074 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:20:20.294 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:20:20.298 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:20:20.299 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:20:20.305 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:20:21.339 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:20:21.343 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:20:21.350 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:20:21.363 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:20:21.590 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:20:21.597 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:20:21.601 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:20:21.606 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:20:22.009 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:20:22.011 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:20:22.019 +02:00 [Error] 26 : "Failure", "Something goes wrong in the open-id process, code : invalid_token, description : the token is not valid, state : " : null
+2016-09-06 17:20:22.077 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:20:22.084 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:20:22.096 +02:00 [Error] 26 : "Failure", "Something goes wrong in the open-id process, code : invalid_token, description : the token is not valid, state : " : null
+2016-09-06 17:20:22.208 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : website_api" : "client credentials"
+2016-09-06 17:20:22.219 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : VisualStudioExtension, authentication type : client_secret_post" : null
+2016-09-06 17:20:22.223 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : VisualStudioExtension, authentication type : client_secret_post" : null
+2016-09-06 17:20:22.229 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : VisualStudioExtension, scope : website_api" : "client credentials"
+2016-09-06 17:20:22.264 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : website_api" : "client credentials"
+2016-09-06 17:20:22.277 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : VisualStudioExtension, authentication type : client_secret_post" : null
+2016-09-06 17:20:22.283 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : VisualStudioExtension, authentication type : client_secret_post" : null
+2016-09-06 17:20:22.292 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : VisualStudioExtension, scope : website_api" : "client credentials"
+2016-09-06 17:20:22.361 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:20:22.366 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:20:22.433 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:20:22.439 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:21:58.644 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : uma_authorization uma_protection website_api" : "client credentials"
+2016-09-06 17:21:58.656 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : b3be2902-533e-498e-8450-dc9d306c9015, authentication type : client_secret_basic" : null
+2016-09-06 17:21:58.661 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : b3be2902-533e-498e-8450-dc9d306c9015, authentication type : client_secret_basic" : null
+2016-09-06 17:21:58.667 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : b3be2902-533e-498e-8450-dc9d306c9015, scope : uma_authorization uma_protection website_api" : "client credentials"
+2016-09-06 17:21:59.735 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:21:59.742 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:21:59.906 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:21:59.911 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:22:00.880 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:22:00.885 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:22:03.590 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:22:03.597 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:22:03.604 +02:00 [Error] 26 : "Failure", "Something goes wrong in the open-id process, code : invalid_token, description : the token is not valid, state : " : null
+2016-09-06 17:22:03.740 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : website_api" : "client credentials"
+2016-09-06 17:22:03.750 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : VisualStudioExtension, authentication type : client_secret_post" : null
+2016-09-06 17:22:03.754 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : VisualStudioExtension, authentication type : client_secret_post" : null
+2016-09-06 17:22:03.761 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : VisualStudioExtension, scope : website_api" : "client credentials"
+2016-09-06 17:22:03.853 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:22:03.857 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:26:10.315 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : uma_authorization uma_protection website_api" : "client credentials"
+2016-09-06 17:26:10.326 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : b3be2902-533e-498e-8450-dc9d306c9015, authentication type : client_secret_basic" : null
+2016-09-06 17:26:10.331 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : b3be2902-533e-498e-8450-dc9d306c9015, authentication type : client_secret_basic" : null
+2016-09-06 17:26:10.337 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : b3be2902-533e-498e-8450-dc9d306c9015, scope : uma_authorization uma_protection website_api" : "client credentials"
+2016-09-06 17:26:10.428 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:26:10.432 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:26:10.602 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:26:10.607 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:26:11.538 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:26:11.544 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:26:13.665 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:26:13.670 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:26:13.677 +02:00 [Error] 26 : "Failure", "Something goes wrong in the open-id process, code : invalid_token, description : the token is not valid, state : " : null
+2016-09-06 17:26:13.806 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : website_api" : "client credentials"
+2016-09-06 17:26:13.815 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : VisualStudioExtension, authentication type : client_secret_post" : null
+2016-09-06 17:26:13.820 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : VisualStudioExtension, authentication type : client_secret_post" : null
+2016-09-06 17:26:13.826 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : VisualStudioExtension, scope : website_api" : "client credentials"
+2016-09-06 17:26:13.927 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:26:13.932 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:28:25.406 +02:00 [Error] ConnectionFilter.OnConnection
+System.AggregateException: One or more errors occurred. ---> System.IO.IOException: Received an unexpected EOF or 0 bytes from the transport stream.
+   at System.Net.Security.SslState.InternalEndProcessAuthentication(LazyAsyncResult lazyResult)
+   at System.Net.Security.SslState.EndProcessAuthentication(IAsyncResult result)
+   at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at Microsoft.AspNetCore.Server.Kestrel.Https.HttpsConnectionFilter.<OnConnectionAsync>d__3.MoveNext()
+   --- End of inner exception stack trace ---
+---> (Inner Exception #0) System.IO.IOException: Received an unexpected EOF or 0 bytes from the transport stream.
+   at System.Net.Security.SslState.InternalEndProcessAuthentication(LazyAsyncResult lazyResult)
+   at System.Net.Security.SslState.EndProcessAuthentication(IAsyncResult result)
+   at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at Microsoft.AspNetCore.Server.Kestrel.Https.HttpsConnectionFilter.<OnConnectionAsync>d__3.MoveNext()<---
+
+2016-09-06 17:29:18.249 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : uma_authorization uma_protection website_api" : "client credentials"
+2016-09-06 17:29:18.431 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : b3be2902-533e-498e-8450-dc9d306c9015, authentication type : client_secret_basic" : null
+2016-09-06 17:29:18.454 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : b3be2902-533e-498e-8450-dc9d306c9015, authentication type : client_secret_basic" : null
+2016-09-06 17:29:21.530 +02:00 [Information] 30 : "Other", "Grant access to the client b3be2902-533e-498e-8450-dc9d306c9015, access token : ZTQ5MWUxNGEtYzNiMC00MzdiLWI0MTYtNjJkOTIxM2YzYjk3, scopes : uma_authorization uma_protection website_api" : null
+2016-09-06 17:29:21.536 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : b3be2902-533e-498e-8450-dc9d306c9015, scope : uma_authorization uma_protection website_api" : "client credentials"
+2016-09-06 17:29:21.670 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:29:21.679 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:29:23.005 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:29:23.012 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:29:26.081 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:29:26.091 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:29:27.141 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:29:27.149 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:29:27.165 +02:00 [Error] 26 : "Failure", "Something goes wrong in the open-id process, code : invalid_token, description : the token is not valid, state : " : null
+2016-09-06 17:29:29.688 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : website_api" : "client credentials"
+2016-09-06 17:29:29.702 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : VisualStudioExtension, authentication type : client_secret_post" : null
+2016-09-06 17:29:29.712 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : VisualStudioExtension, authentication type : client_secret_post" : null
+2016-09-06 17:29:29.720 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : VisualStudioExtension, scope : website_api" : "client credentials"
+2016-09-06 17:29:29.822 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:29:29.830 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:31:22.914 +02:00 [Error] ConnectionFilter.OnConnection
+System.AggregateException: One or more errors occurred. ---> System.IO.IOException: Received an unexpected EOF or 0 bytes from the transport stream.
+   at System.Net.Security.SslState.InternalEndProcessAuthentication(LazyAsyncResult lazyResult)
+   at System.Net.Security.SslState.EndProcessAuthentication(IAsyncResult result)
+   at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at Microsoft.AspNetCore.Server.Kestrel.Https.HttpsConnectionFilter.<OnConnectionAsync>d__3.MoveNext()
+   --- End of inner exception stack trace ---
+---> (Inner Exception #0) System.IO.IOException: Received an unexpected EOF or 0 bytes from the transport stream.
+   at System.Net.Security.SslState.InternalEndProcessAuthentication(LazyAsyncResult lazyResult)
+   at System.Net.Security.SslState.EndProcessAuthentication(IAsyncResult result)
+   at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at Microsoft.AspNetCore.Server.Kestrel.Https.HttpsConnectionFilter.<OnConnectionAsync>d__3.MoveNext()<---
+
+2016-09-06 17:31:48.571 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : uma_authorization uma_protection website_api" : "client credentials"
+2016-09-06 17:31:48.810 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : b3be2902-533e-498e-8450-dc9d306c9015, authentication type : client_secret_basic" : null
+2016-09-06 17:31:48.818 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : b3be2902-533e-498e-8450-dc9d306c9015, authentication type : client_secret_basic" : null
+2016-09-06 17:31:48.874 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : b3be2902-533e-498e-8450-dc9d306c9015, scope : uma_authorization uma_protection website_api" : "client credentials"
+2016-09-06 17:31:49.090 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:31:49.101 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:31:50.461 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:31:50.465 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:31:53.461 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:31:53.466 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:31:55.042 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:31:55.048 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:31:55.062 +02:00 [Error] 26 : "Failure", "Something goes wrong in the open-id process, code : invalid_token, description : the token is not valid, state : " : null
+2016-09-06 17:31:57.144 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : website_api" : "client credentials"
+2016-09-06 17:31:57.156 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : VisualStudioExtension, authentication type : client_secret_post" : null
+2016-09-06 17:31:57.161 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : VisualStudioExtension, authentication type : client_secret_post" : null
+2016-09-06 17:31:57.168 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : VisualStudioExtension, scope : website_api" : "client credentials"
+2016-09-06 17:31:57.772 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:31:57.776 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:33:08.812 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : display_configuration" : "client credentials"
+2016-09-06 17:33:08.824 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : SimpleIdentityServer, authentication type : client_secret_post" : null
+2016-09-06 17:33:08.830 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : SimpleIdentityServer, authentication type : client_secret_post" : null
+2016-09-06 17:33:11.401 +02:00 [Information] 30 : "Other", "Grant access to the client SimpleIdentityServer, access token : ZWU5YTM5NTYtZWU0YS00NjVmLTk2MjYtZTM3Y2RhNWFjOTIx, scopes : display_configuration" : null
+2016-09-06 17:33:11.407 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : SimpleIdentityServer, scope : display_configuration" : "client credentials"
+2016-09-06 17:33:11.552 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Configuration, authentication type : client_secret_post" : null
+2016-09-06 17:33:11.557 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Configuration, authentication type : client_secret_post" : null
+2016-09-06 17:33:16.062 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : display_configuration" : "client credentials"
+2016-09-06 17:33:16.084 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : SimpleIdentityServer, authentication type : client_secret_post" : null
+2016-09-06 17:33:16.091 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : SimpleIdentityServer, authentication type : client_secret_post" : null
+2016-09-06 17:33:16.098 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : SimpleIdentityServer, scope : display_configuration" : "client credentials"
+2016-09-06 17:33:16.120 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Configuration, authentication type : client_secret_post" : null
+2016-09-06 17:33:16.126 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Configuration, authentication type : client_secret_post" : null
+2016-09-06 17:33:16.293 +02:00 [Information] 31 : "Other", "The resource owner is authenticated " : null
+2016-09-06 17:33:19.301 +02:00 [Information] 1 : "Authorization", "Start the authorization process for the client : SimpleIdServerClient, response type : id_token token, scope : openid role profile and claims : " : null
+2016-09-06 17:33:19.320 +02:00 [Information] 10 : "Authorization", "Start the implicit flow, client : SimpleIdServerClient, scope : openid role profile and claims : " : "implicit"
+2016-09-06 17:33:19.355 +02:00 [Information] 3 : "Authorization", "Start processing the authorization request : {\"ClientId\":\"SimpleIdServerClient\",\"Scope\":\"openid role profile\",\"ResponseType\":\"id_token token\",\"RedirectUrl\":\"https://localhost:5443/User/Callback\",\"State\":\"75BCNvRlEGHpQRCT\",\"ResponseMode\":1,\"Nonce\":\"nonce\",\"Display\":0,\"Prompt\":null,\"MaxAge\":0.0,\"UiLocales\":null,\"IdTokenHint\":null,\"LoginHint\":null,\"AcrValues\":null,\"Claims\":null}" : null
+2016-09-06 17:33:19.503 +02:00 [Information] 4 : "Authorization", "End processing the authorization request, request : {\"ClientId\":\"SimpleIdServerClient\",\"Scope\":\"openid role profile\",\"ResponseType\":\"id_token token\",\"RedirectUrl\":\"https://localhost:5443/User/Callback\",\"State\":\"75BCNvRlEGHpQRCT\",\"ResponseMode\":1,\"Nonce\":\"nonce\",\"Display\":0,\"Prompt\":null,\"MaxAge\":0.0,\"UiLocales\":null,\"IdTokenHint\":null,\"LoginHint\":null,\"AcrValues\":null,\"Claims\":null}, action type : RedirectToCallBackUrl and action name : ConsentIndex" : null
+2016-09-06 17:33:19.511 +02:00 [Information] 5 : "Authorization", "Start to generate an authorization response for the client SimpleIdServerClient, response types : id_token token" : null
+2016-09-06 17:33:19.707 +02:00 [Information] 30 : "Other", "Grant access to the client SimpleIdServerClient, access token : YTQxNGJlNmEtYWY3Mi00NTRiLTgzYjctN2VmZTEzMDA4NzMy, scopes : openid role profile" : null
+2016-09-06 17:33:19.768 +02:00 [Information] 7 : "Authorization", "Finished to generate the authorization response for the client SimpleIdServerClient, parameters : [{\"Name\":\"access_token\",\"Value\":\"YTQxNGJlNmEtYWY3Mi00NTRiLTgzYjctN2VmZTEzMDA4NzMy\"},{\"Name\":\"id_token\",\"Value\":\"eyJhbGciOiJSUzI1NiIsImtpZCI6IjEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2xvY2FsaG9zdDo1NDQzIiwiYXVkIjpbIkFub255bW91cyIsIlNpbXBsZUlkU2VydmVyQ2xpZW50IiwiaHR0cHM6Ly9sb2NhbGhvc3Q6NTQ0MyJdLCJleHAiOjE0NzMxNzk1OTkuMCwiaWF0IjoxNDczMTc1OTk5LjAsIm5vbmNlIjoibm9uY2UiLCJhY3IiOiJvcGVuaWQucGFwZS5hdXRoX2xldmVsLm5zLnBhc3N3b3JkPTEiLCJhbXIiOlsicGFzc3dvcmQiXSwiYXpwIjoiU2ltcGxlSWRTZXJ2ZXJDbGllbnQiLCJzdWIiOiI0MTUzYTNkMi1iYjI0LTQ3ZjgtOGI1Zi1lZGNmMzYyM2ExZWIiLCJyb2xlIjoiYWRtaW5pc3RyYXRvcixtYXJrZXRpbmcsb3RoZXIiLCJiaXJ0aGRhdGUiOiIxOTg5LTEwLTA3IiwiZmFtaWx5X25hbWUiOiJoYWJhcnQiLCJnZW5kZXIiOiJNIiwiZ2l2ZW5fbmFtZSI6IkhhYmFydCBUaGllcnJ5IiwibG9jYWxlIjoiZnItRlIiLCJtaWRkbGVfbmFtZSI6IlRoaWVycnkiLCJuYW1lIjoiYWRtaW5pc3RyYXRvciIsIm5pY2tuYW1lIjoiVGl0aSIsInBpY3R1cmUiOiJodHRwczovL3VwbG9hZC53aWtpbWVkaWEub3JnL3dpa2lwZWRpYS9jb21tb25zL3RodW1iLzUvNTgvU2hpYmFfaW51X3RhaWtpLmpwZy8yMjBweC1TaGliYV9pbnVfdGFpa2kuanBnIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiVGhpZXJyeSIsInByb2ZpbGUiOiJodHRwOi8vbG9jYWxob3N0L3Byb2ZpbGUiLCJ3ZWJzaXRlIjoiaHR0cHM6Ly9naXRodWIuY29tL3RoYWJhcnQiLCJ6b25laW5mbyI6IkV1cm9wZS9QYXJpcyIsInVwZGF0ZWRfYXQiOiIxNDcxNTI1MDEwIiwiYXRfaGFzaCI6IlBLV3FtUldiaFVRSE9Tc0VKeXFNeGcifQ.ltVhU72typUpf0zq-qCsuci_YmBFtVEoaXZxr5zxb-FMvkBuWC31gnkvxZrldjPjcgqn9BAhRt2-Sxix9jff94kEPJkR6bBsLZ11duceIA-dBUOHVikSJEnB4BzhPYWw3s_sEARQ5U-gOgWmoLlCrOa56XQM_cN6zcVV95vEsZw\"},{\"Name\":\"state\",\"Value\":\"75BCNvRlEGHpQRCT\"}]" : null
+2016-09-06 17:33:19.775 +02:00 [Information] 11 : "Authorization", "End the implicit flow, client : SimpleIdServerClient, action type : RedirectToCallBackUrl and action name : ConsentIndex" : "implicit"
+2016-09-06 17:33:19.780 +02:00 [Information] 9 : "Authorization", "End the authorization process, action type : RedirectToCallBackUrl, action name :  and parameters : [{\"Name\":\"access_token\",\"Value\":\"YTQxNGJlNmEtYWY3Mi00NTRiLTgzYjctN2VmZTEzMDA4NzMy\"},{\"Name\":\"id_token\",\"Value\":\"eyJhbGciOiJSUzI1NiIsImtpZCI6IjEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2xvY2FsaG9zdDo1NDQzIiwiYXVkIjpbIkFub255bW91cyIsIlNpbXBsZUlkU2VydmVyQ2xpZW50IiwiaHR0cHM6Ly9sb2NhbGhvc3Q6NTQ0MyJdLCJleHAiOjE0NzMxNzk1OTkuMCwiaWF0IjoxNDczMTc1OTk5LjAsIm5vbmNlIjoibm9uY2UiLCJhY3IiOiJvcGVuaWQucGFwZS5hdXRoX2xldmVsLm5zLnBhc3N3b3JkPTEiLCJhbXIiOlsicGFzc3dvcmQiXSwiYXpwIjoiU2ltcGxlSWRTZXJ2ZXJDbGllbnQiLCJzdWIiOiI0MTUzYTNkMi1iYjI0LTQ3ZjgtOGI1Zi1lZGNmMzYyM2ExZWIiLCJyb2xlIjoiYWRtaW5pc3RyYXRvcixtYXJrZXRpbmcsb3RoZXIiLCJiaXJ0aGRhdGUiOiIxOTg5LTEwLTA3IiwiZmFtaWx5X25hbWUiOiJoYWJhcnQiLCJnZW5kZXIiOiJNIiwiZ2l2ZW5fbmFtZSI6IkhhYmFydCBUaGllcnJ5IiwibG9jYWxlIjoiZnItRlIiLCJtaWRkbGVfbmFtZSI6IlRoaWVycnkiLCJuYW1lIjoiYWRtaW5pc3RyYXRvciIsIm5pY2tuYW1lIjoiVGl0aSIsInBpY3R1cmUiOiJodHRwczovL3VwbG9hZC53aWtpbWVkaWEub3JnL3dpa2lwZWRpYS9jb21tb25zL3RodW1iLzUvNTgvU2hpYmFfaW51X3RhaWtpLmpwZy8yMjBweC1TaGliYV9pbnVfdGFpa2kuanBnIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiVGhpZXJyeSIsInByb2ZpbGUiOiJodHRwOi8vbG9jYWxob3N0L3Byb2ZpbGUiLCJ3ZWJzaXRlIjoiaHR0cHM6Ly9naXRodWIuY29tL3RoYWJhcnQiLCJ6b25laW5mbyI6IkV1cm9wZS9QYXJpcyIsInVwZGF0ZWRfYXQiOiIxNDcxNTI1MDEwIiwiYXRfaGFzaCI6IlBLV3FtUldiaFVRSE9Tc0VKeXFNeGcifQ.ltVhU72typUpf0zq-qCsuci_YmBFtVEoaXZxr5zxb-FMvkBuWC31gnkvxZrldjPjcgqn9BAhRt2-Sxix9jff94kEPJkR6bBsLZ11duceIA-dBUOHVikSJEnB4BzhPYWw3s_sEARQ5U-gOgWmoLlCrOa56XQM_cN6zcVV95vEsZw\"},{\"Name\":\"state\",\"Value\":\"75BCNvRlEGHpQRCT\"}]" : null
+2016-09-06 17:41:14.194 +02:00 [Information] 1 : "Authorization", "Start the authorization process for the client : SimpleIdServerClient, response type : id_token token, scope : openid role profile and claims : " : null
+2016-09-06 17:41:14.202 +02:00 [Information] 10 : "Authorization", "Start the implicit flow, client : SimpleIdServerClient, scope : openid role profile and claims : " : "implicit"
+2016-09-06 17:41:14.213 +02:00 [Information] 3 : "Authorization", "Start processing the authorization request : {\"ClientId\":\"SimpleIdServerClient\",\"Scope\":\"openid role profile\",\"ResponseType\":\"id_token token\",\"RedirectUrl\":\"https://localhost:5443/User/Callback\",\"State\":\"75BCNvRlEGHpQRCT\",\"ResponseMode\":1,\"Nonce\":\"nonce\",\"Display\":0,\"Prompt\":null,\"MaxAge\":0.0,\"UiLocales\":null,\"IdTokenHint\":null,\"LoginHint\":null,\"AcrValues\":null,\"Claims\":null}" : null
+2016-09-06 17:41:14.257 +02:00 [Information] 4 : "Authorization", "End processing the authorization request, request : {\"ClientId\":\"SimpleIdServerClient\",\"Scope\":\"openid role profile\",\"ResponseType\":\"id_token token\",\"RedirectUrl\":\"https://localhost:5443/User/Callback\",\"State\":\"75BCNvRlEGHpQRCT\",\"ResponseMode\":1,\"Nonce\":\"nonce\",\"Display\":0,\"Prompt\":null,\"MaxAge\":0.0,\"UiLocales\":null,\"IdTokenHint\":null,\"LoginHint\":null,\"AcrValues\":null,\"Claims\":null}, action type : RedirectToCallBackUrl and action name : ConsentIndex" : null
+2016-09-06 17:41:14.264 +02:00 [Information] 5 : "Authorization", "Start to generate an authorization response for the client SimpleIdServerClient, response types : id_token token" : null
+2016-09-06 17:41:14.321 +02:00 [Information] 7 : "Authorization", "Finished to generate the authorization response for the client SimpleIdServerClient, parameters : [{\"Name\":\"access_token\",\"Value\":\"YTQxNGJlNmEtYWY3Mi00NTRiLTgzYjctN2VmZTEzMDA4NzMy\"},{\"Name\":\"id_token\",\"Value\":\"eyJhbGciOiJSUzI1NiIsImtpZCI6IjEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2xvY2FsaG9zdDo1NDQzIiwiYXVkIjpbIkFub255bW91cyIsIlNpbXBsZUlkU2VydmVyQ2xpZW50IiwiaHR0cHM6Ly9sb2NhbGhvc3Q6NTQ0MyJdLCJleHAiOjE0NzMxODAwNzQuMCwiaWF0IjoxNDczMTc2NDc0LjAsIm5vbmNlIjoibm9uY2UiLCJhY3IiOiJvcGVuaWQucGFwZS5hdXRoX2xldmVsLm5zLnBhc3N3b3JkPTEiLCJhbXIiOlsicGFzc3dvcmQiXSwiYXpwIjoiU2ltcGxlSWRTZXJ2ZXJDbGllbnQiLCJzdWIiOiI0MTUzYTNkMi1iYjI0LTQ3ZjgtOGI1Zi1lZGNmMzYyM2ExZWIiLCJyb2xlIjoiYWRtaW5pc3RyYXRvcixtYXJrZXRpbmcsb3RoZXIiLCJiaXJ0aGRhdGUiOiIxOTg5LTEwLTA3IiwiZmFtaWx5X25hbWUiOiJoYWJhcnQiLCJnZW5kZXIiOiJNIiwiZ2l2ZW5fbmFtZSI6IkhhYmFydCBUaGllcnJ5IiwibG9jYWxlIjoiZnItRlIiLCJtaWRkbGVfbmFtZSI6IlRoaWVycnkiLCJuYW1lIjoiYWRtaW5pc3RyYXRvciIsIm5pY2tuYW1lIjoiVGl0aSIsInBpY3R1cmUiOiJodHRwczovL3VwbG9hZC53aWtpbWVkaWEub3JnL3dpa2lwZWRpYS9jb21tb25zL3RodW1iLzUvNTgvU2hpYmFfaW51X3RhaWtpLmpwZy8yMjBweC1TaGliYV9pbnVfdGFpa2kuanBnIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiVGhpZXJyeSIsInByb2ZpbGUiOiJodHRwOi8vbG9jYWxob3N0L3Byb2ZpbGUiLCJ3ZWJzaXRlIjoiaHR0cHM6Ly9naXRodWIuY29tL3RoYWJhcnQiLCJ6b25laW5mbyI6IkV1cm9wZS9QYXJpcyIsInVwZGF0ZWRfYXQiOiIxNDcxNTI1MDEwIiwiYXRfaGFzaCI6IlBLV3FtUldiaFVRSE9Tc0VKeXFNeGcifQ.RTJxhbeDRuCF9L_CCI42wY3mSqH8IO75HPu2ruaANoRHAvbmeVexSjuDKSV9o7VDSh3triGvIgboktf4OrzY0gqyJrYI06OJcEgWS-4K3-MWYhh2kvxjsLhdLk1tpUx_Gdn0TKPvFx4uG8tqgKVhM7zggARo0NTXmvvykMzPZt4\"},{\"Name\":\"state\",\"Value\":\"75BCNvRlEGHpQRCT\"}]" : null
+2016-09-06 17:41:14.327 +02:00 [Information] 11 : "Authorization", "End the implicit flow, client : SimpleIdServerClient, action type : RedirectToCallBackUrl and action name : ConsentIndex" : "implicit"
+2016-09-06 17:41:14.332 +02:00 [Information] 9 : "Authorization", "End the authorization process, action type : RedirectToCallBackUrl, action name :  and parameters : [{\"Name\":\"access_token\",\"Value\":\"YTQxNGJlNmEtYWY3Mi00NTRiLTgzYjctN2VmZTEzMDA4NzMy\"},{\"Name\":\"id_token\",\"Value\":\"eyJhbGciOiJSUzI1NiIsImtpZCI6IjEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2xvY2FsaG9zdDo1NDQzIiwiYXVkIjpbIkFub255bW91cyIsIlNpbXBsZUlkU2VydmVyQ2xpZW50IiwiaHR0cHM6Ly9sb2NhbGhvc3Q6NTQ0MyJdLCJleHAiOjE0NzMxODAwNzQuMCwiaWF0IjoxNDczMTc2NDc0LjAsIm5vbmNlIjoibm9uY2UiLCJhY3IiOiJvcGVuaWQucGFwZS5hdXRoX2xldmVsLm5zLnBhc3N3b3JkPTEiLCJhbXIiOlsicGFzc3dvcmQiXSwiYXpwIjoiU2ltcGxlSWRTZXJ2ZXJDbGllbnQiLCJzdWIiOiI0MTUzYTNkMi1iYjI0LTQ3ZjgtOGI1Zi1lZGNmMzYyM2ExZWIiLCJyb2xlIjoiYWRtaW5pc3RyYXRvcixtYXJrZXRpbmcsb3RoZXIiLCJiaXJ0aGRhdGUiOiIxOTg5LTEwLTA3IiwiZmFtaWx5X25hbWUiOiJoYWJhcnQiLCJnZW5kZXIiOiJNIiwiZ2l2ZW5fbmFtZSI6IkhhYmFydCBUaGllcnJ5IiwibG9jYWxlIjoiZnItRlIiLCJtaWRkbGVfbmFtZSI6IlRoaWVycnkiLCJuYW1lIjoiYWRtaW5pc3RyYXRvciIsIm5pY2tuYW1lIjoiVGl0aSIsInBpY3R1cmUiOiJodHRwczovL3VwbG9hZC53aWtpbWVkaWEub3JnL3dpa2lwZWRpYS9jb21tb25zL3RodW1iLzUvNTgvU2hpYmFfaW51X3RhaWtpLmpwZy8yMjBweC1TaGliYV9pbnVfdGFpa2kuanBnIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiVGhpZXJyeSIsInByb2ZpbGUiOiJodHRwOi8vbG9jYWxob3N0L3Byb2ZpbGUiLCJ3ZWJzaXRlIjoiaHR0cHM6Ly9naXRodWIuY29tL3RoYWJhcnQiLCJ6b25laW5mbyI6IkV1cm9wZS9QYXJpcyIsInVwZGF0ZWRfYXQiOiIxNDcxNTI1MDEwIiwiYXRfaGFzaCI6IlBLV3FtUldiaFVRSE9Tc0VKeXFNeGcifQ.RTJxhbeDRuCF9L_CCI42wY3mSqH8IO75HPu2ruaANoRHAvbmeVexSjuDKSV9o7VDSh3triGvIgboktf4OrzY0gqyJrYI06OJcEgWS-4K3-MWYhh2kvxjsLhdLk1tpUx_Gdn0TKPvFx4uG8tqgKVhM7zggARo0NTXmvvykMzPZt4\"},{\"Name\":\"state\",\"Value\":\"75BCNvRlEGHpQRCT\"}]" : null
+2016-09-06 17:42:08.559 +02:00 [Information] 14 : "Token", "Start resource owner credentials grant-type, client : , user name : administrator, password : password" : "resource owner credentials"
+2016-09-06 17:42:08.569 +02:00 [Information] 29 : "Info", "the client cannot be authenticated" : null
+2016-09-06 17:42:08.618 +02:00 [Information] 30 : "Other", "Grant access to the client Anonymous, access token : Y2M2NTliMjMtZTYzMi00NjEzLTg4OTItODVlZGIxNDEwNjQ3, scopes : openid role profile" : null
+2016-09-06 17:42:08.623 +02:00 [Information] 15 : "Token", "End of the resource owner credentials grant-type, access token : Y2M2NTliMjMtZTYzMi00NjEzLTg4OTItODVlZGIxNDEwNjQ3, identity token : eyJhbGciOiJSUzI1NiIsImtpZCI6IjEiLCJ0eXAiOiJKV1QifQ.eyJzdWIiOiI0MTUzYTNkMi1iYjI0LTQ3ZjgtOGI1Zi1lZGNmMzYyM2ExZWIiLCJyb2xlIjoiYWRtaW5pc3RyYXRvcixtYXJrZXRpbmcsb3RoZXIiLCJiaXJ0aGRhdGUiOiIxOTg5LTEwLTA3IiwiZmFtaWx5X25hbWUiOiJoYWJhcnQiLCJnZW5kZXIiOiJNIiwiZ2l2ZW5fbmFtZSI6IkhhYmFydCBUaGllcnJ5IiwibG9jYWxlIjoiZnItRlIiLCJtaWRkbGVfbmFtZSI6IlRoaWVycnkiLCJuYW1lIjoiYWRtaW5pc3RyYXRvciIsIm5pY2tuYW1lIjoiVGl0aSIsInBpY3R1cmUiOiJodHRwczovL3VwbG9hZC53aWtpbWVkaWEub3JnL3dpa2lwZWRpYS9jb21tb25zL3RodW1iLzUvNTgvU2hpYmFfaW51X3RhaWtpLmpwZy8yMjBweC1TaGliYV9pbnVfdGFpa2kuanBnIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiVGhpZXJyeSIsInByb2ZpbGUiOiJodHRwOi8vbG9jYWxob3N0L3Byb2ZpbGUiLCJ3ZWJzaXRlIjoiaHR0cHM6Ly9naXRodWIuY29tL3RoYWJhcnQiLCJ6b25laW5mbyI6IkV1cm9wZS9QYXJpcyIsInVwZGF0ZWRfYXQiOiIxNDcxNTI1MDEwIn0.vIe3rmq_TiWK1cTlNejTuzpmZ-eQ-DFr7yt4Z095WVL-c-b5LwNMiashXUbI0e3TDQWvhUeDM1MjCQWsCMwIH-kjrFf4XCnIM6xx2Po_hyJnLKfd98--u4EwlIhDTVCCYk-rVYF8pM9iCxBRI_dSIr4uQ430yZcdjeujDBt0WN8" : "resource owner credentials"
+2016-09-06 17:42:10.475 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:42:10.479 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:42:11.188 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : openid_manager" : "client credentials"
+2016-09-06 17:42:11.202 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 17:42:11.208 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 17:42:11.237 +02:00 [Information] 30 : "Other", "Grant access to the client ManagerWebSiteApi, access token : NjhhY2IyYmMtOWNkZi00ODI0LWE5MzctZWY5NWMwMDVkYjMz, scopes : openid_manager" : null
+2016-09-06 17:42:11.242 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : openid_manager" : "client credentials"
+2016-09-06 17:42:11.468 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 17:42:11.473 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 17:42:13.728 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:42:13.733 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:42:15.713 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:42:15.717 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:42:19.222 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:42:19.228 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:42:19.280 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : uma_protection" : "client credentials"
+2016-09-06 17:42:19.289 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 17:42:19.293 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 17:42:19.315 +02:00 [Information] 30 : "Other", "Grant access to the client ManagerWebSiteApi, access token : M2Y1MzBkOGMtYWM1MC00NTZlLWIxNjctOTkwMTMxNmE4ZGI0, scopes : uma_protection" : null
+2016-09-06 17:42:19.320 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : uma_protection" : "client credentials"
+2016-09-06 17:42:19.357 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:42:19.362 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:44:00.299 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : uma_authorization uma_protection website_api" : "client credentials"
+2016-09-06 17:44:00.309 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : b3be2902-533e-498e-8450-dc9d306c9015, authentication type : client_secret_basic" : null
+2016-09-06 17:44:00.314 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : b3be2902-533e-498e-8450-dc9d306c9015, authentication type : client_secret_basic" : null
+2016-09-06 17:44:00.320 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : b3be2902-533e-498e-8450-dc9d306c9015, scope : uma_authorization uma_protection website_api" : "client credentials"
+2016-09-06 17:44:00.488 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:44:00.493 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:44:00.723 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:44:00.729 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:44:00.860 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:44:00.866 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:44:01.630 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:44:01.635 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:44:01.651 +02:00 [Error] 26 : "Failure", "Something goes wrong in the open-id process, code : invalid_token, description : the token is not valid, state : " : null
+2016-09-06 17:44:01.925 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : website_api" : "client credentials"
+2016-09-06 17:44:01.934 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : VisualStudioExtension, authentication type : client_secret_post" : null
+2016-09-06 17:44:01.939 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : VisualStudioExtension, authentication type : client_secret_post" : null
+2016-09-06 17:44:01.945 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : VisualStudioExtension, scope : website_api" : "client credentials"
+2016-09-06 17:44:02.055 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:44:02.061 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:46:10.496 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:46:10.502 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:46:10.510 +02:00 [Error] 26 : "Failure", "Something goes wrong in the open-id process, code : invalid_token, description : the token is not valid, state : " : null
+2016-09-06 17:46:11.016 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:46:11.027 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:46:11.033 +02:00 [Error] 26 : "Failure", "Something goes wrong in the open-id process, code : invalid_token, description : the token is not valid, state : " : null
+2016-09-06 17:46:11.225 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:46:11.232 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:46:11.239 +02:00 [Error] 26 : "Failure", "Something goes wrong in the open-id process, code : invalid_token, description : the token is not valid, state : " : null
+2016-09-06 17:46:11.400 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:46:11.405 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:46:11.414 +02:00 [Error] 26 : "Failure", "Something goes wrong in the open-id process, code : invalid_token, description : the token is not valid, state : " : null
+2016-09-06 17:46:11.593 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:46:11.598 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:46:11.604 +02:00 [Error] 26 : "Failure", "Something goes wrong in the open-id process, code : invalid_token, description : the token is not valid, state : " : null
+2016-09-06 17:46:11.833 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:46:11.838 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:46:11.845 +02:00 [Error] 26 : "Failure", "Something goes wrong in the open-id process, code : invalid_token, description : the token is not valid, state : " : null
+2016-09-06 17:46:12.040 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:46:12.045 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:46:12.052 +02:00 [Error] 26 : "Failure", "Something goes wrong in the open-id process, code : invalid_token, description : the token is not valid, state : " : null
+2016-09-06 17:46:12.232 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:46:12.237 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:46:12.245 +02:00 [Error] 26 : "Failure", "Something goes wrong in the open-id process, code : invalid_token, description : the token is not valid, state : " : null
+2016-09-06 17:46:12.424 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:46:12.429 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:46:12.437 +02:00 [Error] 26 : "Failure", "Something goes wrong in the open-id process, code : invalid_token, description : the token is not valid, state : " : null
+2016-09-06 17:46:12.617 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:46:12.623 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:46:12.631 +02:00 [Error] 26 : "Failure", "Something goes wrong in the open-id process, code : invalid_token, description : the token is not valid, state : " : null
+2016-09-06 17:46:12.841 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:46:12.849 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:46:12.855 +02:00 [Error] 26 : "Failure", "Something goes wrong in the open-id process, code : invalid_token, description : the token is not valid, state : " : null
+2016-09-06 17:46:13.081 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:46:13.087 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:46:13.094 +02:00 [Error] 26 : "Failure", "Something goes wrong in the open-id process, code : invalid_token, description : the token is not valid, state : " : null
+2016-09-06 17:46:13.289 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:46:13.294 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:46:13.300 +02:00 [Error] 26 : "Failure", "Something goes wrong in the open-id process, code : invalid_token, description : the token is not valid, state : " : null
+2016-09-06 17:46:13.497 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:46:13.503 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:46:13.509 +02:00 [Error] 26 : "Failure", "Something goes wrong in the open-id process, code : invalid_token, description : the token is not valid, state : " : null
+2016-09-06 17:46:13.674 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:46:13.681 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:46:13.688 +02:00 [Error] 26 : "Failure", "Something goes wrong in the open-id process, code : invalid_token, description : the token is not valid, state : " : null
+2016-09-06 17:46:13.833 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:46:13.839 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:46:13.847 +02:00 [Error] 26 : "Failure", "Something goes wrong in the open-id process, code : invalid_token, description : the token is not valid, state : " : null
+2016-09-06 17:46:14.025 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:46:14.030 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:46:14.037 +02:00 [Error] 26 : "Failure", "Something goes wrong in the open-id process, code : invalid_token, description : the token is not valid, state : " : null
+2016-09-06 17:46:14.200 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:46:14.206 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:46:14.215 +02:00 [Error] 26 : "Failure", "Something goes wrong in the open-id process, code : invalid_token, description : the token is not valid, state : " : null
+2016-09-06 17:46:14.393 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:46:14.398 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:46:14.406 +02:00 [Error] 26 : "Failure", "Something goes wrong in the open-id process, code : invalid_token, description : the token is not valid, state : " : null
+2016-09-06 17:47:37.105 +02:00 [Error] 26 : "Failure", "Something goes wrong in the open-id process, code : invalid_token, description : the token is not valid, state : " : null
+2016-09-06 17:47:39.963 +02:00 [Error] 26 : "Failure", "Something goes wrong in the open-id process, code : invalid_token, description : the token is not valid, state : " : null
+2016-09-06 17:47:41.114 +02:00 [Information] 24 : "Token", "Start revoking token, token : Y2M2NTliMjMtZTYzMi00NjEzLTg4OTItODVlZGIxNDEwNjQ3" : null
+2016-09-06 17:47:41.153 +02:00 [Information] 25 : "Token", "End revoking token, token : Y2M2NTliMjMtZTYzMi00NjEzLTg4OTItODVlZGIxNDEwNjQ3" : null
+2016-09-06 17:47:42.154 +02:00 [Information] 24 : "Token", "Start revoking token, token : YTNjNzc5ZWEtZDlkZC00NTkwLWFlMzYtZTgwZWNjOTFmNWM1" : null
+2016-09-06 17:47:42.181 +02:00 [Information] 25 : "Token", "End revoking token, token : YTNjNzc5ZWEtZDlkZC00NTkwLWFlMzYtZTgwZWNjOTFmNWM1" : null
+2016-09-06 17:47:48.424 +02:00 [Information] 14 : "Token", "Start resource owner credentials grant-type, client : , user name : administrator, password : password" : "resource owner credentials"
+2016-09-06 17:47:48.429 +02:00 [Information] 29 : "Info", "the client cannot be authenticated" : null
+2016-09-06 17:47:48.479 +02:00 [Information] 30 : "Other", "Grant access to the client Anonymous, access token : YjFkYTA1YjktZjgwMy00MGJmLTg3ZmUtZjU3OGFlZWQ4NjM0, scopes : openid role profile" : null
+2016-09-06 17:47:48.483 +02:00 [Information] 15 : "Token", "End of the resource owner credentials grant-type, access token : YjFkYTA1YjktZjgwMy00MGJmLTg3ZmUtZjU3OGFlZWQ4NjM0, identity token : eyJhbGciOiJSUzI1NiIsImtpZCI6IjEiLCJ0eXAiOiJKV1QifQ.eyJzdWIiOiI0MTUzYTNkMi1iYjI0LTQ3ZjgtOGI1Zi1lZGNmMzYyM2ExZWIiLCJyb2xlIjoiYWRtaW5pc3RyYXRvcixtYXJrZXRpbmcsb3RoZXIiLCJiaXJ0aGRhdGUiOiIxOTg5LTEwLTA3IiwiZmFtaWx5X25hbWUiOiJoYWJhcnQiLCJnZW5kZXIiOiJNIiwiZ2l2ZW5fbmFtZSI6IkhhYmFydCBUaGllcnJ5IiwibG9jYWxlIjoiZnItRlIiLCJtaWRkbGVfbmFtZSI6IlRoaWVycnkiLCJuYW1lIjoiYWRtaW5pc3RyYXRvciIsIm5pY2tuYW1lIjoiVGl0aSIsInBpY3R1cmUiOiJodHRwczovL3VwbG9hZC53aWtpbWVkaWEub3JnL3dpa2lwZWRpYS9jb21tb25zL3RodW1iLzUvNTgvU2hpYmFfaW51X3RhaWtpLmpwZy8yMjBweC1TaGliYV9pbnVfdGFpa2kuanBnIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiVGhpZXJyeSIsInByb2ZpbGUiOiJodHRwOi8vbG9jYWxob3N0L3Byb2ZpbGUiLCJ3ZWJzaXRlIjoiaHR0cHM6Ly9naXRodWIuY29tL3RoYWJhcnQiLCJ6b25laW5mbyI6IkV1cm9wZS9QYXJpcyIsInVwZGF0ZWRfYXQiOiIxNDcxNTI1MDEwIn0.vIe3rmq_TiWK1cTlNejTuzpmZ-eQ-DFr7yt4Z095WVL-c-b5LwNMiashXUbI0e3TDQWvhUeDM1MjCQWsCMwIH-kjrFf4XCnIM6xx2Po_hyJnLKfd98--u4EwlIhDTVCCYk-rVYF8pM9iCxBRI_dSIr4uQ430yZcdjeujDBt0WN8" : "resource owner credentials"
+2016-09-06 17:47:50.018 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:47:50.023 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:47:52.977 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:47:52.982 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:47:53.048 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : uma_protection" : "client credentials"
+2016-09-06 17:47:53.048 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : openid_manager" : "client credentials"
+2016-09-06 17:47:53.053 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : uma_protection" : "client credentials"
+2016-09-06 17:47:53.060 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 17:47:53.063 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 17:47:53.065 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 17:47:53.066 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 17:47:53.068 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 17:47:53.074 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : uma_protection" : "client credentials"
+2016-09-06 17:47:53.077 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 17:47:53.082 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : openid_manager" : "client credentials"
+2016-09-06 17:47:53.090 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : uma_protection" : "client credentials"
+2016-09-06 17:47:53.105 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:47:53.110 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:47:53.111 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 17:47:53.119 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 17:47:53.120 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:47:53.131 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:48:00.274 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:48:00.279 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:48:01.687 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:48:01.693 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:48:02.192 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:48:02.199 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:48:03.001 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:48:03.007 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:48:03.500 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:48:03.504 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:48:05.207 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:48:05.212 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:48:05.274 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : uma_protection" : "client credentials"
+2016-09-06 17:48:05.274 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : uma_protection" : "client credentials"
+2016-09-06 17:48:05.274 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : openid_manager" : "client credentials"
+2016-09-06 17:48:05.284 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 17:48:05.291 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 17:48:05.289 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 17:48:05.294 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 17:48:05.298 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : uma_protection" : "client credentials"
+2016-09-06 17:48:05.300 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 17:48:05.304 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 17:48:05.316 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : uma_protection" : "client credentials"
+2016-09-06 17:48:05.321 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : openid_manager" : "client credentials"
+2016-09-06 17:48:05.333 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:48:05.337 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:48:05.339 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 17:48:05.344 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 17:48:05.344 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:48:05.355 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:48:10.908 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:48:10.914 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:48:10.968 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : uma_protection" : "client credentials"
+2016-09-06 17:48:10.981 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 17:48:10.985 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 17:48:10.991 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : uma_protection" : "client credentials"
+2016-09-06 17:48:11.018 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:48:11.023 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:48:11.738 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:48:11.743 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:48:11.758 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:48:11.762 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:48:12.973 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:48:12.979 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:48:13.035 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : uma_protection" : "client credentials"
+2016-09-06 17:48:13.035 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : openid_manager" : "client credentials"
+2016-09-06 17:48:13.035 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : uma_protection" : "client credentials"
+2016-09-06 17:48:13.048 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 17:48:13.052 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 17:48:13.056 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 17:48:13.062 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 17:48:13.064 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 17:48:13.070 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : uma_protection" : "client credentials"
+2016-09-06 17:48:13.070 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 17:48:13.078 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : openid_manager" : "client credentials"
+2016-09-06 17:48:13.091 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : uma_protection" : "client credentials"
+2016-09-06 17:48:13.109 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 17:48:13.112 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:48:13.112 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 17:48:13.116 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:48:13.118 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:48:13.128 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:48:20.718 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : uma_authorization uma_protection website_api" : "client credentials"
+2016-09-06 17:48:20.728 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : b3be2902-533e-498e-8450-dc9d306c9015, authentication type : client_secret_basic" : null
+2016-09-06 17:48:20.732 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : b3be2902-533e-498e-8450-dc9d306c9015, authentication type : client_secret_basic" : null
+2016-09-06 17:48:20.738 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : b3be2902-533e-498e-8450-dc9d306c9015, scope : uma_authorization uma_protection website_api" : "client credentials"
+2016-09-06 17:48:20.824 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:48:20.828 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:48:20.964 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:48:20.968 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:48:21.968 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:48:21.974 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:48:25.879 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : uma_authorization uma_protection website_api" : "client credentials"
+2016-09-06 17:48:25.888 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : b3be2902-533e-498e-8450-dc9d306c9015, authentication type : client_secret_basic" : null
+2016-09-06 17:48:25.893 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : b3be2902-533e-498e-8450-dc9d306c9015, authentication type : client_secret_basic" : null
+2016-09-06 17:48:25.899 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : b3be2902-533e-498e-8450-dc9d306c9015, scope : uma_authorization uma_protection website_api" : "client credentials"
+2016-09-06 17:48:26.769 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:48:26.774 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:48:26.915 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:48:26.920 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:48:27.042 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:48:27.046 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:48:32.887 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : uma_authorization uma_protection website_api" : "client credentials"
+2016-09-06 17:48:32.897 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : b3be2902-533e-498e-8450-dc9d306c9015, authentication type : client_secret_basic" : null
+2016-09-06 17:48:32.902 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : b3be2902-533e-498e-8450-dc9d306c9015, authentication type : client_secret_basic" : null
+2016-09-06 17:48:32.908 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : b3be2902-533e-498e-8450-dc9d306c9015, scope : uma_authorization uma_protection website_api" : "client credentials"
+2016-09-06 17:48:32.992 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:48:32.997 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:48:33.146 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:48:33.150 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:48:33.270 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:48:33.274 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:53:18.364 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:53:18.370 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:53:18.439 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : uma_protection" : "client credentials"
+2016-09-06 17:53:18.440 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : openid_manager" : "client credentials"
+2016-09-06 17:53:18.443 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : uma_protection" : "client credentials"
+2016-09-06 17:53:18.453 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 17:53:18.460 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 17:53:18.464 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 17:53:18.465 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 17:53:18.470 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 17:53:18.476 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : uma_protection" : "client credentials"
+2016-09-06 17:53:18.479 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 17:53:18.485 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : openid_manager" : "client credentials"
+2016-09-06 17:53:18.494 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : uma_protection" : "client credentials"
+2016-09-06 17:53:18.523 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 17:53:18.525 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:53:18.530 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : OpenIdManager, authentication type : client_secret_post" : null
+2016-09-06 17:53:18.535 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:53:18.537 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:53:18.548 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:53:23.936 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:53:23.941 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:53:23.990 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : uma_protection" : "client credentials"
+2016-09-06 17:53:24.001 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 17:53:24.005 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : ManagerWebSiteApi, authentication type : client_secret_post" : null
+2016-09-06 17:53:24.011 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : ManagerWebSiteApi, scope : uma_protection" : "client credentials"
+2016-09-06 17:53:24.034 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:53:24.039 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:53:24.988 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:53:24.995 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:53:25.016 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:53:25.024 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:53:26.086 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : uma_authorization uma_protection website_api" : "client credentials"
+2016-09-06 17:53:26.095 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : b3be2902-533e-498e-8450-dc9d306c9015, authentication type : client_secret_basic" : null
+2016-09-06 17:53:26.099 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : b3be2902-533e-498e-8450-dc9d306c9015, authentication type : client_secret_basic" : null
+2016-09-06 17:53:26.106 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : b3be2902-533e-498e-8450-dc9d306c9015, scope : uma_authorization uma_protection website_api" : "client credentials"
+2016-09-06 17:53:26.202 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:53:26.206 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:53:26.350 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:53:26.354 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:53:26.491 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:53:26.495 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:53:26.673 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:53:26.677 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Uma, authentication type : client_secret_post" : null
+2016-09-06 17:53:26.684 +02:00 [Error] 26 : "Failure", "Something goes wrong in the open-id process, code : invalid_token, description : the token is not valid, state : " : null
+2016-09-06 17:53:26.812 +02:00 [Information] 22 : "Token", "Start get token by client credentials, scope : website_api" : "client credentials"
+2016-09-06 17:53:26.821 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : VisualStudioExtension, authentication type : client_secret_post" : null
+2016-09-06 17:53:26.826 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : VisualStudioExtension, authentication type : client_secret_post" : null
+2016-09-06 17:53:26.832 +02:00 [Information] 23 : "Token", "End get token by client credentials, client : VisualStudioExtension, scope : website_api" : "client credentials"
+2016-09-06 17:53:26.922 +02:00 [Information] 18 : "Token", "Start to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
+2016-09-06 17:53:26.927 +02:00 [Information] 19 : "Token", "Finish to authenticate the client, client : Anonymous, authentication type : client_secret_post" : null
