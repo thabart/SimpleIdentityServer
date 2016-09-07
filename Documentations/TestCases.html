@@ -7,7 +7,6 @@
   <title></title>
   <style type="text/css">code{white-space: pre;}</style>
   <link rel="stylesheet" href="pandoc.css" type="text/css" />
-  <link rel="stylesheet" href="menu.js" type="text/css" />
 </head>
 <body>
 <h1 id="terminologies">Terminologies</h1>
@@ -888,7 +887,7 @@ Use cases of the Visual Studio extension</h1>
 </ul>
 <p><img src="media/image59.png" width="319" height="365" /></p>
 <h3 id="add-a-resource">Add a resource</h3>
-<p>There are different two ways to add a resource, either with the website (refer to the use case “create a folder”) or either with the Visual Studio extension (refer to the use case “generate one or more resources”). In both cases, the name must respect a certain convention which has been decided by you and it must be consistent with the other resources. For example, imagine there are two pictures, one “Thierry\picture.png” and an another “Lokit \ picture.png”. At first glance this organisation seems to be awkward, and it can be easily reorganized in something cleaner: “images\thierry-picture.png &amp; images\lokit-picture.png”.</p>
+<p>There are two different ways to add a resource, either with the website (refer to the use case “create a folder”) or either with the Visual Studio extension (refer to the use case “generate one or more resources”). In both cases, the name must respect a certain convention which has been decided by you and it must be consistent with the other resources. For example, imagine there are two pictures, one “Thierry\picture.png” and an another “Lokit \ picture.png”. At first glance this organisation seems to be awkward, and it can be easily reorganized in something cleaner: “images\thierry-picture.png &amp; images\lokit-picture.png”.</p>
 <p>If your resource is an API operation, then we suggest to respect this convention: “<em>Apis \ &lt;application name&gt; \ &lt;version number&gt; \ &lt;business entity&gt; \ &lt;operation&gt;</em>”</p>
 <p>In our scenario the resource name is: « <em>Apis \ ClientApi \ v1 \ ClientsController \ Get</em> ». If you are working with the Visual Studio Extension you don’t have to be worried about the name because the convention is respected.</p>
 <p>We really insist on the fact that it’s very important to have a good architecture since the beginning. If later the structure is modified, then all the resource consumers will be impacted and they must be updated and redeployed again.</p>
