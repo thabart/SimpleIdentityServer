@@ -21,15 +21,22 @@ using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
 
 using Jwt = SimpleIdentityServer.Core.Jwt;
+using SimpleIdentityServer.Logging;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 {
     public sealed class JsonWebKeyRepository : IJsonWebKeyRepository
     {       
-         private readonly SimpleIdentityServerContext _context;
-        
-        public JsonWebKeyRepository(SimpleIdentityServerContext context) {
+        private readonly SimpleIdentityServerContext _context;
+
+        private readonly IManagerEventSource _managerEventSource;
+
+        public JsonWebKeyRepository(
+            SimpleIdentityServerContext context,
+            IManagerEventSource managerEventSource)
+        {
             _context = context;
+            _managerEventSource = managerEventSource;
         }
         
         public IList<Jwt.JsonWebKey> GetAll()
@@ -101,8 +108,9 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                     _context.SaveChanges();
                     transaction.Commit();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    _managerEventSource.Failure(ex);
                     transaction.Rollback();
                     return false;
                 }
@@ -147,8 +155,9 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                     _context.SaveChanges();
                     transaction.Commit();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    _managerEventSource.Failure(ex);
                     transaction.Rollback();
                     return false;
                 }
@@ -173,8 +182,9 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                     _context.SaveChanges();
                     transaction.Commit();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    _managerEventSource.Failure(ex);
                     transaction.Rollback();
                     return false;
                 }

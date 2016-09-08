@@ -21,15 +21,21 @@ using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
 using Domains = SimpleIdentityServer.Core.Models;
 using Microsoft.EntityFrameworkCore;
+using SimpleIdentityServer.Logging;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 {
     public sealed class ScopeRepository : IScopeRepository
     {
-         private readonly SimpleIdentityServerContext _context;
-        
-        public ScopeRepository(SimpleIdentityServerContext context) {
+        private readonly SimpleIdentityServerContext _context;
+
+        private readonly IManagerEventSource _managerEventSource;
+
+        public ScopeRepository(
+            SimpleIdentityServerContext context,
+            IManagerEventSource managerEventSource) {
             _context = context;
+            _managerEventSource = managerEventSource;
         }
 
         public bool InsertScope(Domains.Scope scope)
@@ -58,8 +64,9 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                     _context.SaveChanges();
                     transaction.Commit();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    _managerEventSource.Failure(ex);
                     transaction.Rollback();
                     return false;
                 }
@@ -117,8 +124,9 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                     transaction.Commit();
 
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    _managerEventSource.Failure(ex);
                     transaction.Rollback();
                     return false;
                 }
@@ -142,8 +150,9 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                     translation.Commit();
 
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    _managerEventSource.Failure(ex);
                     translation.Rollback();
                     return false;
                 }

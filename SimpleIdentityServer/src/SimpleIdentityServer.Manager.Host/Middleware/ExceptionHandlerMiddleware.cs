@@ -29,17 +29,26 @@ namespace SimpleIdentityServer.Manager.Host.Middleware
     {
         private readonly RequestDelegate _next;
 
+        private readonly ExceptionHandlerMiddlewareOptions _options;
+
         #region Constructor
 
         public ExceptionHandlerMiddleware(
-            RequestDelegate next)
+            RequestDelegate next,
+            ExceptionHandlerMiddlewareOptions options)
         {
             if (next == null)
             {
                 throw new ArgumentNullException(nameof(next));
             }
 
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
             _next = next;
+            _options = options;
         }
 
         #endregion
@@ -66,6 +75,7 @@ namespace SimpleIdentityServer.Manager.Host.Middleware
                     Message = identityServerManagerException.Message
                 };
 
+                _options.ManagerEventSource.Failure(identityServerManagerException);
                 // context.Response.Clear();
                 context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 context.Response.ContentType = "application/json";

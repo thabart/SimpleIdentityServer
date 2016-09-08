@@ -15,6 +15,7 @@
 #endregion
 
 using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Manager.Core.Errors;
 using SimpleIdentityServer.Manager.Core.Exceptions;
 using SimpleIdentityServer.Manager.Core.Parameters;
@@ -33,7 +34,8 @@ namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners.Actions
 
         #region Constructor
 
-        public UpdateResourceOwnerAction(IResourceOwnerRepository resourceOwnerRepository)
+        public UpdateResourceOwnerAction(
+            IResourceOwnerRepository resourceOwnerRepository)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
         }

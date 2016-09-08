@@ -15,6 +15,7 @@
 #endregion
 
 using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Manager.Core.Errors;
 using SimpleIdentityServer.Manager.Core.Exceptions;
 using System;
@@ -32,13 +33,18 @@ namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners.Actions
 
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
 
+        private readonly IManagerEventSource _managerEventSource;
+
         #endregion
 
         #region Constructor
 
-        public DeleteResourceOwnerAction(IResourceOwnerRepository resourceOwnerRepository)
+        public DeleteResourceOwnerAction(
+            IResourceOwnerRepository resourceOwnerRepository,
+            IManagerEventSource managerEventSource)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
+            _managerEventSource = managerEventSource;
         }
 
         #endregion
@@ -47,6 +53,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners.Actions
 
         public bool Execute(string subject)
         {
+            _managerEventSource.StartToRemoveResourceOwner(subject);
             if (string.IsNullOrWhiteSpace(subject))
             {
                 throw new ArgumentNullException(nameof(subject));
@@ -59,8 +66,14 @@ namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners.Actions
                     string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, subject));
             }
 
-            return _resourceOwnerRepository.Delete(subject);
 
+            var res = _resourceOwnerRepository.Delete(subject);
+            if (res)
+            {
+                _managerEventSource.FinishToRemoveResourceOwner(subject);
+            }
+
+            return res;
         }
 
         #endregion

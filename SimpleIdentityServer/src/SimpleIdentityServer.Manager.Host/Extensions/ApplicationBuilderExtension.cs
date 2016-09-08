@@ -15,6 +15,9 @@
 #endregion
 
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Logging;
+using Serilog;
+using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Manager.Host.Middleware;
 using SimpleIdentityServer.Oauth2Instrospection.Authentication;
 using System;
@@ -25,6 +28,7 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
     {
         public static void UseSimpleIdentityServerManager(
             this IApplicationBuilder applicationBuilder,
+            ILoggerFactory loggerFactory,
             AuthorizationServerOptions authorizationServerOptions,
             SwaggerOptions swaggerOptions)
         {
@@ -38,6 +42,8 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
                 throw new ArgumentNullException(nameof(swaggerOptions));
             }
 
+            loggerFactory.AddSerilog();
+
             // Display status code page
             applicationBuilder.UseStatusCodePages();
 
@@ -45,7 +51,10 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
             applicationBuilder.UseCors("AllowAll");
 
             // Enable custom exception handler
-            applicationBuilder.UseSimpleIdentityServerManagerExceptionHandler();
+            applicationBuilder.UseSimpleIdentityServerManagerExceptionHandler(new ExceptionHandlerMiddlewareOptions
+            {
+                ManagerEventSource = (IManagerEventSource)applicationBuilder.ApplicationServices.GetService(typeof(IManagerEventSource))
+            });
             var introspectionOptions = new Oauth2IntrospectionOptions
             {
                 InstrospectionEndPoint = authorizationServerOptions.IntrospectionUrl,

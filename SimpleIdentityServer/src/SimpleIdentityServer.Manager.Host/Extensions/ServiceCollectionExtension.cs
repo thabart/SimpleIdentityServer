@@ -15,12 +15,15 @@
 #endregion
 
 using Microsoft.Extensions.DependencyInjection;
+using Serilog;
+using Serilog.Events;
+using Serilog.Sinks.Elasticsearch;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.DataAccess.SqlServer;
+using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Manager.Core;
 using System;
-using System.Reflection;
 
 namespace SimpleIdentityServer.Manager.Host.Extensions
 {
@@ -30,7 +33,8 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
             this IServiceCollection serviceCollection,
             AuthorizationServerOptions authorizationServerOptions,
             DatabaseOptions databaseOptions,
-            SwaggerOptions swaggerOptions)
+            SwaggerOptions swaggerOptions,
+            LoggingOptions loggingOptions)
         {
             if (authorizationServerOptions == null)
             {
@@ -87,6 +91,45 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
 
             // Add the dependencies needed to run MVC
             serviceCollection.AddMvc();
+
+            // Configure SeriLog pipeline
+            Func<LogEvent, bool> serilogFilter = (e) =>
+            {
+                var ctx = e.Properties["SourceContext"];
+                var contextValue = ctx.ToString()
+                    .TrimStart('"')
+                    .TrimEnd('"');
+                return contextValue.StartsWith("SimpleIdentityServer") ||
+                    e.Level == LogEventLevel.Error ||
+                    e.Level == LogEventLevel.Fatal;
+            };
+
+            var logger = new LoggerConfiguration()
+                .MinimumLevel.Information()
+                .Enrich.FromLogContext()
+                .WriteTo.ColoredConsole();
+            if (loggingOptions.FileLogOptions != null &&
+                loggingOptions.FileLogOptions.IsEnabled)
+            {
+                logger.WriteTo.RollingFile(loggingOptions.FileLogOptions.PathFormat);
+            }
+
+            if (loggingOptions.ElasticsearchOptions != null &&
+                loggingOptions.ElasticsearchOptions.IsEnabled)
+            {
+                logger.WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(loggingOptions.ElasticsearchOptions.Url))
+                {
+                    AutoRegisterTemplate = true,
+                    IndexFormat = "manager-{0:yyyy.MM.dd}",
+                    TemplateName = "manager-events-template"
+                });
+            }
+
+            var log = logger.Filter.ByIncludingOnly(serilogFilter)
+                .CreateLogger();
+            Log.Logger = log;
+            serviceCollection.AddLogging();
+            serviceCollection.AddTransient<IManagerEventSource, ManagerEventSource>();
         }
     }
 }

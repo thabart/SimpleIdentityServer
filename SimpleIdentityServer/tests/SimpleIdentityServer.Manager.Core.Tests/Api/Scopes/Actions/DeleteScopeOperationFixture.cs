@@ -18,6 +18,7 @@
 using Moq;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Manager.Core.Api.Scopes.Actions;
 using SimpleIdentityServer.Manager.Core.Errors;
 using SimpleIdentityServer.Manager.Core.Exceptions;
@@ -29,6 +30,8 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Scopes.Actions
     public class DeleteScopeOperationFixture
     {
         private Mock<IScopeRepository> _scopeRepositoryStub;
+
+        private Mock<IManagerEventSource> _managerEventSourceStub;
 
         private IDeleteScopeOperation _deleteScopeOperation;
         
@@ -91,7 +94,10 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Scopes.Actions
         private void InitializeFakeObjects()
         {
             _scopeRepositoryStub = new Mock<IScopeRepository>();
-            _deleteScopeOperation = new DeleteScopeOperation(_scopeRepositoryStub.Object);
+            _managerEventSourceStub = new Mock<IManagerEventSource>();
+            _deleteScopeOperation = new DeleteScopeOperation(
+                _scopeRepositoryStub.Object,
+                _managerEventSourceStub.Object);
         }
 
         #endregion

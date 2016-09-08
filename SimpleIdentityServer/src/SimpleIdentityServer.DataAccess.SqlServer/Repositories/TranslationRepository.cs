@@ -19,16 +19,24 @@ using System.Linq;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
+using SimpleIdentityServer.Logging;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 {
     public sealed class TranslationRepository : ITranslationRepository
     {         
         private readonly SimpleIdentityServerContext _context;
-        
-        public TranslationRepository(SimpleIdentityServerContext context) {
+
+        private readonly IManagerEventSource _managerEventSource;
+
+        public TranslationRepository(
+            SimpleIdentityServerContext context,
+            IManagerEventSource managerEventSource)
+        {
             _context = context;
+            _managerEventSource = managerEventSource;
         }
+
         public Translation GetTranslationByCode(
             string languageTag,
             string code)

@@ -18,6 +18,7 @@ using Microsoft.EntityFrameworkCore;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
 using SimpleIdentityServer.DataAccess.SqlServer.Models;
+using SimpleIdentityServer.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,11 +29,16 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
     {
         private readonly SimpleIdentityServerContext _context;
 
+        private readonly IManagerEventSource _managerEventSource;
+
         #region Constructor
 
-        public ClientRepository(SimpleIdentityServerContext context)
+        public ClientRepository(
+            SimpleIdentityServerContext context,
+            IManagerEventSource managerEventSource)
         {
             _context = context;
+            _managerEventSource = managerEventSource;
         }
 
         #endregion
@@ -141,8 +147,9 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                     _context.SaveChanges();
                     transaction.Commit();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    _managerEventSource.Failure(ex);
                     transaction.Rollback();
                     return false;
                 }
@@ -153,8 +160,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 
         public IList<Core.Models.Client> GetAll()
         {
-                var clients = _context.Clients.ToList();
-                return clients.Select(client => client.ToDomain()).ToList();
+            var clients = _context.Clients.ToList();
+            return clients.Select(client => client.ToDomain()).ToList();
         }
 
         public bool DeleteClient(Core.Models.Client client)
@@ -176,8 +183,9 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                     _context.SaveChanges();
                     transaction.Commit();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    _managerEventSource.Failure(ex);
                     transaction.Rollback();
                     return false;
                 }
@@ -258,8 +266,9 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                     _context.SaveChanges();
                     translation.Commit();
                 }
-                catch(Exception)
+                catch(Exception ex)
                 {
+                    _managerEventSource.Failure(ex);
                     translation.Rollback();
                     return false;
                 }

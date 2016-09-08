@@ -22,16 +22,21 @@ using System.Linq;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
 using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
+using SimpleIdentityServer.Logging;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 {
     public class GrantedTokenRepository : IGrantedTokenRepository
     {
         private readonly SimpleIdentityServerContext _context;
-        
-        public GrantedTokenRepository(SimpleIdentityServerContext context) {
+
+        private readonly IManagerEventSource _managerEventSource;
+
+        public GrantedTokenRepository(
+            SimpleIdentityServerContext context,
+            IManagerEventSource managerEventSource) {
             _context = context;
+            _managerEventSource = managerEventSource;
         }
 
         #region Public methods
@@ -137,8 +142,9 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                     _context.SaveChanges();
                     transaction.Commit();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    _managerEventSource.Failure(ex);
                     transaction.Rollback();
                     return false;
                 }
@@ -158,8 +164,9 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                     _context.SaveChanges();
                     transaction.Commit();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    _managerEventSource.Failure(ex);
                     transaction.Rollback();
                     return false;
                 }
@@ -180,8 +187,9 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                     _context.SaveChanges();
                     transaction.Commit();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    _managerEventSource.Failure(ex);
                     transaction.Rollback();
                     return false;
                 }

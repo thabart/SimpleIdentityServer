@@ -20,18 +20,24 @@ using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
 using SimpleIdentityServer.DataAccess.SqlServer.Models;
+using SimpleIdentityServer.Logging;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 {
     public sealed  class AuthorizationCodeRepository : IAuthorizationCodeRepository
     {
         private readonly SimpleIdentityServerContext _context;
+
+        private readonly IManagerEventSource _managerEventSource;
         
         #region Constructor
         
-        public AuthorizationCodeRepository(SimpleIdentityServerContext context) 
+        public AuthorizationCodeRepository(
+            SimpleIdentityServerContext context,
+            IManagerEventSource managerEventSource) 
         {
             _context = context;
+            _managerEventSource = managerEventSource;
         }
         
         #endregion
@@ -40,65 +46,67 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
         
         public bool AddAuthorizationCode(Core.Models.AuthorizationCode authorizationCode)
         {
-                using (var transaction = _context.Database.BeginTransaction())
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
                 {
-                    try
+                    var newAuthorizationCode = new AuthorizationCode
                     {
-                        var newAuthorizationCode = new AuthorizationCode
-                        {
-                            Code = authorizationCode.Code,
-                            ClientId = authorizationCode.ClientId,
-                            CreateDateTime = authorizationCode.CreateDateTime,
-                            Scopes = authorizationCode.Scopes,
-                            RedirectUri = authorizationCode.RedirectUri,
-                            IdTokenPayload = authorizationCode.IdTokenPayload ==  null ? string.Empty : authorizationCode.IdTokenPayload.SerializeWithJavascript(),
-                            UserInfoPayLoad = authorizationCode.UserInfoPayLoad == null ? string.Empty : authorizationCode.UserInfoPayLoad.SerializeWithJavascript()
-                        };
-                        _context.AuthorizationCodes.Add(newAuthorizationCode);
-                        _context.SaveChanges();
-                        transaction.Commit();
-                    }
-                    catch (Exception)
-                    {
-                        transaction.Rollback();
-                    }
+                        Code = authorizationCode.Code,
+                        ClientId = authorizationCode.ClientId,
+                        CreateDateTime = authorizationCode.CreateDateTime,
+                        Scopes = authorizationCode.Scopes,
+                        RedirectUri = authorizationCode.RedirectUri,
+                        IdTokenPayload = authorizationCode.IdTokenPayload ==  null ? string.Empty : authorizationCode.IdTokenPayload.SerializeWithJavascript(),
+                        UserInfoPayLoad = authorizationCode.UserInfoPayLoad == null ? string.Empty : authorizationCode.UserInfoPayLoad.SerializeWithJavascript()
+                    };
+                    _context.AuthorizationCodes.Add(newAuthorizationCode);
+                    _context.SaveChanges();
+                    transaction.Commit();
                 }
+                catch (Exception ex)
+                {
+                    _managerEventSource.Failure(ex);
+                    transaction.Rollback();
+                }
+            }
 
-            return true;
+        return true;
         }
 
         public Core.Models.AuthorizationCode GetAuthorizationCode(string code)
         {
-                var authorizationCode = _context.AuthorizationCodes.FirstOrDefault(a => a.Code == code);
-                if (authorizationCode == null)
-                {
-                    return null;
-                }
+            var authorizationCode = _context.AuthorizationCodes.FirstOrDefault(a => a.Code == code);
+            if (authorizationCode == null)
+            {
+                return null;
+            }
 
-                return authorizationCode.ToDomain();
+            return authorizationCode.ToDomain();
         }
 
         public bool RemoveAuthorizationCode(string code)
         {
-                using (var transaction = _context.Database.BeginTransaction())
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
                 {
-                    try
+                    var authorizationCode = _context.AuthorizationCodes.FirstOrDefault(a => a.Code == code);
+                    if (authorizationCode == null)
                     {
-                        var authorizationCode = _context.AuthorizationCodes.FirstOrDefault(a => a.Code == code);
-                        if (authorizationCode == null)
-                        {
-                            return false;
-                        }
+                        return false;
+                    }
 
-                        _context.AuthorizationCodes.Remove(authorizationCode);
-                        _context.SaveChanges();
-                        transaction.Commit();
-                    }
-                    catch (Exception)
-                    {
-                        transaction.Rollback();
-                    }
+                    _context.AuthorizationCodes.Remove(authorizationCode);
+                    _context.SaveChanges();
+                    transaction.Commit();
                 }
+                catch (Exception ex)
+                {
+                    _managerEventSource.Failure(ex);
+                    transaction.Rollback();
+                }
+            }
 
             return true;
         }

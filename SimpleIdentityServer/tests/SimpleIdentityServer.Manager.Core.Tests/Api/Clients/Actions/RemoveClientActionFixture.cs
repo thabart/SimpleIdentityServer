@@ -17,6 +17,7 @@
 using Moq;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Manager.Core.Api.Clients.Actions;
 using SimpleIdentityServer.Manager.Core.Errors;
 using SimpleIdentityServer.Manager.Core.Exceptions;
@@ -28,6 +29,8 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Clients.Actions
     public class RemoveClientActionFixture
     {
         private Mock<IClientRepository> _clientRepositoryStub;
+
+        private Mock<IManagerEventSource> _managerEventSourceStub;
 
         private IRemoveClientAction _removeClientAction;
 
@@ -87,7 +90,10 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Clients.Actions
         private void InitializeFakeObjects()
         {
             _clientRepositoryStub = new Mock<IClientRepository>();
-            _removeClientAction = new RemoveClientAction(_clientRepositoryStub.Object);
+            _managerEventSourceStub = new Mock<IManagerEventSource>();
+            _removeClientAction = new RemoveClientAction(
+                _clientRepositoryStub.Object,
+                _managerEventSourceStub.Object);
         }
     }
 }

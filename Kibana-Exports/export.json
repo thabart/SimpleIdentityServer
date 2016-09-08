@@ -1,12 +1,12 @@
 [
   {
-    "_id": "Failures",
+    "_id": "Authorizations",
     "_type": "dashboard",
     "_source": {
-      "title": "Failures",
+      "title": "Authorizations",
       "hits": 0,
       "description": "",
-      "panelsJSON": "[{\"col\":1,\"id\":\"navigation\",\"panelIndex\":1,\"row\":1,\"size_x\":3,\"size_y\":2,\"type\":\"visualization\"},{\"col\":4,\"columns\":[\"fields.Id\",\"fields.Operation\"],\"id\":\"Failures\",\"panelIndex\":2,\"row\":1,\"size_x\":9,\"size_y\":2,\"sort\":[\"@timestamp\",\"desc\"],\"type\":\"search\"},{\"id\":\"Failures-counter\",\"type\":\"visualization\",\"panelIndex\":3,\"size_x\":3,\"size_y\":2,\"col\":1,\"row\":3}]",
+      "panelsJSON": "[{\"col\":1,\"id\":\"navigation\",\"panelIndex\":1,\"row\":1,\"size_x\":2,\"size_y\":5,\"type\":\"visualization\"},{\"id\":\"Authorizations\",\"type\":\"visualization\",\"panelIndex\":2,\"size_x\":10,\"size_y\":3,\"col\":3,\"row\":1}]",
       "optionsJSON": "{\"darkTheme\":true}",
       "uiStateJSON": "{}",
       "version": 1,
@@ -17,13 +17,30 @@
     }
   },
   {
-    "_id": "Tokens",
+    "_id": "Failures",
     "_type": "dashboard",
     "_source": {
-      "title": "Tokens",
+      "title": "Failures",
       "hits": 0,
       "description": "",
-      "panelsJSON": "[{\"id\":\"navigation\",\"type\":\"visualization\",\"panelIndex\":1,\"size_x\":2,\"size_y\":3,\"col\":1,\"row\":1},{\"id\":\"Granted-tokens\",\"type\":\"visualization\",\"panelIndex\":2,\"size_x\":10,\"size_y\":3,\"col\":3,\"row\":1},{\"id\":\"Revocations-counter\",\"type\":\"visualization\",\"panelIndex\":3,\"size_x\":3,\"size_y\":2,\"col\":1,\"row\":4}]",
+      "panelsJSON": "[{\"col\":1,\"id\":\"navigation\",\"panelIndex\":1,\"row\":1,\"size_x\":3,\"size_y\":5,\"type\":\"visualization\"},{\"col\":4,\"columns\":[\"fields.Id\",\"fields.Operation\"],\"id\":\"Failures\",\"panelIndex\":2,\"row\":1,\"size_x\":9,\"size_y\":2,\"sort\":[\"@timestamp\",\"desc\"],\"type\":\"search\"},{\"id\":\"Failures-counter\",\"type\":\"visualization\",\"panelIndex\":3,\"size_x\":3,\"size_y\":2,\"col\":10,\"row\":3}]",
+      "optionsJSON": "{\"darkTheme\":true}",
+      "uiStateJSON": "{}",
+      "version": 1,
+      "timeRestore": false,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"filter\":[{\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"*\"}}}]}"
+      }
+    }
+  },
+  {
+    "_id": "LogsManager",
+    "_type": "dashboard",
+    "_source": {
+      "title": "LogsManager",
+      "hits": 0,
+      "description": "",
+      "panelsJSON": "[{\"col\":1,\"id\":\"navigation\",\"panelIndex\":1,\"row\":1,\"size_x\":3,\"size_y\":5,\"type\":\"visualization\"},{\"id\":\"Logs-Manager\",\"type\":\"search\",\"panelIndex\":2,\"size_x\":9,\"size_y\":4,\"col\":4,\"row\":1,\"columns\":[\"fields.Message\"],\"sort\":[\"@timestamp\",\"desc\"]}]",
       "optionsJSON": "{\"darkTheme\":true}",
       "uiStateJSON": "{}",
       "version": 1,
@@ -40,24 +57,7 @@
       "title": "Logs",
       "hits": 0,
       "description": "",
-      "panelsJSON": "[{\"col\":1,\"id\":\"navigation\",\"panelIndex\":1,\"row\":1,\"size_x\":3,\"size_y\":4,\"type\":\"visualization\"},{\"id\":\"Logs\",\"type\":\"search\",\"panelIndex\":2,\"size_x\":9,\"size_y\":4,\"col\":4,\"row\":1,\"columns\":[\"fields.Id\",\"fields.Message\"],\"sort\":[\"@timestamp\",\"desc\"]}]",
-      "optionsJSON": "{\"darkTheme\":true}",
-      "uiStateJSON": "{}",
-      "version": 1,
-      "timeRestore": false,
-      "kibanaSavedObjectMeta": {
-        "searchSourceJSON": "{\"filter\":[{\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"*\"}}}]}"
-      }
-    }
-  },
-  {
-    "_id": "Authorizations",
-    "_type": "dashboard",
-    "_source": {
-      "title": "Authorizations",
-      "hits": 0,
-      "description": "",
-      "panelsJSON": "[{\"col\":1,\"id\":\"navigation\",\"panelIndex\":1,\"row\":1,\"size_x\":2,\"size_y\":3,\"type\":\"visualization\"},{\"id\":\"Authorizations\",\"type\":\"visualization\",\"panelIndex\":2,\"size_x\":10,\"size_y\":3,\"col\":3,\"row\":1}]",
+      "panelsJSON": "[{\"col\":1,\"id\":\"navigation\",\"panelIndex\":1,\"row\":1,\"size_x\":3,\"size_y\":5,\"type\":\"visualization\"},{\"id\":\"Logs\",\"type\":\"search\",\"panelIndex\":2,\"size_x\":9,\"size_y\":4,\"col\":4,\"row\":1,\"columns\":[\"fields.Id\",\"fields.Message\"],\"sort\":[\"@timestamp\",\"desc\"]}]",
       "optionsJSON": "{\"darkTheme\":true}",
       "uiStateJSON": "{}",
       "version": 1,
@@ -74,7 +74,24 @@
       "title": "Uma Logs",
       "hits": 0,
       "description": "",
-      "panelsJSON": "[{\"col\":1,\"id\":\"navigation\",\"panelIndex\":1,\"row\":1,\"size_x\":3,\"size_y\":4,\"type\":\"visualization\"},{\"id\":\"Uma-Logs\",\"type\":\"search\",\"panelIndex\":2,\"size_x\":9,\"size_y\":4,\"col\":4,\"row\":1,\"columns\":[\"message\"],\"sort\":[\"@timestamp\",\"desc\"]}]",
+      "panelsJSON": "[{\"col\":1,\"id\":\"navigation\",\"panelIndex\":1,\"row\":1,\"size_x\":3,\"size_y\":5,\"type\":\"visualization\"},{\"id\":\"Uma-Logs\",\"type\":\"search\",\"panelIndex\":2,\"size_x\":9,\"size_y\":4,\"col\":4,\"row\":1,\"columns\":[\"message\"],\"sort\":[\"@timestamp\",\"desc\"]}]",
+      "optionsJSON": "{\"darkTheme\":true}",
+      "uiStateJSON": "{}",
+      "version": 1,
+      "timeRestore": false,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"filter\":[{\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"*\"}}}]}"
+      }
+    }
+  },
+  {
+    "_id": "Tokens",
+    "_type": "dashboard",
+    "_source": {
+      "title": "Tokens",
+      "hits": 0,
+      "description": "",
+      "panelsJSON": "[{\"id\":\"navigation\",\"type\":\"visualization\",\"panelIndex\":1,\"size_x\":2,\"size_y\":6,\"col\":1,\"row\":1},{\"id\":\"Granted-tokens\",\"type\":\"visualization\",\"panelIndex\":2,\"size_x\":10,\"size_y\":3,\"col\":3,\"row\":1},{\"id\":\"Revocations-counter\",\"type\":\"visualization\",\"panelIndex\":3,\"size_x\":3,\"size_y\":2,\"col\":10,\"row\":4}]",
       "optionsJSON": "{\"darkTheme\":true}",
       "uiStateJSON": "{}",
       "version": 1,
@@ -91,7 +108,24 @@
       "title": "Users",
       "hits": 0,
       "description": "",
-      "panelsJSON": "[{\"col\":1,\"id\":\"navigation\",\"panelIndex\":1,\"row\":1,\"size_x\":3,\"size_y\":4,\"type\":\"visualization\"},{\"id\":\"Authenticated-users\",\"type\":\"visualization\",\"panelIndex\":2,\"size_x\":8,\"size_y\":4,\"col\":4,\"row\":1},{\"id\":\"Authenticated-users-counter\",\"type\":\"visualization\",\"panelIndex\":3,\"size_x\":3,\"size_y\":2,\"col\":1,\"row\":5}]",
+      "panelsJSON": "[{\"col\":1,\"id\":\"navigation\",\"panelIndex\":1,\"row\":1,\"size_x\":3,\"size_y\":5,\"type\":\"visualization\"},{\"id\":\"Authenticated-users\",\"type\":\"visualization\",\"panelIndex\":2,\"size_x\":8,\"size_y\":4,\"col\":4,\"row\":1},{\"id\":\"Authenticated-users-counter\",\"type\":\"visualization\",\"panelIndex\":3,\"size_x\":3,\"size_y\":2,\"col\":9,\"row\":5}]",
+      "optionsJSON": "{\"darkTheme\":true}",
+      "uiStateJSON": "{}",
+      "version": 1,
+      "timeRestore": false,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"filter\":[{\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"*\"}}}]}"
+      }
+    }
+  },
+  {
+    "_id": "ManagementActions",
+    "_type": "dashboard",
+    "_source": {
+      "title": "ManagementActions",
+      "hits": 0,
+      "description": "",
+      "panelsJSON": "[{\"col\":1,\"id\":\"navigation\",\"panelIndex\":1,\"row\":1,\"size_x\":3,\"size_y\":5,\"type\":\"visualization\"},{\"id\":\"Removed-clients\",\"type\":\"visualization\",\"panelIndex\":2,\"size_x\":9,\"size_y\":4,\"col\":4,\"row\":1}]",
       "optionsJSON": "{\"darkTheme\":true}",
       "uiStateJSON": "{}",
       "version": 1,
@@ -108,7 +142,24 @@
       "title": "RPTs",
       "hits": 0,
       "description": "",
-      "panelsJSON": "[{\"col\":1,\"id\":\"navigation\",\"panelIndex\":1,\"row\":1,\"size_x\":3,\"size_y\":4,\"type\":\"visualization\"},{\"id\":\"RPT-tokens\",\"type\":\"visualization\",\"panelIndex\":2,\"size_x\":9,\"size_y\":4,\"col\":4,\"row\":1}]",
+      "panelsJSON": "[{\"col\":1,\"id\":\"navigation\",\"panelIndex\":1,\"row\":1,\"size_x\":3,\"size_y\":5,\"type\":\"visualization\"},{\"id\":\"RPT-tokens\",\"type\":\"visualization\",\"panelIndex\":2,\"size_x\":9,\"size_y\":4,\"col\":4,\"row\":1}]",
+      "optionsJSON": "{\"darkTheme\":true}",
+      "uiStateJSON": "{}",
+      "version": 1,
+      "timeRestore": false,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"filter\":[{\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"*\"}}}]}"
+      }
+    }
+  },
+  {
+    "_id": "ConfigurationLogs",
+    "_type": "dashboard",
+    "_source": {
+      "title": "ConfigurationLogs",
+      "hits": 0,
+      "description": "",
+      "panelsJSON": "[{\"col\":1,\"id\":\"navigation\",\"panelIndex\":1,\"row\":1,\"size_x\":3,\"size_y\":5,\"type\":\"visualization\"},{\"id\":\"Logs-Configuration\",\"type\":\"search\",\"panelIndex\":2,\"size_x\":9,\"size_y\":5,\"col\":4,\"row\":1,\"columns\":[\"fields.Message\"],\"sort\":[\"@timestamp\",\"desc\"]}]",
       "optionsJSON": "{\"darkTheme\":true}",
       "uiStateJSON": "{}",
       "version": 1,
@@ -284,6 +335,68 @@
     }
   },
   {
+    "_id": "Removed-clients",
+    "_type": "search",
+    "_source": {
+      "title": "Removed clients",
+      "description": "",
+      "hits": 0,
+      "columns": [
+        "fields.Id",
+        "fields.Operation",
+        "fields.Message"
+      ],
+      "sort": [
+        "@timestamp",
+        "desc"
+      ],
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"manager-*\",\"filter\":[],\"highlight\":{\"pre_tags\":[\"@kibana-highlighted-field@\"],\"post_tags\":[\"@/kibana-highlighted-field@\"],\"fields\":{\"*\":{}},\"require_field_match\":false,\"fragment_size\":2147483647},\"query\":{\"query_string\":{\"query\":\"fields.Id:2\",\"analyze_wildcard\":true}}}"
+      }
+    }
+  },
+  {
+    "_id": "Logs-Manager",
+    "_type": "search",
+    "_source": {
+      "title": "Logs Manager",
+      "description": "",
+      "hits": 0,
+      "columns": [
+        "fields.Message"
+      ],
+      "sort": [
+        "@timestamp",
+        "desc"
+      ],
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"manager-*\",\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"*\"}},\"filter\":[],\"highlight\":{\"pre_tags\":[\"@kibana-highlighted-field@\"],\"post_tags\":[\"@/kibana-highlighted-field@\"],\"fields\":{\"*\":{}},\"require_field_match\":false,\"fragment_size\":2147483647}}"
+      }
+    }
+  },
+  {
+    "_id": "Logs-Configuration",
+    "_type": "search",
+    "_source": {
+      "title": "Logs Configuration",
+      "description": "",
+      "hits": 0,
+      "columns": [
+        "fields.Message"
+      ],
+      "sort": [
+        "@timestamp",
+        "desc"
+      ],
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"configuration-*\",\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"*\"}},\"filter\":[],\"highlight\":{\"pre_tags\":[\"@kibana-highlighted-field@\"],\"post_tags\":[\"@/kibana-highlighted-field@\"],\"fields\":{\"*\":{}},\"require_field_match\":false,\"fragment_size\":2147483647}}"
+      }
+    }
+  },
+  {
     "_id": "Revocations-counter",
     "_type": "visualization",
     "_source": {
@@ -389,11 +502,26 @@
     }
   },
   {
+    "_id": "Removed-clients",
+    "_type": "visualization",
+    "_source": {
+      "title": "Removed clients",
+      "visState": "{\"title\":\"New Visualization\",\"type\":\"line\",\"params\":{\"shareYAxis\":true,\"addTooltip\":true,\"addLegend\":true,\"showCircles\":true,\"smoothLines\":false,\"interpolate\":\"linear\",\"scale\":\"linear\",\"drawLinesBetweenPoints\":true,\"radiusRatio\":9,\"times\":[],\"addTimeMarker\":false,\"defaultYExtents\":false,\"setYExtents\":false,\"yAxis\":{}},\"aggs\":[{\"id\":\"1\",\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"type\":\"date_histogram\",\"schema\":\"segment\",\"params\":{\"field\":\"@timestamp\",\"interval\":\"auto\",\"customInterval\":\"2h\",\"min_doc_count\":1,\"extended_bounds\":{}}},{\"id\":\"3\",\"type\":\"terms\",\"schema\":\"group\",\"params\":{\"field\":\"fields.Message.raw\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\"}}],\"listeners\":{}}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "savedSearchId": "Removed-clients",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"filter\":[]}"
+      }
+    }
+  },
+  {
     "_id": "navigation",
     "_type": "visualization",
     "_source": {
       "title": "navigation",
-      "visState": "{\"title\":\"navigation\",\"type\":\"markdown\",\"params\":{\"markdown\":\"###OpenId server:\\n\\n[Tokens](/#/dashboard/Tokens)\\n\\n[Authorizations](/#/dashboard/Authorizations)\\n\\n[Users](/#/dashboard/Users)\\n\\n[Failures](/#/dashboard/Failures)\\n\\n[Logs](/#/dashboard/Logs)\\n\\n###UMA server:\\n\\n[RPT tokens](/#/dashboard/RPTs)\\n\\n[Logs](/#/dashboard/Uma-Logs)\"},\"aggs\":[],\"listeners\":{}}",
+      "visState": "{\"title\":\"navigation\",\"type\":\"markdown\",\"params\":{\"markdown\":\"###OpenId server:\\n\\n[Tokens](/#/dashboard/Tokens)\\n\\n[Authorizations](/#/dashboard/Authorizations)\\n\\n[Users](/#/dashboard/Users)\\n\\n[Failures](/#/dashboard/Failures)\\n\\n[Logs](/#/dashboard/Logs)\\n\\n###UMA server:\\n\\n[RPT tokens](/#/dashboard/RPTs)\\n\\n[Logs](/#/dashboard/Uma-Logs)\\n\\n###Manager:\\n\\n[Actions](/#/dashboard/ManagementActions)\\n\\n[Logs](/#/dashboard/LogsManager)\\n\\n###Configuration:\\n\\n[Logs](/#/dashboard/ConfigurationLogs)\"},\"aggs\":[],\"listeners\":{}}",
       "uiStateJSON": "{}",
       "description": "",
       "version": 1,

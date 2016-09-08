@@ -15,6 +15,7 @@
 #endregion
 
 using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Manager.Core.Errors;
 using SimpleIdentityServer.Manager.Core.Exceptions;
 using System;
@@ -28,13 +29,18 @@ namespace SimpleIdentityServer.Manager.Core.Api.Scopes.Actions
 
     internal class DeleteScopeOperation : IDeleteScopeOperation
     {
-        private IScopeRepository _scopeRepository;
+        private readonly IScopeRepository _scopeRepository;
+
+        private readonly IManagerEventSource _managerEventSource;
 
         #region Constructor
 
-        public DeleteScopeOperation(IScopeRepository scopeRepository)
+        public DeleteScopeOperation(
+            IScopeRepository scopeRepository,
+            IManagerEventSource managerEventSource)
         {
             _scopeRepository = scopeRepository;
+            _managerEventSource = managerEventSource;
         }
 
         #endregion
@@ -43,6 +49,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.Scopes.Actions
 
         public bool Execute(string scopeName)
         {
+            _managerEventSource.StartToRemoveScope(scopeName);
             if (string.IsNullOrWhiteSpace(scopeName))
             {
                 throw new ArgumentNullException(nameof(scopeName));
@@ -55,7 +62,13 @@ namespace SimpleIdentityServer.Manager.Core.Api.Scopes.Actions
                     string.Format(ErrorDescriptions.TheScopeDoesntExist, scopeName));
             }
 
-            return _scopeRepository.DeleteScope(scope);
+            var res = _scopeRepository.DeleteScope(scope);
+            if (res)
+            {
+                _managerEventSource.FinishToRemoveScope(scopeName);
+            }
+
+            return res;
         }
 
         #endregion

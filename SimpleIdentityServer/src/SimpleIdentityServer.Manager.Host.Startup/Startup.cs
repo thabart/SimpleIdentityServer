@@ -50,6 +50,8 @@ namespace SimpleIdentityServer.Manager.Host.Startup
             var isSqlServer = bool.Parse(Configuration["isSqlServer"]);
             var isPostgre = bool.Parse(Configuration["isPostgre"]);
             var authorizationUrl = Configuration["AuthorizationServer"] + "/authorization";
+            var isLogFileEnabled = bool.Parse(Configuration["Log:File:Enabled"]);
+            var isElasticSearchEnabled = bool.Parse(Configuration["Log:Elasticsearch:Enabled"]);
             var tokenUrl = authorizationUrl + "/token";
             var dataSourceType = DataSourceTypes.InMemory;
             if (isSqlServer)
@@ -71,7 +73,20 @@ namespace SimpleIdentityServer.Manager.Host.Startup
             {
                 ConnectionString = connectionString,
                 DataSourceType = dataSourceType
-            }, _swaggerOptions);
+            }, _swaggerOptions,
+            new LoggingOptions
+            {
+                ElasticsearchOptions = new ElasticsearchOptions
+                {
+                    IsEnabled = isElasticSearchEnabled,
+                    Url = Configuration["Log:Elasticsearch:Url"]
+                },
+                FileLogOptions = new FileLogOptions
+                {
+                    IsEnabled = isLogFileEnabled,
+                    PathFormat = Configuration["Log:File:PathFormat"]
+                }
+            });
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
@@ -82,7 +97,7 @@ namespace SimpleIdentityServer.Manager.Host.Startup
             loggerFactory.AddConsole();
             loggerFactory.AddDebug();
 
-            app.UseSimpleIdentityServerManager(new AuthorizationServerOptions
+            app.UseSimpleIdentityServerManager(loggerFactory, new AuthorizationServerOptions
             {
                 IntrospectionUrl = introspectionUrl,
                 ClientId = clientId,

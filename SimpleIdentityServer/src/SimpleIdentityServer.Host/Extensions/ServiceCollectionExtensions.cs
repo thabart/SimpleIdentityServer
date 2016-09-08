@@ -280,6 +280,7 @@ namespace SimpleIdentityServer.Host
             Log.Logger = log;
             services.AddLogging();
             services.AddTransient<ISimpleIdentityServerEventSource, SimpleIdentityServerEventSource>();
+            services.AddTransient<IManagerEventSource, ManagerEventSource>();
             services.AddSingleton<ILogger>(log);
             services.AddSingleton<ISimpleIdServerConfigurationClientFactory>(new SimpleIdServerConfigurationClientFactory());
             services.AddSingleton<IIdentityServerClientFactory>(new IdentityServerClientFactory());

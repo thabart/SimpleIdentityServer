@@ -18,6 +18,7 @@ using Microsoft.EntityFrameworkCore;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
 using SimpleIdentityServer.DataAccess.SqlServer.Models;
+using SimpleIdentityServer.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,13 +32,18 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 
         private readonly SimpleIdentityServerContext _context;
 
+        private readonly IManagerEventSource _managerEventSource;
+
         #endregion
 
         #region Constructor
 
-        public ResourceOwnerRepository(SimpleIdentityServerContext context)
+        public ResourceOwnerRepository(
+            SimpleIdentityServerContext context,
+            IManagerEventSource managerEventSource)
         {
             _context = context;
+            _managerEventSource = managerEventSource;
         }
 
         #endregion
@@ -126,8 +132,9 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                 _context.ResourceOwners.Add(user);
                 _context.SaveChanges();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _managerEventSource.Failure(ex);
                 return false;
             }
 

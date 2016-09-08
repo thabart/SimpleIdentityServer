@@ -17,6 +17,7 @@
 using Moq;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Manager.Core.Api.ResourceOwners.Actions;
 using SimpleIdentityServer.Manager.Core.Errors;
 using SimpleIdentityServer.Manager.Core.Exceptions;
@@ -28,6 +29,8 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.ResourceOwners
     public class DeleteResourceOwnerActionFixture
     {
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
+
+        private Mock<IManagerEventSource> _managerEventSourceStub;
 
         private IDeleteResourceOwnerAction _deleteResourceOwnerAction;
 
@@ -88,8 +91,10 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.ResourceOwners
         private void InitializeFakeObjects()
         {
             _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
+            _managerEventSourceStub = new Mock<IManagerEventSource>();
             _deleteResourceOwnerAction = new DeleteResourceOwnerAction(
-                _resourceOwnerRepositoryStub.Object);
+                _resourceOwnerRepositoryStub.Object,
+                _managerEventSourceStub.Object);
         }
 
         #endregion

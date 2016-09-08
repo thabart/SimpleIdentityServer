@@ -15,6 +15,7 @@
 #endregion
 
 using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Manager.Core.Errors;
 using SimpleIdentityServer.Manager.Core.Exceptions;
 using System;
@@ -30,11 +31,16 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients.Actions
     {
         private readonly IClientRepository _clientRepository;
 
+        private readonly IManagerEventSource _managerEventSource;
+
         #region Constructor
         
-        public RemoveClientAction(IClientRepository clientRepository)
+        public RemoveClientAction(
+            IClientRepository clientRepository,
+            IManagerEventSource managerEventSource)
         {
             _clientRepository = clientRepository;
+            _managerEventSource = managerEventSource;
         }
 
         #endregion
@@ -43,6 +49,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients.Actions
 
         public bool Execute(string clientId)
         {
+            _managerEventSource.StartToRemoveClient(clientId);
             if (string.IsNullOrWhiteSpace(clientId))
             {
                 throw new ArgumentNullException(nameof(clientId));
@@ -55,7 +62,13 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients.Actions
                     string.Format(ErrorDescriptions.TheClientDoesntExist, clientId));
             }
 
-            return _clientRepository.DeleteClient(client);
+            var result = _clientRepository.DeleteClient(client);
+            if (result)
+            {
+                _managerEventSource.FinishToRemoveClient(clientId);
+            }
+
+            return result;
         }
 
         #endregion

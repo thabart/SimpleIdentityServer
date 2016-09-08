@@ -21,15 +21,22 @@ using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
 using SimpleIdentityServer.DataAccess.SqlServer.Models;
 using Microsoft.EntityFrameworkCore;
+using SimpleIdentityServer.Logging;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 {
     public sealed class ConsentRepository : IConsentRepository
     {
         private readonly SimpleIdentityServerContext _context;
-        
-        public ConsentRepository(SimpleIdentityServerContext context) {
+
+        private readonly IManagerEventSource _managerEventSource;
+
+        public ConsentRepository(
+            SimpleIdentityServerContext context,
+            IManagerEventSource managerEventSource)
+        {
             _context = context;
+            _managerEventSource = managerEventSource;
         }
 
         public List<Core.Models.Consent> GetConsentsForGivenUser(string subject)
@@ -109,8 +116,9 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                     transaction.Commit();
                     result = insertedConsent.Entity.ToDomain();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    _managerEventSource.Failure(ex);
                     transaction.Rollback();
                 }
             }
@@ -135,8 +143,9 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                     _context.SaveChanges();
                     transaction.Commit();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    _managerEventSource.Failure(ex);
                     transaction.Rollback();
                     return false;
                 }
