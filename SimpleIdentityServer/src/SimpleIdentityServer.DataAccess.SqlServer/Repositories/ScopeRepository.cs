@@ -137,7 +137,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 
         public bool UpdateScope(Domains.Scope scope)
         {
-            using (var translation = _context.Database.BeginTransaction())
+            using (var transaction = _context.Database.BeginTransaction())
             {
                 try
                 {
@@ -147,13 +147,13 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                     connectedScope.IsDisplayedInConsent = scope.IsDisplayedInConsent;
                     connectedScope.IsExposed = scope.IsExposed;
                     _context.SaveChanges();
-                    translation.Commit();
+                    transaction.Commit();
 
                 }
                 catch (Exception ex)
                 {
                     _managerEventSource.Failure(ex);
-                    translation.Rollback();
+                    transaction.Rollback();
                     return false;
                 }
 

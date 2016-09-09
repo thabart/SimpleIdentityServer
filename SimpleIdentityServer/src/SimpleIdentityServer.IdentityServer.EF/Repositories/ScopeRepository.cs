@@ -19,9 +19,9 @@ using System.Linq;
 using System.Collections.Generic;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
-using IdentityServer4.EntityFramework.Interfaces;
 using SimpleIdentityServer.Logging;
 using IdentityServer4.EntityFramework.DbContexts;
+using Microsoft.EntityFrameworkCore;
 
 namespace SimpleIdentityServer.IdentityServer.EF
 {
@@ -29,7 +29,7 @@ namespace SimpleIdentityServer.IdentityServer.EF
     {
         #region Fields
 
-        private readonly IConfigurationDbContext _context;
+        private readonly ConfigurationDbContext _context;
 
         private readonly IManagerEventSource _managerEventSource;
 
@@ -56,27 +56,122 @@ namespace SimpleIdentityServer.IdentityServer.EF
 
         public bool DeleteScope(Scope scope)
         {
-            throw new NotImplementedException();
+            if (scope == null)
+            {
+                throw new ArgumentNullException(nameof(scope));
+            }
+
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    var connectedScope = _context.Scopes
+                        .FirstOrDefault(c => c.Name == scope.Name);
+                    if (connectedScope == null)
+                    {
+                        return false;
+                    }
+
+                    _context.Scopes.Remove(connectedScope);
+                    _context.SaveChanges();
+                    transaction.Commit();
+                }
+                catch (Exception ex)
+                {
+                    _managerEventSource.Failure(ex);
+                    transaction.Rollback();
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         public IList<Scope> GetAllScopes()
         {
-            return _context.Scopes.Select(s => s.ToDomain()).ToList();
+            return _context.Scopes.Include(s => s.Claims)
+                .Select(s => s.ToDomain()).ToList();
         }
 
         public Scope GetScopeByName(string name)
         {
-            throw new NotImplementedException();
+            var result = _context.Scopes
+                .Include(s => s.Claims)
+                .FirstOrDefault(s => s.Name == name);
+            if (result == null)
+            {
+                return null;
+            }
+
+            return result.ToDomain();
         }
 
         public bool InsertScope(Scope scope)
         {
-            throw new NotImplementedException();
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    var record = new IdentityServer4.EntityFramework.Entities.Scope
+                    {
+                        Name = scope.Name,
+                        Description = scope.Description,
+                        ShowInDiscoveryDocument = scope.IsExposed,
+                        Type = scope.Type == ScopeType.ProtectedApi ? 1 : 0,
+                        DisplayName = scope.Name
+                    };
+
+                    if (scope.Claims != null && scope.Claims.Any())
+                    {
+                        scope.Claims.ForEach(c => record.Claims.Add(new IdentityServer4.EntityFramework.Entities.ScopeClaim
+                        {
+                            Name = c,
+                            Description = c
+                        }));    
+                    }
+
+                    _context.Scopes.Add(record);
+                    _context.SaveChanges();
+                    transaction.Commit();
+                }
+                catch(Exception ex)
+                {
+                    _managerEventSource.Failure(ex);
+                    transaction.Rollback();
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         public bool UpdateScope(Scope scope)
         {
-            throw new NotImplementedException();
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    var connectedScope = _context.Scopes
+                        .FirstOrDefault(c => c.Name == scope.Name);
+                    if (connectedScope == null)
+                    {
+                        return false;
+                    }
+
+                    connectedScope.Description = scope.Description;
+                    connectedScope.ShowInDiscoveryDocument = scope.IsExposed;
+                    _context.SaveChanges();
+                    transaction.Commit();
+                }
+                catch (Exception ex)
+                {
+                    _managerEventSource.Failure(ex);
+                    transaction.Rollback();
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         #endregion

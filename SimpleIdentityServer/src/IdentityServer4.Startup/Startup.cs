@@ -15,12 +15,14 @@
 #endregion
 
 using IdentityServer4.EntityFramework.DbContexts;
+using IdentityServer4.EntityFramework.Mappers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System.Linq;
 using System.Reflection;
 
 namespace IdentityServer4.Startup
@@ -74,28 +76,16 @@ namespace IdentityServer4.Startup
         {
             using (var scope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
             {
-                // scope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.EnsureCreated();
                 var context = scope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
-                /*
-                if (!context.Clients.Any())
-                {
-                    foreach (var client in Config.GetClients())
-                    {
-                        context.Clients.Add(client.ToEntity());
-                    }
-
-                    context.SaveChanges();
-                }
-
                 if (!context.Scopes.Any())
                 {
                     foreach (var client in Config.GetScopes())
                     {
                         context.Scopes.Add(client.ToEntity());
                     }
+
                     context.SaveChanges();
                 }
-                */
             }
         }
 

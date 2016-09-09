@@ -36,7 +36,7 @@ namespace SimpleIdentityServer.IdentityServer.EF
             record.IsOpenIdScope = standardScopeNames.Contains(record.Name);
             record.Type = scope.Type == (int)IdentityServer4.Models.ScopeType.Identity ?
                 ScopeType.ResourceOwner : ScopeType.ProtectedApi;
-            if (scope != null && scope.Claims.Any())
+            if (scope.Claims != null && scope.Claims.Any())
             {
                 record.Claims = scope.Claims.Select(c => c.Name).ToList();
             }

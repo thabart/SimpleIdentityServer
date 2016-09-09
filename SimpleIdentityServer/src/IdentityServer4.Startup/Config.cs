@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace IdentityServer4.Startup
 {
-    internal static class Configuration
+    internal static class Config
     {
         /// <summary>
         /// Get scopes
