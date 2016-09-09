@@ -15,7 +15,7 @@
     ]
   },
   "tooling": {
-    "defaultNamespace": "SimpleIdentityServer.Manager.Host.Startup"
+    "defaultNamespace": "SimpleIdentityServer.IdentityServer.Manager.Startup"
   },
 
   "dependencies": {
@@ -24,8 +24,7 @@
     "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0",
     "SimpleIdentityServer.UserInformation.Authentication": "*",
     "SimpleIdentityServer.Manager.Host": "*",
-    "SimpleIdentityServer.DataAccess.Fake": "*",
-    "SimpleIdentityServer.DataAccess.SqlServer": "*"
+    "SimpleIdentityServer.IdentityServer.EF": "*"
   },
   "frameworks": {
     "net46": {

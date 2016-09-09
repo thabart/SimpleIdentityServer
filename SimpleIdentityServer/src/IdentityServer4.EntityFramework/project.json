@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-*",
+  "version": "1.0.0-rc1-*",
   "authors": [ "Brock Allen", "Dominick Baier", "Scott Brady" ],
   "description": "EntityFramework persistence layer for IdentityServer4",
 
@@ -11,43 +11,15 @@
   },
 
   "dependencies": {
-    "IdentityServer4": "1.0.0-rc1",
+    "NETStandard.Library": "1.6.0",
+    "IdentityServer4":  "1.0.0-rc1",
     "Microsoft.EntityFrameworkCore": "1.0.0",
     "Microsoft.EntityFrameworkCore.Relational": "1.0.0",
-    "Microsoft.EntityFrameworkCore.SqlServer": "1.0.0",
-    "Microsoft.EntityFrameworkCore.Tools": {
-      "type": "build",
-      "version": "1.0.0-preview2-final"
-    },
-    "AutoMapper": "5.1.1",
-    "Microsoft.Extensions.Configuration.Json": "1.0.0",
-    "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0"
+    "AutoMapper": "5.1.1"
   },
 
-  "tools": {
-    "Microsoft.EntityFrameworkCore.Tools": {
-      "imports": [ "dnxcore50", "portable-net451+win8" ],
-      "version": "1.0.0-preview2-final"
-    }
-  },
-
-  "buildOptions": {
-    "emitEntryPoint": true,
-    "copyToOutput": [
-      "appsettings.json"
-    ]
-  },
-   
   "frameworks": {
-      "net46": { },
-      "netcoreapp1.0": {
-        "imports": [ "dnxcore50", "portable-net451+win8" ],
-        "dependencies": {
-          "Microsoft.NETCore.App": {
-            "type": "platform",
-            "version": "1.0.0"
-          }
-        }
-      }
-    }
+    "netstandard1.4": {},
+    "net452": {}
   }
+}

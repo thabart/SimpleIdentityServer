@@ -20,7 +20,6 @@ using Serilog.Events;
 using Serilog.Sinks.Elasticsearch;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Jwt;
-using SimpleIdentityServer.DataAccess.SqlServer;
 using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Manager.Core;
 using System;
@@ -32,8 +31,6 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
         public static void AddSimpleIdentityServerManager(
             this IServiceCollection serviceCollection,
             AuthorizationServerOptions authorizationServerOptions,
-            DatabaseOptions databaseOptions,
-            SwaggerOptions swaggerOptions,
             LoggingOptions loggingOptions)
         {
             if (authorizationServerOptions == null)
@@ -41,39 +38,10 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
                 throw new ArgumentNullException(nameof(authorizationServerOptions));
             }
 
-            if (databaseOptions == null)
-            {
-                throw new ArgumentNullException(nameof(databaseOptions));
-            }
-
-            if (swaggerOptions == null)
-            {
-                throw new ArgumentNullException(nameof(swaggerOptions));
-            }
-
             // Add the dependencies needed to enable CORS
             serviceCollection.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
                 .AllowAnyMethod()
-                .AllowAnyHeader()));
-
-
-            // Enable SQLServer
-            if (databaseOptions.DataSourceType == DataSourceTypes.SqlServer)
-            {
-                serviceCollection.AddSimpleIdentityServerSqlServer(databaseOptions.ConnectionString);
-            }
-
-            // Enable SQLite
-            if (databaseOptions.DataSourceType == DataSourceTypes.SqlLite)
-            {
-                serviceCollection.AddSimpleIdentityServerSqlLite(databaseOptions.ConnectionString);
-            }
-
-            // Enable postgresql
-            if (databaseOptions.DataSourceType == DataSourceTypes.Postgres)
-            {
-                serviceCollection.AddSimpleIdentityServerPostgre(databaseOptions.ConnectionString);
-            }
+                .AllowAnyHeader()));            
 
             serviceCollection.AddSimpleIdentityServerCore();
             serviceCollection.AddSimpleIdentityServerManagerCore();

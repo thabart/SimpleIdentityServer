@@ -19,10 +19,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using SimpleIdentityServer.DataAccess.SqlServer;
+using SimpleIdentityServer.IdentityServer.EF;
 using SimpleIdentityServer.Manager.Host.Extensions;
 
-namespace SimpleIdentityServer.Manager.Host.Startup
+namespace SimpleIdentityServer.IdentityServer.Manager.Startup
 {
 
     public class Startup
@@ -42,23 +42,12 @@ namespace SimpleIdentityServer.Manager.Host.Startup
         public void ConfigureServices(IServiceCollection services)
         {
             var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
-            var databaseType = Configuration["DatabaseType"];
+            // var databaseType = Configuration["DatabaseType"];
             var authorizationUrl = Configuration["AuthorizationServer"] + "/authorization";
             var isLogFileEnabled = bool.Parse(Configuration["Log:File:Enabled"]);
             var isElasticSearchEnabled = bool.Parse(Configuration["Log:Elasticsearch:Enabled"]);
             var tokenUrl = authorizationUrl + "/token";
-            if (databaseType == "SQLITE")
-            {
-                services.AddSimpleIdentityServerSqlLite(connectionString);
-            }
-            else if (databaseType == "POSTGRES")
-            {
-                services.AddSimpleIdentityServerPostgre(connectionString);
-            }
-            else
-            {
-                services.AddSimpleIdentityServerSqlServer(connectionString);
-            }
+            services.AddSimpleIdentityServerSqlServer(connectionString);
 
             services.AddSimpleIdentityServerManager(new AuthorizationServerOptions
             {

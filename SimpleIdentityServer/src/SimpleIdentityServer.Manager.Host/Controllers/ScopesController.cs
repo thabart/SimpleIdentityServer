@@ -40,7 +40,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
         #region Public methods
 
         [HttpGet]
-        [Authorize("manager")]
+        // [Authorize("manager")]
         public List<ScopeResponse> GetAll()
         {
             return _scopeActions.GetScopes().ToDtos();

@@ -6,19 +6,17 @@
   </PropertyGroup>
   <Import Project="$(VSToolsPath)\DotNet\Microsoft.DotNet.Props" Condition="'$(VSToolsPath)' != ''" />
   <PropertyGroup Label="Globals">
-    <ProjectGuid>ebf79640-420a-41ca-92c1-33826ff1f116</ProjectGuid>
-    <RootNamespace>IdentityServer4.EntityFramework</RootNamespace>
+    <ProjectGuid>ef086fd1-656b-4dc6-b23b-b1401203ce76</ProjectGuid>
+    <RootNamespace>SimpleIdentityServer.IdentityServer.Manager.Startup</RootNamespace>
     <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">.\obj</BaseIntermediateOutputPath>
     <OutputPath Condition="'$(OutputPath)'=='' ">.\bin\</OutputPath>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup>
     <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
-  <ItemGroup>
-    <Content Include="..\..\IdentityServer4.EntityFramework.licenseheader">
-      <Link>IdentityServer4.EntityFramework.licenseheader</Link>
-    </Content>
-  </ItemGroup>
+  <!--
+  <Import Project="$(VSToolsPath)\DotNet.Web\Microsoft.DotNet.Web.targets" Condition="'$(VSToolsPath)' != ''" />
+  -->
   <Import Project="$(VSToolsPath)\DotNet\Microsoft.DotNet.targets" Condition="'$(VSToolsPath)' != ''" />
 </Project>

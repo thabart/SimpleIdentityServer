@@ -29,17 +29,11 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
         public static void UseSimpleIdentityServerManager(
             this IApplicationBuilder applicationBuilder,
             ILoggerFactory loggerFactory,
-            AuthorizationServerOptions authorizationServerOptions,
-            SwaggerOptions swaggerOptions)
+            AuthorizationServerOptions authorizationServerOptions)
         {
             if (authorizationServerOptions == null)
             {
                 throw new ArgumentNullException(nameof(authorizationServerOptions));
-            }
-
-            if (swaggerOptions == null)
-            {
-                throw new ArgumentNullException(nameof(swaggerOptions));
             }
 
             loggerFactory.AddSerilog();

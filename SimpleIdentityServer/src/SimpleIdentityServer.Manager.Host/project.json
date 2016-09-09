@@ -21,8 +21,6 @@
     "Serilog.Sinks.ColoredConsole": "2.0.0",
     "Serilog.Extensions.Logging": "1.0.0",
     "Serilog.Sinks.ElasticSearch": "*",
-    "SimpleIdentityServer.DataAccess.Fake": "*",
-    "SimpleIdentityServer.DataAccess.SqlServer": "*",
     "SimpleIdentityServer.Manager.Core": "*",
     "SimpleIdentityServer.Oauth2Instrospection.Authentication": "*"
   },
