@@ -22,6 +22,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using System.Linq;
 using System.Reflection;
 
@@ -52,9 +53,11 @@ namespace IdentityServer4.Startup
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMvc();
             var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
             services.AddIdentityServerQuickstart()
+                .AddInMemoryUsers(Config.GetUsers())
                 .AddConfigurationStore(builder => builder.UseSqlServer(connectionString, options => options.MigrationsAssembly(migrationsAssembly)))
                 .AddOperationalStore(builder => builder.UseSqlServer(connectionString, options => options.MigrationsAssembly(migrationsAssembly)));
         }
@@ -65,7 +68,31 @@ namespace IdentityServer4.Startup
         {
             InitializeDatabase(app);
             loggerFactory.AddConsole(LogLevel.Debug);
+
+            app.UseDeveloperExceptionPage();
+
+            app.UseCookieAuthentication(new CookieAuthenticationOptions
+            {
+                AuthenticationScheme = "Cookies"
+            });
+
+            app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
+            {
+                AuthenticationScheme = "oidc",
+                SignInScheme = "Cookies",
+                Authority = "http://localhost:5000/",
+                RequireHttpsMetadata = false,
+                ClientId = "mvc",
+                ClientSecret = "secret",
+                ResponseType = "code id_token",
+                GetClaimsFromUserInfoEndpoint = true,
+                SaveTokens = true
+            });
+
+
             app.UseIdentityServer();
+            app.UseStaticFiles();
+            app.UseMvcWithDefaultRoute();
         }
 
         #endregion
@@ -79,9 +106,19 @@ namespace IdentityServer4.Startup
                 var context = scope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
                 if (!context.Scopes.Any())
                 {
-                    foreach (var client in Config.GetScopes())
+                    foreach (var s in Config.GetScopes())
                     {
-                        context.Scopes.Add(client.ToEntity());
+                        context.Scopes.Add(s.ToEntity());
+                    }
+
+                    context.SaveChanges();
+                }
+
+                if (!context.Clients.Any())
+                {
+                    foreach (var c in Config.GetClients())
+                    {
+                        context.Clients.Add(c.ToEntity());
                     }
 
                     context.SaveChanges();

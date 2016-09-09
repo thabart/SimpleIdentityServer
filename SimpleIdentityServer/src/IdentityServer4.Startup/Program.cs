@@ -16,6 +16,7 @@
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using System.IO;
 
 namespace IdentityServer4.Startup
 {
@@ -30,6 +31,7 @@ namespace IdentityServer4.Startup
                 .Build();
             var host = new WebHostBuilder()
                 .UseKestrel()
+                .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseConfiguration(configuration)
                 .UseStartup<Startup>()
                 .Build();

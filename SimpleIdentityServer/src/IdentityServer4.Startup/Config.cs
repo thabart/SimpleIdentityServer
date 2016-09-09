@@ -1,5 +1,7 @@
 ﻿using IdentityServer4.Models;
+using IdentityServer4.Quickstart;
 using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace IdentityServer4.Startup
 {
@@ -75,7 +77,69 @@ namespace IdentityServer4.Startup
         {
             return new List<Client>
             {
-                
+                new Client
+                {
+                    ClientId = "mvc",
+                    ClientName = "MVC Client",
+                    AllowedGrantTypes = GrantTypes.HybridAndClientCredentials,
+
+                    ClientSecrets = new List<Secret>
+                    {
+                        new Secret("secret".Sha256())
+                    },
+
+                    RedirectUris = new List<string>
+                    {
+                        "http://localhost:4001/signin-oidc"
+                    },
+                    PostLogoutRedirectUris = new List<string>
+                    {
+                        "http://localhost:4001"
+                    },
+
+                    AllowedScopes = new List<string>
+                    {
+                        StandardScopes.OpenId.Name,
+                        StandardScopes.Profile.Name,
+                        StandardScopes.OfflineAccess.Name,
+                        "api1"
+                    }
+                }
+            };
+        }
+
+        /// <summary>
+        /// Get resource owners
+        /// </summary>
+        /// <returns></returns>
+        public static List<InMemoryUser> GetUsers()
+        {
+            return new List<InMemoryUser>
+            {
+                new InMemoryUser
+                {
+                    Subject = "1",
+                    Username = "alice",
+                    Password = "password",
+
+                    Claims = new List<Claim>
+                    {
+                        new Claim("name", "Alice"),
+                        new Claim("website", "https://alice.com")
+                    }
+                },
+                new InMemoryUser
+                {
+                    Subject = "2",
+                    Username = "bob",
+                    Password = "password",
+
+                    Claims = new List<Claim>
+                    {
+                        new Claim("name", "Bob"),
+                        new Claim("website", "https://bob.com")
+                    }
+                }
             };
         }
     }

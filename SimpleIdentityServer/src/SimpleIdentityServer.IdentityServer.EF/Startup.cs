@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
 
 namespace IdentityServer4.EntityFramework
 {
@@ -26,13 +27,16 @@ namespace IdentityServer4.EntityFramework
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
             var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
             services.AddEntityFramework()
                .AddDbContext<ConfigurationDbContext>(options =>
-                   options.UseSqlServer(connectionString));
+                   options.UseSqlServer(connectionString, opt =>
+                       opt.MigrationsAssembly(migrationsAssembly)));
             services.AddEntityFramework()
                .AddDbContext<PersistedGrantDbContext>(options =>
-                   options.UseSqlServer(connectionString));
+                   options.UseSqlServer(connectionString, opt =>
+                       opt.MigrationsAssembly(migrationsAssembly)));
         }
 
         public static void Main(string[] args) { }

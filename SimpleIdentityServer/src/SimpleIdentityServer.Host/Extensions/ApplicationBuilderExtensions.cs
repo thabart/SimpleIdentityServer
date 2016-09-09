@@ -146,9 +146,7 @@ namespace SimpleIdentityServer.Host
             // 3. Protect against IFRAME attack
             app.UseXFrame();
 
-            // Check this implementation : https://github.com/aspnet/Security/blob/dev/samples/SocialSample/Startup.cs
-
-            // 3. Enable authentication
+            // 4. Enable authentication
             app.UseAuthentication(authenticationOptions);
 
             // 5. Migrate all the database
