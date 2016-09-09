@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using SimpleIdentityServer.IdentityServer.EF.DbContexts;
 using System.Reflection;
 
 namespace IdentityServer4.EntityFramework
@@ -35,6 +36,10 @@ namespace IdentityServer4.EntityFramework
                        opt.MigrationsAssembly(migrationsAssembly)));
             services.AddEntityFramework()
                .AddDbContext<PersistedGrantDbContext>(options =>
+                   options.UseSqlServer(connectionString, opt =>
+                       opt.MigrationsAssembly(migrationsAssembly)));
+            services.AddEntityFramework()
+               .AddDbContext<UserDbContext>(options =>
                    options.UseSqlServer(connectionString, opt =>
                        opt.MigrationsAssembly(migrationsAssembly)));
         }

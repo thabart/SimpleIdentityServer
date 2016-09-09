@@ -19,6 +19,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.IdentityServer.EF.DbContexts;
 
 namespace SimpleIdentityServer.IdentityServer.EF
 {
@@ -36,6 +37,9 @@ namespace SimpleIdentityServer.IdentityServer.EF
                     options.UseSqlServer(connectionString));
             serviceCollection.AddEntityFramework()
                 .AddDbContext<PersistedGrantDbContext>(options =>
+                    options.UseSqlServer(connectionString));
+            serviceCollection.AddEntityFramework()
+                .AddDbContext<UserDbContext>(options =>
                     options.UseSqlServer(connectionString));
             return serviceCollection;
         }

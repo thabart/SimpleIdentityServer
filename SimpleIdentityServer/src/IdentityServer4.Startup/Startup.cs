@@ -16,15 +16,19 @@
 
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
+using IdentityServer4.Startup.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
+using SimpleIdentityServer.IdentityServer.EF.DbContexts;
 using System.Linq;
 using System.Reflection;
+using IdentityServer4.Startup.Extensions;
+using IdentityServer4.Services;
+using SimpleIdentityServer.IdentityServer.EF;
 
 namespace IdentityServer4.Startup
 {
@@ -55,11 +59,9 @@ namespace IdentityServer4.Startup
         {
             services.AddMvc();
             var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
-            var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
-            services.AddIdentityServerQuickstart()
-                .AddInMemoryUsers(Config.GetUsers())
-                .AddConfigurationStore(builder => builder.UseSqlServer(connectionString, options => options.MigrationsAssembly(migrationsAssembly)))
-                .AddOperationalStore(builder => builder.UseSqlServer(connectionString, options => options.MigrationsAssembly(migrationsAssembly)));
+            services.AddTransient<IProfileService, UserProfileService>();
+            services.AddIdentityServerQuickstart();
+            services.AddSimpleIdentityServerSqlServer(connectionString);
         }
 
         public void Configure(IApplicationBuilder app,
@@ -80,7 +82,7 @@ namespace IdentityServer4.Startup
             {
                 AuthenticationScheme = "oidc",
                 SignInScheme = "Cookies",
-                Authority = "http://localhost:5000/",
+                Authority = "http://localhost:4001/",
                 RequireHttpsMetadata = false,
                 ClientId = "mvc",
                 ClientSecret = "secret",
@@ -104,6 +106,7 @@ namespace IdentityServer4.Startup
             using (var scope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
             {
                 var context = scope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
+                var ctxUsers = scope.ServiceProvider.GetRequiredService<UserDbContext>();
                 if (!context.Scopes.Any())
                 {
                     foreach (var s in Config.GetScopes())
@@ -122,6 +125,16 @@ namespace IdentityServer4.Startup
                     }
 
                     context.SaveChanges();
+                }
+
+                if (!ctxUsers.Users.Any())
+                {
+                    foreach(DbUser u in Config.GetUsers())
+                    {
+                        ctxUsers.Users.Add(u.ToEntity());
+                    }
+
+                    ctxUsers.SaveChanges();
                 }
             }
         }

@@ -1,5 +1,6 @@
 ﻿using IdentityServer4.Models;
 using IdentityServer4.Quickstart;
+using IdentityServer4.Startup.Services;
 using System.Collections.Generic;
 using System.Security.Claims;
 
@@ -112,32 +113,31 @@ namespace IdentityServer4.Startup
         /// Get resource owners
         /// </summary>
         /// <returns></returns>
-        public static List<InMemoryUser> GetUsers()
+        public static List<DbUser> GetUsers()
         {
-            return new List<InMemoryUser>
+            return new List<DbUser>
             {
-                new InMemoryUser
+                new DbUser
                 {
                     Subject = "1",
                     Username = "alice",
                     Password = "password",
 
-                    Claims = new List<Claim>
+                    Claims = new List<DbClaim>
                     {
-                        new Claim("name", "Alice"),
-                        new Claim("website", "https://alice.com")
+                        new DbClaim("name", "Alice"),
+                        new DbClaim("website", "https://alice.com")
                     }
                 },
-                new InMemoryUser
+                new DbUser
                 {
                     Subject = "2",
                     Username = "bob",
                     Password = "password",
-
-                    Claims = new List<Claim>
+                    Claims = new List<DbClaim>
                     {
-                        new Claim("name", "Bob"),
-                        new Claim("website", "https://bob.com")
+                        new DbClaim("name", "Bob"),
+                        new DbClaim("website", "https://bob.com")
                     }
                 }
             };
