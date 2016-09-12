@@ -27,6 +27,11 @@ using System.Linq;
 using IdentityServer4.Startup.Extensions;
 using IdentityServer4.Services;
 using SimpleIdentityServer.IdentityServer.EF;
+using System;
+using Serilog.Events;
+using Serilog;
+using IdentityServer4.Startup.Validation;
+using IdentityServer4.Validation;
 
 namespace IdentityServer4.Startup
 {
@@ -56,6 +61,11 @@ namespace IdentityServer4.Startup
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+
+            services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader()));
+
             var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
             services.AddIdentityServerQuickstart();
             services.AddSimpleIdentityServerSqlServer(connectionString);
@@ -67,15 +77,13 @@ namespace IdentityServer4.Startup
             ILoggerFactory loggerFactory)
         {
             InitializeDatabase(app);
-            loggerFactory.AddConsole(LogLevel.Debug);
-
+            loggerFactory.AddSerilog();
             app.UseDeveloperExceptionPage();
-
             app.UseCookieAuthentication(new CookieAuthenticationOptions
             {
                 AuthenticationScheme = "Cookies"
             });
-
+            app.UseCors("AllowAll");
             app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
             {
                 AuthenticationScheme = "oidc",
@@ -88,8 +96,6 @@ namespace IdentityServer4.Startup
                 GetClaimsFromUserInfoEndpoint = true,
                 SaveTokens = true
             });
-
-
             app.UseIdentityServer();
             app.UseStaticFiles();
             app.UseMvcWithDefaultRoute();
@@ -141,6 +147,27 @@ namespace IdentityServer4.Startup
         {
             services.AddTransient<UserLoginService>();
             services.AddTransient<IProfileService, UserProfileService>();
+            services.AddTransient<IResourceOwnerPasswordValidator, ResourceOwnerPasswordValidator>();
+            Func<LogEvent, bool> filter = (e) =>
+            {
+                var ctx = e.Properties["SourceContext"];
+                var contextValue = ctx.ToString()
+                    .TrimStart('"')
+                    .TrimEnd('"');
+                return contextValue.StartsWith("IdentityServer") ||
+                    contextValue.StartsWith("IdentityModel") ||
+                    e.Level == LogEventLevel.Error ||
+                    e.Level == LogEventLevel.Fatal;
+            };
+            var logger = new LoggerConfiguration()
+                .MinimumLevel.Information()
+                .Enrich.FromLogContext()
+                .WriteTo.ColoredConsole();
+            logger.WriteTo.RollingFile("log-{Date}.txt");
+            var log = logger.Filter.ByIncludingOnly(filter)
+                .CreateLogger();
+            Log.Logger = log;
+            services.AddLogging();
         }
 
         #endregion

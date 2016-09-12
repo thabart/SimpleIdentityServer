@@ -6,6 +6,9 @@ using IdentityServer4.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using System.Linq;
+using System.Text;
+using System;
 
 namespace IdentityServer4.Startup.Controllers
 {
@@ -23,9 +26,23 @@ namespace IdentityServer4.Startup.Controllers
             return View();
         }
 
-        [Authorize]
+        // [Authorize]
         public IActionResult Claims()
         {
+            var authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
+            var parameter = authorizationHeader.Substring("Basic ".Length);
+            string pair = string.Empty;
+            try
+            {
+                pair = Encoding.UTF8.GetString(
+                    Convert.FromBase64String(parameter));
+            }
+            catch (FormatException ex)
+            {
+                string s = "";
+            }
+
+            var ix = pair.IndexOf(':');
             return View();
         }
 

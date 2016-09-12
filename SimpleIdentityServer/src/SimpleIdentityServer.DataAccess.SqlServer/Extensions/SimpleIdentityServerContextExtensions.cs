@@ -244,156 +244,156 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
             if (!context.Translations.Any())
             {
                 context.Translations.AddRange(new[] {
-                    new Models.Translation
+                    new Translation
                     {
                         LanguageTag = "en",
-                        Code = Core.Constants.StandardTranslationCodes.ApplicationWouldLikeToCode,
+                        Code = Constants.StandardTranslationCodes.ApplicationWouldLikeToCode,
                         Value = "the client {0} would like to access"
                     },
-                    new Models.Translation
+                    new Translation
                     {
                         LanguageTag = "en",
-                        Code = Core.Constants.StandardTranslationCodes.IndividualClaimsCode,
+                        Code = Constants.StandardTranslationCodes.IndividualClaimsCode,
                         Value = "individual claims"
                     },
-                    new Models.Translation
+                    new Translation
                     {
                         LanguageTag = "en",
-                        Code = Core.Constants.StandardTranslationCodes.LoginCode,
+                        Code = Constants.StandardTranslationCodes.LoginCode,
                         Value = "Login"
                     },
-                    new Models.Translation
+                    new Translation
                     {
                         LanguageTag = "en",
                         Code = Core.Constants.StandardTranslationCodes.PasswordCode,
                         Value = "Password"
                     },
-                    new Models.Translation
+                    new Translation
                     {
                         LanguageTag = "en",
-                        Code = Core.Constants.StandardTranslationCodes.UserNameCode,
+                        Code = Constants.StandardTranslationCodes.UserNameCode,
                         Value = "Username"
                     },
-                    new Models.Translation
+                    new Translation
                     {
                         LanguageTag = "en",
-                        Code = Core.Constants.StandardTranslationCodes.ConfirmCode,
+                        Code = Constants.StandardTranslationCodes.ConfirmCode,
                         Value = "Confirm"
                     },
-                    new Models.Translation
+                    new Translation
                     {
                         LanguageTag = "en",
-                        Code = Core.Constants.StandardTranslationCodes.CancelCode,
+                        Code = Constants.StandardTranslationCodes.CancelCode,
                         Value = "Cancel"
                     },
-                    new Models.Translation
+                    new Translation
                     {
                         LanguageTag = "en",
-                        Code = Core.Constants.StandardTranslationCodes.LoginLocalAccount,
+                        Code = Constants.StandardTranslationCodes.LoginLocalAccount,
                         Value = "Login with your local account"
                     },
-                    new Models.Translation
+                    new Translation
                     {
                         LanguageTag = "en",
-                        Code = Core.Constants.StandardTranslationCodes.LoginExternalAccount,
+                        Code = Constants.StandardTranslationCodes.LoginExternalAccount,
                         Value = "Login with your external account"
                     },
-                    new Models.Translation
+                    new Translation
                     {
                         LanguageTag = "en",
-                        Code = Core.Constants.StandardTranslationCodes.LinkToThePolicy,
+                        Code = Constants.StandardTranslationCodes.LinkToThePolicy,
                         Value = "policy"
                     },
-                    new Models.Translation
+                    new Translation
                     {
                         LanguageTag = "en",
-                        Code = Core.Constants.StandardTranslationCodes.Tos,
+                        Code = Constants.StandardTranslationCodes.Tos,
                         Value = "Terms of Service"
                     },
                     // Swedish
-                    new Models.Translation
+                    new Translation
                     {
                         LanguageTag = "se",
-                        Code = Core.Constants.StandardTranslationCodes.ApplicationWouldLikeToCode,
+                        Code = Constants.StandardTranslationCodes.ApplicationWouldLikeToCode,
                         Value = "tillämpning {0} skulle vilja:"
                     },
-                    new Models.Translation
+                    new Translation
                     {
                         LanguageTag = "se",
-                        Code = Core.Constants.StandardTranslationCodes.IndividualClaimsCode,
+                        Code = Constants.StandardTranslationCodes.IndividualClaimsCode,
                         Value = "enskilda anspråk"
                     },
-                    new Models.Translation
+                    new Translation
                     {
                         LanguageTag = "se",
-                        Code = Core.Constants.StandardTranslationCodes.LoginCode,
+                        Code = Constants.StandardTranslationCodes.LoginCode,
                         Value = "Logga in"
                     },
-                    new Models.Translation
+                    new Translation
                     {
                         LanguageTag = "se",
-                        Code = Core.Constants.StandardTranslationCodes.PasswordCode,
+                        Code = Constants.StandardTranslationCodes.PasswordCode,
                         Value = "Lösenord"
                     },
-                    new Models.Translation
+                    new Translation
                     {
                         LanguageTag = "se",
-                        Code = Core.Constants.StandardTranslationCodes.UserNameCode,
+                        Code = Constants.StandardTranslationCodes.UserNameCode,
                         Value = "Användarnamn"
                     },
-                    new Models.Translation
+                    new Translation
                     {
                         LanguageTag = "se",
-                        Code = Core.Constants.StandardTranslationCodes.ConfirmCode,
+                        Code = Constants.StandardTranslationCodes.ConfirmCode,
                         Value = "bekräfta"
                     },
-                    new Models.Translation
+                    new Translation
                     {
                         LanguageTag = "se",
-                        Code = Core.Constants.StandardTranslationCodes.CancelCode,
+                        Code = Constants.StandardTranslationCodes.CancelCode,
                         Value = "annullera"
                     },
                     // French                
-                    new Models.Translation
+                    new Translation
                     {
                         LanguageTag = "fr",
-                        Code = Core.Constants.StandardTranslationCodes.ApplicationWouldLikeToCode,
+                        Code = Constants.StandardTranslationCodes.ApplicationWouldLikeToCode,
                         Value = "L'application veut accéder à:"
                     },
-                    new Models.Translation
+                    new Translation
                     {
                         LanguageTag = "fr",
-                        Code = Core.Constants.StandardTranslationCodes.IndividualClaimsCode,
+                        Code = Constants.StandardTranslationCodes.IndividualClaimsCode,
                         Value = "Les claims"
                     },
-                    new Models.Translation
+                    new Translation
                     {
                         LanguageTag = "fr",
-                        Code = Core.Constants.StandardTranslationCodes.LoginCode,
+                        Code = Constants.StandardTranslationCodes.LoginCode,
                         Value = "S'authentifier"
                     },
-                    new Models.Translation
+                    new Translation
                     {
                         LanguageTag = "fr",
-                        Code = Core.Constants.StandardTranslationCodes.PasswordCode,
+                        Code = Constants.StandardTranslationCodes.PasswordCode,
                         Value = "Mot de passe"
                     },
-                    new Models.Translation
+                    new Translation
                     {
                         LanguageTag = "fr",
-                        Code = Core.Constants.StandardTranslationCodes.UserNameCode,
+                        Code = Constants.StandardTranslationCodes.UserNameCode,
                         Value = "Nom d'utilisateur"
                     },
-                    new Models.Translation
+                    new Translation
                     {
                         LanguageTag = "fr",
-                        Code = Core.Constants.StandardTranslationCodes.ConfirmCode,
+                        Code = Constants.StandardTranslationCodes.ConfirmCode,
                         Value = "confirmer"
                     },
-                    new Models.Translation
+                    new Translation
                     {
                         LanguageTag = "fr",
-                        Code = Core.Constants.StandardTranslationCodes.CancelCode,
+                        Code = Constants.StandardTranslationCodes.CancelCode,
                         Value = "annuler"
                     }
                 });
@@ -406,7 +406,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
             {
                 context.ResourceOwners.AddRange(new[]
                 {
-                    new Models.ResourceOwner
+                    new ResourceOwner
                     {
                         Id = Guid.NewGuid().ToString(),
                         Name = "administrator",
@@ -465,7 +465,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
 
                 context.JsonWebKeys.AddRange(new[]
                 {
-                    new Models.JsonWebKey
+                    new JsonWebKey
                     {
                         Alg = AllAlg.RS256,
                         KeyOps = "0,1",
@@ -474,7 +474,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         Use = Use.Sig,
                         SerializedKey = serializedRsa,
                     },
-                    new Models.JsonWebKey
+                    new JsonWebKey
                     {
                         Alg = AllAlg.RSA1_5,
                         KeyOps = "2,3",

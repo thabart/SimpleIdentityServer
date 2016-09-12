@@ -30,7 +30,10 @@ namespace IdentityServer4.Startup
                 .AddEnvironmentVariables(prefix: "ASPNETCORE_")
                 .Build();
             var host = new WebHostBuilder()
-                .UseKestrel()
+                .UseKestrel(options =>
+                {
+                    options.UseHttps("SimpleIdServer.pfx");
+                })
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseConfiguration(configuration)
                 .UseStartup<Startup>()

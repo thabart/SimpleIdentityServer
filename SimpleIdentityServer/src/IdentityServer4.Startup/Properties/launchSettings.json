@@ -2,7 +2,7 @@
   "profiles": {
     "IdentityServer4.Startup": {
       "commandName": "Project",
-      "commandLineArgs": "--server.urls=http://*:4001"
+      "commandLineArgs": "--server.urls=https://*:5443"
     }
   }
 }
