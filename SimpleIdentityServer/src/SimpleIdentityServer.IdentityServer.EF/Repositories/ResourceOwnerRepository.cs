@@ -20,6 +20,9 @@ using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.IdentityServer.EF.DbContexts;
 using SimpleIdentityServer.Logging;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using SimpleIdentityServer.IdentityServer.EF.Models;
 
 namespace SimpleIdentityServer.IdentityServer.EF
 {
@@ -59,32 +62,80 @@ namespace SimpleIdentityServer.IdentityServer.EF
 
         public bool Delete(string subject)
         {
-            throw new NotImplementedException();
+            var user = _context.Users.Include(u => u.Claims)
+                .FirstOrDefault(u => u.Subject == subject);
+            if (user == null)
+            {
+                return false;
+            }
+
+            _context.Users.Remove(user);
+            _context.SaveChanges();
+            return true;
         }
 
         public List<ResourceOwner> GetAll()
         {
-            throw new NotImplementedException();
+            var users = _context.Users.ToList();
+            return users.Select(u => u.ToDomain()).ToList();
         }
 
         public ResourceOwner GetBySubject(string subject)
         {
-            throw new NotImplementedException();
+            var user = _context.Users.Include(u => u.Claims).FirstOrDefault(r => r.Subject == subject);
+            if (user == null)
+            {
+                return null;
+            }
+
+            return user.ToDomain();
         }
 
         public ResourceOwner GetResourceOwnerByCredentials(string userName, string hashedPassword)
-        {
-            throw new NotImplementedException();
+        {            
+            var user = _context.Users.Include(u => u.Claims).FirstOrDefault(r => r.Username == userName && r.Password == hashedPassword);
+            if (user == null)
+            {
+                return null;
+            }
+            
+            return user.ToDomain();
         }
 
         public bool Insert(ResourceOwner resourceOwner)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var user = resourceOwner.ToEntity();
+                _context.Users.Add(user);
+                _context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                _managerEventSource.Failure(ex);
+                return false;
+            }
+
+            return true;
         }
 
         public bool Update(ResourceOwner resourceOwner)
         {
-            throw new NotImplementedException();
+            var user = resourceOwner.ToEntity();
+            var record = _context.Users
+               .Include(r => r.Claims)
+               .FirstOrDefault(r => r.Subject == user.Subject);
+            if (record == null)
+            {
+                return false;
+            }
+
+            record.Username = user.Username;
+            record.Password = user.Password;
+            record.IsLocalAccount = resourceOwner.IsLocalAccount;
+            record.Claims = user.Claims;
+            _context.SaveChanges();
+            return true;
         }
 
         #endregion

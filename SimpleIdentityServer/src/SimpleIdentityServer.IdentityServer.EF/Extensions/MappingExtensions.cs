@@ -16,6 +16,7 @@
 
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.IdentityServer.EF.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -83,7 +84,59 @@ namespace SimpleIdentityServer.IdentityServer.EF
 
         #endregion
 
+        #region To Entity
+
+        public static User ToEntity(this ResourceOwner resourceOwner)
+        {
+            var result = new User
+            {
+                Subject = resourceOwner.Id,
+                Password = resourceOwner.Password,
+                Username = resourceOwner.Name,
+                IsLocalAccount = resourceOwner.IsLocalAccount,
+                Claims = new List<Claim>()
+            };
+
+            result.Claims.Add(CreateClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.BirthDate, resourceOwner.BirthDate));
+            result.Claims.Add(CreateClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Email, resourceOwner.Email));
+            result.Claims.Add(CreateClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.FamilyName, resourceOwner.FamilyName));
+            result.Claims.Add(CreateClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Gender, resourceOwner.Gender));
+            result.Claims.Add(CreateClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.GivenName, resourceOwner.GivenName));
+            result.Claims.Add(CreateClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Locale, resourceOwner.Locale));
+            result.Claims.Add(CreateClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.MiddleName, resourceOwner.MiddleName));
+            result.Claims.Add(CreateClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.NickName, resourceOwner.NickName));
+            result.Claims.Add(CreateClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Picture, resourceOwner.Picture));
+            result.Claims.Add(CreateClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber, resourceOwner.PhoneNumber));
+            result.Claims.Add(CreateClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.PreferredUserName, resourceOwner.PreferredUserName));
+            result.Claims.Add(CreateClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Profile, resourceOwner.Profile));
+            result.Claims.Add(CreateClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.WebSite, resourceOwner.WebSite));
+            result.Claims.Add(CreateClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.ZoneInfo, resourceOwner.ZoneInfo));
+            result.Claims.Add(CreateClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.EmailVerified, resourceOwner.EmailVerified.ToString()));
+            result.Claims.Add(CreateClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumberVerified, resourceOwner.PhoneNumberVerified.ToString()));
+            if (resourceOwner.Roles != null && resourceOwner.Roles.Any())
+            {
+                foreach(var role in resourceOwner.Roles)
+                {
+                    result.Claims.Add(CreateClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Role,  role));
+                }
+            }
+
+            return result;
+        }
+
+        #endregion
+
         #region Private static methods
+
+        private static Claim CreateClaim(string key, string value)
+        {
+            return new Claim
+            {
+                Key = key,
+                Value = value,
+                Id = Guid.NewGuid().ToString()
+            };
+        }
 
         private static string GetClaim(this IEnumerable<Claim> claims, string key)
         {

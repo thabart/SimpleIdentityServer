@@ -62,6 +62,7 @@ namespace SimpleIdentityServer.IdentityServer.EF
             serviceCollection.AddTransient<IPersistedGrantStore, PersistedGrantStore>();
             serviceCollection.AddTransient<ICorsPolicyService, CorsPolicyService>();
             serviceCollection.AddTransient<IScopeRepository, ScopeRepository>();
+            serviceCollection.AddTransient<IResourceOwnerRepository, ResourceOwnerRepository>();
         }
 
         #endregion

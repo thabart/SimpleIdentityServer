@@ -76,7 +76,6 @@ namespace SimpleIdentityServer.IdentityServer.Manager.Startup
             var clientSecret = Configuration["ClientSecret"];
             loggerFactory.AddConsole();
             loggerFactory.AddDebug();
-
             app.UseSimpleIdentityServerManager(loggerFactory, new AuthorizationServerOptions
             {
                 IntrospectionUrl = introspectionUrl,

@@ -14,6 +14,8 @@
 // limitations under the License.
 #endregion
 
+using System;
+
 namespace SimpleIdentityServer.IdentityServer.EF.Models
 {
     public class Claim

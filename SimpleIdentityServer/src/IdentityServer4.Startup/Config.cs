@@ -122,7 +122,7 @@ namespace IdentityServer4.Startup
                     Subject = "1",
                     Username = "alice",
                     Password = "password",
-
+                    IsLocalAccount = true,
                     Claims = new List<DbClaim>
                     {
                         new DbClaim("name", "Alice"),
@@ -134,6 +134,7 @@ namespace IdentityServer4.Startup
                     Subject = "2",
                     Username = "bob",
                     Password = "password",
+                    IsLocalAccount = true,
                     Claims = new List<DbClaim>
                     {
                         new DbClaim("name", "Bob"),
