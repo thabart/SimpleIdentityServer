@@ -15,6 +15,11 @@
 #endregion
 
 using IdentityServer4.EntityFramework.DbContexts;
+using IdentityServer4.EntityFramework.Interfaces;
+using IdentityServer4.EntityFramework.Services;
+using IdentityServer4.EntityFramework.Stores;
+using IdentityServer4.Services;
+using IdentityServer4.Stores;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
@@ -50,6 +55,12 @@ namespace SimpleIdentityServer.IdentityServer.EF
 
         private static void RegisterServices(IServiceCollection serviceCollection)
         {
+            serviceCollection.AddScoped<IConfigurationDbContext, ConfigurationDbContext>();
+            serviceCollection.AddScoped<IPersistedGrantDbContext, PersistedGrantDbContext>();
+            serviceCollection.AddTransient<IClientStore, ClientStore>();
+            serviceCollection.AddTransient<IScopeStore, ScopeStore>();
+            serviceCollection.AddTransient<IPersistedGrantStore, PersistedGrantStore>();
+            serviceCollection.AddTransient<ICorsPolicyService, CorsPolicyService>();
             serviceCollection.AddTransient<IScopeRepository, ScopeRepository>();
         }
 

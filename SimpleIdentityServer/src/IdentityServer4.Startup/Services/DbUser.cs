@@ -2,7 +2,7 @@
 
 namespace IdentityServer4.Startup.Services
 {
-    internal class DbUser
+    public class DbUser
     {
         public bool Enabled { get; set; }
 

@@ -19,13 +19,11 @@ using IdentityServer4.EntityFramework.Mappers;
 using IdentityServer4.Startup.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SimpleIdentityServer.IdentityServer.EF.DbContexts;
 using System.Linq;
-using System.Reflection;
 using IdentityServer4.Startup.Extensions;
 using IdentityServer4.Services;
 using SimpleIdentityServer.IdentityServer.EF;
@@ -59,9 +57,9 @@ namespace IdentityServer4.Startup
         {
             services.AddMvc();
             var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
-            services.AddTransient<IProfileService, UserProfileService>();
             services.AddIdentityServerQuickstart();
             services.AddSimpleIdentityServerSqlServer(connectionString);
+            RegisterDependencies(services);
         }
 
         public void Configure(IApplicationBuilder app,
@@ -137,6 +135,12 @@ namespace IdentityServer4.Startup
                     ctxUsers.SaveChanges();
                 }
             }
+        }
+
+        private void RegisterDependencies(IServiceCollection services)
+        {
+            services.AddTransient<UserLoginService>();
+            services.AddTransient<IProfileService, UserProfileService>();
         }
 
         #endregion

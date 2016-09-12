@@ -2,7 +2,7 @@
 
 namespace IdentityServer4.Startup.Services
 {
-    internal class DbClaim
+    public class DbClaim
     {
         public DbClaim(string key, string value)
         {

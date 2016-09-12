@@ -20,7 +20,6 @@ using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.IdentityServer.EF.DbContexts;
 using SimpleIdentityServer.Logging;
-using System.Linq;
 
 namespace SimpleIdentityServer.IdentityServer.EF
 {
@@ -33,8 +32,7 @@ namespace SimpleIdentityServer.IdentityServer.EF
         private readonly IManagerEventSource _managerEventSource;
 
         #endregion
-
-
+        
         #region Constructor
 
         public ResourceOwnerRepository(

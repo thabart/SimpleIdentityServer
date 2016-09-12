@@ -13,6 +13,7 @@ using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using IdentityServer4.Quickstart;
+using IdentityServer4.Startup.Services;
 
 namespace IdentityServer4.Startup.Controllers
 {
@@ -23,11 +24,11 @@ namespace IdentityServer4.Startup.Controllers
     /// </summary>
     public class AccountController : Controller
     {
-        private readonly InMemoryUserLoginService _loginService;
+        private readonly UserLoginService _loginService;
         private readonly IIdentityServerInteractionService _interaction;
 
         public AccountController(
-            InMemoryUserLoginService loginService,
+            UserLoginService loginService,
             IIdentityServerInteractionService interaction)
         {
             _loginService = loginService;
@@ -65,7 +66,7 @@ namespace IdentityServer4.Startup.Controllers
                 if (_loginService.ValidateCredentials(model.Username, model.Password))
                 {
                     // issue authentication cookie with subject ID and username
-                    var user = _loginService.FindByUsername(model.Username);
+                    var user = _loginService.FindUserName(model.Username);
                     await HttpContext.Authentication.SignInAsync(user.Subject, user.Username);
 
                     // make sure the returnUrl is still valid, and if yes - redirect back to authorize endpoint
