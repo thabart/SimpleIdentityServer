@@ -24,6 +24,191 @@ namespace SimpleIdentityServer.IdentityServer.EF
 {
     internal static class MappingExtensions
     {
+        private class GrantingMethod
+        {
+            public List<ResponseType> ResponseTypes { get; set; }
+
+            public List<GrantType> GrantTypes { get; set; }
+
+            public override bool Equals(object obj)
+            {
+                var o = obj as GrantingMethod;
+                if (o == null)
+                {
+                    return false;
+                }
+
+                return o.GrantTypes.Count() == GrantTypes.Count() && o.GrantTypes.All(g => GrantTypes.Contains(g))
+                    && o.ResponseTypes.Count() == ResponseTypes.Count() && o.ResponseTypes.All(r => ResponseTypes.Contains(r));
+            }
+
+            public bool Equals(GrantingMethod obj)
+            {
+                if (obj == null)
+                {
+                    return false;
+                }
+
+                return Equals((object)obj);
+            }
+
+            public override int GetHashCode()
+            {
+                return ResponseTypes.GetHashCode() ^ GrantTypes.GetHashCode();
+            }
+        }
+
+        #region Fields
+
+        private static Dictionary<IEnumerable<string>, GrantingMethod> _mappingIdServerGrantTypesToGrantingMethods = new Dictionary<IEnumerable<string>, GrantingMethod>
+        {
+            {
+                IdentityServer4.Models.GrantTypes.Implicit,
+                new GrantingMethod
+                {
+                    ResponseTypes = new List<ResponseType>
+                    {
+                        ResponseType.id_token,
+                        ResponseType.token
+                    },
+                    GrantTypes = new List<GrantType>
+                    {
+                        GrantType.@implicit
+                    }
+                }
+            },
+            {
+                IdentityServer4.Models.GrantTypes.ImplicitAndClientCredentials,
+                new GrantingMethod
+                {
+                    ResponseTypes = new List<ResponseType>
+                    {
+                        ResponseType.id_token,
+                        ResponseType.token
+                    },
+                    GrantTypes = new List<GrantType>
+                    {
+                        GrantType.@implicit,
+                        GrantType.client_credentials
+                    }
+                }
+            },
+            {
+                IdentityServer4.Models.GrantTypes.Code,
+                new GrantingMethod
+                {
+                    ResponseTypes = new List<ResponseType>
+                    {
+                        ResponseType.code,
+                        ResponseType.token
+                    },
+                    GrantTypes = new List<GrantType>
+                    {
+                        GrantType.authorization_code,
+                        GrantType.refresh_token
+                    }
+                }
+            },
+            {
+                IdentityServer4.Models.GrantTypes.CodeAndClientCredentials,
+                new GrantingMethod
+                {
+                    ResponseTypes = new List<ResponseType>
+                    {
+                        ResponseType.code,
+                        ResponseType.token
+                    },
+                    GrantTypes = new List<GrantType>
+                    {
+                        GrantType.authorization_code,
+                        GrantType.client_credentials
+                    }
+                }
+            },
+            {
+                IdentityServer4.Models.GrantTypes.Hybrid,
+                new GrantingMethod
+                {
+                    ResponseTypes = new List<ResponseType>
+                    {
+                        ResponseType.code,
+                        ResponseType.id_token,
+                        ResponseType.token
+                    },
+                    GrantTypes = new List<GrantType>
+                    {
+                        GrantType.@implicit,
+                        GrantType.authorization_code,
+                        GrantType.refresh_token
+                    }
+                }
+            },
+            {
+                IdentityServer4.Models.GrantTypes.HybridAndClientCredentials,
+                new GrantingMethod
+                {
+                    ResponseTypes = new List<ResponseType>
+                    {
+                        ResponseType.code,
+                        ResponseType.id_token,
+                        ResponseType.token
+                    },
+                    GrantTypes = new List<GrantType>
+                    {
+                        GrantType.@implicit,
+                        GrantType.authorization_code,
+                        GrantType.client_credentials
+                    }
+                }
+            },
+            {
+                IdentityServer4.Models.GrantTypes.ClientCredentials,
+                new GrantingMethod
+                {
+                    ResponseTypes = new List<ResponseType>
+                    {
+                        ResponseType.token
+                    },
+                    GrantTypes = new List<GrantType>
+                    {
+                        GrantType.client_credentials
+                    }
+                }
+            },
+            {
+                IdentityServer4.Models.GrantTypes.ResourceOwnerPassword,
+                new GrantingMethod
+                {
+                    ResponseTypes = new List<ResponseType>
+                    {
+                        ResponseType.token
+                    },
+                    GrantTypes = new List<GrantType>
+                    {
+                        GrantType.password,
+                        GrantType.refresh_token
+                    }
+                }
+            },
+            {
+                IdentityServer4.Models.GrantTypes.ResourceOwnerPasswordAndClientCredentials,
+                new GrantingMethod
+                {
+                    ResponseTypes = new List<ResponseType>
+                    {
+                        ResponseType.token
+                    },
+                    GrantTypes = new List<GrantType>
+                    {
+                        GrantType.password,
+                        GrantType.client_credentials
+                    }
+                }
+            }
+        };
+
+        #endregion
+
         #region To domain
 
         public static Scope ToDomain(this IdentityServer4.EntityFramework.Entities.Scope scope)
@@ -82,6 +267,47 @@ namespace SimpleIdentityServer.IdentityServer.EF
             return result;
         }
 
+        public static Scope ToDomain(this IdentityServer4.EntityFramework.Entities.ClientScope scope)
+        {
+            return new Scope
+            {
+                Name = scope.Scope
+            };
+        }
+
+        public static Client ToDomain(this IdentityServer4.EntityFramework.Entities.Client client)
+        {
+            var result = new Client
+            {
+                ClientId = client.ClientId,
+                ClientSecret =  client.ClientSecrets == null || !client.ClientSecrets.Any() ? string.Empty : client.ClientSecrets.First().Value,
+                LogoUri = client.LogoUri,
+                ClientName = client.ClientName,
+                ClientUri = client.ClientUri,
+                IdTokenSignedResponseAlg = "RS256",
+                IdTokenEncryptedResponseAlg = null,
+                IdTokenEncryptedResponseEnc = null,
+                TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_basic,
+                AllowedScopes = client.AllowedScopes == null || !client.AllowedScopes.Any() ? new List<Scope>() : client.AllowedScopes.Select(s => s.ToDomain()).ToList(),
+                RedirectionUrls = client.RedirectUris == null || !client.RedirectUris.Any() ? new List<string>() : client.RedirectUris.Select(s => s.RedirectUri).ToList(),
+                ApplicationType = ApplicationTypes.web
+            };
+
+            if (client.AllowedGrantTypes != null)
+            {
+                var grantingMethod = _mappingIdServerGrantTypesToGrantingMethods.FirstOrDefault(m =>
+                    client.AllowedGrantTypes.Count() == m.Key.Count() &&
+                    m.Key.All(g => client.AllowedGrantTypes.Any(c => c.GrantType == g)));
+                if (!grantingMethod.Equals(default(KeyValuePair<IEnumerable<string>, GrantingMethod>)))
+                {
+                    result.ResponseTypes = grantingMethod.Value.ResponseTypes;
+                    result.GrantTypes = grantingMethod.Value.GrantTypes;
+                }
+            }
+
+            return result;
+        }
+
         #endregion
 
         #region To Entity
@@ -119,6 +345,60 @@ namespace SimpleIdentityServer.IdentityServer.EF
                 {
                     result.Claims.Add(CreateClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Role,  role));
                 }
+            }
+
+            return result;
+        }
+
+        public static IdentityServer4.EntityFramework.Entities.Client ToEntity(this Client client)
+        {
+            var result = new IdentityServer4.EntityFramework.Entities.Client
+            {
+                ClientId = client.ClientId,
+                ClientSecrets = new List<IdentityServer4.EntityFramework.Entities.ClientSecret>
+                {
+                    new IdentityServer4.EntityFramework.Entities.ClientSecret
+                    {
+                        Value = client.ClientSecret
+                    }
+                },
+                ClientName = client.ClientName,
+                Enabled = true,
+                RequireClientSecret = true,
+                RequireConsent = true,
+                AllowRememberConsent = true,
+                LogoutSessionRequired = true,
+                IdentityTokenLifetime = 300,
+                AccessTokenLifetime = 3600,
+                AuthorizationCodeLifetime = 300,
+                AbsoluteRefreshTokenLifetime = 2592000,
+                SlidingRefreshTokenLifetime = 1296000,
+                RefreshTokenUsage = (int)IdentityServer4.Models.TokenUsage.OneTimeOnly,
+                RefreshTokenExpiration = (int)IdentityServer4.Models.TokenExpiration.Absolute,
+                EnableLocalLogin = true,
+                PrefixClientClaims = true,
+                LogoUri = client.LogoUri,
+                ClientUri = client.ClientUri,
+                AllowedScopes = client.AllowedScopes == null || !client.AllowedScopes.Any() ? new List<IdentityServer4.EntityFramework.Entities.ClientScope>() : client.AllowedScopes.Select(s => new IdentityServer4.EntityFramework.Entities.ClientScope
+                {
+                    Scope = s.Name
+                }).ToList(),
+                RedirectUris = client.RedirectionUrls == null || !client.RedirectionUrls.Any() ? new List<IdentityServer4.EntityFramework.Entities.ClientRedirectUri>() : client.RedirectionUrls.Select(r => new IdentityServer4.EntityFramework.Entities.ClientRedirectUri
+                {
+                    RedirectUri = r
+                }).ToList()
+            };
+
+            var grantingMethod = new GrantingMethod
+            {
+                GrantTypes = client.GrantTypes,
+                ResponseTypes = client.ResponseTypes
+            };
+
+            var meth = _mappingIdServerGrantTypesToGrantingMethods.FirstOrDefault(m => m.Value.Equals(grantingMethod));
+            if (meth.Equals(default(KeyValuePair<IEnumerable<string>, GrantingMethod>)))
+            {
+                result.AllowedGrantTypes = meth.Key.Select(g => new IdentityServer4.EntityFramework.Entities.ClientGrantType { GrantType = g }).ToList();
             }
 
             return result;

@@ -22,9 +22,8 @@ using SimpleIdentityServer.IdentityServer.EF.DbContexts;
 using SimpleIdentityServer.Logging;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using SimpleIdentityServer.IdentityServer.EF.Models;
 
-namespace SimpleIdentityServer.IdentityServer.EF
+namespace SimpleIdentityServer.IdentityServer.EF.Repositories
 {
     public class ResourceOwnerRepository : IResourceOwnerRepository
     {

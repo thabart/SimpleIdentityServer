@@ -44,7 +44,8 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
         [Authorize("manager")]
         public List<ClientInformationResponse> GetAll()
         {
-            return _clientActions.GetClients().ToDtos();
+            var result =  _clientActions.GetClients().ToDtos();
+            return result;
         }
 
         [HttpGet("{id}")]

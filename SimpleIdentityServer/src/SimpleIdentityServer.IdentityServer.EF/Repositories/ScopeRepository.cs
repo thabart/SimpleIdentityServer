@@ -23,7 +23,7 @@ using SimpleIdentityServer.Logging;
 using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.EntityFrameworkCore;
 
-namespace SimpleIdentityServer.IdentityServer.EF
+namespace SimpleIdentityServer.IdentityServer.EF.Repositories
 {
     internal sealed class ScopeRepository : IScopeRepository
     {

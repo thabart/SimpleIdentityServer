@@ -25,6 +25,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.IdentityServer.EF.DbContexts;
+using SimpleIdentityServer.IdentityServer.EF.Repositories;
 
 namespace SimpleIdentityServer.IdentityServer.EF
 {
@@ -63,6 +64,7 @@ namespace SimpleIdentityServer.IdentityServer.EF
             serviceCollection.AddTransient<ICorsPolicyService, CorsPolicyService>();
             serviceCollection.AddTransient<IScopeRepository, ScopeRepository>();
             serviceCollection.AddTransient<IResourceOwnerRepository, ResourceOwnerRepository>();
+            serviceCollection.AddTransient<IClientRepository, ClientRepository>();
         }
 
         #endregion
