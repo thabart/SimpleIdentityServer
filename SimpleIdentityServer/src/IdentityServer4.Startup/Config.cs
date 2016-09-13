@@ -82,7 +82,24 @@ namespace IdentityServer4.Startup
                     Name = "openid_manager",
                     Description = "Access to the OpenId Manager",
                     DisplayName = "OpenId Manager",
-                    Type = ScopeType.Resource
+                    Type = ScopeType.Resource,
+                    AllowUnrestrictedIntrospection = true,
+                    ScopeSecrets = new List<Secret>
+                    {
+                        new Secret("openid_manager".Sha256())
+                    }
+                },
+                new Scope
+                {
+                    Name = "uma",
+                    Description = "UMA",
+                    DisplayName = "uma",
+                    Type = ScopeType.Resource,
+                    AllowUnrestrictedIntrospection = true,
+                    ScopeSecrets = new List<Secret>
+                    {
+                        new Secret("uma".Sha256())
+                    }
                 }
             };
         }
@@ -129,7 +146,8 @@ namespace IdentityServer4.Startup
                         "uma_authorization",
                         "openid_manager",
                         "manage_configuration",
-                        "display_configuration"
+                        "display_configuration",
+                        "uma"
                     }
                 }
             };

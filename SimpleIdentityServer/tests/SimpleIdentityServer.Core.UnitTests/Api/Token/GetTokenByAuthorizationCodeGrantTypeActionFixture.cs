@@ -28,6 +28,7 @@ using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
 using System;
+using System.Collections.Generic;
 using System.Net.Http.Headers;
 using Xunit;
 
@@ -408,7 +409,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 It.IsAny<JwsPayload>()))
                 .Returns(() => null);
             _grantedTokenGeneratorHelperFake.Setup(g => g.GenerateToken(It.IsAny<string>(),
-                It.IsAny<string>(),
+                It.IsAny<List<string>>(),
                 It.IsAny<JwsPayload>(),
                 It.IsAny<JwsPayload>()))
                 .Returns(grantedToken); ;

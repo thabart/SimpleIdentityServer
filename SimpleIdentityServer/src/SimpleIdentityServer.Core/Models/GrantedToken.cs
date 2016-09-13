@@ -16,6 +16,7 @@
 using System;
 using System.Runtime.Serialization;
 using SimpleIdentityServer.Core.Jwt;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Core.Models
 {
@@ -41,7 +42,7 @@ namespace SimpleIdentityServer.Core.Models
         public int ExpiresIn { get; set; }
 
         [DataMember(Name = "scope")]
-        public string Scope { get; set; }
+        public List<string> Scope { get; set; }
 
         public DateTime CreateDateTime { get; set; }
 

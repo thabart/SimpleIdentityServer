@@ -87,7 +87,7 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
 
 #endregion
 
-#region Public methods
+        #region Public methods
 
         public async Task Invoke(HttpContext context)
         {
@@ -117,9 +117,9 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
             await _nullAuthenticationNext(context);
         }
 
-#endregion
+        #endregion
 
-#region Private methods
+        #region Private methods
 
         private string GetAccessToken(string authorizationValue)
         {
@@ -176,9 +176,9 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
             return JsonConvert.DeserializeObject<IntrospectionResponse>(content);
         }
 
-#endregion
+        #endregion
 
-#region Private static methods
+        #region Private static methods
         
         private static ClaimsPrincipal CreateClaimPrincipal(IntrospectionResponse introspectionResponse)
         {
@@ -193,10 +193,9 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
                 claims.Add(new Claim(Constants.ClaimNames.ClientId, introspectionResponse.ClientId));
             }
 
-            if (!string.IsNullOrWhiteSpace(introspectionResponse.Scope))
+            if (introspectionResponse.Scope != null && introspectionResponse.Scope.Any())
             {
-                var scopes = introspectionResponse.Scope.Split(' ');
-                foreach(var scope in scopes)
+                foreach(var scope in introspectionResponse.Scope)
                 {
                     claims.Add(new Claim(Constants.ClaimNames.Scope, scope));
                 }
@@ -206,6 +205,6 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
             return new ClaimsPrincipal(claimsIdentity);
         }
 
-#endregion
+        #endregion
     }
 }

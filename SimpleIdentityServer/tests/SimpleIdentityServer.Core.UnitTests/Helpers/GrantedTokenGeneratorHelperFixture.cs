@@ -18,6 +18,7 @@ using Moq;
 using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Helpers;
 using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Helpers
@@ -44,7 +45,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
             Assert.Throws<ArgumentNullException>(() => _grantedTokenGeneratorHelper.GenerateToken(null, null));
             Assert.Throws<ArgumentNullException>(() => _grantedTokenGeneratorHelper.GenerateToken(string.Empty, null));
             Assert.Throws<ArgumentNullException>(() => _grantedTokenGeneratorHelper.GenerateToken("clientid", null));
-            Assert.Throws<ArgumentNullException>(() => _grantedTokenGeneratorHelper.GenerateToken("clientid", string.Empty));
         }
         
         #endregion
@@ -60,7 +60,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
                 .Returns(3700);
 
             // ACT
-            var result = _grantedTokenGeneratorHelper.GenerateToken("client_id", "scope");
+            var result = _grantedTokenGeneratorHelper.GenerateToken("client_id", new List<string> { "scope" });
 
             // ASSERT
             Assert.NotNull(result);

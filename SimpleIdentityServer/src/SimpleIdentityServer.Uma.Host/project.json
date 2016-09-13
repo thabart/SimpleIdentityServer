@@ -6,6 +6,8 @@
       "appsettings.json",
       "appsettings.docker.json",
       "appsettings.azure.json",
+      "appsettings.idserver.json",
+      "appsettings.idserver_docker.json",
       "SimpleIdServer.pfx"
     ]
   },

@@ -76,9 +76,9 @@ namespace SimpleIdentityServer.Uma.Host
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            var introspectionUrl = Configuration["AuthorizationServerUrl"] + "/introspect";
-            var clientId = Configuration["ClientId"];
-            var clientSecret = Configuration["ClientSecret"];
+            var introspectionUrl = Configuration["OpenId:IntrospectEndPoint"];
+            var clientId = Configuration["OpenId:ClientId"];
+            var clientSecret = Configuration["OpenId:ClientSecret"];
             var isDataMigrated = Configuration["DATA_MIGRATED"] == null ? false : bool.Parse(Configuration["DATA_MIGRATED"]);
 
             loggerFactory.AddSerilog();
@@ -128,18 +128,21 @@ namespace SimpleIdentityServer.Uma.Host
 
         public void RegisterServices(IServiceCollection services)
         {
-            var authorizationServerUrl = Configuration["AuthorizationServerUrl"];
+            var wellKnownConfiguration = Configuration["OpenId:WellKnownConfiguration"];
+            var authorizationEndPoint = Configuration["OpenId:AuthorizationEndPoint"];
+            var registerEndPoint = Configuration["OpenId:RegisterEndPoint"];
+            var tokenEndPoint = Configuration["OpenId:TokenEndPoint"];
             var isSqlServer = bool.Parse(Configuration["isSqlServer"]);
             var isPostgre = bool.Parse(Configuration["isPostgre"]);
             var isLogFileEnabled = bool.Parse(Configuration["Log:File:Enabled"]);
             var isElasticSearchEnabled = bool.Parse(Configuration["Log:Elasticsearch:Enabled"]);
             var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
-            var parametersProvider = new ParametersProvider(authorizationServerUrl);
+            var parametersProvider = new ParametersProvider(wellKnownConfiguration);
             services.AddSimpleIdServerUmaCore(opt =>
             {
-                opt.AuthorizeOperation = authorizationServerUrl + "/authorization";
-                opt.RegisterOperation = authorizationServerUrl + "/connect/register";
-                opt.TokenOperation = authorizationServerUrl + "/token";
+                opt.AuthorizeOperation = authorizationEndPoint;
+                opt.RegisterOperation = registerEndPoint;
+                opt.TokenOperation = tokenEndPoint;
                 opt.RptLifeTime = 3000;
                 opt.TicketLifeTime = 3000;
             });

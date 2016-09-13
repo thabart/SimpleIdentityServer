@@ -26,6 +26,7 @@ using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.Core.Extensions;
 
 namespace SimpleIdentityServer.Core.Api.Token.Actions
 {
@@ -111,7 +112,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             {
                 grantedToken = _grantedTokenGeneratorHelper.GenerateToken(
                     authorizationCode.ClientId,
-                    authorizationCode.Scopes,
+                    authorizationCode.Scopes.SplitScopes(),
                     authorizationCode.UserInfoPayLoad,
                     authorizationCode.IdTokenPayload);
                 _grantedTokenRepository.Insert(grantedToken);

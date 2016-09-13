@@ -15,6 +15,7 @@
 #endregion
 
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
@@ -32,7 +33,7 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
         /// Gets or sets a list of scopes
         /// </summary>
         [JsonProperty(Constants.IntrospectionResponseNames.Scope)]
-        public string Scope { get; set; }
+        public List<string> Scope { get; set; }
 
         /// <summary>
         /// Gets or sets the client id

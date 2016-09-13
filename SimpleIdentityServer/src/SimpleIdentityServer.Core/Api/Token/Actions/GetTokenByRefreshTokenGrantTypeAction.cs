@@ -22,6 +22,7 @@ using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.Core.Extensions;
 
 namespace SimpleIdentityServer.Core.Api.Token.Actions
 {
@@ -79,7 +80,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
             _simpleIdentityServerEventSource.GrantAccessToClient(generatedToken.ClientId,
                 generatedToken.AccessToken,
-                generatedToken.Scope);
+                generatedToken.Scope.Concat());
             return generatedToken;
         }
 

@@ -29,6 +29,7 @@ using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Core.Api.Token.Actions
 {
@@ -124,11 +125,11 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             }
 
             // Check if the requested scopes are valid
-            var allowedTokenScopes = string.Empty;
+            var allowedTokenScopes = new List<string>();
             if (!string.IsNullOrWhiteSpace(resourceOwnerGrantTypeParameter.Scope))
             {
                 string messageErrorDescription;
-                allowedTokenScopes = string.Join(" ", _scopeValidator.IsScopesValid(resourceOwnerGrantTypeParameter.Scope, client, out messageErrorDescription));
+                allowedTokenScopes = _scopeValidator.IsScopesValid(resourceOwnerGrantTypeParameter.Scope, client, out messageErrorDescription);
                 if (!allowedTokenScopes.Any())
                 {
                     throw new IdentityServerException(
@@ -149,7 +150,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
             var generatedToken = _grantedTokenHelper.GetValidGrantedToken(
                 client.ClientId,
-                allowedTokenScopes,
+                allowedTokenScopes.Concat(),
                 payload,
                 payload);
             if (generatedToken == null)
@@ -170,7 +171,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
                 _simpleIdentityServerEventSource.GrantAccessToClient(client.ClientId,
                     generatedToken.AccessToken,
-                    allowedTokenScopes);
+                    allowedTokenScopes.Concat());
             }
 
             return generatedToken;

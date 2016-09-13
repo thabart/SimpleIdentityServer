@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace SimpleIdentityServer.Client.DTOs.Response
@@ -37,6 +38,6 @@ namespace SimpleIdentityServer.Client.DTOs.Response
         public string RefreshToken { get; set; }
 
         [DataMember(Name = Constants.GrantedTokenNames.Scope)]
-        public string Scope { get; set; }
+        public List<string> Scope { get; set; }
     }
 }

@@ -135,7 +135,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                 CreateDateTime = grantedToken.CreateDateTime,
                 ExpiresIn = grantedToken.ExpiresIn,
                 RefreshToken = grantedToken.RefreshToken,
-                Scope = grantedToken.Scope,
+                Scope = grantedToken.Scope.Split(' ').ToList(),
                 ParentRefreshToken = grantedToken.ParentRefreshToken,
                 IdTokenPayLoad = string.IsNullOrWhiteSpace(grantedToken.IdTokenPayLoad) ? null : grantedToken.IdTokenPayLoad.DeserializeWithJavascript<JwsPayload>(),
                 UserInfoPayLoad = string.IsNullOrWhiteSpace(grantedToken.UserInfoPayLoad) ? null : grantedToken.UserInfoPayLoad.DeserializeWithJavascript<JwsPayload>()

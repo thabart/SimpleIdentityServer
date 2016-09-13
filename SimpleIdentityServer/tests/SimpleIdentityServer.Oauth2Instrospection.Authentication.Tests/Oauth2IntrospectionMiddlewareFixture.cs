@@ -27,6 +27,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Builder;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Oauth2Instrospection.Authentication.Tests
 {
@@ -75,7 +76,7 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication.Tests
             var introspectionResponse = new IntrospectionResponse
             {
                 Active = true,
-                Scope = "GetMethod"
+                Scope = new List<string> { "GetMethod" }
             };
             var json = JsonConvert.SerializeObject(introspectionResponse);
             var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.OK)
@@ -109,7 +110,7 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication.Tests
             var introspectionResponse = new IntrospectionResponse
             {
                 Active = true,
-                Scope = "GetMethod"
+                Scope = new List<string> { "GetMethod" }
             };
             var json = JsonConvert.SerializeObject(introspectionResponse);
             var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.OK)
@@ -140,7 +141,7 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication.Tests
             var introspectionResponse = new IntrospectionResponse
             {
                 Active = true,
-                Scope = "GetMethod"
+                Scope = new List<string> { "GetMethod" }
             };
             var json = JsonConvert.SerializeObject(introspectionResponse);
             var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.OK)
@@ -176,7 +177,7 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication.Tests
             var introspectionResponse = new IntrospectionResponse
             {
                 Active = true,
-                Scope = "GetMethod"
+                Scope = new List<string> {  "GetMethod" }
             };
             var json = JsonConvert.SerializeObject(introspectionResponse);
             var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.OK)
@@ -212,7 +213,7 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication.Tests
             var introspectionResponse = new IntrospectionResponse
             {
                 Active = true,
-                Scope = "unauthorized_scope"
+                Scope = new List<string> { "unauthorized_scope" }
             };
             var json = JsonConvert.SerializeObject(introspectionResponse);
             var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.OK)

@@ -26,6 +26,7 @@ using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
 using Xunit;
 using SimpleIdentityServer.Logging;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 {
@@ -86,7 +87,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(grantedToken);
             _grantedTokenGeneratorHelperStub.Setup(g => g.GenerateToken(
                 It.IsAny<string>(),
-                It.IsAny<string>(), 
+                It.IsAny<List<string>>(), 
                 It.IsAny<JwsPayload>(),
                 It.IsAny<JwsPayload>())).Returns(grantedToken);
 

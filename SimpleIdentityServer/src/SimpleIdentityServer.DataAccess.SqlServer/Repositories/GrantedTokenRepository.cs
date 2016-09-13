@@ -132,7 +132,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                         CreateDateTime = grantedToken.CreateDateTime,
                         ExpiresIn = grantedToken.ExpiresIn,
                         RefreshToken = grantedToken.RefreshToken,
-                        Scope = grantedToken.Scope,
+                        Scope = string.Join(" ",grantedToken.Scope),
                         ParentRefreshToken = grantedToken.ParentRefreshToken,
                         IdTokenPayLoad = grantedToken.IdTokenPayLoad == null ? string.Empty : grantedToken.IdTokenPayLoad.SerializeWithJavascript(),
                         UserInfoPayLoad = grantedToken.UserInfoPayLoad == null ? string.Empty : grantedToken.UserInfoPayLoad.SerializeWithJavascript()

@@ -71,7 +71,7 @@ namespace SimpleIdentityServer.IdentityServer.Manager.Startup
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            var introspectionUrl = Configuration["AuthorizationServer"] + "/introspect";
+            var introspectionUrl = Configuration["IntrospectUrl"];
             var clientId = Configuration["ClientId"];
             var clientSecret = Configuration["ClientSecret"];
             loggerFactory.AddConsole();

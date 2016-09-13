@@ -17,6 +17,7 @@
 using SimpleIdentityServer.Core.Authenticate;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
+using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
@@ -24,6 +25,7 @@ using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
 
@@ -126,25 +128,23 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             }
 
             // Check scopes
-            var allowedTokenScopes = string.Empty;
+            var allowedTokenScopes = new List<string>();
             if (!string.IsNullOrWhiteSpace(clientCredentialsGrantTypeParameter.Scope))
             {
                 string messageErrorDescription;
-                var scopes = _scopeValidator.IsScopesValid(clientCredentialsGrantTypeParameter.Scope, client, out messageErrorDescription);
-                if (scopes == null ||
-                    !scopes.Any())
+                allowedTokenScopes = _scopeValidator.IsScopesValid(clientCredentialsGrantTypeParameter.Scope, client, out messageErrorDescription);
+                if (allowedTokenScopes == null ||
+                    !allowedTokenScopes.Any())
                 {
                     throw new IdentityServerException(
                         ErrorCodes.InvalidScope,
                         messageErrorDescription);
                 }
-
-                allowedTokenScopes = string.Join(" ", scopes);
             }
 
             // Generate token
             var grantedToken = _grantedTokenHelper.GetValidGrantedToken(
-                allowedTokenScopes,
+                allowedTokenScopes.Concat(),
                 client.ClientId,
                 null,
                 null);
@@ -157,7 +157,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
                 _simpleIdentityServerEventSource.GrantAccessToClient(client.ClientId,
                     grantedToken.AccessToken,
-                    allowedTokenScopes);
+                    allowedTokenScopes.Concat());
             }
 
             return grantedToken;
