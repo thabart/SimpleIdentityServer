@@ -1,17 +1,31 @@
-﻿using System.Threading.Tasks;
+﻿using IdentityModel;
+using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
+using Microsoft.EntityFrameworkCore;
+using SimpleIdentityServer.IdentityServer.EF.DbContexts;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace IdentityServer4.Startup.Services
 {
     public class UserProfileService : IProfileService
     {
+        private readonly UserDbContext _context;
+
         #region Constructor
 
-        public UserProfileService()
+        public UserProfileService(UserDbContext context)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
 
+            _context = context;
         }
 
         #endregion
@@ -20,13 +34,24 @@ namespace IdentityServer4.Startup.Services
         
         public Task GetProfileDataAsync(ProfileDataRequestContext context)
         {
-            var claims = context.Subject.Claims;
-            if (!context.AllClaimsRequested || !context.RequestedClaimTypes.Any())
+            var user = _context.Users.Include(u => u.Claims).FirstOrDefault(u => u.Subject == context.Subject.GetSubjectId());
+            if (user != null)
             {
-                claims = claims.Where(x => context.RequestedClaimTypes.Contains(x.Type));
+                var claims = user.Claims == null || !user.Claims.Any() ? new List<Claim>() : user.Claims.Select(c => new Claim(c.Key, c.Value)).ToList();
+                var userClaims = new List<Claim>();
+                userClaims.Add(new Claim(JwtClaimTypes.Subject, user.Subject));
+                if (!context.AllClaimsRequested)
+                {
+                    userClaims.AddRange(claims.Where(x => context.RequestedClaimTypes.Contains(x.Type)).ToList());
+                }
+                else
+                {
+                    userClaims.AddRange(claims);
+                }
+
+                context.IssuedClaims = userClaims;
             }
 
-            context.IssuedClaims = claims;
             return Task.FromResult(0);
         }
 

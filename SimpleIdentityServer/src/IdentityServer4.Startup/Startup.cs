@@ -160,7 +160,7 @@ namespace IdentityServer4.Startup
                     e.Level == LogEventLevel.Fatal;
             };
             var logger = new LoggerConfiguration()
-                .MinimumLevel.Information()
+                .MinimumLevel.Debug()
                 .Enrich.FromLogContext()
                 .WriteTo.ColoredConsole();
             logger.WriteTo.RollingFile("log-{Date}.txt");
