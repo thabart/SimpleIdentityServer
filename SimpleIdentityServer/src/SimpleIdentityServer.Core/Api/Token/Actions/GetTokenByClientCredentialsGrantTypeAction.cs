@@ -133,8 +133,8 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             {
                 string messageErrorDescription;
                 var scopes = _scopeValidator.IsScopesValid(clientCredentialsGrantTypeParameter.Scope, client, out messageErrorDescription);
-                if (allowedTokenScopes == null ||
-                    !allowedTokenScopes.Any())
+                if (scopes == null ||
+                    !scopes.Any())
                 {
                     throw new IdentityServerException(
                         ErrorCodes.InvalidScope,
