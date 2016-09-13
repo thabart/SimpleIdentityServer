@@ -16,7 +16,6 @@
 
 using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 
 namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
 {
@@ -40,8 +39,7 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
         /// </summary>
         [JsonProperty(Constants.IntrospectionResponseNames.ClientId)]
         public string ClientId { get; set; }
-
-
+        
         /// <summary>
         /// Gets or sets identifier for the resource owner who authorized this token
         /// </summary>

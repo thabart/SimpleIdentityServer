@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Authentication.Common.Authentication;
 using SimpleIdentityServer.Oauth2Instrospection.Authentication.Errors;
 using System;
@@ -173,7 +174,7 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
             }
 
             var content = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<IntrospectionResponse>(content);
+            return ParseIntrospection(content);
         }
 
         #endregion
@@ -203,6 +204,109 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
 
             var claimsIdentity = new ClaimsIdentity(claims, "Introspection");
             return new ClaimsPrincipal(claimsIdentity);
+        }
+
+        private static IntrospectionResponse ParseIntrospection(string json)
+        {
+            var jObj = JObject.Parse(json);
+            bool active = false;
+            var scopes = new List<string>();
+            JToken token;
+            string clientId = string.Empty,
+                tokenType = string.Empty,
+                audience = string.Empty,
+                issuer = string.Empty,
+                jti = string.Empty,
+                subject = string.Empty,
+                userName = string.Empty;
+            int expiration = 0,
+                nbf = 0;
+            double issuedAt = 0;
+            if (jObj.TryGetValue(Constants.IntrospectionResponseNames.Active, out token))
+            {
+                active = bool.Parse(token.ToString());
+            }
+
+            if (jObj.TryGetValue(Constants.IntrospectionResponseNames.Scope, out token))
+            {
+                if (token.Children().Count() > 0)
+                {
+                    foreach (var scope in token.Children())
+                    {
+                        scopes.Add(scope.ToString());
+                    }
+                }
+                else
+                {
+                    scopes.Add(token.ToString());
+                }
+            }
+
+            if (jObj.TryGetValue(Constants.IntrospectionResponseNames.ClientId, out token))
+            {
+                clientId = token.ToString();
+            }
+
+            if (jObj.TryGetValue(Constants.IntrospectionResponseNames.Audience, out token))
+            {
+                audience = token.ToString();
+            }
+
+            if (jObj.TryGetValue(Constants.IntrospectionResponseNames.UserName, out token))
+            {
+                userName = token.ToString();
+            }
+
+            if (jObj.TryGetValue(Constants.IntrospectionResponseNames.TokenType, out token))
+            {
+                tokenType = token.ToString();
+            }
+
+            if (jObj.TryGetValue(Constants.IntrospectionResponseNames.Expiration, out token))
+            {
+                expiration = int.Parse(token.ToString());
+            }
+
+            if (jObj.TryGetValue(Constants.IntrospectionResponseNames.IssuedAt, out token))
+            {
+                issuedAt = double.Parse(token.ToString());
+            }
+
+            if (jObj.TryGetValue(Constants.IntrospectionResponseNames.Nbf, out token))
+            {
+                nbf = int.Parse(token.ToString());
+            }
+
+            if (jObj.TryGetValue(Constants.IntrospectionResponseNames.Issuer, out token))
+            {
+                issuer = token.ToString();
+            }
+
+            if (jObj.TryGetValue(Constants.IntrospectionResponseNames.Jti, out token))
+            {
+                jti = token.ToString();
+            }
+
+            if (jObj.TryGetValue(Constants.IntrospectionResponseNames.Subject, out token))
+            {
+                subject = token.ToString();
+            }
+
+            return new IntrospectionResponse
+            {
+                Active = active,
+                Scope = scopes,
+                Audience = audience,
+                ClientId = clientId,
+                Expiration = expiration,
+                Nbf = nbf,
+                IssuedAt = issuedAt,
+                TokenType = tokenType,
+                Issuer = issuer,
+                Jti = jti,
+                Subject = subject,
+                UserName = userName
+            };
         }
 
         #endregion
