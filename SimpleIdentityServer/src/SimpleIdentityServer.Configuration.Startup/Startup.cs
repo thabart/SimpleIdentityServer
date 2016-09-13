@@ -73,7 +73,7 @@ namespace SimpleIdentityServer.Configuration.Startup
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            var introspectionUrl = Configuration["AuthorizationServerUrl"] + "/introspect";
+            var introspectionUrl = Configuration["IntrospectionUrl"];
             var clientId = Configuration["ClientId"];
             var clientSecret = Configuration["ClientSecret"];
             var isDataMigrated = Configuration["DATA_MIGRATED"] == null ? false : bool.Parse(Configuration["DATA_MIGRATED"]);

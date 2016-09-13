@@ -4,7 +4,9 @@
     "emitEntryPoint": true,
     "copyToOutput": [
       "appsettings.json",
-      "appsettings.docker.json"
+      "appsettings.docker.json",
+      "appsettings.idserver.json",
+      "appsettings.idserver_docker.json"
     ]
   },
   "tooling": {

@@ -560,6 +560,40 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         RedirectionUrls = "http://localhost:4200/callback",
                         ApplicationType = ApplicationTypes.web
                     },
+                    // Website
+                    new Client
+                    {
+                        ClientId = "website",
+                        ClientName = "Website",
+                        ClientSecret = "website",
+                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_basic,
+                        LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
+                        PolicyUri = "http://openid.net",
+                        TosUri = "http://openid.net",
+                        ClientScopes = new List<ClientScope>
+                        {
+                            new ClientScope
+                            {
+                                ScopeName = "openid"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "role"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "profile"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "website_api"
+                            }
+                        },
+                        GrantTypes = "4",
+                        ResponseTypes = "0,1,2",
+                        IdTokenSignedResponseAlg = "RS256",
+                        ApplicationType = ApplicationTypes.web
+                    },
                     // Manager website API
                     new Client
                     {

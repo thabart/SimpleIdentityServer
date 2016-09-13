@@ -1,10 +1,8 @@
 ﻿using IdentityServer4.Models;
-using IdentityServer4.Quickstart;
 using IdentityServer4.Startup.Services;
 using SimpleIdentityServer.Core.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Security.Claims;
 
 namespace IdentityServer4.Startup
 {
@@ -53,7 +51,12 @@ namespace IdentityServer4.Startup
                     Name = "manage_configuration",
                     Description = "Manage configuration",
                     DisplayName = "Manage configuration",
-                    Type = ScopeType.Resource
+                    Type = ScopeType.Resource,
+                    AllowUnrestrictedIntrospection = true,
+                    ScopeSecrets = new List<Secret>
+                    {
+                        new Secret("manage_configuration".Sha256())
+                    }
                 },
                 new Scope
                 {
@@ -67,6 +70,18 @@ namespace IdentityServer4.Startup
                     Name = "website_api",
                     Description = "Access to the website API",
                     DisplayName = "Website API",
+                    Type = ScopeType.Resource,
+                    AllowUnrestrictedIntrospection = true,
+                    ScopeSecrets = new List<Secret>
+                    {
+                        new Secret("website_api".Sha256())
+                    }
+                },
+                new Scope
+                {
+                    Name = "openid_manager",
+                    Description = "Access to the OpenId Manager",
+                    DisplayName = "OpenId Manager",
                     Type = ScopeType.Resource
                 }
             };
@@ -93,7 +108,28 @@ namespace IdentityServer4.Startup
                     {
                         SimpleIdentityServer.Core.Constants.StandardScopes.OpenId.Name,
                         SimpleIdentityServer.Core.Constants.StandardScopes.ProfileScope.Name,
-                        "role"
+                        "role",
+                        "website_api"
+                    }
+                },
+                new Client
+                {
+                    ClientId = "ManagerWebSiteApi",
+                    ClientName = "Manager website API",
+                    ClientSecrets = new List<Secret>
+                    {
+                        new Secret("ManagerWebSiteApi".Sha256())
+                    },
+                    LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
+                    AllowedGrantTypes = GrantTypes.ClientCredentials,
+                    AllowedScopes = new List<string>
+                    {
+                        "openid",
+                        "uma_protection",
+                        "uma_authorization",
+                        "openid_manager",
+                        "manage_configuration",
+                        "display_configuration"
                     }
                 }
             };
