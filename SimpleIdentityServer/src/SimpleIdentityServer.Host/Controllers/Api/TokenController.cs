@@ -42,7 +42,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
 
         // [SimpleTypeFilterAttribute(typeof(RateLimitationFilterAttribute), Arguments = new object[] { "PostToken" })]
         [HttpPost]
-        public GrantedToken Post([FromForm] TokenRequest tokenRequest)
+        public TokenResponse Post([FromForm] TokenRequest tokenRequest)
         {
             GrantedToken result = null;
             StringValues authorizationHeader;
@@ -83,7 +83,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
                     break;
             }
 
-            return result;
+            return result.ToDto();
         }
 
         [HttpPost("revoke")]

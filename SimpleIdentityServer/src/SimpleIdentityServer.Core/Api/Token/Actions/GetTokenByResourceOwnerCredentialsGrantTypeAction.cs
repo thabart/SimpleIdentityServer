@@ -125,17 +125,19 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             }
 
             // Check if the requested scopes are valid
-            var allowedTokenScopes = new List<string>();
+            var allowedTokenScopes = string.Empty;
             if (!string.IsNullOrWhiteSpace(resourceOwnerGrantTypeParameter.Scope))
             {
                 string messageErrorDescription;
-                allowedTokenScopes = _scopeValidator.IsScopesValid(resourceOwnerGrantTypeParameter.Scope, client, out messageErrorDescription);
-                if (!allowedTokenScopes.Any())
+                var scopes = _scopeValidator.IsScopesValid(resourceOwnerGrantTypeParameter.Scope, client, out messageErrorDescription);
+                if (!scopes.Any())
                 {
                     throw new IdentityServerException(
                         ErrorCodes.InvalidScope,
                         messageErrorDescription);
                 }
+
+                allowedTokenScopes = string.Join(" ", scopes);
             }
 
             // Generate the user information payload and store it.
@@ -150,7 +152,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
             var generatedToken = _grantedTokenHelper.GetValidGrantedToken(
                 client.ClientId,
-                allowedTokenScopes.Concat(),
+                allowedTokenScopes,
                 payload,
                 payload);
             if (generatedToken == null)
@@ -171,7 +173,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
                 _simpleIdentityServerEventSource.GrantAccessToClient(client.ClientId,
                     generatedToken.AccessToken,
-                    allowedTokenScopes.Concat());
+                    allowedTokenScopes);
             }
 
             return generatedToken;

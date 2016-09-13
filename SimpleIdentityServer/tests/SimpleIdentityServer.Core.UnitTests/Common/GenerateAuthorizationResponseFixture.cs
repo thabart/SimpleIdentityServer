@@ -179,7 +179,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 It.IsAny<JwsPayload>()))
                 .Returns(() => null);
             _grantedTokenGeneratorHelperFake.Setup(r => r.GenerateToken(It.IsAny<string>(),
-                It.IsAny<List<string>>(),
+                It.IsAny<string>(),
                 It.IsAny<JwsPayload>(),
                 It.IsAny<JwsPayload>()))
                 .Returns(grantedToken);

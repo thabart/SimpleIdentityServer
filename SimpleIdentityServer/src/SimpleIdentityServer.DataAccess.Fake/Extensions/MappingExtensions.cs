@@ -377,7 +377,7 @@ namespace SimpleIdentityServer.DataAccess.Fake.Extensions
                 ExpiresIn = grantedToken.ExpiresIn,
                 IdToken = grantedToken.IdToken,
                 RefreshToken = grantedToken.RefreshToken,
-                Scope = grantedToken.Scope.Split(' ').ToList(),
+                Scope = grantedToken.Scope,
                 TokenType = grantedToken.TokenType,
                 CreateDateTime = grantedToken.CreateDateTime,
                 UserInfoPayLoad = grantedToken.UserInfoPayLoad,

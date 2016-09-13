@@ -80,7 +80,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
             _simpleIdentityServerEventSource.GrantAccessToClient(generatedToken.ClientId,
                 generatedToken.AccessToken,
-                generatedToken.Scope.Concat());
+                generatedToken.Scope);
             return generatedToken;
         }
 

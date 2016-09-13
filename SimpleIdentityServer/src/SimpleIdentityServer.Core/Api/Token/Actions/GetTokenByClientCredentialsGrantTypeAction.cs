@@ -128,11 +128,11 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             }
 
             // Check scopes
-            var allowedTokenScopes = new List<string>();
+            string allowedTokenScopes = string.Empty;
             if (!string.IsNullOrWhiteSpace(clientCredentialsGrantTypeParameter.Scope))
             {
                 string messageErrorDescription;
-                allowedTokenScopes = _scopeValidator.IsScopesValid(clientCredentialsGrantTypeParameter.Scope, client, out messageErrorDescription);
+                var scopes = _scopeValidator.IsScopesValid(clientCredentialsGrantTypeParameter.Scope, client, out messageErrorDescription);
                 if (allowedTokenScopes == null ||
                     !allowedTokenScopes.Any())
                 {
@@ -140,11 +140,13 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                         ErrorCodes.InvalidScope,
                         messageErrorDescription);
                 }
+
+                allowedTokenScopes = string.Join(" ", scopes);
             }
 
             // Generate token
             var grantedToken = _grantedTokenHelper.GetValidGrantedToken(
-                allowedTokenScopes.Concat(),
+                allowedTokenScopes,
                 client.ClientId,
                 null,
                 null);
@@ -157,7 +159,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
                 _simpleIdentityServerEventSource.GrantAccessToClient(client.ClientId,
                     grantedToken.AccessToken,
-                    allowedTokenScopes.Concat());
+                    allowedTokenScopes);
             }
 
             return grantedToken;

@@ -38,16 +38,6 @@ namespace SimpleIdentityServer.Core.Extensions
             }
 
             return (JwsAlg)Enum.Parse(typeof (JwsAlg), algName);
-        }
-
-        public static List<string> SplitScopes(this string concatenated)
-        {
-            if (string.IsNullOrWhiteSpace(concatenated))
-            {
-                return new List<string>();
-            }
-
-            return concatenated.Split(' ').ToList();
-        }
+        }        
     }
 }

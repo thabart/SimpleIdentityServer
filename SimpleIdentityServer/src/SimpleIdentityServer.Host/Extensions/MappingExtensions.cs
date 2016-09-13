@@ -377,10 +377,28 @@ namespace SimpleIdentityServer.Host.Extensions
                 Issuer = introspectionResult.Issuer,
                 Jti = introspectionResult.Jti,
                 Nbf = introspectionResult.Nbf,
-                Scope = introspectionResult.Scope,
+                Scope = introspectionResult.Scope.Split(' ').ToList(),
                 Subject = introspectionResult.Subject,
                 TokenType = introspectionResult.TokenType,
                 UserName = introspectionResult.UserName
+            };
+        }
+
+        public static TokenResponse ToDto(this GrantedToken grantedToken)
+        {
+            if (grantedToken == null)
+            {
+                throw new ArgumentNullException(nameof(grantedToken));
+            }
+
+            return new TokenResponse
+            {
+                AccessToken = grantedToken.AccessToken,
+                IdToken = grantedToken.IdToken,
+                ExpiresIn = grantedToken.ExpiresIn,
+                RefreshToken = grantedToken.RefreshToken,
+                TokenType = grantedToken.TokenType,
+                Scope = grantedToken.Scope.Split(' ').ToList()
             };
         }
 

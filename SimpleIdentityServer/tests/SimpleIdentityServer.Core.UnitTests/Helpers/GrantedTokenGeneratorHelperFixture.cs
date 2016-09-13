@@ -60,7 +60,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
                 .Returns(3700);
 
             // ACT
-            var result = _grantedTokenGeneratorHelper.GenerateToken("client_id", new List<string> { "scope" });
+            var result = _grantedTokenGeneratorHelper.GenerateToken("client_id", "scope");
 
             // ASSERT
             Assert.NotNull(result);

@@ -28,7 +28,7 @@ namespace SimpleIdentityServer.Core.Results
         /// <summary>
         /// Gets or sets a list of scopes
         /// </summary>
-        public List<string> Scope { get; set; }
+        public string Scope { get; set; }
 
         /// <summary>
         /// Gets or sets the client id

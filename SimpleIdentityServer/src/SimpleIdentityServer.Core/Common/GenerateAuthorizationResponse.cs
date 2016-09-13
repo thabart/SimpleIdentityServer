@@ -109,7 +109,7 @@ namespace SimpleIdentityServer.Core.Common
             }
 
             var newAccessTokenGranted = false;
-            var allowedTokenScopes = new List<string>();
+            var allowedTokenScopes = string.Empty;
             GrantedToken grantedToken = null;
             var newAuthorizationCodeGranted = false;
             AuthorizationCode authorizationCode = null;
@@ -125,14 +125,14 @@ namespace SimpleIdentityServer.Core.Common
             {
                 if (!string.IsNullOrWhiteSpace(authorizationParameter.Scope))
                 {
-                    allowedTokenScopes = _parameterParserHelper.ParseScopeParameters(authorizationParameter.Scope);
+                    allowedTokenScopes = string.Join(" ", _parameterParserHelper.ParseScopeParameters(authorizationParameter.Scope));
                 }
 
                 // Check if an access token has already been generated and can be reused for that :
                 // We assumed that an access token is unique for a specific client id, user information 
                 // & id token payload & for certain scopes
                 grantedToken = _grantedTokenHelper.GetValidGrantedToken(
-                    allowedTokenScopes.Concat(),
+                    allowedTokenScopes,
                     authorizationParameter.ClientId,
                     idTokenPayload,
                     userInformationPayload);
@@ -186,7 +186,7 @@ namespace SimpleIdentityServer.Core.Common
                 _grantedTokenRepository.Insert(grantedToken);
                 _simpleIdentityServerEventSource.GrantAccessToClient(authorizationParameter.ClientId,
                     grantedToken.AccessToken,
-                    allowedTokenScopes.Concat());
+                    allowedTokenScopes);
             }
 
             if (newAuthorizationCodeGranted)

@@ -112,7 +112,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             {
                 grantedToken = _grantedTokenGeneratorHelper.GenerateToken(
                     authorizationCode.ClientId,
-                    authorizationCode.Scopes.SplitScopes(),
+                    authorizationCode.Scopes,
                     authorizationCode.UserInfoPayLoad,
                     authorizationCode.IdTokenPayload);
                 _grantedTokenRepository.Insert(grantedToken);

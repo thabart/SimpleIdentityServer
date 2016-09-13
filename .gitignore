@@ -207,3 +207,5 @@ FakesAssemblies/
 
 # Ignore the bower files
 SimpleIdentityServer/VNEXT/src/SimpleIdentityServer.Host/wwwroot/lib/*
+
+log-*.txt

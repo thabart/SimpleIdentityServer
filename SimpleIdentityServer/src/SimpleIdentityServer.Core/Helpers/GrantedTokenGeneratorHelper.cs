@@ -19,7 +19,6 @@ using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Models;
 using System.Text;
 using SimpleIdentityServer.Core.Configuration;
-using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Core.Helpers
 {
@@ -27,7 +26,7 @@ namespace SimpleIdentityServer.Core.Helpers
     {
         GrantedToken GenerateToken(
             string clientId,
-            List<string> scope,
+            string scope,
             JwsPayload userInformationPayload = null,
             JwsPayload idTokenPayload = null);
     }
@@ -53,7 +52,7 @@ namespace SimpleIdentityServer.Core.Helpers
 
         public GrantedToken GenerateToken(
             string clientId,
-            List<string> scope,
+            string scope,
             JwsPayload userInformationPayload = null,
             JwsPayload idTokenPayload = null)
         {
@@ -62,7 +61,7 @@ namespace SimpleIdentityServer.Core.Helpers
                 throw new ArgumentNullException(nameof(clientId));
             }
 
-            if (scope == null)
+            if (string.IsNullOrWhiteSpace(scope))
             {
                 throw new ArgumentNullException(nameof(scope));
             }
