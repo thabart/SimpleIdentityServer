@@ -22,19 +22,30 @@ using SimpleIdentityServer.Uma.Host.DTOs.Responses;
 using SimpleIdentityServer.Uma.Host.Extensions;
 using System;
 using System.Net;
+using System.Threading.Tasks;
+using WebApiContrib.Core.Concurrency;
 
 namespace SimpleIdentityServer.Uma.Host.Controllers
 {
     [Route(Constants.RouteValues.ResourceSet)]
     public class ResourceSetController : Controller
     {
+        private const string GetResourcesStoreName = "GetResources";
+
+        private const string GetResourceStoreName = "GetResource_";
+
         private readonly IResourceSetActions _resourceSetActions;
+
+        private readonly IRepresentationManager _representationManager;
 
         #region Constructor
 
-        public ResourceSetController(IResourceSetActions resourceSetActions)
+        public ResourceSetController(
+            IResourceSetActions resourceSetActions,
+            IRepresentationManager representationManager)
         {
             _resourceSetActions = resourceSetActions;
+            _representationManager = representationManager;
         }
 
         #endregion
@@ -43,19 +54,36 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
 
         [HttpGet]
         [Authorize("UmaProtection")]
-        public ActionResult GetResourceSets()
+        public async Task<ActionResult> GetResourceSets()
         {
+            if (!await _representationManager.CheckRepresentationExistsAsync(this, GetResourcesStoreName))
+            {
+                return new ContentResult
+                {
+                    StatusCode = 412
+                };
+            }
+
             var resourceSetIds = _resourceSetActions.GetAllResourceSet();
+            await _representationManager.AddOrUpdateRepresentationAsync(this, GetResourcesStoreName);
             return new OkObjectResult(resourceSetIds);
         }
 
         [HttpGet("{id}")]
         [Authorize("UmaProtection")]
-        public ActionResult GetResourceSet(string id)
+        public async Task<ActionResult> GetResourceSet(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
                 throw new ArgumentNullException(nameof(id));
+            }
+
+            if (!await _representationManager.CheckRepresentationExistsAsync(this, GetResourceStoreName + id))
+            {
+                return new ContentResult
+                {
+                    StatusCode = 412
+                };
             }
 
             var result = _resourceSetActions.GetResourceSet(id);
@@ -65,12 +93,13 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             }
 
             var content = result.ToResponse();
+            await _representationManager.AddOrUpdateRepresentationAsync(this, GetResourceStoreName + id);
             return new OkObjectResult(content);
         }
 
         [HttpPost]
         [Authorize("UmaProtection")]
-        public ActionResult AddResourceSet([FromBody] PostResourceSet postResourceSet)
+        public async Task<ActionResult> AddResourceSet([FromBody] PostResourceSet postResourceSet)
         {
             if (postResourceSet == null)
             {
@@ -83,6 +112,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             {
                 Id = result
             };
+            await _representationManager.AddOrUpdateRepresentationAsync(this, GetResourcesStoreName, false);
             return new ObjectResult(response)
             {
                 StatusCode = (int)HttpStatusCode.Created
@@ -91,7 +121,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
 
         [HttpPut]
         [Authorize("UmaProtection")]
-        public ActionResult UpdateResourceSet([FromBody] PutResourceSet putResourceSet)
+        public async Task<ActionResult> UpdateResourceSet([FromBody] PutResourceSet putResourceSet)
         {
             if (putResourceSet == null)
             {
@@ -110,6 +140,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 Id = putResourceSet.Id
             };
 
+            await _representationManager.AddOrUpdateRepresentationAsync(this, GetResourceStoreName + putResourceSet.Id, false);
             return new ObjectResult(response)
             {
                 StatusCode = (int)HttpStatusCode.OK
@@ -118,7 +149,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
 
         [HttpDelete("{id}")]
         [Authorize("UmaProtection")]
-        public ActionResult DeleleteResourceSet(string id)
+        public async Task<ActionResult> DeleleteResourceSet(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -131,6 +162,8 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 return GetNotFoundResourceSet();
             }
 
+            await _representationManager.AddOrUpdateRepresentationAsync(this, GetResourceStoreName + id, false);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, GetResourcesStoreName, false);
             return new StatusCodeResult((int)HttpStatusCode.NoContent);
         }
 

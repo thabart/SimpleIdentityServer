@@ -11,8 +11,9 @@ namespace WebApiContrib.Core.Concurrency
     public interface IRepresentationManager
     {
         Task AddOrUpdateRepresentationAsync(
-            Controller controller, 
-            string representationId);
+            Controller controller,
+            string representationId,
+            bool addHeader = true);
 
         Task UpdateHeader(
             Controller controller,
@@ -38,7 +39,8 @@ namespace WebApiContrib.Core.Concurrency
         
         public async Task AddOrUpdateRepresentationAsync(
             Controller controller, 
-            string representationId)
+            string representationId,
+            bool addHeader = true)
         {
             if (controller == null)
             {
@@ -51,7 +53,10 @@ namespace WebApiContrib.Core.Concurrency
             }
 
             var concurrentObject = await _concurrencyManager.TryUpdateRepresentationAsync(representationId);
-            SetHeaders(controller, concurrentObject);
+            if (addHeader)
+            {
+                SetHeaders(controller, concurrentObject);
+            }
         }
 
         public async Task UpdateHeader(

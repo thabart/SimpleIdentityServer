@@ -114,7 +114,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 return GetNotFoundPolicy();
             }
 
-            await _representationManager.AddOrUpdateRepresentationAsync(this, GetPolicyStoreName + putPolicy.PolicyId);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, GetPolicyStoreName + putPolicy.PolicyId, false);
             return new StatusCodeResult((int)HttpStatusCode.NoContent);
         }
         
@@ -142,7 +142,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 return GetNotFoundPolicy();
             }
 
-            await _representationManager.AddOrUpdateRepresentationAsync(this, GetPolicyStoreName + id);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, GetPolicyStoreName + id, false);
             return new StatusCodeResult((int)HttpStatusCode.NoContent);
         }
 
@@ -166,7 +166,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 return GetNotFoundPolicy();
             }
 
-            await _representationManager.AddOrUpdateRepresentationAsync(this, GetPolicyStoreName + id);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, GetPolicyStoreName + id, false);
             return new StatusCodeResult((int)HttpStatusCode.NoContent);
         }
 
@@ -185,7 +185,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 PolicyId = policyId
             };
 
-            await _representationManager.AddOrUpdateRepresentationAsync(this, GetPoliciesStoreName);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, GetPoliciesStoreName, false);
             return new ObjectResult(content)
             {
                 StatusCode = (int)HttpStatusCode.Created
@@ -207,7 +207,8 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 return GetNotFoundPolicy();
             }
 
-            await _representationManager.AddOrUpdateRepresentationAsync(this, GetPoliciesStoreName);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, GetPolicyStoreName + id, false);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, GetPoliciesStoreName, false);
             return new StatusCodeResult((int)HttpStatusCode.NoContent);
         }
 
