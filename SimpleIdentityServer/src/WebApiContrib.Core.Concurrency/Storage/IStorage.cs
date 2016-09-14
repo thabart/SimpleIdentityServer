@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace WebApiContrib.Core.Concurrency.Storage
 {
@@ -15,5 +16,7 @@ namespace WebApiContrib.Core.Concurrency.Storage
         void Remove(string key);
 
         Task RemoveAsync(string key);
+
+        IEnumerable<ConcurrentObject> GetAll();
     }
 }

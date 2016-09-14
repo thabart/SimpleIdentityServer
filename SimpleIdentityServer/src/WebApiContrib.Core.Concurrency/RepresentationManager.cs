@@ -26,19 +26,21 @@ namespace WebApiContrib.Core.Concurrency
         Task<bool> CheckRepresentationHasChangedAsync(
             Controller controller,
             string representationId);
+
+        Task<IEnumerable<ConcurrentObject>> GetRepresentations();
     }
 
     internal class RepresentationManager : IRepresentationManager
     {
         private readonly IConcurrencyManager _concurrencyManager;
-             
+
         public RepresentationManager(IConcurrencyManager concurrencyManager)
         {
             _concurrencyManager = concurrencyManager;
         }
-        
+
         public async Task AddOrUpdateRepresentationAsync(
-            Controller controller, 
+            Controller controller,
             string representationId,
             bool addHeader = true)
         {
@@ -175,6 +177,11 @@ namespace WebApiContrib.Core.Concurrency
             return await ContinueExecution(concatenatedEtags, modifiedSince, representationId, checkDateCallback, checkEtagCorrectCallback);
         }
 
+        public Task<IEnumerable<ConcurrentObject>> GetRepresentations()
+        {
+            return Task.FromResult(_concurrencyManager.GetRepresentations());
+        }
+
         private async Task<bool> ContinueExecution(
             string concatenatedEtags,
             string modifiedDate,
@@ -187,7 +194,7 @@ namespace WebApiContrib.Core.Concurrency
             {
                 return true;
             }
-            
+
             // Check a representation exists
             var lastRepresentation = await _concurrencyManager.TryGetRepresentationAsync(representationId);
             if (lastRepresentation == null)
@@ -207,7 +214,7 @@ namespace WebApiContrib.Core.Concurrency
                 return !checkDateCallback(dateTime, lastRepresentation);
             }
             else
-            {            
+            {
                 // Check etags are correct
                 var etagsStr = concatenatedEtags.Split(',');
                 var etags = new List<EntityTagHeaderValue>();

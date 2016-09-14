@@ -29,6 +29,8 @@ using SimpleIdentityServer.Configuration.Startup.Middleware;
 using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Oauth2Instrospection.Authentication;
 using System;
+using WebApiContrib.Core.Concurrency.Extensions;
+using WebApiContrib.Core.Concurrency.Redis;
 
 namespace SimpleIdentityServer.Configuration.Startup
 {
@@ -126,11 +128,19 @@ namespace SimpleIdentityServer.Configuration.Startup
 
         public void RegisterServices(IServiceCollection services)
         {
+            var cachingDatabase = Configuration["Caching:Database"];
+            var cachingConnectionPath = Configuration["Caching:ConnectionPath"];
             var isSqlServer = bool.Parse(Configuration["isSqlServer"]);
             var isPostgre = bool.Parse(Configuration["isPostgre"]);
             var isLogFileEnabled = bool.Parse(Configuration["Log:File:Enabled"]);
             var isElasticSearchEnabled = bool.Parse(Configuration["Log:Elasticsearch:Enabled"]);
             var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
+            if (string.IsNullOrWhiteSpace(cachingDatabase))
+            {
+                cachingDatabase = "INMEMORY";
+            }
+
+            // Configure database
             services.AddSimpleIdentityServerConfiguration();
             if (isSqlServer)
             {
@@ -141,6 +151,21 @@ namespace SimpleIdentityServer.Configuration.Startup
                 services.AddSimpleIdentityServerPostgre(connectionString);
             }
 
+            // Configure caching
+            if (cachingDatabase == "REDIS")
+            {
+                services.AddConcurrency(opt => opt.UseRedis(o =>
+                {
+                    o.Configuration = Configuration[cachingConnectionPath + ":ConnectionString"];
+                    o.InstanceName = Configuration[cachingConnectionPath + ":InstanceName"];
+                }, int.Parse(Configuration[cachingConnectionPath + ":Port"])));
+            }
+            else if (cachingDatabase == "INMEMORY")
+            {
+                services.AddConcurrency(opt => opt.UseInMemoryStorage());
+            }
+
+            // Configure logging
             var logger = new LoggerConfiguration()
                 .MinimumLevel.Information()
                 .Enrich.FromLogContext()

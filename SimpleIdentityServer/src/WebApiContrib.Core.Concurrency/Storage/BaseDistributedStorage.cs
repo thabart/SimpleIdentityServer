@@ -1,12 +1,13 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace WebApiContrib.Core.Concurrency.Storage
 {
-    public class BaseDistributedStorage : IStorage
+    public abstract class BaseDistributedStorage : IStorage
     {
         private IDistributedCache _distributedCache;
 
@@ -51,7 +52,7 @@ namespace WebApiContrib.Core.Concurrency.Storage
 
         public ConcurrentObject TryGetValue(string key)
         {
-            throw new NotImplementedException();
+            return TryGetValueAsync(key).Result;
         }
 
         public async Task<ConcurrentObject> TryGetValueAsync(string key)
@@ -70,6 +71,8 @@ namespace WebApiContrib.Core.Concurrency.Storage
             var serialized = Encoding.UTF8.GetString(bytes);
             return JsonConvert.DeserializeObject<ConcurrentObject>(serialized);
         }
+
+        public abstract IEnumerable<ConcurrentObject> GetAll();
         
         protected void Initialize(IDistributedCache distributedCache)
         {

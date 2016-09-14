@@ -23,6 +23,7 @@ namespace SimpleIdentityServer.Configuration.Startup
             public const string AuthProvider = "authproviders";
             public const string Configuration = "configuration";
             public const string Setting = "settings";
+            public const string Cache = "representations";
         }
 
         public static class ErrorResponseNames

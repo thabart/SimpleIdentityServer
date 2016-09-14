@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace WebApiContrib.Core.Concurrency.Storage
 {
@@ -61,6 +62,11 @@ namespace WebApiContrib.Core.Concurrency.Storage
         public Task RemoveAsync(string key)
         {
             return Task.Factory.StartNew(() => Remove(key));
+        }
+
+        public IEnumerable<ConcurrentObject> GetAll()
+        {
+            return new List<ConcurrentObject>();
         }
     }
 }

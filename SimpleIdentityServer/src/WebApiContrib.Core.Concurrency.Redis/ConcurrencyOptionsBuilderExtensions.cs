@@ -8,7 +8,8 @@ namespace WebApiContrib.Core.Concurrency.Redis
 
         public static void UseRedis(
             this ConcurrencyOptionsBuilder concurrencyOptionsBuilder,
-            Action<RedisCacheOptions> callback)
+            Action<RedisCacheOptions> callback,
+            int port = 6379)
         {
             if (callback == null)
             {
@@ -17,12 +18,13 @@ namespace WebApiContrib.Core.Concurrency.Redis
 
             var options = new RedisCacheOptions();
             callback(options);
-            UseRedis(concurrencyOptionsBuilder, options);
+            UseRedis(concurrencyOptionsBuilder, options, port);
         }
 
         public static void UseRedis(
             this ConcurrencyOptionsBuilder concurrencyOptionsBuilder,
-            RedisCacheOptions options)
+            RedisCacheOptions options,
+            int port = 6379)
         {
             if (concurrencyOptionsBuilder == null)
             {
@@ -34,7 +36,7 @@ namespace WebApiContrib.Core.Concurrency.Redis
                 throw new ArgumentNullException(nameof(options));
             }
 
-            concurrencyOptionsBuilder.ConcurrencyOptions.Storage = new RedisStorage(options);
+            concurrencyOptionsBuilder.ConcurrencyOptions.Storage = new RedisStorage(options, port);
         }
     }
 }

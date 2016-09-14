@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace WebApiContrib.Core.Concurrency
@@ -18,6 +19,8 @@ namespace WebApiContrib.Core.Concurrency
         void Remove(string representationId);
 
         Task RemoveAsync(string representationId);
+
+        IEnumerable<ConcurrentObject> GetRepresentations();
     }
 
     internal class ConcurrencyManager : IConcurrencyManager
@@ -54,6 +57,11 @@ namespace WebApiContrib.Core.Concurrency
             };
             await _options.Storage.SetAsync(representationId, concurrentObject);
             return concurrentObject;
+        }
+
+        public IEnumerable<ConcurrentObject> GetRepresentations()
+        {
+            return _options.Storage.GetAll();
         }
 
         public async Task<bool> IsRepresentationDifferentAsync(string representationId, string etag)

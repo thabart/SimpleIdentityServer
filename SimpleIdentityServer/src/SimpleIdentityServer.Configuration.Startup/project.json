@@ -37,7 +37,10 @@
     "SimpleIdentityServer.Core.Common": "*",
     "SimpleIdentityServer.Configuration.Core": "*",
     "SimpleIdentityServer.Configuration.EF": "*",
-    "SimpleIdentityServer.Oauth2Instrospection.Authentication": "*"
+    "SimpleIdentityServer.Oauth2Instrospection.Authentication": "*",
+    "WebApiContrib.Core.Concurrency.Redis": {
+      "target": "project"
+    }
   },
   "frameworks": {
     "net46": {
