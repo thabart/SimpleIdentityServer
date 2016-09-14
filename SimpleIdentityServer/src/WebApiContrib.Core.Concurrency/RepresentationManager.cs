@@ -199,7 +199,7 @@ namespace WebApiContrib.Core.Concurrency
             var lastRepresentation = await _concurrencyManager.TryGetRepresentationAsync(representationId);
             if (lastRepresentation == null)
             {
-                throw new ArgumentNullException($"the representation {representationId} doesn't exist");
+                return true;
             }
 
             if (string.IsNullOrWhiteSpace(concatenatedEtags) || concatenatedEtags == "*")
