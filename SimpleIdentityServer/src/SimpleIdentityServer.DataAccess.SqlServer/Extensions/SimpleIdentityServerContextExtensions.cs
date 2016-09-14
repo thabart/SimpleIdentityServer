@@ -200,6 +200,14 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         IsDisplayedInConsent = true,
                         Type = ScopeType.ProtectedApi
                     },
+                    new Scope
+                    {
+                        Name = "uma",
+                        Description = "UMA",
+                        IsOpenIdScope = false,
+                        IsDisplayedInConsent = true,
+                        Type = ScopeType.ProtectedApi
+                    },
                     // Scopes needed to manage the openid assets
                     new Scope
                     {
@@ -222,6 +230,14 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                     {
                         Name = "display_configuration",
                         Description = "Display configuration",
+                        IsOpenIdScope = false,
+                        IsDisplayedInConsent = true,
+                        Type = ScopeType.ProtectedApi
+                    },
+                    new Scope
+                    {
+                        Name = "configuration",
+                        Description = "Configuration",
                         IsOpenIdScope = false,
                         IsDisplayedInConsent = true,
                         Type = ScopeType.ProtectedApi
@@ -629,6 +645,14 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                             new ClientScope
                             {
                                 ScopeName = "display_configuration"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "configuration"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "uma"
                             }
                         },
                         GrantTypes = "3",

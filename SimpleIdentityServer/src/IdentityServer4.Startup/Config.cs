@@ -51,12 +51,7 @@ namespace IdentityServer4.Startup
                     Name = "manage_configuration",
                     Description = "Manage configuration",
                     DisplayName = "Manage configuration",
-                    Type = ScopeType.Resource,
-                    AllowUnrestrictedIntrospection = true,
-                    ScopeSecrets = new List<Secret>
-                    {
-                        new Secret("manage_configuration".Sha256())
-                    }
+                    Type = ScopeType.Resource
                 },
                 new Scope
                 {
@@ -64,6 +59,18 @@ namespace IdentityServer4.Startup
                     Description = "Display configuration",
                     DisplayName = "Display configuration",
                     Type = ScopeType.Resource
+                },
+                new Scope
+                {
+                    Name = "configuration",
+                    Description = "Configuration",
+                    DisplayName = "Configuration",
+                    Type = ScopeType.Resource,
+                    AllowUnrestrictedIntrospection = true,
+                    ScopeSecrets = new List<Secret>
+                    {
+                        new Secret("configuration".Sha256())
+                    }
                 },
                 new Scope
                 {
@@ -147,7 +154,8 @@ namespace IdentityServer4.Startup
                         "openid_manager",
                         "manage_configuration",
                         "display_configuration",
-                        "uma"
+                        "uma",
+                        "configuration"
                     }
                 }
             };

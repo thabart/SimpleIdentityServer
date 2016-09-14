@@ -4,8 +4,7 @@
       "commandName": "Project",
       "commandLineArgs": "--server.urls=http://*:5004",
       "environmentVariables": {
-        "DATA_MIGRATED": "true",
-        "ASPNETCORE_ENVIRONMENT": "idserver"
+        "DATA_MIGRATED": "true"
       }
     }
   }

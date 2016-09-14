@@ -20,6 +20,7 @@ using SimpleIdentityServer.Core.Api.Token;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Host.DTOs.Request;
+using SimpleIdentityServer.Host.DTOs.Response;
 using SimpleIdentityServer.Host.Extensions;
 using System;
 using System.Linq;
