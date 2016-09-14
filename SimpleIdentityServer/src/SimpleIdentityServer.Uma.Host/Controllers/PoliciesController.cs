@@ -23,19 +23,28 @@ using SimpleIdentityServer.Uma.Host.DTOs.Responses;
 using SimpleIdentityServer.Uma.Host.Extensions;
 using System;
 using System.Net;
+using System.Threading.Tasks;
+using WebApiContrib.Core.Concurrency;
 
 namespace SimpleIdentityServer.Uma.Host.Controllers
 {
     [Route(Constants.RouteValues.Policies)]
     public class PoliciesController : Controller
     {
+        private const string GetPoliciesStoreName = "GetPolicies";
+
         private readonly IPolicyActions _policyActions;
+
+        private readonly IRepresentationManager _representationManager;
 
         #region Constructor
 
-        public PoliciesController(IPolicyActions policyActions)
+        public PoliciesController(
+            IPolicyActions policyActions,
+            IRepresentationManager representationManager)
         {
             _policyActions = policyActions;
+            _representationManager = representationManager;
         }
 
         #endregion
@@ -63,9 +72,18 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
 
         [HttpGet]
         [Authorize("UmaProtection")]
-        public ActionResult GetPolicies()
+        public async Task<ActionResult> GetPolicies()
         {
+            if (!await _representationManager.CheckRepresentationExistsAsync(this, GetPoliciesStoreName))
+            {
+                return new ContentResult
+                {
+                    StatusCode = 412
+                };
+            }
+
             var policies = _policyActions.GetPolicies();
+            await _representationManager.AddOrUpdateRepresentationAsync(this, GetPoliciesStoreName);
             return new OkObjectResult(policies);
         }
 
@@ -161,7 +179,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
 
         [HttpDelete("{id}")]
         [Authorize("UmaProtection")]
-        public ActionResult DeletePolicy(string id)
+        public async Task<ActionResult> DeletePolicy(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -173,7 +191,8 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             {
                 return GetNotFoundPolicy();
             }
-
+            
+            await _representationManager.AddOrUpdateRepresentationAsync(this, GetPoliciesStoreName);
             return new StatusCodeResult((int)HttpStatusCode.NoContent);
         }
 

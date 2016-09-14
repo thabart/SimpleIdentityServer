@@ -39,7 +39,10 @@
     "Serilog.Sinks.ElasticSearch": "*",
     "SimpleIdentityServer.Uma.Core": "*",
     "SimpleIdentityServer.Uma.EF": "*",
-    "SimpleIdentityServer.Oauth2Instrospection.Authentication": "*"
+    "SimpleIdentityServer.Oauth2Instrospection.Authentication": "*",
+    "WebApiContrib.Core.Concurrency.Redis": {
+      "target": "project"
+    }
   },
   "frameworks": {
     "net46": {

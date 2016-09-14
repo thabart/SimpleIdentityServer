@@ -33,6 +33,8 @@ using SimpleIdentityServer.Uma.Host.Configuration;
 using SimpleIdentityServer.Uma.Host.Middlewares;
 using SimpleIdentityServer.Uma.Logging;
 using System;
+using WebApiContrib.Core.Concurrency.Extensions;
+using WebApiContrib.Core.Concurrency.Redis;
 
 namespace SimpleIdentityServer.Uma.Host
 {
@@ -128,6 +130,8 @@ namespace SimpleIdentityServer.Uma.Host
 
         public void RegisterServices(IServiceCollection services)
         {
+            var cachingDatabase = Configuration["Caching:Database"];
+            var cachingConnectionPath = Configuration["Caching:ConnectionPath"];
             var wellKnownConfiguration = Configuration["OpenId:WellKnownConfiguration"];
             var authorizationEndPoint = Configuration["OpenId:AuthorizationEndPoint"];
             var registerEndPoint = Configuration["OpenId:RegisterEndPoint"];
@@ -137,6 +141,11 @@ namespace SimpleIdentityServer.Uma.Host
             var isLogFileEnabled = bool.Parse(Configuration["Log:File:Enabled"]);
             var isElasticSearchEnabled = bool.Parse(Configuration["Log:Elasticsearch:Enabled"]);
             var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
+            if (string.IsNullOrWhiteSpace(cachingDatabase))
+            {
+                cachingDatabase = "INMEMORY";
+            }
+
             var parametersProvider = new ParametersProvider(wellKnownConfiguration);
             services.AddSimpleIdServerUmaCore(opt =>
             {
@@ -146,6 +155,19 @@ namespace SimpleIdentityServer.Uma.Host
                 opt.RptLifeTime = 3000;
                 opt.TicketLifeTime = 3000;
             });
+
+            if (cachingDatabase == "REDIS")
+            {
+                services.AddConcurrency(opt => opt.UseRedis(o =>
+                {
+                    o.Configuration = Configuration[cachingConnectionPath + ":ConnectionString"];
+                    o.InstanceName = Configuration[cachingConnectionPath + ":InstanceName"];
+                }));
+            }
+            else if (cachingDatabase == "INMEMORY")
+            {
+                services.AddConcurrency(opt => opt.UseInMemoryStorage());
+            }
 
             if (isSqlServer)
             {
