@@ -17,7 +17,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Authentication.Common.Authentication;
 using SimpleIdentityServer.Oauth2Instrospection.Authentication.Errors;
