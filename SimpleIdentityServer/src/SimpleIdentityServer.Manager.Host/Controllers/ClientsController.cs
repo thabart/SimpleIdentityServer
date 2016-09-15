@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Manager.Core.Api.Clients;
 using SimpleIdentityServer.Manager.Host.DTOs.Requests;
+using SimpleIdentityServer.Manager.Host.DTOs.Responses;
 using SimpleIdentityServer.Manager.Host.Extensions;
 using System;
 using System.Threading.Tasks;
@@ -103,8 +104,8 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
             }
 
             _clientActions.DeleteClient(id);
-            await _representationManager.AddOrUpdateRepresentationAsync(this, GetClientStoreName + id);
-            await _representationManager.AddOrUpdateRepresentationAsync(this, GetClientsStoreName);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, GetClientStoreName + id, false);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, GetClientsStoreName, false);
             return new NoContentResult();
         }
 
@@ -118,8 +119,22 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
             }
 
             _clientActions.UpdateClient(updateClientRequest.ToParameter());
-            await _representationManager.AddOrUpdateRepresentationAsync(this, GetClientStoreName + updateClientRequest.ClientId);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, GetClientStoreName + updateClientRequest.ClientId, false);
             return new NoContentResult();
+        }
+
+        [HttpPost]
+        [Authorize("manager")]
+        public async Task<ActionResult> Add([FromBody] ClientResponse client)
+        {
+            if (client == null)
+            {
+                throw new ArgumentNullException(nameof(client));
+            }
+
+            var result = _clientActions.AddClient(client.ToParameter());
+            await _representationManager.AddOrUpdateRepresentationAsync(this, GetClientsStoreName, false);
+            return new OkObjectResult(result);
         }
 
         #endregion

@@ -100,8 +100,8 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
             }
 
             _resourceOwnerActions.Delete(id);
-            await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwner + id);
-            await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwners);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwner + id, false);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwners, false);
             return new NoContentResult();
         }
 
@@ -115,7 +115,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
             }
 
             _resourceOwnerActions.UpdateResourceOwner(updateResourceOwnerRequest.ToParameter());
-            await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwner + updateResourceOwnerRequest.Subject);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwner + updateResourceOwnerRequest.Subject, false);
             return new NoContentResult();
         }
 

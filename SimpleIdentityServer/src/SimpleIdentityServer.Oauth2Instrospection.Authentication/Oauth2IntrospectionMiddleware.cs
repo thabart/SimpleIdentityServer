@@ -86,7 +86,7 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
             _nullAuthenticationNext = nullAuthenticationBuilder.Build();
         }
 
-#endregion
+        #endregion
 
         #region Public methods
 

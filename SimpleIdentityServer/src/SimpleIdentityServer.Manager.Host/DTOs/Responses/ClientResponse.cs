@@ -15,6 +15,7 @@
 #endregion
 
 using SimpleIdentityServer.Core.Jwt;
+using SimpleIdentityServer.Core.Jwt.Signature;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
@@ -131,6 +132,12 @@ namespace SimpleIdentityServer.Manager.Host.DTOs.Responses
         /// </summary>
         [DataMember(Name = Constants.ClientNames.JwksUri)]
         public string JwksUri { get; set; }
+
+        /// <summary>
+        /// Client json web keys are passed by values
+        /// </summary>
+        [DataMember(Name = Constants.ClientNames.Jwks)]
+        public JsonWebKeySet Jwks { get; set; }
 
         /// <summary>
         /// Gets or sets the list of json web keys

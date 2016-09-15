@@ -15,6 +15,7 @@
 #endregion
 
 using Microsoft.Extensions.DependencyInjection;
+using SimpleIdentityServer.Core.Api.Registration.Actions;
 using SimpleIdentityServer.Manager.Core.Api.Clients;
 using SimpleIdentityServer.Manager.Core.Api.Clients.Actions;
 using SimpleIdentityServer.Manager.Core.Api.Jwe;
@@ -57,6 +58,7 @@ namespace SimpleIdentityServer.Manager.Core
             serviceCollection.AddTransient<IUpdateResourceOwnerAction, UpdateResourceOwnerAction>();
             serviceCollection.AddTransient<IResourceOwnerActions, ResourceOwnerActions>();
             serviceCollection.AddTransient<IDeleteResourceOwnerAction, DeleteResourceOwnerAction>();
+            serviceCollection.AddTransient<IRegisterClientAction, RegisterClientAction>();
             return serviceCollection;
         }
     }

@@ -98,6 +98,7 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
             Log.Logger = log;
             serviceCollection.AddLogging();
             serviceCollection.AddTransient<IManagerEventSource, ManagerEventSource>();
+            serviceCollection.AddTransient<ISimpleIdentityServerEventSource, SimpleIdentityServerEventSource>();
         }
     }
 }

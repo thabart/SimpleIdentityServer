@@ -99,13 +99,11 @@ namespace SimpleIdentityServer.IdentityServer.EF
                 {
                     ResponseTypes = new List<ResponseType>
                     {
-                        ResponseType.code,
-                        ResponseType.token
+                        ResponseType.code
                     },
                     GrantTypes = new List<GrantType>
                     {
-                        GrantType.authorization_code,
-                        GrantType.refresh_token
+                        GrantType.authorization_code
                     }
                 }
             },
@@ -396,7 +394,7 @@ namespace SimpleIdentityServer.IdentityServer.EF
             };
 
             var meth = _mappingIdServerGrantTypesToGrantingMethods.FirstOrDefault(m => m.Value.Equals(grantingMethod));
-            if (meth.Equals(default(KeyValuePair<IEnumerable<string>, GrantingMethod>)))
+            if (!meth.Equals(default(KeyValuePair<IEnumerable<string>, GrantingMethod>)))
             {
                 result.AllowedGrantTypes = meth.Key.Select(g => new IdentityServer4.EntityFramework.Entities.ClientGrantType { GrantType = g }).ToList();
             }

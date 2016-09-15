@@ -15,6 +15,7 @@
 #endregion
 
 using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Manager.Core.Parameters;
 using SimpleIdentityServer.Manager.Core.Results;
 using SimpleIdentityServer.Manager.Host.DTOs.Requests;
@@ -117,6 +118,86 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
                 UserInfoEncryptedResponseEnc = updateClientRequest.UserInfoEncryptedResponseEnc,
                 UserInfoSignedResponseAlg = updateClientRequest.UserInfoSignedResponseAlg,
                 AllowedScopes = updateClientRequest.AllowedScopes == null ? new List<string>() : updateClientRequest.AllowedScopes
+            };
+        }
+
+        public static RegistrationParameter ToParameter(this ClientResponse clientResponse)
+        {
+            var responseTypes = new List<ResponseType>();
+            var redirectUris = clientResponse.RedirectUris == null
+                ? new List<string>()
+                : clientResponse.RedirectUris.ToList();
+            var grantTypes = new List<GrantType>();
+            ApplicationTypes? applicationType = null;
+            if (clientResponse.ResponseTypes != null &&
+                clientResponse.ResponseTypes.Any())
+            {
+                foreach (var responseType in clientResponse.ResponseTypes)
+                {
+                    var responseTypeSplitted = responseType.Split(' ');
+                    foreach (var response in responseTypeSplitted)
+                    {
+                        ResponseType responseTypeEnum;
+                        if (Enum.TryParse(response, out responseTypeEnum) &&
+                            !responseTypes.Contains(responseTypeEnum))
+                        {
+                            responseTypes.Add(responseTypeEnum);
+                        }
+                    }
+                }
+            }
+
+            if (clientResponse.GrantTypes != null &&
+                clientResponse.GrantTypes.Any())
+            {
+                foreach (var grantType in clientResponse.GrantTypes)
+                {
+                    GrantType grantTypeEnum;
+                    if (Enum.TryParse(grantType, out grantTypeEnum))
+                    {
+                        grantTypes.Add(grantTypeEnum);
+                    }
+                }
+            }
+
+            ApplicationTypes appTypeEnum;
+            if (Enum.TryParse(clientResponse.ApplicationType, out appTypeEnum))
+            {
+                applicationType = appTypeEnum;
+            }
+
+            return new RegistrationParameter
+            {
+                ApplicationType = applicationType,
+                ClientName = clientResponse.ClientName,
+                ClientUri = clientResponse.ClientUri,
+                Contacts = clientResponse.Contacts == null ? new List<string>() : clientResponse.Contacts.ToList(),
+                DefaultAcrValues = clientResponse.DefaultAcrValues,
+                DefaultMaxAge = clientResponse.DefaultMaxAge,
+                GrantTypes = grantTypes,
+                IdTokenEncryptedResponseAlg = clientResponse.IdTokenEncryptedResponseAlg,
+                IdTokenEncryptedResponseEnc = clientResponse.IdTokenEncryptedResponseEnc,
+                IdTokenSignedResponseAlg = clientResponse.IdTokenSignedResponseAlg,
+                InitiateLoginUri = clientResponse.InitiateLoginUri,
+                Jwks = clientResponse.Jwks,
+                JwksUri = clientResponse.JwksUri,
+                LogoUri = clientResponse.LogoUri,
+                PolicyUri = clientResponse.PolicyUri,
+                RedirectUris = redirectUris,
+                RequestObjectEncryptionAlg = clientResponse.RequestObjectEncryptionAlg,
+                RequestObjectEncryptionEnc = clientResponse.RequestObjectEncryptionEnc,
+                RequestObjectSigningAlg = clientResponse.RequestObjectSigningAlg,
+                RequestUris = clientResponse.RequestUris,
+                RequireAuthTime = clientResponse.RequireAuthTime,
+                ResponseTypes = responseTypes,
+                SectorIdentifierUri = clientResponse.SectorIdentifierUri,
+                SubjectType = clientResponse.SubjectType,
+                TokenEndPointAuthMethod = clientResponse.TokenEndPointAuthMethod,
+                TokenEndPointAuthSigningAlg = clientResponse.TokenEndPointAuthSigningAlg,
+                TosUri = clientResponse.TosUri,
+                UserInfoEncryptedResponseAlg = clientResponse.UserInfoEncryptedResponseAlg,
+                UserInfoEncryptedResponseEnc = clientResponse.UserInfoEncryptedResponseEnc,
+                UserInfoSignedResponseAlg = clientResponse.UserInfoSignedResponseAlg
             };
         }
 

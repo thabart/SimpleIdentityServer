@@ -14,11 +14,13 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Api.Registration.Actions;
 using SimpleIdentityServer.Core.Models;
-using System.Collections.Generic;
+using SimpleIdentityServer.Core.Parameters;
+using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Manager.Core.Api.Clients.Actions;
 using SimpleIdentityServer.Manager.Core.Parameters;
-using System;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Manager.Core.Api.Clients
 {
@@ -31,6 +33,8 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients
         bool DeleteClient(string clientId);
 
         bool UpdateClient(UpdateClientParameter updateClientParameter);
+
+        RegistrationResponse AddClient(RegistrationParameter registrationParameter);
     }
 
     public class ClientActions : IClientActions
@@ -43,18 +47,22 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients
 
         private readonly IUpdateClientAction _updateClientAction;
 
+        private readonly IRegisterClientAction _registerClientAction;
+
         #region Constructor
 
         public ClientActions(
             IGetClientsAction getClientsAction,
             IGetClientAction getClientAction,
             IRemoveClientAction removeClientAction,
-            IUpdateClientAction updateClientAction)
+            IUpdateClientAction updateClientAction,
+            IRegisterClientAction registerClientAction)
         {
             _getClientsAction = getClientsAction;
             _getClientAction = getClientAction;
             _removeClientAction = removeClientAction;
             _updateClientAction = updateClientAction;
+            _registerClientAction = registerClientAction;
         }
 
         #endregion
@@ -79,6 +87,11 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients
         public bool UpdateClient(UpdateClientParameter updateClientParameter)
         {
             return _updateClientAction.Execute(updateClientParameter);
+        }
+
+        public RegistrationResponse AddClient(RegistrationParameter registrationParameter)
+        {
+            return _registerClientAction.Execute(registrationParameter);
         }
 
         #endregion
