@@ -19,20 +19,36 @@ using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Manager.Core.Api.Scopes;
 using SimpleIdentityServer.Manager.Host.DTOs.Responses;
 using SimpleIdentityServer.Manager.Host.Extensions;
+using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using WebApiContrib.Core.Concurrency;
 
 namespace SimpleIdentityServer.Manager.Host.Controllers
 {
     [Route(Constants.EndPoints.Scopes)]
-    public class ScopesController
+    public class ScopesController : Controller
     {
+        #region Fields
+
+        private const string ScopesStoreName = "Scopes";
+
+        private const string ScopeStoreName = "Scope_";
+
         private readonly IScopeActions _scopeActions;
+
+        private readonly IRepresentationManager _representationManager;
+
+        #endregion
 
         #region Constructor
 
-        public ScopesController(IScopeActions scopeActions)
+        public ScopesController(
+            IScopeActions scopeActions,
+            IRepresentationManager representationManager)
         {
             _scopeActions = scopeActions;
+            _representationManager = representationManager;
         }
 
         #endregion
@@ -41,23 +57,51 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
 
         [HttpGet]
         [Authorize("manager")]
-        public List<ScopeResponse> GetAll()
+        public async Task<ActionResult> GetAll()
         {
-            return _scopeActions.GetScopes().ToDtos();
+            if (!await _representationManager.CheckRepresentationExistsAsync(this, ScopesStoreName))
+            {
+                return new ContentResult
+                {
+                    StatusCode = 412
+                };
+            }
+
+            var result = _scopeActions.GetScopes().ToDtos();
+            await _representationManager.AddOrUpdateRepresentationAsync(this, ScopesStoreName);
+            return new OkObjectResult(result);
         }
 
         [HttpGet("{id}")]
         [Authorize("manager")]
-        public ScopeResponse Get(string id)
+        public async Task<ActionResult> Get(string id)
         {
-            return _scopeActions.GetScope(id).ToDto();
+            if (!await _representationManager.CheckRepresentationExistsAsync(this, ScopeStoreName + id))
+            {
+                return new ContentResult
+                {
+                    StatusCode = 412
+                };
+            }
+
+            var result = _scopeActions.GetScope(id).ToDto();
+            await _representationManager.AddOrUpdateRepresentationAsync(this, ScopeStoreName + id);
+            return new OkObjectResult(result);
         }
 
         [HttpDelete("{id}")]
         [Authorize("manager")]
-        public bool Delete(string id)
+        public async Task<ActionResult> Delete(string id)
         {
-            return _scopeActions.DeleteScope(id);
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            _scopeActions.DeleteScope(id);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, ScopeStoreName + id, false);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, ScopesStoreName, false);
+            return new NoContentResult();
         }
 
         #endregion
