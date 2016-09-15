@@ -30,5 +30,7 @@ namespace SimpleIdentityServer.Uma.Core.Repositories
         bool DeletePolicy(string id);
 
         bool UpdatePolicy(Policy policy);
+
+        List<Policy> GetPoliciesByResourceSetId(string resourceSetId);
     }
 }

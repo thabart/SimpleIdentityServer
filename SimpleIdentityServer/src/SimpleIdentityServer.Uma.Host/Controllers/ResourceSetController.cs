@@ -24,16 +24,13 @@ using System;
 using System.Net;
 using System.Threading.Tasks;
 using WebApiContrib.Core.Concurrency;
+using static SimpleIdentityServer.Uma.Host.Constants;
 
 namespace SimpleIdentityServer.Uma.Host.Controllers
 {
-    [Route(Constants.RouteValues.ResourceSet)]
+    [Route(RouteValues.ResourceSet)]
     public class ResourceSetController : Controller
     {
-        private const string GetResourcesStoreName = "GetResources";
-
-        private const string GetResourceStoreName = "GetResource_";
-
         private readonly IResourceSetActions _resourceSetActions;
 
         private readonly IRepresentationManager _representationManager;
@@ -56,7 +53,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         [Authorize("UmaProtection")]
         public async Task<ActionResult> GetResourceSets()
         {
-            if (!await _representationManager.CheckRepresentationExistsAsync(this, GetResourcesStoreName))
+            if (!await _representationManager.CheckRepresentationExistsAsync(this, CachingStoreNames.GetResourcesStoreName))
             {
                 return new ContentResult
                 {
@@ -65,7 +62,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             }
 
             var resourceSetIds = _resourceSetActions.GetAllResourceSet();
-            await _representationManager.AddOrUpdateRepresentationAsync(this, GetResourcesStoreName);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetResourcesStoreName);
             return new OkObjectResult(resourceSetIds);
         }
 
@@ -78,7 +75,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 throw new ArgumentNullException(nameof(id));
             }
 
-            if (!await _representationManager.CheckRepresentationExistsAsync(this, GetResourceStoreName + id))
+            if (!await _representationManager.CheckRepresentationExistsAsync(this, CachingStoreNames.GetResourceStoreName + id))
             {
                 return new ContentResult
                 {
@@ -93,7 +90,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             }
 
             var content = result.ToResponse();
-            await _representationManager.AddOrUpdateRepresentationAsync(this, GetResourceStoreName + id);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetResourceStoreName + id);
             return new OkObjectResult(content);
         }
 
@@ -112,7 +109,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             {
                 Id = result
             };
-            await _representationManager.AddOrUpdateRepresentationAsync(this, GetResourcesStoreName, false);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetResourcesStoreName, false);
             return new ObjectResult(response)
             {
                 StatusCode = (int)HttpStatusCode.Created
@@ -140,7 +137,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 Id = putResourceSet.Id
             };
 
-            await _representationManager.AddOrUpdateRepresentationAsync(this, GetResourceStoreName + putResourceSet.Id, false);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetResourceStoreName + putResourceSet.Id, false);
             return new ObjectResult(response)
             {
                 StatusCode = (int)HttpStatusCode.OK
@@ -149,21 +146,28 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
 
         [HttpDelete("{id}")]
         [Authorize("UmaProtection")]
-        public async Task<ActionResult> DeleleteResourceSet(string id)
+        public async Task<ActionResult> DeleteResourceSet(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
                 throw new ArgumentNullException(nameof(id));
             }
 
+            var policyIds = _resourceSetActions.GetPolicies(id);
             var resourceSetExists = _resourceSetActions.RemoveResourceSet(id);
             if (!resourceSetExists)
             {
                 return GetNotFoundResourceSet();
             }
 
-            await _representationManager.AddOrUpdateRepresentationAsync(this, GetResourceStoreName + id, false);
-            await _representationManager.AddOrUpdateRepresentationAsync(this, GetResourcesStoreName, false);
+            // Update all the representations include the authorization policies
+            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetResourceStoreName + id, false);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetResourcesStoreName, false);
+            foreach (var policyId in policyIds)
+            {
+                await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPolicyStoreName + policyId, false);
+            }
+
             return new StatusCodeResult((int)HttpStatusCode.NoContent);
         }
 

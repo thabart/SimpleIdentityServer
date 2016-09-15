@@ -25,16 +25,13 @@ using System;
 using System.Net;
 using System.Threading.Tasks;
 using WebApiContrib.Core.Concurrency;
+using static SimpleIdentityServer.Uma.Host.Constants;
 
 namespace SimpleIdentityServer.Uma.Host.Controllers
 {
     [Route(Constants.RouteValues.Policies)]
     public class PoliciesController : Controller
     {
-        private const string GetPoliciesStoreName = "GetPolicies";
-
-        private const string GetPolicyStoreName = "GetPolicy_";
-
         private readonly IPolicyActions _policyActions;
 
         private readonly IRepresentationManager _representationManager;
@@ -62,7 +59,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 throw new ArgumentNullException(id);
             }
 
-            if (!await _representationManager.CheckRepresentationExistsAsync(this, GetPolicyStoreName + id))
+            if (!await _representationManager.CheckRepresentationExistsAsync(this, CachingStoreNames.GetPolicyStoreName + id))
             {
                 return new ContentResult
                 {
@@ -77,7 +74,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             }
 
             var content = result.ToResponse();
-            await _representationManager.AddOrUpdateRepresentationAsync(this, GetPolicyStoreName + id);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPolicyStoreName + id);
             return new OkObjectResult(content);
         }
 
@@ -85,7 +82,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         [Authorize("UmaProtection")]
         public async Task<ActionResult> GetPolicies()
         {
-            if (!await _representationManager.CheckRepresentationExistsAsync(this, GetPoliciesStoreName))
+            if (!await _representationManager.CheckRepresentationExistsAsync(this, CachingStoreNames.GetPoliciesStoreName))
             {
                 return new ContentResult
                 {
@@ -94,7 +91,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             }
 
             var policies = _policyActions.GetPolicies();
-            await _representationManager.AddOrUpdateRepresentationAsync(this, GetPoliciesStoreName);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPoliciesStoreName);
             return new OkObjectResult(policies);
         }
 
@@ -114,7 +111,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 return GetNotFoundPolicy();
             }
 
-            await _representationManager.AddOrUpdateRepresentationAsync(this, GetPolicyStoreName + putPolicy.PolicyId, false);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPolicyStoreName + putPolicy.PolicyId, false);
             return new StatusCodeResult((int)HttpStatusCode.NoContent);
         }
         
@@ -142,7 +139,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 return GetNotFoundPolicy();
             }
 
-            await _representationManager.AddOrUpdateRepresentationAsync(this, GetPolicyStoreName + id, false);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPolicyStoreName + id, false);
             return new StatusCodeResult((int)HttpStatusCode.NoContent);
         }
 
@@ -166,7 +163,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 return GetNotFoundPolicy();
             }
 
-            await _representationManager.AddOrUpdateRepresentationAsync(this, GetPolicyStoreName + id, false);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPolicyStoreName + id, false);
             return new StatusCodeResult((int)HttpStatusCode.NoContent);
         }
 
@@ -185,7 +182,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 PolicyId = policyId
             };
 
-            await _representationManager.AddOrUpdateRepresentationAsync(this, GetPoliciesStoreName, false);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPoliciesStoreName, false);
             return new ObjectResult(content)
             {
                 StatusCode = (int)HttpStatusCode.Created
@@ -207,8 +204,8 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 return GetNotFoundPolicy();
             }
 
-            await _representationManager.AddOrUpdateRepresentationAsync(this, GetPolicyStoreName + id, false);
-            await _representationManager.AddOrUpdateRepresentationAsync(this, GetPoliciesStoreName, false);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPolicyStoreName + id, false);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPoliciesStoreName, false);
             return new StatusCodeResult((int)HttpStatusCode.NoContent);
         }
 

@@ -162,6 +162,15 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
             return true;
         }
 
+        public List<Policy> GetPoliciesByResourceSetId(string resourceSetId)
+        {
+            var policies = _simpleIdServerUmaContext.Policies
+                .Include(p => p.PolicyResources)
+                .Where(p => p.PolicyResources.Any(r => r.ResourceSetId == resourceSetId))
+                .Select(p => p.ToDomain());
+            return policies.ToList();
+        }
+
         #endregion
     }
 }

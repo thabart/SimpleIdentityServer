@@ -25,7 +25,10 @@
     "SimpleIdentityServer.UserInformation.Authentication": "*",
     "SimpleIdentityServer.Manager.Host": "*",
     "SimpleIdentityServer.DataAccess.Fake": "*",
-    "SimpleIdentityServer.DataAccess.SqlServer": "*"
+    "SimpleIdentityServer.DataAccess.SqlServer": "*",
+    "WebApiContrib.Core.Concurrency.Redis": {
+      "target": "project"
+    }
   },
   "frameworks": {
     "net46": {

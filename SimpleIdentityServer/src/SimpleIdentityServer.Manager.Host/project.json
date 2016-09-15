@@ -22,7 +22,10 @@
     "Serilog.Extensions.Logging": "1.0.0",
     "Serilog.Sinks.ElasticSearch": "*",
     "SimpleIdentityServer.Manager.Core": "*",
-    "SimpleIdentityServer.Oauth2Instrospection.Authentication": "*"
+    "SimpleIdentityServer.Oauth2Instrospection.Authentication": "*",
+    "WebApiContrib.Core.Concurrency": {
+      "target": "project"
+    }
   },
   "frameworks": {
     "net46": {

@@ -210,5 +210,13 @@ namespace SimpleIdentityServer.Uma.Host
         {
             public const string TicketId = "ticket_id";
         }
+
+        public static class CachingStoreNames
+        {
+            public const string GetResourceStoreName = "GetResource_";
+            public const string GetResourcesStoreName = "GetResources";
+            public const string GetPolicyStoreName = "GetPolicy_";
+            public const string GetPoliciesStoreName = "GetPolicies";
+        }
     }
 }

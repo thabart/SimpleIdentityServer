@@ -16,27 +16,35 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Manager.Core.Api.ResourceOwners;
 using SimpleIdentityServer.Manager.Host.DTOs.Requests;
 using SimpleIdentityServer.Manager.Host.Extensions;
 using System;
+using System.Threading.Tasks;
+using WebApiContrib.Core.Concurrency;
 
 namespace SimpleIdentityServer.Manager.Host.Controllers
 {
     [Route(Constants.EndPoints.ResourceOwners)]
-    public class ResourceOwnersController
+    public class ResourceOwnersController : Controller
     {
         #region Fields
 
         private readonly IResourceOwnerActions _resourceOwnerActions;
 
+        private readonly IRepresentationManager _representationManager;
+
         #endregion
 
         #region Constructor
 
-        public ResourceOwnersController(IResourceOwnerActions resourceOwnerActions)
+        public ResourceOwnersController(
+            IResourceOwnerActions resourceOwnerActions,
+            IRepresentationManager representationManager)
         {
             _resourceOwnerActions = resourceOwnerActions;
+            _representationManager = representationManager;
         }
 
         #endregion
@@ -45,28 +53,46 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
 
         [HttpGet]
         [Authorize("manager")]
-        public ActionResult Get()
+        public async Task<ActionResult> Get()
         {
+            if (!await _representationManager.CheckRepresentationExistsAsync(this, StoreNames.GetResourceOwners))
+            {
+                return new ContentResult
+                {
+                    StatusCode = 412
+                };
+            }
+
             var content = _resourceOwnerActions.GetResourceOwners().ToDtos();
+            await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwners);
             return new OkObjectResult(content);
         }
 
         [HttpGet("{id}")]
         [Authorize("manager")]
-        public ActionResult Get(string id)
+        public async Task<ActionResult> Get(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
                 throw new ArgumentNullException(nameof(id));
             }
+            
+            if (!await _representationManager.CheckRepresentationExistsAsync(this, StoreNames.GetResourceOwner + id))
+            {
+                return new ContentResult
+                {
+                    StatusCode = 412
+                };
+            }
 
             var content = _resourceOwnerActions.GetResourceOwner(id).ToDto();
+            await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwner + id);
             return new OkObjectResult(content);
         }
 
         [HttpDelete("{id}")]
         [Authorize("manager")]
-        public ActionResult Delete(string id)
+        public async Task<ActionResult> Delete(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -74,12 +100,14 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
             }
 
             _resourceOwnerActions.Delete(id);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwner + id);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwners);
             return new NoContentResult();
         }
 
         [HttpPut]
         [Authorize("manager")]
-        public ActionResult Update([FromBody] UpdateResourceOwnerRequest updateResourceOwnerRequest)
+        public async Task<ActionResult> Update([FromBody] UpdateResourceOwnerRequest updateResourceOwnerRequest)
         {
             if (updateResourceOwnerRequest == null)
             {
@@ -87,6 +115,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
             }
 
             _resourceOwnerActions.UpdateResourceOwner(updateResourceOwnerRequest.ToParameter());
+            await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwner + updateResourceOwnerRequest.Subject);
             return new NoContentResult();
         }
 

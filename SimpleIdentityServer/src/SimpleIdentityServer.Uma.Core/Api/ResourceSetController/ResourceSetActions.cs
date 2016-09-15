@@ -17,8 +17,8 @@
 using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions;
 using SimpleIdentityServer.Uma.Core.Models;
-using System.Net;
 using System.Collections.Generic;
+using System;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController
 {
@@ -33,6 +33,8 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController
         bool RemoveResourceSet(string resourceSetId);
 
         List<string> GetAllResourceSet();
+
+        List<string> GetPolicies(string resourceId);
     }
 
     internal class ResourceSetActions : IResourceSetActions
@@ -47,6 +49,8 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController
 
         private readonly IGetAllResourceSetAction _getAllResourceSetAction;
 
+        private readonly IGetPoliciesAction _getPoliciesAction;
+
         #region Constructor
 
         public ResourceSetActions(
@@ -54,13 +58,15 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController
             IGetResourceSetAction getResourceSetAction,
             IUpdateResourceSetAction updateResourceSetAction,
             IDeleteResourceSetAction deleteResourceSetAction,
-            IGetAllResourceSetAction getAllResourceSetAction)
+            IGetAllResourceSetAction getAllResourceSetAction,
+            IGetPoliciesAction getPoliciesAction)
         {
             _addResourceSetAction = addResourceSetAction;
             _getResourceSetAction = getResourceSetAction;
             _updateResourceSetAction = updateResourceSetAction;
             _deleteResourceSetAction = deleteResourceSetAction;
             _getAllResourceSetAction = getAllResourceSetAction;
+            _getPoliciesAction = getPoliciesAction;
         }
         
         #endregion
@@ -90,6 +96,11 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController
         public List<string> GetAllResourceSet()
         {
             return _getAllResourceSetAction.Execute();
+        }
+
+        public List<string> GetPolicies(string resourceId)
+        {
+            return _getPoliciesAction.Execute(resourceId);
         }
 
         #endregion

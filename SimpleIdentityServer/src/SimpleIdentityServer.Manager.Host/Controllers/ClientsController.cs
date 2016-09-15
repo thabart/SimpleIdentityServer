@@ -21,19 +21,33 @@ using SimpleIdentityServer.Manager.Host.DTOs.Requests;
 using SimpleIdentityServer.Manager.Host.DTOs.Responses;
 using SimpleIdentityServer.Manager.Host.Extensions;
 using System.Collections.Generic;
+using WebApiContrib.Core.Concurrency;
 
 namespace SimpleIdentityServer.Manager.Host.Controllers
 {
     [Route(Constants.EndPoints.Clients)]
     public class ClientsController : Controller
     {
+        #region Fields
+
+        private const string GetClientsStoreName = "GetClients";
+
+        private const string GetClientStoreName = "GetClient_";
+
         private readonly IClientActions _clientActions;
+
+        private readonly IRepresentationManager _representationManager;
+
+        #endregion
 
         #region Constructor
 
-        public ClientsController(IClientActions clientActions)
+        public ClientsController(
+            IClientActions clientActions,
+            IRepresentationManager representationManager)
         {
             _clientActions = clientActions;
+            _representationManager = representationManager;
         }
 
         #endregion

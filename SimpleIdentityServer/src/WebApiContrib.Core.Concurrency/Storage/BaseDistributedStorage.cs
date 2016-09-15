@@ -43,10 +43,11 @@ namespace WebApiContrib.Core.Concurrency.Storage
                 throw new ArgumentNullException(nameof(value));
             }
 
+            // TODO : Should be possible to configure the sliding expiration time
             var serializedObject = JsonConvert.SerializeObject(value);
             await _distributedCache.SetAsync(key.ToString(), Encoding.UTF8.GetBytes(serializedObject), new DistributedCacheEntryOptions
             {
-                AbsoluteExpiration = DateTime.UtcNow.AddYears(2)
+                SlidingExpiration = TimeSpan.FromSeconds(300)
             });
         }
 
