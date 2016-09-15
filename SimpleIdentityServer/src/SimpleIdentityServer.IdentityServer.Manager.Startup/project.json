@@ -24,7 +24,10 @@
     "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0",
     "SimpleIdentityServer.UserInformation.Authentication": "*",
     "SimpleIdentityServer.Manager.Host": "*",
-    "SimpleIdentityServer.IdentityServer.EF": "*"
+    "SimpleIdentityServer.IdentityServer.EF": "*",
+    "WebApiContrib.Core.Concurrency.Redis": {
+      "target": "project"
+    }
   },
   "frameworks": {
     "net46": {

@@ -43,6 +43,10 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "IdentityServer4.EntityFrame
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.IdentityServer.Manager.Startup", "src\SimpleIdentityServer.IdentityServer.Manager.Startup\SimpleIdentityServer.IdentityServer.Manager.Startup.xproj", "{EF086FD1-656B-4DC6-B23B-B1401203CE76}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "WebApiContrib.Core.Concurrency", "src\WebApiContrib.Core.Concurrency\WebApiContrib.Core.Concurrency.xproj", "{2C54595F-55DA-4970-AE42-FAE8864ABF06}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "WebApiContrib.Core.Concurrency.Redis", "src\WebApiContrib.Core.Concurrency.Redis\WebApiContrib.Core.Concurrency.Redis.xproj", "{8571D8F9-0847-46C8-A794-845B331982B7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -117,6 +121,14 @@ Global
 		{EF086FD1-656B-4DC6-B23B-B1401203CE76}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF086FD1-656B-4DC6-B23B-B1401203CE76}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EF086FD1-656B-4DC6-B23B-B1401203CE76}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C54595F-55DA-4970-AE42-FAE8864ABF06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C54595F-55DA-4970-AE42-FAE8864ABF06}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C54595F-55DA-4970-AE42-FAE8864ABF06}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C54595F-55DA-4970-AE42-FAE8864ABF06}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8571D8F9-0847-46C8-A794-845B331982B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8571D8F9-0847-46C8-A794-845B331982B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8571D8F9-0847-46C8-A794-845B331982B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8571D8F9-0847-46C8-A794-845B331982B7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -139,5 +151,7 @@ Global
 		{AB83F911-8B78-4973-A3A9-2A2D85581F25} = {8B627719-9BB9-4029-8CFF-FDAD3382EE4E}
 		{EBF79640-420A-41CA-92C1-33826FF1F116} = {8B627719-9BB9-4029-8CFF-FDAD3382EE4E}
 		{EF086FD1-656B-4DC6-B23B-B1401203CE76} = {0F45A228-483B-45AD-B651-CE43EC05E6EB}
+		{2C54595F-55DA-4970-AE42-FAE8864ABF06} = {5BB98496-960E-4B30-B062-CA3AE97818BE}
+		{8571D8F9-0847-46C8-A794-845B331982B7} = {5BB98496-960E-4B30-B062-CA3AE97818BE}
 	EndGlobalSection
 EndGlobal

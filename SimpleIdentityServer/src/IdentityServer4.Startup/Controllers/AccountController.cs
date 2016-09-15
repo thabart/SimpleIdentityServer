@@ -12,7 +12,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using IdentityServer4.Quickstart;
 using IdentityServer4.Startup.Services;
 
 namespace IdentityServer4.Startup.Controllers

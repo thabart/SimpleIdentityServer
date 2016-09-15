@@ -21,6 +21,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SimpleIdentityServer.IdentityServer.EF;
 using SimpleIdentityServer.Manager.Host.Extensions;
+using WebApiContrib.Core.Concurrency.Extensions;
+using WebApiContrib.Core.Concurrency.Redis;
 
 namespace SimpleIdentityServer.IdentityServer.Manager.Startup
 {
@@ -41,14 +43,30 @@ namespace SimpleIdentityServer.IdentityServer.Manager.Startup
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var cachingDatabase = Configuration["Caching:Database"];
+            var cachingConnectionPath = Configuration["Caching:ConnectionPath"];
             var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
-            // var databaseType = Configuration["DatabaseType"];
             var authorizationUrl = Configuration["AuthorizationServer"] + "/authorization";
             var isLogFileEnabled = bool.Parse(Configuration["Log:File:Enabled"]);
             var isElasticSearchEnabled = bool.Parse(Configuration["Log:Elasticsearch:Enabled"]);
             var tokenUrl = authorizationUrl + "/token";
             services.AddSimpleIdentityServerSqlServer(connectionString);
 
+            // Configure the caching
+            if (cachingDatabase == "REDIS")
+            {
+                services.AddConcurrency(opt => opt.UseRedis(o =>
+                {
+                    o.Configuration = Configuration[cachingConnectionPath + ":ConnectionString"];
+                    o.InstanceName = Configuration[cachingConnectionPath + ":InstanceName"];
+                }));
+            }
+            else if (cachingDatabase == "INMEMORY")
+            {
+                services.AddConcurrency(opt => opt.UseInMemoryStorage());
+            }
+
+            // Add server manager
             services.AddSimpleIdentityServerManager(new AuthorizationServerOptions
             {
                 AuthorizationUrl = authorizationUrl,
