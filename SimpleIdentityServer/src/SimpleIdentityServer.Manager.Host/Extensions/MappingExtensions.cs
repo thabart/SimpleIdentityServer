@@ -39,6 +39,15 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
             };
         }
 
+        public static AddUserParameter ToParameter(this AddResourceOwnerRequest request)
+        {
+            return new AddUserParameter
+            {
+                Name = request.Subject,
+                Password = request.Password
+            };
+        }
+
         public static GetJwsParameter ToParameter(this GetJwsRequest getJwsRequest)
         {
             return new GetJwsParameter

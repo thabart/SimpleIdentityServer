@@ -104,6 +104,12 @@ namespace SimpleIdentityServer.Manager.Host
             public const string Roles = "roles";
         }
 
+        public static class AddResourceOwnerRequestNames
+        {
+            public const string Subject = "sub";
+            public const string Password = "password";
+        }
+
         public static class ResourceOwnerResponseNames
         {
             public const string Id = "id";

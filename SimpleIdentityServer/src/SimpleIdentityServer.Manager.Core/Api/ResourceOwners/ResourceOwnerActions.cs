@@ -17,8 +17,9 @@
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Manager.Core.Parameters;
 using System.Collections.Generic;
-using System;
 using SimpleIdentityServer.Manager.Core.Api.ResourceOwners.Actions;
+using SimpleIdentityServer.Core.WebSite.Account.Actions;
+using SimpleIdentityServer.Core.Parameters;
 
 namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners
 {
@@ -31,6 +32,8 @@ namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners
         List<ResourceOwner> GetResourceOwners();
 
         bool Delete(string subject);
+
+        void Add(AddUserParameter parameter);
     }
 
     internal class ResourceOwnerActions : IResourceOwnerActions
@@ -45,6 +48,8 @@ namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners
 
         private readonly IDeleteResourceOwnerAction _deleteResourceOwnerAction;
 
+        private readonly IAddResourceOwnerAction _addResourceOwnerAction;
+
         #endregion
 
         #region Constructor
@@ -53,12 +58,14 @@ namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners
             IGetResourceOwnerAction getResourceOwnerAction,
             IGetResourceOwnersAction getResourceOwnersAction,
             IUpdateResourceOwnerAction updateResourceOwnerAction,
-            IDeleteResourceOwnerAction deleteResourceOwnerAction)
+            IDeleteResourceOwnerAction deleteResourceOwnerAction,
+            IAddResourceOwnerAction addResourceOwnerAction)
         {
             _getResourceOwnerAction = getResourceOwnerAction;
             _getResourceOwnersAction = getResourceOwnersAction;
             _updateResourceOwnerAction = updateResourceOwnerAction;
             _deleteResourceOwnerAction = deleteResourceOwnerAction;
+            _addResourceOwnerAction = addResourceOwnerAction;
         }
 
         #endregion
@@ -83,6 +90,11 @@ namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners
         public bool Delete(string subject)
         {
             return _deleteResourceOwnerAction.Execute(subject);
+        }
+
+        public void Add(AddUserParameter parameter)
+        {
+            _addResourceOwnerAction.Execute(parameter);
         }
 
         #endregion

@@ -28,7 +28,7 @@ namespace SimpleIdentityServer.Core.WebSite.Account.Actions
         void Execute(AddUserParameter addUserParameter);
     }
 
-    internal class AddResourceOwnerAction : IAddResourceOwnerAction
+    public class AddResourceOwnerAction : IAddResourceOwnerAction
     {
         #region Fields
 

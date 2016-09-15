@@ -119,6 +119,20 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
             return new NoContentResult();
         }
 
+        [HttpPost]
+        [Authorize("manager")]
+        public async Task<ActionResult> Add([FromBody] AddResourceOwnerRequest addResourceOwnerRequest)
+        {
+            if (addResourceOwnerRequest == null)
+            {
+                throw new ArgumentNullException(nameof(addResourceOwnerRequest));
+            }
+
+            _resourceOwnerActions.Add(addResourceOwnerRequest.ToParameter());
+            await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwners, false);
+            return new NoContentResult();
+        }
+
         #endregion
     }
 }
