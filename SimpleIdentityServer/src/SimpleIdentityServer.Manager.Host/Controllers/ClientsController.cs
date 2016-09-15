@@ -18,9 +18,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Manager.Core.Api.Clients;
 using SimpleIdentityServer.Manager.Host.DTOs.Requests;
-using SimpleIdentityServer.Manager.Host.DTOs.Responses;
 using SimpleIdentityServer.Manager.Host.Extensions;
-using System.Collections.Generic;
+using System;
+using System.Threading.Tasks;
 using WebApiContrib.Core.Concurrency;
 
 namespace SimpleIdentityServer.Manager.Host.Controllers
@@ -56,31 +56,70 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
 
         [HttpGet]
         [Authorize("manager")]
-        public List<ClientInformationResponse> GetAll()
+        public async Task<ActionResult> GetAll()
         {
+            if (!await _representationManager.CheckRepresentationExistsAsync(this, GetClientsStoreName))
+            {
+                return new ContentResult
+                {
+                    StatusCode = 412
+                };
+            }
+
             var result =  _clientActions.GetClients().ToDtos();
-            return result;
+            await _representationManager.AddOrUpdateRepresentationAsync(this, GetClientsStoreName);
+            return new OkObjectResult(result);
         }
 
         [HttpGet("{id}")]
         [Authorize("manager")]
-        public ClientResponse Get(string id)
+        public async Task<ActionResult> Get(string id)
         {
-            return _clientActions.GetClient(id).ToClientResponseDto();
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            if (!await _representationManager.CheckRepresentationExistsAsync(this, GetClientStoreName + id))
+            {
+                return new ContentResult
+                {
+                    StatusCode = 412
+                };
+            }
+
+            var result = _clientActions.GetClient(id).ToClientResponseDto();
+            await _representationManager.AddOrUpdateRepresentationAsync(this, GetClientStoreName + id);
+            return new OkObjectResult(result);
         }
 
         [HttpDelete("{id}")]
         [Authorize("manager")]
-        public bool Delete(string id)
+        public async Task<ActionResult> Delete(string id)
         {
-            return _clientActions.DeleteClient(id);
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            _clientActions.DeleteClient(id);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, GetClientStoreName + id);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, GetClientsStoreName);
+            return new NoContentResult();
         }
 
         [HttpPut]
         [Authorize("manager")]
-        public bool Put([FromBody] UpdateClientRequest updateClientRequest)
+        public async Task<ActionResult> Put([FromBody] UpdateClientRequest updateClientRequest)
         {
-            return _clientActions.UpdateClient(updateClientRequest.ToParameter());
+            if (updateClientRequest == null)
+            {
+                throw new ArgumentNullException(nameof(updateClientRequest));
+            }
+
+            _clientActions.UpdateClient(updateClientRequest.ToParameter());
+            await _representationManager.AddOrUpdateRepresentationAsync(this, GetClientStoreName + updateClientRequest.ClientId);
+            return new NoContentResult();
         }
 
         #endregion

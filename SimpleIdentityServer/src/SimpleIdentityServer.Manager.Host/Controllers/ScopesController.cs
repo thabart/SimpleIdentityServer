@@ -17,10 +17,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Manager.Core.Api.Scopes;
-using SimpleIdentityServer.Manager.Host.DTOs.Responses;
 using SimpleIdentityServer.Manager.Host.Extensions;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using WebApiContrib.Core.Concurrency;
 
