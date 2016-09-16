@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Manager.Core.Api.ResourceOwners;
 using SimpleIdentityServer.Manager.Host.DTOs.Requests;
+using SimpleIdentityServer.Manager.Host.DTOs.Responses;
 using SimpleIdentityServer.Manager.Host.Extensions;
 using System;
 using System.Threading.Tasks;
@@ -107,15 +108,15 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
 
         [HttpPut]
         [Authorize("manager")]
-        public async Task<ActionResult> Update([FromBody] UpdateResourceOwnerRequest updateResourceOwnerRequest)
+        public async Task<ActionResult> Update([FromBody] ResourceOwnerResponse resourceOwnerResponse)
         {
-            if (updateResourceOwnerRequest == null)
+            if (resourceOwnerResponse == null)
             {
-                throw new ArgumentNullException(nameof(updateResourceOwnerRequest));
+                throw new ArgumentNullException(nameof(resourceOwnerResponse));
             }
 
-            _resourceOwnerActions.UpdateResourceOwner(updateResourceOwnerRequest.ToParameter());
-            await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwner + updateResourceOwnerRequest.Subject, false);
+            _resourceOwnerActions.UpdateResourceOwner(resourceOwnerResponse.ToParameter());
+            await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwner + resourceOwnerResponse.Id, false);
             return new NoContentResult();
         }
 

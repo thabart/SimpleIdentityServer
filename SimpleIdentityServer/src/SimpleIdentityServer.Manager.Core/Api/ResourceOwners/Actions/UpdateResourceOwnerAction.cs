@@ -14,18 +14,17 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
-using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Manager.Core.Errors;
 using SimpleIdentityServer.Manager.Core.Exceptions;
-using SimpleIdentityServer.Manager.Core.Parameters;
 using System;
 
 namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners.Actions
 {
     public interface IUpdateResourceOwnerAction
     {
-        bool Execute(UpdateResourceOwnerParameter updateResourceOwnerParameter);
+        bool Execute(ResourceOwner resourceOwner);
     }
 
     internal class UpdateResourceOwnerAction : IUpdateResourceOwnerAction
@@ -44,35 +43,26 @@ namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners.Actions
 
         #region Public methods
 
-        public bool Execute(UpdateResourceOwnerParameter updateResourceOwnerParameter)
+        public bool Execute(ResourceOwner parameter)
         {
-            if (updateResourceOwnerParameter == null)
+            if (parameter == null)
             {
-                throw new ArgumentNullException(nameof(updateResourceOwnerParameter));
+                throw new ArgumentNullException(nameof(parameter));
             }
 
-            if (string.IsNullOrWhiteSpace(updateResourceOwnerParameter.Subject))
+            if (string.IsNullOrWhiteSpace(parameter.Id))
             {
-                throw new ArgumentNullException(nameof(updateResourceOwnerParameter.Subject));
+                throw new ArgumentNullException(nameof(parameter.Id));
             }
 
-            var resourceOwner = _resourceOwnerRepository.GetBySubject(updateResourceOwnerParameter.Subject);
-            if (resourceOwner == null)
+            if (_resourceOwnerRepository.GetBySubject(parameter.Id) == null)
             {
                 throw new IdentityServerManagerException(
                     ErrorCodes.InvalidParameterCode,
-                    string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, updateResourceOwnerParameter.Subject));
+                    string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, parameter.Id));
             }
-
-            if (!resourceOwner.IsLocalAccount)
-            {
-                throw new IdentityServerManagerException(
-                    ErrorCodes.UnhandledExceptionCode,
-                    ErrorDescriptions.TheResourceOwnerMustBeConfirmed);
-            }
-
-            resourceOwner.Roles = updateResourceOwnerParameter.Roles;
-            return _resourceOwnerRepository.Update(resourceOwner);
+            
+            return _resourceOwnerRepository.Update(parameter);
         }
 
         #endregion

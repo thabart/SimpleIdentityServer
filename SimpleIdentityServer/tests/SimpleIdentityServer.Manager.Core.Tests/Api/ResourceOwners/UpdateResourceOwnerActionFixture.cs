@@ -42,7 +42,7 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.ResourceOwners
 
             // ACT & ASSERT
             Assert.Throws<ArgumentNullException>(() => _updateResourceOwnerAction.Execute(null));
-            Assert.Throws<ArgumentNullException>(() => _updateResourceOwnerAction.Execute(new UpdateResourceOwnerParameter()));
+            Assert.Throws<ArgumentNullException>(() => _updateResourceOwnerAction.Execute(new ResourceOwner()));
         }
 
         [Fact]
@@ -50,9 +50,9 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.ResourceOwners
         {
             // ARRANGE
             const string subject = "invalid_subject";
-            var request = new UpdateResourceOwnerParameter
+            var request = new ResourceOwner
             {
-                Subject = subject
+                Id = subject
             };
             InitializeFakeObjects();
             _resourceOwnerRepositoryStub.Setup(r => r.GetBySubject(It.IsAny<string>()))
@@ -67,31 +67,6 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.ResourceOwners
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, subject));
         }
 
-        [Fact]
-        public void When_ResourceOwner_Is_Not_Confirmed_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            const string subject = "invalid_subject";
-            var request = new UpdateResourceOwnerParameter
-            {
-                Subject = subject
-            };
-            InitializeFakeObjects();
-            _resourceOwnerRepositoryStub.Setup(r => r.GetBySubject(It.IsAny<string>()))
-                .Returns(new ResourceOwner
-                {
-                    IsLocalAccount = false
-                });
-
-            // ACT
-            var exception = Assert.Throws<IdentityServerManagerException>(() => _updateResourceOwnerAction.Execute(request));
-
-            // ASSERT
-            Assert.NotNull(exception);
-            Assert.True(exception.Code == ErrorCodes.UnhandledExceptionCode);
-            Assert.True(exception.Message == ErrorDescriptions.TheResourceOwnerMustBeConfirmed);
-        }
-
         #endregion
 
         #region Happy path
@@ -100,9 +75,9 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.ResourceOwners
         public void When_Updating_Resource_Owner_Then_Operation_Is_Called()
         {
             // ARRANGE
-            var request = new UpdateResourceOwnerParameter
+            var request = new ResourceOwner
             {
-                Subject = "subject"
+                Id = "subject"
             };
             InitializeFakeObjects();
             _resourceOwnerRepositoryStub.Setup(r => r.GetBySubject(It.IsAny<string>()))

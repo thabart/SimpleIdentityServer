@@ -169,7 +169,24 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             }
 
             record.Name = resourceOwner.Name;
+            record.BirthDate = resourceOwner.BirthDate;
+            record.Email = resourceOwner.Email;
+            record.EmailVerified = resourceOwner.EmailVerified;
+            record.FamilyName = resourceOwner.FamilyName;
+            record.Gender = resourceOwner.Gender;
+            record.GivenName = resourceOwner.GivenName;
+            record.Locale = resourceOwner.Locale;
+            record.MiddleName = resourceOwner.MiddleName;
+            record.NickName = resourceOwner.NickName;
             record.Password = resourceOwner.Password;
+            record.PhoneNumber = resourceOwner.PhoneNumber;
+            record.PhoneNumberVerified = resourceOwner.PhoneNumberVerified;
+            record.Picture = resourceOwner.Picture;
+            record.PreferredUserName = resourceOwner.PreferredUserName;
+            record.Profile = resourceOwner.Profile;
+            record.UpdatedAt = resourceOwner.UpdatedAt;
+            record.WebSite = resourceOwner.WebSite;
+            record.ZoneInfo = resourceOwner.ZoneInfo;
             record.IsLocalAccount = resourceOwner.IsLocalAccount;
             var rolesNotToBeDeleted = new List<string>();
             if (resourceOwner.Roles != null)

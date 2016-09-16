@@ -30,12 +30,32 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
     {
         #region To parameters
     
-        public static UpdateResourceOwnerParameter ToParameter(this UpdateResourceOwnerRequest request)
+        public static ResourceOwner ToParameter(this ResourceOwnerResponse request)
         {
-            return new UpdateResourceOwnerParameter
+            return new ResourceOwner
             {
+                BirthDate = request.BirthDate,
+                Email = request.Email,
+                EmailVerified = request.EmailVerified,
+                FamilyName = request.FamilyName,
+                Gender = request.Gender,
+                GivenName = request.GivenName,
+                Id = request.Id,
+                Locale = request.Locale,
+                MiddleName = request.MiddleName,
+                Name = request.Name,
+                NickName = request.NickName,
+                Password = request.Password,
+                PhoneNumber = request.PhoneNumber,
+                PhoneNumberVerified = request.PhoneNumberVerified,
+                Picture = request.Picture,
+                PreferredUserName = request.PreferredUserName,
+                Profile = request.Profile,
                 Roles = request.Roles,
-                Subject = request.Subject
+                UpdatedAt = request.UpdatedAt,
+                WebSite = request.WebSite,
+                ZoneInfo = request.ZoneInfo,
+                IsLocalAccount = request.IsLocalAccount
             };
         }
 

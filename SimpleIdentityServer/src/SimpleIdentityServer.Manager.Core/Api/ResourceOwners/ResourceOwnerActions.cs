@@ -25,7 +25,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners
 {
     public interface IResourceOwnerActions
     {
-        bool UpdateResourceOwner(UpdateResourceOwnerParameter updateResourceOwnerParameter);
+        bool UpdateResourceOwner(ResourceOwner resourceOwner);
 
         ResourceOwner GetResourceOwner(string subject);
 
@@ -82,9 +82,9 @@ namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners
             return _getResourceOwnersAction.Execute();
         }
 
-        public bool UpdateResourceOwner(UpdateResourceOwnerParameter updateResourceOwnerParameter)
+        public bool UpdateResourceOwner(ResourceOwner resourceOwner)
         {
-            return _updateResourceOwnerAction.Execute(updateResourceOwnerParameter);
+            return _updateResourceOwnerAction.Execute(resourceOwner);
         }
 
         public bool Delete(string subject)
