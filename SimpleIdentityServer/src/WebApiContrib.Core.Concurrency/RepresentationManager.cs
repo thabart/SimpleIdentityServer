@@ -28,6 +28,8 @@ namespace WebApiContrib.Core.Concurrency
             string representationId);
 
         Task<IEnumerable<Record>> GetRepresentations();
+
+        Task RemoveRepresentations();
     }
 
     internal class RepresentationManager : IRepresentationManager
@@ -180,6 +182,11 @@ namespace WebApiContrib.Core.Concurrency
         public Task<IEnumerable<Record>> GetRepresentations()
         {
             return Task.FromResult(_concurrencyManager.GetRepresentations());
+        }
+
+        public async Task RemoveRepresentations()
+        {
+           await _concurrencyManager.RemoveAllAsync();
         }
 
         private async Task<bool> ContinueExecution(

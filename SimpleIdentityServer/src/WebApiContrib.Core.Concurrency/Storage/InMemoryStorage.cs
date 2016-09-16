@@ -66,7 +66,18 @@ namespace WebApiContrib.Core.Concurrency.Storage
 
         public IEnumerable<Record> GetAll()
         {
+            // IMPLEMENT
             return new List<Record>();
+        }
+
+        public void RemoveAll()
+        {
+            // IMPLEMENT
+        }
+
+        public Task RemoveAllAsync()
+        {
+            return Task.FromResult(0);
         }
     }
 }

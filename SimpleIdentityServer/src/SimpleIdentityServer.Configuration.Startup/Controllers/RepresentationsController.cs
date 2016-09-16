@@ -50,6 +50,14 @@ namespace SimpleIdentityServer.Configuration.Startup.Controllers
             return new OkObjectResult(representations.ToDtos());
         }
 
+        [HttpDelete]
+        [Authorize("manage")]
+        public async Task<ActionResult> Delete()
+        {
+            await _representationManager.RemoveRepresentations();
+            return new NoContentResult();
+        }
+
         #endregion
     }
 }

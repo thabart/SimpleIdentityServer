@@ -9,6 +9,7 @@ using StackExchange.Redis;
 using WebApiContrib.Core.Concurrency.Redis.Extensions;
 using System.Text;
 using Newtonsoft.Json;
+using System.Threading.Tasks;
 
 namespace WebApiContrib.Core.Concurrency.Redis
 {
@@ -64,6 +65,26 @@ namespace WebApiContrib.Core.Concurrency.Redis
             }
 
             return result;
+        }
+
+        public override void RemoveAll()
+        {
+            Connect();
+            var keys = _connection.GetServer("localhost", _port).Keys();
+            foreach(RedisKey key in keys)
+            {
+                _cache.KeyDelete(key);
+            }
+        }
+
+        public override async Task RemoveAllAsync()
+        {
+            Connect();
+            var keys = _connection.GetServer("localhost", _port).Keys();
+            foreach (RedisKey key in keys)
+            {
+                await _cache.KeyDeleteAsync(key);
+            }
         }
 
         public void Dispose()

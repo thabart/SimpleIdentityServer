@@ -21,6 +21,10 @@ namespace WebApiContrib.Core.Concurrency
         Task RemoveAsync(string representationId);
 
         IEnumerable<Record> GetRepresentations();
+
+        void RemoveAll();
+
+        Task RemoveAllAsync();
     }
 
     internal class ConcurrencyManager : IConcurrencyManager
@@ -99,6 +103,16 @@ namespace WebApiContrib.Core.Concurrency
         public void Remove(string name)
         {
             RemoveAsync(name).Wait();
+        }
+
+        public void RemoveAll()
+        {
+            _options.Storage.RemoveAll();
+        }
+
+        public async Task RemoveAllAsync()
+        {
+            await _options.Storage.RemoveAllAsync();
         }
 
         public async Task RemoveAsync(string name)

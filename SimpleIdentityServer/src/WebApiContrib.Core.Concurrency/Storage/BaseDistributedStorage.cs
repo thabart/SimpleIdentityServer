@@ -74,7 +74,12 @@ namespace WebApiContrib.Core.Concurrency.Storage
         }
 
         public abstract IEnumerable<Record> GetAll();
-        
+
+        public abstract void RemoveAll();
+
+        public abstract Task RemoveAllAsync();
+
+
         protected void Initialize(IDistributedCache distributedCache)
         {
             _distributedCache = distributedCache;
