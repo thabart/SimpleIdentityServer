@@ -15,6 +15,7 @@
 #endregion
 
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Manager.Core.Api.Clients;
 using SimpleIdentityServer.Manager.Host.DTOs.Requests;
@@ -103,7 +104,11 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                 throw new ArgumentNullException(nameof(id));
             }
 
-            _clientActions.DeleteClient(id);
+            if (!_clientActions.DeleteClient(id))
+            {
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+
             await _representationManager.AddOrUpdateRepresentationAsync(this, GetClientStoreName + id, false);
             await _representationManager.AddOrUpdateRepresentationAsync(this, GetClientsStoreName, false);
             return new NoContentResult();
@@ -118,7 +123,11 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                 throw new ArgumentNullException(nameof(updateClientRequest));
             }
 
-            _clientActions.UpdateClient(updateClientRequest.ToParameter());
+            if (!_clientActions.UpdateClient(updateClientRequest.ToParameter()))
+            {
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+
             await _representationManager.AddOrUpdateRepresentationAsync(this, GetClientStoreName + updateClientRequest.ClientId, false);
             return new NoContentResult();
         }

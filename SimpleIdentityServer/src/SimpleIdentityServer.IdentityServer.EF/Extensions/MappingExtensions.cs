@@ -353,13 +353,6 @@ namespace SimpleIdentityServer.IdentityServer.EF
             var result = new IdentityServer4.EntityFramework.Entities.Client
             {
                 ClientId = client.ClientId,
-                ClientSecrets = new List<IdentityServer4.EntityFramework.Entities.ClientSecret>
-                {
-                    new IdentityServer4.EntityFramework.Entities.ClientSecret
-                    {
-                        Value = client.ClientSecret
-                    }
-                },
                 ClientName = client.ClientName,
                 Enabled = true,
                 RequireClientSecret = true,
@@ -394,11 +387,12 @@ namespace SimpleIdentityServer.IdentityServer.EF
             };
 
             var meth = _mappingIdServerGrantTypesToGrantingMethods.FirstOrDefault(m => m.Value.Equals(grantingMethod));
-            if (!meth.Equals(default(KeyValuePair<IEnumerable<string>, GrantingMethod>)))
+            if (meth.Equals(default(KeyValuePair<IEnumerable<string>, GrantingMethod>)))
             {
-                result.AllowedGrantTypes = meth.Key.Select(g => new IdentityServer4.EntityFramework.Entities.ClientGrantType { GrantType = g }).ToList();
+                throw new InvalidOperationException("The grant type is not supported");
             }
 
+            result.AllowedGrantTypes = meth.Key.Select(g => new IdentityServer4.EntityFramework.Entities.ClientGrantType { GrantType = g }).ToList();
             return result;
         }
 

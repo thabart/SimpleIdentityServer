@@ -129,7 +129,7 @@ namespace SimpleIdentityServer.IdentityServer.EF.Repositories
                         return false;
                     }
 
-                    result.ClientSecrets = record.ClientSecrets;
+                    result.ClientName = record.ClientName;
                     result.Enabled = record.Enabled;
                     result.RequireClientSecret = record.RequireClientSecret;
                     result.RequireConsent = record.RequireConsent;
