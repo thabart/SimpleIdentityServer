@@ -73,7 +73,7 @@ namespace WebApiContrib.Core.Concurrency.Storage
             return JsonConvert.DeserializeObject<ConcurrentObject>(serialized);
         }
 
-        public abstract IEnumerable<ConcurrentObject> GetAll();
+        public abstract IEnumerable<Record> GetAll();
         
         protected void Initialize(IDistributedCache distributedCache)
         {

@@ -14,13 +14,15 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SimpleIdentityServer.Configuration.Startup.Extensions;
 using System.Threading.Tasks;
 using WebApiContrib.Core.Concurrency;
 
 namespace SimpleIdentityServer.Configuration.Startup.Controllers
 {
-    [Route(Constants.RouteValues.Cache)]
+    [Route(Constants.RouteValues.Representations)]
     public class RepresentationsController : Controller
     {
         #region Fields
@@ -41,10 +43,11 @@ namespace SimpleIdentityServer.Configuration.Startup.Controllers
         #region Public methods
 
         [HttpGet]
+        [Authorize("display")]
         public async Task<ActionResult> Get()
         {
             var representations = await _representationManager.GetRepresentations();
-            return new OkObjectResult(representations);
+            return new OkObjectResult(representations.ToDtos());
         }
 
         #endregion

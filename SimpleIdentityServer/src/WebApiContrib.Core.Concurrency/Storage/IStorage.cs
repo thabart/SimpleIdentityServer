@@ -17,6 +17,6 @@ namespace WebApiContrib.Core.Concurrency.Storage
 
         Task RemoveAsync(string key);
 
-        IEnumerable<ConcurrentObject> GetAll();
+        IEnumerable<Record> GetAll();
     }
 }

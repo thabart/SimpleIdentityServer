@@ -23,7 +23,7 @@ namespace SimpleIdentityServer.Configuration.Startup
             public const string AuthProvider = "authproviders";
             public const string Configuration = "configuration";
             public const string Setting = "settings";
-            public const string Cache = "representations";
+            public const string Representations = "representations";
         }
 
         public static class ErrorResponseNames
@@ -37,12 +37,22 @@ namespace SimpleIdentityServer.Configuration.Startup
         {
             public const string AuthProviderEndPoint = "authprovider_endpoint";
             public const string SettingEndPoint = "setting_endpoint";
+            public const string RepresentationsEndPoint = "representations_endpoint";
         }
 
         public static class SettingResponseNames
         {
             public const string Key = "key";
             public const string Value = "value";
+        }
+
+        public static class RepresentationResponseNames
+        {
+            public const string Key = "key";
+            public const string AbsoluteExpiration = "abs_exp";
+            public const string SlidingExpiration = "sliding_exp";
+            public const string Etag = "etag";
+            public const string DateTime = "datetime";
         }
     }
 }

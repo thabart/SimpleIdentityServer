@@ -14,6 +14,8 @@ namespace WebApiContrib.Core.Concurrency.Redis
 {
     internal class RedisStorage : BaseDistributedStorage, IDisposable
     {
+        private const long NotPresent = -1;
+
         private readonly RedisCacheOptions _options;
 
         private readonly int _port;
@@ -37,18 +39,28 @@ namespace WebApiContrib.Core.Concurrency.Redis
             _options = options;
         }
 
-        public override IEnumerable<ConcurrentObject> GetAll()
+        public override IEnumerable<Record> GetAll()
         {
             Connect();
-            var result = new List<ConcurrentObject>();
+            var result = new List<Record>();
             var keys = _connection.GetServer("localhost", _port).Keys();
-            foreach (var key in keys)
+            foreach (RedisKey key in keys)
             {
-                var results = _cache.HashMemberGet(key, "data");
-                var bytes = results[0];
+                var keyStr = Encoding.UTF8.GetString(key);
+                var results = _cache.HashMemberGet(key, "absexp", "sldexp", "data");
+                DateTimeOffset? absExpr;
+                TimeSpan? sldExpr;
+                MapMetadata(results, out absExpr, out sldExpr);
+                var bytes = results[2];
                 var serialized = Encoding.UTF8.GetString(bytes);
                 var concurentObject = JsonConvert.DeserializeObject<ConcurrentObject>(serialized);
-                result.Add(concurentObject);
+                result.Add(new Record
+                {
+                   Key = keyStr,
+                   AbsoluteExpiration = absExpr,
+                   SlidingExpiration = sldExpr,
+                   Obj = concurentObject
+                });
             }
 
             return result;
@@ -68,6 +80,22 @@ namespace WebApiContrib.Core.Concurrency.Redis
             {
                 _connection = ConnectionMultiplexer.Connect(_options.Configuration);
                 _cache = _connection.GetDatabase();
+            }
+        }
+
+        private static void MapMetadata(RedisValue[] results, out DateTimeOffset? absoluteExpiration, out TimeSpan? slidingExpiration)
+        {
+            absoluteExpiration = null;
+            slidingExpiration = null;
+            var absoluteExpirationTicks = (long?)results[0];
+            if (absoluteExpirationTicks.HasValue && absoluteExpirationTicks.Value != NotPresent)
+            {
+                absoluteExpiration = new DateTimeOffset(absoluteExpirationTicks.Value, TimeSpan.Zero);
+            }
+            var slidingExpirationTicks = (long?)results[1];
+            if (slidingExpirationTicks.HasValue && slidingExpirationTicks.Value != NotPresent)
+            {
+                slidingExpiration = new TimeSpan(slidingExpirationTicks.Value);
             }
         }
     }

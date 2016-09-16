@@ -64,9 +64,9 @@ namespace WebApiContrib.Core.Concurrency.Storage
             return Task.Factory.StartNew(() => Remove(key));
         }
 
-        public IEnumerable<ConcurrentObject> GetAll()
+        public IEnumerable<Record> GetAll()
         {
-            return new List<ConcurrentObject>();
+            return new List<Record>();
         }
     }
 }

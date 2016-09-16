@@ -32,7 +32,8 @@ namespace SimpleIdentityServer.Configuration.Startup.Controllers
             var result = new ConfigurationResponse
             {
                 AuthProviderEndPoint = absoluteUrl + '/' + Constants.RouteValues.AuthProvider,
-                SettingEndPoint = absoluteUrl + '/' + Constants.RouteValues.Setting
+                SettingEndPoint = absoluteUrl + '/' + Constants.RouteValues.Setting,
+                RepresentationEndPoint = absoluteUrl + "/" + Constants.RouteValues.Representations
             };
 
             return new OkObjectResult(result);

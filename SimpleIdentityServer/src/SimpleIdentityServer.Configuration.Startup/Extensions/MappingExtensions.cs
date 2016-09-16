@@ -18,8 +18,10 @@ using SimpleIdentityServer.Configuration.Core.Models;
 using SimpleIdentityServer.Configuration.Core.Parameters;
 using SimpleIdentityServer.Configuration.Startup.DTOs.Requests;
 using SimpleIdentityServer.Configuration.Startup.DTOs.Responses;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using WebApiContrib.Core.Concurrency;
 
 namespace SimpleIdentityServer.Configuration.Startup.Extensions
 {
@@ -42,11 +44,39 @@ namespace SimpleIdentityServer.Configuration.Startup.Extensions
 
         public static SettingResponse ToDto(this Setting setting)
         {
+            if (setting == null)
+            {
+                throw new ArgumentNullException(nameof(setting));
+            }
+
             return new SettingResponse
             {
                 Key = setting.Key,
                 Value = setting.Value
             };
+        }
+
+        public static RepresentationResponse ToDto(this Record record)
+        {
+            if (record == null)
+            {
+                throw new ArgumentNullException(nameof(record));
+            }
+
+            var result = new RepresentationResponse
+            {
+                AbsoluteExpiration = record.AbsoluteExpiration,
+                SlidingExpiration = record.SlidingExpiration,
+                Key = record.Key
+            };
+
+            if (record.Obj != null)
+            {
+                result.Etag = record.Obj.Etag;
+                result.DateTime = record.Obj.DateTime;
+            }
+
+            return result;
         }
 
         #endregion
@@ -55,7 +85,22 @@ namespace SimpleIdentityServer.Configuration.Startup.Extensions
 
         public static List<SettingResponse> ToDtos(this List<Setting> settings)
         {
+            if (settings == null)
+            {
+                throw new ArgumentNullException(nameof(settings));
+            }
+
             return settings.Select(s => s.ToDto()).ToList();
+        }
+
+        public static IEnumerable<RepresentationResponse> ToDtos(this IEnumerable<Record> records)
+        {
+            if (records == null)
+            {
+                throw new ArgumentNullException(nameof(records));
+            }
+
+            return records.Select(r => r.ToDto());
         }
 
         #endregion

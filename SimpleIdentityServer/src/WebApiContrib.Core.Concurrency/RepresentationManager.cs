@@ -27,7 +27,7 @@ namespace WebApiContrib.Core.Concurrency
             Controller controller,
             string representationId);
 
-        Task<IEnumerable<ConcurrentObject>> GetRepresentations();
+        Task<IEnumerable<Record>> GetRepresentations();
     }
 
     internal class RepresentationManager : IRepresentationManager
@@ -177,7 +177,7 @@ namespace WebApiContrib.Core.Concurrency
             return await ContinueExecution(concatenatedEtags, modifiedSince, representationId, checkDateCallback, checkEtagCorrectCallback);
         }
 
-        public Task<IEnumerable<ConcurrentObject>> GetRepresentations()
+        public Task<IEnumerable<Record>> GetRepresentations()
         {
             return Task.FromResult(_concurrencyManager.GetRepresentations());
         }

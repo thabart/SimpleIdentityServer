@@ -20,7 +20,7 @@ namespace WebApiContrib.Core.Concurrency
 
         Task RemoveAsync(string representationId);
 
-        IEnumerable<ConcurrentObject> GetRepresentations();
+        IEnumerable<Record> GetRepresentations();
     }
 
     internal class ConcurrencyManager : IConcurrencyManager
@@ -59,7 +59,7 @@ namespace WebApiContrib.Core.Concurrency
             return concurrentObject;
         }
 
-        public IEnumerable<ConcurrentObject> GetRepresentations()
+        public IEnumerable<Record> GetRepresentations()
         {
             return _options.Storage.GetAll();
         }
