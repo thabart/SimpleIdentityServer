@@ -44,5 +44,10 @@ namespace SimpleIdentityServer.DataAccess.Fake.Repositories
         {
             throw new NotImplementedException();
         }
+
+        public bool AddScope(Scope scope)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -51,13 +51,24 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                         IsDisplayedInConsent = scope.IsDisplayedInConsent,
                         IsExposed = scope.IsExposed,
                         IsOpenIdScope = scope.IsOpenIdScope,
-                        Type = (Models.ScopeType)scope.Type
+                        Type = (Models.ScopeType)scope.Type,
+                        ScopeClaims = new List<Models.ScopeClaim>()
                     };
 
                     if (scope.Claims != null &&
                         scope.Claims.Any())
                     {
-                        record.ScopeClaims = scope.Claims.Select(c => new Models.ScopeClaim { ClaimCode = c }).ToList();
+                        foreach(var type in scope.Claims)
+                        {
+                            var rec = _context.Claims.FirstOrDefault(c => c.Code == type);
+                            if (rec == null)
+                            {
+                                rec = new Models.Claim { Code = type };
+                                _context.Claims.Add(rec);
+                            }
+
+                            record.ScopeClaims.Add(new Models.ScopeClaim { Claim = rec });
+                        }
                     }
 
                     _context.Scopes.Add(record);

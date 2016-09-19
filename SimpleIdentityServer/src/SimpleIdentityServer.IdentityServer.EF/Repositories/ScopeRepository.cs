@@ -118,7 +118,12 @@ namespace SimpleIdentityServer.IdentityServer.EF.Repositories
                         Description = scope.Description,
                         ShowInDiscoveryDocument = scope.IsExposed,
                         Type = scope.Type == ScopeType.ProtectedApi ? 1 : 0,
-                        DisplayName = scope.Name
+                        DisplayName = scope.Name,
+                        Claims = scope.Claims == null ? new List<IdentityServer4.EntityFramework.Entities.ScopeClaim>()
+                            : scope.Claims.Select(s => new IdentityServer4.EntityFramework.Entities.ScopeClaim
+                            {
+                                Name = s
+                            }).ToList()
                     };
 
                     if (scope.Claims != null && scope.Claims.Any())

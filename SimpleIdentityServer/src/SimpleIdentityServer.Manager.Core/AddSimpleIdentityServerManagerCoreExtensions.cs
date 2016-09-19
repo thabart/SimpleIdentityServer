@@ -61,6 +61,7 @@ namespace SimpleIdentityServer.Manager.Core
             serviceCollection.AddTransient<IDeleteResourceOwnerAction, DeleteResourceOwnerAction>();
             serviceCollection.AddTransient<IRegisterClientAction, RegisterClientAction>();
             serviceCollection.AddTransient<IAddResourceOwnerAction, AddResourceOwnerAction>();
+            serviceCollection.AddTransient<IAddScopeOperation, AddScopeOperation>();
             return serviceCollection;
         }
     }

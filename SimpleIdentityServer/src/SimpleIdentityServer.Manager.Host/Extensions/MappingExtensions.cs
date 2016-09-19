@@ -111,6 +111,25 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
             };
         }
 
+        public static Scope ToParameter(this ScopeResponse scopeResponse)
+        {
+            if (scopeResponse == null)
+            {
+                throw new ArgumentNullException(nameof(scopeResponse));
+            }
+
+            return new Scope
+            {
+                Description = scopeResponse.Description,
+                IsDisplayedInConsent = scopeResponse.IsDisplayedInConsent,
+                IsExposed = scopeResponse.IsExposed,
+                IsOpenIdScope = scopeResponse.IsOpenIdScope,
+                Name = scopeResponse.Name,
+                Type = scopeResponse.Type,
+                Claims = scopeResponse.Claims
+            };
+        }
+
         public static UpdateClientParameter ToParameter(this UpdateClientRequest updateClientRequest)
         {
             return new UpdateClientParameter

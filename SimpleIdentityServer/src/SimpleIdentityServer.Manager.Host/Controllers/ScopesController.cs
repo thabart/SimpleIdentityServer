@@ -15,8 +15,10 @@
 #endregion
 
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Manager.Core.Api.Scopes;
+using SimpleIdentityServer.Manager.Host.DTOs.Responses;
 using SimpleIdentityServer.Manager.Host.Extensions;
 using System;
 using System.Threading.Tasks;
@@ -98,6 +100,24 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
 
             _scopeActions.DeleteScope(id);
             await _representationManager.AddOrUpdateRepresentationAsync(this, ScopeStoreName + id, false);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, ScopesStoreName, false);
+            return new NoContentResult();
+        }
+
+        [HttpPost]
+        [Authorize("manager")]
+        public async Task<ActionResult> Add([FromBody] ScopeResponse request)
+        {
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            if (!_scopeActions.AddScope(request.ToParameter()))
+            {
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+
             await _representationManager.AddOrUpdateRepresentationAsync(this, ScopesStoreName, false);
             return new NoContentResult();
         }

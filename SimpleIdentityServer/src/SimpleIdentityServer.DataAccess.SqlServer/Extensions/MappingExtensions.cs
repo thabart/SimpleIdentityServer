@@ -243,6 +243,31 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
 
         #endregion
 
+        #region To models
+
+        public static Model.Scope ToModel(this Domain.Scope scope)
+        {
+            return new Model.Scope
+            {
+                Name = scope.Name,
+                Description = scope.Description,
+                IsDisplayedInConsent = scope.IsDisplayedInConsent,
+                IsExposed = scope.IsExposed,
+                IsOpenIdScope = scope.IsOpenIdScope,
+                Type = (Models.ScopeType)scope.Type,
+                ScopeClaims = scope.Claims == null ? new List<Model.ScopeClaim>() :
+                    scope.Claims.Select(c => new Model.ScopeClaim()
+                    {
+                        Claim =  new Model.Claim
+                        {
+                            Code = c
+                        }
+                    }).ToList()
+            };
+        }
+
+        #endregion
+
         #region Private static methods
 
         private static List<string> GetList(string value)

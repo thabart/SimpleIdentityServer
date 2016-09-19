@@ -27,6 +27,8 @@ namespace SimpleIdentityServer.Manager.Core.Api.Scopes
         Scope GetScope(string scopeName);
 
         List<Scope> GetScopes();
+
+        bool AddScope(Scope scope);
     }
 
     internal class ScopeActions : IScopeActions
@@ -37,16 +39,20 @@ namespace SimpleIdentityServer.Manager.Core.Api.Scopes
 
         private readonly IGetScopesOperation _getScopesOperation;
 
+        private readonly IAddScopeOperation _addScopeOperation;
+
         #region Constructor
 
         public ScopeActions(
             IDeleteScopeOperation deleteScopeOperation,
             IGetScopeOperation getScopeOperation,
-            IGetScopesOperation getScopesOperation)
+            IGetScopesOperation getScopesOperation,
+            IAddScopeOperation addScopeOperation)
         {
             _deleteScopeOperation = deleteScopeOperation;
             _getScopeOperation = getScopeOperation;
             _getScopesOperation = getScopesOperation;
+            _addScopeOperation = addScopeOperation;
         }
 
         #endregion
@@ -66,6 +72,11 @@ namespace SimpleIdentityServer.Manager.Core.Api.Scopes
         public List<Scope> GetScopes()
         {
             return _getScopesOperation.Execute();
+        }
+
+        public bool AddScope(Scope scope)
+        {
+            return _addScopeOperation.Execute(scope);
         }
 
         #endregion
