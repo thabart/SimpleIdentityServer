@@ -15,9 +15,12 @@
 #endregion
 
 using Moq;
+using SimpleIdentityServer.Core.Api.Registration.Actions;
+using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Manager.Core.Api.Clients;
 using SimpleIdentityServer.Manager.Core.Api.Clients.Actions;
 using SimpleIdentityServer.Manager.Core.Parameters;
+using System.Collections.Generic;
 using Xunit;
 
 namespace SimpleIdentityServer.Manager.Core.Tests.Api.Clients
@@ -31,6 +34,8 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Clients
         private Mock<IRemoveClientAction> _removeClientActionStub;
 
         private Mock<IUpdateClientAction> _updateClientActionStub;
+
+        private Mock<IRegisterClientAction> _registerClientActionStub;
 
         private IClientActions _clientActions;
 
@@ -94,6 +99,26 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Clients
             _updateClientActionStub.Verify(g => g.Execute(parameter));
         }
 
+        [Fact]
+        public void When_RegisterClient_Then_Operation_Is_Called()
+        {
+            // ARRANGE
+            var parameter = new RegistrationParameter
+            {
+                RedirectUris = new List<string>
+                {
+                    "https://localhost/callback"
+                }
+            };
+            InitializeFakeObjects();
+
+            // ACT
+            _clientActions.AddClient(parameter);
+
+            // ASSERT
+            _registerClientActionStub.Verify(g => g.Execute(parameter));
+        }
+
         #endregion
 
         private void InitializeFakeObjects()
@@ -102,10 +127,12 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Clients
             _getClientActionStub = new Mock<IGetClientAction>();
             _removeClientActionStub = new Mock<IRemoveClientAction>();
             _updateClientActionStub = new Mock<IUpdateClientAction>();
+            _registerClientActionStub = new Mock<IRegisterClientAction>();
             _clientActions = new ClientActions(_getClientsActionStub.Object,
                 _getClientActionStub.Object,
                 _removeClientActionStub.Object,
-                _updateClientActionStub.Object);
+                _updateClientActionStub.Object,
+                _registerClientActionStub.Object);
         }
     }
 }

@@ -10,7 +10,7 @@
     ]
   },
   "tooling": {
-    "defaultNamespace": "SimpleIdentityServer.Configuration.Startup"
+    "defaultNamespace": "SimpleIdentityServer.Configuration.IdServer.Startup"
   },
   "dependencies": {
     "Microsoft.Extensions.Configuration.CommandLine": "1.0.0",
@@ -29,15 +29,19 @@
     "Serilog.Extensions.Logging": "1.0.0",
     "Serilog.Sinks.ColoredConsole": "2.0.0",
     "Serilog.Sinks.RollingFile": "2.0.0",
-    "Serilog.Sinks.ElasticSearch": "*",
-    "SimpleIdentityServer.Configuration.EF": "*",
-    "WebApiContrib.Core.Concurrency.Redis": {
+    "Serilog.Sinks.ElasticSearch": {
       "target": "project"
+    },
+    "SimpleIdentityServer.Configuration.IdServer.EF": {
+      "target": "project"
+    },
+    "WebApiContrib.Core.Concurrency.Redis": {
+     "target": "project"
     },
     "SimpleIdentityServer.Configuration.Host": {
       "target": "project"
     }
-  },
+    },
   "frameworks": {
     "net46": {
       "frameworkAssemblies": {

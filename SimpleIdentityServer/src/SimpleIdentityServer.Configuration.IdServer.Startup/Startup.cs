@@ -23,9 +23,9 @@ using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.Elasticsearch;
 using SimpleIdentityServer.Configuration.Core;
-using SimpleIdentityServer.Configuration.EF;
-using SimpleIdentityServer.Configuration.EF.Extensions;
 using SimpleIdentityServer.Configuration.Host.Extensions;
+using SimpleIdentityServer.Configuration.IdServer.EF;
+using SimpleIdentityServer.Configuration.IdServer.EF.Extensions;
 using SimpleIdentityServer.Oauth2Instrospection.Authentication;
 using System;
 using WebApiContrib.Core.Concurrency.Extensions;
@@ -66,7 +66,7 @@ namespace SimpleIdentityServer.Configuration.Startup
             {
                 using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
                 {
-                    var simpleIdentityServerContext = serviceScope.ServiceProvider.GetService<SimpleIdentityServerConfigurationContext>();
+                    var simpleIdentityServerContext = serviceScope.ServiceProvider.GetService<IdServerConfigurationDbContext>();
                     simpleIdentityServerContext.Database.EnsureCreated();
                     simpleIdentityServerContext.EnsureSeedData();
                 }
@@ -95,6 +95,7 @@ namespace SimpleIdentityServer.Configuration.Startup
             var isLogFileEnabled = bool.Parse(Configuration["Log:File:Enabled"]);
             var isElasticSearchEnabled = bool.Parse(Configuration["Log:Elasticsearch:Enabled"]);
             var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
+            var idServerConnectionString = Configuration["Data:IdServerConnection:ConnectionString"];
             if (string.IsNullOrWhiteSpace(cachingDatabase))
             {
                 cachingDatabase = "INMEMORY";
@@ -104,11 +105,11 @@ namespace SimpleIdentityServer.Configuration.Startup
             services.AddSimpleIdentityServerConfiguration();
             if (isSqlServer)
             {
-                services.AddSimpleIdentityServerSqlServer(connectionString);
+                services.AddIdServerConfigurationSqlServer(connectionString, idServerConnectionString);
             }
             else if (isPostgre)
             {
-                services.AddSimpleIdentityServerPostgre(connectionString);
+                services.AddIdServerConfigurationPostgre(connectionString, idServerConnectionString);
             }
 
             // Configure caching

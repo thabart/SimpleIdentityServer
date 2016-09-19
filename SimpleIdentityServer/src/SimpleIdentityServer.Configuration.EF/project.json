@@ -50,7 +50,8 @@
   },
   "publishOptions": {
     "include": [
-      "appsettings.json"
+      "appsettings.json",
+      "appsettings.docker.json"
     ]
   }
 }
