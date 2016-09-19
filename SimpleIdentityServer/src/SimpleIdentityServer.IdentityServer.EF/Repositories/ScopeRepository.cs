@@ -126,15 +126,6 @@ namespace SimpleIdentityServer.IdentityServer.EF.Repositories
                             }).ToList()
                     };
 
-                    if (scope.Claims != null && scope.Claims.Any())
-                    {
-                        scope.Claims.ForEach(c => record.Claims.Add(new IdentityServer4.EntityFramework.Entities.ScopeClaim
-                        {
-                            Name = c,
-                            Description = c
-                        }));    
-                    }
-
                     _context.Scopes.Add(record);
                     _context.SaveChanges();
                     transaction.Commit();
@@ -163,8 +154,14 @@ namespace SimpleIdentityServer.IdentityServer.EF.Repositories
                         return false;
                     }
 
+                    connectedScope.Type = scope.Type == ScopeType.ProtectedApi ? 1 : 0;
                     connectedScope.Description = scope.Description;
                     connectedScope.ShowInDiscoveryDocument = scope.IsExposed;
+                    connectedScope.Claims = scope.Claims == null ? new List<IdentityServer4.EntityFramework.Entities.ScopeClaim>()
+                            : scope.Claims.Select(s => new IdentityServer4.EntityFramework.Entities.ScopeClaim
+                            {
+                                Name = s
+                            }).ToList();
                     _context.SaveChanges();
                     transaction.Commit();
                 }

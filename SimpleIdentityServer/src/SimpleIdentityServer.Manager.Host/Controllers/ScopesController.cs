@@ -121,6 +121,24 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
             await _representationManager.AddOrUpdateRepresentationAsync(this, ScopesStoreName, false);
             return new NoContentResult();
         }
+        
+        [HttpPut]
+        [Authorize("manager")]
+        public async Task<ActionResult> Update([FromBody] ScopeResponse request)
+        {
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            if (!_scopeActions.UpdateScope(request.ToParameter()))
+            {
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+
+            await _representationManager.AddOrUpdateRepresentationAsync(this, ScopeStoreName + request.Name, false);
+            return new NoContentResult();
+        }
 
         #endregion
     }

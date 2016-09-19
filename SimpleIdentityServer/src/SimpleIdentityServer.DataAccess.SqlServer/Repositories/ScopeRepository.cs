@@ -153,10 +153,45 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                 try
                 {
                     var connectedScope = _context.Scopes
+                        .Include(s => s.ScopeClaims)
                         .FirstOrDefault(c => c.Name == scope.Name);
                     connectedScope.Description = scope.Description;
+                    connectedScope.IsOpenIdScope = scope.IsOpenIdScope;
                     connectedScope.IsDisplayedInConsent = scope.IsDisplayedInConsent;
                     connectedScope.IsExposed = scope.IsExposed;
+                    connectedScope.Type = (Models.ScopeType)scope.Type;
+                    var scopesNotToBeRemoved = new List<string>();
+                    if (scope.Claims != null &&
+                        scope.Claims.Any())
+                    {
+                        foreach (var type in scope.Claims)
+                        {
+                            var rec = _context.Claims.FirstOrDefault(c => c.Code == type);
+                            var scopeClaims = connectedScope.ScopeClaims.FirstOrDefault(c => c.ClaimCode == type);
+                            if (rec == null)
+                            {
+                                rec = new Models.Claim { Code = type };
+                                _context.Claims.Add(rec);
+                            }
+
+                            if (scopeClaims == null)
+                            {
+                                connectedScope.ScopeClaims.Add(new Models.ScopeClaim
+                                {
+                                    ClaimCode = rec.Code,
+                                    ScopeName = connectedScope.Name
+                                });
+                            }
+
+                            scopesNotToBeRemoved.Add(type);
+                        }
+                    }
+
+                    foreach(var scopeClaim in connectedScope.ScopeClaims.Where(s => !scopesNotToBeRemoved.Any(c => c == s.ClaimCode)).ToList())
+                    {
+                        _context.ScopeClaims.Remove(scopeClaim);
+                    }
+
                     _context.SaveChanges();
                     transaction.Commit();
 
