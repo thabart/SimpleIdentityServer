@@ -18,6 +18,8 @@ namespace SimpleIdentityServer.Scim.Startup
 {
     public class Constants
     {
+        #region DTO names
+
         public static class MultiValueAttributeNames
         {
             public const string Type = "type";
@@ -25,6 +27,51 @@ namespace SimpleIdentityServer.Scim.Startup
             public const string Primary = "primary";
             public const string Value = "value";
             public const string Ref = "$ref";
+        }
+
+        public static class UserResourceResponseNames
+        {
+            public const string UserName = "userName";
+            public const string Name = "name";
+            public const string DisplayName = "displayName";
+            public const string NickName = "nickName";
+            public const string ProfileUrl = "profileUrl";
+            public const string Title = "title";
+            public const string UserType = "userType";
+            public const string PreferredLanguage = "preferredLanguage";
+            public const string Locale = "locale";
+            public const string Timezone = "timezone";
+            public const string Active = "active";
+            public const string Password = "password";
+            public const string Emails = "emails";
+            public const string Phones = "phones";
+            public const string Ims = "ims";
+            public const string Photos = "photos";
+            public const string Addresses = "addresses";
+            public const string Groups = "groups";
+            public const string Entitlements = "entitlements";
+            public const string Roles = "roles";
+            public const string X509Certificates = "x509Certificates";
+        }
+
+        public static class AddressResponseNames
+        {
+            public const string Formatted = "formatted";
+            public const string StreetAddress = "streetAddress";
+            public const string Locality = "locality";
+            public const string Region = "region";
+            public const string PostalCode = "postalCode";
+            public const string Country = "country";
+        }
+
+        public static class NameResponseNames
+        {
+            public const string Formatted = "formatted";
+            public const string FamilyName = "familyName";
+            public const string GivenName = "givenName";
+            public const string MiddleName = "middleName";
+            public const string HonorificPrefix = "honorificPrefix";
+            public const string HonorificSuffix = "honorificSuffix";
         }
 
         public static class ScimResourceNames
@@ -101,5 +148,7 @@ namespace SimpleIdentityServer.Scim.Startup
             public const string SpecUri = "specUri";
             public const string DocumentationUri = "documentationUri";
         }
+
+        #endregion
     }
 }
