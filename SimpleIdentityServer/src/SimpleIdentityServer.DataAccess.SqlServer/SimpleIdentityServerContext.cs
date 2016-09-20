@@ -62,6 +62,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
 
         public virtual DbSet<Role> Roles { get; set; }
 
+        public virtual DbSet<ConfirmationCode> ConfirmationCodes { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.AddAddressMapping();

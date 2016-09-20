@@ -84,7 +84,7 @@ namespace SimpleIdentityServer.Host.Controllers
                 
         #region Normal authentication process
         
-        public async Task<ActionResult> Index(string name)
+        public ActionResult Index(string name)
         {
             var authenticatedUser = this.GetAuthenticatedUser();
             if (authenticatedUser == null ||
@@ -122,18 +122,27 @@ namespace SimpleIdentityServer.Host.Controllers
             {
                 var claims = _authenticateActions.LocalUserAuthentication(authorizeViewModel.ToParameter());
                 var authenticationManager = this.GetAuthenticationManager();
-                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var claimsIdentity = new ClaimsIdentity(claims, Constants.TwoFactorCookieName);
+                // var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                 var principal = new ClaimsPrincipal(claimsIdentity);
+                /*
+                 If two factor authentication is enabled
                 authenticationManager.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
                     principal,
-                    new AuthenticationProperties {
+                    new AuthenticationProperties
+                    {
                         ExpiresUtc = DateTime.UtcNow.AddDays(7),
+                        IsPersistent = false
+                    });*/
+                // return RedirectToAction("Index", "User");
+                authenticationManager.SignInAsync(Constants.TwoFactorCookieName,
+                    principal,
+                    new AuthenticationProperties {
+                        ExpiresUtc = DateTime.UtcNow.AddMinutes(5),
                         IsPersistent = false
                     });
                 _simpleIdentityServerEventSource.AuthenticateResourceOwner(claimsIdentity.Name);
-                // Enable TWO-Factor authentication with email
-
-                return RedirectToAction("Index", "User");
+                return RedirectToAction("SendCode");
             }
             catch (Exception exception)
             {
@@ -175,6 +184,13 @@ namespace SimpleIdentityServer.Host.Controllers
             
             // 2. Redirect to the profile
             return RedirectToAction("Index", "User");
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> SendCode()
+        {
+            var user = await HttpContext.Authentication.AuthenticateAsync(Constants.TwoFactorCookieName);
+            return View();
         }
         
         #endregion
