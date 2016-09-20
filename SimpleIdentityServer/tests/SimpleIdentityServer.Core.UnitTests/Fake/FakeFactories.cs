@@ -1,11 +1,10 @@
 ﻿using SimpleIdentityServer.Core.Repositories;
-using SimpleIdentityServer.DataAccess.Fake;
-using SimpleIdentityServer.DataAccess.Fake.Repositories;
 
 namespace SimpleIdentityServer.Core.UnitTests.Fake
 {
     public static class FakeFactories
     {
+        /*
         public static FakeDataSource FakeDataSource = new FakeDataSource();
 
         public static IClientRepository GetClientRepository()
@@ -32,5 +31,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Fake
         {
             return new FakeJsonWebKeyRepository(FakeDataSource);
         }
+        */
     }
 }

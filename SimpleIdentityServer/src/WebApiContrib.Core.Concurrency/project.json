@@ -15,7 +15,8 @@
     "Microsoft.Extensions.DependencyInjection": "1.0.0",
     "Microsoft.AspNetCore.Mvc.Core": "1.0.0",
     "Microsoft.AspNetCore.Mvc": "1.0.0",
-    "Newtonsoft.Json": "9.0.1"
+    "Newtonsoft.Json": "9.0.1",
+    "WebApiContrib.Core.Storage": { "target": "project" }
   },
   "tooling": {
     "defaultNamespace": "WebApiContrib.Core.Concurrency"

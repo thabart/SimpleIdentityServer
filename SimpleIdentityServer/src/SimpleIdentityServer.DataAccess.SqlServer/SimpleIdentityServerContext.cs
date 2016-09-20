@@ -80,6 +80,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
             modelBuilder.AddClientScopeMapping();
             modelBuilder.AddRoleMapping();
             modelBuilder.AddResourceOwnerRoleMapping();
+            modelBuilder.AddConfirmationCodeMapping();
             base.OnModelCreating(modelBuilder);
         }
     }

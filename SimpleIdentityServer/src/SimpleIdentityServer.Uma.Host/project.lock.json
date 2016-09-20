@@ -4513,7 +4513,8 @@
           "Newtonsoft.Json": "9.0.1",
           "System.Dynamic.Runtime": "4.0.11",
           "System.Net.Http": "4.1.0",
-          "System.Private.DataContractSerialization": "4.1.1"
+          "System.Private.DataContractSerialization": "4.1.1",
+          "WebApiContrib.Core.Storage": "1.0.0"
         },
         "compile": {
           "netstandard1.6/WebApiContrib.Core.Concurrency.dll": {}
@@ -4522,18 +4523,41 @@
           "netstandard1.6/WebApiContrib.Core.Concurrency.dll": {}
         }
       },
-      "WebApiContrib.Core.Concurrency.Redis/1.0.0": {
+      "WebApiContrib.Core.Storage/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v1.6",
+        "dependencies": {
+          "Microsoft.AspNetCore.Mvc": "1.0.0",
+          "Microsoft.AspNetCore.Mvc.Core": "1.0.0",
+          "Microsoft.Extensions.Caching.Abstractions": "1.0.0",
+          "Microsoft.Extensions.Caching.Memory": "1.0.0",
+          "Microsoft.Extensions.DependencyInjection": "1.0.0",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
+          "Microsoft.Extensions.Options": "1.0.0",
+          "Newtonsoft.Json": "9.0.1",
+          "System.Dynamic.Runtime": "4.0.11",
+          "System.Net.Http": "4.1.0",
+          "System.Private.DataContractSerialization": "4.1.1"
+        },
+        "compile": {
+          "netstandard1.6/WebApiContrib.Core.Storage.dll": {}
+        },
+        "runtime": {
+          "netstandard1.6/WebApiContrib.Core.Storage.dll": {}
+        }
+      },
+      "WebApiContrib.Core.Storage.Redis/1.0.0": {
         "type": "project",
         "framework": ".NETStandard,Version=v1.6",
         "dependencies": {
           "Microsoft.Extensions.Caching.Redis.Core": "1.0.2",
-          "WebApiContrib.Core.Concurrency": "1.0.0"
+          "WebApiContrib.Core.Storage": "1.0.0"
         },
         "compile": {
-          "netstandard1.6/WebApiContrib.Core.Concurrency.Redis.dll": {}
+          "netstandard1.6/WebApiContrib.Core.Storage.Redis.dll": {}
         },
         "runtime": {
-          "netstandard1.6/WebApiContrib.Core.Concurrency.Redis.dll": {}
+          "netstandard1.6/WebApiContrib.Core.Storage.Redis.dll": {}
         }
       }
     },
@@ -7039,7 +7063,8 @@
           "Microsoft.Extensions.DependencyInjection": "1.0.0",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
           "Microsoft.Extensions.Options": "1.0.0",
-          "Newtonsoft.Json": "9.0.1"
+          "Newtonsoft.Json": "9.0.1",
+          "WebApiContrib.Core.Storage": "1.0.0"
         },
         "frameworkAssemblies": [
           "System.Net.Http",
@@ -7053,18 +7078,43 @@
           "net451/WebApiContrib.Core.Concurrency.dll": {}
         }
       },
-      "WebApiContrib.Core.Concurrency.Redis/1.0.0": {
+      "WebApiContrib.Core.Storage/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.5.1",
+        "dependencies": {
+          "Microsoft.AspNetCore.Mvc": "1.0.0",
+          "Microsoft.AspNetCore.Mvc.Core": "1.0.0",
+          "Microsoft.Extensions.Caching.Abstractions": "1.0.0",
+          "Microsoft.Extensions.Caching.Memory": "1.0.0",
+          "Microsoft.Extensions.DependencyInjection": "1.0.0",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
+          "Microsoft.Extensions.Options": "1.0.0",
+          "Newtonsoft.Json": "9.0.1"
+        },
+        "frameworkAssemblies": [
+          "System.Net.Http",
+          "System.Runtime",
+          "System.Runtime.Serialization"
+        ],
+        "compile": {
+          "net451/WebApiContrib.Core.Storage.dll": {}
+        },
+        "runtime": {
+          "net451/WebApiContrib.Core.Storage.dll": {}
+        }
+      },
+      "WebApiContrib.Core.Storage.Redis/1.0.0": {
         "type": "project",
         "framework": ".NETFramework,Version=v4.5.1",
         "dependencies": {
           "Microsoft.Extensions.Caching.Redis.Core": "1.0.2",
-          "WebApiContrib.Core.Concurrency": "1.0.0"
+          "WebApiContrib.Core.Storage": "1.0.0"
         },
         "compile": {
-          "net451/WebApiContrib.Core.Concurrency.Redis.dll": {}
+          "net451/WebApiContrib.Core.Storage.Redis.dll": {}
         },
         "runtime": {
-          "net451/WebApiContrib.Core.Concurrency.Redis.dll": {}
+          "net451/WebApiContrib.Core.Storage.Redis.dll": {}
         }
       }
     }
@@ -13789,10 +13839,15 @@
       "path": "../WebApiContrib.Core.Concurrency/project.json",
       "msbuildProject": "../WebApiContrib.Core.Concurrency/WebApiContrib.Core.Concurrency.xproj"
     },
-    "WebApiContrib.Core.Concurrency.Redis/1.0.0": {
+    "WebApiContrib.Core.Storage/1.0.0": {
       "type": "project",
-      "path": "../WebApiContrib.Core.Concurrency.Redis/project.json",
-      "msbuildProject": "../WebApiContrib.Core.Concurrency.Redis/WebApiContrib.Core.Concurrency.Redis.xproj"
+      "path": "../WebApiContrib.Core.Storage/project.json",
+      "msbuildProject": "../WebApiContrib.Core.Storage/WebApiContrib.Core.Storage.xproj"
+    },
+    "WebApiContrib.Core.Storage.Redis/1.0.0": {
+      "type": "project",
+      "path": "../WebApiContrib.Core.Storage.Redis/project.json",
+      "msbuildProject": "../WebApiContrib.Core.Storage.Redis/WebApiContrib.Core.Storage.Redis.xproj"
     }
   },
   "projectFileDependencyGroups": {
@@ -13822,7 +13877,8 @@
       "SimpleIdentityServer.Oauth2Instrospection.Authentication",
       "SimpleIdentityServer.Uma.Core",
       "SimpleIdentityServer.Uma.EF",
-      "WebApiContrib.Core.Concurrency.Redis"
+      "WebApiContrib.Core.Concurrency",
+      "WebApiContrib.Core.Storage.Redis"
     ],
     ".NETCoreApp,Version=v1.0": [
       "Microsoft.NETCore.App >= 1.0.0",

@@ -16,22 +16,25 @@
 
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
+using IdentityServer4.Services;
+using IdentityServer4.Startup.Extensions;
 using IdentityServer4.Startup.Services;
+using IdentityServer4.Startup.Validation;
+using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using SimpleIdentityServer.IdentityServer.EF.DbContexts;
-using System.Linq;
-using IdentityServer4.Startup.Extensions;
-using IdentityServer4.Services;
-using SimpleIdentityServer.IdentityServer.EF;
-using System;
-using Serilog.Events;
 using Serilog;
-using IdentityServer4.Startup.Validation;
-using IdentityServer4.Validation;
+using Serilog.Events;
+using SimpleIdentityServer.Authentication.Middleware;
+using SimpleIdentityServer.Authentication.Middleware.Extensions;
+using SimpleIdentityServer.IdentityServer.EF;
+using SimpleIdentityServer.IdentityServer.EF.DbContexts;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace IdentityServer4.Startup
 {
@@ -61,7 +64,6 @@ namespace IdentityServer4.Startup
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-
             services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader()));
@@ -81,21 +83,34 @@ namespace IdentityServer4.Startup
             app.UseDeveloperExceptionPage();
             app.UseCookieAuthentication(new CookieAuthenticationOptions
             {
-                AuthenticationScheme = "Cookies"
+                AutomaticAuthenticate = true,
+                AutomaticChallenge = true
             });
-            app.UseCors("AllowAll");
-            app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
+            app.UseAuthentication(new AuthenticationMiddlewareOptions
             {
-                AuthenticationScheme = "oidc",
-                SignInScheme = "Cookies",
-                Authority = "http://localhost:4001/",
-                RequireHttpsMetadata = false,
-                ClientId = "mvc",
-                ClientSecret = "secret",
-                ResponseType = "code id_token",
-                GetClaimsFromUserInfoEndpoint = true,
-                SaveTokens = true
+                ConfigurationEdp = new ConfigurationEdpOptions
+                {
+                    ClientId = Configuration["ClientId"],
+                    ClientSecret = Configuration["ClientSecret"],
+                    ConfigurationUrl = Configuration["ConfigurationUrl"],
+                    Scopes = new List<string>
+                    {
+                        "configuration",
+                        "display_configuration"
+                    }
+                },
+                IdServer = new IdServerOptions
+                {
+                    ExternalLoginCallback = "/Account/ExternalCallback",
+                    LoginUrls = new List<string>
+                    {
+                        "/Account/Login",
+                        "/Account/External"
+                    }
+                }
             });
+
+            app.UseCors("AllowAll");
             app.UseIdentityServer();
             app.UseStaticFiles();
             app.UseMvcWithDefaultRoute();
@@ -145,9 +160,6 @@ namespace IdentityServer4.Startup
 
         private void RegisterDependencies(IServiceCollection services)
         {
-            services.AddTransient<UserLoginService>();
-            services.AddTransient<IProfileService, UserProfileService>();
-            services.AddTransient<IResourceOwnerPasswordValidator, ResourceOwnerPasswordValidator>();
             Func<LogEvent, bool> filter = (e) =>
             {
                 var ctx = e.Properties["SourceContext"];
@@ -168,6 +180,11 @@ namespace IdentityServer4.Startup
                 .CreateLogger();
             Log.Logger = log;
             services.AddLogging();
+            services.AddAuthenticationMiddleware();
+            services.AddTransient<UserLoginService>();
+            services.AddTransient<IProfileService, UserProfileService>();
+            services.AddTransient<IResourceOwnerPasswordValidator, ResourceOwnerPasswordValidator>();
+            services.AddSingleton<Serilog.ILogger>(log);
         }
 
         #endregion

@@ -131,6 +131,8 @@ namespace SimpleIdentityServer.Host.Controllers
                         IsPersistent = false
                     });
                 _simpleIdentityServerEventSource.AuthenticateResourceOwner(claimsIdentity.Name);
+                // Enable TWO-Factor authentication with email
+
                 return RedirectToAction("Index", "User");
             }
             catch (Exception exception)

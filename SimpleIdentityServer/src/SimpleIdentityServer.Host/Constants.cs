@@ -63,36 +63,6 @@ namespace SimpleIdentityServer.Host
             
             public const string Get404 = "Error/404";
         }
-        
-        public static class IdentityProviderNames 
-        {
-            public const string Microsoft = "Microsoft";
-            
-            public const string Facebook = "Facebook";
-
-            public const string Google = "Google";
-
-            public const string Adfs = "ADFS";
-
-            public const string Cookies = "Cookies";
-
-            public const string Eid = "EID";
-
-            public const string Twitter = "Twitter";
-
-            public const string Github = "Github";
-        }
-        
-        public static List<string> SupportedIdentityProviders = new List<string> 
-        {
-            IdentityProviderNames.Microsoft,
-            IdentityProviderNames.Facebook,
-            IdentityProviderNames.Adfs,
-            IdentityProviderNames.Eid,
-            IdentityProviderNames.Google,
-            IdentityProviderNames.Twitter,
-            IdentityProviderNames.Github
-        };
 
         public static class RevocationRequestNames
         {

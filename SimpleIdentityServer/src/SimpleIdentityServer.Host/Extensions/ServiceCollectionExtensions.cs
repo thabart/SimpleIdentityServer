@@ -23,6 +23,7 @@ using Microsoft.Extensions.FileProviders;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.Elasticsearch;
+using SimpleIdentityServer.Authentication.Middleware.Extensions;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Configuration.Client;
 using SimpleIdentityServer.Core;
@@ -33,7 +34,6 @@ using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.DataAccess.SqlServer;
 using SimpleIdentityServer.Host.Configuration;
 using SimpleIdentityServer.Host.Controllers;
-using SimpleIdentityServer.Host.Handlers;
 using SimpleIdentityServer.Host.Parsers;
 using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.RateLimitation;
@@ -227,7 +227,6 @@ namespace SimpleIdentityServer.Host
             {
                 ConfigurationUrl = configurationUrl
             });
-            services.AddTransient<IClaimsParser, ClaimsParser>();
             services.AddTransient<ISimpleIdentityServerConfigurator, ConcreteSimpleIdentityServerConfigurator>();
             services.AddDataProtection();
             services.AddSingleton<SwaggerOptions>(swaggerOptions);
@@ -235,6 +234,7 @@ namespace SimpleIdentityServer.Host
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddAuthentication(opts => opts.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme);
             services.AddMvc();
+            services.AddAuthenticationMiddleware();
             services.Configure<RazorViewEngineOptions>(options =>
             {
                 options.FileProviders.Add(new EmbeddedFileProvider(
@@ -282,9 +282,6 @@ namespace SimpleIdentityServer.Host
             services.AddTransient<ISimpleIdentityServerEventSource, SimpleIdentityServerEventSource>();
             services.AddTransient<IManagerEventSource, ManagerEventSource>();
             services.AddSingleton<ILogger>(log);
-            services.AddSingleton<ISimpleIdServerConfigurationClientFactory>(new SimpleIdServerConfigurationClientFactory());
-            services.AddSingleton<IIdentityServerClientFactory>(new IdentityServerClientFactory());
-            services.AddTransient<IAuthenticationManager, AuthenticationManager>();
         }
         
         #endregion

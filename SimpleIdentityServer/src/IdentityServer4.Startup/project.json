@@ -16,20 +16,22 @@
     "Microsoft.AspNetCore.Mvc": "1.0.0",
     "Microsoft.AspNetCore.StaticFiles": "1.0.0",
     "Microsoft.AspNetCore.Authentication.Cookies": "1.0.0",
-    "Microsoft.AspNetCore.Authentication.OpenIdConnect": "1.0.0",
     "Microsoft.Extensions.Configuration.Json": "1.0.0",
     "Microsoft.Extensions.Logging.Console": "1.0.0",
     "IdentityServer4": "1.0.0-rc1",
     "Microsoft.EntityFrameworkCore.SqlServer": "1.0.0",
     "Microsoft.AspNetCore.Server.Kestrel.Https": "1.0.0",
-    "SimpleIdentityServer.IdentityServer.EF": {
-      "target": "project"
-    },
     "Serilog.Extensions.Logging": "1.0.0",
     "Serilog.Sinks.RollingFile": "2.0.0",
     "Serilog.Sinks.ColoredConsole": "2.0.0",
     "Microsoft.AspNetCore.Diagnostics": "1.0.0",
-    "Microsoft.Extensions.Logging.Debug": "1.0.0"
+    "Microsoft.Extensions.Logging.Debug": "1.0.0",
+    "SimpleIdentityServer.IdentityServer.EF": {
+      "target": "project"
+    },
+    "SimpleIdentityServer.Authentication.Middleware": {
+      "target": "project"
+    }
   },
   "frameworks": {
     "netcoreapp1.0": {

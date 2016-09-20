@@ -33,8 +33,8 @@ using SimpleIdentityServer.Uma.Host.Configuration;
 using SimpleIdentityServer.Uma.Host.Middlewares;
 using SimpleIdentityServer.Uma.Logging;
 using System;
-using WebApiContrib.Core.Concurrency.Extensions;
-using WebApiContrib.Core.Concurrency.Redis;
+using WebApiContrib.Core.Concurrency;
+using WebApiContrib.Core.Storage;
 
 namespace SimpleIdentityServer.Uma.Host
 {

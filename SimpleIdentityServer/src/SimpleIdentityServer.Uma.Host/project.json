@@ -36,13 +36,12 @@
     "Serilog.Extensions.Logging": "1.0.0",
     "Serilog.Sinks.ColoredConsole": "2.0.0",
     "Serilog.Sinks.RollingFile": "2.0.0",
-    "Serilog.Sinks.ElasticSearch": "*",
-    "SimpleIdentityServer.Uma.Core": "*",
-    "SimpleIdentityServer.Uma.EF": "*",
-    "SimpleIdentityServer.Oauth2Instrospection.Authentication": "*",
-    "WebApiContrib.Core.Concurrency.Redis": {
-      "target": "project"
-    }
+    "Serilog.Sinks.ElasticSearch": { "target": "project" },
+    "SimpleIdentityServer.Uma.Core": { "target": "project" },
+    "SimpleIdentityServer.Uma.EF": { "target": "project" },
+    "SimpleIdentityServer.Oauth2Instrospection.Authentication": { "target": "project" },
+    "WebApiContrib.Core.Storage.Redis": { "target": "project" },
+    "WebApiContrib.Core.Concurrency": { "target": "project" }
   },
   "frameworks": {
     "net46": {

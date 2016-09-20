@@ -32,7 +32,6 @@ using SimpleIdentityServer.Core.Validators;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
-using SimpleIdentityServer.DataAccess.Fake;
 using SimpleIdentityServer.Core.Jwt.Serializer;
 using SimpleIdentityServer.Core.Jwt;
 using System.Security.Cryptography;

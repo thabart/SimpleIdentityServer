@@ -36,15 +36,13 @@
     "Serilog.Extensions.Logging": "1.0.0",
     "Serilog.Sinks.ColoredConsole": "2.0.0",
     "Serilog.Sinks.RollingFile": "2.0.0",
-    "Serilog.Sinks.ElasticSearch": "*",
-    "SimpleIdentityServer.Core": "*",
-    "SimpleIdentityServer.Core.Jwt": "*",
-    "SimpleIdentityServer.DataAccess.Fake": "*",
-    "SimpleIdentityServer.DataAccess.SqlServer": "*",
-    "SimpleIdentityServer.RateLimitation": "*",
-    "SimpleIdentityServer.Configuration.Client": "*",
-    "SimpleIdentityServer.Client": "*",
-    "WsFederation": "*"
+    "MailKit": "1.4.2.1",
+    "Serilog.Sinks.ElasticSearch": { "target": "project" },
+    "SimpleIdentityServer.Core": { "target": "project" },
+    "SimpleIdentityServer.Core.Jwt": { "target": "project" },
+    "SimpleIdentityServer.DataAccess.SqlServer": { "target": "project" },
+    "SimpleIdentityServer.RateLimitation": { "target": "project" },
+    "SimpleIdentityServer.Authentication.Middleware": { "target": "project" }
   },
   "frameworks": {
     "net46": {

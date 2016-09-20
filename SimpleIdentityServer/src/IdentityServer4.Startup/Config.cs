@@ -157,6 +157,22 @@ namespace IdentityServer4.Startup
                         "uma",
                         "configuration"
                     }
+                },
+                new Client
+                {
+                    ClientId = "IdentityServer",
+                    ClientName = "IdentityServer",
+                    ClientSecrets = new List<Secret>
+                    {
+                        new Secret("IdentityServer".Sha256())
+                    },
+                    LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
+                    AllowedGrantTypes = GrantTypes.ClientCredentials,
+                    AllowedScopes = new List<string>
+                    {
+                        "configuration",
+                        "display_configuration"
+                    }
                 }
             };
         }

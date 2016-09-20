@@ -24,9 +24,8 @@
     "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0",
     "SimpleIdentityServer.UserInformation.Authentication": "*",
     "SimpleIdentityServer.Manager.Host": "*",
-    "SimpleIdentityServer.DataAccess.Fake": "*",
     "SimpleIdentityServer.DataAccess.SqlServer": "*",
-    "WebApiContrib.Core.Concurrency.Redis": {
+    "WebApiContrib.Core.Storage.Redis": {
       "target": "project"
     }
   },

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApiContrib.Core.Concurrency.Extensions;
+using WebApiContrib.Core.Storage;
 
 namespace WebApiContrib.Core.Concurrency
 {

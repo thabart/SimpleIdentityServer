@@ -26,26 +26,6 @@ namespace IdentityServer4.Startup.Controllers
             return View();
         }
 
-        // [Authorize]
-        public IActionResult Claims()
-        {
-            var authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
-            var parameter = authorizationHeader.Substring("Basic ".Length);
-            string pair = string.Empty;
-            try
-            {
-                pair = Encoding.UTF8.GetString(
-                    Convert.FromBase64String(parameter));
-            }
-            catch (FormatException ex)
-            {
-                string s = "";
-            }
-
-            var ix = pair.IndexOf(':');
-            return View();
-        }
-
         /// <summary>
         /// Shows the error page
         /// </summary>

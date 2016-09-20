@@ -26,16 +26,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
             modelBuilder.Entity<Address>()
                 .ToTable("addresses")
                 .HasKey(a => a.Id);
-            /*
-            ToTable("addresses");
-            HasKey(a => a.Id);
-            Property(a => a.Formatted);
-            Property(a => a.StreetAddress);
-            Property(a => a.Locality);
-            Property(a => a.Region);
-            Property(a => a.PostalCode);
-            Property(a => a.Country);
-            */
         }
     }
 }

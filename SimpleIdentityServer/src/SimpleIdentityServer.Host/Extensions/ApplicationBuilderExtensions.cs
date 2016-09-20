@@ -19,14 +19,16 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Primitives;
 using Serilog;
+using SimpleIdentityServer.Authentication.Middleware;
+using SimpleIdentityServer.Authentication.Middleware.Extensions;
 using SimpleIdentityServer.DataAccess.SqlServer;
 using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
 using SimpleIdentityServer.Host.Controllers;
 using SimpleIdentityServer.Host.MiddleWare;
 using SimpleIdentityServer.Logging;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace SimpleIdentityServer.Host
@@ -60,7 +62,7 @@ namespace SimpleIdentityServer.Host
         public static void UseSimpleIdentityServer(this IApplicationBuilder app,
             Action<HostingOptions> hostingCallback,
             Action<SwaggerOptions> swaggerCallback,
-            Action<AuthenticationOptions> authenticationOptionsCallback,
+            Action<AuthenticationMiddlewareOptions> authenticationOptionsCallback,
             ILoggerFactory loggerFactory) 
         {
             if (hostingCallback == null) 
@@ -80,7 +82,7 @@ namespace SimpleIdentityServer.Host
             
             var hostingOptions = new HostingOptions();
             var swaggerOptions = new SwaggerOptions();
-            var authenticationOptions = new AuthenticationOptions();
+            var authenticationOptions = new AuthenticationMiddlewareOptions();
             hostingCallback(hostingOptions);
             swaggerCallback(swaggerOptions);
             authenticationOptionsCallback(authenticationOptions);
@@ -94,7 +96,7 @@ namespace SimpleIdentityServer.Host
             this IApplicationBuilder app,
             HostingOptions hostingOptions,
             SwaggerOptions swaggerOptions,
-            AuthenticationOptions authenticationOptions,
+            AuthenticationMiddlewareOptions authenticationOptions,
             ILoggerFactory loggerFactory) 
         {
             if (hostingOptions == null)
@@ -106,10 +108,31 @@ namespace SimpleIdentityServer.Host
                 throw new ArgumentNullException(nameof(swaggerOptions));
             }
 
-
             if (authenticationOptions == null)
             {
                 throw new ArgumentNullException(nameof(authenticationOptions));
+            }
+
+            if (authenticationOptions.ConfigurationEdp == null)
+            {
+                throw new ArgumentNullException(nameof(authenticationOptions.ConfigurationEdp));
+            }
+
+            if (authenticationOptions.IdServer == null)
+            {
+                authenticationOptions.IdServer = new IdServerOptions
+                {
+                    ExternalLoginCallback = "/Authenticate/LoginCallback",
+                    LoginUrls = new List<string>
+                    {
+                        "/Authenticate",
+                        "/Authenticate/ExternalLogin",
+                        "/Authenticate/OpenId",
+                        "/Authenticate/LocalLoginOpenId",
+                        "/Authenticate/LocalLogin",
+                        "/Authenticate/ExternalLoginOpenId"
+                    }
+                };
             }
 
             var staticFileOptions = new StaticFileOptions();
@@ -161,8 +184,7 @@ namespace SimpleIdentityServer.Host
             }
 
             // 6. Add logging
-            loggerFactory.AddSerilog();
-            
+            loggerFactory.AddSerilog();            
 
             // 7. Configure ASP.NET MVC
             app.UseMvc(routes =>

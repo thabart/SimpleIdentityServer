@@ -28,8 +28,8 @@ using SimpleIdentityServer.Configuration.IdServer.EF;
 using SimpleIdentityServer.Configuration.IdServer.EF.Extensions;
 using SimpleIdentityServer.Oauth2Instrospection.Authentication;
 using System;
-using WebApiContrib.Core.Concurrency.Extensions;
-using WebApiContrib.Core.Concurrency.Redis;
+using WebApiContrib.Core.Concurrency;
+using WebApiContrib.Core.Storage;
 
 namespace SimpleIdentityServer.Configuration.Startup
 {

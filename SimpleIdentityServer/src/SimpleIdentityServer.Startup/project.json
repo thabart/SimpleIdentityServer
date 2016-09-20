@@ -14,7 +14,8 @@
     "Microsoft.AspNetCore.Server.Kestrel": "1.0.0",
     "Microsoft.AspNetCore.Server.Kestrel.Https": "1.0.0",
     "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0",
-    "SimpleIdentityServer.Host": "*"
+    "SimpleIdentityServer.Host": { "target": "project" },
+    "WebApiContrib.Core.Storage.Redis": { "target": "project"}
   },
   "frameworks": {
     "net46": {

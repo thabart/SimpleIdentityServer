@@ -22,12 +22,11 @@
     "Microsoft.Extensions.Configuration.CommandLine": "1.0.0",
     "Microsoft.AspNetCore.Server.Kestrel": "1.0.0",
     "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0",
-    "SimpleIdentityServer.UserInformation.Authentication": "*",
-    "SimpleIdentityServer.Manager.Host": "*",
-    "SimpleIdentityServer.IdentityServer.EF": "*",
-    "WebApiContrib.Core.Concurrency.Redis": {
-      "target": "project"
-    }
+    "SimpleIdentityServer.UserInformation.Authentication": { "target": "project" },
+    "SimpleIdentityServer.Manager.Host": { "target": "project" },
+    "SimpleIdentityServer.IdentityServer.EF": { "target": "project" },
+    "WebApiContrib.Core.Storage.Redis": { "target": "project" },
+    "WebApiContrib.Core.Concurrency": { "target": "project" }
   },
   "frameworks": {
     "net46": {

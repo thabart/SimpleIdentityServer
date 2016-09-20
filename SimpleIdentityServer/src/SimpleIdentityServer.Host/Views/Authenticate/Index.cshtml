@@ -2,7 +2,7 @@
 
 @{
     ViewBag.Title = "Authenticate";
-    var loginProviders = Context.Authentication.GetAuthenticationSchemes().Where(a => a.AuthenticationScheme != "Cookies");
+    var loginProviders = Context.Authentication.GetAuthenticationSchemes().Where(a => a.DisplayName != null);
     var userNameState = ViewData.ModelState["UserName"];
     var passwordState = ViewData.ModelState["Password"];
 }
@@ -34,7 +34,7 @@
                 {
                     foreach (var loginProvider in loginProviders)
                     {
-                        <button type="submit" class="btn btn-default" id="@loginProvider.AuthenticationScheme" name="provider" value="@loginProvider.AuthenticationScheme" title="Log in using your @loginProvider.AuthenticationScheme account">@loginProvider.AuthenticationScheme</button>                      
+                        <button type="submit" class="btn btn-default" id="@loginProvider.AuthenticationScheme" name="provider" value="@loginProvider.AuthenticationScheme" title="Log in using your @loginProvider.AuthenticationScheme account">@loginProvider.DisplayName</button>                      
                     }
                 }
             }

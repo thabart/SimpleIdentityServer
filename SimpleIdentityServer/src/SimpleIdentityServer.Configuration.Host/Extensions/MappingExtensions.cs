@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Configuration.Core.Models;
 using SimpleIdentityServer.Configuration.Core.Parameters;
 using SimpleIdentityServer.Configuration.DTOs.Requests;
@@ -22,6 +23,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using WebApiContrib.Core.Concurrency;
+using WebApiContrib.Core.Storage;
 
 namespace SimpleIdentityServer.Configuration.Extensions
 {
@@ -72,8 +74,16 @@ namespace SimpleIdentityServer.Configuration.Extensions
 
             if (record.Obj != null)
             {
-                result.Etag = record.Obj.Etag;
-                result.DateTime = record.Obj.DateTime;
+                var jObj = record.Obj as JObject;
+                if (jObj != null)
+                {
+                    result.Etag = jObj.GetValue("Etag").ToString();
+                    DateTime dateTime;
+                    if (DateTime.TryParse(jObj.GetValue("DateTime").ToString(), out dateTime))
+                    {
+                        result.DateTime = dateTime;
+                    }
+                }
             }
 
             return result;

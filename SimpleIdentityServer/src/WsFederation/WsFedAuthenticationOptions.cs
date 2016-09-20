@@ -49,7 +49,11 @@ namespace WsFederation
 
         public string SignInScheme { get; set; }
 
-        public string DisplayName { get; set; }
+        public string DisplayName
+        {
+            get { return Description.DisplayName; }
+            set { Description.DisplayName = value; }
+        }
 
         public IWsFedAuthenticationEvents Events { get; set; }
 

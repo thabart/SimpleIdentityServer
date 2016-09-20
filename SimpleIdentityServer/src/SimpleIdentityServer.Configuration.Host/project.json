@@ -16,9 +16,8 @@
     "SimpleIdentityServer.Core.Common": "*",
     "SimpleIdentityServer.Configuration.Core": "*",
     "SimpleIdentityServer.Oauth2Instrospection.Authentication": "*",
-    "WebApiContrib.Core.Concurrency": {
-      "target": "project"
-    }
+    "WebApiContrib.Core.Concurrency": { "target": "project" },
+    "WebApiContrib.Core.Storage": { "target": "project" }
   },
   "frameworks": {
     "netcoreapp1.0": {

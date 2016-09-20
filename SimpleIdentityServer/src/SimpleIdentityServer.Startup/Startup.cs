@@ -23,6 +23,8 @@ using Microsoft.Extensions.Logging;
 using SimpleIdentityServer.Host;
 using SimpleIdentityServer.RateLimitation.Configuration;
 using System.Collections.Generic;
+using SimpleIdentityServer.Authentication.Middleware;
+using WebApiContrib.Core.Storage;
 
 namespace SimpleIdentityServer.Startup
 {
@@ -54,6 +56,8 @@ namespace SimpleIdentityServer.Startup
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var cachingDatabase = Configuration["Caching:Database"];
+            var cachingConnectionPath = Configuration["Caching:ConnectionPath"];
             var isSqlServer = bool.Parse(Configuration["isSqlServer"]);
             var isSqlLite = bool.Parse(Configuration["isSqlLite"]);
             var isPostgre = bool.Parse(Configuration["isPostgre"]);
@@ -71,6 +75,24 @@ namespace SimpleIdentityServer.Startup
                     PathFormat = Configuration["Log:File:PathFormat"]
                 }
             };
+            if (string.IsNullOrWhiteSpace(cachingDatabase))
+            {
+                cachingDatabase = "INMEMORY";
+            }
+
+            // Configure the caching
+            if (cachingDatabase == "REDIS")
+            {
+                services.AddStorage(opt => opt.UseRedis(o =>
+                {
+                    o.Configuration = Configuration[cachingConnectionPath + ":ConnectionString"];
+                    o.InstanceName = Configuration[cachingConnectionPath + ":InstanceName"];
+                }));
+            }
+            else if (cachingDatabase == "INMEMORY")
+            {
+                services.AddStorage(opt => opt.UseInMemoryStorage());
+            }
 
             // Add the dependencies needed to enable CORS
             services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
@@ -127,11 +149,18 @@ namespace SimpleIdentityServer.Startup
             {
                 IsDataMigrated = isDataMigrated,
                 IsDeveloperModeEnabled = false
-            }, _swaggerOptions, new Host.AuthenticationOptions
+            }, _swaggerOptions, new AuthenticationMiddlewareOptions
             {
-                ClientId = clientId,
-                ClientSecret = clientSecret,
-                ConfigurationUrl = configurationUrl
+                ConfigurationEdp = new ConfigurationEdpOptions
+                {
+                    ClientId = clientId,
+                    ClientSecret = clientSecret,
+                    ConfigurationUrl = configurationUrl,
+                    Scopes = new List<string>
+                    {
+                        "display_configuration"
+                    }
+                }
             }, loggerFactory);
         }
 

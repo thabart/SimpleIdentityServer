@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using WebApiContrib.Core.Storage;
 
 namespace WebApiContrib.Core.Concurrency
 {
@@ -29,10 +30,10 @@ namespace WebApiContrib.Core.Concurrency
 
     internal class ConcurrencyManager : IConcurrencyManager
     {
-        private readonly ConcurrencyOptions _options;
+        private readonly StorageOptions _options;
 
         public ConcurrencyManager(
-            ConcurrencyOptions options)
+            StorageOptions options)
         {
             if (options == null)
             {
@@ -91,13 +92,13 @@ namespace WebApiContrib.Core.Concurrency
                 throw new ArgumentNullException(nameof(representationId));
             }
 
-            var value = await _options.Storage.TryGetValueAsync(representationId);
-            if (value == null || !(value is ConcurrentObject))
+            var value = await _options.Storage.TryGetValueAsync<ConcurrentObject>(representationId);
+            if (value == null)
             {
                 return null;
             }
 
-            return value as ConcurrentObject;
+            return value;
         }
 
         public void Remove(string name)

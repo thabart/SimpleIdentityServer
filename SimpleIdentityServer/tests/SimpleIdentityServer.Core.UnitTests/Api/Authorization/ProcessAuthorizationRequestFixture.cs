@@ -10,8 +10,6 @@ using SimpleIdentityServer.Core.Jwt.Converter;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.UnitTests.Fake;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.DataAccess.Fake;
-using SimpleIdentityServer.DataAccess.Fake.Models;
 using System.Security.Claims;
 using System.Collections.Generic;
 using SimpleIdentityServer.Core.Extensions;

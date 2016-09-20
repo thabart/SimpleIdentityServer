@@ -21,8 +21,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SimpleIdentityServer.IdentityServer.EF;
 using SimpleIdentityServer.Manager.Host.Extensions;
-using WebApiContrib.Core.Concurrency.Extensions;
-using WebApiContrib.Core.Concurrency.Redis;
+using WebApiContrib.Core.Concurrency;
+using WebApiContrib.Core.Storage;
 
 namespace SimpleIdentityServer.IdentityServer.Manager.Startup
 {
