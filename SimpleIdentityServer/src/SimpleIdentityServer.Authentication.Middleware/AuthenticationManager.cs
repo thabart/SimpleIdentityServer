@@ -41,6 +41,7 @@ using System.Threading.Tasks;
 using WsFederation;
 using WebApiContrib.Core.Storage;
 using SimpleIdentityServer.Client.DTOs.Response;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Authentication.Middleware
 {
@@ -106,8 +107,16 @@ namespace SimpleIdentityServer.Authentication.Middleware
             {
                 throw new ArgumentNullException(nameof(authenticationOptions.IdServer));
             }
-
             var url = httpContext.Request.GetAbsoluteUriWithVirtualPath();
+            Func<GrantedToken, Task<List<AuthenticationProviderResponse>>> getAuthProvidersCb = (t) =>
+            {
+                return _simpleIdServerConfigurationClientFactory.GetAuthProviderClient()
+                    .GetAuthProvidersByResolving(authenticationOptions.ConfigurationEdp.ConfigurationUrl, t.AccessToken);
+            };
+            Func<Task<GrantedToken>> getAccessTokenCb = () => _identityServerClientFactory.CreateTokenClient()
+                    .UseClientSecretPostAuth(authenticationOptions.ConfigurationEdp.ClientId, authenticationOptions.ConfigurationEdp.ClientSecret)
+                    .UseClientCredentials(authenticationOptions.ConfigurationEdp.Scopes.ToArray())
+                    .ResolveAsync(url + "/.well-known/openid-configuration");
             var datedRecord = await _storageHelper.GetAsync<GrantedToken>(StorageKey);
             bool generateToken = datedRecord == null || datedRecord.Obj == null;
             if (!generateToken)
@@ -119,10 +128,7 @@ namespace SimpleIdentityServer.Authentication.Middleware
             GrantedToken grantedToken = null;
             if (generateToken)
             {
-                grantedToken = await _identityServerClientFactory.CreateTokenClient()
-                    .UseClientSecretPostAuth(authenticationOptions.ConfigurationEdp.ClientId, authenticationOptions.ConfigurationEdp.ClientSecret)
-                    .UseClientCredentials(authenticationOptions.ConfigurationEdp.Scopes.ToArray())
-                    .ResolveAsync(url + "/.well-known/openid-configuration");
+                grantedToken = await getAccessTokenCb();
                 await _storageHelper.SetAsync(StorageKey, grantedToken);
             }
             else
@@ -130,8 +136,19 @@ namespace SimpleIdentityServer.Authentication.Middleware
                 grantedToken = datedRecord.Obj;
             }
 
-            var authProviders = await _simpleIdServerConfigurationClientFactory.GetAuthProviderClient()
-                .GetAuthProvidersByResolving(authenticationOptions.ConfigurationEdp.ConfigurationUrl, grantedToken.AccessToken);
+            var authProviders = new List<AuthenticationProviderResponse>();
+            try
+            {
+                authProviders = await getAuthProvidersCb(grantedToken);
+            }
+            catch
+            {
+                _logger.LogError("An error occured while trying to retrieve the authentication providers. Retry ...");
+                grantedToken = await getAccessTokenCb();
+                await _storageHelper.SetAsync(StorageKey, grantedToken);
+                authProviders = await getAuthProvidersCb(grantedToken);
+            }
+
             foreach (var authProvider in authProviders)
             {
                 if (!authProvider.IsEnabled)

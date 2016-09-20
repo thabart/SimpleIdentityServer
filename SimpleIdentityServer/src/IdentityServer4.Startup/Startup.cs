@@ -35,6 +35,7 @@ using SimpleIdentityServer.IdentityServer.EF.DbContexts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using WebApiContrib.Core.Storage;
 
 namespace IdentityServer4.Startup
 {
@@ -160,6 +161,8 @@ namespace IdentityServer4.Startup
 
         private void RegisterDependencies(IServiceCollection services)
         {
+            var cachingDatabase = Configuration["Caching:Database"];
+            var cachingConnectionPath = Configuration["Caching:ConnectionPath"];
             Func<LogEvent, bool> filter = (e) =>
             {
                 var ctx = e.Properties["SourceContext"];
@@ -171,6 +174,26 @@ namespace IdentityServer4.Startup
                     e.Level == LogEventLevel.Error ||
                     e.Level == LogEventLevel.Fatal;
             };
+            if (string.IsNullOrWhiteSpace(cachingDatabase))
+            {
+                cachingDatabase = "INMEMORY";
+            }
+
+            // Configure caching
+            if (cachingDatabase == "REDIS")
+            {
+                services.AddStorage(opt => opt.UseRedis(o =>
+                {
+                    o.Configuration = Configuration[cachingConnectionPath + ":ConnectionString"];
+                    o.InstanceName = Configuration[cachingConnectionPath + ":InstanceName"];
+                }));
+            }
+            else if (cachingDatabase == "INMEMORY")
+            {
+                services.AddStorage(opt => opt.UseInMemoryStorage());
+            }
+
+            // Configure the logging
             var logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
                 .Enrich.FromLogContext()
@@ -180,6 +203,7 @@ namespace IdentityServer4.Startup
                 .CreateLogger();
             Log.Logger = log;
             services.AddLogging();
+
             services.AddAuthenticationMiddleware();
             services.AddTransient<UserLoginService>();
             services.AddTransient<IProfileService, UserProfileService>();

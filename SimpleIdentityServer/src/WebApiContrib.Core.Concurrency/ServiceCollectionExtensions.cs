@@ -20,7 +20,7 @@ namespace WebApiContrib.Core.Concurrency
                 throw new ArgumentNullException(nameof(callback));
             }
 
-            var builder = new StorageOptionsBuilder();
+            var builder = new StorageOptionsBuilder(serviceCollection);
             callback(builder);
             serviceCollection.AddSingleton(builder.StorageOptions);
             serviceCollection.AddTransient<IConcurrencyManager, ConcurrencyManager>();

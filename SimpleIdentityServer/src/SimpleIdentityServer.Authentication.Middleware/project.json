@@ -16,7 +16,8 @@
     "SimpleIdentityServer.Configuration.Client": { "target": "project" },
     "SimpleIdentityServer.Client": { "target": "project" },
     "SimpleIdentityServer.Core.Jwt": { "target": "project" },
-    "WsFederation": { "target": "project" }
+    "WsFederation": { "target": "project" },
+    "WebApiContrib.Core.Storage":  {"target": "project"}
   },
   "tooling": {
     "defaultNamespace": "SimpleIdentityServer.Core"

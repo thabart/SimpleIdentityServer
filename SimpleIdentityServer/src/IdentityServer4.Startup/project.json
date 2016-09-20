@@ -26,12 +26,9 @@
     "Serilog.Sinks.ColoredConsole": "2.0.0",
     "Microsoft.AspNetCore.Diagnostics": "1.0.0",
     "Microsoft.Extensions.Logging.Debug": "1.0.0",
-    "SimpleIdentityServer.IdentityServer.EF": {
-      "target": "project"
-    },
-    "SimpleIdentityServer.Authentication.Middleware": {
-      "target": "project"
-    }
+    "SimpleIdentityServer.IdentityServer.EF": { "target": "project" },
+    "SimpleIdentityServer.Authentication.Middleware": { "target": "project" },
+    "WebApiContrib.Core.Storage.Redis": { "target": "project" }
   },
   "frameworks": {
     "netcoreapp1.0": {
