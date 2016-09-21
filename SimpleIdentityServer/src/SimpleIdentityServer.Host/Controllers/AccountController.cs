@@ -20,6 +20,7 @@ using SimpleIdentityServer.Core.WebSite.Account;
 using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.Host.ViewModels;
 using System;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Host.Controllers
 {
@@ -43,9 +44,9 @@ namespace SimpleIdentityServer.Host.Controllers
         #region Public methods
 
         [HttpGet]
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            var authenticatedUser = this.GetAuthenticatedUser();
+            var authenticatedUser = await this.GetAuthenticatedUser();
             if (authenticatedUser != null &&
                 authenticatedUser.Identity.IsAuthenticated)
             {
@@ -56,14 +57,14 @@ namespace SimpleIdentityServer.Host.Controllers
         }
 
         [HttpPost]
-        public ActionResult Index(UpdateResourceOwnerViewModel updateResourceOwnerViewModel)
+        public async Task<ActionResult> Index(UpdateResourceOwnerViewModel updateResourceOwnerViewModel)
         {
             if (updateResourceOwnerViewModel == null)
             {
                 throw new ArgumentNullException(nameof(updateResourceOwnerViewModel));
             }
 
-            var authenticatedUser = this.GetAuthenticatedUser();
+            var authenticatedUser = await this.GetAuthenticatedUser();
             if (authenticatedUser != null &&
                 authenticatedUser.Identity.IsAuthenticated)
             {

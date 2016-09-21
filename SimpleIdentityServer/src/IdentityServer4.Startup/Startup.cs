@@ -21,6 +21,7 @@ using IdentityServer4.Startup.Extensions;
 using IdentityServer4.Startup.Services;
 using IdentityServer4.Startup.Validation;
 using IdentityServer4.Validation;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -86,6 +87,10 @@ namespace IdentityServer4.Startup
             {
                 AutomaticAuthenticate = true,
                 AutomaticChallenge = true
+            });
+            app.UseCookieAuthentication(new CookieAuthenticationOptions
+            {
+                AuthenticationScheme = Constants.CookieName
             });
             app.UseAuthentication(new AuthenticationMiddlewareOptions
             {
@@ -205,6 +210,7 @@ namespace IdentityServer4.Startup
             services.AddLogging();
 
             services.AddAuthenticationMiddleware();
+            services.AddAuthentication(opts => opts.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme);
             services.AddTransient<UserLoginService>();
             services.AddTransient<IProfileService, UserProfileService>();
             services.AddTransient<IResourceOwnerPasswordValidator, ResourceOwnerPasswordValidator>();

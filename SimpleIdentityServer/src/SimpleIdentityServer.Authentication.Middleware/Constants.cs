@@ -29,5 +29,7 @@ namespace SimpleIdentityServer.Authentication.Middleware
             public const string Twitter = "Twitter";
             public const string Github = "Github";
         }
+
+        public static string CookieName = "SimpleIdServer-external";
     }
 }

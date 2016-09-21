@@ -73,7 +73,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             }
 
             authorizationRequest = await ResolveAuthorizationRequest(authorizationRequest);
-            var authenticatedUser = this.GetAuthenticatedUser();
+            var authenticatedUser = await this.GetAuthenticatedUser();
             var parameter = authorizationRequest.ToParameter();
             var actionResult = _authorizationActions.GetAuthorization(
                 parameter,

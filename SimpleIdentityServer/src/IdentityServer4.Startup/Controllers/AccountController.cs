@@ -1,12 +1,16 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using IdentityModel;
 using IdentityServer4.Services;
 using IdentityServer4.Startup.Models;
 using IdentityServer4.Startup.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Mvc;
+using SimpleIdentityServer.Authentication.Middleware;
+using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -105,9 +109,35 @@ namespace IdentityServer4.Startup.Controllers
         /// Post processing of external authentication
         /// </summary>
         [HttpGet]
-        public IActionResult ExternalCallback(string returnUrl)
+        public async Task<IActionResult> ExternalCallback(string returnUrl)
         {
-            // Insert the resource owner etc ...
+            var tempUser = await HttpContext.Authentication.AuthenticateAsync(Constants.CookieName);
+            if (tempUser == null)
+            {
+                throw new Exception("External authentication error");
+            }
+
+            var claims = tempUser.Claims.ToList();
+            var userIdClaim = claims.FirstOrDefault(x => x.Type == JwtClaimTypes.Subject);
+            if (userIdClaim == null)
+            {
+                userIdClaim = claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
+            }
+            if (userIdClaim == null)
+            {
+                throw new Exception("Unknown userid");
+            }
+
+            var nameClaim = claims.FirstOrDefault(x => x.Type == JwtClaimTypes.Name);
+            var name = "Unknown";
+            if (nameClaim != null)
+            {
+                name = nameClaim.Value;
+            }
+
+            await HttpContext.Authentication.SignInAsync(userIdClaim.Value, name, userIdClaim.Issuer, claims.ToArray());
+            await HttpContext.Authentication.SignOutAsync(Constants.CookieName);
+
             if (_interaction.IsValidReturnUrl(returnUrl))
             {
                 return Redirect(returnUrl);

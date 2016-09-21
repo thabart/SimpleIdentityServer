@@ -265,7 +265,7 @@ namespace SimpleIdentityServer.Authentication.Middleware
                 AuthenticationScheme = authProvider.Name,
                 DisplayName = authProvider.Name,
                 ClaimsIssuer = authProvider.Name,
-                SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme,
+                SignInScheme = Constants.CookieName,
                 CallbackPath = new PathString(authProvider.CallbackPath),
                 AuthorizationEndpoint = authorizationEndPoint.Value,
                 TokenEndpoint = tokenEndpoint.Value,
@@ -337,7 +337,7 @@ namespace SimpleIdentityServer.Authentication.Middleware
             var openIdOptions = new OpenIdConnectOptions
             {
                 AuthenticationScheme = Constants.IdentityProviderNames.Microsoft,
-                SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme,
+                SignInScheme = Constants.CookieName,
                 DisplayName = Constants.IdentityProviderNames.Microsoft,
                 ClientId = clientId.Value,
                 ClientSecret = clientSecret.Value,
@@ -397,7 +397,7 @@ namespace SimpleIdentityServer.Authentication.Middleware
                 Realm = realm.Value,
                 AuthenticationScheme = authProvider.Name,
                 DisplayName = authProvider.Name,
-                SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme,
+                SignInScheme = Constants.CookieName,
                 AutomaticChallenge = true,
                 AutomaticAuthenticate = true,
                 CallbackPath = new PathString(authProvider.CallbackPath),

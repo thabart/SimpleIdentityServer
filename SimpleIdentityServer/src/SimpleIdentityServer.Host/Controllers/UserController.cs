@@ -23,6 +23,7 @@ using SimpleIdentityServer.Host.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Api.Controllers
 {
@@ -43,37 +44,37 @@ namespace SimpleIdentityServer.Api.Controllers
         #region Public methods
 
         [HttpGet]
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            var user = GetCurrentUser();
+            var user = await GetCurrentUser();
             ViewBag.IsLocalAccount = user.IsLocalAccount;
             return View();
         }
 
         [HttpGet]
-        public ActionResult Consent()
+        public async Task<ActionResult> Consent()
         {
-            var user = GetCurrentUser();
+            var user = await GetCurrentUser();
             ViewBag.IsLocalAccount = user.IsLocalAccount;
-            return GetConsents();
+            return await GetConsents();
         }
 
         [HttpPost]
-        public ActionResult Consent(string id)
+        public async Task<ActionResult> Consent(string id)
         {
             if (!_userActions.DeleteConsent(id))
             {
                 ViewBag.ErrorMessage = "the consent cannot be deleted";
-                return GetConsents();
+                return await GetConsents();
             }
 
             return RedirectToAction("Consent");
         }
 
         [HttpGet]
-        public ActionResult Edit()
+        public async Task<ActionResult> Edit()
         {
-            var user = GetCurrentUser();
+            var user = await GetCurrentUser();
             if (!user.IsLocalAccount)
             {
                 return RedirectToAction("Index");
@@ -84,14 +85,14 @@ namespace SimpleIdentityServer.Api.Controllers
         }
 
         [HttpPost]
-        public ActionResult Edit(UpdateResourceOwnerViewModel viewModel)
+        public async Task<ActionResult> Edit(UpdateResourceOwnerViewModel viewModel)
         {
             if (viewModel == null)
             {
                 throw new ArgumentNullException(nameof(viewModel));
             }
 
-            var user = GetCurrentUser();
+            var user = await GetCurrentUser();
             if (!user.IsLocalAccount)
             {
                 return RedirectToAction("Index");
@@ -104,9 +105,9 @@ namespace SimpleIdentityServer.Api.Controllers
         }
 
         [HttpGet]
-        public ActionResult Simulator()
+        public async Task<ActionResult> Simulator()
         {
-            var user = GetCurrentUser();
+            var user = await GetCurrentUser();
             ViewBag.IsLocalAccount = user.IsLocalAccount;
             ViewBag.Url = string.Format("{0}://{1}", HttpContext.Request.Scheme, HttpContext.Request.Host.Value);
             return View();
@@ -128,9 +129,9 @@ namespace SimpleIdentityServer.Api.Controllers
         }
 
         [HttpGet]
-        public ActionResult Confirm()
+        public async Task<ActionResult> Confirm()
         {
-            var user = this.GetAuthenticatedUser();
+            var user = await this.GetAuthenticatedUser();
             _userActions.ConfirmUser(user);
             return RedirectToAction("Index");
         }
@@ -139,9 +140,9 @@ namespace SimpleIdentityServer.Api.Controllers
 
         #region Private methods
 
-        private ActionResult GetConsents()
+        private async Task<ActionResult> GetConsents()
         {
-            var authenticatedUser = this.GetAuthenticatedUser();
+            var authenticatedUser = await this.GetAuthenticatedUser();
             var consents = _userActions.GetConsents(authenticatedUser);
             var result = new List<ConsentViewModel>();
             foreach (var consent in consents)
@@ -168,9 +169,9 @@ namespace SimpleIdentityServer.Api.Controllers
             return View(result);
         }
 
-        private ResourceOwner GetCurrentUser()
+        private async Task<ResourceOwner> GetCurrentUser()
         {
-            var authenticatedUser = this.GetAuthenticatedUser();
+            var authenticatedUser = await this.GetAuthenticatedUser();
             return  _userActions.GetUser(authenticatedUser);
         }
 

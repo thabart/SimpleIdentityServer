@@ -234,7 +234,9 @@ namespace SimpleIdentityServer.Host
             services.AddAuthentication(opts => opts.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme);
             services.AddAuthorization(opts =>
             {
-                opts.AddPolicy("Connected", policy => policy.RequireAssertion(ctx => ctx.User.Identity != null && ctx.User.Identity.IsAuthorized()));
+                opts.AddPolicy("Connected", policy => policy.RequireAssertion((ctx) => {
+                    return ctx.User.Identity != null && ctx.User.Identity.AuthenticationType == CookieAuthenticationDefaults.AuthenticationScheme;
+                }));
             });
             services.AddMvc();
             services.AddAuthenticationMiddleware();

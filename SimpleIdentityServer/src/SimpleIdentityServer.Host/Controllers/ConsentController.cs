@@ -26,6 +26,7 @@ using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.Host.ViewModels;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Api.Controllers
 {
@@ -52,14 +53,13 @@ namespace SimpleIdentityServer.Api.Controllers
             _translationManager = translationManager;
         }
         
-        public ActionResult Index(string code)
+        public async Task<ActionResult> Index(string code)
         {
-            var user = Request.HttpContext.User;
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
             var client = new Core.Models.Client();
             var scopes = new List<Scope>();
             var claims = new List<string>();
-            var authenticatedUser = this.GetAuthenticatedUser();
+            var authenticatedUser = await this.GetAuthenticatedUser();
             var actionResult = _consentActions.DisplayConsent(request.ToParameter(),
                 authenticatedUser, 
                 out client, 
@@ -86,11 +86,11 @@ namespace SimpleIdentityServer.Api.Controllers
             return View(viewModel);
         }
         
-        public ActionResult Confirm(string code)
+        public async Task<ActionResult> Confirm(string code)
         {
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
             var parameter = request.ToParameter();
-            var authenticatedUser = this.GetAuthenticatedUser();
+            var authenticatedUser = await this.GetAuthenticatedUser();
             var actionResult =_consentActions.ConfirmConsent(parameter,
                 authenticatedUser);
 

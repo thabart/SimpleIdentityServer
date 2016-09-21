@@ -18,6 +18,7 @@ using MailKit.Net.Smtp;
 using MimeKit;
 using SimpleIdentityServer.Core.Models;
 using System;
+using System.Net.Security;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.TwoFactors
@@ -48,16 +49,17 @@ namespace SimpleIdentityServer.Core.TwoFactors
                 Text = $"The confirmation code is {code}"
             };
 
-            /*
             using (var client = new SmtpClient())
             {
+                client.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => {
+                    return true;
+                };
                 await client.ConnectAsync("smtp.live.com", 587, false);
                 client.AuthenticationMechanisms.Remove("XOAUTH2");
                 await client.AuthenticateAsync("habarthierry@hotmail.fr", "SORbonne1989");
                 await client.SendAsync(message);
                 await client.DisconnectAsync(true);
             }
-            */
         }
     }
 }

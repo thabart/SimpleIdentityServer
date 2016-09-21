@@ -4,6 +4,11 @@
 
 @using SimpleIdentityServer.Host.Extensions
 
+@{
+    var user = await this.GetAuthenticatedUser();
+}
+
+
 @model SimpleIdentityServer.Host.ViewModels.HomeViewModel
 
 <div class="row">
@@ -21,7 +26,7 @@
             </div>
         </section>
     </a>
-    @if (User != null && User.Identity != null && User.Identity.IsAuthorized())
+    @if (user != null && user.Identity != null && user.Identity.IsAuthenticated)
     {
         <a href="@Url.Content("~/User")">
             <section class="col-md-3 tile"> 

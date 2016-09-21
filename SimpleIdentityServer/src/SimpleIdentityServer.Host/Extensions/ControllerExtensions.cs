@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
@@ -22,6 +23,7 @@ using SimpleIdentityServer.Host.DTOs.Request;
 using SimpleIdentityServer.Host.Parsers;
 using System;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using ActionResult = Microsoft.AspNetCore.Mvc.ActionResult;
 using ResponseMode = SimpleIdentityServer.Core.Parameters.ResponseMode;
 
@@ -29,14 +31,37 @@ namespace SimpleIdentityServer.Host.Extensions
 {
     public static class ControllerExtensions
     {
-        /// <summary>
-        /// Returns the authenticated user
-        /// </summary>
-        /// <param name="controller">Controller</param>
-        /// <returns>Authenticated user</returns>
-        public static ClaimsPrincipal GetAuthenticatedUser(this Controller controller)
+        public static async Task<ClaimsPrincipal> GetAuthenticatedUser(this Controller controller)
         {
-            return controller.Request.HttpContext.User;
+            if (controller == null)
+            {
+                throw new ArgumentNullException(nameof(controller));
+            }
+
+            var user = await controller.HttpContext.Authentication.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return user ?? new ClaimsPrincipal(new ClaimsIdentity());
+        }
+
+        public static async Task<ClaimsPrincipal> GetAuthenticatedUser2F(this Controller controller)
+        {
+            if (controller == null)
+            {
+                throw new ArgumentNullException(nameof(controller));
+            }
+
+            var user  = await controller.HttpContext.Authentication.AuthenticateAsync(Constants.TwoFactorCookieName);
+            return user ?? new ClaimsPrincipal(new ClaimsIdentity());
+        }
+
+        public static async Task<ClaimsPrincipal> GetAuthenticatedUserExternal(this Controller controller)
+        {
+            if (controller == null)
+            {
+                throw new ArgumentNullException(nameof(controller));
+            }
+
+            var user = await controller.HttpContext.Authentication.AuthenticateAsync(Authentication.Middleware.Constants.CookieName);
+            return user ?? new ClaimsPrincipal(new ClaimsIdentity());
         }
 
         public static AuthenticationManager GetAuthenticationManager(this Controller controller) 

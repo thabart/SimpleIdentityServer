@@ -3,6 +3,10 @@
 @using SimpleIdentityServer.Core.Jwt
 @using SimpleIdentityServer.Host.Extensions
 
+@{ 
+    var user = await this.GetAuthenticatedUser();
+}
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -28,9 +32,9 @@
                         <span class="navbar-brand">Simple Identity Server</span>
                     </a>
                 </div>
-                @if (User != null && User.Identity != null && User.Identity.IsAuthorized())
+                @if (user != null && user.Identity != null && user.Identity.IsAuthenticated)
                 {
-                    var claimsIdentity = User.Identity as ClaimsIdentity;
+                    var claimsIdentity = user.Identity as ClaimsIdentity;
                     var userName = "Unknown";
                     if (claimsIdentity != null)
                     {

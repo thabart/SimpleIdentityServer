@@ -159,7 +159,6 @@ namespace SimpleIdentityServer.Host
             Extensions.UriHelperExtensions.Configure(httpContextAccessor); 
 
             // 2. Enable cookie authentication
-            // TODO : Define custom authentication policy
             app.UseCookieAuthentication(new CookieAuthenticationOptions
             {
                 AutomaticAuthenticate = true,
@@ -169,6 +168,10 @@ namespace SimpleIdentityServer.Host
             app.UseCookieAuthentication(new CookieAuthenticationOptions
             {
                 AuthenticationScheme = Constants.TwoFactorCookieName
+            });
+            app.UseCookieAuthentication(new CookieAuthenticationOptions
+            {
+                AuthenticationScheme = Authentication.Middleware.Constants.CookieName
             });
 
             // 3. Protect against IFRAME attack

@@ -118,5 +118,6 @@ namespace SimpleIdentityServer.Core.Errors
         public const string TwoFactorAuthenticationCannotBePerformed = "two factor authentication cannot be performed";
         public const string TwoFactorAuthenticationIsNotEnabled = "two factor authentication is not enabled";
         public const string TheConfirmationCodeCannotBeSaved = "the confirmation code cannot be saved";
+        public const string TheExternalResourceOwnerIsNotAuthenticated = "the 'external' resource owner is not authenticated";
     }
 }
