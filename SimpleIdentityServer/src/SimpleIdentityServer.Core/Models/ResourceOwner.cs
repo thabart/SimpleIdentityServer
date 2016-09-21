@@ -130,8 +130,19 @@ namespace SimpleIdentityServer.Core.Models
         public bool IsLocalAccount { get; set; }
 
         /// <summary>
+        /// Gets or sets the two factor authentication method
+        /// </summary>
+        public TwoFactorAuthentications TwoFactorAuthentication { get; set; }
+
+        /// <summary>
         /// Gets or sets the list of roles
         /// </summary>
         public List<string> Roles { get; set; }
+    }
+
+    public enum TwoFactorAuthentications
+    {
+        NONE,
+        Email
     }
 }

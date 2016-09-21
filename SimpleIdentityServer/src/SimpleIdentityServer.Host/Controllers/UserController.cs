@@ -23,11 +23,10 @@ using SimpleIdentityServer.Host.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Api.Controllers
 {
-    [Authorize]
+    [Authorize("Connected")]
     public class UserController : Controller
     {
         private readonly IUserActions _userActions;

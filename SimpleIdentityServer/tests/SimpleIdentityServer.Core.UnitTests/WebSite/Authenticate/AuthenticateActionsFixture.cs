@@ -1,14 +1,12 @@
-﻿using System.Linq;
+﻿
 using Moq;
+using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.WebSite.Authenticate;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;
-
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
-using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Errors;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
@@ -24,6 +22,12 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
         private Mock<ILocalUserAuthenticationAction> _localUserAuthenticationActionFake;
 
         private Mock<ILoginCallbackAction> _loginCallbackActionStub;
+
+        private Mock<IGenerateAndSendCodeAction> _generateAndSendCodeActionStub;
+
+        private Mock<IValidateConfirmationCodeAction> _validateConfirmationCodeActionStub;
+
+        private Mock<IRemoveConfirmationCodeAction> _removeConfirmationCodeActionStub;
 
         private IAuthenticateActions _authenticateActions;
 
@@ -153,26 +157,25 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
         {
             // ARRANGE
             InitializeFakeObjects();
-            const string claimType = "sub";
-            const string claimValue = "subject";
             var localAuthenticationParameter = new LocalAuthenticationParameter
             {
                 Password = "password",
                 UserName = "username"
             };
-            var claims = new List<Claim>
+            var resourceOwner = new ResourceOwner
             {
-                new Claim(claimType, claimValue)
+                Password = "password",
+                Name = "username"
             };
             _localUserAuthenticationActionFake.Setup(l => l.Execute(It.IsAny<LocalAuthenticationParameter>()))
-                .Returns(claims);
+                .Returns(resourceOwner);
 
             // ACT
             var result = _authenticateActions.LocalUserAuthentication(localAuthenticationParameter);
 
             // ASSERT
             Assert.NotNull(result);
-            Assert.True(result.First().Type == claimType && result.First().Value == claimValue);
+            Assert.True(result.Name == "username" && result.Password == "password");
         }
 
         [Fact]
@@ -195,12 +198,18 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             _externalUserAuthenticationFake = new Mock<IExternalOpenIdUserAuthenticationAction>();
             _localUserAuthenticationActionFake = new Mock<ILocalUserAuthenticationAction>();
             _loginCallbackActionStub = new Mock<ILoginCallbackAction>();
+            _generateAndSendCodeActionStub = new Mock<IGenerateAndSendCodeAction>();
+            _validateConfirmationCodeActionStub = new Mock<IValidateConfirmationCodeAction>();
+            _removeConfirmationCodeActionStub = new Mock<IRemoveConfirmationCodeAction>();
             _authenticateActions = new AuthenticateActions(
                 _authenticateResourceOwnerActionFake.Object,
                 _localOpenIdUserAuthenticationActionFake.Object,
                 _externalUserAuthenticationFake.Object,
                 _localUserAuthenticationActionFake.Object,
-                _loginCallbackActionStub.Object);
+                _loginCallbackActionStub.Object,
+                _generateAndSendCodeActionStub.Object,
+                _validateConfirmationCodeActionStub.Object,
+                _removeConfirmationCodeActionStub.Object);
         }
     }
 }

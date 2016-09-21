@@ -23,6 +23,7 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using SimpleIdentityServer.Api.ViewModels;
 using SimpleIdentityServer.Core.Exceptions;
+using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.Authenticate;
@@ -32,6 +33,7 @@ using SimpleIdentityServer.Host.ViewModels;
 using SimpleIdentityServer.Logging;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -88,7 +90,8 @@ namespace SimpleIdentityServer.Host.Controllers
         {
             var authenticatedUser = this.GetAuthenticatedUser();
             if (authenticatedUser == null ||
-                !authenticatedUser.Identity.IsAuthenticated)
+                authenticatedUser.Identity == null ||
+                !authenticatedUser.Identity.IsAuthorized())
             {
                 TranslateView(DefaultLanguage);
                 return View(new AuthorizeViewModel());
@@ -102,7 +105,8 @@ namespace SimpleIdentityServer.Host.Controllers
         {
             var authenticatedUser = this.GetAuthenticatedUser();
             if (authenticatedUser != null &&
-                authenticatedUser.Identity.IsAuthenticated)
+                authenticatedUser.Identity != null &&
+                authenticatedUser.Identity.IsAuthorized())
             {
                 return RedirectToAction("Index", "User");
             }
@@ -120,28 +124,39 @@ namespace SimpleIdentityServer.Host.Controllers
 
             try
             {
-                var claims = _authenticateActions.LocalUserAuthentication(authorizeViewModel.ToParameter());
+                var resourceOwner = _authenticateActions.LocalUserAuthentication(authorizeViewModel.ToParameter());
+                var claims = resourceOwner.ToClaims();
+                claims.Add(new Claim(ClaimTypes.AuthenticationInstant,
+                    DateTimeOffset.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture),
+                    ClaimValueTypes.Integer));
                 var authenticationManager = this.GetAuthenticationManager();
-                var claimsIdentity = new ClaimsIdentity(claims, Constants.TwoFactorCookieName);
-                // var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                var principal = new ClaimsPrincipal(claimsIdentity);
-                /*
-                 If two factor authentication is enabled
-                authenticationManager.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
-                    principal,
-                    new AuthenticationProperties
-                    {
-                        ExpiresUtc = DateTime.UtcNow.AddDays(7),
-                        IsPersistent = false
-                    });*/
-                // return RedirectToAction("Index", "User");
+                ClaimsIdentity identity = null;
+                ClaimsPrincipal principal = null;
+                // If there is no two factor authentication then authenticate the user and redirect to User page
+                if (resourceOwner.TwoFactorAuthentication == Core.Models.TwoFactorAuthentications.NONE)
+                {
+                    identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                    principal = new ClaimsPrincipal(identity);
+                    authenticationManager.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
+                        principal,
+                        new AuthenticationProperties
+                        {
+                            ExpiresUtc = DateTime.UtcNow.AddDays(7),
+                            IsPersistent = false
+                        });
+                    _simpleIdentityServerEventSource.AuthenticateResourceOwner(identity.Name);
+                    return RedirectToAction("Index", "User");
+                }
+
+                identity = new ClaimsIdentity(claims, Constants.TwoFactorCookieName);
+                principal = new ClaimsPrincipal(identity);
                 authenticationManager.SignInAsync(Constants.TwoFactorCookieName,
                     principal,
                     new AuthenticationProperties {
                         ExpiresUtc = DateTime.UtcNow.AddMinutes(5),
                         IsPersistent = false
                     });
-                _simpleIdentityServerEventSource.AuthenticateResourceOwner(claimsIdentity.Name);
+                _simpleIdentityServerEventSource.AuthenticateResourceOwner(identity.Name);
                 return RedirectToAction("SendCode");
             }
             catch (Exception exception)
@@ -189,8 +204,71 @@ namespace SimpleIdentityServer.Host.Controllers
         [HttpGet]
         public async Task<ActionResult> SendCode()
         {
+            var authenticatedUser = this.GetAuthenticatedUser();
             var user = await HttpContext.Authentication.AuthenticateAsync(Constants.TwoFactorCookieName);
+            if (user == null || !user.Claims.Any(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject))
+            {
+                throw new IdentityServerException(
+                    Core.Errors.ErrorCodes.UnhandledExceptionCode,
+                    Core.Errors.ErrorDescriptions.TwoFactorAuthenticationCannotBePerformed);
+            }
+
+            // TODO : SEND A VALID CODE
+            await _authenticateActions.GenerateAndSendCode(user.Claims.First(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject).Value);
+            TranslateView(DefaultLanguage);
             return View();
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> SendCode(CodeViewModel codeViewModel)
+        {
+            var authenticationManager = this.GetAuthenticationManager();
+            var user = await authenticationManager.AuthenticateAsync(Constants.TwoFactorCookieName);
+            if (user == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (codeViewModel == null)
+            {
+                throw new ArgumentNullException(nameof(codeViewModel));
+            }
+
+            if (!ModelState.IsValid)
+            {
+                TranslateView(DefaultLanguage);
+                return View(codeViewModel);
+            }
+
+            // Validate the code
+            if(!_authenticateActions.ValidateCode(codeViewModel.Code))
+            {
+                TranslateView(DefaultLanguage);
+                ModelState.AddModelError("Code", "confirmation code is not valid");
+                _simpleIdentityServerEventSource.ConfirmationCodeNotValid(codeViewModel.Code);
+                return View(codeViewModel);
+            }
+
+            // Remove the code
+            if (!_authenticateActions.RemoveCode(codeViewModel.Code))
+            {
+                TranslateView(DefaultLanguage);
+                ModelState.AddModelError("Code", "an error occured while trying to remove the code");
+                return View(codeViewModel);
+            }
+
+            // Authenticate the resource owner
+            await authenticationManager.SignOutAsync(Constants.TwoFactorCookieName);
+            var identity = new ClaimsIdentity(user.Claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var authenticatedUser = new ClaimsPrincipal(identity);
+            await authenticationManager.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
+                authenticatedUser,
+                new AuthenticationProperties
+                {
+                    ExpiresUtc = DateTime.UtcNow.AddDays(7),
+                    IsPersistent = false
+                });
+            return RedirectToAction("Index", "Home");
         }
         
         #endregion
@@ -396,7 +474,10 @@ namespace SimpleIdentityServer.Host.Controllers
                 Core.Constants.StandardTranslationCodes.PasswordCode,
                 Core.Constants.StandardTranslationCodes.RememberMyLoginCode,
                 Core.Constants.StandardTranslationCodes.LoginLocalAccount,
-                Core.Constants.StandardTranslationCodes.LoginExternalAccount
+                Core.Constants.StandardTranslationCodes.LoginExternalAccount,
+                Core.Constants.StandardTranslationCodes.SendCode,
+                Core.Constants.StandardTranslationCodes.Code,
+                Core.Constants.StandardTranslationCodes.ConfirmCode
             });
 
             ViewBag.Translations = translations;

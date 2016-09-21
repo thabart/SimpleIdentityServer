@@ -29,7 +29,7 @@ using System.Linq;
 
 namespace SimpleIdentityServer.Api.Controllers
 {
-    [Authorize]
+    [Authorize("Connected")]
     public class ConsentController : Controller
     {
         private readonly IConsentActions _consentActions;

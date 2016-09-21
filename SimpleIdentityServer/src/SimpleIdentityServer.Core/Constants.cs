@@ -341,30 +341,20 @@ namespace SimpleIdentityServer.Core
         public static class StandardTranslationCodes
         {
             public static string ApplicationWouldLikeToCode = "application_would_like_to";
-
             public static string ScopesCode = "scopes";
-
             public static string IndividualClaimsCode = "individual_claims";
-
             public static string LoginCode = "login";
-
             public static string LoginExternalAccount = "login_external_account";
-
             public static string LoginLocalAccount = "login_local_account";
-
             public static string UserNameCode = "username";
-
             public static string PasswordCode = "password";
-
             public static string RememberMyLoginCode = "remember_my_login";
-
             public static string CancelCode = "cancel";
-
             public static string ConfirmCode = "confirm";
-
             public static string LinkToThePolicy = "policy";
-
             public static string Tos = "tos";
+            public static string SendCode = "send_code";
+            public static string Code = "code";
         }
 
         public static readonly Dictionary<List<ResponseType>, AuthorizationFlow> MappingResponseTypesToAuthorizationFlows = new Dictionary<List<ResponseType>, AuthorizationFlow>

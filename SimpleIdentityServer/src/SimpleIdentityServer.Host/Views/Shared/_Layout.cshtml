@@ -1,6 +1,7 @@
 ﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @using System.Security.Claims
 @using SimpleIdentityServer.Core.Jwt
+@using SimpleIdentityServer.Host.Extensions
 
 <!DOCTYPE html>
 <html>
@@ -27,8 +28,7 @@
                         <span class="navbar-brand">Simple Identity Server</span>
                     </a>
                 </div>
-                @if (User != null && User.Identity != null &&
-                    User.Identity.IsAuthenticated)
+                @if (User != null && User.Identity != null && User.Identity.IsAuthorized())
                 {
                     var claimsIdentity = User.Identity as ClaimsIdentity;
                     var userName = "Unknown";

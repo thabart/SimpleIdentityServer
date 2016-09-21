@@ -14,22 +14,19 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Security.Claims;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Extensions;
+using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Services;
+using System;
 
 namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 {
     public interface ILocalUserAuthenticationAction
     {
-        List<Claim> Execute(LocalAuthenticationParameter localAuthenticationParameter);
+        ResourceOwner Execute(LocalAuthenticationParameter localAuthenticationParameter);
     }
 
     public sealed class LocalUserAuthenticationAction : ILocalUserAuthenticationAction
@@ -52,7 +49,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 
         #region Public methods
 
-        public List<Claim> Execute(LocalAuthenticationParameter localAuthenticationParameter)
+        public ResourceOwner Execute(LocalAuthenticationParameter localAuthenticationParameter)
         {
             if (localAuthenticationParameter == null)
             {
@@ -66,12 +63,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                 throw new IdentityServerAuthenticationException(ErrorDescriptions.TheResourceOwnerCredentialsAreNotCorrect);
             }
             
-            var resourceOwner = _resourceOwnerRepository.GetBySubject(subject);
-            var claims = resourceOwner.ToClaims();
-            claims.Add(new Claim(ClaimTypes.AuthenticationInstant,
-                DateTimeOffset.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture),
-                ClaimValueTypes.Integer));
-            return claims;
+            return _resourceOwnerRepository.GetBySubject(subject);
         }
 
         #endregion

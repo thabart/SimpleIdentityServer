@@ -140,8 +140,6 @@ namespace SimpleIdentityServer.Logging
 
         #endregion
 
-        void AuthenticateResourceOwner(string subject);
-
         void GiveConsent(string subject, 
             string clientId,
             string consentId);
@@ -165,8 +163,20 @@ namespace SimpleIdentityServer.Logging
             string clientName);
 
         #endregion
+
+        #region Event linked to Authentication
+
+        void AuthenticateResourceOwner(string subject);
+
+        void GetConfirmationCode(string code);
+
+        void InvalidateConfirmationCode(string code);
+
+        void ConfirmationCodeNotValid(string code);
+
+        #endregion
     }
-    
+
     public class SimpleIdentityServerEventSource : ISimpleIdentityServerEventSource
     {
         private static class Tasks
@@ -176,6 +186,7 @@ namespace SimpleIdentityServer.Logging
             public const string Failure = "Failure";
             public const string Information = "Info";
             public const string Other = "Other";
+            public const string Authentication = "Authentication";
         }
 
         private readonly ILogger _logger;
@@ -664,8 +675,45 @@ namespace SimpleIdentityServer.Logging
 
         #endregion
 
+        #region Events linked to Authentication
+
+        public void GetConfirmationCode(string code)
+        {
+            var evt = new Event
+            {
+                Id = 35,
+                Task = Tasks.Authentication,
+                Message = $"Get confirmation code {code}"
+            };
+            LogInformation(evt);
+        }
+
+        public void InvalidateConfirmationCode(string code)
+        {
+            var evt = new Event
+            {
+                Id = 36,
+                Task = Tasks.Authentication,
+                Message = $"Remove confirmation code {code}"
+            };
+            LogInformation(evt);
+        }
+
+        public void ConfirmationCodeNotValid(string code)
+        {
+            var evt = new Event
+            {
+                Id = 37,
+                Task = Tasks.Authentication,
+                Message = $"Confirmation code is not valid {code}"
+            };
+            LogError(evt);
+        }
+
+        #endregion
+
         #region Private methods
-        
+
         private void LogInformation(Event evt)
         {
             _logger.LogInformation(MessagePattern, evt.Id, evt.Task, evt.Message, evt.Operation);

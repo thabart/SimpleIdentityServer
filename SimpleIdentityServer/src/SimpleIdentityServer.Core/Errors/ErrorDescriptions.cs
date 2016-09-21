@@ -115,5 +115,8 @@ namespace SimpleIdentityServer.Core.Errors
         public const string TheRoDoesntExist = "the resource owner doesn't exist";
         public const string TheRoWithCredentialsAlreadyExists = "a resource owner with same credentials already exists";
         public const string TheAccountHasAlreadyBeenActivated = "the accout has already been activated";
+        public const string TwoFactorAuthenticationCannotBePerformed = "two factor authentication cannot be performed";
+        public const string TwoFactorAuthenticationIsNotEnabled = "two factor authentication is not enabled";
+        public const string TheConfirmationCodeCannotBeSaved = "the confirmation code cannot be saved";
     }
 }

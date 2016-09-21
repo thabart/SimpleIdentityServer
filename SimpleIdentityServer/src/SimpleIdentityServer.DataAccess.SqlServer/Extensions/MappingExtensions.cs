@@ -72,7 +72,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                 ZoneInfo = resourceOwner.ZoneInfo,
                 Address = resourceOwner.Address == null ? null : resourceOwner.Address.ToDomain(),
                 Roles = roleNames,
-                IsLocalAccount = resourceOwner.IsLocalAccount
+                IsLocalAccount = resourceOwner.IsLocalAccount,
+                TwoFactorAuthentication = (Domain.TwoFactorAuthentications)resourceOwner.TwoFactorAuthentication
             };
         }
 
@@ -123,6 +124,22 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                 X5u = x5u,
                 SerializedKey = jsonWebKey.SerializedKey,
                 KeyOps = keyOperationsEnums.ToArray()
+            };
+        }
+
+        public static Domain.ConfirmationCode ToDomain(this Model.ConfirmationCode confirmationCode)
+        {
+            if (confirmationCode == null)
+            {
+                throw new ArgumentNullException(nameof(confirmationCode));
+            }
+
+            return new Domain.ConfirmationCode
+            {
+                Code = confirmationCode.Code,
+                CreateDateTime = confirmationCode.CreateDateTime,
+                ExpiresIn = confirmationCode.ExpiresIn,
+                IsConfirmed = confirmationCode.IsConfirmed
             };
         }
 
@@ -263,6 +280,22 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                             Code = c
                         }
                     }).ToList()
+            };
+        }
+        
+        public static Model.ConfirmationCode ToModel(this Domain.ConfirmationCode confirmationCode)
+        {
+            if (confirmationCode == null)
+            {
+                throw new ArgumentNullException(nameof(confirmationCode));
+            }
+
+            return new Model.ConfirmationCode
+            {
+                Code = confirmationCode.Code,
+                CreateDateTime = confirmationCode.CreateDateTime,
+                ExpiresIn = confirmationCode.ExpiresIn,
+                IsConfirmed = confirmationCode.IsConfirmed
             };
         }
 

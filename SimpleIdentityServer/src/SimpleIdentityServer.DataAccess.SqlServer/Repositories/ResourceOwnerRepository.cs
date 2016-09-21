@@ -97,7 +97,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                     ZoneInfo = resourceOwner.ZoneInfo,
                     Id = resourceOwner.Id,
                     ResourceOwnerRoles = new List<ResourceOwnerRole>(),
-                    IsLocalAccount = resourceOwner.IsLocalAccount
+                    IsLocalAccount = resourceOwner.IsLocalAccount,
+                    TwoFactorAuthentication = (int)resourceOwner.TwoFactorAuthentication
                 };
 
                 // 2. Add information about the user's address
@@ -188,6 +189,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             record.WebSite = resourceOwner.WebSite;
             record.ZoneInfo = resourceOwner.ZoneInfo;
             record.IsLocalAccount = resourceOwner.IsLocalAccount;
+            record.TwoFactorAuthentication = (int)resourceOwner.TwoFactorAuthentication;
             var rolesNotToBeDeleted = new List<string>();
             if (resourceOwner.Roles != null)
             {

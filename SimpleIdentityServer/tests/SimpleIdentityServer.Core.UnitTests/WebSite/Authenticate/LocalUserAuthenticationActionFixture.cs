@@ -71,11 +71,10 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
                 .Returns(resourceOwner);
 
             // ACT
-            var claims = _localUserAuthenticationAction.Execute(parameter);
+            var res = _localUserAuthenticationAction.Execute(parameter);
 
             // ASSERT
-            Assert.NotNull(claims);
-            Assert.True(claims.Any(c => c.Type == "sub" && c.Value == subject));
+            Assert.NotNull(res);
         }
 
         private void InitializeFakeObjects()

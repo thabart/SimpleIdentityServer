@@ -49,7 +49,6 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 
     public class LocalOpenIdUserAuthenticationAction : ILocalOpenIdUserAuthenticationAction
     {
-
         private readonly IResourceOwnerService _resourceOwnerService;
 
         private readonly IResourceOwnerRepository _resourceOwnerRepository;

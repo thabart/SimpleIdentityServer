@@ -24,8 +24,6 @@ using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.Elasticsearch;
 using SimpleIdentityServer.Authentication.Middleware.Extensions;
-using SimpleIdentityServer.Client;
-using SimpleIdentityServer.Configuration.Client;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Jwt;
@@ -34,6 +32,7 @@ using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.DataAccess.SqlServer;
 using SimpleIdentityServer.Host.Configuration;
 using SimpleIdentityServer.Host.Controllers;
+using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.Host.Parsers;
 using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.RateLimitation;
@@ -229,10 +228,14 @@ namespace SimpleIdentityServer.Host
             });
             services.AddTransient<ISimpleIdentityServerConfigurator, ConcreteSimpleIdentityServerConfigurator>();
             services.AddDataProtection();
-            services.AddSingleton<SwaggerOptions>(swaggerOptions);
+            services.AddSingleton(swaggerOptions);
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddAuthentication(opts => opts.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme);
+            services.AddAuthorization(opts =>
+            {
+                opts.AddPolicy("Connected", policy => policy.RequireAssertion(ctx => ctx.User.Identity != null && ctx.User.Identity.IsAuthorized()));
+            });
             services.AddMvc();
             services.AddAuthenticationMiddleware();
             services.Configure<RazorViewEngineOptions>(options =>

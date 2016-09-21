@@ -36,7 +36,6 @@
     "Serilog.Extensions.Logging": "1.0.0",
     "Serilog.Sinks.ColoredConsole": "2.0.0",
     "Serilog.Sinks.RollingFile": "2.0.0",
-    "MailKit": "1.4.2.1",
     "Serilog.Sinks.ElasticSearch": { "target": "project" },
     "SimpleIdentityServer.Core": { "target": "project" },
     "SimpleIdentityServer.Core.Jwt": { "target": "project" },

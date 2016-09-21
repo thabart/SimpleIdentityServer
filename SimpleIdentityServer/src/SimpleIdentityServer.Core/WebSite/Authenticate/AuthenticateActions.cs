@@ -14,15 +14,15 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Parameters;
+using SimpleIdentityServer.Core.Results;
+using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-
-using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;
-using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Results;
-
-using System;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.Authenticate
 {
@@ -33,7 +33,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
             ClaimsPrincipal claimsPrincipal,
             string code);
 
-        List<Claim> LocalUserAuthentication(LocalAuthenticationParameter localAuthenticationParameter);
+        ResourceOwner LocalUserAuthentication(LocalAuthenticationParameter localAuthenticationParameter);
 
         ActionResult LocalOpenIdUserAuthentication(
             LocalAuthenticationParameter localAuthenticationParameter,
@@ -47,6 +47,12 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
             string code);
 
         void LoginCallback(ClaimsPrincipal claimsPrincipal);
+
+        Task GenerateAndSendCode(string subject);
+
+        bool ValidateCode(string code);
+
+        bool RemoveCode(string code);
     }
 
     public class AuthenticateActions : IAuthenticateActions
@@ -61,18 +67,30 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
 
         private readonly ILoginCallbackAction _loginCallbackAction;
 
+        private readonly IGenerateAndSendCodeAction _generateAndSendCodeAction;
+
+        private readonly IValidateConfirmationCodeAction _validateConfirmationCodeAction;
+
+        private readonly IRemoveConfirmationCodeAction _removeConfirmationCodeAction;
+
         public AuthenticateActions(
             IAuthenticateResourceOwnerOpenIdAction authenticateResourceOwnerOpenIdAction,
             ILocalOpenIdUserAuthenticationAction localOpenIdUserAuthenticationAction,
             IExternalOpenIdUserAuthenticationAction externalOpenIdUserAuthenticationAction,
             ILocalUserAuthenticationAction localUserAuthenticationAction,
-            ILoginCallbackAction loginCallbackAction)
+            ILoginCallbackAction loginCallbackAction,
+            IGenerateAndSendCodeAction generateAndSendCodeAction,
+            IValidateConfirmationCodeAction validateConfirmationCodeAction,
+            IRemoveConfirmationCodeAction removeConfirmationCodeAction)
         {
             _authenticateResourceOwnerOpenIdAction = authenticateResourceOwnerOpenIdAction;
             _localOpenIdUserAuthenticationAction = localOpenIdUserAuthenticationAction;
             _externalOpenIdUserAuthenticationAction = externalOpenIdUserAuthenticationAction;
             _localUserAuthenticationAction = localUserAuthenticationAction;
             _loginCallbackAction = loginCallbackAction;
+            _generateAndSendCodeAction = generateAndSendCodeAction;
+            _validateConfirmationCodeAction = validateConfirmationCodeAction;
+            _removeConfirmationCodeAction = removeConfirmationCodeAction;
         }
 
         public ActionResult AuthenticateResourceOwnerOpenId(
@@ -95,7 +113,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
                 code);
         }
 
-        public List<Claim> LocalUserAuthentication(LocalAuthenticationParameter localAuthenticationParameter)
+        public ResourceOwner LocalUserAuthentication(LocalAuthenticationParameter localAuthenticationParameter)
         {
             if (localAuthenticationParameter == null)
             {
@@ -157,6 +175,21 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
         public void LoginCallback(ClaimsPrincipal claimsPrincipal)
         {
             _loginCallbackAction.Execute(claimsPrincipal);
+        }
+
+        public async Task GenerateAndSendCode(string subject)
+        {
+            await _generateAndSendCodeAction.ExecuteAsync(subject);
+        }
+
+        public bool ValidateCode(string code)
+        {
+            return _validateConfirmationCodeAction.Execute(code);
+        }
+
+        public bool RemoveCode(string code)
+        {
+            return _removeConfirmationCodeAction.Execute(code);
         }
     }
 }

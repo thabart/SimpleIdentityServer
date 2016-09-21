@@ -2,6 +2,8 @@
     ViewBag.Title = "Home";
 }
 
+@using SimpleIdentityServer.Host.Extensions
+
 @model SimpleIdentityServer.Host.ViewModels.HomeViewModel
 
 <div class="row">
@@ -19,8 +21,7 @@
             </div>
         </section>
     </a>
-    @if (User != null && User.Identity != null &&
-        User.Identity.IsAuthenticated)
+    @if (User != null && User.Identity != null && User.Identity.IsAuthorized())
     {
         <a href="@Url.Content("~/User")">
             <section class="col-md-3 tile"> 

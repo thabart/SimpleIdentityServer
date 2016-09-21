@@ -156,6 +156,21 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                     b.ToTable("clientScopes");
                 });
 
+            modelBuilder.Entity("SimpleIdentityServer.DataAccess.SqlServer.Models.ConfirmationCode", b =>
+                {
+                    b.Property<string>("Code");
+
+                    b.Property<DateTime>("CreateDateTime");
+
+                    b.Property<int>("ExpiresIn");
+
+                    b.Property<bool>("IsConfirmed");
+
+                    b.HasKey("Code");
+
+                    b.ToTable("confirmationCodes");
+                });
+
             modelBuilder.Entity("SimpleIdentityServer.DataAccess.SqlServer.Models.Consent", b =>
                 {
                     b.Property<int>("Id")
@@ -297,6 +312,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                     b.Property<string>("PreferredUserName");
 
                     b.Property<string>("Profile");
+
+                    b.Property<int>("TwoFactorAuthentication");
 
                     b.Property<double>("UpdatedAt");
 

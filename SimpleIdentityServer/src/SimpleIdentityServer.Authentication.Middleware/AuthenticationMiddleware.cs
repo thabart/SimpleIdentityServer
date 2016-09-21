@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using System;
@@ -71,7 +72,7 @@ namespace SimpleIdentityServer.Authentication.Middleware
                 || context.Request.Path.Value.StartsWith("/signin-"))
                 && (context.User == null ||
                     context.User.Identity == null ||
-                    !context.User.Identity.IsAuthenticated))
+                    context.User.Identity.AuthenticationType != CookieAuthenticationDefaults.AuthenticationScheme))
             {
                 if (!await _authenticationManager.Initialize(context, _options))
                 {

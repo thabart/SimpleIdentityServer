@@ -122,7 +122,12 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Models
         /// Gets or sets local account
         /// </summary>
         public bool IsLocalAccount { get; set; }
-        
+
+        /// <summary>
+        /// Gets or sets the two factor authentication
+        /// </summary>
+        public int TwoFactorAuthentication { get; set; }
+
         /// <summary>
         /// Gets or sets the End-User's preferred postal address. The value is a JSON structure containing some or all the members defined in 
         /// http://openid.net/specs/openid-connect-core-1_0.html#AddressClaim

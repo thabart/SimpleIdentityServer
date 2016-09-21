@@ -326,6 +326,17 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         Code = Constants.StandardTranslationCodes.Tos,
                         Value = "Terms of Service"
                     },
+                    new Translation
+                    {
+                        LanguageTag = "en",
+                        Code = Constants.StandardTranslationCodes.SendCode,
+                        Value = "Send code"
+                    },
+                    new Translation
+                    {
+                        LanguageTag = "en",
+                        Code = Constants.StandardTranslationCodes.Code
+                    },
                     // Swedish
                     new Translation
                     {

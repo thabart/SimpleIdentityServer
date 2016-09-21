@@ -79,6 +79,20 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "confirmationCodes",
+                columns: table => new
+                {
+                    Code = table.Column<string>(nullable: false),
+                    CreateDateTime = table.Column<DateTime>(nullable: false),
+                    ExpiresIn = table.Column<int>(nullable: false),
+                    IsConfirmed = table.Column<bool>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_confirmationCodes", x => x.Code);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "grantedTokens",
                 columns: table => new
                 {
@@ -120,6 +134,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                     Picture = table.Column<string>(nullable: true),
                     PreferredUserName = table.Column<string>(nullable: true),
                     Profile = table.Column<string>(nullable: true),
+                    TwoFactorAuthentication = table.Column<int>(nullable: false),
                     UpdatedAt = table.Column<double>(nullable: false),
                     WebSite = table.Column<string>(nullable: true),
                     ZoneInfo = table.Column<string>(nullable: true)
@@ -448,6 +463,9 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
 
             migrationBuilder.DropTable(
                 name: "clientScopes");
+
+            migrationBuilder.DropTable(
+                name: "confirmationCodes");
 
             migrationBuilder.DropTable(
                 name: "consentClaims");

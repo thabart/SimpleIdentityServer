@@ -43,7 +43,7 @@ namespace WebApiContrib.Core.Storage.Redis
         {
             Connect();
             var result = new List<Record>();
-            var keys = _connection.GetServer("localhost", _port).Keys();
+            var keys = _connection.GetServer(_options.Configuration, _port).Keys();
             foreach (RedisKey key in keys)
             {
                 var keyStr = Encoding.UTF8.GetString(key);
@@ -69,7 +69,7 @@ namespace WebApiContrib.Core.Storage.Redis
         public override void RemoveAll()
         {
             Connect();
-            var keys = _connection.GetServer("localhost", _port).Keys();
+            var keys = _connection.GetServer(_options.Configuration, _port).Keys();
             foreach(RedisKey key in keys)
             {
                 _cache.KeyDelete(key);
@@ -79,7 +79,7 @@ namespace WebApiContrib.Core.Storage.Redis
         public override async Task RemoveAllAsync()
         {
             Connect();
-            var keys = _connection.GetServer("localhost", _port).Keys();
+            var keys = _connection.GetServer(_options.Configuration, _port).Keys();
             foreach (RedisKey key in keys)
             {
                 await _cache.KeyDeleteAsync(key);
