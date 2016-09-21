@@ -48,7 +48,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
 
         void LoginCallback(ClaimsPrincipal claimsPrincipal);
 
-        Task GenerateAndSendCode(string subject);
+        Task<string> GenerateAndSendCode(string subject);
 
         bool ValidateCode(string code);
 
@@ -177,9 +177,9 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
             _loginCallbackAction.Execute(claimsPrincipal);
         }
 
-        public async Task GenerateAndSendCode(string subject)
+        public async Task<string> GenerateAndSendCode(string subject)
         {
-            await _generateAndSendCodeAction.ExecuteAsync(subject);
+            return await _generateAndSendCodeAction.ExecuteAsync(subject);
         }
 
         public bool ValidateCode(string code)

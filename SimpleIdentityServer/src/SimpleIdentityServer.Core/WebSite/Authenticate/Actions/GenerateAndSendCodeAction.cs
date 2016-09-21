@@ -26,7 +26,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 {
     public interface IGenerateAndSendCodeAction
     {
-        Task ExecuteAsync(string subject);
+        Task<string> ExecuteAsync(string subject);
     }
 
     internal class GenerateAndSendCodeAction : IGenerateAndSendCodeAction
@@ -57,7 +57,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 
         #region Public methods
 
-        public async Task ExecuteAsync(string subject)
+        public async Task<string> ExecuteAsync(string subject)
         {
             if (string.IsNullOrWhiteSpace(subject))
             {
@@ -95,6 +95,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
             }
 
             await _twoFactorAuthenticationHandler.SendCode(confirmationCode.Code, (int)resourceOwner.TwoFactorAuthentication);
+            return confirmationCode.Code;
         }
 
         #endregion

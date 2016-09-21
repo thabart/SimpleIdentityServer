@@ -101,7 +101,7 @@ namespace SimpleIdentityServer.Host.Controllers
         }
         
         [HttpPost]
-        public ActionResult LocalLogin(AuthorizeViewModel authorizeViewModel)
+        public async Task<ActionResult> LocalLogin(AuthorizeViewModel authorizeViewModel)
         {
             var authenticatedUser = this.GetAuthenticatedUser();
             if (authenticatedUser != null &&
@@ -132,12 +132,12 @@ namespace SimpleIdentityServer.Host.Controllers
                 var authenticationManager = this.GetAuthenticationManager();
                 ClaimsIdentity identity = null;
                 ClaimsPrincipal principal = null;
-                // If there is no two factor authentication then authenticate the user and redirect to User page
                 if (resourceOwner.TwoFactorAuthentication == Core.Models.TwoFactorAuthentications.NONE)
                 {
+                    // 1. Authenticate the user
                     identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                     principal = new ClaimsPrincipal(identity);
-                    authenticationManager.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
+                    await authenticationManager.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
                         principal,
                         new AuthenticationProperties
                         {
@@ -148,15 +148,18 @@ namespace SimpleIdentityServer.Host.Controllers
                     return RedirectToAction("Index", "User");
                 }
 
+                // 2.1 Store temporary information in cookie
                 identity = new ClaimsIdentity(claims, Constants.TwoFactorCookieName);
                 principal = new ClaimsPrincipal(identity);
-                authenticationManager.SignInAsync(Constants.TwoFactorCookieName,
+                await authenticationManager.SignInAsync(Constants.TwoFactorCookieName,
                     principal,
                     new AuthenticationProperties {
                         ExpiresUtc = DateTime.UtcNow.AddMinutes(5),
                         IsPersistent = false
                     });
-                _simpleIdentityServerEventSource.AuthenticateResourceOwner(identity.Name);
+                // 1.2. Send confirmation code
+                var code = await _authenticateActions.GenerateAndSendCode(identity.Claims.First(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject).Value);
+                _simpleIdentityServerEventSource.GetConfirmationCode(code);
                 return RedirectToAction("SendCode");
             }
             catch (Exception exception)
@@ -213,8 +216,6 @@ namespace SimpleIdentityServer.Host.Controllers
                     Core.Errors.ErrorDescriptions.TwoFactorAuthenticationCannotBePerformed);
             }
 
-            // TODO : SEND A VALID CODE
-            await _authenticateActions.GenerateAndSendCode(user.Claims.First(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject).Value);
             TranslateView(DefaultLanguage);
             return View();
         }
@@ -240,7 +241,7 @@ namespace SimpleIdentityServer.Host.Controllers
                 return View(codeViewModel);
             }
 
-            // Validate the code
+            // 1. Validate the code
             if(!_authenticateActions.ValidateCode(codeViewModel.Code))
             {
                 TranslateView(DefaultLanguage);
@@ -249,7 +250,7 @@ namespace SimpleIdentityServer.Host.Controllers
                 return View(codeViewModel);
             }
 
-            // Remove the code
+            // 2. Remove the code
             if (!_authenticateActions.RemoveCode(codeViewModel.Code))
             {
                 TranslateView(DefaultLanguage);
@@ -257,7 +258,7 @@ namespace SimpleIdentityServer.Host.Controllers
                 return View(codeViewModel);
             }
 
-            // Authenticate the resource owner
+            // 3. Authenticate the resource owner
             await authenticationManager.SignOutAsync(Constants.TwoFactorCookieName);
             var identity = new ClaimsIdentity(user.Claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var authenticatedUser = new ClaimsPrincipal(identity);

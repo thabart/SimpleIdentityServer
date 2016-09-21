@@ -120,7 +120,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             await _generateAndSendCodeAction.ExecuteAsync("subject");
 
             // ASSERTS
-            _twoFactorAuthenticationHandlerStub.Verify(t => t.SendCode("code", (int)TwoFactorAuthentications.Email));
+            _twoFactorAuthenticationHandlerStub.Verify(t => t.SendCode(It.IsAny<string>(), It.IsAny<int>()));
         }
 
         private void InitializeFakeObjects()
