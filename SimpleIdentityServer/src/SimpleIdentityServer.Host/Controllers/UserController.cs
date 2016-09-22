@@ -16,7 +16,10 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SimpleIdentityServer.Core.Errors;
+using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.User;
 using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.Host.ViewModels;
@@ -30,13 +33,24 @@ namespace SimpleIdentityServer.Api.Controllers
     [Authorize("Connected")]
     public class UserController : Controller
     {
+        #region Fields
+
+        private const string DefaultLanguage = "en";
+
         private readonly IUserActions _userActions;
+
+        private readonly ITranslationManager _translationManager;
+
+        #endregion
 
         #region Constructor
 
-        public UserController(IUserActions userActions)
+        public UserController(
+            IUserActions userActions,
+            ITranslationManager translationManager)
         {
             _userActions = userActions;
+            _translationManager = translationManager;
         }
 
         #endregion
@@ -75,16 +89,23 @@ namespace SimpleIdentityServer.Api.Controllers
         public async Task<ActionResult> Edit()
         {
             var user = await GetCurrentUser();
-            if (!user.IsLocalAccount)
+            if (!SetUserEditViewBag(user))
             {
                 return RedirectToAction("Index");
             }
 
-            ViewBag.IsLocalAccount = user.IsLocalAccount;
-            return View();
+            ViewBag.IsUpdated = false;
+            return View(new UpdateResourceOwnerViewModel
+            {
+                Email = user.Email,
+                Name = user.Name,
+                Password = user.Password,
+                TwoAuthenticationFactor = user.TwoFactorAuthentication
+            });
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<ActionResult> Edit(UpdateResourceOwnerViewModel viewModel)
         {
             if (viewModel == null)
@@ -92,16 +113,30 @@ namespace SimpleIdentityServer.Api.Controllers
                 throw new ArgumentNullException(nameof(viewModel));
             }
 
+            // 1. Set view bag
             var user = await GetCurrentUser();
-            if (!user.IsLocalAccount)
+            if (!SetUserEditViewBag(user))
             {
-                return RedirectToAction("Index");
+                throw new IdentityServerException(
+                    ErrorCodes.UnhandledExceptionCode,
+                    ErrorDescriptions.TheResourceOwnerIsNotALocalAccount);
             }
 
+            // 2. Validate the view model
+            if (!ModelState.IsValid)
+            {
+                ViewBag.IsUpdated = false;
+                return View(viewModel);
+            }
+
+            // 3. Update the resource owner
             var parameter = viewModel.ToParameter();
             parameter.Id = user.Id;
             _userActions.UpdateUser(parameter);
-            return RedirectToAction("Edit");
+
+            // 4. Returns translated view
+            ViewBag.IsUpdated = true;
+            return View(viewModel);
         }
 
         [HttpGet]
@@ -173,6 +208,37 @@ namespace SimpleIdentityServer.Api.Controllers
         {
             var authenticatedUser = await this.GetAuthenticatedUser();
             return  _userActions.GetUser(authenticatedUser);
+        }
+
+        private bool SetUserEditViewBag(ResourceOwner user)
+        {
+            if (!user.IsLocalAccount)
+            {
+                return false;
+            }
+
+            TranslateUserEditView(DefaultLanguage);
+            ViewBag.IsLocalAccount = user.IsLocalAccount;
+            return true;
+        }
+
+        private void TranslateUserEditView(string uiLocales)
+        {
+            var translations = _translationManager.GetTranslations(uiLocales, new List<string>
+            {
+                Core.Constants.StandardTranslationCodes.EditResourceOwner,
+                Core.Constants.StandardTranslationCodes.LoginCode,
+                Core.Constants.StandardTranslationCodes.YourLogin,
+                Core.Constants.StandardTranslationCodes.PasswordCode,
+                Core.Constants.StandardTranslationCodes.YourPassword,
+                Core.Constants.StandardTranslationCodes.Email,
+                Core.Constants.StandardTranslationCodes.YourEmail,
+                Core.Constants.StandardTranslationCodes.ConfirmCode,
+                Core.Constants.StandardTranslationCodes.TwoAuthenticationFactor,
+                Core.Constants.StandardTranslationCodes.UserIsUpdated
+            });
+
+            ViewBag.Translations = translations;
         }
 
         #endregion

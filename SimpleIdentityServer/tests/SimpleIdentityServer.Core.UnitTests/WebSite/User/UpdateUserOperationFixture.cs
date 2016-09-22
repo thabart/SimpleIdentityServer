@@ -57,6 +57,22 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
         }
 
         [Fact]
+        public void When_EmailAddress_Is_Not_Valid_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+
+            // ACT & ASSERT
+            Assert.Throws<ArgumentException>(() => _updateUserOperation.Execute(new UpdateUserParameter
+            {
+                Id = "id",
+                Name = "name",
+                Password = "password",
+                Email = "invalid_email"
+            }));
+        }
+
+        [Fact]
         public void When_ResourceOwner_With_SameCredentials_Exists_Then_Exception_Is_Thrown()
         {
             // ARRANGE
@@ -68,7 +84,10 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
                 Password = "password"
             };
             _resourceOwnerRepositoryStub.Setup(r => r.GetResourceOwnerByCredentials(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(new ResourceOwner());
+                .Returns(new ResourceOwner
+                {
+                    Id = "id2"
+                });
 
             // ACT
             var exception = Assert.Throws<IdentityServerException>(() => _updateUserOperation.Execute(parameter));

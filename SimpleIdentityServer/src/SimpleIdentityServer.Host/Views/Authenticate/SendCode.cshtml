@@ -20,7 +20,6 @@
             @Html.AntiForgeryToken()
             <div class="form-group">
                 <label class="control-label">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.Code]</label>
-                @Html.LabelFor(m => m.Code, new { @class = "control-label" })
                 @Html.TextBoxFor(i => i.Code, new { @type = "number", @class="form-control" })
                 @Html.ValidationMessageFor(m => m.Code, "", new { @class = "text-danger" })
             </div>

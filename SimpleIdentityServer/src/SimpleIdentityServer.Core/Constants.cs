@@ -340,21 +340,28 @@ namespace SimpleIdentityServer.Core
 
         public static class StandardTranslationCodes
         {
-            public static string ApplicationWouldLikeToCode = "application_would_like_to";
-            public static string ScopesCode = "scopes";
-            public static string IndividualClaimsCode = "individual_claims";
-            public static string LoginCode = "login";
-            public static string LoginExternalAccount = "login_external_account";
-            public static string LoginLocalAccount = "login_local_account";
-            public static string UserNameCode = "username";
-            public static string PasswordCode = "password";
-            public static string RememberMyLoginCode = "remember_my_login";
-            public static string CancelCode = "cancel";
-            public static string ConfirmCode = "confirm";
-            public static string LinkToThePolicy = "policy";
-            public static string Tos = "tos";
-            public static string SendCode = "send_code";
-            public static string Code = "code";
+            public const string ApplicationWouldLikeToCode = "application_would_like_to";
+            public const string ScopesCode = "scopes";
+            public const string IndividualClaimsCode = "individual_claims";
+            public const string LoginCode = "login";
+            public const string LoginExternalAccount = "login_external_account";
+            public const string LoginLocalAccount = "login_local_account";
+            public const string UserNameCode = "username";
+            public const string PasswordCode = "password";
+            public const string RememberMyLoginCode = "remember_my_login";
+            public const string CancelCode = "cancel";
+            public const string ConfirmCode = "confirm";
+            public const string LinkToThePolicy = "policy";
+            public const string Tos = "tos";
+            public const string SendCode = "send_code";
+            public const string Code = "code";
+            public const string EditResourceOwner = "edit_resource_owner";
+            public const string YourLogin = "your_login";
+            public const string YourPassword = "your_password";
+            public const string Email = "email";
+            public const string YourEmail = "your_email";
+            public const string TwoAuthenticationFactor = "two_authentication_factor";
+            public const string UserIsUpdated = "user_is_updated";
         }
 
         public static readonly Dictionary<List<ResponseType>, AuthorizationFlow> MappingResponseTypesToAuthorizationFlows = new Dictionary<List<ResponseType>, AuthorizationFlow>

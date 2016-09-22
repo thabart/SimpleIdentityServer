@@ -7,21 +7,48 @@
     Layout = "~/Views/Shared/_UserLayout.cshtml";
 }
 
+@model SimpleIdentityServer.Host.ViewModels.UpdateResourceOwnerViewModel
+@using SimpleIdentityServer.Core.Models
+
 <div class="tab-pane active" id="edit-ro">
     <div class="col-md-8 col-md-offset-2">
-        <h1>Edit resource owner</h1>
-        <form action="@Url.Action("Edit")" method="post">
-            <!-- Display name -->
+        <h1>
+            @ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.EditResourceOwner]
+        </h1>
+        @if (ViewBag.IsUpdated)
+        {
+            <span class="text-success">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.UserIsUpdated]</span>
+        }
+        @using (Html.BeginForm("Edit", "User", null, FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            <!-- Login -->
             <fieldset class="form-group">
-                <label>Login</label>
-                <input type="text" name="Name" class="form-control" placeholder="Your login" />
+                <label class="control-label">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.LoginCode]</label>
+                @Html.TextBoxFor(i => i.Name, new { @class = "form-control", placeholder= @ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.YourLogin ] })
+                @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
             </fieldset>
-            <!-- Display new password -->
+            <!-- Password -->
             <fieldset class="form-group">
-                <label>New password</label>
-                <input type="password" name="Password" class="form-control" placeholder="Your password" />
+                <label class="control-label">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.PasswordCode]</label>
+                @Html.TextBoxFor(i => i.Password, new { type="password", @class = "form-control", placeholder = @ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.YourPassword] })
+                @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
             </fieldset>
-            <button type="submit" class="form-control">Update</button>
-        </form>
+            <!-- Email -->
+            <fieldset class="form-group">
+                <label class="control-label">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.Email]</label>
+                @Html.TextBoxFor(i => i.Email, new { @class = "form-control", placeholder = @ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.YourEmail] })
+                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+            </fieldset>
+            <!-- Two authentication factors -->
+            <fieldset class="form-group">
+                <label class="control-label">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.TwoAuthenticationFactor]</label>
+                @Html.DropDownListFor(m => m.TwoAuthenticationFactor, Html.GetEnumSelectList(typeof(TwoFactorAuthentications)), new { @class = "form-control" })
+            </fieldset>
+            <!-- Submit -->
+            <fieldset class="form-group">
+                <button type="submit" class="btn btn-primary">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.ConfirmCode]</button>
+            </fieldset>
+        }
     </div>
 </div>

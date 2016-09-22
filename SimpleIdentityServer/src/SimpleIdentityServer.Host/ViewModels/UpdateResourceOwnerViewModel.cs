@@ -14,12 +14,22 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Models;
+using System.ComponentModel.DataAnnotations;
+
 namespace SimpleIdentityServer.Host.ViewModels
 {
     public class UpdateResourceOwnerViewModel
     {
+        [Required]
         public string Name { get; set; }
 
+        [Required]
         public string Password { get; set; }
+                
+        [EmailAddress]
+        public string Email { get; set; }
+
+        public TwoFactorAuthentications TwoAuthenticationFactor { get; set; }
     }
 }

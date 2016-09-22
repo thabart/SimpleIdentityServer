@@ -19,6 +19,7 @@ using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace SimpleIdentityServer.Core.WebSite.User.Actions
 {
@@ -69,9 +70,15 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                 throw new ArgumentNullException(nameof(updateUserParameter.Password));
             }
 
+            if (!string.IsNullOrWhiteSpace(updateUserParameter.Email) && !new EmailAddressAttribute().IsValid(updateUserParameter.Email))
+            {
+                throw new ArgumentException($"not a valid email address {updateUserParameter.Email}");
+            }
+
             var newPassword = _securityHelper.ComputeHash(updateUserParameter.Password);
-            if (_resourceOwnerRepository.GetResourceOwnerByCredentials(updateUserParameter.Name,
-                newPassword) != null)
+            var user = _resourceOwnerRepository.GetResourceOwnerByCredentials(updateUserParameter.Name,
+                newPassword);
+            if (user != null && user.Id != updateUserParameter.Id)
             {
                 throw new IdentityServerException(
                     Errors.ErrorCodes.InternalError,
@@ -87,6 +94,8 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
             }
 
             resourceOwner.Name = updateUserParameter.Name;
+            resourceOwner.Email = updateUserParameter.Email;
+            resourceOwner.TwoFactorAuthentication = updateUserParameter.TwoFactorAuthentication;
             resourceOwner.Password = newPassword;
             _resourceOwnerRepository.Update(resourceOwner);
         }

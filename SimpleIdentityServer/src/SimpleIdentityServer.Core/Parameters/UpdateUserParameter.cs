@@ -14,6 +14,8 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Models;
+
 namespace SimpleIdentityServer.Core.Parameters
 {
     public class UpdateUserParameter
@@ -23,5 +25,9 @@ namespace SimpleIdentityServer.Core.Parameters
         public string Name { get; set; }
 
         public string Password { get; set; }
+
+        public string Email { get; set; }
+
+        public TwoFactorAuthentications TwoFactorAuthentication { get; set; }
     }
 }

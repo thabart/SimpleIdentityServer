@@ -335,7 +335,50 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                     new Translation
                     {
                         LanguageTag = "en",
-                        Code = Constants.StandardTranslationCodes.Code
+                        Code = Constants.StandardTranslationCodes.Code,
+                        Value = "Code"
+                    },
+                    new Translation
+                    {
+                        LanguageTag = "en",
+                        Code = Constants.StandardTranslationCodes.EditResourceOwner,
+                        Value = "Edit resource owner"
+                    },
+                    new Translation
+                    {
+                        LanguageTag = "en",
+                        Code = Constants.StandardTranslationCodes.YourLogin,
+                        Value = "Your login"
+                    },
+                    new Translation
+                    {
+                        LanguageTag = "en",
+                        Code = Constants.StandardTranslationCodes.YourPassword,
+                        Value = "Your password"
+                    },
+                    new Translation
+                    {
+                        LanguageTag = "en",
+                        Code = Constants.StandardTranslationCodes.Email,
+                        Value = "Email"
+                    },
+                    new Translation
+                    {
+                        LanguageTag = "en",
+                        Code = Constants.StandardTranslationCodes.YourEmail,
+                        Value = "Your email"
+                    },
+                    new Translation
+                    {
+                        LanguageTag = "en",
+                        Code = Constants.StandardTranslationCodes.TwoAuthenticationFactor,
+                        Value = "Two authentication factor"
+                    },
+                    new Translation
+                    {
+                        LanguageTag = "en",
+                        Code = Constants.StandardTranslationCodes.UserIsUpdated,
+                        Value = "User has been updated"
                     },
                     // Swedish
                     new Translation
