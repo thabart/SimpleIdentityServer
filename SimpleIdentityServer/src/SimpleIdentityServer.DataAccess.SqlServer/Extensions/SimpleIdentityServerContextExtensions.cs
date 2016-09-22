@@ -380,6 +380,12 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         Code = Constants.StandardTranslationCodes.UserIsUpdated,
                         Value = "User has been updated"
                     },
+                    new Translation
+                    {
+                        LanguageTag = "en",
+                        Code = Constants.StandardTranslationCodes.SendConfirmationCode,
+                        Value = "Send a confirmation code"
+                    },
                     // Swedish
                     new Translation
                     {

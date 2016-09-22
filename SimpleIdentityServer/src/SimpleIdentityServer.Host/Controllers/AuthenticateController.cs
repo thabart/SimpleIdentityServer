@@ -211,15 +211,30 @@ namespace SimpleIdentityServer.Host.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> SendCode(CodeViewModel codeViewModel)
+        public async Task<ActionResult> ResendCode()
         {
-            var authenticationManager = this.GetAuthenticationManager();
+            // 1. Retrieve user
             var authenticatedUser = await this.GetAuthenticatedUser2F();
-            if (authenticatedUser == null)
+            if (authenticatedUser == null || authenticatedUser.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
             {
-                return RedirectToAction("Index", "User");
+                throw new IdentityServerException(
+                    Core.Errors.ErrorCodes.UnhandledExceptionCode,
+                    Core.Errors.ErrorDescriptions.TwoFactorAuthenticationCannotBePerformed);
             }
 
+            // 2. Send the code
+            var subject = authenticatedUser.Claims.First(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject).Value;
+            var code = await _authenticateActions.GenerateAndSendCode(subject);
+            _simpleIdentityServerEventSource.GetConfirmationCode(code);
+
+            // 3. Redirect to code view
+            return RedirectToAction("SendCode");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> SendCode(CodeViewModel codeViewModel)
+        {
             if (codeViewModel == null)
             {
                 throw new ArgumentNullException(nameof(codeViewModel));
@@ -231,8 +246,17 @@ namespace SimpleIdentityServer.Host.Controllers
                 return View(codeViewModel);
             }
 
-            // 1. Validate the code
-            if(!_authenticateActions.ValidateCode(codeViewModel.Code))
+            // 1. Check user is authenticated
+            var authenticatedUser = await this.GetAuthenticatedUser2F();
+            if (authenticatedUser == null || authenticatedUser.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
+            {
+                throw new IdentityServerException(
+                    Core.Errors.ErrorCodes.UnhandledExceptionCode,
+                    Core.Errors.ErrorDescriptions.TwoFactorAuthenticationCannotBePerformed);
+            }
+
+            // 2. Validate the code
+            if (!_authenticateActions.ValidateCode(codeViewModel.Code))
             {
                 TranslateView(DefaultLanguage);
                 ModelState.AddModelError("Code", "confirmation code is not valid");
@@ -240,7 +264,7 @@ namespace SimpleIdentityServer.Host.Controllers
                 return View(codeViewModel);
             }
 
-            // 2. Remove the code
+            // 3. Remove the code
             if (!_authenticateActions.RemoveCode(codeViewModel.Code))
             {
                 TranslateView(DefaultLanguage);
@@ -248,7 +272,8 @@ namespace SimpleIdentityServer.Host.Controllers
                 return View(codeViewModel);
             }
 
-            // 3. Authenticate the resource owner
+            // 4. Authenticate the resource owner
+            var authenticationManager = this.GetAuthenticationManager();
             await authenticationManager.SignOutAsync(Constants.TwoFactorCookieName);
             await SetLocalCookie(authenticationManager, authenticatedUser.Claims);
             return RedirectToAction("Index", "User");
@@ -456,7 +481,8 @@ namespace SimpleIdentityServer.Host.Controllers
                 Core.Constants.StandardTranslationCodes.LoginExternalAccount,
                 Core.Constants.StandardTranslationCodes.SendCode,
                 Core.Constants.StandardTranslationCodes.Code,
-                Core.Constants.StandardTranslationCodes.ConfirmCode
+                Core.Constants.StandardTranslationCodes.ConfirmCode,
+                Core.Constants.StandardTranslationCodes.SendConfirmationCode
             });
 
             ViewBag.Translations = translations;
