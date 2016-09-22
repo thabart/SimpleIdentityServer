@@ -252,7 +252,7 @@ namespace SimpleIdentityServer.Core.JwtToken
             return jsonWebKey;
         }
         
-        private JsonWebKey GetJsonWebKeyFromClient(Client client,
+        private JsonWebKey GetJsonWebKeyFromClient(Models.Client client,
             string kid)
         {
             JsonWebKey result = null;

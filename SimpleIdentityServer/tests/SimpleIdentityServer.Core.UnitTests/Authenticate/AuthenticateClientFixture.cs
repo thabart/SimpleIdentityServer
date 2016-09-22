@@ -79,7 +79,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             InitializeFakeObjects();
             const string clientId = "clientId";
             var authenticationInstruction = new AuthenticateInstruction();
-            var client = new Client
+            var client = new Models.Client
             {
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_basic,
                 ClientId = clientId
@@ -91,7 +91,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             _clientValidatorFake.Setup(c => c.ValidateClientExist(It.IsAny<string>()))
                 .Returns(client);
             _clientSecretBasicAuthenticationFake.Setup(
-                c => c.AuthenticateClient(It.IsAny<AuthenticateInstruction>(), It.IsAny<Client>()))
+                c => c.AuthenticateClient(It.IsAny<AuthenticateInstruction>(), It.IsAny<Models.Client>()))
                 .Returns(client);
 
             // ACT
@@ -110,7 +110,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             InitializeFakeObjects();
             const string clientId = "clientId";
             var authenticationInstruction = new AuthenticateInstruction();
-            var client = new Client
+            var client = new Models.Client
             {
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_basic,
                 ClientId = clientId
@@ -122,7 +122,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             _clientValidatorFake.Setup(c => c.ValidateClientExist(It.IsAny<string>()))
                 .Returns(client);
             _clientSecretBasicAuthenticationFake.Setup(
-                c => c.AuthenticateClient(It.IsAny<AuthenticateInstruction>(), It.IsAny<Client>()))
+                c => c.AuthenticateClient(It.IsAny<AuthenticateInstruction>(), It.IsAny<Models.Client>()))
                 .Returns(() => null);
 
             // ACT

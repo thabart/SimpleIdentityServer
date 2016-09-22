@@ -259,7 +259,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
                 ResponseType = "code",
                 Prompt = "none"
             };
-            var client = new Client();
+            var client = new Models.Client();
             _parameterParserHelperFake.Setup(p => p.ParsePromptParameters(It.IsAny<string>()))
                 .Returns(new List<PromptParameter>
                 {
@@ -268,7 +268,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             _clientValidatorFake.Setup(c => c.ValidateClientExist(It.IsAny<string>()))
                 .Returns(client);
             _clientValidatorFake.Setup(c => c.ValidateRedirectionUrl(It.IsAny<string>(),
-                It.IsAny<Client>()))
+                It.IsAny<Models.Client>()))
                 .Returns(() => string.Empty);
 
             // ACT & ASSERT

@@ -31,7 +31,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             {
                 ClientSecretFromAuthorizationHeader= "notCorrectClientSecret"
             };
-            var client = new Client
+            var client = new Models.Client
             {
                 ClientSecret = "clientSecret"
             };
@@ -53,7 +53,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             {
                 ClientSecretFromAuthorizationHeader = clientSecret
             };
-            var client = new Client
+            var client = new Models.Client
             {
                 ClientSecret = clientSecret
             };

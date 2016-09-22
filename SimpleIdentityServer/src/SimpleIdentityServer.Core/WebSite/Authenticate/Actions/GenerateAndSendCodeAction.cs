@@ -83,7 +83,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
             {
                 Code = GetCode(),
                 CreateDateTime = DateTime.UtcNow,
-                ExpiresIn = 120,
+                ExpiresIn = 300,
                 IsConfirmed = false
             };
 

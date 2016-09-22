@@ -20,17 +20,17 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using SimpleIdentityServer.Authentication.Middleware;
 using SimpleIdentityServer.Host;
 using SimpleIdentityServer.RateLimitation.Configuration;
 using System.Collections.Generic;
-using SimpleIdentityServer.Authentication.Middleware;
 using WebApiContrib.Core.Storage;
 
 namespace SimpleIdentityServer.Startup
 {
     public class Startup
     {
-        private SwaggerOptions _swaggerOptions;
+        private ConfigurationEdpOptions _configurationEdpOptions;
 
         #region Properties
 
@@ -48,9 +48,15 @@ namespace SimpleIdentityServer.Startup
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
-            _swaggerOptions = new SwaggerOptions
+            _configurationEdpOptions = new ConfigurationEdpOptions
             {
-                IsSwaggerEnabled = false
+                ConfigurationUrl = Configuration["ConfigurationUrl"],
+                ClientId = Configuration["ClientId"],
+                ClientSecret = Configuration["ClientSecret"],
+                Scopes = new List<string>
+                {
+                    "display_configuration"
+                }
             };
         }
 
@@ -61,7 +67,6 @@ namespace SimpleIdentityServer.Startup
             var isSqlServer = bool.Parse(Configuration["isSqlServer"]);
             var isSqlLite = bool.Parse(Configuration["isSqlLite"]);
             var isPostgre = bool.Parse(Configuration["isPostgre"]);
-            var configurationUrl = Configuration["ConfigurationUrl"];
             var loggingOptions = new LoggingOptions
             {
                 ElasticsearchOptions = new ElasticsearchOptions
@@ -131,7 +136,7 @@ namespace SimpleIdentityServer.Startup
             {
                 DataSourceType = dataSourceType,
                 ConnectionString = connectionString
-            }, _swaggerOptions, loggingOptions, configurationUrl);
+            }, loggingOptions, _configurationEdpOptions);
 
             services.AddLogging();
         }
@@ -140,28 +145,13 @@ namespace SimpleIdentityServer.Startup
             IHostingEnvironment env,
             ILoggerFactory loggerFactory)
         {
-            var clientId = Configuration["ClientId"];
-            var clientSecret = Configuration["ClientSecret"];
-            var configurationUrl = Configuration["ConfigurationUrl"];
             var isDataMigrated = Configuration["DATA_MIGRATED"] == null ? false : bool.Parse(Configuration["DATA_MIGRATED"]);
             app.UseCors("AllowAll");
             app.UseSimpleIdentityServer(new HostingOptions
             {
                 IsDataMigrated = isDataMigrated,
                 IsDeveloperModeEnabled = false
-            }, _swaggerOptions, new AuthenticationMiddlewareOptions
-            {
-                ConfigurationEdp = new ConfigurationEdpOptions
-                {
-                    ClientId = clientId,
-                    ClientSecret = clientSecret,
-                    ConfigurationUrl = configurationUrl,
-                    Scopes = new List<string>
-                    {
-                        "display_configuration"
-                    }
-                }
-            }, loggerFactory);
+            }, _configurationEdpOptions, loggerFactory);
         }
 
         #endregion

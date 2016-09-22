@@ -23,7 +23,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
     {
         public static void AddClientMapping(this ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Client>()
+            modelBuilder.Entity<Models.Client>()
                 .ToTable("clients")
                 .HasKey(c => c.ClientId);
             /*

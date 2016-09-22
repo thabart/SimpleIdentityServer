@@ -109,7 +109,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 ClientId = "clientId",
                 ClientSecret = "clientSecret"
             };
-            var client = new Client();
+            var client = new Models.Client();
 
             string errorMessage;
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
@@ -139,7 +139,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 ClientId = "notCorrectClientId",
                 ClientSecret = "clientSecret"
             };
-            var client = new Client
+            var client = new Models.Client
             {
                 ClientId = "notCorrectClientId"
             };
@@ -179,7 +179,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 ClientSecret = "clientSecret",
                 RedirectUri = "notCorrectRedirectUri"
             };
-            var client = new Client
+            var client = new Models.Client
             {
                 ClientId = "clientId"
             };
@@ -218,7 +218,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 RedirectUri = "redirectUri",
                 ClientId = "clientId",
             };
-            var client = new Client
+            var client = new Models.Client
             {
                 ClientId = "clientId"
             };
@@ -260,7 +260,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 RedirectUri = "redirectUri",
                 ClientId = "clientId",
             };
-            var client = new Client
+            var client = new Models.Client
             {
                 ClientId = "clientId"
             };
@@ -281,7 +281,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(authorizationCode);
             _simpleIdentityServerConfiguratorFake.Setup(s => s.GetAuthorizationCodeValidityPeriodInSeconds())
                 .Returns(3000);
-            _clientValidatorFake.Setup(c => c.ValidateRedirectionUrl(It.IsAny<string>(), It.IsAny<Client>()))
+            _clientValidatorFake.Setup(c => c.ValidateRedirectionUrl(It.IsAny<string>(), It.IsAny<Models.Client>()))
                 .Returns(() => null);
 
             // ACT & ASSERTS
@@ -311,7 +311,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 RedirectUri = "redirectUri",
                 ClientId = clientId
             };
-            var client = new Client
+            var client = new Models.Client
             {
                 ClientId = clientId,
                 IdTokenSignedResponseAlg = Jwt.Constants.JwsAlgNames.RS256,
@@ -342,7 +342,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(authorizationCode);
             _simpleIdentityServerConfiguratorFake.Setup(s => s.GetAuthorizationCodeValidityPeriodInSeconds())
                 .Returns(3000);
-            _clientValidatorFake.Setup(c => c.ValidateRedirectionUrl(It.IsAny<string>(), It.IsAny<Client>()))
+            _clientValidatorFake.Setup(c => c.ValidateRedirectionUrl(It.IsAny<string>(), It.IsAny<Models.Client>()))
                 .Returns("redirectUri");
             _clientValidatorFake.Setup(c => c.ValidateClientExist(It.IsAny<string>()))
                 .Returns(client);
@@ -375,7 +375,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 RedirectUri = "redirectUri",
                 ClientId = clientId
             };
-            var client = new Client
+            var client = new Models.Client
             {
                 ClientId = clientId
             };
@@ -401,7 +401,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(authorizationCode);
             _simpleIdentityServerConfiguratorFake.Setup(s => s.GetAuthorizationCodeValidityPeriodInSeconds())
                 .Returns(3000);
-            _clientValidatorFake.Setup(c => c.ValidateRedirectionUrl(It.IsAny<string>(), It.IsAny<Client>()))
+            _clientValidatorFake.Setup(c => c.ValidateRedirectionUrl(It.IsAny<string>(), It.IsAny<Models.Client>()))
                 .Returns("redirectUri");
             _grantedTokenHelperStub.Setup(g => g.GetValidGrantedToken(It.IsAny<string>(),
                 It.IsAny<string>(),

@@ -95,7 +95,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
             _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), out errorMessage))
-                .Returns(() => new Client());
+                .Returns(() => new Models.Client());
             _grantedTokenRepositoryStub.Setup(g => g.GetToken(It.IsAny<string>()))
                 .Returns(() => null);
             _grantedTokenRepositoryStub.Setup(g => g.GetTokenByRefreshToken(It.IsAny<string>()))
@@ -130,7 +130,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
             _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), out errorMessage))
-                .Returns(() => new Client());
+                .Returns(() => new Models.Client());
             _grantedTokenRepositoryStub.Setup(g => g.GetToken(It.IsAny<string>()))
                 .Returns(() => null);
             _grantedTokenRepositoryStub.Setup(g => g.GetTokenByRefreshToken(It.IsAny<string>()))
@@ -168,7 +168,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
             _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), out errorMessage))
-                .Returns(() => new Client());
+                .Returns(() => new Models.Client());
             _grantedTokenRepositoryStub.Setup(g => g.GetToken(It.IsAny<string>()))
                 .Returns(grantedToken);
             _grantedTokenRepositoryStub.Setup(g => g.GetTokenByRefreshToken(It.IsAny<string>()))

@@ -118,7 +118,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
                     Kid = kid
                 }
             };
-            var client = new Client
+            var client = new Models.Client
             {
                 ClientName = clientName,
                 ResponseTypes = new List<ResponseType>
@@ -159,15 +159,15 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
             _generateClientFromRegistrationRequest.Setup(g => g.Execute(It.IsAny<RegistrationParameter>()))
                 .Returns(client);
                 
-            _clientRepositoryFake.Setup(c => c.InsertClient(It.IsAny<Client>()))
-                .Callback<Client>(c => client = c);
+            _clientRepositoryFake.Setup(c => c.InsertClient(It.IsAny<Models.Client>()))
+                .Callback<Models.Client>(c => client = c);
 
             // ACT
             var result = _registerClientAction.Execute(registrationParameter);
 
             // ASSERT
             _simpleIdentityServerEventSourceFake.Verify(s => s.StartRegistration(clientName));
-            _clientRepositoryFake.Verify(c => c.InsertClient(It.IsAny<Client>()));
+            _clientRepositoryFake.Verify(c => c.InsertClient(It.IsAny<Models.Client>()));
             _simpleIdentityServerEventSourceFake.Verify(s => s.EndRegistration(It.IsAny<string>(), clientName));
             Assert.NotEmpty(result.ClientSecret);
             Assert.True(client.AllowedScopes.Contains(Constants.StandardScopes.OpenId));

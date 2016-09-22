@@ -81,7 +81,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
                 Token = "token"
             };
             string errorMessage;
-            var client = new Client();
+            var client = new Models.Client();
             _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), out errorMessage))
                 .Returns(client);
             _grantedTokenRepositoryStub.Setup(a => a.GetToken(It.IsAny<string>()))
@@ -118,7 +118,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
                 Token = "token"
             };
             string errorMessage;
-            var client = new Client
+            var client = new Models.Client
             {
                 ClientId = clientId
             };
@@ -175,7 +175,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
                 Token = "token"
             };
             string errorMessage;
-            var client = new Client
+            var client = new Models.Client
             {
                 ClientId = clientId
             };

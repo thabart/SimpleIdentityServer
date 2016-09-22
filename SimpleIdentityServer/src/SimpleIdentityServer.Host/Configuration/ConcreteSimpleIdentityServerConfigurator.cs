@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Http;
 using SimpleIdentityServer.Configuration.Client;
 using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Host.Extensions;
+using System.IO;
 
 namespace SimpleIdentityServer.Host.Configuration
 {
@@ -49,13 +50,6 @@ namespace SimpleIdentityServer.Host.Configuration
 
         #region Public methods
 
-        public string GetIssuerName()
-        {
-            var request = _httpContextAccessor.HttpContext.Request;
-            var result = request.GetAbsoluteUriWithVirtualPath();
-            return result;
-        }
-
         /// <summary>
         /// Returns the validity of an access token or identity token in seconds
         /// </summary>
@@ -77,6 +71,27 @@ namespace SimpleIdentityServer.Host.Configuration
         public string DefaultLanguage()
         {
             return "en";
+        }
+
+        public string GetIssuerName()
+        {
+            return GetCurrentPath();
+        }
+
+        public string GetWellKnownOpenIdEndPoint()
+        {
+            var currentPath = GetCurrentPath();
+            if (!currentPath.EndsWith("/"))
+            {
+                currentPath = string.Concat(currentPath, "/");
+            }
+
+            return string.Concat(GetCurrentPath(), Constants.EndPoints.DiscoveryAction);
+        }
+
+        public string GetWellKnownConfigurationEndPoint()
+        {
+            return _configurationParameters.ConfigurationUrl;
         }
 
         #endregion
@@ -104,6 +119,12 @@ namespace SimpleIdentityServer.Host.Configuration
             {
                 return defaultValue;
             }
+        }
+
+        private string GetCurrentPath()
+        {
+            var request = _httpContextAccessor.HttpContext.Request;
+            return request.GetAbsoluteUriWithVirtualPath();
         }
 
         #endregion

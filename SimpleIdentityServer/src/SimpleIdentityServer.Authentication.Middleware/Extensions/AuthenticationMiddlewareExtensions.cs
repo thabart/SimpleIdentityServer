@@ -64,8 +64,6 @@ namespace SimpleIdentityServer.Authentication.Middleware.Extensions
 
             services.AddTransient<IClaimsParser, ClaimsParser>();
             services.AddTransient<IAuthenticationManager, AuthenticationManager>();
-            services.AddSingleton<IIdentityServerClientFactory>(new IdentityServerClientFactory());
-            services.AddSingleton<ISimpleIdServerConfigurationClientFactory>(new SimpleIdServerConfigurationClientFactory());
             return services;
         }
     }

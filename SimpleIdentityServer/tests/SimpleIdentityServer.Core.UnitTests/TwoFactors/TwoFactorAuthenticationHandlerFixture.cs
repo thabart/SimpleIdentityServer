@@ -14,6 +14,10 @@
 // limitations under the License.
 #endregion
 
+using Moq;
+using SimpleIdentityServer.Client;
+using SimpleIdentityServer.Configuration.Client;
+using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.TwoFactors;
 using System;
 using System.Threading.Tasks;
@@ -23,6 +27,12 @@ namespace SimpleIdentityServer.Core.UnitTests.TwoFactors
 {
     public class TwoFactorAuthenticationHandlerFixture
     {
+        private Mock<ISimpleIdServerConfigurationClientFactory> _simpleIdServerConfigurationClientFactoryStub;
+
+        private Mock<ISimpleIdentityServerConfigurator> _simpleIdentityServerConfiguratorStub;
+
+        private Mock<IIdentityServerClientFactory> _identityServerClientFactoryStub;
+
         private ITwoFactorAuthenticationHandler _twoFactorAuthenticationHandler;
 
         [Fact]
@@ -51,7 +61,13 @@ namespace SimpleIdentityServer.Core.UnitTests.TwoFactors
 
         private void InitializeFakeObjects()
         {
-            _twoFactorAuthenticationHandler = new TwoFactorAuthenticationHandler();
+            _simpleIdServerConfigurationClientFactoryStub = new Mock<ISimpleIdServerConfigurationClientFactory>();
+            _simpleIdentityServerConfiguratorStub = new Mock<ISimpleIdentityServerConfigurator>();
+            _identityServerClientFactoryStub = new Mock<IIdentityServerClientFactory>();
+            _twoFactorAuthenticationHandler = new TwoFactorAuthenticationHandler(
+                _simpleIdServerConfigurationClientFactoryStub.Object,
+                _identityServerClientFactoryStub.Object,
+                _simpleIdentityServerConfiguratorStub.Object);
         }
     }
 }

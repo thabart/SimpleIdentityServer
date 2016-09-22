@@ -97,7 +97,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
             {
                 UserInfoPayLoad = new Jwt.JwsPayload()
             };
-            var client = new Client
+            var client = new Models.Client
             {
                 UserInfoSignedResponseAlg = Jwt.Constants.JwsAlgNames.NONE
             };
@@ -126,7 +126,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
             {
                 UserInfoPayLoad = new Jwt.JwsPayload()
             };
-            var client = new Client
+            var client = new Models.Client
             {
                 UserInfoSignedResponseAlg = string.Empty
             };
@@ -156,7 +156,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
             {
                 UserInfoPayLoad = new Jwt.JwsPayload()
             };
-            var client = new Client
+            var client = new Models.Client
             {
                 UserInfoSignedResponseAlg = Jwt.Constants.JwsAlgNames.RS256,
                 UserInfoEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5

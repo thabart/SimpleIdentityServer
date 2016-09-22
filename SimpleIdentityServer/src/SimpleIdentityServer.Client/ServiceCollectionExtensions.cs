@@ -1,4 +1,4 @@
-#region copyright
+﻿#region copyright
 // Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,19 +14,22 @@
 // limitations under the License.
 #endregion
 
-namespace SimpleIdentityServer.Host 
-{
-    public sealed class SwaggerOptions
-    {
-        /// <summary>
-        /// Enable or disable swagger.
-        /// </summary>
-        public bool IsSwaggerEnabled { get; set; }
+using Microsoft.Extensions.DependencyInjection;
+using System;
 
-        /// <summary>
-        /// If swagger is enabled and the SimpleIdentityServer is hosted under a relative path, then the URL needs to be specified.
-        /// Otherwise the information cannot be extracted from the endpoints.
-        /// </summary>
-        public string SwaggerUrl { get; set; }
-    }   
+namespace SimpleIdentityServer.Client
+{
+    public static class ServiceCollectionExtensions
+    {
+        public static IServiceCollection AddIdServerClient(this IServiceCollection services)
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            services.AddTransient<IIdentityServerClientFactory, IdentityServerClientFactory>();
+            return services;
+        }
+    }
 }

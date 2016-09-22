@@ -41,7 +41,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             // ARRANGE
             InitializeFakeObjects();
             var authorizationParameter = new AuthorizationParameter();
-            Client client;
+            Models.Client client;
             List<Scope> scopes;
             List<string> claims;
 
@@ -67,7 +67,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             InitializeFakeObjects();
             var claimsIdentity = new ClaimsIdentity();
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            Client client;
+            Models.Client client;
             List<Scope> scopes;
             List<string> claims;
             var actionResult = new ActionResult
@@ -106,7 +106,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             const string state = "state";
             var claimsIdentity = new ClaimsIdentity();
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            Client client;
+            Models.Client client;
             List<Scope> scopes;
             List<string> claims;
             var responseTypes = new List<ResponseType>();
@@ -144,7 +144,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             const string state = "state";
             var claimsIdentity = new ClaimsIdentity();
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            Client client;
+            Models.Client client;
             List<Scope> scopes;
             List<string> claims;
             var authorizationParameter = new AuthorizationParameter
@@ -179,7 +179,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             const string scopeName = "profile";
             var claimsIdentity = new ClaimsIdentity();
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            Client client = new Client();
+            var client = new Models.Client();
             List<Scope> scopes;
             List<string> claims;
             var authorizationParameter = new AuthorizationParameter

@@ -8,9 +8,6 @@
     var user = await this.GetAuthenticatedUser();
 }
 
-
-@model SimpleIdentityServer.Host.ViewModels.HomeViewModel
-
 <div class="row">
     <h1>Dashboard</h1>
     <a href="@Url.Content("~/.well-known/openid-configuration")">

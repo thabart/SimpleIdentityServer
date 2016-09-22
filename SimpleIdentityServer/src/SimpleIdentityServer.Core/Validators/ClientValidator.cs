@@ -23,17 +23,17 @@ namespace SimpleIdentityServer.Core.Validators
 {
     public interface IClientValidator
     {
-        Client ValidateClientExist(string clientId);
+        Models.Client ValidateClientExist(string clientId);
 
-        string ValidateRedirectionUrl(string url, Client client);
+        string ValidateRedirectionUrl(string url, Models.Client client);
 
-        bool ValidateGrantType(GrantType grantType, Client client);
+        bool ValidateGrantType(GrantType grantType, Models.Client client);
 
-        bool ValidateGrantTypes(Client client, params GrantType[] grantTypes);
+        bool ValidateGrantTypes(Models.Client client, params GrantType[] grantTypes);
 
-        bool ValidateResponseType(ResponseType responseType, Client client);
+        bool ValidateResponseType(ResponseType responseType, Models.Client client);
 
-        bool ValidateResponseTypes(IList<ResponseType> responseType, Client client);
+        bool ValidateResponseTypes(IList<ResponseType> responseType, Models.Client client);
     }
 
     public class ClientValidator : IClientValidator
@@ -52,12 +52,12 @@ namespace SimpleIdentityServer.Core.Validators
 
         #region Public methods
 
-        public Client ValidateClientExist(string clientId)
+        public Models.Client ValidateClientExist(string clientId)
         {
             return _clientRepository.GetClientById(clientId);
         }
         
-        public string ValidateRedirectionUrl(string url, Client client)
+        public string ValidateRedirectionUrl(string url, Models.Client client)
         {
             if (string.IsNullOrWhiteSpace(url) ||
                 client == null || 
@@ -70,7 +70,7 @@ namespace SimpleIdentityServer.Core.Validators
             return client.RedirectionUrls.FirstOrDefault(r => r == url);
         }
 
-        public bool ValidateGrantType(GrantType grantType, Client client)
+        public bool ValidateGrantType(GrantType grantType, Models.Client client)
         {
             if (client == null)
             {
@@ -81,7 +81,7 @@ namespace SimpleIdentityServer.Core.Validators
             return client.GrantTypes != null && client.GrantTypes.Contains(grantType);
         }
 
-        public bool ValidateGrantTypes(Client client, params GrantType[] grantTypes)
+        public bool ValidateGrantTypes(Models.Client client, params GrantType[] grantTypes)
         {
             if (client == null || grantTypes == null)
             {
@@ -92,7 +92,7 @@ namespace SimpleIdentityServer.Core.Validators
             return client.GrantTypes != null && grantTypes.All(gt => client.GrantTypes.Contains(gt));
         }
 
-        public bool ValidateResponseType(ResponseType responseType, Client client)
+        public bool ValidateResponseType(ResponseType responseType, Models.Client client)
         {
             if (client == null)
             {
@@ -103,7 +103,7 @@ namespace SimpleIdentityServer.Core.Validators
             return client.ResponseTypes != null && client.ResponseTypes.Contains(responseType);
         }
 
-        public bool ValidateResponseTypes(IList<ResponseType> responseTypes, Client client)
+        public bool ValidateResponseTypes(IList<ResponseType> responseTypes, Models.Client client)
         {
             if (client == null)
             {
@@ -118,7 +118,7 @@ namespace SimpleIdentityServer.Core.Validators
 
         #region Private static methods
 
-        private static void SetDefaultClientGrantType(Client client)
+        private static void SetDefaultClientGrantType(Models.Client client)
         {
             if (client.GrantTypes == null || !client.GrantTypes.Any())
             {
@@ -129,7 +129,7 @@ namespace SimpleIdentityServer.Core.Validators
             }
         }
 
-        private static void SetDefaultClientResponseType(Client client)
+        private static void SetDefaultClientResponseType(Models.Client client)
         {
             if (client.ResponseTypes == null || !client.ResponseTypes.Any())
             {

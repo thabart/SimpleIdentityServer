@@ -14,6 +14,8 @@
 // limitations under the License.
 #endregion
 
+using System;
+
 namespace SimpleIdentityServer.Core.Configuration
 {
     public interface ISimpleIdentityServerConfigurator
@@ -25,6 +27,10 @@ namespace SimpleIdentityServer.Core.Configuration
         double GetAuthorizationCodeValidityPeriodInSeconds();
 
         string DefaultLanguage();
+
+        string GetWellKnownOpenIdEndPoint();
+
+        string GetWellKnownConfigurationEndPoint();
     }
 
     public class SimpleIdentityServerConfigurator : ISimpleIdentityServerConfigurator
@@ -60,6 +66,16 @@ namespace SimpleIdentityServer.Core.Configuration
         public string DefaultLanguage()
         {
             return "en";
+        }
+
+        public string GetWellKnownOpenIdEndPoint()
+        {
+            return "http://localhost/wellknown";
+        }
+
+        public string GetWellKnownConfigurationEndPoint()
+        {
+            return "http://localhost/configuration";
         }
     }
 }

@@ -23,7 +23,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             // ARRANGE
             InitializeFakeObjects();
             var authorizationParameter = new AuthorizationParameter();
-            Client client;
+            Models.Client client;
             List<Scope> scopes;
             List<string> allowedClaims;
 

@@ -14,21 +14,22 @@
 // limitations under the License.
 #endregion
 
-using System.Collections.Generic;
-using SimpleIdentityServer.Core.Models;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 
-namespace SimpleIdentityServer.Core.Repositories
+namespace SimpleIdentityServer.Configuration.Client
 {
-    public interface IClientRepository
+    public static class ServiceCollectionExtensions
     {
-        Models.Client GetClientById(string clientId);
-
-        bool InsertClient(Models.Client client);
-
-        bool DeleteClient(Models.Client client);
-
-        IList<Models.Client> GetAll();
-
-        bool UpdateClient(Models.Client client);
+        public static IServiceCollection AddConfigurationClient(this IServiceCollection services)
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+            
+            services.AddTransient<ISimpleIdServerConfigurationClientFactory, SimpleIdServerConfigurationClientFactory>();
+            return services;
+        }
     }
 }

@@ -22,7 +22,6 @@ using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Validators;
 
 namespace SimpleIdentityServer.Core.Authenticate
@@ -30,14 +29,14 @@ namespace SimpleIdentityServer.Core.Authenticate
     public interface IClientAssertionAuthentication
     {
         string GetClientId(AuthenticateInstruction instruction);
-        
+
         /// <summary>
         /// Perform private_key_jwt client authentication.
         /// </summary>
         /// <param name="instruction"></param>
         /// <param name="messageError"></param>
         /// <returns></returns>
-        Client AuthenticateClientWithPrivateKeyJwt(
+        Models.Client AuthenticateClientWithPrivateKeyJwt(
             AuthenticateInstruction instruction,
             out string messageError);
 
@@ -48,7 +47,7 @@ namespace SimpleIdentityServer.Core.Authenticate
         /// <param name="clientSecret"></param>
         /// <param name="messageError"></param>
         /// <returns></returns>
-        Client AuthenticateClientWithClientSecretJwt(
+        Models.Client AuthenticateClientWithClientSecretJwt(
             AuthenticateInstruction instruction,
             string clientSecret,
             out string messageError);
@@ -82,7 +81,7 @@ namespace SimpleIdentityServer.Core.Authenticate
         /// <param name="instruction"></param>
         /// <param name="messageError"></param>
         /// <returns></returns>
-        public Client AuthenticateClientWithPrivateKeyJwt(
+        public Models.Client AuthenticateClientWithPrivateKeyJwt(
             AuthenticateInstruction instruction,
             out string messageError)
         {
@@ -126,7 +125,7 @@ namespace SimpleIdentityServer.Core.Authenticate
         /// <param name="clientSecret"></param>
         /// <param name="messageError"></param>
         /// <returns></returns>
-        public Client AuthenticateClientWithClientSecretJwt(
+        public Models.Client AuthenticateClientWithClientSecretJwt(
             AuthenticateInstruction instruction,
             string clientSecret,
             out string messageError)
@@ -209,7 +208,7 @@ namespace SimpleIdentityServer.Core.Authenticate
             return payload.Issuer;
         }
 
-        private Client ValidateJwsPayLoad(
+        private Models.Client ValidateJwsPayLoad(
             JwsPayload jwsPayload,
             out string messageError)
         {
@@ -221,7 +220,7 @@ namespace SimpleIdentityServer.Core.Authenticate
             var jwsAudiences = jwsPayload.Audiences;
             var expirationDateTime = jwsPayload.ExpirationTime.ConvertFromUnixTimestamp();
 
-            Client client = null;
+            Models.Client client = null;
             // 1. Check the issuer is correct.
             if (!string.IsNullOrWhiteSpace(jwsIssuer))
             {

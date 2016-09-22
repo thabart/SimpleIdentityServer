@@ -152,7 +152,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 ClientId = clientId
             };
             _simpleIdentityServerConfigurator.Setup(s => s.GetIssuerName()).Returns(issuerName);
-            _clientRepositoryStub.Setup(c => c.GetAll()).Returns(new List<Client>());
+            _clientRepositoryStub.Setup(c => c.GetAll()).Returns(new List<Models.Client>());
 
             // ACT
             var result = _jwtGenerator.GenerateIdTokenPayloadForScopes(

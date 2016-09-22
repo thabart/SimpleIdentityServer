@@ -16,18 +16,73 @@
 
 using MailKit.Net.Smtp;
 using MimeKit;
+using SimpleIdentityServer.Client;
+using SimpleIdentityServer.Client.Selectors;
+using SimpleIdentityServer.Configuration.Client;
+using SimpleIdentityServer.Configuration.Client.Setting;
+using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Models;
 using System;
-using System.Net.Security;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.TwoFactors
 {
     public class EmailService : ITwoFactorAuthenticationService
     {
-        public EmailService()
-        {
+        private const string EmailFromName = "EmailFromName";
+        private const string EmailFromAddress = "EmailFromAddress";
+        private const string EmailSubject = "EmailSubject";
+        private const string EmailBody = "EmailBody";
+        private const string EmailSmtpHost = "EmailSmtpHost";
+        private const string EmailSmtpPort = "EmailSmtpPort";
+        private const string EmailSmtpUseSsl = "EmailSmtpUseSsl";
+        private const string EmailUserName = "EmailUserName";
+        private const string EmailPassword = "EmailPassword";
 
+        private List<string> _settingNames = new List<string>
+        {
+            EmailFromName,
+            EmailFromAddress,
+            EmailSubject,
+            EmailBody,
+            EmailSmtpHost,
+            EmailSmtpPort,
+            EmailSmtpUseSsl,
+            EmailUserName,
+            EmailPassword
+        };
+
+        private readonly ISettingClient _settingClient;
+
+        private readonly IClientAuthSelector _tokenClient;
+
+        private readonly ISimpleIdentityServerConfigurator _simpleIdentityServerConfigurator;
+
+        public EmailService(
+            ISimpleIdServerConfigurationClientFactory simpleIdServerConfigurationClientFactory,
+            IIdentityServerClientFactory identityServerClientFactory,
+            ISimpleIdentityServerConfigurator simpleIdentityServerConfigurator)
+        {
+            if (simpleIdServerConfigurationClientFactory == null)
+            {
+                throw new ArgumentNullException(nameof(simpleIdServerConfigurationClientFactory));
+            }
+
+            if (identityServerClientFactory == null)
+            {
+                throw new ArgumentNullException(nameof(identityServerClientFactory));
+            }
+
+            if (simpleIdentityServerConfigurator == null)
+            {
+                throw new ArgumentNullException(nameof(simpleIdentityServerConfigurator));
+            }
+
+            _settingClient = simpleIdServerConfigurationClientFactory.GetSettingClient();
+            _tokenClient = identityServerClientFactory.CreateTokenClient();
+            _simpleIdentityServerConfigurator = simpleIdentityServerConfigurator;
         }
 
         public int Code
@@ -40,23 +95,46 @@ namespace SimpleIdentityServer.Core.TwoFactors
 
         public async Task SendAsync(string code, ResourceOwner user)
         {
-            var message = new MimeMessage();
-            message.From.Add(new MailboxAddress("Habart Thierry", "habarthierry@hotmail.fr"));
-            message.To.Add(new MailboxAddress("thabart", "habarthierry@hotmail.fr"));
-            message.Subject = $"Confirmation code";
-            message.Body = new TextPart("plain")
+            if (string.IsNullOrWhiteSpace(code))
             {
-                Text = $"The confirmation code is {code}"
+                throw new ArgumentNullException(nameof(code));
+            }
+
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (string.IsNullOrEmpty(user.Email))
+            {
+                throw new ArgumentException("the email is not valid");
+            }
+
+            var settings = await _settingClient.GetSettingsByResolving(_simpleIdentityServerConfigurator.GetWellKnownConfigurationEndPoint());
+            if (!_settingNames.All(k => settings.Any(s => s.Key == k)))
+            {
+                throw new InvalidOperationException("there are one or more missing settings");
+            }
+
+            var dic = settings.ToDictionary(s => s.Key);
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress(dic[EmailFromName].Value, dic[EmailFromAddress].Value));
+            message.To.Add(new MailboxAddress(user.Name, user.Email));
+            message.Subject = dic[EmailSubject].Value;
+            var bodyBuilder = new BodyBuilder()
+            {
+                HtmlBody = string.Format(dic[EmailBody].Value, code)
             };
+            message.Body = bodyBuilder.ToMessageBody();
 
             using (var client = new SmtpClient())
             {
                 client.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => {
                     return true;
                 };
-                await client.ConnectAsync("smtp.live.com", 587, false);
+                await client.ConnectAsync(dic[EmailSmtpHost].Value, int.Parse(dic[EmailSmtpPort].Value), bool.Parse(dic[EmailSmtpUseSsl].Value));
                 client.AuthenticationMechanisms.Remove("XOAUTH2");
-                await client.AuthenticateAsync("habarthierry@hotmail.fr", "SORbonne1989");
+                await client.AuthenticateAsync(dic[EmailUserName].Value, dic[EmailPassword].Value);
                 await client.SendAsync(message);
                 await client.DisconnectAsync(true);
             }

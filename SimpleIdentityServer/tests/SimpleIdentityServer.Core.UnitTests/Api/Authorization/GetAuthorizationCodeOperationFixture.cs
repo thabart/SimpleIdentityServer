@@ -51,7 +51,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                 Scope = scope,
                 Claims = null
             };
-            _clientValidatorFake.Setup(c => c.ValidateGrantType(It.IsAny<GrantType>(), It.IsAny<Client>()))
+            _clientValidatorFake.Setup(c => c.ValidateGrantType(It.IsAny<GrantType>(), It.IsAny<Models.Client>()))
                 .Returns(false);
 
             // ACT & ASSERTS
@@ -81,7 +81,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             _processAuthorizationRequestFake.Setup(p => p.Process(It.IsAny<AuthorizationParameter>(),
                 It.IsAny<ClaimsPrincipal>()))
                 .Returns(actionResult);
-            _clientValidatorFake.Setup(c => c.ValidateGrantType(It.IsAny<GrantType>(), It.IsAny<Client>()))
+            _clientValidatorFake.Setup(c => c.ValidateGrantType(It.IsAny<GrantType>(), It.IsAny<Models.Client>()))
                 .Returns(true);
 
             // ACT & ASSERT
@@ -108,7 +108,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                     Action = IdentityServerEndPoints.FormIndex
                 }
             };
-            var client = new Client();
+            var client = new Models.Client();
             var authorizationParameter = new AuthorizationParameter
             {
                 ClientId = clientId,
@@ -121,7 +121,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                 It.IsAny<ClaimsPrincipal>())).Returns(actionResult);
             _clientValidatorFake.Setup(c => c.ValidateClientExist(It.IsAny<string>()))
                 .Returns(client);
-            _clientValidatorFake.Setup(c => c.ValidateGrantType(It.IsAny<GrantType>(), It.IsAny<Client>()))
+            _clientValidatorFake.Setup(c => c.ValidateGrantType(It.IsAny<GrantType>(), It.IsAny<Models.Client>()))
                 .Returns(true);
 
             // ACT

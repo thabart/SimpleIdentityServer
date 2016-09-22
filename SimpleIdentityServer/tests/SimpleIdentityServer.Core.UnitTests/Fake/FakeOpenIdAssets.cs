@@ -29,11 +29,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Fake
         /// Get a list of fake clients
         /// </summary>
         /// <returns></returns>
-        public static List<Client> GetClients()
+        public static List<Models.Client> GetClients()
         {
-            return new List<Client>
+            return new List<Models.Client>
             {
-                new Client
+                new Models.Client
                 {
                     ClientId = "MyBlog",
                     ClientName = "My blog",

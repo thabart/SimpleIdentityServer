@@ -44,7 +44,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
 
         public virtual DbSet<GrantedToken> GrantedTokens { get; set; }
 
-        public virtual DbSet<Client> Clients { get; set; } 
+        public virtual DbSet<Models.Client> Clients { get; set; } 
 
         public virtual DbSet<Consent> Consents { get; set; }
 

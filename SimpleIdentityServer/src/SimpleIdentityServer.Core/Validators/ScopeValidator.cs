@@ -27,7 +27,7 @@ namespace SimpleIdentityServer.Core.Validators
     {
         List<string> IsScopesValid(
             string scope,
-            Client client,
+            Models.Client client,
             out string messageDescription);
     }
 
@@ -41,8 +41,8 @@ namespace SimpleIdentityServer.Core.Validators
         }
 
         public List<string> IsScopesValid(
-            string scope, 
-            Client client,
+            string scope,
+            Models.Client client,
             out string messageDescription)
         {
             var emptyList = new List<string>();

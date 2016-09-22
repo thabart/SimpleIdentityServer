@@ -308,7 +308,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 Scope = scope,
                 ResponseType = responseType
             };
-            var client = new Client
+            var client = new Models.Client
             {
                 IdTokenEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5,
                 IdTokenEncryptedResponseEnc = Jwt.Constants.JweEncNames.A128CBC_HS256,
@@ -358,7 +358,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 ResponseType = responseType,
                 ResponseMode = ResponseMode.None
             };
-            var client = new Client
+            var client = new Models.Client
             {
                 IdTokenEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5,
                 IdTokenEncryptedResponseEnc = Jwt.Constants.JweEncNames.A128CBC_HS256,

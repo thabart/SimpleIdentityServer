@@ -66,7 +66,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             };
 
             _clientValidatorFake.Setup(c => c.ValidateGrantType(It.IsAny<GrantType>(),
-                It.IsAny<Client>()))
+                It.IsAny<Models.Client>()))
                 .Returns(false);
 
             // ACT & ASSERTS
@@ -105,7 +105,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             _processAuthorizationRequestFake.Setup(p => p.Process(It.IsAny<AuthorizationParameter>(),
                 It.IsAny<ClaimsPrincipal>())).Returns(actionResult);
             _clientValidatorFake.Setup(c => c.ValidateGrantType(It.IsAny<GrantType>(),
-                It.IsAny<Client>()))
+                It.IsAny<Models.Client>()))
                 .Returns(true);
 
             // ACT

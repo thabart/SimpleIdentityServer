@@ -77,7 +77,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
                     {
                         claimName
                     },
-                    Client = new Client
+                    Client = new Models.Client
                     {
                         ClientId = clientId
                     }
@@ -114,7 +114,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
             {
                 new Consent
                 {
-                    Client = new Client
+                    Client = new Models.Client
                     {
                         ClientId = clientId
                     },
@@ -166,7 +166,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
             {
                 new Consent
                 {
-                    Client = new Client
+                    Client = new Models.Client
                     {
                         ClientId = clientId
                     },

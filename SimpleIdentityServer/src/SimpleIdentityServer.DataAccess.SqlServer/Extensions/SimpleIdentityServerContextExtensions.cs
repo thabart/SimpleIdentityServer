@@ -570,7 +570,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                 context.Clients.AddRange(new[]
                 {
                     // Configuration API : needs to interact with the introspection endpoint.
-                    new Client
+                    new Models.Client
                     {
                         ClientId = "Configuration",
                         ClientSecret = "Configuration",
@@ -582,7 +582,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         ApplicationType = ApplicationTypes.web
                     },
                     // Open Id manager API : needs to interact with the introspection endpoint.
-                    new Client
+                    new Models.Client
                     {
                         ClientId = "OpenIdManager",
                         ClientSecret = "OpenIdManager",
@@ -594,7 +594,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         ApplicationType = ApplicationTypes.web
                     },
                     // UMA API : needs to interact with the introspection endpoint.
-                    new Client
+                    new Models.Client
                     {
                         ClientId = "Uma",
                         ClientSecret = "Uma",
@@ -606,7 +606,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         ApplicationType = ApplicationTypes.web
                     },
                     // Anonymous client
-                    new Client
+                    new Models.Client
                     {
                         ClientId = Constants.AnonymousClientId,
                         ClientName = "Anonymous client",
@@ -637,7 +637,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         ApplicationType = ApplicationTypes.web
                     },
                     // Website
-                    new Client
+                    new Models.Client
                     {
                         ClientId = "website",
                         ClientName = "Website",
@@ -671,7 +671,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         ApplicationType = ApplicationTypes.web
                     },
                     // Manager website API
-                    new Client
+                    new Models.Client
                     {
                         ClientId = "ManagerWebSiteApi",
                         ClientName = "Manager website API",
@@ -721,7 +721,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         ApplicationType = ApplicationTypes.web
                     },
                     // Visual studio extension
-                    new Client
+                    new Models.Client
                     {
                         ClientId = "VisualStudioExtension",
                         ClientName = "VisualStudioExtension",
@@ -743,7 +743,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
 
                     },
                     // SimpleIdentity server : needs to interact with the configuration server to retrieve his configuration
-                    new Client
+                    new Models.Client
                     {
                         ClientId = "SimpleIdentityServer",
                         ClientSecret = "SimpleIdentityServer",
@@ -764,7 +764,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         ApplicationType = ApplicationTypes.web
                     },
                     // Manager website 
-                    new Client
+                    new Models.Client
                     {
                         ClientId = "SampleClient",
                         ClientName = "Sample client",
@@ -792,7 +792,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         ApplicationType = ApplicationTypes.web
                     },
                     // Simple Identity server test client
-                    new Client
+                    new Models.Client
                     {
                         ClientId = "SimpleIdServerClient",
                         ClientName = "Simple Identity Server Client",

@@ -24,7 +24,7 @@ namespace SimpleIdentityServer.Core.Authenticate
 {
     public interface IAuthenticateClient
     {
-        Client Authenticate(
+        Models.Client Authenticate(
             AuthenticateInstruction instruction,
             out string errorMessage);
     }
@@ -55,7 +55,7 @@ namespace SimpleIdentityServer.Core.Authenticate
             _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
         }
 
-        public Client Authenticate(
+        public Models.Client Authenticate(
             AuthenticateInstruction instruction,
             out string errorMessage)
         {
@@ -65,7 +65,7 @@ namespace SimpleIdentityServer.Core.Authenticate
             }
 
             errorMessage = string.Empty;
-            Client client = null;
+            Models.Client client = null;
 
             // First we try to fetch the client_id
             // The different client authentication mechanisms are described here : http://openid.net/specs/openid-connect-core-1_0.html#ClientAuthentication

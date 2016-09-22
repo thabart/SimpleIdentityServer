@@ -46,33 +46,18 @@ namespace SimpleIdentityServer.Host
         public bool IsDataMigrated { get; set; }
     }
 
-    public class AuthenticationOptions
-    {
-        public string ConfigurationUrl { get; set; }
-
-        public string ClientId { get; set; }
-
-        public string ClientSecret { get; set; }
-    }
-
     public static class ApplicationBuilderExtensions 
     {        
         #region Public static methods
         
         public static void UseSimpleIdentityServer(this IApplicationBuilder app,
             Action<HostingOptions> hostingCallback,
-            Action<SwaggerOptions> swaggerCallback,
-            Action<AuthenticationMiddlewareOptions> authenticationOptionsCallback,
+            Action<ConfigurationEdpOptions> authenticationOptionsCallback,
             ILoggerFactory loggerFactory) 
         {
             if (hostingCallback == null) 
             {
                 throw new ArgumentNullException(nameof(hostingCallback));    
-            }
-            
-            if (swaggerCallback == null) 
-            {
-                throw new ArgumentNullException(nameof(swaggerCallback));
             }
 
             if (authenticationOptionsCallback == null)
@@ -81,13 +66,10 @@ namespace SimpleIdentityServer.Host
             }
             
             var hostingOptions = new HostingOptions();
-            var swaggerOptions = new SwaggerOptions();
-            var authenticationOptions = new AuthenticationMiddlewareOptions();
+            var authenticationOptions = new ConfigurationEdpOptions();
             hostingCallback(hostingOptions);
-            swaggerCallback(swaggerOptions);
             authenticationOptionsCallback(authenticationOptions);
             app.UseSimpleIdentityServer(hostingOptions,
-                swaggerOptions, 
                 authenticationOptions, 
                 loggerFactory);
         }
@@ -95,8 +77,7 @@ namespace SimpleIdentityServer.Host
         public static void UseSimpleIdentityServer(
             this IApplicationBuilder app,
             HostingOptions hostingOptions,
-            SwaggerOptions swaggerOptions,
-            AuthenticationMiddlewareOptions authenticationOptions,
+            ConfigurationEdpOptions configurationEdpOptions,
             ILoggerFactory loggerFactory) 
         {
             if (hostingOptions == null)
@@ -104,23 +85,14 @@ namespace SimpleIdentityServer.Host
                 throw new ArgumentNullException(nameof(hostingOptions));
             }
 
-            if (swaggerOptions == null) {
-                throw new ArgumentNullException(nameof(swaggerOptions));
+            if (configurationEdpOptions == null)
+            {
+                throw new ArgumentNullException(nameof(configurationEdpOptions));
             }
 
-            if (authenticationOptions == null)
+            var authenticationOptions = new AuthenticationMiddlewareOptions
             {
-                throw new ArgumentNullException(nameof(authenticationOptions));
-            }
-
-            if (authenticationOptions.ConfigurationEdp == null)
-            {
-                throw new ArgumentNullException(nameof(authenticationOptions.ConfigurationEdp));
-            }
-
-            if (authenticationOptions.IdServer == null)
-            {
-                authenticationOptions.IdServer = new IdServerOptions
+                IdServer = new IdServerOptions
                 {
                     ExternalLoginCallback = "/Authenticate/LoginCallback",
                     LoginUrls = new List<string>
@@ -132,8 +104,9 @@ namespace SimpleIdentityServer.Host
                         "/Authenticate/LocalLogin",
                         "/Authenticate/ExternalLoginOpenId"
                     }
-                };
-            }
+                },
+                ConfigurationEdp = configurationEdpOptions
+            };
 
             var staticFileOptions = new StaticFileOptions();
             staticFileOptions.FileProvider = new EmbeddedFileProvider(

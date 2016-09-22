@@ -14,6 +14,9 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Client;
+using SimpleIdentityServer.Configuration.Client;
+using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Models;
 using System;
 using System.Collections.Generic;
@@ -36,11 +39,37 @@ namespace SimpleIdentityServer.Core.TwoFactors
     {
         private readonly List<ITwoFactorAuthenticationService> _services;
 
-        public TwoFactorAuthenticationHandler()
+        private readonly ISimpleIdServerConfigurationClientFactory _simpleIdServerConfigurationClientFactory;
+
+        private readonly IIdentityServerClientFactory _identityServerClientFactory;
+
+        private readonly ISimpleIdentityServerConfigurator _simpleIdentityServerConfigurator;
+
+        public TwoFactorAuthenticationHandler(
+            ISimpleIdServerConfigurationClientFactory simpleIdServerConfigurationClientFactory,
+            IIdentityServerClientFactory identityServerClientFactory,
+            ISimpleIdentityServerConfigurator simpleIdentityServerConfigurator)
         {
+            if (simpleIdServerConfigurationClientFactory == null)
+            {
+                throw new ArgumentNullException(nameof(simpleIdServerConfigurationClientFactory));
+            }
+
+            if (identityServerClientFactory == null)
+            {
+                throw new ArgumentNullException(nameof(identityServerClientFactory));
+            }
+
+            if (simpleIdentityServerConfigurator == null)
+            {
+                throw new ArgumentNullException(nameof(simpleIdentityServerConfigurator));
+            }
+
+            _simpleIdServerConfigurationClientFactory = simpleIdServerConfigurationClientFactory;
+            _simpleIdentityServerConfigurator = simpleIdentityServerConfigurator;
             _services = new List<ITwoFactorAuthenticationService>
             {
-                new EmailService(),
+                new EmailService(simpleIdServerConfigurationClientFactory, identityServerClientFactory, simpleIdentityServerConfigurator),
                 new TwilioSmsService()
             };
         }

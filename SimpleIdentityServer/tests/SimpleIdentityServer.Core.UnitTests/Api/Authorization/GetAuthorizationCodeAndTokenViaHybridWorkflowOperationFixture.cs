@@ -68,7 +68,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                 Nonce = "nonce"
             };
 
-            _clientValidatorFake.Setup(c => c.ValidateGrantTypes(It.IsAny<Client>(), It.IsAny<GrantType[]>()))
+            _clientValidatorFake.Setup(c => c.ValidateGrantTypes(It.IsAny<Models.Client>(), It.IsAny<GrantType[]>()))
                 .Returns(false);
 
             // ACT & ASSERT
@@ -100,7 +100,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             _processAuthorizationRequestFake.Setup(p => p.Process(It.IsAny<AuthorizationParameter>(),
                 It.IsAny<ClaimsPrincipal>()))
                 .Returns(actionResult);
-            _clientValidatorFake.Setup(c => c.ValidateGrantTypes(It.IsAny<Client>(), It.IsAny<GrantType[]>()))
+            _clientValidatorFake.Setup(c => c.ValidateGrantTypes(It.IsAny<Models.Client>(), It.IsAny<GrantType[]>()))
                 .Returns(true);
 
             // ACT & ASSERT
@@ -139,7 +139,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             _processAuthorizationRequestFake.Setup(p => p.Process(It.IsAny<AuthorizationParameter>(),
                 It.IsAny<ClaimsPrincipal>()))
                 .Returns(actionResult);
-            _clientValidatorFake.Setup(c => c.ValidateGrantTypes(It.IsAny<Client>(), It.IsAny<GrantType[]>()))
+            _clientValidatorFake.Setup(c => c.ValidateGrantTypes(It.IsAny<Models.Client>(), It.IsAny<GrantType[]>()))
                 .Returns(true);
 
             // ACT

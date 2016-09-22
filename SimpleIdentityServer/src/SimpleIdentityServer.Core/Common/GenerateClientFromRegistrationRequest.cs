@@ -26,7 +26,7 @@ namespace SimpleIdentityServer.Core.Common
 {
     public interface IGenerateClientFromRegistrationRequest
     {
-        Client Execute(RegistrationParameter registrationParameter);
+        Models.Client Execute(RegistrationParameter registrationParameter);
     }
 
     public class GenerateClientFromRegistrationRequest : IGenerateClientFromRegistrationRequest
@@ -49,7 +49,7 @@ namespace SimpleIdentityServer.Core.Common
 
         #region Public methods
 
-        public Client Execute(RegistrationParameter registrationParameter)
+        public Models.Client Execute(RegistrationParameter registrationParameter)
         {
             if (registrationParameter == null)
             {
@@ -59,7 +59,7 @@ namespace SimpleIdentityServer.Core.Common
             // Validate the parameters
             _registrationParameterValidator.Validate(registrationParameter);
             // Generate the client
-            var client = new Client
+            var client = new Models.Client
             {
                 RedirectionUrls = registrationParameter.RedirectUris,
                 Contacts = registrationParameter.Contacts,

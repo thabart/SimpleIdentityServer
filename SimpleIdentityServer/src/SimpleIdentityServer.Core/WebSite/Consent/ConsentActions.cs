@@ -29,7 +29,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent
         ActionResult DisplayConsent(
             AuthorizationParameter authorizationParameter,
             ClaimsPrincipal claimsPrincipal,
-            out Client client,
+            out Models.Client client,
             out List<Scope> allowedScopes,
             out List<string> allowedClaims);
 
@@ -55,7 +55,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent
         public ActionResult DisplayConsent(
             AuthorizationParameter authorizationParameter,
             ClaimsPrincipal claimsPrincipal,
-            out Client client,
+            out Models.Client client,
             out List<Scope> allowedScopes,
             out List<string> allowedClaims)
         {

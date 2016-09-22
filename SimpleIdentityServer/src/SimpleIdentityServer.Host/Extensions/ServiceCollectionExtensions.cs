@@ -23,7 +23,10 @@ using Microsoft.Extensions.FileProviders;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.Elasticsearch;
+using SimpleIdentityServer.Authentication.Middleware;
 using SimpleIdentityServer.Authentication.Middleware.Extensions;
+using SimpleIdentityServer.Client;
+using SimpleIdentityServer.Configuration.Client;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Jwt;
@@ -115,18 +118,12 @@ namespace SimpleIdentityServer.Host
         public static void AddSimpleIdentityServer(
             this IServiceCollection serviceCollection,
             Action<DataSourceOptions> dataSourceCallback,
-            Action<SwaggerOptions> swaggerCallback,
             Action<LoggingOptions> loggingOptionsCallback,
-            string configurationUrl) 
+            Action<ConfigurationEdpOptions> configurationEdpOptionsCallback) 
         {
             if (dataSourceCallback == null)
             {
                 throw new ArgumentNullException(nameof(dataSourceCallback));
-            }
-            
-            if (swaggerCallback == null) 
-            {
-                throw new ArgumentNullException(nameof(swaggerCallback));
             }
 
             if (loggingOptionsCallback == null)
@@ -134,47 +131,41 @@ namespace SimpleIdentityServer.Host
                 throw new ArgumentNullException(nameof(loggingOptionsCallback));
             }
 
-            if (string.IsNullOrWhiteSpace(configurationUrl))
+            if (configurationEdpOptionsCallback == null)
             {
-                throw new ArgumentNullException(nameof(configurationUrl));
+                throw new ArgumentNullException(nameof(configurationEdpOptionsCallback));
             }
             
             var dataSourceOptions = new DataSourceOptions();
-            var swaggerOptions = new SwaggerOptions();
             var loggingOptions = new LoggingOptions();
+            var configurationEdpOptions = new ConfigurationEdpOptions();
             dataSourceCallback(dataSourceOptions);
-            swaggerCallback(swaggerOptions);
             loggingOptionsCallback(loggingOptions);
+            configurationEdpOptionsCallback(configurationEdpOptions);
             serviceCollection.AddSimpleIdentityServer(
                 dataSourceOptions,
-                swaggerOptions,
                 loggingOptions,
-                configurationUrl);
+                configurationEdpOptions);
         }
         
         public static void AddSimpleIdentityServer(
             this IServiceCollection serviceCollection, 
             DataSourceOptions dataSourceOptions,
-            SwaggerOptions swaggerOptions,
             LoggingOptions loggingOptions,
-            string configurationUrl) 
+            ConfigurationEdpOptions configurationEdpOptions) 
         {
             if (dataSourceOptions == null) {
                 throw new ArgumentNullException(nameof(dataSourceOptions));
-            }            
-            
-            if (swaggerOptions == null) {
-                throw new ArgumentNullException(nameof(swaggerOptions));
-            }
+            }           
 
             if (loggingOptions == null)
             {
                 throw new ArgumentNullException(nameof(loggingOptions));
             }
 
-            if (string.IsNullOrWhiteSpace(configurationUrl))
+            if (configurationEdpOptions == null)
             {
-                throw new ArgumentNullException(nameof(configurationUrl));
+                throw new ArgumentNullException(nameof(configurationEdpOptions));
             }
 
             if (dataSourceOptions.DataSourceType == DataSourceTypes.SqlServer)
@@ -194,9 +185,8 @@ namespace SimpleIdentityServer.Host
             
             ConfigureSimpleIdentityServer(
                 serviceCollection, 
-                swaggerOptions,
                 loggingOptions,
-                configurationUrl);
+                configurationEdpOptions);
         }
         
         #endregion
@@ -210,25 +200,26 @@ namespace SimpleIdentityServer.Host
         /// <param name="swaggerOptions"></param>
         private static void ConfigureSimpleIdentityServer(
             IServiceCollection services,
-            SwaggerOptions swaggerOptions,
             LoggingOptions loggingOptions,
-            string configurationUrl) 
+            ConfigurationEdpOptions configurationEdpOptions) 
         {
             services.AddSimpleIdentityServerCore();
             services.AddSimpleIdentityServerJwt();
             services.AddRateLimitation();
-
+            services.AddIdServerClient();
+            services.AddConfigurationClient();
             services.AddTransient<ICertificateStore, CertificateStore>();
             services.AddTransient<IResourceOwnerService, InMemoryUserService>();
             services.AddTransient<IRedirectInstructionParser, RedirectInstructionParser>();
             services.AddTransient<IActionResultParser, ActionResultParser>();
             services.AddSingleton(new ConfigurationParameters
             {
-                ConfigurationUrl = configurationUrl
+                ConfigurationUrl = configurationEdpOptions.ConfigurationUrl,
+                ClientId = configurationEdpOptions.ClientId,
+                ClientSecret = configurationEdpOptions.ClientSecret
             });
             services.AddTransient<ISimpleIdentityServerConfigurator, ConcreteSimpleIdentityServerConfigurator>();
             services.AddDataProtection();
-            services.AddSingleton(swaggerOptions);
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddAuthentication(opts => opts.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme);

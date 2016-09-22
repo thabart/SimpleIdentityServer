@@ -140,9 +140,7 @@ namespace SimpleIdentityServer.Core
             serviceCollection.AddTransient<IGenerateAndSendCodeAction, GenerateAndSendCodeAction>();
             serviceCollection.AddTransient<IValidateConfirmationCodeAction, ValidateConfirmationCodeAction>();
             serviceCollection.AddTransient<IRemoveConfirmationCodeAction, RemoveConfirmationCodeAction>();
-            var handler = new TwoFactorAuthenticationHandler();
-            serviceCollection.AddSingleton<ITwoFactorAuthenticationHandler>(handler);
-            serviceCollection.AddSingleton<ITwoFactorAuthenticationStore>(handler);
+            serviceCollection.AddTransient<ITwoFactorAuthenticationHandler, TwoFactorAuthenticationHandler>();
             return serviceCollection;
         }
     }

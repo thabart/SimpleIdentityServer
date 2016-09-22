@@ -170,7 +170,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                     }
                 }
             };
-            var client = new Client();
+            var client = new Models.Client();
             _jwtParserFake.Setup(j => j.IsJwsToken(It.IsAny<string>()))
                 .Returns(true);
             _jwsParserFake.Setup(j => j.GetPayload(It.IsAny<string>()))
@@ -219,7 +219,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                     Jwt.Constants.StandardClaimNames.ExpirationTime, DateTime.Now.AddDays(-2)
                 }
             };
-            var client = new Client();
+            var client = new Models.Client();
             _jwtParserFake.Setup(j => j.IsJwsToken(It.IsAny<string>()))
                 .Returns(true);
             _jwsParserFake.Setup(j => j.GetPayload(It.IsAny<string>()))
@@ -268,7 +268,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                     Jwt.Constants.StandardClaimNames.ExpirationTime, DateTime.UtcNow.AddDays(2).ConvertToUnixTimestamp()
                 }
             };
-            var client = new Client();
+            var client = new Models.Client();
             _jwtParserFake.Setup(j => j.IsJwsToken(It.IsAny<string>()))
                 .Returns(true);
             _jwsParserFake.Setup(j => j.GetPayload(It.IsAny<string>()))
@@ -441,7 +441,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                     Jwt.Constants.StandardClaimNames.ExpirationTime, DateTime.Now.AddDays(2).ConvertToUnixTimestamp()
                 }
             };
-            var client = new Client();
+            var client = new Models.Client();
             _jwtParserFake.Setup(j => j.IsJweToken(It.IsAny<string>()))
                 .Returns(true);
             _jwtParserFake.Setup(j => j.DecryptWithPassword(It.IsAny<string>(),

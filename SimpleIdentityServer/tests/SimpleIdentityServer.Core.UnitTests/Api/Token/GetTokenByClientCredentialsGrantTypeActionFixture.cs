@@ -102,7 +102,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             {
                 Scope = "scope"
             };
-            var client = new Client
+            var client = new Models.Client
             {
                 GrantTypes = new List<GrantType>
                 {
@@ -132,7 +132,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             {
                 Scope = "scope"
             };
-            var client = new Client
+            var client = new Models.Client
             {
                 GrantTypes = new List<GrantType>
                 {
@@ -167,7 +167,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             {
                 Scope = "scope"
             };
-            var client = new Client
+            var client = new Models.Client
             {
                 GrantTypes = new List<GrantType>
                 {
@@ -183,7 +183,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(authenticateInstruction);
             _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), out message))
                 .Returns(client);
-            _scopeValidatorStub.Setup(s => s.IsScopesValid(It.IsAny<string>(), It.IsAny<Client>(), out messageDescription))
+            _scopeValidatorStub.Setup(s => s.IsScopesValid(It.IsAny<string>(), It.IsAny<Models.Client>(), out messageDescription))
                 .Returns(() => null);
 
             // ACT & ASSERT
@@ -212,7 +212,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             {
                 Scope = scope
             };
-            var client = new Client
+            var client = new Models.Client
             {
                 GrantTypes = new List<GrantType>
                 {
@@ -235,7 +235,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(authenticateInstruction);
             _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), out message))
                 .Returns(client);
-            _scopeValidatorStub.Setup(s => s.IsScopesValid(It.IsAny<string>(), It.IsAny<Client>(), out messageDescription))
+            _scopeValidatorStub.Setup(s => s.IsScopesValid(It.IsAny<string>(), It.IsAny<Models.Client>(), out messageDescription))
                 .Returns(scopes);
             _grantedTokenHelperStub.Setup(g => g.GetValidGrantedToken(It.IsAny<string>(),
                 It.IsAny<string>(),

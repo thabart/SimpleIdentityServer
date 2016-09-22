@@ -121,7 +121,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 ClientId = clientId,
                 ClientSecret = clientSecret
             };
-            var client = new Client();
+            var client = new Models.Client();
 
             string message;
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
@@ -156,7 +156,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 ClientSecret = clientSecret,
                 Scope = invalidScope
             };
-            var client = new Client();
+            var client = new Models.Client();
             var resourceOwner = new ResourceOwner();
 
             string message;
@@ -167,7 +167,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _resourceOwnerValidatorFake.Setup(
                 r => r.ValidateResourceOwnerCredentials(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(() => resourceOwner);
-            _scopeValidatorFake.Setup(s => s.IsScopesValid(It.IsAny<string>(), It.IsAny<Client>(), out message))
+            _scopeValidatorFake.Setup(s => s.IsScopesValid(It.IsAny<string>(), It.IsAny<Models.Client>(), out message))
                 .Returns(() => new List<string>());
 
             // ACT & ASSERTS
@@ -198,7 +198,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 ClientSecret = clientSecret,
                 Scope = invalidScope
             };
-            var client = new Client
+            var client = new Models.Client
             {
                 ClientId = clientId
             };
@@ -218,7 +218,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _resourceOwnerValidatorFake.Setup(
                 r => r.ValidateResourceOwnerCredentials(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(() => resourceOwner);
-            _scopeValidatorFake.Setup(s => s.IsScopesValid(It.IsAny<string>(), It.IsAny<Client>(), out message))
+            _scopeValidatorFake.Setup(s => s.IsScopesValid(It.IsAny<string>(), It.IsAny<Models.Client>(), out message))
                 .Returns(() => new List<string> { invalidScope });
             _jwtGeneratorFake.Setup(
                 j => j.GenerateUserInfoPayloadForScope(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))

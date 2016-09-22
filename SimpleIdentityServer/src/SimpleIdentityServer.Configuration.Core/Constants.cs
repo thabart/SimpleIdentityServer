@@ -41,6 +41,15 @@ namespace SimpleIdentityServer.Configuration.Core
         {
             public const string ExpirationTimeName = "TokenExpirationTime";
             public const string AuthorizationCodeExpirationTimeName = "AuthorizationCodeExpirationTime";
+            public const string EmailFromName = "EmailFromName";
+            public const string EmailFromAddress = "EmailFromAddress";
+            public const string EmailSubject = "EmailSubject";
+            public const string EmailBody = "EmailBody";
+            public const string EmailSmtpHost = "EmailSmtpHost";
+            public const string EmailSmtpPort = "EmailSmtpPort";
+            public const string EmailSmtpUseSsl = "EmailSmtpUseSsl";
+            public const string EmailUserName = "EmailUserName";
+            public const string EmailPassword = "EmailPassword";
         }
     }
 }

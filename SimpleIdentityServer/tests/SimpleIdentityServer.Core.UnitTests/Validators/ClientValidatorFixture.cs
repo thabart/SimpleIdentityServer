@@ -58,8 +58,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             // ACTS & ASSERTS
             Assert.Null(_clientValidator.ValidateRedirectionUrl(null, null));
             Assert.Null(_clientValidator.ValidateRedirectionUrl("url", null));
-            Assert.Null(_clientValidator.ValidateRedirectionUrl("url", new Client()));
-            Assert.Null(_clientValidator.ValidateRedirectionUrl("url", new Client
+            Assert.Null(_clientValidator.ValidateRedirectionUrl("url", new Models.Client()));
+            Assert.Null(_clientValidator.ValidateRedirectionUrl("url", new Models.Client
             {
                 RedirectionUrls = new List<string>()
             }));
@@ -70,7 +70,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
         {
             // ARRANGE
             const string url = "url";
-            var client = new Client
+            var client = new Models.Client
             {
                 RedirectionUrls = new List<string>
                 {
@@ -108,7 +108,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
         {
             // ARRANGE
             InitializeMockingObjects();
-            var client = new Client();
+            var client = new Models.Client();
 
             // ACT
             var result = _clientValidator.ValidateGrantType(GrantType.authorization_code, client);
@@ -123,7 +123,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
         {
             // ARRANGE
             InitializeMockingObjects();
-            var client = new Client
+            var client = new Models.Client
             {
                 GrantTypes = new List<GrantType>
                 {
@@ -150,7 +150,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
 
             // ACTS & ASSERTS
             Assert.False(_clientValidator.ValidateGrantTypes(null, null));
-            Assert.False(_clientValidator.ValidateGrantTypes(new Client(), null));
+            Assert.False(_clientValidator.ValidateGrantTypes(new Models.Client(), null));
         }
 
         [Fact]
@@ -158,7 +158,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
         {
             // ARRANGE
             InitializeMockingObjects();
-            var client = new Client
+            var client = new Models.Client
             {
                 GrantTypes = new List<GrantType>
                 {
@@ -177,7 +177,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
         {
             // ARRANGE
             InitializeMockingObjects();
-            var client = new Client
+            var client = new Models.Client
             {
                 GrantTypes = new List<GrantType>
                 {
