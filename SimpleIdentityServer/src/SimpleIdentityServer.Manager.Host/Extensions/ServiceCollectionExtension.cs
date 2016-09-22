@@ -23,6 +23,8 @@ using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Manager.Core;
 using System;
+using SimpleIdentityServer.Configuration.Client;
+using SimpleIdentityServer.Client;
 
 namespace SimpleIdentityServer.Manager.Host.Extensions
 {
@@ -45,6 +47,8 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
 
             serviceCollection.AddSimpleIdentityServerCore();
             serviceCollection.AddSimpleIdentityServerManagerCore();
+            serviceCollection.AddConfigurationClient();
+            serviceCollection.AddIdServerClient();
 
             // Add authentication
             serviceCollection.AddAuthentication();
