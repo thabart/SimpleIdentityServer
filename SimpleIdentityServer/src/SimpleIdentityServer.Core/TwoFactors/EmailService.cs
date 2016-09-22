@@ -38,7 +38,7 @@ namespace SimpleIdentityServer.Core.TwoFactors
             }
         }
 
-        public async Task SendAsync(string code)
+        public async Task SendAsync(string code, ResourceOwner user)
         {
             var message = new MimeMessage();
             message.From.Add(new MailboxAddress("Habart Thierry", "habarthierry@hotmail.fr"));

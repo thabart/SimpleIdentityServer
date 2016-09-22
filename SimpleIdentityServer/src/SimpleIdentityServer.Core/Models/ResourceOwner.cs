@@ -143,6 +143,7 @@ namespace SimpleIdentityServer.Core.Models
     public enum TwoFactorAuthentications
     {
         NONE,
-        Email
+        Email,
+        Sms
     }
 }

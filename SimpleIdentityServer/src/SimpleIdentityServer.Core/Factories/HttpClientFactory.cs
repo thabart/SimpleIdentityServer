@@ -13,6 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
+#if NET
+using System.Net;
+#endif
 using System.Net.Http;
 
 namespace SimpleIdentityServer.Core.Factories
@@ -26,7 +30,13 @@ namespace SimpleIdentityServer.Core.Factories
     {
         public HttpClient GetHttpClient()
         {
-            return new HttpClient();
+            var httpHandler = new HttpClientHandler();
+#if NET
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
+#else
+            httpHandler.ServerCertificateCustomValidationCallback = (_, __, ___, ____) => true;
+#endif
+            return new HttpClient(httpHandler);
         }
     }
 }

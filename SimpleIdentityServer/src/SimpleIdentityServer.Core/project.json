@@ -20,10 +20,20 @@
     "net46": {
       "frameworkAssemblies": {
         "System.Net.Http": "4.0.0.0"
+      },
+      "buildOptions": {
+        "define": [
+          "NET"
+        ]
       }
     },
     "netstandard1.6": {
       "dependencies": {
+      },
+      "buildOptions": {
+        "define": [
+          "NETSTANDARD"
+        ]
       }
     }
   }

@@ -14,13 +14,14 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Models;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.TwoFactors
 {
     public interface ITwoFactorAuthenticationService
     {
-        Task SendAsync(string code);
+        Task SendAsync(string code, ResourceOwner user);
 
         int Code { get; }
     }

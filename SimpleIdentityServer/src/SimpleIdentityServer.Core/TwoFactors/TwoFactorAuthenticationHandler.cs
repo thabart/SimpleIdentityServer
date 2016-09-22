@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +24,7 @@ namespace SimpleIdentityServer.Core.TwoFactors
 {
     public interface ITwoFactorAuthenticationHandler
     {
-        Task SendCode(string code, int twoFactorAuthType);
+        Task SendCode(string code, int twoFactorAuthType, ResourceOwner user);
     }
 
     public interface ITwoFactorAuthenticationStore
@@ -39,15 +40,21 @@ namespace SimpleIdentityServer.Core.TwoFactors
         {
             _services = new List<ITwoFactorAuthenticationService>
             {
-                new EmailService()
+                new EmailService(),
+                new TwilioSmsService()
             };
         }
 
-        public async Task SendCode(string code, int twoFactorAuthType)
+        public async Task SendCode(string code, int twoFactorAuthType, ResourceOwner user)
         {
             if (string.IsNullOrWhiteSpace(code))
             {
                 throw new ArgumentNullException(nameof(code));
+            }
+
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
             }
 
             var service = _services.FirstOrDefault(s => s.Code == twoFactorAuthType);
@@ -56,7 +63,7 @@ namespace SimpleIdentityServer.Core.TwoFactors
                 throw new InvalidOperationException($"the service {twoFactorAuthType} doesn't exist");
             }
 
-            await service.SendAsync(code);
+            await service.SendAsync(code, user);
         }
 
         public void AddService(ITwoFactorAuthenticationService service)

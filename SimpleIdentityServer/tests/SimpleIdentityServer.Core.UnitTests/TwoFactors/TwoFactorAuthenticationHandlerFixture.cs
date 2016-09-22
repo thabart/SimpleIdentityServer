@@ -32,8 +32,9 @@ namespace SimpleIdentityServer.Core.UnitTests.TwoFactors
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            Assert.ThrowsAsync<ArgumentNullException>(() => _twoFactorAuthenticationHandler.SendCode(null, 0));
-            Assert.ThrowsAsync<ArgumentNullException>(() => _twoFactorAuthenticationHandler.SendCode(string.Empty, 0));
+            Assert.ThrowsAsync<ArgumentNullException>(() => _twoFactorAuthenticationHandler.SendCode(null, 0, null));
+            Assert.ThrowsAsync<ArgumentNullException>(() => _twoFactorAuthenticationHandler.SendCode(string.Empty, 0, null));
+            Assert.ThrowsAsync<ArgumentNullException>(() => _twoFactorAuthenticationHandler.SendCode("code", 0, null));
         }
 
         [Fact]
@@ -43,7 +44,7 @@ namespace SimpleIdentityServer.Core.UnitTests.TwoFactors
             InitializeFakeObjects();
 
             // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _twoFactorAuthenticationHandler.SendCode("code", 3));
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _twoFactorAuthenticationHandler.SendCode("code", 3, new Models.ResourceOwner()));
             Assert.NotNull(exception);
             Assert.True(exception.Message == $"the service 3 doesn't exist");
         }

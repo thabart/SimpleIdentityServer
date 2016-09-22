@@ -94,7 +94,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                     ErrorDescriptions.TheConfirmationCodeCannotBeSaved);
             }
 
-            await _twoFactorAuthenticationHandler.SendCode(confirmationCode.Code, (int)resourceOwner.TwoFactorAuthentication);
+            await _twoFactorAuthenticationHandler.SendCode(confirmationCode.Code, (int)resourceOwner.TwoFactorAuthentication, resourceOwner);
             return confirmationCode.Code;
         }
 
