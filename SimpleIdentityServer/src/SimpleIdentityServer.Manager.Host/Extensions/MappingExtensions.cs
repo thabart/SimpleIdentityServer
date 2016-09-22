@@ -272,7 +272,7 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
             };
         }
 
-        public static ClientInformationResponse ToDto(this Client client)
+        public static ClientInformationResponse ToDto(this SimpleIdentityServer.Core.Models.Client client)
         {
             return new ClientInformationResponse
             {
@@ -282,7 +282,7 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
             };
         }
 
-        public static ClientResponse ToClientResponseDto(this Client client)
+        public static ClientResponse ToClientResponseDto(this SimpleIdentityServer.Core.Models.Client client)
         {
             return new ClientResponse
             {
@@ -369,7 +369,7 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
 
         #region To List of DTOs
 
-        public static List<ClientInformationResponse> ToDtos(this List<Client> clients)
+        public static List<ClientInformationResponse> ToDtos(this List<SimpleIdentityServer.Core.Models.Client> clients)
         {
             return clients.Select(c => c.ToDto()).ToList();
         }
