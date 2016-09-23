@@ -31,6 +31,8 @@ using Serilog;
 using Serilog.Events;
 using SimpleIdentityServer.Authentication.Middleware;
 using SimpleIdentityServer.Authentication.Middleware.Extensions;
+using SimpleIdentityServer.Client;
+using SimpleIdentityServer.Configuration.Client;
 using SimpleIdentityServer.IdentityServer.EF;
 using SimpleIdentityServer.IdentityServer.EF.DbContexts;
 using System;
@@ -215,6 +217,8 @@ namespace IdentityServer4.Startup
             services.AddTransient<IProfileService, UserProfileService>();
             services.AddTransient<IResourceOwnerPasswordValidator, ResourceOwnerPasswordValidator>();
             services.AddSingleton<Serilog.ILogger>(log);
+            services.AddConfigurationClient();
+            services.AddIdServerClient();
         }
 
         #endregion
