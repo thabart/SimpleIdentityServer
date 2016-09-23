@@ -26,9 +26,14 @@ namespace SimpleIdentityServer.Host.ViewModels
 
         [Required]
         public string Password { get; set; }
+
+        public string NewPassword { get; set; }
                 
         [EmailAddress]
         public string Email { get; set; }
+
+        [Phone]
+        public string PhoneNumber { get; set; }
 
         public TwoFactorAuthentications TwoAuthenticationFactor { get; set; }
     }

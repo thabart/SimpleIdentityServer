@@ -386,6 +386,18 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         Code = Constants.StandardTranslationCodes.SendConfirmationCode,
                         Value = "Send a confirmation code"
                     },
+                    new Translation
+                    {
+                        LanguageTag = "en",
+                        Code = Constants.StandardTranslationCodes.Phone,
+                        Value = "Phone"
+                    },
+                    new Translation
+                    {
+                        LanguageTag = "en",
+                        Code = Constants.StandardTranslationCodes.HashedPassword,
+                        Value = "Hashed password"
+                    },
                     // Swedish
                     new Translation
                     {

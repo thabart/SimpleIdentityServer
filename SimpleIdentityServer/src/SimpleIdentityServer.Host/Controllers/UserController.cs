@@ -99,8 +99,9 @@ namespace SimpleIdentityServer.Api.Controllers
             {
                 Email = user.Email,
                 Name = user.Name,
-                Password = string.Empty,
-                TwoAuthenticationFactor = user.TwoFactorAuthentication
+                Password = user.Password,
+                TwoAuthenticationFactor = user.TwoFactorAuthentication,
+                PhoneNumber = user.PhoneNumber
             });
         }
 
@@ -235,7 +236,9 @@ namespace SimpleIdentityServer.Api.Controllers
                 Core.Constants.StandardTranslationCodes.YourEmail,
                 Core.Constants.StandardTranslationCodes.ConfirmCode,
                 Core.Constants.StandardTranslationCodes.TwoAuthenticationFactor,
-                Core.Constants.StandardTranslationCodes.UserIsUpdated
+                Core.Constants.StandardTranslationCodes.UserIsUpdated,
+                Core.Constants.StandardTranslationCodes.Phone,
+                Core.Constants.StandardTranslationCodes.HashedPassword
             });
 
             ViewBag.Translations = translations;

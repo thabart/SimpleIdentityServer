@@ -85,9 +85,10 @@ namespace SimpleIdentityServer.Host.Extensions
             return new UpdateUserParameter
             {
                 Name = updateResourceOwnerViewModel.Name,
-                Password = updateResourceOwnerViewModel.Password,
+                Password = updateResourceOwnerViewModel.NewPassword,
                 TwoFactorAuthentication = updateResourceOwnerViewModel.TwoAuthenticationFactor,
-                Email = updateResourceOwnerViewModel.Email
+                Email = updateResourceOwnerViewModel.Email,
+                Phone = updateResourceOwnerViewModel.PhoneNumber
             };
         }
 

@@ -65,24 +65,9 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                 throw new ArgumentNullException(nameof(updateUserParameter.Name));
             }
 
-            if (string.IsNullOrWhiteSpace(updateUserParameter.Password))
-            {
-                throw new ArgumentNullException(nameof(updateUserParameter.Password));
-            }
-
             if (!string.IsNullOrWhiteSpace(updateUserParameter.Email) && !new EmailAddressAttribute().IsValid(updateUserParameter.Email))
             {
                 throw new ArgumentException($"not a valid email address {updateUserParameter.Email}");
-            }
-
-            var newPassword = _securityHelper.ComputeHash(updateUserParameter.Password);
-            var user = _resourceOwnerRepository.GetResourceOwnerByCredentials(updateUserParameter.Name,
-                newPassword);
-            if (user != null && user.Id != updateUserParameter.Id)
-            {
-                throw new IdentityServerException(
-                    Errors.ErrorCodes.InternalError,
-                    Errors.ErrorDescriptions.TheRoWithCredentialsAlreadyExists);
             }
 
             var resourceOwner = _resourceOwnerRepository.GetBySubject(updateUserParameter.Id);
@@ -93,10 +78,23 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                     Errors.ErrorDescriptions.TheRoDoesntExist);
             }
 
+            var user = _resourceOwnerRepository.GetResourceOwnerByCredentials(updateUserParameter.Name, resourceOwner.Password);
+            if (user != null && user.Id != updateUserParameter.Id)
+            {
+                throw new IdentityServerException(
+                    Errors.ErrorCodes.InternalError,
+                    Errors.ErrorDescriptions.TheRoWithCredentialsAlreadyExists);
+            }
+
             resourceOwner.Name = updateUserParameter.Name;
             resourceOwner.Email = updateUserParameter.Email;
             resourceOwner.TwoFactorAuthentication = updateUserParameter.TwoFactorAuthentication;
-            resourceOwner.Password = newPassword;
+            resourceOwner.PhoneNumber = updateUserParameter.Phone;
+            if (!string.IsNullOrWhiteSpace(updateUserParameter.Password))
+            {
+                resourceOwner.Password = _securityHelper.ComputeHash(updateUserParameter.Password);
+            }
+
             _resourceOwnerRepository.Update(resourceOwner);
         }
 

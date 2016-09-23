@@ -49,11 +49,6 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             {
                 Id = "id"
             }));
-            Assert.Throws<ArgumentNullException>(() => _updateUserOperation.Execute(new UpdateUserParameter
-            {
-                Id = "id",
-                Name = "name"
-            }));
         }
 
         [Fact]
@@ -73,6 +68,29 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
         }
 
         [Fact]
+        public void When_ResourceOwner_DoesntExist_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var parameter = new UpdateUserParameter
+            {
+                Id = "id",
+                Name = "name",
+                Password = "password"
+            };
+            _resourceOwnerRepositoryStub.Setup(r => r.GetBySubject(It.IsAny<string>()))
+                .Returns((ResourceOwner)null);
+
+            // ACT
+            var exception = Assert.Throws<IdentityServerException>(() => _updateUserOperation.Execute(parameter));
+
+            // ASSERTS
+            Assert.NotNull(exception);
+            Assert.True(exception.Code == Errors.ErrorCodes.InternalError);
+            Assert.True(exception.Message == Errors.ErrorDescriptions.TheRoDoesntExist);
+        }
+
+        [Fact]
         public void When_ResourceOwner_With_SameCredentials_Exists_Then_Exception_Is_Thrown()
         {
             // ARRANGE
@@ -83,6 +101,8 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
                 Name = "name",
                 Password = "password"
             };
+            _resourceOwnerRepositoryStub.Setup(r => r.GetBySubject(It.IsAny<string>()))
+                .Returns(new ResourceOwner());
             _resourceOwnerRepositoryStub.Setup(r => r.GetResourceOwnerByCredentials(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(new ResourceOwner
                 {
@@ -97,32 +117,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             Assert.True(exception.Code == Errors.ErrorCodes.InternalError);
             Assert.True(exception.Message == Errors.ErrorDescriptions.TheRoWithCredentialsAlreadyExists);
         }
-
-        [Fact]
-        public void When_ResourceOwner_DoesntExist_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            var parameter = new UpdateUserParameter
-            {
-                Id = "id",
-                Name = "name",
-                Password = "password"
-            };
-            _resourceOwnerRepositoryStub.Setup(r => r.GetResourceOwnerByCredentials(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns((ResourceOwner)null);
-            _resourceOwnerRepositoryStub.Setup(r => r.GetBySubject(It.IsAny<string>()))
-                .Returns((ResourceOwner)null);
-
-            // ACT
-            var exception = Assert.Throws<IdentityServerException>(() => _updateUserOperation.Execute(parameter));
-
-            // ASSERTS
-            Assert.NotNull(exception);
-            Assert.True(exception.Code == Errors.ErrorCodes.InternalError);
-            Assert.True(exception.Message == Errors.ErrorDescriptions.TheRoDoesntExist);
-        }
-        
+                
         #endregion
 
         #region Happy path

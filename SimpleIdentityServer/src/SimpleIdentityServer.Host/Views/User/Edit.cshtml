@@ -28,17 +28,27 @@
                 @Html.TextBoxFor(i => i.Name, new { @class = "form-control", placeholder= @ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.YourLogin ] })
                 @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
             </fieldset>
+            <!-- Hashed password -->
+            <fieldset class="form-group">
+                <label class="control-label">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.HashedPassword]</label>
+                @Html.TextBoxFor(i => i.Password, new { type = "password", @class = "form-control", @readonly=true })
+            </fieldset>
             <!-- Password -->
             <fieldset class="form-group">
                 <label class="control-label">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.PasswordCode]</label>
-                @Html.TextBoxFor(i => i.Password, new { type="password", @class = "form-control", placeholder = @ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.YourPassword] })
-                @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                @Html.TextBoxFor(i => i.NewPassword, new { type="password", @class = "form-control", placeholder = @ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.YourPassword] })
             </fieldset>
             <!-- Email -->
             <fieldset class="form-group">
                 <label class="control-label">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.Email]</label>
                 @Html.TextBoxFor(i => i.Email, new { @class = "form-control", placeholder = @ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.YourEmail] })
                 @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+            </fieldset>
+            <!-- Phone -->
+            <fieldset class="form-group">
+                <label class="control-label">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.Phone]</label>
+                @Html.TextBoxFor(i => i.PhoneNumber, new { @class = "form-control", placeholder = @ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.Phone] })
+                @Html.ValidationMessageFor(m => m.PhoneNumber, "", new { @class = "text-danger" })
             </fieldset>
             <!-- Two authentication factors -->
             <fieldset class="form-group">

@@ -363,6 +363,8 @@ namespace SimpleIdentityServer.Core
             public const string TwoAuthenticationFactor = "two_authentication_factor";
             public const string UserIsUpdated = "user_is_updated";
             public const string SendConfirmationCode = "send_confirmation_code";
+            public const string Phone = "phone";
+            public const string HashedPassword = "hashed_password";
         }
 
         public static readonly Dictionary<List<ResponseType>, AuthorizationFlow> MappingResponseTypesToAuthorizationFlows = new Dictionary<List<ResponseType>, AuthorizationFlow>
