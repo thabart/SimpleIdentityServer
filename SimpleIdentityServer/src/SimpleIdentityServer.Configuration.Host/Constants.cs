@@ -53,5 +53,10 @@ namespace SimpleIdentityServer.Configuration
             public const string Etag = "etag";
             public const string DateTime = "datetime";
         }
+
+        public static class GetSettingsRequestNames
+        {
+            public const string Ids = "ids";
+        }
     }
 }

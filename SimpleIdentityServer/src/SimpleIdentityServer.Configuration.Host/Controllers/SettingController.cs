@@ -17,11 +17,15 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Configuration.Core.Api.Setting;
+using SimpleIdentityServer.Configuration.Core.Errors;
+using SimpleIdentityServer.Configuration.Core.Exceptions;
 using SimpleIdentityServer.Configuration.DTOs.Requests;
 using SimpleIdentityServer.Configuration.DTOs.Responses;
 using SimpleIdentityServer.Configuration.Extensions;
+using SimpleIdentityServer.Configuration.Host.DTOs.Requests;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SimpleIdentityServer.Configuration.Controllers
 {
@@ -59,13 +63,25 @@ namespace SimpleIdentityServer.Configuration.Controllers
                 throw new ArgumentNullException(nameof(id));
             }
 
-            var configuration = _settingActions.GetSetting(id);
-            if (configuration == null)
+            var setting = _settingActions.GetSetting(id);
+            if (setting == null)
             {
                 return new NotFoundResult();
             }
 
-            return new OkObjectResult(configuration.ToDto());
+            return new OkObjectResult(setting.ToDto());
+        }
+
+        [HttpPost]
+        public ActionResult Get([FromBody] GetSettingsRequest request)
+        {
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            var settings = _settingActions.BulkGetSettings(request.ToParameter()).Select(s => s.ToDto());
+            return new OkObjectResult(settings);
         }
 
         [HttpDelete("{id}")]
@@ -102,6 +118,24 @@ namespace SimpleIdentityServer.Configuration.Controllers
             return new NoContentResult();
         }
 
+        [HttpPut("bulk")]
+        [Authorize("manage")]
+        public ActionResult Put([FromBody] IEnumerable<UpdateSettingRequest> updateSettingRequests)
+        {
+            if (updateSettingRequests == null)
+            {
+                throw new ArgumentNullException(nameof(updateSettingRequests));
+            }
+
+            ;
+            if (!_settingActions.BulkUpdateSettings(updateSettingRequests.Select(s => s.ToParameter())))
+            {
+                throw new IdentityConfigurationException(ErrorCodes.UnhandledExceptionCode,
+                    ErrorDescriptions.BulkUpdateSettingOperationFailed);
+            }
+
+            return new NoContentResult();
+        }
 
         #endregion
     }

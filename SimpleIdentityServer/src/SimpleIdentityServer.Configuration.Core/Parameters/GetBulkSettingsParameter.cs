@@ -14,25 +14,12 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Configuration.Core.Parameters;
 using System.Collections.Generic;
 
-namespace SimpleIdentityServer.Configuration.Core.Repositories
+namespace SimpleIdentityServer.Configuration.Core.Parameters
 {
-    public interface ISettingRepository
+    public class GetBulkSettingsParameter
     {
-        List<Models.Setting> GetAll();
-
-        Models.Setting Get(string key);
-
-        bool Insert(Models.Setting configuration);
-
-        bool Remove(string key);
-
-        bool Update(Models.Setting configuration);
-
-        bool Update(IEnumerable<Models.Setting> settings);
-
-        List<Models.Setting> Get(IEnumerable<string> ids);
+        public IEnumerable<string> Ids { get; set; }
     }
 }

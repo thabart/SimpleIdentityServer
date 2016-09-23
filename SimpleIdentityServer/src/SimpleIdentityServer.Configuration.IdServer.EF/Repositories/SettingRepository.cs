@@ -154,6 +154,60 @@ namespace SimpleIdentityServer.Configuration.IdServer.EF.Repositories
             }
         }
 
+        public List<Core.Models.Setting> Get(IEnumerable<string> ids)
+        {
+            if (ids == null)
+            {
+                throw new ArgumentNullException(nameof(ids));
+            }
+
+            try
+            {
+                return _idServerConfigurationDbContext.Settings.Where(s => ids.Contains(s.Key)).Select(r => r.ToDomain()).ToList();
+            }
+            catch (Exception ex)
+            {
+                _configurationEventSource.Failure(ex);
+                return new List<Core.Models.Setting>();
+            }
+        }
+
+        public bool Update(IEnumerable<Core.Models.Setting> settings)
+        {
+            if (settings == null)
+            {
+                throw new ArgumentNullException(nameof(settings));
+            }
+
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    foreach (var setting in settings)
+                    {
+                        var record = _idServerConfigurationDbContext.Settings.FirstOrDefault(c => c.Key == setting.Key);
+                        if (record == null)
+                        {
+                            transaction.Rollback();
+                            return false;
+                        }
+
+                        record.Value = setting.Value;
+                    }
+
+                    _context.SaveChanges();
+                    transaction.Commit();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    _configurationEventSource.Failure(ex);
+                    transaction.Rollback();
+                    return false;
+                }
+            }
+        }
+
         #endregion
     }
 }

@@ -329,6 +329,7 @@ namespace SimpleIdentityServer.Configuration.IdServer.EF.Extensions
             {
                 context.Settings.AddRange(new[] 
                 {
+                    // Expiration times
                      new Setting
                     {
                         Key = Constants.SettingNames.ExpirationTimeName,
@@ -338,6 +339,52 @@ namespace SimpleIdentityServer.Configuration.IdServer.EF.Extensions
                     {
                         Key = Constants.SettingNames.AuthorizationCodeExpirationTimeName,
                         Value = "3600"
+                    },
+                    // Email settings
+                    new Setting
+                    {
+                        Key = Constants.SettingNames.EmailFromName,
+                        Value = "Lokit"
+                    },
+                    new Setting
+                    {
+                        Key = Constants.SettingNames.EmailFromAddress,
+                        Value = "lokitserver@hotmail.com"
+                    },
+                    new Setting
+                    {
+                        Key = Constants.SettingNames.EmailSubject,
+                        Value = "Confirmation code"
+                    },
+                    new Setting
+                    {
+                        Key = Constants.SettingNames.EmailBody,
+                        Value = "Your confirmation code is {0}"
+                    },
+                    new Setting
+                    {
+                        Key = Constants.SettingNames.EmailSmtpHost,
+                        Value = "smtp.live.com"
+                    },
+                    new Setting
+                    {
+                        Key = Constants.SettingNames.EmailSmtpPort,
+                        Value = "587"
+                    },
+                    new Setting
+                    {
+                        Key = Constants.SettingNames.EmailSmtpUseSsl,
+                        Value = "false"
+                    },
+                    new Setting
+                    {
+                        Key = Constants.SettingNames.EmailUserName,
+                        Value = "lokitserver@hotmail.com"
+                    },
+                    new Setting
+                    {
+                        Key = Constants.SettingNames.EmailPassword,
+                        Value = "FuckMicrosoftPassword1989"
                     }
                 });
             }

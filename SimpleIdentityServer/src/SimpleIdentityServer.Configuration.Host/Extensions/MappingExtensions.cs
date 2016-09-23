@@ -19,10 +19,10 @@ using SimpleIdentityServer.Configuration.Core.Models;
 using SimpleIdentityServer.Configuration.Core.Parameters;
 using SimpleIdentityServer.Configuration.DTOs.Requests;
 using SimpleIdentityServer.Configuration.DTOs.Responses;
+using SimpleIdentityServer.Configuration.Host.DTOs.Requests;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using WebApiContrib.Core.Concurrency;
 using WebApiContrib.Core.Storage;
 
 namespace SimpleIdentityServer.Configuration.Extensions
@@ -37,6 +37,19 @@ namespace SimpleIdentityServer.Configuration.Extensions
             {
                 Key = request.Key,
                 Value = request.Value
+            };
+        }
+
+        public static GetBulkSettingsParameter ToParameter(this GetSettingsRequest request)
+        {
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            return new GetBulkSettingsParameter
+            {
+                Ids = request.Ids
             };
         }
 

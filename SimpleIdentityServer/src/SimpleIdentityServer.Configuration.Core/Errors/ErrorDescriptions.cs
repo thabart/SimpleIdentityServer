@@ -21,5 +21,6 @@ namespace SimpleIdentityServer.Configuration.Core.Errors
         public const string InternalErrorOccurred = "an internal error occured";
         public const string TheAuthenticationProviderDoesntExist = "the authentication provider doesn't exist";
         public const string TheAuthenticationProviderAlreadyExists = "the authentication provider {0} already exists";
+        public const string BulkUpdateSettingOperationFailed = "either one setting doesn't exist or there's is an error with the database";
     }
 }

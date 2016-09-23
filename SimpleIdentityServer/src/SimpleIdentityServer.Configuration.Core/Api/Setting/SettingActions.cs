@@ -29,6 +29,10 @@ namespace SimpleIdentityServer.Configuration.Core.Api.Setting
         Models.Setting GetSetting(string key);
 
         bool UpdateSetting(UpdateSettingParameter updateSettingParameter);
+
+        IEnumerable<Models.Setting> BulkGetSettings(GetBulkSettingsParameter parameter);
+
+        bool BulkUpdateSettings(IEnumerable<UpdateSettingParameter> settings);
     }
 
     internal class SettingActions : ISettingActions
@@ -43,6 +47,10 @@ namespace SimpleIdentityServer.Configuration.Core.Api.Setting
 
         private readonly IUpdateSettingAction _updateSettingAction;
 
+        private readonly IBulkGetSettingsOperation _bulkGetSettingsOperation;
+
+        private readonly IBulkUpdateSettingsOperation _bulkUpdateSettingsOperation;
+
         #endregion
 
         #region Constructor
@@ -51,12 +59,16 @@ namespace SimpleIdentityServer.Configuration.Core.Api.Setting
             IDeleteSettingAction deleteSettingAction,
             IGetAllSettingAction getAllSettingAction,
             IGetSettingAction getSettingAction,
-            IUpdateSettingAction updateSettingAction)
+            IUpdateSettingAction updateSettingAction,
+            IBulkGetSettingsOperation bulkGetSettingsOperation,
+            IBulkUpdateSettingsOperation bulkUpdateSettingsOperation)
         {
             _deleteSettingAction = deleteSettingAction;
             _getAllSettingAction = getAllSettingAction;
             _getSettingAction = getSettingAction;
             _updateSettingAction = updateSettingAction;
+            _bulkGetSettingsOperation = bulkGetSettingsOperation;
+            _bulkUpdateSettingsOperation = bulkUpdateSettingsOperation;
         }
 
         #endregion
@@ -81,6 +93,16 @@ namespace SimpleIdentityServer.Configuration.Core.Api.Setting
         public bool UpdateSetting(UpdateSettingParameter updateSettingParameter)
         {
             return _updateSettingAction.Execute(updateSettingParameter);
+        }
+
+        public IEnumerable<Models.Setting> BulkGetSettings(GetBulkSettingsParameter parameter)
+        {
+            return _bulkGetSettingsOperation.Execute(parameter);
+        }
+
+        public bool BulkUpdateSettings(IEnumerable<UpdateSettingParameter> settings)
+        {
+            return _bulkUpdateSettingsOperation.Execute(settings);
         }
 
         #endregion

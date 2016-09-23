@@ -20,6 +20,8 @@ using System.Collections.Generic;
 using SimpleIdentityServer.Configuration.EF.Extensions;
 using SimpleIdentityServer.Logging;
 using System;
+using SimpleIdentityServer.Configuration.Core.Models;
+using SimpleIdentityServer.Configuration.Core.Parameters;
 
 namespace SimpleIdentityServer.Configuration.EF.Repositories
 {
@@ -104,7 +106,7 @@ namespace SimpleIdentityServer.Configuration.EF.Repositories
             }
         }
 
-        public bool Update(Core.Models.Setting conf)
+        public bool Update(Setting conf)
         {
             if (conf == null || string.IsNullOrWhiteSpace(conf.Key))
             {
@@ -122,6 +124,60 @@ namespace SimpleIdentityServer.Configuration.EF.Repositories
             {
                 _configurationEventSource.Failure(ex);
                 return false;
+            }
+        }
+
+        public List<Setting> Get(IEnumerable<string> ids)
+        {
+            if (ids == null)
+            {
+                throw new ArgumentNullException(nameof(ids));
+            }
+
+            try
+            {
+                return _context.Settings.Where(s => ids.Contains(s.Key)).Select(r => r.ToDomain()).ToList();
+            }
+            catch(Exception ex)
+            {
+                _configurationEventSource.Failure(ex);
+                return new List<Setting>();
+            }
+        }
+
+        public bool Update(IEnumerable<Setting> settings)
+        {
+            if (settings == null)
+            {
+                throw new ArgumentNullException(nameof(settings));
+            }
+
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    foreach (var setting in settings)
+                    {
+                        var record = _context.Settings.FirstOrDefault(c => c.Key == setting.Key);
+                        if (record == null)
+                        {
+                            transaction.Rollback();
+                            return false;
+                        }
+
+                        record.Value = setting.Value;
+                    }
+
+                    _context.SaveChanges();
+                    transaction.Commit();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    _configurationEventSource.Failure(ex);
+                    transaction.Rollback();
+                    return false;
+                }
             }
         }
 
