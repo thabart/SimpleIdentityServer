@@ -14,13 +14,8 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Client;
-using SimpleIdentityServer.Configuration.Client;
-using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.TwoFactors
@@ -30,48 +25,18 @@ namespace SimpleIdentityServer.Core.TwoFactors
         Task SendCode(string code, int twoFactorAuthType, ResourceOwner user);
     }
 
-    public interface ITwoFactorAuthenticationStore
+    internal class TwoFactorAuthenticationHandler : ITwoFactorAuthenticationHandler
     {
-        void AddService(ITwoFactorAuthenticationService service);
-    }
+        private readonly ITwoFactorServiceStore _twoFactorServiceStore;
 
-    internal class TwoFactorAuthenticationHandler : ITwoFactorAuthenticationHandler, ITwoFactorAuthenticationStore
-    {
-        private readonly List<ITwoFactorAuthenticationService> _services;
-
-        private readonly ISimpleIdServerConfigurationClientFactory _simpleIdServerConfigurationClientFactory;
-
-        private readonly IIdentityServerClientFactory _identityServerClientFactory;
-
-        private readonly ISimpleIdentityServerConfigurator _simpleIdentityServerConfigurator;
-
-        public TwoFactorAuthenticationHandler(
-            ISimpleIdServerConfigurationClientFactory simpleIdServerConfigurationClientFactory,
-            IIdentityServerClientFactory identityServerClientFactory,
-            ISimpleIdentityServerConfigurator simpleIdentityServerConfigurator)
+        public TwoFactorAuthenticationHandler(ITwoFactorServiceStore twoFactorServiceStore)
         {
-            if (simpleIdServerConfigurationClientFactory == null)
+            if (twoFactorServiceStore == null)
             {
-                throw new ArgumentNullException(nameof(simpleIdServerConfigurationClientFactory));
+                throw new ArgumentNullException(nameof(twoFactorServiceStore));
             }
 
-            if (identityServerClientFactory == null)
-            {
-                throw new ArgumentNullException(nameof(identityServerClientFactory));
-            }
-
-            if (simpleIdentityServerConfigurator == null)
-            {
-                throw new ArgumentNullException(nameof(simpleIdentityServerConfigurator));
-            }
-
-            _simpleIdServerConfigurationClientFactory = simpleIdServerConfigurationClientFactory;
-            _simpleIdentityServerConfigurator = simpleIdentityServerConfigurator;
-            _services = new List<ITwoFactorAuthenticationService>
-            {
-                new EmailService(simpleIdServerConfigurationClientFactory, identityServerClientFactory, simpleIdentityServerConfigurator),
-                new TwilioSmsService()
-            };
+            _twoFactorServiceStore = twoFactorServiceStore;
         }
 
         public async Task SendCode(string code, int twoFactorAuthType, ResourceOwner user)
@@ -86,18 +51,8 @@ namespace SimpleIdentityServer.Core.TwoFactors
                 throw new ArgumentNullException(nameof(user));
             }
 
-            var service = _services.FirstOrDefault(s => s.Code == twoFactorAuthType);
-            if (service == null)
-            {
-                throw new InvalidOperationException($"the service {twoFactorAuthType} doesn't exist");
-            }
 
-            await service.SendAsync(code, user);
-        }
-
-        public void AddService(ITwoFactorAuthenticationService service)
-        {
-            _services.Add(service);
+            await _twoFactorServiceStore.Get(twoFactorAuthType).SendAsync(code, user);
         }
     }
 }

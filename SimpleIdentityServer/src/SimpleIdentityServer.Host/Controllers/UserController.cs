@@ -99,7 +99,7 @@ namespace SimpleIdentityServer.Api.Controllers
             {
                 Email = user.Email,
                 Name = user.Name,
-                Password = user.Password,
+                Password = string.Empty,
                 TwoAuthenticationFactor = user.TwoFactorAuthentication
             });
         }

@@ -14,20 +14,40 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Configuration.Client;
+using SimpleIdentityServer.Configuration.Client.Setting;
+using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.TwoFactors;
+using SimpleIdentityServer.Host.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SimpleIdentityServer.Core.TwoFactors
+namespace SimpleIdentityServer.Host.TwoFactors
 {
     public class TwilioSmsService : ITwoFactorAuthenticationService
     {
+        private const string TwilioSmsEndpointFormat = "https://api.twilio.com/2010-04-01/Accounts/{0}/Messages.json";
+        private const string TwilioAccountSid = "TwilioAccountSid";
+        private const string TwilioAuthToken = "TwilioAuthToken";
+        private const string TwilioFromNumber = "TwilioFromNumber";
+        private const string TwilioMessage = "TwilioMessage";
+
+        private List<string> _settingNames = new List<string>
+        {
+            TwilioAccountSid,
+            TwilioAuthToken,
+            TwilioFromNumber,
+            TwilioMessage
+        };
+
         private class TwilioSmsCredentials
         {
             public string AccountSid { get; set; } = string.Empty;
@@ -37,12 +57,28 @@ namespace SimpleIdentityServer.Core.TwoFactors
 
         private readonly IHttpClientFactory _clientFactory;
 
-        public TwilioSmsService()
+        private readonly ISettingClient _settingClient;
+
+        private readonly string _configurationUrl;
+
+        public TwilioSmsService(
+            ISimpleIdServerConfigurationClientFactory simpleIdServerConfigurationClientFactory,
+            string configurationUrl)
         {
+            if (simpleIdServerConfigurationClientFactory == null)
+            {
+                throw new ArgumentNullException(nameof(simpleIdServerConfigurationClientFactory));
+            }
+
+            if (string.IsNullOrWhiteSpace(configurationUrl))
+            {
+                throw new ArgumentNullException(nameof(configurationUrl));
+            }
+
+            _settingClient = simpleIdServerConfigurationClientFactory.GetSettingClient();
+            _configurationUrl = configurationUrl;
             _clientFactory = new HttpClientFactory();
         }
-
-        private const string TwilioSmsEndpointFormat = "https://api.twilio.com/2010-04-01/Accounts/{0}/Messages.json";
 
         public int Code
         {
@@ -54,12 +90,29 @@ namespace SimpleIdentityServer.Core.TwoFactors
 
         public async Task SendAsync(string code, ResourceOwner user)
         {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (string.IsNullOrWhiteSpace(user.PhoneNumber))
+            {
+                throw new ArgumentException("the phone number is missing");
+            }
+
+            var settings = await _settingClient.GetSettingsByResolving(_configurationUrl);
+            if (!_settingNames.All(k => settings.Any(s => s.Key == k)))
+            {
+                throw new InvalidOperationException("there are one or more missing settings");
+            }
+
+            var dic = settings.ToDictionary(s => s.Key);
             await SendMessage(new TwilioSmsCredentials
             {
-             AccountSid = "AC093c9783bfa2e70ff29998c2b3d1ba5a",
-             AuthToken = "0c006b20fa2459200274229b2b655746",
-             FromNumber = "+32460206628"
-            }, "+32485350536", $"Your code is {code}");
+             AccountSid = dic[TwilioAccountSid].Value,
+             AuthToken = dic[TwilioAuthToken].Value,
+             FromNumber = dic[TwilioFromNumber].Value,
+            }, user.PhoneNumber, string.Format(dic[TwilioMessage].Value, code));
         }
 
         private async Task<bool> SendMessage(

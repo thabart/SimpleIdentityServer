@@ -385,6 +385,27 @@ namespace SimpleIdentityServer.Configuration.IdServer.EF.Extensions
                     {
                         Key = Constants.SettingNames.EmailPassword,
                         Value = "FuckMicrosoftPassword1989"
+                    },
+                    // Twilio
+                    new Setting
+                    {
+                        Key = Constants.SettingNames.TwilioAccountSid,
+                        Value = "AC093c9783bfa2e70ff29998c2b3d1ba5a"
+                    },
+                    new Setting
+                    {
+                        Key = Constants.SettingNames.TwilioAuthToken,
+                        Value = "0c006b20fa2459200274229b2b655746"
+                    },
+                    new Setting
+                    {
+                        Key = Constants.SettingNames.TwilioFromNumber,
+                        Value = "+32460206628"
+                    },
+                    new Setting
+                    {
+                        Key = Constants.SettingNames.TwilioMessage,
+                        Value = "Your code is {0}"
                     }
                 });
             }

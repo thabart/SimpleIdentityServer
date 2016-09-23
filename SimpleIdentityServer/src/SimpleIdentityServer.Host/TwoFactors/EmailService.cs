@@ -16,18 +16,16 @@
 
 using MailKit.Net.Smtp;
 using MimeKit;
-using SimpleIdentityServer.Client;
-using SimpleIdentityServer.Client.Selectors;
 using SimpleIdentityServer.Configuration.Client;
 using SimpleIdentityServer.Configuration.Client.Setting;
-using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.TwoFactors;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SimpleIdentityServer.Core.TwoFactors
+namespace SimpleIdentityServer.Host.TwoFactors
 {
     public class EmailService : ITwoFactorAuthenticationService
     {
@@ -56,33 +54,24 @@ namespace SimpleIdentityServer.Core.TwoFactors
 
         private readonly ISettingClient _settingClient;
 
-        private readonly IClientAuthSelector _tokenClient;
-
-        private readonly ISimpleIdentityServerConfigurator _simpleIdentityServerConfigurator;
+        private readonly string _configurationUrl;
 
         public EmailService(
             ISimpleIdServerConfigurationClientFactory simpleIdServerConfigurationClientFactory,
-            IIdentityServerClientFactory identityServerClientFactory,
-            ISimpleIdentityServerConfigurator simpleIdentityServerConfigurator)
+            string configurationUrl)
         {
             if (simpleIdServerConfigurationClientFactory == null)
             {
                 throw new ArgumentNullException(nameof(simpleIdServerConfigurationClientFactory));
             }
 
-            if (identityServerClientFactory == null)
+            if (string.IsNullOrWhiteSpace(configurationUrl))
             {
-                throw new ArgumentNullException(nameof(identityServerClientFactory));
-            }
-
-            if (simpleIdentityServerConfigurator == null)
-            {
-                throw new ArgumentNullException(nameof(simpleIdentityServerConfigurator));
+                throw new ArgumentNullException(nameof(configurationUrl));
             }
 
             _settingClient = simpleIdServerConfigurationClientFactory.GetSettingClient();
-            _tokenClient = identityServerClientFactory.CreateTokenClient();
-            _simpleIdentityServerConfigurator = simpleIdentityServerConfigurator;
+            _configurationUrl = configurationUrl;
         }
 
         public int Code
@@ -110,7 +99,7 @@ namespace SimpleIdentityServer.Core.TwoFactors
                 throw new ArgumentException("the email is not valid");
             }
 
-            var settings = await _settingClient.GetSettingsByResolving(_simpleIdentityServerConfigurator.GetWellKnownConfigurationEndPoint());
+            var settings = await _settingClient.GetSettingsByResolving(_configurationUrl);
             if (!_settingNames.All(k => settings.Any(s => s.Key == k)))
             {
                 throw new InvalidOperationException("there are one or more missing settings");

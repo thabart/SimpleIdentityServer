@@ -50,6 +50,10 @@ namespace SimpleIdentityServer.Configuration.Core
             public const string EmailSmtpUseSsl = "EmailSmtpUseSsl";
             public const string EmailUserName = "EmailUserName";
             public const string EmailPassword = "EmailPassword";
+            public const string TwilioAccountSid = "TwilioAccountSid";
+            public const string TwilioAuthToken = "TwilioAuthToken";
+            public const string TwilioFromNumber = "TwilioFromNumber";
+            public const string TwilioMessage = "TwilioMessage";
         }
     }
 }

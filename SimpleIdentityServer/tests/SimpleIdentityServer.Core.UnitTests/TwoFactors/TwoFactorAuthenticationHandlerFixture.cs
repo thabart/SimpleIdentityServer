@@ -27,11 +27,7 @@ namespace SimpleIdentityServer.Core.UnitTests.TwoFactors
 {
     public class TwoFactorAuthenticationHandlerFixture
     {
-        private Mock<ISimpleIdServerConfigurationClientFactory> _simpleIdServerConfigurationClientFactoryStub;
-
-        private Mock<ISimpleIdentityServerConfigurator> _simpleIdentityServerConfiguratorStub;
-
-        private Mock<IIdentityServerClientFactory> _identityServerClientFactoryStub;
+        private Mock<ITwoFactorServiceStore> _twoFactorServiceStore;
 
         private ITwoFactorAuthenticationHandler _twoFactorAuthenticationHandler;
 
@@ -47,27 +43,10 @@ namespace SimpleIdentityServer.Core.UnitTests.TwoFactors
             Assert.ThrowsAsync<ArgumentNullException>(() => _twoFactorAuthenticationHandler.SendCode("code", 0, null));
         }
 
-        [Fact]
-        public async Task When_Passing_NotSupported_ProviderType_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-
-            // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _twoFactorAuthenticationHandler.SendCode("code", 3, new Models.ResourceOwner()));
-            Assert.NotNull(exception);
-            Assert.True(exception.Message == $"the service 3 doesn't exist");
-        }
-
         private void InitializeFakeObjects()
         {
-            _simpleIdServerConfigurationClientFactoryStub = new Mock<ISimpleIdServerConfigurationClientFactory>();
-            _simpleIdentityServerConfiguratorStub = new Mock<ISimpleIdentityServerConfigurator>();
-            _identityServerClientFactoryStub = new Mock<IIdentityServerClientFactory>();
-            _twoFactorAuthenticationHandler = new TwoFactorAuthenticationHandler(
-                _simpleIdServerConfigurationClientFactoryStub.Object,
-                _identityServerClientFactoryStub.Object,
-                _simpleIdentityServerConfiguratorStub.Object);
+            _twoFactorServiceStore = new Mock<ITwoFactorServiceStore>();
+            _twoFactorAuthenticationHandler = new TwoFactorAuthenticationHandler(_twoFactorServiceStore.Object);
         }
     }
 }

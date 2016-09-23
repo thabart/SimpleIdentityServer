@@ -32,11 +32,13 @@ using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Services;
+using SimpleIdentityServer.Core.TwoFactors;
 using SimpleIdentityServer.DataAccess.SqlServer;
 using SimpleIdentityServer.Host.Configuration;
 using SimpleIdentityServer.Host.Controllers;
 using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.Host.Parsers;
+using SimpleIdentityServer.Host.TwoFactors;
 using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.RateLimitation;
 using System;
@@ -203,6 +205,12 @@ namespace SimpleIdentityServer.Host
             LoggingOptions loggingOptions,
             ConfigurationEdpOptions configurationEdpOptions) 
         {
+            var configurationParameters = new ConfigurationParameters
+            {
+                ConfigurationUrl = configurationEdpOptions.ConfigurationUrl,
+                ClientId = configurationEdpOptions.ClientId,
+                ClientSecret = configurationEdpOptions.ClientSecret
+            };
             services.AddSimpleIdentityServerCore();
             services.AddSimpleIdentityServerJwt();
             services.AddRateLimitation();
@@ -212,12 +220,7 @@ namespace SimpleIdentityServer.Host
             services.AddTransient<IResourceOwnerService, InMemoryUserService>();
             services.AddTransient<IRedirectInstructionParser, RedirectInstructionParser>();
             services.AddTransient<IActionResultParser, ActionResultParser>();
-            services.AddSingleton(new ConfigurationParameters
-            {
-                ConfigurationUrl = configurationEdpOptions.ConfigurationUrl,
-                ClientId = configurationEdpOptions.ClientId,
-                ClientSecret = configurationEdpOptions.ClientSecret
-            });
+            services.AddSingleton(configurationParameters);
             services.AddTransient<ISimpleIdentityServerConfigurator, ConcreteSimpleIdentityServerConfigurator>();
             services.AddDataProtection();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -278,6 +281,13 @@ namespace SimpleIdentityServer.Host
             services.AddTransient<ISimpleIdentityServerEventSource, SimpleIdentityServerEventSource>();
             services.AddTransient<IManagerEventSource, ManagerEventSource>();
             services.AddSingleton<ILogger>(log);
+
+            // Configure two factors authentication
+            var twoFactorServiceStore = new TwoFactorServiceStore();
+            var factory = new SimpleIdServerConfigurationClientFactory();
+            twoFactorServiceStore.Add(new TwilioSmsService(factory, configurationParameters.ConfigurationUrl));
+            twoFactorServiceStore.Add(new EmailService(factory, configurationParameters.ConfigurationUrl));
+            services.AddSingleton<ITwoFactorServiceStore>(twoFactorServiceStore);
         }
         
         #endregion
