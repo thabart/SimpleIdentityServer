@@ -15,11 +15,16 @@
 #endregion
 
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Startup.Controllers
 {
     public class UsersController : Controller
     {
-        private const string SchemaName = "urn:ietf:params:scim:schemas:core:2.0:User";
+        [HttpPost]
+        public async Task<ActionResult> Create()
+        {
+            return null;
+        }
     }
 }

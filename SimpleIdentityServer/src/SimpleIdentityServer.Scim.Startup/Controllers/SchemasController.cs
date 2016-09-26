@@ -15,10 +15,23 @@
 #endregion
 
 using Microsoft.AspNetCore.Mvc;
+using SimpleIdentityServer.Scim.Startup.Stores;
 
 namespace SimpleIdentityServer.Scim.Startup.Controllers
 {
+    [Route("/Schemas")]
     public class SchemasController : Controller
     {
+        [HttpGet("{id}")]
+        public ActionResult Get(string id)
+        {
+            return null;
+        }
+
+        [HttpGet]
+        public ActionResult All()
+        {
+            return new OkObjectResult(SchemasStore.GetAll());
+        }
     }
 }

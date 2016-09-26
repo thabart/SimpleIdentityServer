@@ -149,6 +149,99 @@ namespace SimpleIdentityServer.Scim.Startup
             public const string DocumentationUri = "documentationUri";
         }
 
+        public static class SchemaResponseNames
+        {
+            public const string Id = "id";
+            public const string Name = "name";
+            public const string Description = "description";
+            public const string Attributes = "attributes";
+        }
+
+        public static class SchemaAttributeResponseNames
+        {
+            public const string Name = "name";
+            public const string Type = "type";
+            public const string MultiValued = "multiValued";
+            public const string Description = "description";
+            public const string Required = "required";
+            public const string CanonicalValues = "canonicalValues";
+            public const string CaseExact = "caseExact";
+            public const string Mutability = "mutability";
+            public const string Returned = "returned";
+            public const string Uniqueness = "uniqueness";
+            public const string ReferenceTypes = "referenceTypes";  
+        }
+
+        public static class ComplexSchemaAttributeResponseNames
+        {
+            public const string SubAttributes = "subAttributes";
+        }
+
+        public static class SchemaAttributeTypes
+        {
+            public const string String = "string";
+            public const string Complex = "complex";
+            public const string Reference = "reference";
+            public const string Boolean = "boolean";
+            public const string Binary = "binary";
+        }
+
+        public static class SchemaAttributeMutability
+        {
+            /// <summary>
+            /// Attribute shall not be modified
+            /// </summary>
+            public const string ReadOnly = "readOnly";
+            /// <summary>
+            /// May be updated and read at any time
+            /// </summary>
+            public const string ReadWrite = "readWrite";
+            /// <summary>
+            /// Attribute may be defined at resource creation or at record replacement
+            /// </summary>
+            public const string Immutable = "immutable";
+            /// <summary>
+            /// The attribute may be updated at any time
+            /// </summary>
+            public const string writeOnly = "writeOnly";
+        }
+
+        public static class SchemaAttributeReturned
+        {
+            /// <summary>
+            /// Always returned
+            /// </summary>
+            public const string Always = "always";
+            /// <summary>
+            /// Never returned
+            /// </summary>
+            public const string Never = "never";
+            /// <summary>
+            /// Returned by default in all SCIM oprations
+            /// </summary>
+            public const string Default = "default";
+            /// <summary>
+            /// Returned in response to any PUT, POST or PATCH operations
+            /// </summary>
+            public const string Request = "request";
+        }
+
+        public static class SchemaAttributeUniqueness
+        {
+            /// <summary>
+            /// Values are not intended to be unique
+            /// </summary>
+            public const string None = "none";
+            /// <summary>
+            /// Value should be unique within the context of the current SCIM endpoint
+            /// </summary>
+            public const string Server = "server";
+            /// <summary>
+            /// Value should be globally unique
+            /// </summary>
+            public const string Global = "global";
+        }
+
         #endregion
     }
 }
