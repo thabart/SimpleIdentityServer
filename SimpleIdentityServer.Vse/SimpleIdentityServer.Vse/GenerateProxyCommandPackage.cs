@@ -76,6 +76,24 @@ namespace SimpleIdentityServer.Vse
             }
         }
 
+        public string ClientId
+        {
+            get
+            {
+                var page = (OptionsPageGrid)GetDialogPage(typeof(OptionsPageGrid));
+                return page.ClientId;
+            }
+        }
+
+        public string ClientSecret
+        {
+            get
+            {
+                var page = (OptionsPageGrid)GetDialogPage(typeof(OptionsPageGrid));
+                return page.ClientSecret;
+            }
+        }
+
         #endregion
 
         #region Package Members

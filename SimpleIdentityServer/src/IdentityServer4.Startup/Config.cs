@@ -173,6 +173,21 @@ namespace IdentityServer4.Startup
                         "configuration",
                         "display_configuration"
                     }
+                },
+                new Client
+                {
+                    ClientId = "VisualStudioExtension",
+                    ClientName = "VisualStudioExtension",
+                    ClientSecrets = new List<Secret>
+                    {
+                        new Secret("VisualStudioExtension".Sha256())
+                    },
+                    LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
+                    AllowedGrantTypes = GrantTypes.ClientCredentials,
+                    AllowedScopes = new List<string>
+                    {
+                        "website_api"
+                    }
                 }
             };
         }

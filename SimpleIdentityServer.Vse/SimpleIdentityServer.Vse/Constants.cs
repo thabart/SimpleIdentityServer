@@ -18,8 +18,6 @@ namespace SimpleIdentityServer.Vse
 {
     public static class Constants
     {
-        public const string ClientId = "VisualStudioExtension";
-        public const string ClientSecret = "VisualStudioExtension";
         public const string Scope = "website_api";
     }
 }

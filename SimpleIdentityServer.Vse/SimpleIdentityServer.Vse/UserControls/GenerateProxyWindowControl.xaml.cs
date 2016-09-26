@@ -392,7 +392,7 @@ namespace SimpleIdentityServer.Vse
             var url = _options.Package.WellKnownConfigurationEdp;
             try
             {
-                var response = await _clientAuthSelector.UseClientSecretPostAuth(Constants.ClientId, Constants.ClientSecret)
+                var response = await _clientAuthSelector.UseClientSecretPostAuth(_options.Package.ClientId, _options.Package.ClientSecret)
                     .UseClientCredentials(Constants.Scope)
                     .ResolveAsync(url);
                 if (response == null)

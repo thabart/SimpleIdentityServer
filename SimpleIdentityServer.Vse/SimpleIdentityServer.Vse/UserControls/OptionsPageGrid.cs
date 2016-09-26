@@ -24,8 +24,9 @@ namespace SimpleIdentityServer.Vse
         #region Private fields
 
         private string _url = "https://localhost:5444/api/vs/resources";
-
         private string _wellKnownConfigurationEdp = "https://localhost:5443/.well-known/openid-configuration";
+        private string _clientId = "VisualStudioExtension";
+        private string _clientSecret = "VisualStudioExtension";
 
         #endregion
 
@@ -47,6 +48,24 @@ namespace SimpleIdentityServer.Vse
         {
             get { return _wellKnownConfigurationEdp; }
             set { _wellKnownConfigurationEdp = value; }
+        }
+
+        [Category("Configuration")]
+        [DisplayName("Client identifier")]
+        [Description("Client identifier")]
+        public string ClientId
+        {
+            get { return _clientId; }
+            set { _clientId = value; }
+        }
+
+        [Category("Configuration")]
+        [DisplayName("Client secret")]
+        [Description("Client secret")]
+        public string ClientSecret
+        {
+            get { return _clientSecret; }
+            set { _clientSecret = value; }
         }
 
         #endregion

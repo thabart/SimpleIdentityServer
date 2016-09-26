@@ -26,7 +26,7 @@ namespace SimpleIdentityServer.Uma.Host.Configuration
 
         public ParametersProvider(string authorizationServerUrl)
         {
-            _openIdConfigurationUrl = authorizationServerUrl + "/.well-known/openid-configuration";
+            _openIdConfigurationUrl = authorizationServerUrl;
         }
 
         #endregion
