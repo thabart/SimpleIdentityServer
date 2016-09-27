@@ -30,13 +30,14 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
                 .ToTable("consents")
                 .HasKey(c => c.Id);
             modelBuilder.Entity<Consent>()
-                .HasOne(c => c.Client)
-                .WithMany(c => c.Consents)
-                .HasForeignKey(c => c.ClientId);
+                .HasMany(r => r.ConsentScopes)
+                .WithOne(a => a.Consent)
+                .HasForeignKey(fk => fk.ConsentId)
+                .OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<Consent>()
-                .HasOne(c => c.ResourceOwner)
-                .WithMany(c => c.Consents)
-                .HasForeignKey(c => c.ResourceOwnerId)
+                .HasMany(r => r.ConsentClaims)
+                .WithOne(a => a.Consent)
+                .HasForeignKey(fk => fk.ConsentId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
 

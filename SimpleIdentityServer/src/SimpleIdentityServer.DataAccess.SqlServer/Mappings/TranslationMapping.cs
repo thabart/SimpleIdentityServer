@@ -29,14 +29,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
             modelBuilder.Entity<Translation>()
                 .Property(p => p.Code)
                 .HasMaxLength(255);
-            /*
-            ToTable("translations");
-            HasKey(p => new {p.Code, p.LanguageTag});
-            Property(p => p.Code)
-                .HasMaxLength(255);
-            Property(p => p.LanguageTag);
-            Property(p => p.Value);
-            */
         }
     }
 }

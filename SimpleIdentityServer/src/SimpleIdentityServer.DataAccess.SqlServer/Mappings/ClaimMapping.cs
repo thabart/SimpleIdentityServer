@@ -15,6 +15,7 @@
 #endregion
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using SimpleIdentityServer.DataAccess.SqlServer.Models;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
@@ -26,10 +27,16 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
             modelBuilder.Entity<Claim>()
                 .ToTable("claims")
                 .HasKey(p => p.Code);
-            /*
-            ToTable("claims");
-            HasKey(p => p.Code);
-            */
+            modelBuilder.Entity<Claim>()
+                .HasMany(c => c.ScopeClaims)
+                .WithOne(s => s.Claim)
+                .HasForeignKey(s => s.ClaimCode)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Claim>()
+                .HasMany(c => c.ConsentClaims)
+                .WithOne(s => s.Claim)
+                .HasForeignKey(s => s.ClaimCode)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

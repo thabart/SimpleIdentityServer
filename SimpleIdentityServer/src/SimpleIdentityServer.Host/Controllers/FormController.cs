@@ -23,21 +23,35 @@ namespace SimpleIdentityServer.Api.Controllers
     {
         public ActionResult Index(dynamic parameters)
         {
-            var queryStringValue = Request.QueryString.Value;            
+            var queryStringValue = Request.QueryString.Value;
             var queryString = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(queryStringValue);
-            var idToken = queryString[Core.Constants.StandardAuthorizationResponseNames.IdTokenName];
-            var accessToken = queryString[Core.Constants.StandardAuthorizationResponseNames.AccessTokenName];
-            var authorizationCode = queryString[Core.Constants.StandardAuthorizationResponseNames.AuthorizationCodeName];
-            var state = queryString[Core.Constants.StandardAuthorizationResponseNames.StateName];
-            var redirectUri = queryString["redirect_uri"];
-            return View(new FormViewModel
+            var viewModel = new FormViewModel();    
+            if (queryString.ContainsKey(Core.Constants.StandardAuthorizationResponseNames.AccessTokenName))
             {
-                AccessToken = accessToken,
-                AuthorizationCode = authorizationCode,
-                IdToken = idToken,
-                RedirectUri = redirectUri,
-                State = state
-            });
+                viewModel.AccessToken = queryString[Core.Constants.StandardAuthorizationResponseNames.AccessTokenName];
+            }
+
+            if (queryString.ContainsKey(Core.Constants.StandardAuthorizationResponseNames.AuthorizationCodeName))
+            {
+                viewModel.AuthorizationCode = queryString[Core.Constants.StandardAuthorizationResponseNames.AuthorizationCodeName];
+            }
+
+            if (queryString.ContainsKey(Core.Constants.StandardAuthorizationResponseNames.IdTokenName))
+            {
+                viewModel.IdToken = queryString[Core.Constants.StandardAuthorizationResponseNames.IdTokenName];
+            }
+
+            if (queryString.ContainsKey(Core.Constants.StandardAuthorizationResponseNames.StateName))
+            {
+                viewModel.State = queryString[Core.Constants.StandardAuthorizationResponseNames.StateName];
+            }
+
+            if (queryString.ContainsKey("redirect_uri"))
+            {
+                viewModel.RedirectUri = queryString["redirect_uri"];
+            }
+
+            return View(viewModel);
         }
     }
 }

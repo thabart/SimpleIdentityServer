@@ -26,14 +26,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
             modelBuilder.Entity<ClientScope>()
                 .ToTable("clientScopes")
                 .HasKey(s => new { s.ClientId, s.ScopeName });
-            modelBuilder.Entity<ClientScope>()
-                .HasOne(c => c.Client)
-                .WithMany(c => c.ClientScopes)
-                .HasForeignKey(c => c.ClientId);
-            modelBuilder.Entity<ClientScope>()
-                .HasOne(c => c.Scope)
-                .WithMany(c => c.ClientScopes)
-                .HasForeignKey(c => c.ScopeName);
         }
     }
 }

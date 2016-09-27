@@ -15,7 +15,6 @@
 #endregion
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 using SimpleIdentityServer.DataAccess.SqlServer.Models;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
@@ -29,15 +28,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
             modelBuilder.Entity<ResourceOwnerRole>()
                 .ToTable("resourceOwnerRoles")
                 .HasKey(r => new { r.ResourceOwnerId, r.RoleName });
-            modelBuilder.Entity<ResourceOwnerRole>()
-                .HasOne(r => r.ResourceOwner)
-                .WithMany(r => r.ResourceOwnerRoles)
-                .HasForeignKey(r => r.ResourceOwnerId)
-                .OnDelete(DeleteBehavior.Cascade);
-            modelBuilder.Entity<ResourceOwnerRole>()
-                .HasOne(r => r.Role)
-                .WithMany(r => r.ResourceOwnerRoles)
-                .HasForeignKey(r => r.RoleName);
         }
 
         #endregion

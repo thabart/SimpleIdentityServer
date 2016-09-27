@@ -34,6 +34,16 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
                 .WithOne(a => a.ResourceOwner)
                 .HasForeignKey<Address>(a => a.ResourceOwnerForeignKey)
                 .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<ResourceOwner>()
+                .HasMany(r => r.ResourceOwnerRoles)
+                .WithOne(o => o.ResourceOwner)
+                .HasForeignKey(a => a.ResourceOwnerId)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<ResourceOwner>()
+                .HasMany(r => r.Consents)
+                .WithOne(c => c.ResourceOwner)
+                .HasForeignKey(a => a.ResourceOwnerId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
 
         #endregion
