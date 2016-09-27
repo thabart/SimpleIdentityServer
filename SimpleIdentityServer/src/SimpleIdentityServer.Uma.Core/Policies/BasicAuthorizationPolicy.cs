@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Uma.Core.JwtToken;
 using SimpleIdentityServer.Uma.Core.Models;
@@ -222,7 +223,27 @@ namespace SimpleIdentityServer.Uma.Core.Policies
 
                 if (claim.Type == SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Role)
                 {
-                    if (!payload.Value.ToString().Split(',').Any(v => claim.Value == v))
+                    IEnumerable<string> roles = null;
+                    if (payload.Value is string)
+                    {
+                        roles = payload.Value.ToString().Split(',');
+                    }
+                    else
+                    {
+                        var arr = payload.Value as object[];
+                        var jArr = payload.Value as JArray;
+                        if (arr != null)
+                        {
+                            roles = arr.Select(c => c.ToString());
+                        }
+
+                        if (jArr != null)
+                        {
+                            roles = jArr.Select(c => c.ToString());
+                        }
+                    }
+
+                    if (roles == null || !roles.Any(v => claim.Value == v))
                     {
                         return new AuthorizationPolicyResult
                         {

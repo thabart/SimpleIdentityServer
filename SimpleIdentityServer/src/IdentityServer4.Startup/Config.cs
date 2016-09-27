@@ -29,7 +29,7 @@ namespace IdentityServer4.Startup
                     Emphasize = true,
                     Claims = new List<ScopeClaim>()
                     {
-                      new ScopeClaim("role", false)
+                      new ScopeClaim("role", true)
                     }
                 },
                 new Scope

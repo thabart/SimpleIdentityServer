@@ -158,7 +158,6 @@ namespace SimpleIdentityServer.Core.Jwt
             }
 
             var claim = this[claimName];
-            var type = claim.GetType();
             var arr = claim as object[];
             var jArr = claim as JArray;
             if (arr != null)
