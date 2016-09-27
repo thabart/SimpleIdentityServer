@@ -7121,7 +7121,7 @@
   },
   "libraries": {
     "Elasticsearch.Net/2.4.1": {
-      "sha512": "/J+3VFpR+adDX55a4hXVmwMCb0QN/gRfwmeTAz5svd95gL/Lql7/rdMNeUF1CcePbzOavvK728GpBOb3hB9Zcw==",
+      "sha512": "j0QxxrhwIUrVV0vlkrX8ZLk/TcNuXZjNkmHZl90NKm/Tkftnat5JGuDrwMOyqmPf/3mPzxrqkV4IPQrP3C0emg==",
       "type": "package",
       "path": "Elasticsearch.Net/2.4.1",
       "files": [
@@ -8688,7 +8688,7 @@
       ]
     },
     "runtime.native.System.Net.Http/4.0.1": {
-      "sha512": "Nh0UPZx2Vifh8r+J+H2jxifZUD3sBrmolgiFWJd2yiNrxO0xTa6bAw3YwRn1VOiSen/tUXMS31ttNItCZ6lKuA==",
+      "sha512": "ca8oLM6d3QzlVwzoqm+4hhgFgosxhs8AZMZvPTUIfO4B2VK5N6fi6+QPNbWOPKHW8Ue5Bm7ePWnnBzgcIFVfPw==",
       "type": "package",
       "path": "runtime.native.System.Net.Http/4.0.1",
       "files": [
@@ -8700,7 +8700,7 @@
       ]
     },
     "runtime.native.System.Net.Security/4.0.1": {
-      "sha512": "UmRrwjv9kmEAhHmIDnWtoSIg0WOUhNR3B3VAt70vBCiYP3zmvoomdcQlhR3VGFKrItGOLhmdATSlocJlRBUL/Q==",
+      "sha512": "vui4RD/cI1Qi3eJROPk2fJTVVjF7E99ITtJpquAe6eA9LbU4bOwLa7FL3sCdXPUYPbIt3sLdheYiz2i9U8AOtw==",
       "type": "package",
       "path": "runtime.native.System.Net.Security/4.0.1",
       "files": [
@@ -8848,7 +8848,7 @@
       ]
     },
     "StackExchange.Redis.StrongName.Core/1.1.605": {
-      "sha512": "+VuyBBLv/u+Yh/efLAMlbEKbhtTv8H1hgY03guelpOPuFyz7joRsxq1p6PJZk4Jvq9DcW2MD7NKhWbFi/u4OQw==",
+      "sha512": "ce0VbDD1cG5K2Nkd8TWqnc3mA3zyr/BJTHhCy6kedlkzWkwYju82jGxZwwH0zAWFXRRC45+FNyq2eYd/of/M1w==",
       "type": "package",
       "path": "StackExchange.Redis.StrongName.Core/1.1.605",
       "files": [
@@ -12533,7 +12533,7 @@
       ]
     },
     "System.Security.Cryptography.Cng/4.2.0": {
-      "sha512": "cUJ2h+ZvONDe28Szw3st5dOHdjndhJzQ2WObDEXAWRPEQBtVItVoxbXM/OEsTthl3cNn2dk2k0I3y45igCQcLw==",
+      "sha512": "MvosdrBaNilM9HAB5BM1THLYvr7+RXeq2zBqA3rlZFqv8nEmJJiBoS4zwuqg7LrYEDIcEVWuWUMpckqJSJWXmQ==",
       "type": "package",
       "path": "System.Security.Cryptography.Cng/4.2.0",
       "files": [

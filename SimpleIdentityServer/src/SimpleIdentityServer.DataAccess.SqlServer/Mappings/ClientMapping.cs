@@ -24,20 +24,20 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
     {
         public static void AddClientMapping(this ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Client>()
+            modelBuilder.Entity<Models.Client>()
                 .ToTable("clients")
                 .HasKey(c => c.ClientId);
-            modelBuilder.Entity<Client>()
+            modelBuilder.Entity<Models.Client>()
                 .HasMany(c => c.ClientScopes)
                 .WithOne(s => s.Client)
                 .HasForeignKey(s => s.ClientId)
                 .OnDelete(DeleteBehavior.Cascade);
-            modelBuilder.Entity<Client>()
+            modelBuilder.Entity<Models.Client>()
                 .HasMany(c => c.JsonWebKeys)
                 .WithOne(s => s.Client)
                 .HasForeignKey(s => s.ClientId)
                 .OnDelete(DeleteBehavior.Cascade);
-            modelBuilder.Entity<Client>()
+            modelBuilder.Entity<Models.Client>()
                 .HasMany(c => c.Consents)
                 .WithOne(s => s.Client)
                 .HasForeignKey(s => s.ClientId)
