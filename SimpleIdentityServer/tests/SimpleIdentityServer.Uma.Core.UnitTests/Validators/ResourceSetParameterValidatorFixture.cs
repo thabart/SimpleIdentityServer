@@ -76,7 +76,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Validators
         {
             // ARRANGE
             InitializeFakeObjects();
-            const string iconUri = "icon_uri";
+            const string iconUri = "#icon_uri";
             var addResourceParameter = new ResourceSet
             {
                 Name = "name",
@@ -96,7 +96,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Validators
         {
             // ARRANGE
             InitializeFakeObjects();
-            const string uri = "uri";
+            const string uri = "#uri";
             var addResourceParameter = new ResourceSet
             {
                 Name = "name",

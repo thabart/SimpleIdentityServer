@@ -52,14 +52,14 @@ namespace SimpleIdentityServer.Uma.Core.Validators
             }
 
             if (!string.IsNullOrWhiteSpace(resourceSet.IconUri) &&
-                !Uri.IsWellFormedUriString(resourceSet.IconUri, UriKind.Absolute))
+                !Uri.IsWellFormedUriString(resourceSet.IconUri, UriKind.RelativeOrAbsolute))
             {
                 throw new BaseUmaException(ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, resourceSet.IconUri));
             }
 
             if (!string.IsNullOrWhiteSpace(resourceSet.Uri) &&
-                !Uri.IsWellFormedUriString(resourceSet.Uri, UriKind.Absolute))
+                !Uri.IsWellFormedUriString(resourceSet.Uri, UriKind.RelativeOrAbsolute))
             {
                 throw new BaseUmaException(ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, resourceSet.Uri));
