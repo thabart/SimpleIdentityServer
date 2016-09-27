@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using IdentityServer4.Models;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.IdentityServer.EF.Models;
 using System;
@@ -28,7 +29,7 @@ namespace SimpleIdentityServer.IdentityServer.EF
         {
             public List<ResponseType> ResponseTypes { get; set; }
 
-            public List<GrantType> GrantTypes { get; set; }
+            public List<Core.Models.GrantType> GrantTypes { get; set; }
 
             public override bool Equals(object obj)
             {
@@ -71,9 +72,9 @@ namespace SimpleIdentityServer.IdentityServer.EF
                         ResponseType.id_token,
                         ResponseType.token
                     },
-                    GrantTypes = new List<GrantType>
+                    GrantTypes = new List<Core.Models.GrantType>
                     {
-                        GrantType.@implicit
+                        Core.Models.GrantType.@implicit
                     }
                 }
             },
@@ -86,10 +87,10 @@ namespace SimpleIdentityServer.IdentityServer.EF
                         ResponseType.id_token,
                         ResponseType.token
                     },
-                    GrantTypes = new List<GrantType>
+                    GrantTypes = new List<Core.Models.GrantType>
                     {
-                        GrantType.@implicit,
-                        GrantType.client_credentials
+                        Core.Models.GrantType.@implicit,
+                        Core.Models.GrantType.client_credentials
                     }
                 }
             },
@@ -101,9 +102,9 @@ namespace SimpleIdentityServer.IdentityServer.EF
                     {
                         ResponseType.code
                     },
-                    GrantTypes = new List<GrantType>
+                    GrantTypes = new List<Core.Models.GrantType>
                     {
-                        GrantType.authorization_code
+                        Core.Models.GrantType.authorization_code
                     }
                 }
             },
@@ -116,10 +117,10 @@ namespace SimpleIdentityServer.IdentityServer.EF
                         ResponseType.code,
                         ResponseType.token
                     },
-                    GrantTypes = new List<GrantType>
+                    GrantTypes = new List<Core.Models.GrantType>
                     {
-                        GrantType.authorization_code,
-                        GrantType.client_credentials
+                        Core.Models.GrantType.authorization_code,
+                        Core.Models.GrantType.client_credentials
                     }
                 }
             },
@@ -133,11 +134,11 @@ namespace SimpleIdentityServer.IdentityServer.EF
                         ResponseType.id_token,
                         ResponseType.token
                     },
-                    GrantTypes = new List<GrantType>
+                    GrantTypes = new List<Core.Models.GrantType>
                     {
-                        GrantType.@implicit,
-                        GrantType.authorization_code,
-                        GrantType.refresh_token
+                        Core.Models.GrantType.@implicit,
+                        Core.Models.GrantType.authorization_code,
+                        Core.Models.GrantType.refresh_token
                     }
                 }
             },
@@ -151,11 +152,11 @@ namespace SimpleIdentityServer.IdentityServer.EF
                         ResponseType.id_token,
                         ResponseType.token
                     },
-                    GrantTypes = new List<GrantType>
+                    GrantTypes = new List<Core.Models.GrantType>
                     {
-                        GrantType.@implicit,
-                        GrantType.authorization_code,
-                        GrantType.client_credentials
+                        Core.Models.GrantType.@implicit,
+                        Core.Models.GrantType.authorization_code,
+                        Core.Models.GrantType.client_credentials
                     }
                 }
             },
@@ -167,9 +168,9 @@ namespace SimpleIdentityServer.IdentityServer.EF
                     {
                         ResponseType.token
                     },
-                    GrantTypes = new List<GrantType>
+                    GrantTypes = new List<Core.Models.GrantType>
                     {
-                        GrantType.client_credentials
+                        Core.Models.GrantType.client_credentials
                     }
                 }
             },
@@ -181,10 +182,10 @@ namespace SimpleIdentityServer.IdentityServer.EF
                     {
                         ResponseType.token
                     },
-                    GrantTypes = new List<GrantType>
+                    GrantTypes = new List<Core.Models.GrantType>
                     {
-                        GrantType.password,
-                        GrantType.refresh_token
+                        Core.Models.GrantType.password,
+                        Core.Models.GrantType.refresh_token
                     }
                 }
             },
@@ -196,10 +197,10 @@ namespace SimpleIdentityServer.IdentityServer.EF
                     {
                         ResponseType.token
                     },
-                    GrantTypes = new List<GrantType>
+                    GrantTypes = new List<Core.Models.GrantType>
                     {
-                        GrantType.password,
-                        GrantType.client_credentials
+                        Core.Models.GrantType.password,
+                        Core.Models.GrantType.client_credentials
                     }
                 }
             }
@@ -209,10 +210,10 @@ namespace SimpleIdentityServer.IdentityServer.EF
 
         #region To domain
 
-        public static Scope ToDomain(this IdentityServer4.EntityFramework.Entities.Scope scope)
+        public static Core.Models.Scope ToDomain(this IdentityServer4.EntityFramework.Entities.Scope scope)
         {
             var standardScopeNames = IdentityServer4.Models.StandardScopes.All.Select(s => s.Name);
-            var record = new Scope
+            var record = new Core.Models.Scope
             {
                 Name = scope.Name,
                 Description = scope.Description,
@@ -221,7 +222,7 @@ namespace SimpleIdentityServer.IdentityServer.EF
             };
             record.IsOpenIdScope = standardScopeNames.Contains(record.Name);
             record.Type = scope.Type == (int)IdentityServer4.Models.ScopeType.Identity ?
-                ScopeType.ResourceOwner : ScopeType.ProtectedApi;
+                Core.Models.ScopeType.ResourceOwner : Core.Models.ScopeType.ProtectedApi;
             if (scope.Claims != null && scope.Claims.Any())
             {
                 record.Claims = scope.Claims.Select(c => c.Name).ToList();
@@ -265,17 +266,17 @@ namespace SimpleIdentityServer.IdentityServer.EF
             return result;
         }
 
-        public static Scope ToDomain(this IdentityServer4.EntityFramework.Entities.ClientScope scope)
+        public static Core.Models.Scope ToDomain(this IdentityServer4.EntityFramework.Entities.ClientScope scope)
         {
-            return new Scope
+            return new Core.Models.Scope
             {
                 Name = scope.Scope
             };
         }
 
-        public static Client ToDomain(this IdentityServer4.EntityFramework.Entities.Client client)
+        public static Core.Models.Client ToDomain(this IdentityServer4.EntityFramework.Entities.Client client)
         {
-            var result = new Client
+            var result = new Core.Models.Client
             {
                 ClientId = client.ClientId,
                 ClientSecret =  client.ClientSecrets == null || !client.ClientSecrets.Any() ? string.Empty : client.ClientSecrets.First().Value,
@@ -286,7 +287,7 @@ namespace SimpleIdentityServer.IdentityServer.EF
                 IdTokenEncryptedResponseAlg = null,
                 IdTokenEncryptedResponseEnc = null,
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_basic,
-                AllowedScopes = client.AllowedScopes == null || !client.AllowedScopes.Any() ? new List<Scope>() : client.AllowedScopes.Select(s => s.ToDomain()).ToList(),
+                AllowedScopes = client.AllowedScopes == null || !client.AllowedScopes.Any() ? new List<Core.Models.Scope>() : client.AllowedScopes.Select(s => s.ToDomain()).ToList(),
                 RedirectionUrls = client.RedirectUris == null || !client.RedirectUris.Any() ? new List<string>() : client.RedirectUris.Select(s => s.RedirectUri).ToList(),
                 ApplicationType = ApplicationTypes.web
             };
@@ -348,7 +349,7 @@ namespace SimpleIdentityServer.IdentityServer.EF
             return result;
         }
 
-        public static IdentityServer4.EntityFramework.Entities.Client ToEntity(this Client client)
+        public static IdentityServer4.EntityFramework.Entities.Client ToEntity(this Core.Models.Client client)
         {
             var result = new IdentityServer4.EntityFramework.Entities.Client
             {
@@ -377,7 +378,15 @@ namespace SimpleIdentityServer.IdentityServer.EF
                 RedirectUris = client.RedirectionUrls == null || !client.RedirectionUrls.Any() ? new List<IdentityServer4.EntityFramework.Entities.ClientRedirectUri>() : client.RedirectionUrls.Select(r => new IdentityServer4.EntityFramework.Entities.ClientRedirectUri
                 {
                     RedirectUri = r
-                }).ToList()
+                }).ToList(),
+                ClientSecrets = string.IsNullOrWhiteSpace(client.ClientSecret) ? new List<IdentityServer4.EntityFramework.Entities.ClientSecret>() : new List<IdentityServer4.EntityFramework.Entities.ClientSecret>
+                {
+                    new IdentityServer4.EntityFramework.Entities.ClientSecret
+                    {
+                        Value = client.ClientSecret.Sha256(),
+                        Type= "SharedSecret"
+                    }
+                }
             };
 
             var grantingMethod = new GrantingMethod

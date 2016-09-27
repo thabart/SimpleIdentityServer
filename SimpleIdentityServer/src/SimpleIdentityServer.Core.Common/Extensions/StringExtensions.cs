@@ -28,15 +28,12 @@ namespace SimpleIdentityServer.Core.Common.Extensions
         public static string Base64Encode(this string plainText)
         {
             var plainTextBytes = Encoding.UTF8.GetBytes(plainText);
-            return plainTextBytes.Base64EncodeBytes();
+            return Base64EncodeBytes(plainTextBytes);
         }
 
         public static string Base64EncodeBytes(this byte[] bytes)
         {
-            return Convert.ToBase64String(bytes)
-                .Split('=')[0] // Remove any trailing '='s
-                .Replace('+', '-') // 62nd char of encoding
-                .Replace('/', '_'); // 63nd char of encoding
+            return Convert.ToBase64String(bytes);
         }
 
         public static string Base64Decode(this string base64EncodedData)

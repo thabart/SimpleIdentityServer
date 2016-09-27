@@ -16,8 +16,6 @@
 
 using System;
 
-using SimpleIdentityServer.Core.Models;
-
 namespace SimpleIdentityServer.Core.Authenticate
 {
     public interface IClientSecretBasicAuthentication

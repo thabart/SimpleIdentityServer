@@ -17,6 +17,7 @@
 using SimpleIdentityServer.Client.Builders;
 using SimpleIdentityServer.Core.Common.Extensions;
 using System;
+using System.Text;
 
 namespace SimpleIdentityServer.Client.Selectors
 {

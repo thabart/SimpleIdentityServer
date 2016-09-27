@@ -72,7 +72,7 @@ namespace SimpleIdentityServer.Client.Operations
                 Content = body,
                 RequestUri = requestUri
             };
-            request.Headers.Add("Authorization", "Bearer " + authorizationValue);
+            request.Headers.Add("Authorization", "Basic " + authorizationValue);
             var result = await httpClient.SendAsync(request);
             result.EnsureSuccessStatusCode();
             var content = await result.Content.ReadAsStringAsync();
