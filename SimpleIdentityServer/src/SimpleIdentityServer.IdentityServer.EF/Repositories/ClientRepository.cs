@@ -16,7 +16,6 @@
 
 using System;
 using System.Collections.Generic;
-using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
 using IdentityServer4.EntityFramework.DbContexts;
 using SimpleIdentityServer.Logging;
@@ -43,7 +42,7 @@ namespace SimpleIdentityServer.IdentityServer.EF.Repositories
 
         #endregion
 
-        public bool DeleteClient(Client client)
+        public bool DeleteClient(SimpleIdentityServer.Core.Models.Client client)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
@@ -69,13 +68,13 @@ namespace SimpleIdentityServer.IdentityServer.EF.Repositories
             }
         }
 
-        public IList<Client> GetAll()
+        public IList<Core.Models.Client> GetAll()
         {
             var clients = _context.Clients.Include(c => c.AllowedGrantTypes).ToList();
             return clients.Select(c => c.ToDomain()).ToList();
         }
 
-        public Client GetClientById(string clientId)
+        public Core.Models.Client GetClientById(string clientId)
         {
             var client = _context.Clients
                 .Include(c => c.AllowedGrantTypes)
@@ -95,7 +94,7 @@ namespace SimpleIdentityServer.IdentityServer.EF.Repositories
             return client.ToDomain();
         }
 
-        public bool InsertClient(Client client)
+        public bool InsertClient(Core.Models.Client client)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
@@ -116,7 +115,7 @@ namespace SimpleIdentityServer.IdentityServer.EF.Repositories
             }
         }
 
-        public bool UpdateClient(Client client)
+        public bool UpdateClient(Core.Models.Client client)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {

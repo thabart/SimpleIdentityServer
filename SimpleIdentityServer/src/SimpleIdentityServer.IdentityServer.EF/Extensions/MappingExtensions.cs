@@ -369,6 +369,7 @@ namespace SimpleIdentityServer.IdentityServer.EF
                 RefreshTokenExpiration = (int)IdentityServer4.Models.TokenExpiration.Absolute,
                 EnableLocalLogin = true,
                 PrefixClientClaims = true,
+                AllowAccessTokensViaBrowser = true,
                 LogoUri = client.LogoUri,
                 ClientUri = client.ClientUri,
                 AllowedScopes = client.AllowedScopes == null || !client.AllowedScopes.Any() ? new List<IdentityServer4.EntityFramework.Entities.ClientScope>() : client.AllowedScopes.Select(s => new IdentityServer4.EntityFramework.Entities.ClientScope
