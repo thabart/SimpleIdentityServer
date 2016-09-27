@@ -15,7 +15,6 @@
 #endregion
 
 using SimpleIdentityServer.Core.Api.Registration.Actions;
-using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Manager.Core.Api.Clients.Actions;
@@ -26,9 +25,9 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients
 {
     public interface IClientActions
     {
-        List<Client> GetClients();
+        List<SimpleIdentityServer.Core.Models.Client> GetClients();
 
-        Client GetClient(string clientId);
+        SimpleIdentityServer.Core.Models.Client GetClient(string clientId);
 
         bool DeleteClient(string clientId);
 
@@ -69,12 +68,12 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients
 
         #region Public methods
 
-        public List<Client> GetClients()
+        public List<SimpleIdentityServer.Core.Models.Client> GetClients()
         {
             return _getClientsAction.Execute();
         }
 
-        public Client GetClient(string clientId)
+        public SimpleIdentityServer.Core.Models.Client GetClient(string clientId)
         {
             return _getClientAction.Execute(clientId);
         }

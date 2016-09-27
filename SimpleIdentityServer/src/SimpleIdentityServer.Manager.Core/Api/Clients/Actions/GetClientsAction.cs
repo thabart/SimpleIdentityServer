@@ -23,7 +23,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients.Actions
 {
     public interface IGetClientsAction
     {
-        List<Client> Execute();
+        List<SimpleIdentityServer.Core.Models.Client> Execute();
     }
 
     public class GetClientsAction : IGetClientsAction
@@ -41,7 +41,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients.Actions
 
         #region Public methods
 
-        public List<Client> Execute()
+        public List<SimpleIdentityServer.Core.Models.Client> Execute()
         {
             return _clientRepository.GetAll().ToList();
         }

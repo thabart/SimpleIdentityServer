@@ -24,7 +24,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients.Actions
 {
     public interface IGetClientAction
     {
-        Client Execute(string clientId);
+        SimpleIdentityServer.Core.Models.Client Execute(string clientId);
     }
 
     public class GetClientAction : IGetClientAction
@@ -42,7 +42,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients.Actions
 
         #region Public methods
 
-        public Client Execute(string clientId)
+        public SimpleIdentityServer.Core.Models.Client Execute(string clientId)
         {
             if (string.IsNullOrWhiteSpace(clientId))
             {

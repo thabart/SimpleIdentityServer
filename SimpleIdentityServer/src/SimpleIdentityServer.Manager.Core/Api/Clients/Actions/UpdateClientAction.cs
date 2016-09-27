@@ -66,7 +66,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients.Actions
                     string.Format(ErrorDescriptions.TheClientDoesntExist, updateClientParameter.ClientId));
             }
 
-            Client client = null;
+            SimpleIdentityServer.Core.Models.Client client = null;
             try
             {
                 client = _generateClientFromRegistrationRequest.Execute(updateClientParameter);
