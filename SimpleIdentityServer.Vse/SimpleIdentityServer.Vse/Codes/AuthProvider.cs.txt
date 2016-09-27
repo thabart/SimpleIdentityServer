@@ -24,7 +24,11 @@ namespace {namespace}
         private const string OpenIdConfigurationUrl = "https://localhost:5443/.well-known/openid-configuration";
 
         #region Public static methods
-
+		
+        /// <summary>
+        /// Get an identity token via the resource owner credentials workflow.
+        /// </summary>
+        /// <returns>JWS or JWE token</returns>
         public static string GetIdentityToken()
         {
             var authProvider = new AuthenticationProviderFactory();

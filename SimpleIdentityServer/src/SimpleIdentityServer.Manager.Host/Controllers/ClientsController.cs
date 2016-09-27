@@ -129,6 +129,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
             }
 
             await _representationManager.AddOrUpdateRepresentationAsync(this, GetClientStoreName + updateClientRequest.ClientId, false);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, GetClientsStoreName, false);
             return new NoContentResult();
         }
 
