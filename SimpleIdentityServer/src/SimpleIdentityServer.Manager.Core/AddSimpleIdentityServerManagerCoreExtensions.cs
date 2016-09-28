@@ -23,12 +23,14 @@ using SimpleIdentityServer.Manager.Core.Api.Jwe;
 using SimpleIdentityServer.Manager.Core.Api.Jwe.Actions;
 using SimpleIdentityServer.Manager.Core.Api.Jws;
 using SimpleIdentityServer.Manager.Core.Api.Jws.Actions;
+using SimpleIdentityServer.Manager.Core.Api.Manage.Actions;
 using SimpleIdentityServer.Manager.Core.Api.ResourceOwners;
 using SimpleIdentityServer.Manager.Core.Api.ResourceOwners.Actions;
 using SimpleIdentityServer.Manager.Core.Api.Scopes;
 using SimpleIdentityServer.Manager.Core.Api.Scopes.Actions;
 using SimpleIdentityServer.Manager.Core.Factories;
 using SimpleIdentityServer.Manager.Core.Helpers;
+using SimpleIdentityServer.Manager.Core.Manage;
 
 namespace SimpleIdentityServer.Manager.Core
 {
@@ -63,6 +65,9 @@ namespace SimpleIdentityServer.Manager.Core
             serviceCollection.AddTransient<IAddResourceOwnerAction, AddResourceOwnerAction>();
             serviceCollection.AddTransient<IAddScopeOperation, AddScopeOperation>();
             serviceCollection.AddTransient<IUpdateScopeOperation, UpdateScopeOperation>();
+            serviceCollection.AddTransient<IManageActions, ManageActions>();
+            serviceCollection.AddTransient<IExportAction, ExportAction>();
+            serviceCollection.AddTransient<IImportAction, ImportAction>();
             return serviceCollection;
         }
     }

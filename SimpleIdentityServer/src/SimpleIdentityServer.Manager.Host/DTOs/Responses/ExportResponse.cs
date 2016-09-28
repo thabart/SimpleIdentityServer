@@ -15,22 +15,14 @@
 #endregion
 
 using System.Collections.Generic;
-using SimpleIdentityServer.Core.Models;
+using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.Core.Repositories
+namespace SimpleIdentityServer.Manager.Host.DTOs.Responses
 {
-    public interface IClientRepository
+    [DataContract]
+    public class ExportResponse
     {
-        Models.Client GetClientById(string clientId);
-
-        bool InsertClient(Models.Client client);
-
-        bool DeleteClient(Models.Client client);
-
-        IList<Models.Client> GetAll();
-
-        bool UpdateClient(Models.Client client);
-
-        bool RemoveAll();
+        [DataMember(Name = Constants.ExportResponseNames.Clients)]
+        public IEnumerable<ClientResponse> Clients { get; set; }
     }
 }

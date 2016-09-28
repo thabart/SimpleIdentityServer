@@ -14,23 +14,14 @@
 // limitations under the License.
 #endregion
 
-using System.Collections.Generic;
+
 using SimpleIdentityServer.Core.Models;
+using System.Collections.Generic;
 
-namespace SimpleIdentityServer.Core.Repositories
+namespace SimpleIdentityServer.Manager.Core.Parameters
 {
-    public interface IClientRepository
+    public class ImportParameter
     {
-        Models.Client GetClientById(string clientId);
-
-        bool InsertClient(Models.Client client);
-
-        bool DeleteClient(Models.Client client);
-
-        IList<Models.Client> GetAll();
-
-        bool UpdateClient(Models.Client client);
-
-        bool RemoveAll();
+        public IEnumerable<Client> Clients { get; set; }
     }
 }

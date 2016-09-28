@@ -45,6 +45,24 @@ namespace SimpleIdentityServer.Logging
 
         #endregion
 
+        #region Events linked to export
+
+        void StartToExport();
+
+        void FinishToExport();
+
+        #endregion
+
+        #region Events linked to import
+
+        void StartToImport();
+
+        void RemoveAllClients();
+
+        void FinishToImport();
+
+        #endregion
+
         void Failure(string message);
 
         void Failure(Exception exception);
@@ -58,6 +76,8 @@ namespace SimpleIdentityServer.Logging
             public const string ResourceOwner = "ResourceOwner";
             public const string Scope = "Scope";
             public const string Failure = "Failure";
+            public const string Export = "Export";
+            public const string Import = "Import";
         }
 
         private const string MessagePattern = "{Id} : {Task}, {Message} : {Operation}";
@@ -158,6 +178,76 @@ namespace SimpleIdentityServer.Logging
 
             LogInformation(evt);
         }
+
+        #endregion
+
+        #region Events linked to export operations
+
+        public void StartToExport()
+        {
+            var evt = new Event
+            {
+                Id = 7,
+                Task = Tasks.Export,
+                Message = $"Start to export"
+            };
+
+            LogInformation(evt);
+        }
+
+        public void FinishToExport()
+        {
+            var evt = new Event
+            {
+                Id = 8,
+                Task = Tasks.Export,
+                Message = $"Finish to export"
+            };
+
+            LogInformation(evt);
+        }
+
+        #endregion
+
+        #region Events linked to import
+
+        public void StartToImport()
+        {
+            var evt = new Event
+            {
+                Id = 9,
+                Task = Tasks.Import,
+                Message = $"Start to import"
+            };
+
+            LogInformation(evt);
+
+        }
+
+        public void RemoveAllClients()
+        {
+            var evt = new Event
+            {
+                Id = 10,
+                Task = Tasks.Import,
+                Message = $"All clients have been removed"
+            };
+
+            LogInformation(evt);
+        }
+
+        public void FinishToImport()
+        {
+            var evt = new Event
+            {
+                Id = 11,
+                Task = Tasks.Import,
+                Message = $"Import is finished"
+            };
+
+            LogInformation(evt);
+        }
+
 
         #endregion
 

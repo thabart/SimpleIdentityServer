@@ -591,7 +591,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
                         PolicyUri = "http://openid.net",
                         TosUri = "http://openid.net",
-                        ApplicationType = ApplicationTypes.web
+                        ApplicationType = ApplicationTypes.web,
+                        RedirectionUrls = "https://configuration/callback"
                     },
                     // Open Id manager API : needs to interact with the introspection endpoint.
                     new Models.Client
@@ -603,7 +604,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
                         PolicyUri = "http://openid.net",
                         TosUri = "http://openid.net",
-                        ApplicationType = ApplicationTypes.web
+                        ApplicationType = ApplicationTypes.web,
+                        RedirectionUrls = "https://openidmanager/callback"
                     },
                     // UMA API : needs to interact with the introspection endpoint.
                     new Models.Client
@@ -615,7 +617,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
                         PolicyUri = "http://openid.net",
                         TosUri = "http://openid.net",
-                        ApplicationType = ApplicationTypes.web
+                        ApplicationType = ApplicationTypes.web,
+                        RedirectionUrls = "https://uma/callback",
                     },
                     // Anonymous client
                     new Models.Client
@@ -645,8 +648,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         GrantTypes = "4",
                         ResponseTypes = "0,1,2",
                         IdTokenSignedResponseAlg = "RS256",
-                        RedirectionUrls = "http://localhost:4200/callback",
-                        ApplicationType = ApplicationTypes.web
+                        ApplicationType = ApplicationTypes.web,
+                        RedirectionUrls = "https://localhost:4200/callback"
                     },
                     // Website
                     new Models.Client
@@ -680,7 +683,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         GrantTypes = "4",
                         ResponseTypes = "0,1,2",
                         IdTokenSignedResponseAlg = "RS256",
-                        ApplicationType = ApplicationTypes.web
+                        ApplicationType = ApplicationTypes.web,
+                        RedirectionUrls = "https://website/callback"
                     },
                     // Manager website API
                     new Models.Client
@@ -730,7 +734,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         GrantTypes = "3",
                         ResponseTypes = "1",
                         IdTokenSignedResponseAlg = "RS256",
-                        ApplicationType = ApplicationTypes.web
+                        ApplicationType = ApplicationTypes.web,
+                        RedirectionUrls = "https://websiteapi/callback"
                     },
                     // Visual studio extension
                     new Models.Client
@@ -773,7 +778,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         GrantTypes = "3",
                         ResponseTypes = "1",
                         IdTokenSignedResponseAlg = "RS256",
-                        ApplicationType = ApplicationTypes.web
+                        ApplicationType = ApplicationTypes.web,
+                        RedirectionUrls = "https://simpleidserver/callback"
                     },
                     // Manager website 
                     new Models.Client
@@ -801,7 +807,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         GrantTypes = "3",
                         ResponseTypes = "1",
                         IdTokenSignedResponseAlg = "RS256",
-                        ApplicationType = ApplicationTypes.web
+                        ApplicationType = ApplicationTypes.web,
+                        RedirectionUrls = "https://sampleclient/callback"
                     },
                     // Simple Identity server test client
                     new Models.Client
@@ -829,8 +836,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         GrantTypes = "1",
                         ResponseTypes = "0,1,2",
                         IdTokenSignedResponseAlg = "RS256",
-                        RedirectionUrls = "https://localhost:5443/User/Callback",
-                        ApplicationType = ApplicationTypes.web
+                        ApplicationType = ApplicationTypes.web,
+                        RedirectionUrls = "https://localhost:5443/User/Callback"
                     }
                 });
             }

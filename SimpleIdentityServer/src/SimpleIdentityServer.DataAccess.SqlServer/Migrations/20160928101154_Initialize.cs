@@ -208,7 +208,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                         column: x => x.ClientId,
                         principalTable: "clients",
                         principalColumn: "ClientId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -252,7 +252,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                         column: x => x.ClientId,
                         principalTable: "clients",
                         principalColumn: "ClientId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_consents_resourceOwners_ResourceOwnerId",
                         column: x => x.ResourceOwnerId,

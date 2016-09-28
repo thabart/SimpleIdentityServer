@@ -21,80 +21,61 @@ namespace SimpleIdentityServer.Manager.Host
         public static class EndPoints
         {
             public const string RootPath = "/api";
-
             public const string Jws = RootPath + "/jws";
-
             public const string Jwe = RootPath + "/jwe";
-
             public const string Clients = RootPath + "/clients";
-
             public const string Scopes = RootPath + "/scopes";
-
             public const string ResourceOwners = RootPath + "/resource_owners";
+            public const string Manage = RootPath + "/manage";
         }
 
         public static class GetJwsRequestNames
         {
             public const string Jws = "jws";
-
             public const string Url = "url";
         }
 
         public static class GetJweRequestNames
         {
             public const string Jwe = "jwe";
-
             public const string Url = "url";
-
             public const string Password = "password";
         }
 
         public static class JwsInformationResponseNames
         {
             public const string Header = "header";
-
             public const string Payload = "payload";
-
             public const string JsonWebKey = "jsonwebkey";
         }
 
         public static class JweInformationResponseNames
         {
             public const string Content = "content";
-
             public const string IsContentJws = "iscontentjws";
         }
 
         public static class ErrorResponseNames
         {
             public const string Code = "code";
-
             public const string Message = "message";
         }
 
         public static class CreateJwsRequestNames
         {
             public const string Kid = "kid";
-
             public const string Alg = "alg";
-
             public const string Url = "url";
-
             public const string Payload = "payload";
         }
 
         public static class CreateJweRequestNames
         {
             public const string Jws = "jws";
-
             public const string Url = "url";
-
             public const string Kid = "kid";
-
             public const string Alg = "alg";
-
             public const string Enc = "enc";
-
             public const string Password = "password";
         }
 
@@ -185,6 +166,11 @@ namespace SimpleIdentityServer.Manager.Host
             public const string IsExposed = "is_exposed";
             public const string Type = "type";
             public const string Claims = "claims";
+        }
+
+        public static class ExportResponseNames
+        {
+            public const string Clients = "clients";
         }
     }
 }

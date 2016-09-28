@@ -28,25 +28,27 @@ namespace SimpleIdentityServer.Manager.Core.Errors
         public const string TheKtyIsNotSupported = "the kty '{0}' is not supported";
         public const string TheContentCannotBeExtractedFromJweToken = "the content cannot be extracted from the jwe token";
         public const string TheClientDoesntExist = "the client '{0}' doesn't exist";
-        public static string MissingParameter = "the parameter {0} is missing";
+        public const string MissingParameter = "the parameter {0} is missing";
         public const string TheScopeDoesntExist = "the scope '{0}' doesn't exist";
-        public static string TheRedirectUriParameterIsNotValid = "one or more redirect_uri values are invalid";
-        public static string TheRedirectUriContainsAFragment = "one or more redirect_uri contains a fragment";
-        public static string ParameterIsNotCorrect = "the paramater {0} is not correct";
-        public static string TheJwksParameterCannotBeSetBecauseJwksUrlIsUsed =
+        public const string TheRedirectUriParameterIsNotValid = "one or more redirect_uri values are invalid";
+        public const string TheRedirectUriContainsAFragment = "one or more redirect_uri contains a fragment";
+        public const string ParameterIsNotCorrect = "the paramater {0} is not correct";
+        public const string TheJwksParameterCannotBeSetBecauseJwksUrlIsUsed =
             "the jwks parameter cannot be set because the Jwks Url has already been set";
-        public static string OneOrMoreSectorIdentifierUriIsNotARedirectUri =
+        public const string OneOrMoreSectorIdentifierUriIsNotARedirectUri =
             "one or more sector uri is not a redirect_uri";
-        public static string TheParameterIsTokenEncryptedResponseAlgMustBeSpecified =
+        public const string TheParameterIsTokenEncryptedResponseAlgMustBeSpecified =
             "the parameter id_token_encrypted_response_alg must be specified";
-        public static string OneOfTheRequestUriIsNotValid = "one of the request_uri is not valid";
-        public static string TheParameterRequestObjectEncryptionAlgMustBeSpecified =
+        public const string OneOfTheRequestUriIsNotValid = "one of the request_uri is not valid";
+        public const string TheParameterRequestObjectEncryptionAlgMustBeSpecified =
             "the parameter request_object_encryption_alg must be specified";                
         public static string TheParameterUserInfoEncryptedResponseAlgMustBeSpecified =
             "the parameter userinfo_encrypted_response_alg must be specified";
-        public static string TheSectorIdentifierUrisCannotBeRetrieved = "the sector identifier uris cannot be retrieved";
-        public static string TheResourceOwnerDoesntExist = "the resource owner {0} doesn't exist";
-        public static string TheResourceOwnerMustBeConfirmed = "the account must be confirmed";
-        public static string TheScopeAlreadyExists = "The scope {0} already exists";
+        public const string TheSectorIdentifierUrisCannotBeRetrieved = "the sector identifier uris cannot be retrieved";
+        public const string TheResourceOwnerDoesntExist = "the resource owner {0} doesn't exist";
+        public const string TheResourceOwnerMustBeConfirmed = "the account must be confirmed";
+        public const string TheScopeAlreadyExists = "The scope {0} already exists";
+        public const string TheFileExtensionIsNotCorrect = "the file extension is not correct";
+        public const string TheFileIsNotWellFormed = "the file is not well formed";
     }
 }

@@ -8,7 +8,7 @@ using SimpleIdentityServer.DataAccess.SqlServer;
 namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
 {
     [DbContext(typeof(SimpleIdentityServerContext))]
-    [Migration("20160921105253_Initialize")]
+    [Migration("20160928101154_Initialize")]
     partial class Initialize
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -427,7 +427,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                 {
                     b.HasOne("SimpleIdentityServer.DataAccess.SqlServer.Models.Client", "Client")
                         .WithMany("Consents")
-                        .HasForeignKey("ClientId");
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("SimpleIdentityServer.DataAccess.SqlServer.Models.ResourceOwner", "ResourceOwner")
                         .WithMany("Consents")
@@ -465,7 +466,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                 {
                     b.HasOne("SimpleIdentityServer.DataAccess.SqlServer.Models.Client", "Client")
                         .WithMany("JsonWebKeys")
-                        .HasForeignKey("ClientId");
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("SimpleIdentityServer.DataAccess.SqlServer.Models.ResourceOwnerRole", b =>

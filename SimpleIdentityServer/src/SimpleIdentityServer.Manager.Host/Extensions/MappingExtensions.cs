@@ -249,6 +249,112 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
             };
         }
 
+        public static SimpleIdentityServer.Core.Models.Client ToModel(this ClientResponse clientResponse)
+        {
+            var responseTypes = new List<ResponseType>();
+            var grantTypes = new List<GrantType>();
+            var redirectUris = clientResponse.RedirectUris == null
+                ? new List<string>()
+                : clientResponse.RedirectUris.ToList();
+            var scopes = clientResponse.AllowedScopes == null ? new List<Scope>() : clientResponse.AllowedScopes.Select(s => new Scope
+            {
+                Name = s
+            }).ToList();
+            ApplicationTypes? applicationType = null;
+            if (clientResponse.ResponseTypes != null &&
+                clientResponse.ResponseTypes.Any())
+            {
+                foreach (var responseType in clientResponse.ResponseTypes)
+                {
+                    var responseTypeSplitted = responseType.Split(' ');
+                    foreach (var response in responseTypeSplitted)
+                    {
+                        ResponseType responseTypeEnum;
+                        if (Enum.TryParse(response, out responseTypeEnum) &&
+                            !responseTypes.Contains(responseTypeEnum))
+                        {
+                            responseTypes.Add(responseTypeEnum);
+                        }
+                    }
+                }
+            }
+
+            if (clientResponse.GrantTypes != null &&
+                clientResponse.GrantTypes.Any())
+            {
+                foreach (var grantType in clientResponse.GrantTypes)
+                {
+                    GrantType grantTypeEnum;
+                    if (Enum.TryParse(grantType, out grantTypeEnum))
+                    {
+                        grantTypes.Add(grantTypeEnum);
+                    }
+                }
+            }
+
+            ApplicationTypes appTypeEnum;
+            if (Enum.TryParse(clientResponse.ApplicationType, out appTypeEnum))
+            {
+                applicationType = appTypeEnum;
+            }
+
+            TokenEndPointAuthenticationMethods tokenEndPointAuthenticationMethod;
+            if (!Enum.TryParse(clientResponse.TokenEndPointAuthMethod, out tokenEndPointAuthenticationMethod))
+            {
+                tokenEndPointAuthenticationMethod = TokenEndPointAuthenticationMethods.client_secret_basic;
+            }
+
+            return new SimpleIdentityServer.Core.Models.Client
+            {
+                AllowedScopes = scopes,
+                GrantTypes = grantTypes,
+                TokenEndPointAuthMethod = tokenEndPointAuthenticationMethod,
+                ApplicationType = appTypeEnum,
+                ResponseTypes = responseTypes,
+                ClientId = clientResponse.ClientId,
+                ClientName = clientResponse.ClientName,
+                ClientSecret = clientResponse.ClientSecret,
+                ClientUri = clientResponse.ClientUri,
+                Contacts = clientResponse.Contacts,
+                DefaultAcrValues = clientResponse.DefaultAcrValues,
+                DefaultMaxAge = clientResponse.DefaultMaxAge,
+                IdTokenEncryptedResponseAlg = clientResponse.IdTokenEncryptedResponseAlg,
+                IdTokenEncryptedResponseEnc = clientResponse.IdTokenEncryptedResponseEnc,
+                IdTokenSignedResponseAlg = clientResponse.IdTokenSignedResponseAlg,
+                InitiateLoginUri = clientResponse.InitiateLoginUri,
+                JwksUri = clientResponse.JwksUri,
+                LogoUri = clientResponse.LogoUri,
+                PolicyUri = clientResponse.PolicyUri,
+                UserInfoSignedResponseAlg = clientResponse.UserInfoSignedResponseAlg,
+                UserInfoEncryptedResponseEnc = clientResponse.UserInfoEncryptedResponseEnc,
+                UserInfoEncryptedResponseAlg = clientResponse.UserInfoEncryptedResponseAlg,
+                TosUri = clientResponse.TosUri,
+                TokenEndPointAuthSigningAlg = clientResponse.TokenEndPointAuthSigningAlg,
+                SubjectType = clientResponse.SubjectType,
+                SectorIdentifierUri = clientResponse.SectorIdentifierUri,
+                RequireAuthTime = clientResponse.RequireAuthTime,
+                RequestObjectSigningAlg = clientResponse.RequestObjectSigningAlg,
+                RequestObjectEncryptionAlg = clientResponse.RequestObjectEncryptionAlg,
+                RequestObjectEncryptionEnc = clientResponse.RequestObjectEncryptionEnc,
+                RedirectionUrls = redirectUris,
+                RequestUris = clientResponse.RequestUris
+            };
+        }
+
+        public static ImportParameter ToParameter(this ExportResponse export)
+        {
+            if (export == null)
+            {
+                throw new ArgumentNullException(nameof(export));
+            }
+
+
+            return new ImportParameter
+            {
+                Clients = export.Clients == null ? null : export.Clients.Select(c => c.ToModel())
+            };
+        }
+
         #endregion
 
         #region To DTOs
@@ -260,6 +366,19 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
                 Header = jwsInformationResult.Header,
                 JsonWebKey = jwsInformationResult.JsonWebKey,
                 Payload = jwsInformationResult.Payload
+            };
+        }
+
+        public static ExportResponse ToDto(this ExportResult export)
+        {
+            if (export == null)
+            {
+                throw new ArgumentNullException(nameof(export));
+            }
+
+            return new ExportResponse
+            {
+                Clients = export.Clients == null ? null : export.Clients.Select(c => c.ToClientResponseDto())
             };
         }
 

@@ -426,7 +426,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                 {
                     b.HasOne("SimpleIdentityServer.DataAccess.SqlServer.Models.Client", "Client")
                         .WithMany("Consents")
-                        .HasForeignKey("ClientId");
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("SimpleIdentityServer.DataAccess.SqlServer.Models.ResourceOwner", "ResourceOwner")
                         .WithMany("Consents")
@@ -464,7 +465,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                 {
                     b.HasOne("SimpleIdentityServer.DataAccess.SqlServer.Models.Client", "Client")
                         .WithMany("JsonWebKeys")
-                        .HasForeignKey("ClientId");
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("SimpleIdentityServer.DataAccess.SqlServer.Models.ResourceOwnerRole", b =>

@@ -160,5 +160,25 @@ namespace SimpleIdentityServer.IdentityServer.EF.Repositories
                 }
             }
         }
+
+        public bool RemoveAll()
+        {
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    _context.Clients.RemoveRange(_context.Clients);
+                    _context.SaveChanges();
+                    transaction.Commit();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    _managerEventSource.Failure(ex);
+                    transaction.Rollback();
+                    return false;
+                }
+            }
+        }
     }
 }
