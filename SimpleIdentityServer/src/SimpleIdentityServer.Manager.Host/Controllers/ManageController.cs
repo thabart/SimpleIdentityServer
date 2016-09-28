@@ -52,7 +52,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
         #region Public methods
 
         [HttpGet("export")]
-        // [Authorize("manager")]
+        [Authorize("manager")]
         public ActionResult Export()
         {
             var export = _manageActions.Export().ToDto();
@@ -64,7 +64,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
         }
 
         [HttpPost("import")]
-        // [Authorize("manager")]
+        [Authorize("manager")]
         public async Task<ActionResult> Import()
         {
             var files = Request.Form.Files;

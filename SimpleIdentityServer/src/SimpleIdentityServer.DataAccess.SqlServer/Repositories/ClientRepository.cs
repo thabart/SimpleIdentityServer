@@ -55,11 +55,10 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                 return null;
             }
 
-            var clientScopes = _context.ClientScopes
-                .Include(c => c.Scope)
-                .Where(c => c.ClientId == clientId)
-                .ToList();
-            client.ClientScopes = clientScopes;
+            client.ClientScopes = _context.ClientScopes
+                    .Include(c => c.Scope)
+                    .Where(c => c.ClientId == clientId)
+                    .ToList();
             return client.ToDomain();
         }
 
@@ -160,7 +159,17 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 
         public IList<Core.Models.Client> GetAll()
         {
-            var clients = _context.Clients.ToList();
+            var clients = _context.Clients
+                .Include(c => c.JsonWebKeys)
+                .ToList();
+            foreach(var client in clients)
+            {
+                client.ClientScopes = _context.ClientScopes
+                    .Include(c => c.Scope)
+                    .Where(c => c.ClientId == client.ClientId)
+                    .ToList();
+            }
+            
             return clients.Select(client => client.ToDomain()).ToList();
         }
 
