@@ -70,7 +70,16 @@ namespace SimpleIdentityServer.IdentityServer.EF.Repositories
 
         public IList<Core.Models.Client> GetAll()
         {
-            var clients = _context.Clients.Include(c => c.AllowedGrantTypes).ToList();
+            var clients = _context.Clients
+                .Include(c => c.AllowedGrantTypes)
+                .Include(c => c.ClientSecrets)
+                .Include(c => c.RedirectUris)
+                .Include(c => c.PostLogoutRedirectUris)
+                .Include(c => c.AllowedScopes)
+                .Include(c => c.IdentityProviderRestrictions)
+                .Include(c => c.Claims)
+                .Include(c => c.AllowedCorsOrigins)
+                .ToList();
             return clients.Select(c => c.ToDomain()).ToList();
         }
 

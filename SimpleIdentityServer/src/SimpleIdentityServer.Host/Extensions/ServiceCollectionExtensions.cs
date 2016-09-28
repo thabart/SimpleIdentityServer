@@ -29,6 +29,7 @@ using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Configuration.Client;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Configuration;
+using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Services;
@@ -216,15 +217,16 @@ namespace SimpleIdentityServer.Host
             services.AddRateLimitation();
             services.AddIdServerClient();
             services.AddConfigurationClient();
+            services.AddDataProtection();
             services.AddTransient<ICertificateStore, CertificateStore>();
             services.AddTransient<IResourceOwnerService, InMemoryUserService>();
             services.AddTransient<IRedirectInstructionParser, RedirectInstructionParser>();
             services.AddTransient<IActionResultParser, ActionResultParser>();
-            services.AddSingleton(configurationParameters);
             services.AddTransient<ISimpleIdentityServerConfigurator, ConcreteSimpleIdentityServerConfigurator>();
-            services.AddDataProtection();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+            services.AddSingleton<IEncryptedPasswordFactory, EncryptedPasswordFactory>();
+            services.AddSingleton(configurationParameters);
             services.AddAuthentication(opts => opts.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme);
             services.AddAuthorization(opts =>
             {

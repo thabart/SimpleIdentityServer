@@ -365,8 +365,8 @@ namespace SimpleIdentityServer.IdentityServer.EF
                 AuthorizationCodeLifetime = 300,
                 AbsoluteRefreshTokenLifetime = 2592000,
                 SlidingRefreshTokenLifetime = 1296000,
-                RefreshTokenUsage = (int)IdentityServer4.Models.TokenUsage.OneTimeOnly,
-                RefreshTokenExpiration = (int)IdentityServer4.Models.TokenExpiration.Absolute,
+                RefreshTokenUsage = (int)TokenUsage.OneTimeOnly,
+                RefreshTokenExpiration = (int)TokenExpiration.Absolute,
                 EnableLocalLogin = true,
                 PrefixClientClaims = true,
                 AllowAccessTokensViaBrowser = true,
@@ -384,8 +384,8 @@ namespace SimpleIdentityServer.IdentityServer.EF
                 {
                     new IdentityServer4.EntityFramework.Entities.ClientSecret
                     {
-                        Value = client.ClientSecret.Sha256(),
-                        Type= "SharedSecret"
+                        Value = client.ClientSecret,
+                        Type = "SharedSecret"
                     }
                 }
             };

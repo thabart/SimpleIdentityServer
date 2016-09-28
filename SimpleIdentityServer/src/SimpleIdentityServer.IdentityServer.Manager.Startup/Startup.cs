@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.IdentityServer.EF;
 using SimpleIdentityServer.Manager.Host.Extensions;
 using WebApiContrib.Core.Concurrency;
@@ -50,6 +51,7 @@ namespace SimpleIdentityServer.IdentityServer.Manager.Startup
             var isLogFileEnabled = bool.Parse(Configuration["Log:File:Enabled"]);
             var isElasticSearchEnabled = bool.Parse(Configuration["Log:Elasticsearch:Enabled"]);
             var tokenUrl = authorizationUrl + "/token";
+            services.AddSingleton<IEncryptedPasswordFactory, EncryptedPasswordFactory>();
             services.AddSimpleIdentityServerSqlServer(connectionString);
 
             // Configure the caching

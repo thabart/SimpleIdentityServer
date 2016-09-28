@@ -32,9 +32,9 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
     {
         #region Fields
 
-        private const string GetClientsStoreName = "GetClients";
+        public const string GetClientsStoreName = "GetClients";
 
-        private const string GetClientStoreName = "GetClient_";
+        public const string GetClientStoreName = "GetClient_";
 
         private readonly IClientActions _clientActions;
 

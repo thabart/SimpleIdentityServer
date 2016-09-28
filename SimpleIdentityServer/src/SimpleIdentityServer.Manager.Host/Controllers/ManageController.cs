@@ -28,6 +28,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using WebApiContrib.Core.Concurrency;
 
 namespace SimpleIdentityServer.Manager.Host.Controllers
 {
@@ -38,13 +39,16 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
 
         private readonly IManageActions _manageActions;
 
+        private readonly IRepresentationManager _representationManager;
+
         #endregion
 
         #region Constructor
 
-        public ManageController(IManageActions manageActions)
+        public ManageController(IManageActions manageActions, IRepresentationManager representationManager)
         {
             _manageActions = manageActions;
+            _representationManager = representationManager;
         }
 
         #endregion
@@ -108,6 +112,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                 return new StatusCodeResult((int)HttpStatusCode.InternalServerError);
             }
 
+            await _representationManager.AddOrUpdateRepresentationAsync(this, ClientsController.GetClientsStoreName);
             return new NoContentResult();
         }
 

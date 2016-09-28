@@ -14,14 +14,16 @@
 // limitations under the License.
 #endregion
 
+using System;
+using SimpleIdentityServer.Core.Factories;
 
-using SimpleIdentityServer.Core.Models;
-using System.Collections.Generic;
-
-namespace SimpleIdentityServer.Manager.Core.Parameters
+namespace SimpleIdentityServer.Host.Configuration
 {
-    public class ImportParameter
+    public class EncryptedPasswordFactory : IEncryptedPasswordFactory
     {
-        public IEnumerable<SimpleIdentityServer.Core.Models.Client> Clients { get; set; }
+        public string Encrypt(string password)
+        {
+            return password;
+        }
     }
 }

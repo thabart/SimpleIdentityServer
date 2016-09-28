@@ -25,6 +25,7 @@ using SimpleIdentityServer.Logging;
 using System.Linq;
 using System.Collections.Generic;
 using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Factories;
 
 namespace SimpleIdentityServer.Core.Api.Registration.Actions
 {
@@ -41,14 +42,18 @@ namespace SimpleIdentityServer.Core.Api.Registration.Actions
 
         private readonly IGenerateClientFromRegistrationRequest _generateClientFromRegistrationRequest;
 
+        private readonly IEncryptedPasswordFactory _encryptedPasswordFactory;
+
         public RegisterClientAction(
             ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
             IClientRepository clientRepository,
-            IGenerateClientFromRegistrationRequest generateClientFromRegistrationRequest)
+            IGenerateClientFromRegistrationRequest generateClientFromRegistrationRequest,
+            IEncryptedPasswordFactory encryptedPasswordFactory)
         {
             _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
             _clientRepository = clientRepository;
             _generateClientFromRegistrationRequest = generateClientFromRegistrationRequest;
+            _encryptedPasswordFactory = encryptedPasswordFactory;
         }
 
         public RegistrationResponse Execute(RegistrationParameter registrationParameter)
@@ -117,7 +122,7 @@ namespace SimpleIdentityServer.Core.Api.Registration.Actions
             if (client.TokenEndPointAuthMethod != TokenEndPointAuthenticationMethods.private_key_jwt)
             {
                 result.ClientSecret = Guid.NewGuid().ToString();
-                client.ClientSecret = result.ClientSecret;
+                client.ClientSecret = _encryptedPasswordFactory.Encrypt(result.ClientSecret);
             }
 
             client.ClientId = result.ClientId;
