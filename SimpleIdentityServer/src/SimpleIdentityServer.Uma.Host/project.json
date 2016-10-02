@@ -3,11 +3,13 @@
   "buildOptions": {
     "emitEntryPoint": true,
     "copyToOutput": [
-      "appsettings.json",
-      "appsettings.docker.json",
-      "appsettings.azure.json",
-      "appsettings.idserver.json",
-      "appsettings.idserver_docker.json",
+      "appsettings*.json",
+      "SimpleIdServer.pfx"
+    ]
+  },
+  "publishOptions": {
+    "include": [
+      "appsettings*.json",
       "SimpleIdServer.pfx"
     ]
   },

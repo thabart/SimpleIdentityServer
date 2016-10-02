@@ -38,17 +38,13 @@
     "emitEntryPoint": true,
     "preserveCompilationContext": true,
     "copyToOutput": [
-      "appsettings.json",
-      "appsettings.azure.json",
-      "appsettings.docker.json",
+      "appsettings*.json",
       "SimpleIdServer.pfx"
     ]
   },
   "publishOptions": {
     "include": [
-      "appsettings.json",
-      "appsettings.azure.json",
-      "appsettings.docker.json",
+      "appsettings*.json",
       "SimpleIdServer.pfx"
     ]
   }

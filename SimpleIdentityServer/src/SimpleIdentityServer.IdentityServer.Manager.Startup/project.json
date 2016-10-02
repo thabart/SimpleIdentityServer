@@ -9,9 +9,12 @@
     "emitEntryPoint": true,
     "preserveCompilationContext": true,
     "copyToOutput": [
-      "appsettings.json",
-      "appsettings.docker.json",
-      "appsettings.azure.json"
+      "appsettings*.json"
+    ]
+  },
+  "publishOptions": {
+    "include": [
+      "appsettings*.json"
     ]
   },
   "tooling": {
