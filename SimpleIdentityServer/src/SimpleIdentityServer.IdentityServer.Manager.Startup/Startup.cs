@@ -22,6 +22,7 @@ using Microsoft.Extensions.Logging;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.IdentityServer.EF;
 using SimpleIdentityServer.Manager.Host.Extensions;
+using System.Reflection;
 using WebApiContrib.Core.Concurrency;
 using WebApiContrib.Core.Storage;
 
@@ -52,7 +53,8 @@ namespace SimpleIdentityServer.IdentityServer.Manager.Startup
             var isElasticSearchEnabled = bool.Parse(Configuration["Log:Elasticsearch:Enabled"]);
             var tokenUrl = authorizationUrl + "/token";
             services.AddSingleton<IEncryptedPasswordFactory, EncryptedPasswordFactory>();
-            services.AddSimpleIdentityServerSqlServer(connectionString);
+            var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
+            services.AddSimpleIdentityServerSqlServer(connectionString, migrationsAssembly);
 
             // Configure the caching
             if (cachingDatabase == "REDIS")
