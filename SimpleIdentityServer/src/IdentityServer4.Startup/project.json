@@ -64,7 +64,8 @@
     "include": [
       "appsettings*.json",
       "SimpleIdServer.pfx",
-      "Views/**/*.cshtml"
+      "Views/**/*.cshtml",
+	  "wwwroot"
     ]
   },
   "runtimes": {
