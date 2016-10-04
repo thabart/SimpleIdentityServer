@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace SimpleIdentityServer.IdentityServer.EF.Migrations.UserDb
+namespace IdentityServer4.Startup.Migrations.UserDb
 {
-    public partial class Initialize : Migration
+    public partial class InitialIdentityServerMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

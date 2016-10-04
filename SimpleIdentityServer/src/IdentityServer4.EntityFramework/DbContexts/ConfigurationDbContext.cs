@@ -26,7 +26,6 @@ namespace IdentityServer4.EntityFramework.DbContexts
         {
             modelBuilder.ConfigureClientContext();
             modelBuilder.ConfigureScopeContext();
-
             base.OnModelCreating(modelBuilder);
         }
     }

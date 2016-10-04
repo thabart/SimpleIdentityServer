@@ -19,6 +19,10 @@
     "Microsoft.Extensions.Configuration.Json": "1.0.0",
     "Microsoft.Extensions.Logging.Console": "1.0.0",
     "Microsoft.EntityFrameworkCore.SqlServer": "1.0.0",
+    "Microsoft.EntityFrameworkCore.Tools": {
+      "type": "build",
+      "version": "1.0.0-preview2-final"
+    },
     "Microsoft.AspNetCore.Server.Kestrel.Https": "1.0.0",
     "Serilog.Extensions.Logging": "1.0.0",
     "Serilog.Sinks.RollingFile": "2.0.0",
@@ -29,6 +33,12 @@
     "SimpleIdentityServer.IdentityServer.EF": { "target": "project" },
     "SimpleIdentityServer.Authentication.Middleware": { "target": "project" },
     "WebApiContrib.Core.Storage.Redis": { "target": "project" }
+  },
+  "tools": {
+    "Microsoft.EntityFrameworkCore.Tools": {
+      "imports": [ "dnxcore50", "portable-net451+win8" ],
+      "version": "1.0.0-preview2-final"
+    }
   },
   "frameworks": {
     "netcoreapp1.0": {

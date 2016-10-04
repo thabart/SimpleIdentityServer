@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using SimpleIdentityServer.IdentityServer.EF.DbContexts;
 
-namespace SimpleIdentityServer.IdentityServer.EF.Migrations.UserDb
+namespace IdentityServer4.Startup.Migrations.UserDb
 {
     [DbContext(typeof(UserDbContext))]
     partial class UserDbContextModelSnapshot : ModelSnapshot

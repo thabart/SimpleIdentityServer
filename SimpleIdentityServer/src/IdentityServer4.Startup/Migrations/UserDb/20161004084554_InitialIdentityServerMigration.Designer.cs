@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using SimpleIdentityServer.IdentityServer.EF.DbContexts;
 
-namespace SimpleIdentityServer.IdentityServer.EF.Migrations.UserDb
+namespace IdentityServer4.Startup.Migrations.UserDb
 {
     [DbContext(typeof(UserDbContext))]
-    [Migration("20160909135812_Initialize")]
-    partial class Initialize
+    [Migration("20161004084554_InitialIdentityServerMigration")]
+    partial class InitialIdentityServerMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

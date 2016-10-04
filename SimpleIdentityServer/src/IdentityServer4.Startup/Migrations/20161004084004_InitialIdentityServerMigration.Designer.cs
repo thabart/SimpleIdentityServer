@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using IdentityServer4.EntityFramework.DbContexts;
 
-namespace SimpleIdentityServer.IdentityServer.EF.Migrations.PersistedGrantDb
+namespace IdentityServer4.Startup.Migrations
 {
     [DbContext(typeof(PersistedGrantDbContext))]
-    [Migration("20160909121443_Initialize")]
-    partial class Initialize
+    [Migration("20161004084004_InitialIdentityServerMigration")]
+    partial class InitialIdentityServerMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

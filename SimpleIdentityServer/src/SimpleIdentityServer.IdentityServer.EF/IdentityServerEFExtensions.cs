@@ -26,6 +26,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.IdentityServer.EF.DbContexts;
 using SimpleIdentityServer.IdentityServer.EF.Repositories;
+using System;
 
 namespace SimpleIdentityServer.IdentityServer.EF
 {
@@ -35,18 +36,19 @@ namespace SimpleIdentityServer.IdentityServer.EF
 
         public static IServiceCollection AddSimpleIdentityServerSqlServer(
             this IServiceCollection serviceCollection,
-            string connectionString)
+            string connectionString,
+            string assembly)
         {
             RegisterServices(serviceCollection);
             serviceCollection.AddEntityFramework()
                 .AddDbContext<ConfigurationDbContext>(options =>
-                    options.UseSqlServer(connectionString));
+                    options.UseSqlServer(connectionString, opts => opts.MigrationsAssembly(assembly)));
             serviceCollection.AddEntityFramework()
                 .AddDbContext<PersistedGrantDbContext>(options =>
-                    options.UseSqlServer(connectionString));
+                    options.UseSqlServer(connectionString, opts => opts.MigrationsAssembly(assembly)));
             serviceCollection.AddEntityFramework()
                 .AddDbContext<UserDbContext>(options =>
-                    options.UseSqlServer(connectionString));
+                    options.UseSqlServer(connectionString, opts => opts.MigrationsAssembly(assembly)));
             return serviceCollection;
         }
 

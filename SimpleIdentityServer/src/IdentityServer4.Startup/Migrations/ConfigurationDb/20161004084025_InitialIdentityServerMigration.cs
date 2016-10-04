@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace SimpleIdentityServer.IdentityServer.EF.Migrations
+namespace IdentityServer4.Startup.Migrations.ConfigurationDb
 {
-    public partial class Initialize : Migration
+    public partial class InitialIdentityServerMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

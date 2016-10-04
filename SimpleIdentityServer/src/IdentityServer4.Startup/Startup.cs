@@ -24,6 +24,7 @@ using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -38,6 +39,7 @@ using SimpleIdentityServer.IdentityServer.EF.DbContexts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using WebApiContrib.Core.Storage;
 
 namespace IdentityServer4.Startup
@@ -73,8 +75,9 @@ namespace IdentityServer4.Startup
                 .AllowAnyHeader()));
 
             var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
+            var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
             services.AddIdentityServerQuickstart();
-            services.AddSimpleIdentityServerSqlServer(connectionString);
+            services.AddSimpleIdentityServerSqlServer(connectionString, migrationsAssembly);
             RegisterDependencies(services);
         }
 
@@ -130,39 +133,15 @@ namespace IdentityServer4.Startup
 
         private void InitializeDatabase(IApplicationBuilder app)
         {
-            using (var scope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+            using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
-                var context = scope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
-                var ctxUsers = scope.ServiceProvider.GetRequiredService<UserDbContext>();
-                if (!context.Scopes.Any())
-                {
-                    foreach (var s in Config.GetScopes())
-                    {
-                        context.Scopes.Add(s.ToEntity());
-                    }
-
-                    context.SaveChanges();
-                }
-
-                if (!context.Clients.Any())
-                {
-                    foreach (var c in Config.GetClients())
-                    {
-                        context.Clients.Add(c.ToEntity());
-                    }
-
-                    context.SaveChanges();
-                }
-
-                if (!ctxUsers.Users.Any())
-                {
-                    foreach(DbUser u in Config.GetUsers())
-                    {
-                        ctxUsers.Users.Add(u.ToEntity());
-                    }
-
-                    ctxUsers.SaveChanges();
-                }
+                scope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.Migrate();
+                var confContext = scope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
+                var userContext = scope.ServiceProvider.GetRequiredService<UserDbContext>();
+                confContext.Database.Migrate();
+                userContext.Database.Migrate();
+                confContext.EnsureSeedData();
+                userContext.EnsureSeedData();
             }
         }
 
