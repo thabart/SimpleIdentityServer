@@ -63,7 +63,8 @@
   "publishOptions": {
     "include": [
       "appsettings*.json",
-      "SimpleIdServer.pfx"
+      "SimpleIdServer.pfx",
+      "Views/**/*.cshtml"
     ]
   },
   "runtimes": {

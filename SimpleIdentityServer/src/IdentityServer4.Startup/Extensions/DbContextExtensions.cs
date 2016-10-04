@@ -33,6 +33,7 @@ namespace IdentityServer4.Startup.Extensions
             }
 
             CreateClients(context);
+            CreateScopes(context);
         }
 
         public static void EnsureSeedData(this UserDbContext context)
