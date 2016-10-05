@@ -16,6 +16,7 @@
 
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
+using IdentityServer4.Models;
 using IdentityServer4.Services;
 using IdentityServer4.Startup.Extensions;
 using IdentityServer4.Startup.Services;

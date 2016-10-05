@@ -17,6 +17,7 @@
 using IdentityModel;
 using IdentityServer4.Startup.Extensions;
 using Microsoft.EntityFrameworkCore;
+using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.IdentityServer.EF.DbContexts;
 using System;
 using System.Collections.Generic;
@@ -30,6 +31,8 @@ namespace IdentityServer4.Startup.Services
     {
         private readonly UserDbContext _context;
 
+        private readonly ISecurityHelper _securityHelper;
+
         public UserLoginService(UserDbContext context)
         {
             if(context == null)
@@ -38,11 +41,12 @@ namespace IdentityServer4.Startup.Services
             }
 
             _context = context;
+            _securityHelper = new SecurityHelper();
         }
 
         public bool ValidateCredentials(string userName, string password)
         {
-            var user = _context.Users.FirstOrDefault(u => u.Username == userName && u.Password == password);
+            var user = _context.Users.FirstOrDefault(u => u.Username == userName && u.Password == _securityHelper.ComputeHash(password));
             return user != null;
         }
 

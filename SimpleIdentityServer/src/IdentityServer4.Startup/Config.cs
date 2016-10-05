@@ -1,6 +1,7 @@
 ﻿using IdentityServer4.Models;
 using IdentityServer4.Startup.Services;
 using SimpleIdentityServer.Core.Extensions;
+using SimpleIdentityServer.Core.Helpers;
 using System;
 using System.Collections.Generic;
 
@@ -204,7 +205,7 @@ namespace IdentityServer4.Startup
                 {
                     Subject = "1",
                     Username = "administrator",
-                    Password = "password",
+                    Password = new SecurityHelper().ComputeHash("password"),
                     IsLocalAccount = true,
                     Enabled = true,
                     Claims = new List<DbClaim>

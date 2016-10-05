@@ -6,6 +6,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Security.Claims;
+using SimpleIdentityServer.Core.Helpers;
 
 namespace IdentityServer4.Startup.Validation
 {
@@ -13,15 +14,18 @@ namespace IdentityServer4.Startup.Validation
     {
         private readonly UserDbContext _context;
 
+        private readonly ISecurityHelper _securityHelper;
+
         public ResourceOwnerPasswordValidator(UserDbContext context)
         {
             _context = context;
+            _securityHelper = new SecurityHelper();
         }
 
         public Task ValidateAsync(ResourceOwnerPasswordValidationContext context)
         {
             var user = _context.Users.Include(u => u.Claims)
-                .FirstOrDefault(u => u.Username == context.UserName && u.Password == context.Password);
+                .FirstOrDefault(u => u.Username == context.UserName && u.Password == _securityHelper.ComputeHash(context.Password));
             if (user != null)
             {
                 var claims = user.Claims == null || !user.Claims.Any() ? new List<Claim>() : user.Claims.Select(c => new Claim(c.Key, c.Value)).ToList();
