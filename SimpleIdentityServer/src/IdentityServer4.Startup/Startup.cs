@@ -74,11 +74,7 @@ namespace IdentityServer4.Startup
             services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader()));
-
-            var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
-            var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
             services.AddIdentityServerQuickstart();
-            services.AddSimpleIdentityServerSqlServer(connectionString, migrationsAssembly);
             RegisterDependencies(services);
         }
 
@@ -148,8 +144,13 @@ namespace IdentityServer4.Startup
 
         private void RegisterDependencies(IServiceCollection services)
         {
+            var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
+            var isSqlServer = bool.Parse(Configuration["isSqlServer"]);
+            var isSqlLite = bool.Parse(Configuration["isSqlLite"]);
+            var isPostgre = bool.Parse(Configuration["isPostgre"]);
             var cachingDatabase = Configuration["Caching:Database"];
             var cachingConnectionPath = Configuration["Caching:ConnectionPath"];
+            var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
             Func<LogEvent, bool> filter = (e) =>
             {
                 var ctx = e.Properties["SourceContext"];
@@ -164,6 +165,16 @@ namespace IdentityServer4.Startup
             if (string.IsNullOrWhiteSpace(cachingDatabase))
             {
                 cachingDatabase = "INMEMORY";
+            }
+
+            // Configure database
+            if (isPostgre)
+            {
+                services.AddSimpleIdentityServerPostGre(connectionString, migrationsAssembly);
+            }
+            else
+            {
+                services.AddSimpleIdentityServerSqlServer(connectionString, migrationsAssembly);
             }
 
             // Configure caching

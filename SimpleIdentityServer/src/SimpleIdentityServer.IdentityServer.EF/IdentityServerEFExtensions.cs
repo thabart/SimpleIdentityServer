@@ -39,6 +39,11 @@ namespace SimpleIdentityServer.IdentityServer.EF
             string connectionString,
             string assembly)
         {
+            if (serviceCollection == null)
+            {
+                throw new ArgumentNullException(nameof(serviceCollection));
+            }
+
             RegisterServices(serviceCollection);
             serviceCollection.AddEntityFramework()
                 .AddDbContext<ConfigurationDbContext>(options =>
@@ -49,6 +54,29 @@ namespace SimpleIdentityServer.IdentityServer.EF
             serviceCollection.AddEntityFramework()
                 .AddDbContext<UserDbContext>(options =>
                     options.UseSqlServer(connectionString, opts => opts.MigrationsAssembly(assembly)));
+            return serviceCollection;
+        }
+
+        public static IServiceCollection AddSimpleIdentityServerPostGre(
+            this IServiceCollection serviceCollection,
+            string connectionString,
+            string assembly)
+        {
+            if (serviceCollection == null)
+            {
+                throw new ArgumentNullException(nameof(serviceCollection));
+            }
+
+            RegisterServices(serviceCollection);
+            serviceCollection.AddEntityFramework()
+                .AddDbContext<ConfigurationDbContext>(options =>
+                    options.UseNpgsql(connectionString, opts => opts.MigrationsAssembly(assembly)));
+            serviceCollection.AddEntityFramework()
+                .AddDbContext<PersistedGrantDbContext>(options =>
+                    options.UseNpgsql(connectionString, opts => opts.MigrationsAssembly(assembly)));
+            serviceCollection.AddEntityFramework()
+                .AddDbContext<UserDbContext>(options =>
+                    options.UseNpgsql(connectionString, opts => opts.MigrationsAssembly(assembly)));
             return serviceCollection;
         }
 
