@@ -1,6 +1,9 @@
 ﻿using Microsoft.Extensions.Caching.Redis;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Linq;
+using System.Net;
+using System.Text.RegularExpressions;
 using WebApiContrib.Core.Storage.Redis;
 
 namespace WebApiContrib.Core.Storage
@@ -37,9 +40,32 @@ namespace WebApiContrib.Core.Storage
                 throw new ArgumentNullException(nameof(options));
             }
 
+            if (!IsIpAddress(options.Configuration))
+            {
+                IPHostEntry ip = Dns.GetHostEntryAsync(options.Configuration).Result;
+                var ipAddress = string.Empty;
+                foreach(var adr in ip.AddressList)
+                {
+                    var strIp = adr.ToString();
+                    if (IsIpAddress(strIp))
+                    {
+                        ipAddress = strIp;
+                        break;
+                    }
+                }
+
+                options.Configuration = ipAddress;
+            }
+
             var storage = new RedisStorage(options, port);
             concurrencyOptionsBuilder.StorageOptions.Storage = storage;
             concurrencyOptionsBuilder.ServiceCollection.AddSingleton<IStorage>(storage);
+        }
+
+        private static bool IsIpAddress(string host)
+        {
+            string ipPattern = @"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b";
+            return Regex.IsMatch(host, ipPattern);
         }
     }
 }
