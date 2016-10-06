@@ -7,6 +7,10 @@ artifacts:
   name: NugetPackages
 - path: LokitCa.cer
   name: Certificate
+- path: SimpleIdentityServer\src\feed
+  name: Feed
+- path: exports
+  name: Exports
 deploy:
 - provider: NuGet
   api_key:
@@ -19,7 +23,7 @@ deploy:
   description: SimpleIdentityServer
   auth_token:
     secure: lQ8ijoj6dfshLfFWRKFUrphgt4LkIz1YduZU+S6xuF33ewz1WcySLNJURJysTF11
-  artifact: Certificate,Nuget
+  artifact: Certificate,Feed,Exports
   on:
     branch: master
     appveyor_repo_tag: true
