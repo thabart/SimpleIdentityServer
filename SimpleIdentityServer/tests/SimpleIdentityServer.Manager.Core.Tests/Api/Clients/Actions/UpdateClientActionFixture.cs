@@ -74,7 +74,7 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Clients.Actions
             const string clientId = "client_id";
             const string code = "code";
             const string message = "message";
-            var client = new Client
+            var client = new SimpleIdentityServer.Core.Models.Client
             {
                 ClientId = clientId
             };
@@ -106,9 +106,7 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Clients.Actions
         {
             // ARRANGE
             const string clientId = "client_id";
-            const string code = "code";
-            const string message = "message";
-            var client = new Client
+            var client = new SimpleIdentityServer.Core.Models.Client
             {
                 ClientId = clientId
             };

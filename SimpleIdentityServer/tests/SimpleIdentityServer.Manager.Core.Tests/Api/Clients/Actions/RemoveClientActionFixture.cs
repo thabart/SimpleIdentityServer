@@ -70,7 +70,7 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Clients.Actions
         {
             // ARRANGE
             const string clientId = "client_id";
-            var client = new Client
+            var client = new SimpleIdentityServer.Core.Models.Client
             {
                 ClientId = clientId
             };

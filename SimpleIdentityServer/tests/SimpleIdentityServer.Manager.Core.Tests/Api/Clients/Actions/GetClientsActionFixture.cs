@@ -37,7 +37,7 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Clients.Actions
             // ARRANGE
             InitializeFakeObjects();
             _clientRepositoryStub.Setup(c => c.GetAll())
-                .Returns(new List<Client>());
+                .Returns(new List<SimpleIdentityServer.Core.Models.Client>());
 
             // ACT
             _getClientsAction.Execute();
