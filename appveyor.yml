@@ -1,23 +1,9 @@
 version: 1.0.{build}
-configuration: Release
-before_build:
-- ps: >-
-    (new-object net.webclient).DownloadFile('https://download.microsoft.com/download/4/6/1/46116DFF-29F9-4FF8-94BF-F9BE05BE263B/packages/DotNetCore.1.0.0.RC2-SDK.Preview1-x64.exe','core.exe')
-
-    core.exe /install /quiet /norestart
-
-    dotnet restore
+skip_non_tags: true
 build_script:
-- cmd: dotnet build SimpleIdentityServer\src\SimpleIdentityServer.Startup
-- cmd: dotnet build SimpleIdentityServer\src\SimpleIdentityServer.Uma.Host
-- cmd: dotnet build SimpleIdentityServer\src\SimpleIdentityServer.Manager.Host.Startup
-test_script:
-- cmd: dotnet test SimpleIdentityServer\tests\SimpleIdentityServer.Core.UnitTests
-- cmd: dotnet test SimpleIdentityServer\tests\SimpleIdentityServer.Client.Unit.Tests
-- cmd: dotnet test SimpleIdentityServer\tests\SimpleIdentityServer.Core.Jwt.UnitTests
-- cmd: dotnet test SimpleIdentityServer\tests\SimpleIdentityServer.Manager.Core.Tests
-- cmd: dotnet test SimpleIdentityServer\tests\SimpleIdentityServer.Oauth2Instrospection.Authentication.Tests
-- cmd: dotnet test SimpleIdentityServer\tests\SimpleIdentityServer.Uma.Core.UnitTests
-- cmd: dotnet test SimpleIdentityServer\tests\SimpleIdentityServer.UmaIntrospection.Authentication.Tests
-- cmd: dotnet test SimpleIdentityServer\tests\SimpleIdentityServer.UmaManager.Client.Unit.Tests
-- cmd: dotnet test SimpleIdentityServer\tests\SimpleIdentityServer.UserInformation.Authentication.Tests
+- cmd: cd SimpleIdentityServer\src && generate-nugetpkgs.cmd
+artifacts:
+- path: SimpleIdentityServer\src\feed\*.nupkg
+  name: NugetPackages
+- path: LokitCa.cer
+  name: Certificate
