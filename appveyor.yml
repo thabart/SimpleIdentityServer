@@ -1,7 +1,9 @@
 version: 1.0.{build}
 skip_non_tags: true
-build_script:
+before_build:
 - cmd: cd SimpleIdentityServer\src && dotnet restore && generate-nugetpkgs.cmd
+build:
+ project: SimpleIdentityServer.Vse\SimpleIdentityServer.Vse.sln
 artifacts:
 - path: SimpleIdentityServer\src\feed\*.nupkg
   name: NugetPackages
@@ -11,6 +13,8 @@ artifacts:
   name: Feed
 - path: exports
   name: Exports
+- path: SimpleIdentityServer.Vse\SimpleIdentityServer.Vse\bin\**\SimpleIdentityServer.Vse.vsix
+  name: VSE
 deploy:
 - provider: NuGet
   api_key:
