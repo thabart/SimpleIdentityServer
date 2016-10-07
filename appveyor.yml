@@ -2,6 +2,7 @@ version: 1.0.{build}
 skip_non_tags: true
 before_build:
 - cmd: cd SimpleIdentityServer\src && dotnet restore && generate-nugetpkgs.cmd
+- cmd: cd SimpleIdentityServer.Vse && nuget restore
 build:
  project: SimpleIdentityServer.Vse\SimpleIdentityServer.Vse.sln
 artifacts:
