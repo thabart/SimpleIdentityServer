@@ -27,6 +27,10 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Threading.Tasks;
+#if NETSTANDARD
+#else
+using System.Net;
+#endif
 
 namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
 {
@@ -69,6 +73,8 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
                 handler = new HttpClientHandler();
 #if NETSTANDARD
                 handler.ServerCertificateCustomValidationCallback = delegate { return true; };
+#else
+                ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
 #endif
             }
 

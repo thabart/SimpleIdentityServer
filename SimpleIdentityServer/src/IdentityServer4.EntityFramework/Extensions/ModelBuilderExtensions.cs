@@ -15,7 +15,7 @@ namespace IdentityServer4.EntityFramework.Extensions
             modelBuilder.Entity<Client>(client =>
             {
                 client.ToTable(EfConstants.TableNames.Client).HasKey(x => x.Id);
-
+                client.Property(x => x.Id).ValueGeneratedOnAdd();
                 client.Property(x => x.ClientId).HasMaxLength(200).IsRequired();
                 client.Property(x => x.ClientName).HasMaxLength(200).IsRequired();
                 client.Property(x => x.ClientUri).HasMaxLength(2000);
@@ -33,30 +33,35 @@ namespace IdentityServer4.EntityFramework.Extensions
             modelBuilder.Entity<ClientGrantType>(grantType =>
             {
                 grantType.ToTable(EfConstants.TableNames.ClientGrantType);
+                grantType.Property(x => x.Id).ValueGeneratedOnAdd();
                 grantType.Property(x => x.GrantType).HasMaxLength(250).IsRequired();
             });
 
             modelBuilder.Entity<ClientRedirectUri>(redirectUri =>
             {
                 redirectUri.ToTable(EfConstants.TableNames.ClientRedirectUri);
+                redirectUri.Property(x => x.Id).ValueGeneratedOnAdd();
                 redirectUri.Property(x => x.RedirectUri).HasMaxLength(2000).IsRequired();
             });
 
             modelBuilder.Entity<ClientPostLogoutRedirectUri>(postLogoutRedirectUri =>
             {
                 postLogoutRedirectUri.ToTable(EfConstants.TableNames.ClientPostLogoutRedirectUri);
+                postLogoutRedirectUri.Property(x => x.Id).ValueGeneratedOnAdd();
                 postLogoutRedirectUri.Property(x => x.PostLogoutRedirectUri).HasMaxLength(2000).IsRequired();
             });
 
             modelBuilder.Entity<ClientScope>(scope =>
             {
                 scope.ToTable(EfConstants.TableNames.ClientScopes);
+                scope.Property(x => x.Id).ValueGeneratedOnAdd();
                 scope.Property(x => x.Scope).HasMaxLength(200).IsRequired();
             });
 
             modelBuilder.Entity<ClientSecret>(secret =>
             {
                 secret.ToTable(EfConstants.TableNames.ClientSecret);
+                secret.Property(x => x.Id).ValueGeneratedOnAdd();
                 secret.Property(x => x.Value).HasMaxLength(250).IsRequired();
                 secret.Property(x => x.Type).HasMaxLength(250);
                 secret.Property(x => x.Description).HasMaxLength(2000);
@@ -65,6 +70,7 @@ namespace IdentityServer4.EntityFramework.Extensions
             modelBuilder.Entity<ClientClaim>(claim =>
             {
                 claim.ToTable(EfConstants.TableNames.ClientClaim);
+                claim.Property(x => x.Id).ValueGeneratedOnAdd();
                 claim.Property(x => x.Type).HasMaxLength(250).IsRequired();
                 claim.Property(x => x.Value).HasMaxLength(250).IsRequired();
             });
@@ -72,12 +78,14 @@ namespace IdentityServer4.EntityFramework.Extensions
             modelBuilder.Entity<ClientIdPRestriction>(idPRestriction =>
             {
                 idPRestriction.ToTable(EfConstants.TableNames.ClientIdPRestriction);
+                idPRestriction.Property(x => x.Id).ValueGeneratedOnAdd();
                 idPRestriction.Property(x => x.Provider).HasMaxLength(200).IsRequired();
             });
 
             modelBuilder.Entity<ClientCorsOrigin>(corsOrigin =>
             {
                 corsOrigin.ToTable(EfConstants.TableNames.ClientCorsOrigin);
+                corsOrigin.Property(x => x.Id).ValueGeneratedOnAdd();
                 corsOrigin.Property(x => x.Origin).HasMaxLength(150).IsRequired();
             });
         }
@@ -101,6 +109,7 @@ namespace IdentityServer4.EntityFramework.Extensions
             modelBuilder.Entity<ScopeClaim>(scopeClaim =>
             {
                 scopeClaim.ToTable(EfConstants.TableNames.ScopeClaim).HasKey(x => x.Id);
+                scopeClaim.Property(x => x.Id).ValueGeneratedOnAdd();
                 scopeClaim.Property(x => x.Name).HasMaxLength(200).IsRequired();
                 scopeClaim.Property(x => x.Description).HasMaxLength(1000);
             });
@@ -108,6 +117,7 @@ namespace IdentityServer4.EntityFramework.Extensions
             modelBuilder.Entity<ScopeSecret>(scopeSecret =>
             {
                 scopeSecret.ToTable(EfConstants.TableNames.ScopeSecrets).HasKey(x => x.Id);
+                scopeSecret.Property(x => x.Id).ValueGeneratedOnAdd();
                 scopeSecret.Property(x => x.Description).HasMaxLength(1000);
                 scopeSecret.Property(x => x.Type).HasMaxLength(250);
                 scopeSecret.Property(x => x.Value).HasMaxLength(250);
@@ -116,6 +126,7 @@ namespace IdentityServer4.EntityFramework.Extensions
             modelBuilder.Entity<Scope>(scope =>
             {
                 scope.ToTable(EfConstants.TableNames.Scope).HasKey(x => x.Id);
+                scope.Property(x => x.Id).ValueGeneratedOnAdd();
                 scope.Property(x => x.Name).HasMaxLength(200).IsRequired();
                 scope.Property(x => x.DisplayName).HasMaxLength(200);
                 scope.Property(x => x.Description).HasMaxLength(1000);

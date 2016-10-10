@@ -15,8 +15,6 @@
 #endregion
 
 using IdentityServer4.EntityFramework.DbContexts;
-using IdentityServer4.EntityFramework.Mappers;
-using IdentityServer4.Models;
 using IdentityServer4.Services;
 using IdentityServer4.Startup.Extensions;
 using IdentityServer4.Startup.Services;
@@ -39,7 +37,6 @@ using SimpleIdentityServer.IdentityServer.EF;
 using SimpleIdentityServer.IdentityServer.EF.DbContexts;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using WebApiContrib.Core.Storage;
 

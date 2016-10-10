@@ -8,14 +8,13 @@ using SimpleIdentityServer.IdentityServer.EF.DbContexts;
 namespace IdentityServer4.Startup.Migrations.UserDb
 {
     [DbContext(typeof(UserDbContext))]
-    [Migration("20161004084554_InitialIdentityServerMigration")]
+    [Migration("20161010115255_InitialIdentityServerMigration")]
     partial class InitialIdentityServerMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
-                .HasAnnotation("ProductVersion", "1.0.0-rtm-21431")
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "1.0.0-rtm-21431");
 
             modelBuilder.Entity("SimpleIdentityServer.IdentityServer.EF.Models.Claim", b =>
                 {

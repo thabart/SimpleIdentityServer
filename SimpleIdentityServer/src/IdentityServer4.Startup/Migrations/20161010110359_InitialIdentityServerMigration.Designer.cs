@@ -8,7 +8,7 @@ using IdentityServer4.EntityFramework.DbContexts;
 namespace IdentityServer4.Startup.Migrations
 {
     [DbContext(typeof(PersistedGrantDbContext))]
-    [Migration("20161004084004_InitialIdentityServerMigration")]
+    [Migration("20161010110359_InitialIdentityServerMigration")]
     partial class InitialIdentityServerMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
