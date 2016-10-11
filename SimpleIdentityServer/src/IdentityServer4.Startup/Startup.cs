@@ -71,7 +71,10 @@ namespace IdentityServer4.Startup
             services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader()));
-            services.AddIdentityServerQuickstart();
+            services.AddIdentityServerQuickstart(opts =>
+            {
+                opts.IssuerUri = "https://idserver:5443";
+            });
             RegisterDependencies(services);
         }
 
