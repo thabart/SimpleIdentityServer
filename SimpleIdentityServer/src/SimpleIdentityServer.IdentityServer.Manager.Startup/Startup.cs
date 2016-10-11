@@ -45,6 +45,7 @@ namespace SimpleIdentityServer.IdentityServer.Manager.Startup
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var databaseType = Configuration["DatabaseType"];
             var cachingDatabase = Configuration["Caching:Database"];
             var cachingConnectionPath = Configuration["Caching:ConnectionPath"];
             var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
@@ -54,7 +55,16 @@ namespace SimpleIdentityServer.IdentityServer.Manager.Startup
             var tokenUrl = authorizationUrl + "/token";
             services.AddSingleton<IEncryptedPasswordFactory, EncryptedPasswordFactory>();
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
-            services.AddSimpleIdentityServerSqlServer(connectionString, migrationsAssembly);
+
+            // Configure the database
+            if (databaseType == "POSTGRES")
+            {
+                services.AddSimpleIdentityServerPostGre(connectionString, migrationsAssembly);
+            }
+            else
+            {
+                services.AddSimpleIdentityServerSqlServer(connectionString, migrationsAssembly);
+            }
 
             // Configure the caching
             if (cachingDatabase == "REDIS")
