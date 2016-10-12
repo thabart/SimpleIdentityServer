@@ -191,10 +191,13 @@ namespace SimpleIdentityServer.Scim.Core
         public static class SchemaAttributeTypes
         {
             public const string String = "string";
+            public const string Boolean = "boolean";
+            public const string Decimal = "decimal";
+            public const string DateTime = "dateTime";
+            public const string Integer = "integer";
+            public const string Binary = "binary";
             public const string Complex = "complex";
             public const string Reference = "reference";
-            public const string Boolean = "boolean";
-            public const string Binary = "binary";
         }
 
         public static class SchemaAttributeMutability

@@ -20,6 +20,7 @@ using SimpleIdentityServer.Scim.Core.DTOs;
 using SimpleIdentityServer.Scim.Core.Parsers;
 using SimpleIdentityServer.Scim.Core.Stores;
 using System;
+using System.Linq;
 using Xunit;
 
 namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
@@ -54,7 +55,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
         }
 
         [Fact]
-        public void When_PostGroupRequest_Is_Parsed_Then_SmtgHappened()
+        public void When_Simple_PostGroupRequest_Is_Parsed_Then_CorrectValues_Are_Returned()
         {
             var schemaStore = new SchemaStore();
             // ARRANGE
@@ -71,7 +72,14 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
            "]}");
 
             // ACT
-            _requestParser.Parse(jObj, Constants.SchemaUrns.Group);
+            var result = _requestParser.Parse(jObj, Constants.SchemaUrns.Group);
+
+            // ASSERTS
+            Assert.NotNull(result);
+            Assert.True(result.Attributes.Count() == 2);
+            Assert.True(result.Attributes.First().Type == "displayName");
+
+            // Assert.True(result.ResourceType)
         }
 
         private void InitializeFakeObjects()

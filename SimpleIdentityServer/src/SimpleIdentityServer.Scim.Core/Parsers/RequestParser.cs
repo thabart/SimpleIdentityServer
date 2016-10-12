@@ -20,7 +20,9 @@ using SimpleIdentityServer.Scim.Core.Errors;
 using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Core.Stores;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SimpleIdentityServer.Scim.Core.Parsers
 {
@@ -71,34 +73,147 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             }
 
             representation.Attributes = attributes;
-            return null;
+            return representation;
         }
 
         private RepresentationAttribute GetRepresentation(JToken jObj, SchemaAttributeResponse attribute)
         {
-            var token = jObj.SelectToken(attribute.Name);
-            var json = token.ToString();
-            // 1. Check the attribute is required
-            if (token == null && attribute.Required)
+            Action<ComplexSchemaAttributeResponse, List<RepresentationAttribute>, JToken> setRepresentationCallback = (attr, lst, tok) =>
             {
-                throw new InvalidOperationException(string.Format(ErrorMessages.TheAttributeIsRequired, attribute.Name));
+                foreach (var subAttribute in attr.SubAttributes)
+                {
+                    var rep = GetRepresentation(tok, subAttribute);
+                    if (rep != null)
+                    {
+                        lst.Add(rep);
+                    }
+                }
+            };
+            var token = jObj.SelectToken(attribute.Name);
+            // 1. Check the attribute is required
+            if (token == null)
+            {
+                if (attribute.Required)
+                {
+                    throw new InvalidOperationException(string.Format(ErrorMessages.TheAttributeIsRequired, attribute.Name));
+                }
+
+                return null;
             }
 
-            // 2. Complex attribute
+            // 2. Check is an array
+            JArray jArr = null;
+            if (attribute.MultiValued)
+            {
+                jArr = token as JArray;
+                if (jArr == null)
+                {
+                    throw new InvalidOperationException(string.Format(ErrorMessages.TheAttributeIsNotAnArray, attribute.Name));
+                }
+            }
+
+            // 3. Create complex attribute
             var complexAttribute = attribute as ComplexSchemaAttributeResponse;
             if (complexAttribute != null)
             {
                 var representation = new ComplexRepresentationAttribute(complexAttribute.Name);
                 var values = new List<RepresentationAttribute>();
-                foreach (var subAttribute in complexAttribute.SubAttributes)
+                if (complexAttribute.MultiValued)
                 {
-                    values.Add(GetRepresentation(token, subAttribute));
+                    // 3.1 Contains an array
+                    foreach (var subToken in token)
+                    {
+                        var subRepresentation = new ComplexRepresentationAttribute(string.Empty);
+                        var subValues = new List<RepresentationAttribute>();
+                        setRepresentationCallback(complexAttribute, subValues, subToken);
+                        subRepresentation.Values = subValues;
+                        values.Add(subRepresentation);
+                    }
+                }
+                else
+                {
+                    // 3.2 Don't contain array
+                    setRepresentationCallback(complexAttribute, values, token);
                 }
 
+                representation.Values = values;
                 return representation;
             }
 
-            return new SingularRepresentationAttribute(attribute.Name, token.ToString());
+            // 4. Create singular attribute.
+            // Note : Don't cast to object to avoid unecessaries boxing operations ...
+            switch(attribute.Type)
+            {
+                case Constants.SchemaAttributeTypes.String:
+                    try
+                    {
+                        if (jArr != null)
+                        {
+                            return new SingularRepresentationAttribute<IEnumerable<string>>(attribute.Name, jArr.Values<string>());
+                        }
+                        return new SingularRepresentationAttribute<string>(attribute.Name, token.Value<string>());
+                    }
+                    catch (FormatException)
+                    {
+                        throw new InvalidOperationException(string.Format(ErrorMessages.TheAttributeTypeIsNotCorrect, attribute.Name, Constants.SchemaAttributeTypes.String));
+                    }
+                case Constants.SchemaAttributeTypes.Boolean:
+                    try
+                    {
+                        if (jArr != null)
+                        {
+                            return new SingularRepresentationAttribute<IEnumerable<bool>>(attribute.Name, jArr.Values<bool>());
+                        }
+                        return new SingularRepresentationAttribute<bool>(attribute.Name, token.Value<bool>());
+                    }
+                    catch (FormatException)
+                    {
+                        throw new InvalidOperationException(string.Format(ErrorMessages.TheAttributeTypeIsNotCorrect, attribute.Name, Constants.SchemaAttributeTypes.Boolean));
+                    }
+                case Constants.SchemaAttributeTypes.Decimal:
+                    try
+                    {
+                        if (jArr != null)
+                        {
+                            return new SingularRepresentationAttribute<IEnumerable<decimal>>(attribute.Name, jArr.Values<decimal>());
+                        }
+                        return new SingularRepresentationAttribute<decimal>(attribute.Name, token.Value<decimal>());
+                    }
+                    catch (FormatException)
+                    {
+                        throw new InvalidOperationException(string.Format(ErrorMessages.TheAttributeTypeIsNotCorrect, attribute.Name, Constants.SchemaAttributeTypes.Decimal));
+                    }
+                case Constants.SchemaAttributeTypes.DateTime:
+                    try
+                    {
+                        if (jArr != null)
+                        {
+                            return new SingularRepresentationAttribute<IEnumerable<DateTime>>(attribute.Name, jArr.Values<DateTime>());
+                        }
+
+                        return new SingularRepresentationAttribute<DateTime>(attribute.Name, token.Value<DateTime>());
+                    }
+                    catch (FormatException)
+                    {
+                        throw new InvalidOperationException(string.Format(ErrorMessages.TheAttributeTypeIsNotCorrect, attribute.Name, Constants.SchemaAttributeTypes.DateTime));
+                    }
+                case Constants.SchemaAttributeTypes.Integer:
+                    try
+                    {
+                        if (jArr != null)
+                        {
+                            return new SingularRepresentationAttribute<IEnumerable<int>>(attribute.Name, jArr.Values<int>());
+                        }
+
+                        return new SingularRepresentationAttribute<int>(attribute.Name, token.Value<int>());
+                    }
+                    catch (FormatException)
+                    {
+                        throw new InvalidOperationException(string.Format(ErrorMessages.TheAttributeTypeIsNotCorrect, attribute.Name, Constants.SchemaAttributeTypes.Integer));
+                    }
+                default:
+                    throw new InvalidOperationException(string.Format(ErrorMessages.TheAttributeTypeIsNotSupported, attribute.Type));
+            }
         }
     }
 }

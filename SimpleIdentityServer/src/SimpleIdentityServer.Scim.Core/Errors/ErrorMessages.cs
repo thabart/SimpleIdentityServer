@@ -20,5 +20,8 @@ namespace SimpleIdentityServer.Scim.Core.Errors
     {
         public const string TheSchemaDoesntExist = "the schema {0} doesn't exist";
         public const string TheAttributeIsRequired = "the attribute {0} is required";
+        public const string TheAttributeTypeIsNotCorrect = "the attribute {0} is not a {1} or {1}[]";
+        public const string TheAttributeTypeIsNotSupported = "the attribute type {0} is not supported";
+        public const string TheAttributeIsNotAnArray = "the attribute {0} is not an array";
     }
 }

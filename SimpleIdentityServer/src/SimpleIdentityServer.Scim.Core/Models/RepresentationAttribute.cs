@@ -28,14 +28,14 @@ namespace SimpleIdentityServer.Scim.Core.Models
         public string Type { get; private set; }
     }
 
-    public class SingularRepresentationAttribute : RepresentationAttribute
+    public class SingularRepresentationAttribute<T> : RepresentationAttribute
     {
-        public SingularRepresentationAttribute(string type, string value): base(type)
+        public SingularRepresentationAttribute(string type, T value): base(type)
         {
             Value = value;
         }
 
-        public string Value { get; private set; }
+        public T Value { get; private set; }
     }
 
     public class ComplexRepresentationAttribute : RepresentationAttribute
