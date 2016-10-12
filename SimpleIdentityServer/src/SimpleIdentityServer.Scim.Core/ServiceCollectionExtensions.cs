@@ -14,18 +14,25 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using SimpleIdentityServer.Scim.Core.Parsers;
+using SimpleIdentityServer.Scim.Core.Stores;
+using System;
 
-namespace SimpleIdentityServer.Scim.Startup.Controllers
+namespace SimpleIdentityServer.Scim.Core
 {
-    [Route(Constants.RoutePaths.UsersController)]
-    public class UsersController : Controller
+    public static class ServiceCollectionExtensions
     {
-        [HttpPost]
-        public async Task<ActionResult> Create()
+        public static IServiceCollection AddScim(this IServiceCollection services)
         {
-            return null;
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            services.AddTransient<ISchemaStore, SchemaStore>();
+            services.AddTransient<IRequestParser, RequestParser>();
+            return services;
         }
     }
 }

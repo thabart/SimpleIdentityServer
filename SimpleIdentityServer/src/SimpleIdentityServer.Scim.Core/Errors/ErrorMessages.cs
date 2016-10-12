@@ -14,18 +14,11 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Scim.Startup.Controllers
+namespace SimpleIdentityServer.Scim.Core.Errors
 {
-    [Route(Constants.RoutePaths.UsersController)]
-    public class UsersController : Controller
+    public static class ErrorMessages
     {
-        [HttpPost]
-        public async Task<ActionResult> Create()
-        {
-            return null;
-        }
+        public const string TheSchemaDoesntExist = "the schema {0} doesn't exist";
+        public const string TheAttributeIsRequired = "the attribute {0} is required";
     }
 }

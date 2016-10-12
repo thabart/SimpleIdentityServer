@@ -15,17 +15,31 @@
 #endregion
 
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
+using SimpleIdentityServer.Scim.Core.Stores;
+using System;
 
 namespace SimpleIdentityServer.Scim.Startup.Controllers
 {
-    [Route(Constants.RoutePaths.UsersController)]
-    public class UsersController : Controller
+    [Route(Constants.RoutePaths.GroupsController)]
+    public class GroupsController : Controller
     {
-        [HttpPost]
-        public async Task<ActionResult> Create()
+        private readonly ISchemaStore _schemaStore;
+
+        public GroupsController(ISchemaStore schemaStore)
         {
-            return null;
+            _schemaStore = schemaStore;
+        }
+
+        [HttpPost]
+        public void AddGroup([FromBody] JObject jObj)
+        {
+            if (jObj == null)
+            {
+                throw new ArgumentNullException(nameof(jObj));
+            }
+
+            return;
         }
     }
 }

@@ -14,14 +14,13 @@
 // limitations under the License.
 #endregion
 
-using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.Scim.Startup.DTOs.Responses
+namespace SimpleIdentityServer.Scim.Core.DTOs
 {
     [DataContract]
-    internal class NameResponse
+    public class NameResponse
     {
         [DataMember(Name = Constants.NameResponseNames.Formatted)]
         public string Formatted { get; set; }
@@ -38,7 +37,7 @@ namespace SimpleIdentityServer.Scim.Startup.DTOs.Responses
     }
 
     [DataContract]
-    internal class AddressResponse : MultiValueAttrResponse
+    public class AddressResponse : MultiValueAttrResponse
     {
         [DataMember(Name = Constants.AddressResponseNames.Formatted)]
         public string Formatted { get; set; }
@@ -55,7 +54,7 @@ namespace SimpleIdentityServer.Scim.Startup.DTOs.Responses
     }
 
     [DataContract]
-    internal class UserResourceResponse : IdentifiedScimResourceResponse
+    public class UserResourceResponse : IdentifiedScimResourceResponse
     {
         [DataMember(Name = Constants.UserResourceResponseNames.UserName)]
         public string UserName { get; set; }

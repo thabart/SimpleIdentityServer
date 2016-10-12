@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using SimpleIdentityServer.Scim.Core;
 
 namespace SimpleIdentityServer.Scim.Startup
 {
@@ -39,6 +40,7 @@ namespace SimpleIdentityServer.Scim.Startup
         
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddScim();
             services.AddMvc();
         }
 

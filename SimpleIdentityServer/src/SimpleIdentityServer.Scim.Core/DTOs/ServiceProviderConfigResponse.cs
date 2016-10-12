@@ -17,10 +17,10 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.Scim.Startup.DTOs.Responses
+namespace SimpleIdentityServer.Scim.Core.DTOs
 {
     [DataContract]
-    internal sealed class BulkResponse
+    public sealed class BulkResponse
     {
         [DataMember(Name = Constants.BulkResponseNames.Supported)]
         public bool Supported { get; set; }
@@ -33,14 +33,14 @@ namespace SimpleIdentityServer.Scim.Startup.DTOs.Responses
     }
 
     [DataContract]
-    internal sealed class PatchResponse
+    public sealed class PatchResponse
     {
         [DataMember(Name = Constants.PatchResponseNames.Supported)]
         public bool Supported { get; set; }
     }
 
     [DataContract]
-    internal sealed class FilterResponse
+    public sealed class FilterResponse
     {
         [DataMember(Name = Constants.FilterResponseNames.Supported)]
         public bool Supported { get; set; }
@@ -50,28 +50,28 @@ namespace SimpleIdentityServer.Scim.Startup.DTOs.Responses
     }
 
     [DataContract]
-    internal sealed class ChangePasswordResponse
+    public sealed class ChangePasswordResponse
     {
         [DataMember(Name = Constants.ChangePasswordResponseNames.Supported)]
         public bool Supported { get; set; }
     }
 
     [DataContract]
-    internal sealed class SortResponse
+    public sealed class SortResponse
     {
         [DataMember(Name = Constants.SortResponseNames.Supported)]
         public bool Supported { get; set; }
     }
 
     [DataContract]
-    internal sealed class EtagResponse
+    public sealed class EtagResponse
     {
         [DataMember(Name = Constants.EtagResponseNames.Supported)]
         public bool Supported { get; set; }
     }
 
     [DataContract]
-    internal sealed class AuthenticationSchemeResponse : MultiValueAttrResponse
+    public sealed class AuthenticationSchemeResponse : MultiValueAttrResponse
     {
         [DataMember(Name = Constants.AuthenticationSchemeResponseNames.Name)]
         public string Name { get; set; }
@@ -87,7 +87,7 @@ namespace SimpleIdentityServer.Scim.Startup.DTOs.Responses
     }
 
     [DataContract]
-    internal sealed class ServiceProviderConfigResponse : ScimResourceResponse
+    public sealed class ServiceProviderConfigResponse : ScimResourceResponse
     {
         [DataMember(Name = Constants.ServiceProviderConfigResponseNames.DocumentationUri)]
         public string DocumentationUri { get; set; }

@@ -16,10 +16,10 @@
 
 using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.Scim.Startup.DTOs.Responses
+namespace SimpleIdentityServer.Scim.Core.DTOs
 {
     [DataContract]
-    internal class IdentifiedScimResourceResponse : ScimResourceResponse
+    public class IdentifiedScimResourceResponse : ScimResourceResponse
     {
         [DataMember(Name = Constants.IdentifiedScimResourceNames.Id)]
         public string Id { get; set; }

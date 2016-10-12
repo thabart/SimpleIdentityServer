@@ -14,20 +14,25 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Scim.Startup.DTOs.Responses;
+using SimpleIdentityServer.Scim.Core.DTOs;
 using System.Collections.Generic;
+using System.Linq;
 
-namespace SimpleIdentityServer.Scim.Startup.Stores
+namespace SimpleIdentityServer.Scim.Core.Stores
 {
-    internal static class SchemasStore
+    public interface ISchemaStore
     {
-        #region User
+        IEnumerable<SchemaResponse> GetAll();
+        SchemaResponse Get(string id);
+    }
 
-        internal static class SchemaAttribute
+    internal class SchemaStore : ISchemaStore
+    {
+        private static class SchemaAttribute
         {
             public static SchemaAttributeResponse CreateAttribute(
-                string name, 
-                string description, 
+                string name,
+                string description,
                 string type = Constants.SchemaAttributeTypes.String,
                 string mutability = Constants.SchemaAttributeMutability.ReadWrite,
                 string returned = Constants.SchemaAttributeReturned.Default,
@@ -55,9 +60,9 @@ namespace SimpleIdentityServer.Scim.Startup.Stores
             }
 
             public static SchemaAttributeResponse CreateComplexAttribute(
-                string name, 
-                string description, 
-                IEnumerable<SchemaAttributeResponse> subAttributes, 
+                string name,
+                string description,
+                IEnumerable<SchemaAttributeResponse> subAttributes,
                 string type = Constants.SchemaAttributeTypes.String,
                 bool multiValued = false,
                 bool required = false,
@@ -79,7 +84,8 @@ namespace SimpleIdentityServer.Scim.Startup.Stores
                     Returned = returned,
                     Uniqueness = uniqueness,
                     ReferenceTypes = referenceTypes,
-                    CanonicalValues = canonicalValues
+                    CanonicalValues = canonicalValues,
+                    SubAttributes = subAttributes
                 };
             }
 
@@ -108,7 +114,7 @@ namespace SimpleIdentityServer.Scim.Startup.Stores
             }
 
             public static SchemaAttributeResponse CreateTypeAttribute(
-                string description, 
+                string description,
                 string[] canonicalValues,
                 string mutability = Constants.SchemaAttributeMutability.ReadWrite)
             {
@@ -131,7 +137,7 @@ namespace SimpleIdentityServer.Scim.Startup.Stores
             }
 
             public static SchemaAttributeResponse CreateRefAttribute(
-                string description, 
+                string description,
                 string[] referenceTypes,
                 string mutability = Constants.SchemaAttributeMutability.ReadWrite)
             {
@@ -140,9 +146,13 @@ namespace SimpleIdentityServer.Scim.Startup.Stores
                     description,
                     type: Constants.SchemaAttributeTypes.Reference,
                     referenceTypes: referenceTypes,
-                    mutability : mutability);
+                    mutability: mutability);
             }
         }
+
+        #region User
+
+        #region Attributes
 
         private static IEnumerable<SchemaAttributeResponse> EmailAttributeSub = new SchemaAttributeResponse[]
         {
@@ -210,76 +220,26 @@ namespace SimpleIdentityServer.Scim.Startup.Stores
 
         private static IEnumerable<SchemaAttributeResponse> UserNameAttributeSub = new SchemaAttributeResponse[]
         {
-              // Formatted
-             SchemaAttribute.CreateAttribute(
-                 Constants.NameResponseNames.Formatted,
-                 "The full name, including all middle"+
-                                 "names, titles, and suffixes as appropriate, formatted for display"+
-                                 "(e.g., 'Ms. Barbara J Jensen, III')."),
-             // Family name
-             SchemaAttribute.CreateAttribute(
-                 Constants.NameResponseNames.FamilyName,
-                 "The family name of the User, or"+
-                                 "last name in most Western languages (e.g., 'Jensen' given the full"+
-                                 "name 'Ms. Barbara J Jensen, III')."),
-             // Given name
-             SchemaAttribute.CreateAttribute(
-                 Constants.NameResponseNames.GivenName,
-                 "The given name of the User, or"+
-                                 "first name in most Western languages (e.g., 'Barbara' given the"+
-                                 "full name 'Ms. Barbara J Jensen, III')."),
-             // Middle name
-             SchemaAttribute.CreateAttribute(
-                 Constants.NameResponseNames.MiddleName,
-                 "The middle name(s) of the User"+
-                                 "(e.g., 'Jane' given the full name 'Ms. Barbara J Jensen, III')."),
-             // Honorific prefix
-             SchemaAttribute.CreateAttribute(
-                 Constants.NameResponseNames.HonorificPrefix,
-                 "The honorific prefix(es) of the User, or"+
-                                 "title in most Western languages (e.g., 'Ms.' given the full name"+
-                                 "'Ms. Barbara J Jensen, III')."),
-             // Honorific suffix
-             SchemaAttribute.CreateAttribute(
-                 Constants.NameResponseNames.HonorificPrefix,
-                 "The honorific suffix(es) of the User, or"+
-                                 "suffix in most Western languages (e.g., 'III' given the full name"+
-                                 "'Ms. Barbara J Jensen, III').")
-                       
+             SchemaAttribute.CreateAttribute(Constants.NameResponseNames.Formatted, "The full name, including all middle names, titles, and suffixes as appropriate, formatted for display (e.g., 'Ms. Barbara J Jensen, III')."),
+             SchemaAttribute.CreateAttribute(Constants.NameResponseNames.FamilyName, "The family name of the User, or last name in most Western languages (e.g., 'Jensen' given the fullname 'Ms. Barbara J Jensen, III')."),
+             SchemaAttribute.CreateAttribute(Constants.NameResponseNames.GivenName, "The given name of the User, or first name in most Western languages (e.g., 'Barbara' given the full name 'Ms. Barbara J Jensen, III')."),
+             SchemaAttribute.CreateAttribute(Constants.NameResponseNames.MiddleName, "The middle name(s) of the User (e.g., 'Jane' given the full name 'Ms. Barbara J Jensen, III')."),
+             SchemaAttribute.CreateAttribute(Constants.NameResponseNames.HonorificPrefix, "The honorific prefix(es) of the User, or title in most Western languages (e.g., 'Ms.' given the full name 'Ms. Barbara J Jensen, III')."),
+             SchemaAttribute.CreateAttribute(Constants.NameResponseNames.HonorificPrefix, "The honorific suffix(es) of the User, or suffix in most Western languages (e.g., 'III' given the full name 'Ms. Barbara J Jensen, III').")
         };
 
         private static IEnumerable<SchemaAttributeResponse> UserAddressAttributes = new SchemaAttributeResponse[]
         {
-            // formatted
-             SchemaAttribute.CreateAttribute(
-                 Constants.AddressResponseNames.Formatted,
-                 "The full mailing address, formatted for display or use with a mailing label.  This attribute MAY contain newlines."),
-            // street address
-             SchemaAttribute.CreateAttribute(
-                 Constants.AddressResponseNames.StreetAddress,
-                 "The full street address component, which may include house number, street name, P.O. box, and multi-line extended street address information.  This attribute MAY contain newlines."),
-             // locality
-             SchemaAttribute.CreateAttribute(
-                 Constants.AddressResponseNames.Locality,
-                 "The city or locality component."),
-             // Region
-             SchemaAttribute.CreateAttribute(
-                 Constants.AddressResponseNames.Region,
-                 "The state or region component."),
-             // postal code
-             SchemaAttribute.CreateAttribute(
-                 Constants.AddressResponseNames.PostalCode,
-                 "The zip code or postal code component."),
-             // country
-             SchemaAttribute.CreateAttribute(
-                 Constants.AddressResponseNames.Country,
-                 "The country name component."),
-             // type
-             SchemaAttribute.CreateTypeAttribute(
-                 "A label indicating the attribute's function, e.g., 'work' or 'home'.",
-                 new string[] { "work", "home", "other" }),
-
+             SchemaAttribute.CreateAttribute(Constants.AddressResponseNames.Formatted, "The full mailing address, formatted for display or use with a mailing label.  This attribute MAY contain newlines."),
+             SchemaAttribute.CreateAttribute(Constants.AddressResponseNames.StreetAddress, "The full street address component, which may include house number, street name, P.O. box, and multi-line extended street address information.  This attribute MAY contain newlines."),
+             SchemaAttribute.CreateAttribute(Constants.AddressResponseNames.Locality, "The city or locality component."),
+             SchemaAttribute.CreateAttribute(Constants.AddressResponseNames.Region, "The state or region component."),
+             SchemaAttribute.CreateAttribute(Constants.AddressResponseNames.PostalCode, "The zip code or postal code component."),
+             SchemaAttribute.CreateAttribute(Constants.AddressResponseNames.Country, "The country name component."),
+             SchemaAttribute.CreateTypeAttribute("A label indicating the attribute's function, e.g., 'work' or 'home'.", new string[] { "work", "home", "other" })
         };
+
+        #endregion
 
         private static SchemaResponse UserSchema = new SchemaResponse
         {
@@ -441,14 +401,61 @@ namespace SimpleIdentityServer.Scim.Startup.Stores
 
         #endregion
 
+        #region Group
+
+        private static IEnumerable<SchemaAttributeResponse> GroupMembersAttribute = new SchemaAttributeResponse[]
+        {
+            SchemaAttribute.CreateAttribute(Constants.GroupMembersResponseNames.Value, "Identifier of the member of this Group.", uniqueness: Constants.SchemaAttributeUniqueness.None, required : false, mutability: Constants.SchemaAttributeMutability.Immutable),
+            SchemaAttribute.CreateRefAttribute("The URI corresponding to a SCIM resource that is a member of this Group.", new string[] { "User", "Group" }, Constants.SchemaAttributeMutability.Immutable),
+            SchemaAttribute.CreateTypeAttribute("A label indicating the type of resource, e.g., 'User' or 'Group'.", new string[] { "User", "Group" }, Constants.SchemaAttributeMutability.Immutable)
+        };
+
+        private static SchemaResponse GroupSchema = new SchemaResponse
+        {
+            Id = Constants.SchemaUrns.Group,
+            Name = "Group",
+            Description = "Group",
+            Attributes = new SchemaAttributeResponse[]
+            {                
+                // display name
+                SchemaAttribute.CreateAttribute(
+                    Constants.GroupResourceResponseNames.DisplayName,
+                    "A human-readable name for the Group."+
+                        "REQUIRED.",
+                    uniqueness: Constants.SchemaAttributeUniqueness.None,
+                    required : false),
+                // members
+                SchemaAttribute.CreateComplexAttribute(
+                    Constants.GroupResourceResponseNames.Members,
+                    "A list of members of the Group.",
+                    GroupMembersAttribute,
+                    multiValued: true),
+            },
+            Meta = new MetaResponse
+            {
+                ResourceType = "Schema",
+                Location = "urn:ietf:params:scim:schemas:core:2.0:Group"
+            }
+        };
+
+        #endregion
+
+        private static IEnumerable<SchemaResponse> _schemas = new SchemaResponse[]
+        {
+            UserSchema,
+            GroupSchema
+        };
+
         #region Public methods
 
-        internal static IEnumerable<SchemaResponse> GetAll()
+        public IEnumerable<SchemaResponse> GetAll()
         {
-            return new SchemaResponse[]
-            {
-                UserSchema
-            };
+            return _schemas;
+        }
+
+        public SchemaResponse Get(string id)
+        {
+            return _schemas.FirstOrDefault(s => s.Id == id);
         }
 
         #endregion

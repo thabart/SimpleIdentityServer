@@ -16,10 +16,10 @@
 
 using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.Scim.Startup.DTOs.Responses
+namespace SimpleIdentityServer.Scim.Core.DTOs
 {
     [DataContract]
-    internal class MultiValueAttrResponse
+    public class MultiValueAttrResponse
     {
         [DataMember(Name = Constants.MultiValueAttributeNames.Type)]
         public string Type { get; set; }

@@ -14,18 +14,17 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
+using System;
+using System.Collections.Generic;
 
-namespace SimpleIdentityServer.Scim.Startup.Controllers
+namespace SimpleIdentityServer.Scim.Core.Models
 {
-    [Route(Constants.RoutePaths.UsersController)]
-    public class UsersController : Controller
+    public class Representation
     {
-        [HttpPost]
-        public async Task<ActionResult> Create()
-        {
-            return null;
-        }
+        public string ResourceType { get; set; }
+        public DateTime Created { get; set; }
+        public DateTime LastModified { get; set; }
+        public string Version { get; set; }
+        public IEnumerable<RepresentationAttribute> Attributes { get; set; }
     }
 }

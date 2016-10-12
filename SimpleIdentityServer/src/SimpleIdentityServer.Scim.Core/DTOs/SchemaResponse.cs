@@ -16,9 +16,9 @@
 
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using static SimpleIdentityServer.Scim.Startup.Constants;
+using static SimpleIdentityServer.Scim.Core.Constants;
 
-namespace SimpleIdentityServer.Scim.Startup.DTOs.Responses
+namespace SimpleIdentityServer.Scim.Core.DTOs
 {
     [DataContract]
     public class SchemaAttributeResponse
@@ -96,7 +96,7 @@ namespace SimpleIdentityServer.Scim.Startup.DTOs.Responses
     }
 
     [DataContract]
-    internal class SchemaResponse : ScimResourceResponse
+    public class SchemaResponse : ScimResourceResponse
     {
         /// <summary>
         /// Unique URI of the schema

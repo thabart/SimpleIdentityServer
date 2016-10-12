@@ -15,12 +15,12 @@
 #endregion
 
 using Microsoft.AspNetCore.Mvc;
-using SimpleIdentityServer.Scim.Startup.DTOs.Responses;
+using SimpleIdentityServer.Scim.Core.DTOs;
 using System;
 
 namespace SimpleIdentityServer.Scim.Startup.Controllers
 {
-    [Route("/ServiceProviderConfig")]
+    [Route(Constants.RoutePaths.ServiceProviderConfigController)]
     public class ServiceProviderConfigController : Controller
     {
         #region Public methods

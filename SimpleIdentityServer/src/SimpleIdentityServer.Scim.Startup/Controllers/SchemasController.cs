@@ -15,13 +15,20 @@
 #endregion
 
 using Microsoft.AspNetCore.Mvc;
-using SimpleIdentityServer.Scim.Startup.Stores;
+using SimpleIdentityServer.Scim.Core.Stores;
 
 namespace SimpleIdentityServer.Scim.Startup.Controllers
 {
-    [Route("/Schemas")]
+    [Route(Constants.RoutePaths.GroupsController)]
     public class SchemasController : Controller
     {
+        private readonly ISchemaStore _schemaStore;
+
+        public SchemasController(ISchemaStore schemaStore)
+        {
+            _schemaStore = schemaStore;
+        }
+
         [HttpGet("{id}")]
         public ActionResult Get(string id)
         {
@@ -31,7 +38,7 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
         [HttpGet]
         public ActionResult All()
         {
-            return new OkObjectResult(SchemasStore.GetAll());
+            return new OkObjectResult(_schemaStore.GetAll());
         }
     }
 }
