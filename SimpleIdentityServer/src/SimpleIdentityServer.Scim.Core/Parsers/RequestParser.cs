@@ -69,7 +69,11 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 }
 
                 // 2. Add the attribute
-                attributes.Add(GetRepresentation(jObj, attribute));
+                var repr = GetRepresentation(jObj, attribute);
+                if (repr != null)
+                {
+                    attributes.Add(repr);
+                }
             }
 
             representation.Attributes = attributes;

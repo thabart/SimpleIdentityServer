@@ -17,6 +17,7 @@
 using Moq;
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Scim.Core.DTOs;
+using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Core.Parsers;
 using SimpleIdentityServer.Scim.Core.Stores;
 using System;
@@ -78,8 +79,101 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             Assert.NotNull(result);
             Assert.True(result.Attributes.Count() == 2);
             Assert.True(result.Attributes.First().Type == "displayName");
+            var members = result.Attributes.ElementAt(1) as ComplexRepresentationAttribute;
+            Assert.NotNull(members);
+            Assert.True(members.Type == "members");
+            Assert.True(members.Values.Count() == 1);
+            var value = members.Values.First() as ComplexRepresentationAttribute;
+            foreach (var subValue in value.Values)
+            {
+                var singularAttribute = subValue as SingularRepresentationAttribute<string>;
+                Assert.True(new[] { "type", "value" }.Contains(singularAttribute.Type));
+                Assert.True(new[] { "Group", "bulkId:ytrewq" }.Contains(singularAttribute.Value));
+            } 
+        }
 
-            // Assert.True(result.ResourceType)
+        [Fact]
+        public void When_Complex_PostGroupRequest_Is_Parsed_Then_CorrectValues_Are_Returned()
+        {
+            var schemaStore = new SchemaStore();
+            // ARRANGE
+            InitializeFakeObjects();
+            _schemaStoreStub.Setup(s => s.Get(It.IsAny<string>()))
+                .Returns(schemaStore.Get(Constants.SchemaUrns.Group));
+            var jObj = JObject.Parse(@"{'schemas': ['urn:ietf:params:scim:schemas:core:2.0:Group']," +
+            "'displayName': 'Group A'," +
+            "'members': [" +
+             "{" +
+               "'type': 'Group'," +
+               "'value': 'bulkId:ytrewq'" +
+             "}," +
+             "{" +
+               "'type': 'Group'," +
+               "'value': 'bulkId:ytrewq'" +
+             "}," +
+             "{" +
+               "'type': 'Group'," +
+               "'value': 'bulkId:ytrewq'" +
+             "}" +
+           "]}");
+
+            // ACT
+            var result = _requestParser.Parse(jObj, Constants.SchemaUrns.Group);
+
+
+            // ASSERTS
+            Assert.NotNull(result);
+            Assert.True(result.Attributes.Count() == 2);
+            Assert.True(result.Attributes.First().Type == "displayName");
+            var members = result.Attributes.ElementAt(1) as ComplexRepresentationAttribute;
+            Assert.NotNull(members);
+            Assert.True(members.Type == "members");
+            Assert.True(members.Values.Count() == 3);
+            var value = members.Values.First() as ComplexRepresentationAttribute;
+            foreach (var subValue in value.Values)
+            {
+                var singularAttribute = subValue as SingularRepresentationAttribute<string>;
+                Assert.True(new[] { "type", "value" }.Contains(singularAttribute.Type));
+                Assert.True(new[] { "Group", "bulkId:ytrewq" }.Contains(singularAttribute.Value));
+            }
+        }
+
+        [Fact]
+        public void When_Simple_PostUserRequest_Is_Parsed_Then_CorrectValues_Are_Returned()
+        {
+            var schemaStore = new SchemaStore();
+            // ARRANGE
+            InitializeFakeObjects();
+            _schemaStoreStub.Setup(s => s.Get(It.IsAny<string>()))
+                .Returns(schemaStore.Get(Constants.SchemaUrns.User));
+            var jObj = JObject.Parse(@"{'schemas': ['urn:ietf:params:scim:schemas:core:2.0:User']," +
+            "'externalId': 'bjensen'," +
+            "'userName': 'bjensen'," +
+            "'name': {" +
+                "'familyName': 'Jensen',"+
+                "'givenName':'Barbara'" +
+            "}}");
+
+            // ACT
+            var result = _requestParser.Parse(jObj, Constants.SchemaUrns.Group);
+
+
+            // ASSERTS
+            Assert.NotNull(result);
+            Assert.True(result.Attributes.Count() == 3);
+            /*
+            Assert.True(result.Attributes.First().Type == "displayName");
+            var members = result.Attributes.ElementAt(1) as ComplexRepresentationAttribute;
+            Assert.NotNull(members);
+            Assert.True(members.Type == "members");
+            Assert.True(members.Values.Count() == 3);
+            var value = members.Values.First() as ComplexRepresentationAttribute;
+            foreach (var subValue in value.Values)
+            {
+                var singularAttribute = subValue as SingularRepresentationAttribute<string>;
+                Assert.True(new[] { "type", "value" }.Contains(singularAttribute.Type));
+                Assert.True(new[] { "Group", "bulkId:ytrewq" }.Contains(singularAttribute.Value));
+            }*/
         }
 
         private void InitializeFakeObjects()
