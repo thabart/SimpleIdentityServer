@@ -161,19 +161,6 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             // ASSERTS
             Assert.NotNull(result);
             Assert.True(result.Attributes.Count() == 3);
-            /*
-            Assert.True(result.Attributes.First().Type == "displayName");
-            var members = result.Attributes.ElementAt(1) as ComplexRepresentationAttribute;
-            Assert.NotNull(members);
-            Assert.True(members.Type == "members");
-            Assert.True(members.Values.Count() == 3);
-            var value = members.Values.First() as ComplexRepresentationAttribute;
-            foreach (var subValue in value.Values)
-            {
-                var singularAttribute = subValue as SingularRepresentationAttribute<string>;
-                Assert.True(new[] { "type", "value" }.Contains(singularAttribute.Type));
-                Assert.True(new[] { "Group", "bulkId:ytrewq" }.Contains(singularAttribute.Value));
-            }*/
         }
 
         private void InitializeFakeObjects()

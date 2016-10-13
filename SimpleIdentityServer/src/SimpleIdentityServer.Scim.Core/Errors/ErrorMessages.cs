@@ -25,5 +25,6 @@ namespace SimpleIdentityServer.Scim.Core.Errors
         public const string TheAttributeIsNotAnArray = "the attribute {0} is not an array";
         public const string TheAttributeIsNotComplex = "the attribute {0} is not complex";
         public const string TheRequestCannotBeParsedForSomeReason = "the request cannot be parsed for some reason";
+        public const string TheComplexAttributeArrayShouldContainsOnlyComplexAttribute = "complex attribute array should contains only complex attribute";
     }
 }

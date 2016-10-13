@@ -24,21 +24,23 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 {
     public interface IAddRepresentationAction
     {
-        bool Execute(JObject jObj, string id);
+        JObject Execute(JObject jObj, string id, string resourceType);
     }
 
     internal class AddRepresentationAction : IAddRepresentationAction
     {
         private readonly IRequestParser _requestParser;
         private readonly IRepresentationStore _representationStore;
+        private readonly IResponseParser _responseParser;
 
-        public AddRepresentationAction(IRequestParser requestParser, IRepresentationStore representationStore)
+        public AddRepresentationAction(IRequestParser requestParser, IRepresentationStore representationStore, IResponseParser responseParser)
         {
             _requestParser = requestParser;
             _representationStore = representationStore;
+            _responseParser = responseParser;
         }
 
-        public bool Execute(JObject jObj, string id)
+        public JObject Execute(JObject jObj, string id, string resourceType)
         {
             if (jObj == null)
             {
@@ -57,12 +59,17 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                 throw new InvalidOperationException(ErrorMessages.TheRequestCannotBeParsedForSomeReason);
             }
 
+            // 2. Set parameters
+            result.Id = Guid.NewGuid().ToString();
+            result.Created = DateTime.UtcNow;
+            result.LastModified = DateTime.UtcNow;
+            result.ResourceType = resourceType;
+
             // 2. Save the request
             _representationStore.AddRepresentation(result);
 
             // 3. Transform the representation into response
-
-            return true;
+            return _responseParser.Parse(result, id, resourceType);
         }
     }
 }

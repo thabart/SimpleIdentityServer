@@ -21,6 +21,7 @@ namespace SimpleIdentityServer.Scim.Core.Models
 {
     public class Representation
     {
+        public string Id { get; set; }
         public string ResourceType { get; set; }
         public DateTime Created { get; set; }
         public DateTime LastModified { get; set; }

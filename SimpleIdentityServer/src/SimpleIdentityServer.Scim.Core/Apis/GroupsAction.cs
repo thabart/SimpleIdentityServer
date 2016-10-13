@@ -11,7 +11,7 @@
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
-// limitations under the License.
+// limitations under the License.C:\Projects\SimpleIdentityServer\SimpleIdentityServer\src\SimpleIdentityServer.Scim.Core\DTOs\
 #endregion
 
 using Newtonsoft.Json.Linq;
@@ -20,7 +20,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 {
     public interface IGroupsAction
     {
-        bool AddGroup(JObject jObj);
+        JObject AddGroup(JObject jObj);
     }
 
     internal class GroupsAction : IGroupsAction
@@ -32,9 +32,9 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             _addRepresentationAction = addRepresentationAction;
         }
 
-        public bool AddGroup(JObject jObj)
+        public JObject AddGroup(JObject jObj)
         {
-            return _addRepresentationAction.Execute(jObj, Constants.SchemaUrns.Group);
+            return _addRepresentationAction.Execute(jObj, Constants.SchemaUrns.Group, "Group");
         }
     }
 }

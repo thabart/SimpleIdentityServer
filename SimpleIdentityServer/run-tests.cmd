@@ -8,3 +8,4 @@ dotnet test tests\SimpleIdentityServer.Uma.Core.UnitTests
 dotnet test tests\SimpleIdentityServer.UmaIntrospection.Authentication.Tests
 dotnet test tests\SimpleIdentityServer.UmaManager.Client.Unit.Tests
 dotnet test tests\SimpleIdentityServer.UserInformation.Authentication.Tests
+dotnet test tests\SimpleIdentityServer.Scim.Core.Tests

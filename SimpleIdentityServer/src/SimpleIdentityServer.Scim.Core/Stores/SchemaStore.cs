@@ -150,6 +150,22 @@ namespace SimpleIdentityServer.Scim.Core.Stores
             }
         }
 
+        private static IEnumerable<SchemaAttributeResponse> MetaDataAttributes = new SchemaAttributeResponse[]
+        {
+            SchemaAttribute.CreateAttribute(Constants.MetaResponseNames.ResourceType, "Name of the resource type of the resource", mutability: Constants.SchemaAttributeMutability.ReadOnly, caseExact: true),
+            SchemaAttribute.CreateAttribute(Constants.MetaResponseNames.Created, "The 'DateTime' that the resource was added to the service provider", mutability: Constants.SchemaAttributeMutability.ReadOnly, type: Constants.SchemaAttributeTypes.DateTime),
+            SchemaAttribute.CreateAttribute(Constants.MetaResponseNames.LastModified, "The most recent DateTime than the details of this resource were updated at the service provider", mutability: Constants.SchemaAttributeMutability.ReadOnly, type: Constants.SchemaAttributeTypes.DateTime),
+            SchemaAttribute.CreateAttribute(Constants.MetaResponseNames.Location, "URI of the resource being returned", mutability: Constants.SchemaAttributeMutability.ReadOnly),
+            SchemaAttribute.CreateAttribute(Constants.MetaResponseNames.Version, "Version of the resource being returned", mutability: Constants.SchemaAttributeMutability.ReadOnly, caseExact: true),
+        };
+
+        private static IEnumerable<SchemaAttributeResponse> CommonAttributes = new SchemaAttributeResponse[]
+        {
+            SchemaAttribute.CreateAttribute(Constants.IdentifiedScimResourceNames.Id, "Unique identifier for a SCIM resource as defined by the service provider", mutability: Constants.SchemaAttributeMutability.ReadOnly, caseExact: true, returned: Constants.SchemaAttributeReturned.Always),
+            SchemaAttribute.CreateAttribute(Constants.IdentifiedScimResourceNames.ExternalId, "Identifier as defined by the provisioning client", caseExact: true, mutability: Constants.SchemaAttributeMutability.ReadWrite, required: false),
+            SchemaAttribute.CreateComplexAttribute(Constants.ScimResourceNames.Meta, "Complex attribute contaning resource metadata", MetaDataAttributes, mutability: Constants.SchemaAttributeMutability.ReadOnly, returned: Constants.SchemaAttributeReturned.Default)
+        };
+
         #region User
 
         #region Attributes
@@ -246,7 +262,7 @@ namespace SimpleIdentityServer.Scim.Core.Stores
             Id = "urn:ietf:params:scim:schemas:core:2.0:User",
             Name = "User",
             Description = "User Account",
-            Attributes = new SchemaAttributeResponse[]
+            Attributes = CommonAttributes.Concat(new SchemaAttributeResponse[]
             {
                 // user name
                 SchemaAttribute.CreateAttribute(
@@ -391,7 +407,7 @@ namespace SimpleIdentityServer.Scim.Core.Stores
                     "A list of certificates issued to the User.",
                     UserCertificateAttributes,
                     multiValued: true),
-            },
+            }),
             Meta = new MetaResponse
             {
                 ResourceType = "Schema",
@@ -415,22 +431,13 @@ namespace SimpleIdentityServer.Scim.Core.Stores
             Id = Constants.SchemaUrns.Group,
             Name = "Group",
             Description = "Group",
-            Attributes = new SchemaAttributeResponse[]
-            {                
+            Attributes = CommonAttributes.Concat(new SchemaAttributeResponse[]
+            {
                 // display name
-                SchemaAttribute.CreateAttribute(
-                    Constants.GroupResourceResponseNames.DisplayName,
-                    "A human-readable name for the Group."+
-                        "REQUIRED.",
-                    uniqueness: Constants.SchemaAttributeUniqueness.None,
-                    required : false),
+                SchemaAttribute.CreateAttribute(Constants.GroupResourceResponseNames.DisplayName, "A human-readable name for the Group. REQUIRED.", uniqueness: Constants.SchemaAttributeUniqueness.None, required : false),
                 // members
-                SchemaAttribute.CreateComplexAttribute(
-                    Constants.GroupResourceResponseNames.Members,
-                    "A list of members of the Group.",
-                    GroupMembersAttribute,
-                    multiValued: true),
-            },
+                SchemaAttribute.CreateComplexAttribute(Constants.GroupResourceResponseNames.Members, "A list of members of the Group.", GroupMembersAttribute, multiValued: true),
+            }),
             Meta = new MetaResponse
             {
                 ResourceType = "Schema",

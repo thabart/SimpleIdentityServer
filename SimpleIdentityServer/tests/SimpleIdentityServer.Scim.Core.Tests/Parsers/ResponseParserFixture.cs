@@ -47,7 +47,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             var result = _requestParser.Parse(jObj, Constants.SchemaUrns.Group);
 
             // ACT
-            var response = _responseParser.Parse(result, Constants.SchemaUrns.Group);
+            var response = _responseParser.Parse(result, Constants.SchemaUrns.Group, "Group");
 
             // ASSERT
             Assert.NotNull(response);

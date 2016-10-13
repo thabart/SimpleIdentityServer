@@ -27,7 +27,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 {
     public interface IResponseParser
     {
-        JObject Parse(Representation representation, string id);
+        JObject Parse(Representation representation, string id, string resourceType);
     }
 
     internal class ResponseParser : IResponseParser
@@ -39,7 +39,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             _schemasStore = schemaStore;
         }
 
-        public JObject Parse(Representation representation, string id)
+        public JObject Parse(Representation representation, string id, string resourceType)
         {
             if (representation == null)
             {
@@ -49,6 +49,11 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             if (string.IsNullOrWhiteSpace(id))
             {
                 throw new ArgumentNullException(nameof(id));
+            }
+
+            if (string.IsNullOrWhiteSpace(resourceType))
+            {
+                throw new ArgumentNullException(nameof(resourceType));
             }
 
             var schema = _schemasStore.Get(id);
@@ -78,7 +83,23 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 }
             }
 
+            SetCommonAttributes(result, representation, resourceType);
             return result;
+        }
+
+        private static void SetCommonAttributes(JObject jObj, Representation representation, string resourceType)
+        {
+            // TODO : set the location.
+            jObj.Add(new JProperty(Constants.IdentifiedScimResourceNames.Id, representation.Id));
+            var properties = new JProperty[]
+            {
+                new JProperty(Constants.MetaResponseNames.ResourceType, resourceType),
+                new JProperty(Constants.MetaResponseNames.Created, representation.Created),
+                new JProperty(Constants.MetaResponseNames.LastModified, representation.LastModified),
+                new JProperty(Constants.MetaResponseNames.Version, representation.Version),
+                new JProperty(Constants.MetaResponseNames.Location, "somewhere")
+            };
+            jObj[Constants.ScimResourceNames.Meta] = new JObject(properties);
         }
 
         private static JToken GetToken(RepresentationAttribute attr, SchemaAttributeResponse attribute)
@@ -104,26 +125,35 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                     throw new InvalidOperationException(string.Format(ErrorMessages.TheAttributeIsNotComplex, attribute.Name));
                 }
 
+                // 2.1 Complex attribute[Complex attribute]
                 if (attribute.MultiValued)
                 {
-                    ComplexRepresentationAttribute subValues;
-                    if (complexRepresentation.Values == null ||
-                        complexRepresentation.Values.Count() > 1 ||
-                        (subValues = complexRepresentation.Values.First() as ComplexRepresentationAttribute) == null)
+                    if (complexRepresentation.Values == null || !complexRepresentation.Values.Any())
                     {
                         throw new InvalidOperationException(string.Format(ErrorMessages.TheAttributeIsNotAnArray, attribute.Name));
                     }
 
                     var array = new JArray();
-                    foreach(var subRepresentation in subValues.Values)
+                    foreach(var subRepresentation in complexRepresentation.Values)
                     {
-                        var subAttribute = complexAttribute.SubAttributes.FirstOrDefault(a => a.Name == subRepresentation.Type);
-                        if (subAttribute == null)
+                        var subComplex = subRepresentation as ComplexRepresentationAttribute;
+                        if (subComplex == null)
                         {
-                            continue;
+                            throw new InvalidOperationException(ErrorMessages.TheComplexAttributeArrayShouldContainsOnlyComplexAttribute);
                         }
 
-                        var obj = new JObject(GetToken(subRepresentation, subAttribute));
+                        var obj = new JObject();
+                        foreach(var subAttr in subComplex.Values)
+                        {
+                            var att = complexAttribute.SubAttributes.FirstOrDefault(a => a.Name == subAttr.Type);
+                            if (att == null)
+                            {
+                                continue;
+                            }
+
+                            obj.Add(GetToken(subAttr, att));
+                        }
+
                         array.Add(obj);
                     }
 
@@ -131,6 +161,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 }
 
                 var properties = new List<JToken>();
+                // 2.2 Complex attribute
                 foreach(var subRepresentation in complexRepresentation.Values)
                 {
                     var subAttribute = complexAttribute.SubAttributes.FirstOrDefault(a => a.Name == subRepresentation.Type);

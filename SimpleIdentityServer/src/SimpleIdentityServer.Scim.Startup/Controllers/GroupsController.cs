@@ -32,15 +32,14 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
         }
 
         [HttpPost]
-        public void AddGroup([FromBody] JObject jObj)
+        public ActionResult AddGroup([FromBody] JObject jObj)
         {
             if (jObj == null)
             {
                 throw new ArgumentNullException(nameof(jObj));
             }
 
-            _groupsAction.AddGroup(jObj);
-            return;
+            return new CreatedResult("", _groupsAction.AddGroup(jObj));
         }
     }
 }
