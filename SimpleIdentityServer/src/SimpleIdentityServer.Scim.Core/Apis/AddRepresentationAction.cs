@@ -58,7 +58,11 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             }
 
             // 2. Save the request
-            return _representationStore.AddRepresentation(result);
+            _representationStore.AddRepresentation(result);
+
+            // 3. Transform the representation into response
+
+            return true;
         }
     }
 }

@@ -20,9 +20,7 @@ using SimpleIdentityServer.Scim.Core.Errors;
 using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Core.Stores;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace SimpleIdentityServer.Scim.Core.Parsers
 {
@@ -60,7 +58,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
             var representation = new Representation();
             var attributes = new List<RepresentationAttribute>();
-            foreach(var attribute in schema.Attributes)
+            foreach (var attribute in schema.Attributes)
             {
                 // 1. Ignore the attribute with readonly mutability
                 if (attribute.Mutability == Constants.SchemaAttributeMutability.ReadOnly)
@@ -146,77 +144,37 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
             // 4. Create singular attribute.
             // Note : Don't cast to object to avoid unecessaries boxing operations ...
-            switch(attribute.Type)
+            switch (attribute.Type)
             {
                 case Constants.SchemaAttributeTypes.String:
-                    try
-                    {
-                        if (jArr != null)
-                        {
-                            return new SingularRepresentationAttribute<IEnumerable<string>>(attribute.Name, jArr.Values<string>());
-                        }
-                        return new SingularRepresentationAttribute<string>(attribute.Name, token.Value<string>());
-                    }
-                    catch (FormatException)
-                    {
-                        throw new InvalidOperationException(string.Format(ErrorMessages.TheAttributeTypeIsNotCorrect, attribute.Name, Constants.SchemaAttributeTypes.String));
-                    }
+                    return GetSingularToken<string>(jArr, attribute, token);
                 case Constants.SchemaAttributeTypes.Boolean:
-                    try
-                    {
-                        if (jArr != null)
-                        {
-                            return new SingularRepresentationAttribute<IEnumerable<bool>>(attribute.Name, jArr.Values<bool>());
-                        }
-                        return new SingularRepresentationAttribute<bool>(attribute.Name, token.Value<bool>());
-                    }
-                    catch (FormatException)
-                    {
-                        throw new InvalidOperationException(string.Format(ErrorMessages.TheAttributeTypeIsNotCorrect, attribute.Name, Constants.SchemaAttributeTypes.Boolean));
-                    }
+                    return GetSingularToken<bool>(jArr, attribute, token);
                 case Constants.SchemaAttributeTypes.Decimal:
-                    try
-                    {
-                        if (jArr != null)
-                        {
-                            return new SingularRepresentationAttribute<IEnumerable<decimal>>(attribute.Name, jArr.Values<decimal>());
-                        }
-                        return new SingularRepresentationAttribute<decimal>(attribute.Name, token.Value<decimal>());
-                    }
-                    catch (FormatException)
-                    {
-                        throw new InvalidOperationException(string.Format(ErrorMessages.TheAttributeTypeIsNotCorrect, attribute.Name, Constants.SchemaAttributeTypes.Decimal));
-                    }
+                    return GetSingularToken<decimal>(jArr, attribute, token);
                 case Constants.SchemaAttributeTypes.DateTime:
-                    try
-                    {
-                        if (jArr != null)
-                        {
-                            return new SingularRepresentationAttribute<IEnumerable<DateTime>>(attribute.Name, jArr.Values<DateTime>());
-                        }
-
-                        return new SingularRepresentationAttribute<DateTime>(attribute.Name, token.Value<DateTime>());
-                    }
-                    catch (FormatException)
-                    {
-                        throw new InvalidOperationException(string.Format(ErrorMessages.TheAttributeTypeIsNotCorrect, attribute.Name, Constants.SchemaAttributeTypes.DateTime));
-                    }
+                    return GetSingularToken<DateTime>(jArr, attribute, token);
                 case Constants.SchemaAttributeTypes.Integer:
-                    try
-                    {
-                        if (jArr != null)
-                        {
-                            return new SingularRepresentationAttribute<IEnumerable<int>>(attribute.Name, jArr.Values<int>());
-                        }
-
-                        return new SingularRepresentationAttribute<int>(attribute.Name, token.Value<int>());
-                    }
-                    catch (FormatException)
-                    {
-                        throw new InvalidOperationException(string.Format(ErrorMessages.TheAttributeTypeIsNotCorrect, attribute.Name, Constants.SchemaAttributeTypes.Integer));
-                    }
+                    return GetSingularToken<int>(jArr, attribute, token);
                 default:
                     throw new InvalidOperationException(string.Format(ErrorMessages.TheAttributeTypeIsNotSupported, attribute.Type));
+            }
+        }
+
+        private static RepresentationAttribute GetSingularToken<T>(JArray jArr, SchemaAttributeResponse attribute, JToken token)
+        {
+            try
+            {
+                if (jArr != null)
+                {
+                    return new SingularRepresentationAttribute<IEnumerable<T>>(attribute.Name, jArr.Values<T>());
+                }
+
+                return new SingularRepresentationAttribute<T>(attribute.Name, token.Value<T>());
+            }
+            catch (FormatException)
+            {
+                throw new InvalidOperationException(string.Format(ErrorMessages.TheAttributeTypeIsNotCorrect, attribute.Name, Constants.SchemaAttributeTypes.Integer));
             }
         }
     }
