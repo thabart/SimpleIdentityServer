@@ -1,0 +1,29 @@
+{
+  "version": "1.0.0-*",
+  "description": "SimpleIdentityServer.Scim.Db.InMemory Class Library",
+  "authors": [ "thierry habart" ],
+  "packOptions": {
+    "tags": [ "" ],
+    "licenseUrl": "",
+    "projectUrl": ""
+  },
+  "dependencies": {
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
+    "SimpleIdentityServer.Scim.Core": {
+      "target": "project"
+    }
+  },
+  "frameworks": {
+    "net46": { },
+    "netstandard1.6": {
+      "dependencies": {
+        "NETStandard.Library": "1.6.0"
+      },
+      "buildOptions": {
+        "define": [
+          "NETSTANDARD"
+        ]
+      }
+    }
+  }
+}

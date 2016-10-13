@@ -20,6 +20,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SimpleIdentityServer.Scim.Core;
+using SimpleIdentityServer.Scim.Db.InMemory;
 
 namespace SimpleIdentityServer.Scim.Startup
 {
@@ -40,6 +41,7 @@ namespace SimpleIdentityServer.Scim.Startup
         
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddInMemoryDb();
             services.AddScim();
             services.AddMvc();
         }

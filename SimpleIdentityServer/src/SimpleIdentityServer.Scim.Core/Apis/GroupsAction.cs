@@ -14,33 +14,27 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Scim.Core.Apis;
-using System;
 
-namespace SimpleIdentityServer.Scim.Startup.Controllers
+namespace SimpleIdentityServer.Scim.Core.Apis
 {
-    [Route(Constants.RoutePaths.GroupsController)]
-    public class GroupsController : Controller
+    public interface IGroupsAction
     {
-        private readonly IGroupsAction _groupsAction;
+        bool AddGroup(JObject jObj);
+    }
 
-        public GroupsController(IGroupsAction groupsAction)
+    internal class GroupsAction : IGroupsAction
+    {
+        private readonly IAddRepresentationAction _addRepresentationAction;
+
+        public GroupsAction(IAddRepresentationAction addRepresentationAction)
         {
-            _groupsAction = groupsAction;
+            _addRepresentationAction = addRepresentationAction;
         }
 
-        [HttpPost]
-        public void AddGroup([FromBody] JObject jObj)
+        public bool AddGroup(JObject jObj)
         {
-            if (jObj == null)
-            {
-                throw new ArgumentNullException(nameof(jObj));
-            }
-
-            _groupsAction.AddGroup(jObj);
-            return;
+            return _addRepresentationAction.Execute(jObj, Constants.SchemaUrns.Group);
         }
     }
 }

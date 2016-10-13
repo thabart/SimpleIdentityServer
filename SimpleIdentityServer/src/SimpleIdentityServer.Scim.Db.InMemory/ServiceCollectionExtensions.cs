@@ -15,26 +15,22 @@
 #endregion
 
 using Microsoft.Extensions.DependencyInjection;
-using SimpleIdentityServer.Scim.Core.Apis;
-using SimpleIdentityServer.Scim.Core.Parsers;
 using SimpleIdentityServer.Scim.Core.Stores;
+using SimpleIdentityServer.Scim.Db.InMemory.Stores;
 using System;
 
-namespace SimpleIdentityServer.Scim.Core
+namespace SimpleIdentityServer.Scim.Db.InMemory
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddScim(this IServiceCollection services)
+        public static IServiceCollection AddInMemoryDb(this IServiceCollection services)
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
-            services.AddTransient<ISchemaStore, SchemaStore>();
-            services.AddTransient<IRequestParser, RequestParser>();
-            services.AddTransient<IAddRepresentationAction, AddRepresentationAction>();
-            services.AddTransient<IGroupsAction, GroupsAction>();
+            services.AddTransient<IRepresentationStore, RepresentationStore>();
             return services;
         }
     }
