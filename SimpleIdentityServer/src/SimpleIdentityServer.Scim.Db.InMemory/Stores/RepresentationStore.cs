@@ -16,6 +16,7 @@
 
 using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Core.Stores;
+using System.Linq;
 
 namespace SimpleIdentityServer.Scim.Db.InMemory.Stores
 {
@@ -25,6 +26,11 @@ namespace SimpleIdentityServer.Scim.Db.InMemory.Stores
         {
             Storage.Instance().Representations.Add(representation);
             return true;
+        }
+
+        public Representation GetRepresentation(string id)
+        {
+            return Storage.Instance().Representations.FirstOrDefault(r => r.Id == id);
         }
     }
 }

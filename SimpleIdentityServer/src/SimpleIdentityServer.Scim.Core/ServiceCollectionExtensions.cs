@@ -35,6 +35,7 @@ namespace SimpleIdentityServer.Scim.Core
             services.AddTransient<IRequestParser, RequestParser>();
             services.AddTransient<IResponseParser, ResponseParser>();
             services.AddTransient<IAddRepresentationAction, AddRepresentationAction>();
+            services.AddTransient<IGetRepresentationAction, GetRepresentationAction>();
             services.AddTransient<IGroupsAction, GroupsAction>();
             return services;
         }

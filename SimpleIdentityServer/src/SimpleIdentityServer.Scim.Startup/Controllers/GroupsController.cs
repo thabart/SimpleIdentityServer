@@ -41,5 +41,22 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
 
             return new CreatedResult("", _groupsAction.AddGroup(jObj));
         }
+
+        [HttpGet("{id}")]
+        public ActionResult GetGroup(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            var representation = _groupsAction.GetGroup(id);
+            if (representation == null)
+            {
+                return new NotFoundResult();
+            }
+
+            return new OkObjectResult(representation);
+        }
     }
 }

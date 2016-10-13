@@ -21,5 +21,7 @@ namespace SimpleIdentityServer.Scim.Core.Stores
     public interface IRepresentationStore
     {
         bool AddRepresentation(Representation representation);
+
+        Representation GetRepresentation(string id);
     }
 }

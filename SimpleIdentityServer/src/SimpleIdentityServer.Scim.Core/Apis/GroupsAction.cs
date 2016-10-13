@@ -21,20 +21,30 @@ namespace SimpleIdentityServer.Scim.Core.Apis
     public interface IGroupsAction
     {
         JObject AddGroup(JObject jObj);
+        JObject GetGroup(string id);
     }
 
     internal class GroupsAction : IGroupsAction
     {
         private readonly IAddRepresentationAction _addRepresentationAction;
+        private readonly IGetRepresentationAction _getRepresentationAction;
 
-        public GroupsAction(IAddRepresentationAction addRepresentationAction)
+        public GroupsAction(
+            IAddRepresentationAction addRepresentationAction,
+            IGetRepresentationAction getRepresentationAction)
         {
             _addRepresentationAction = addRepresentationAction;
+            _getRepresentationAction = getRepresentationAction;
         }
 
         public JObject AddGroup(JObject jObj)
         {
             return _addRepresentationAction.Execute(jObj, Constants.SchemaUrns.Group, "Group");
+        }
+
+        public JObject GetGroup(string id)
+        {
+            return _getRepresentationAction.Execute(id, Constants.SchemaUrns.Group, "Group");
         }
     }
 }
