@@ -19,7 +19,7 @@ using SimpleIdentityServer.Scim.Core.Stores;
 
 namespace SimpleIdentityServer.Scim.Startup.Controllers
 {
-    [Route(Constants.RoutePaths.GroupsController)]
+    [Route(Constants.RoutePaths.SchemasController)]
     public class SchemasController : Controller
     {
         private readonly ISchemaStore _schemaStore;

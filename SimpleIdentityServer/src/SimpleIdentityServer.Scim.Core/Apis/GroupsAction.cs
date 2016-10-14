@@ -39,12 +39,12 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 
         public JObject AddGroup(JObject jObj)
         {
-            return _addRepresentationAction.Execute(jObj, Constants.SchemaUrns.Group, "Group");
+            return _addRepresentationAction.Execute(jObj, Constants.SchemaUrns.Group, Constants.ResourceTypes.Group);
         }
 
         public JObject GetGroup(string id)
         {
-            return _getRepresentationAction.Execute(id, Constants.SchemaUrns.Group, "Group");
+            return _getRepresentationAction.Execute(id, Constants.SchemaUrns.Group, Constants.ResourceTypes.Group);
         }
     }
 }

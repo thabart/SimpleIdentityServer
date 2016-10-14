@@ -27,6 +27,15 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 {
     public interface IResponseParser
     {
+        /// <summary>
+        /// Parse the representation into JSON and returns the result.
+        /// </summary>
+        /// <exception cref="System.ArgumentNullException">Thrown when parameters are null empty</exception>
+        /// <exception cref="System.InvalidOperationException">Thrown when error occured during the parsing.</exception>
+        /// <param name="representation">Representation that will be parsed.</param>
+        /// <param name="schemaId">Identifier of the schema.</param>
+        /// <param name="resourceType">Type of resource.</param>
+        /// <returns>JSON representation</returns>
         JObject Parse(Representation representation, string id, string resourceType);
     }
 
@@ -39,16 +48,25 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             _schemasStore = schemaStore;
         }
 
-        public JObject Parse(Representation representation, string id, string resourceType)
+        /// <summary>
+        /// Parse the representation into JSON and returns the result.
+        /// </summary>
+        /// <exception cref="System.ArgumentNullException">Thrown when parameters are null empty</exception>
+        /// <exception cref="System.InvalidOperationException">Thrown when error occured during the parsing.</exception>
+        /// <param name="representation">Representation that will be parsed.</param>
+        /// <param name="schemaId">Identifier of the schema.</param>
+        /// <param name="resourceType">Type of resource.</param>
+        /// <returns>JSON representation</returns>
+        public JObject Parse(Representation representation, string schemaId, string resourceType)
         {
             if (representation == null)
             {
                 throw new ArgumentNullException(nameof(representation));
             }
 
-            if (string.IsNullOrWhiteSpace(id))
+            if (string.IsNullOrWhiteSpace(schemaId))
             {
-                throw new ArgumentNullException(nameof(id));
+                throw new ArgumentNullException(nameof(schemaId));
             }
 
             if (string.IsNullOrWhiteSpace(resourceType))
@@ -56,10 +74,10 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 throw new ArgumentNullException(nameof(resourceType));
             }
 
-            var schema = _schemasStore.Get(id);
+            var schema = _schemasStore.Get(schemaId);
             if (schema == null)
             {
-                throw new InvalidOperationException(string.Format(ErrorMessages.TheSchemaDoesntExist, id));
+                throw new InvalidOperationException(string.Format(ErrorMessages.TheSchemaDoesntExist, schemaId));
             }
 
             JObject result = new JObject();

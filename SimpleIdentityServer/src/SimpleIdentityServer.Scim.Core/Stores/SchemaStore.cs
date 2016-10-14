@@ -341,7 +341,8 @@ namespace SimpleIdentityServer.Scim.Core.Stores
                      "A Boolean value indicating the User's"+
                                     "administrative status.",
                      uniqueness: string.Empty,
-                     caseExact : false),
+                     caseExact : false, 
+                     type: Constants.SchemaAttributeTypes.Boolean),
                 // password
                 SchemaAttribute.CreateAttribute(
                      Constants.UserResourceResponseNames.Password,

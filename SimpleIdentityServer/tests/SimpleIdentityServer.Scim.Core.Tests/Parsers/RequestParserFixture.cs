@@ -17,6 +17,7 @@
 using Moq;
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Scim.Core.DTOs;
+using SimpleIdentityServer.Scim.Core.Errors;
 using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Core.Parsers;
 using SimpleIdentityServer.Scim.Core.Stores;
@@ -29,7 +30,6 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
     public class RequestParserFixture
     {
         private Mock<ISchemaStore> _schemaStoreStub;
-
         private IRequestParser _requestParser;
 
         [Fact]
@@ -53,6 +53,46 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
 
             // ACT & ASSERT
             var exception = Assert.Throws<InvalidOperationException>(() => _requestParser.Parse(new JObject(), "invalid"));
+        }
+
+        [Fact]
+        public void When_Expecting_Array_But_Its_Singular_Then_Exception_Is_Thrown()
+        {
+            var schemaStore = new SchemaStore();
+            // ARRANGE
+            InitializeFakeObjects();
+            _schemaStoreStub.Setup(s => s.Get(It.IsAny<string>()))
+                .Returns(schemaStore.Get(Constants.SchemaUrns.Group));
+            var jObj = JObject.Parse(@"{'schemas': ['urn:ietf:params:scim:schemas:core:2.0:Group']," +
+            "'displayName': 'Group A'," +
+            "'members': 'members'" +
+           "}");
+
+            // ACT & ASSERT
+            var exception = Assert.Throws<InvalidOperationException>(() => _requestParser.Parse(jObj, Constants.SchemaUrns.Group));
+            Assert.True(exception.Message == string.Format(ErrorMessages.TheAttributeIsNotAnArray, "members"));
+        }
+        
+        [Fact]
+        public void When_Expecting_Boolean_But_Its_A_String_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            var schemaStore = new SchemaStore();
+            InitializeFakeObjects();
+            _schemaStoreStub.Setup(s => s.Get(It.IsAny<string>()))
+                .Returns(schemaStore.Get(Constants.SchemaUrns.User));
+            var jObj = JObject.Parse(@"{'schemas': ['urn:ietf:params:scim:schemas:core:2.0:User']," +
+            "'externalId': 'bjensen'," +
+            "'userName': 'bjensen'," +
+            "'name': {" +
+                "'familyName': 'Jensen'," +
+                "'givenName':'Barbara'" +
+            "},"+
+            "'active': 'active'}");
+
+            // ACT & ASSERT
+            var exception = Assert.Throws<InvalidOperationException>(() => _requestParser.Parse(jObj, Constants.SchemaUrns.User));
+            Assert.True(exception.Message == string.Format(ErrorMessages.TheAttributeTypeIsNotCorrect, "active", Constants.SchemaAttributeTypes.Boolean));
         }
 
         [Fact]

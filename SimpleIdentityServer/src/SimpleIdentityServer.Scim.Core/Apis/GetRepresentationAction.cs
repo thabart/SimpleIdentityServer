@@ -23,6 +23,14 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 {
     public interface IGetRepresentationAction
     {
+        /// <summary>
+        /// Get the representation.
+        /// </summary>
+        /// <exception cref="System.ArgumentNullException">Thrown when a parameter is null or empty</exception>
+        /// <param name="identifier">Identifier of the representation.</param>
+        /// <param name="schemaId">Identifier of the schema.</param>
+        /// <param name="resourceType">Type of resource.</param>
+        /// <returns>Representation or null if it doesn't exist.</returns>
         JObject Execute(string identifier, string schemaId, string resourceType);
     }
 
@@ -39,9 +47,17 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             _responseParser = responseParser;
         }
 
+        /// <summary>
+        /// Get the representation.
+        /// </summary>
+        /// <exception cref="System.ArgumentNullException">Thrown when a parameter is null or empty</exception>
+        /// <param name="identifier">Identifier of the representation.</param>
+        /// <param name="schemaId">Identifier of the schema.</param>
+        /// <param name="resourceType">Type of resource.</param>
+        /// <returns>Representation or null if it doesn't exist.</returns>
         public JObject Execute(string identifier, string schemaId, string resourceType)
         {
-            if (identifier == null)
+            if (string.IsNullOrWhiteSpace(identifier))
             {
                 throw new ArgumentNullException(nameof(identifier));
             }

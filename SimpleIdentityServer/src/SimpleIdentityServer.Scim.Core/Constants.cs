@@ -262,6 +262,12 @@ namespace SimpleIdentityServer.Scim.Core
             public const string User = "urn:ietf:params:scim:schemas:core:2.0:User";
         }
 
+        public static class ResourceTypes
+        {
+            public const string Group = "Group";
+            public const string User = "User";
+        }
+
         #endregion
     }
 }

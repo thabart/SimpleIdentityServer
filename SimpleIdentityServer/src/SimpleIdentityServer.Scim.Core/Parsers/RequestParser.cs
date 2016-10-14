@@ -174,7 +174,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             }
             catch (FormatException)
             {
-                throw new InvalidOperationException(string.Format(ErrorMessages.TheAttributeTypeIsNotCorrect, attribute.Name, Constants.SchemaAttributeTypes.Integer));
+                throw new InvalidOperationException(string.Format(ErrorMessages.TheAttributeTypeIsNotCorrect, attribute.Name, attribute.Type));
             }
         }
     }
