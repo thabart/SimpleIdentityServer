@@ -91,6 +91,12 @@ namespace SimpleIdentityServer.Scim.Core
             public const string Meta = "meta";
         }
 
+        public static class ErrorResponseNames
+        {
+            public const string Detail = "detail";
+            public const string Status = "status";
+        }
+
         public static class IdentifiedScimResourceNames
         {
             public const string Id = "id";
@@ -260,6 +266,7 @@ namespace SimpleIdentityServer.Scim.Core
         {
             public const string Group = "urn:ietf:params:scim:schemas:core:2.0:Group";
             public const string User = "urn:ietf:params:scim:schemas:core:2.0:User";
+            public const string Error = "urn:ietf:params:scim:api:messages:2.0:Error";
         }
 
         public static class ResourceTypes

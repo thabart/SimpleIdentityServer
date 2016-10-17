@@ -32,5 +32,18 @@ namespace SimpleIdentityServer.Scim.Db.InMemory.Stores
         {
             return Storage.Instance().Representations.FirstOrDefault(r => r.Id == id);
         }
+
+        public bool RemoveRepresentation(Representation representation)
+        {
+            var representations = Storage.Instance().Representations;
+            var record = representations.FirstOrDefault(r => r.Id == representation.Id);
+            if (record == null)
+            {
+                return false;
+            }
+
+            representations.Remove(record);
+            return true;
+        }
     }
 }

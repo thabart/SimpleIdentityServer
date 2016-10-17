@@ -14,16 +14,21 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Scim.Core.Models;
+using System.Collections.Generic;
+using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.Scim.Core.Stores
+namespace SimpleIdentityServer.Scim.Core.DTOs
 {
-    public interface IRepresentationStore
+    [DataContract]
+    public class ErrorResponse
     {
-        bool AddRepresentation(Representation representation);
+        [DataMember(Name = Constants.ScimResourceNames.Schemas)]
+        public IEnumerable<string> Schemas { get; set; }
 
-        Representation GetRepresentation(string id);
+        [DataMember(Name = Constants.ErrorResponseNames.Detail)]
+        public string Detail { get; set; }
 
-        bool RemoveRepresentation(Representation representation);
+        [DataMember(Name = Constants.ErrorResponseNames.Status)]
+        public int Status { get; set; }
     }
 }

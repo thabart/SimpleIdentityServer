@@ -58,5 +58,24 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
 
             return new OkObjectResult(representation);
         }
+
+        [HttpDelete("{id}")]
+        public ActionResult DeleteGroup(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            var action = _groupsAction.RemoveGroup(id);
+            if (action.Content != null)
+            {
+                var result = new ObjectResult(action.Content);
+                result.StatusCode = action.StatusCode;
+                return result;
+            }
+
+            return new StatusCodeResult(action.StatusCode.Value);
+        }
     }
 }

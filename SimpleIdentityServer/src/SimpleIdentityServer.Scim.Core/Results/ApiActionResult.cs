@@ -14,16 +14,11 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Scim.Core.Models;
-
-namespace SimpleIdentityServer.Scim.Core.Stores
+namespace SimpleIdentityServer.Scim.Core.Results
 {
-    public interface IRepresentationStore
+    public class ApiActionResult
     {
-        bool AddRepresentation(Representation representation);
-
-        Representation GetRepresentation(string id);
-
-        bool RemoveRepresentation(Representation representation);
+        public int? StatusCode { get; set; }
+        public object Content { get; set; }
     }
 }

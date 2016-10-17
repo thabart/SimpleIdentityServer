@@ -16,6 +16,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Scim.Core.Apis;
+using SimpleIdentityServer.Scim.Core.Factories;
 using SimpleIdentityServer.Scim.Core.Parsers;
 using SimpleIdentityServer.Scim.Core.Stores;
 using System;
@@ -36,7 +37,9 @@ namespace SimpleIdentityServer.Scim.Core
             services.AddTransient<IResponseParser, ResponseParser>();
             services.AddTransient<IAddRepresentationAction, AddRepresentationAction>();
             services.AddTransient<IGetRepresentationAction, GetRepresentationAction>();
+            services.AddTransient<IDeleteRepresentationAction, DeleteRepresentationAction>();
             services.AddTransient<IGroupsAction, GroupsAction>();
+            services.AddTransient<IApiResponseFactory, ApiResponseFactory>();
             return services;
         }
     }

@@ -15,6 +15,7 @@
 #endregion
 
 using Newtonsoft.Json.Linq;
+using SimpleIdentityServer.Scim.Core.Results;
 
 namespace SimpleIdentityServer.Scim.Core.Apis
 {
@@ -22,19 +23,23 @@ namespace SimpleIdentityServer.Scim.Core.Apis
     {
         JObject AddGroup(JObject jObj);
         JObject GetGroup(string id);
+        ApiActionResult RemoveGroup(string id);
     }
 
     internal class GroupsAction : IGroupsAction
     {
         private readonly IAddRepresentationAction _addRepresentationAction;
         private readonly IGetRepresentationAction _getRepresentationAction;
+        private readonly IDeleteRepresentationAction _deleteRepresentationAction;
 
         public GroupsAction(
             IAddRepresentationAction addRepresentationAction,
-            IGetRepresentationAction getRepresentationAction)
+            IGetRepresentationAction getRepresentationAction,
+            IDeleteRepresentationAction deleteRepresentationAction)
         {
             _addRepresentationAction = addRepresentationAction;
             _getRepresentationAction = getRepresentationAction;
+            _deleteRepresentationAction = deleteRepresentationAction;
         }
 
         public JObject AddGroup(JObject jObj)
@@ -45,6 +50,11 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         public JObject GetGroup(string id)
         {
             return _getRepresentationAction.Execute(id, Constants.SchemaUrns.Group, Constants.ResourceTypes.Group);
+        }
+
+        public ApiActionResult RemoveGroup(string id)
+        {
+            return _deleteRepresentationAction.Execute(id);
         }
     }
 }
