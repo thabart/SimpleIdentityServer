@@ -25,6 +25,15 @@ namespace SimpleIdentityServer.Scim.Core.Factories
         ApiActionResult CreateEmptyResult(
                HttpStatusCode status);
 
+        ApiActionResult CreateResultWithContent(
+            HttpStatusCode status,
+            object content);
+
+        ApiActionResult CreateResultWithContent(
+            HttpStatusCode status,
+            object content,
+            string location);
+
         ApiActionResult CreateError(
             HttpStatusCode statusCode,
             string content);
@@ -39,6 +48,27 @@ namespace SimpleIdentityServer.Scim.Core.Factories
             {
                 StatusCode = (int)status
             };
+        }
+
+        public ApiActionResult CreateResultWithContent(
+            HttpStatusCode status,
+            object content)
+        {
+            return new ApiActionResult
+            {
+                StatusCode = (int)status,
+                Content = content
+            };
+        }
+
+        public ApiActionResult CreateResultWithContent(
+            HttpStatusCode status,
+            object content,
+            string location)
+        {
+            var result = CreateResultWithContent(status, content);
+            result.Location = location;
+            return result;
         }
 
         public ApiActionResult CreateError(

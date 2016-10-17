@@ -19,6 +19,7 @@ using SimpleIdentityServer.Scim.Core.DTOs;
 using SimpleIdentityServer.Scim.Core.Errors;
 using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Core.Stores;
+using SimpleIdentityServer.Scim.Core.Validators;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,19 +34,34 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         /// <exception cref="System.ArgumentNullException">Thrown when parameters are null empty</exception>
         /// <exception cref="System.InvalidOperationException">Thrown when error occured during the parsing.</exception>
         /// <param name="representation">Representation that will be parsed.</param>
+        /// <param name="locationPattern">Location pattern of the representation.</param>
         /// <param name="schemaId">Identifier of the schema.</param>
         /// <param name="resourceType">Type of resource.</param>
         /// <returns>JSON representation</returns>
-        JObject Parse(Representation representation, string id, string resourceType);
+        Response Parse(
+            Representation representation, 
+            string locationPattern, 
+            string schemaId, 
+            string resourceType);
+    }
+
+    public class Response
+    {
+        public JObject Object { get; set; }
+        public string Location { get; set; }
     }
 
     internal class ResponseParser : IResponseParser
     {
         private readonly ISchemaStore _schemasStore;
+        private readonly IParametersValidator _parametersValidator;
 
-        public ResponseParser(ISchemaStore schemaStore)
+        public ResponseParser(
+            ISchemaStore schemaStore,
+            IParametersValidator parametersValidator)
         {
             _schemasStore = schemaStore;
+            _parametersValidator = parametersValidator;
         }
 
         /// <summary>
@@ -54,14 +70,27 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         /// <exception cref="System.ArgumentNullException">Thrown when parameters are null empty</exception>
         /// <exception cref="System.InvalidOperationException">Thrown when error occured during the parsing.</exception>
         /// <param name="representation">Representation that will be parsed.</param>
+        /// <param name="locationPattern">Location pattern of the representation.</param>
         /// <param name="schemaId">Identifier of the schema.</param>
         /// <param name="resourceType">Type of resource.</param>
         /// <returns>JSON representation</returns>
-        public JObject Parse(Representation representation, string schemaId, string resourceType)
+        public Response Parse(
+            Representation representation, 
+            string locationPattern, 
+            string schemaId, 
+            string resourceType)
         {
             if (representation == null)
             {
                 throw new ArgumentNullException(nameof(representation));
+            }
+
+            _parametersValidator.ValidateLocationPattern(locationPattern);
+            if (!locationPattern.Contains("{id}"))
+            {
+                throw new ArgumentException(
+                    string.Format(ErrorMessages.TheLocationPatternIsNotCorrect,
+                    locationPattern));
             }
 
             if (string.IsNullOrWhiteSpace(schemaId))
@@ -101,11 +130,16 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 }
             }
 
-            SetCommonAttributes(result, representation, resourceType);
-            return result;
+            var location = locationPattern.Replace("{id}", representation.Id);
+            SetCommonAttributes(result, location, representation, resourceType);
+            return new Response
+            {
+                Location = location,
+                Object = result
+            };
         }
 
-        private static void SetCommonAttributes(JObject jObj, Representation representation, string resourceType)
+        private static void SetCommonAttributes(JObject jObj, string location, Representation representation, string resourceType)
         {
             // TODO : set the location.
             jObj.Add(new JProperty(Constants.IdentifiedScimResourceNames.Id, representation.Id));
@@ -115,7 +149,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 new JProperty(Constants.MetaResponseNames.Created, representation.Created),
                 new JProperty(Constants.MetaResponseNames.LastModified, representation.LastModified),
                 new JProperty(Constants.MetaResponseNames.Version, representation.Version),
-                new JProperty(Constants.MetaResponseNames.Location, "somewhere")
+                new JProperty(Constants.MetaResponseNames.Location, location)
             };
             jObj[Constants.ScimResourceNames.Meta] = new JObject(properties);
         }

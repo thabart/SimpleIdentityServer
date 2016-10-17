@@ -16,15 +16,19 @@
 
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Scim.Core.Errors;
+using SimpleIdentityServer.Scim.Core.Factories;
 using SimpleIdentityServer.Scim.Core.Parsers;
+using SimpleIdentityServer.Scim.Core.Results;
 using SimpleIdentityServer.Scim.Core.Stores;
+using SimpleIdentityServer.Scim.Core.Validators;
 using System;
+using System.Net;
 
 namespace SimpleIdentityServer.Scim.Core.Apis
 {
     public interface IAddRepresentationAction
     {
-        JObject Execute(JObject jObj, string id, string resourceType);
+        ApiActionResult Execute(JObject jObj, string locationPattern, string schemaId, string resourceType);
     }
 
     internal class AddRepresentationAction : IAddRepresentationAction
@@ -32,31 +36,42 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         private readonly IRequestParser _requestParser;
         private readonly IRepresentationStore _representationStore;
         private readonly IResponseParser _responseParser;
+        private readonly IApiResponseFactory _apiResponseFactory;
+        private readonly IParametersValidator _parametersValidator;
 
-        public AddRepresentationAction(IRequestParser requestParser, IRepresentationStore representationStore, IResponseParser responseParser)
+        public AddRepresentationAction(
+            IRequestParser requestParser, 
+            IRepresentationStore representationStore, 
+            IResponseParser responseParser,
+            IApiResponseFactory apiResponseFactory,
+            IParametersValidator parametersValidator)
         {
             _requestParser = requestParser;
             _representationStore = representationStore;
             _responseParser = responseParser;
+            _apiResponseFactory = apiResponseFactory;
+            _parametersValidator = parametersValidator;
         }
 
-        public JObject Execute(JObject jObj, string id, string resourceType)
+        public ApiActionResult Execute(JObject jObj, string locationPattern, string schemaId, string resourceType)
         {
             if (jObj == null)
             {
                 throw new ArgumentNullException(nameof(jObj));
             }
 
-            if (string.IsNullOrWhiteSpace(id))
+            _parametersValidator.ValidateLocationPattern(locationPattern);
+            if (string.IsNullOrWhiteSpace(schemaId))
             {
-                throw new ArgumentNullException(nameof(id));
+                throw new ArgumentNullException(nameof(schemaId));
             }
 
             // 1. Parse the request
-            var result = _requestParser.Parse(jObj, id);
+            var result = _requestParser.Parse(jObj, schemaId);
             if (result == null)
             {
-                throw new InvalidOperationException(ErrorMessages.TheRequestCannotBeParsedForSomeReason);
+                return _apiResponseFactory.CreateError(HttpStatusCode.InternalServerError,
+                    ErrorMessages.TheRequestCannotBeParsedForSomeReason);
             }
 
             // 2. Set parameters
@@ -68,8 +83,9 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             // 2. Save the request
             _representationStore.AddRepresentation(result);
 
-            // 3. Transform the representation into response
-            return _responseParser.Parse(result, id, resourceType);
+            // 3. Transform and returns the representation.
+            var response = _responseParser.Parse(result, locationPattern, schemaId, resourceType);
+            return _apiResponseFactory.CreateResultWithContent(HttpStatusCode.Created, response.Object, response.Location);
         }
     }
 }

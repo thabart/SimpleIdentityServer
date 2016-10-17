@@ -16,10 +16,15 @@
 
 using Moq;
 using SimpleIdentityServer.Scim.Core.Apis;
+using SimpleIdentityServer.Scim.Core.Errors;
+using SimpleIdentityServer.Scim.Core.Factories;
 using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Core.Parsers;
+using SimpleIdentityServer.Scim.Core.Results;
 using SimpleIdentityServer.Scim.Core.Stores;
+using SimpleIdentityServer.Scim.Core.Validators;
 using System;
+using System.Net;
 using Xunit;
 
 namespace SimpleIdentityServer.Scim.Core.Tests.Apis
@@ -28,6 +33,8 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
     {
         private Mock<IRepresentationStore> _representationStoreStub;
         private Mock<IResponseParser> _responseParserStub;
+        private Mock<IApiResponseFactory> _apiResponseFactoryStub;
+        private Mock<IParametersValidator> _parametersValidatorStub;
         private IGetRepresentationAction _getRepresentationAction;
 
         [Fact]
@@ -37,54 +44,73 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            Assert.Throws<ArgumentNullException>(() => _getRepresentationAction.Execute(null, null, null));
-            Assert.Throws<ArgumentNullException>(() => _getRepresentationAction.Execute(string.Empty, null, null));
-            Assert.Throws<ArgumentNullException>(() => _getRepresentationAction.Execute("identifier", null, null));
-            Assert.Throws<ArgumentNullException>(() => _getRepresentationAction.Execute("identifier", string.Empty, null));
-            Assert.Throws<ArgumentNullException>(() => _getRepresentationAction.Execute("identifier", "schema_identifier", null));
-            Assert.Throws<ArgumentNullException>(() => _getRepresentationAction.Execute("identifier", "schema_identifier", string.Empty));
+            Assert.Throws<ArgumentNullException>(() => _getRepresentationAction.Execute(null, "http://location/{id}", null, null));
+            Assert.Throws<ArgumentNullException>(() => _getRepresentationAction.Execute(string.Empty, "http://location/{id}", null, null));
+            Assert.Throws<ArgumentNullException>(() => _getRepresentationAction.Execute("identifier", "http://location/{id}", null, null));
+            Assert.Throws<ArgumentNullException>(() => _getRepresentationAction.Execute("identifier", "http://location/{id}", string.Empty, null));
+            Assert.Throws<ArgumentNullException>(() => _getRepresentationAction.Execute("identifier", "http://location/{id}", "schema_identifier", null));
+            Assert.Throws<ArgumentNullException>(() => _getRepresentationAction.Execute("identifier", "http://location/{id}", "schema_identifier", string.Empty));
         }
 
         [Fact]
-        public void When_Representation_Doesnt_Exist_Then_Null_Is_Returned()
+        public void When_Representation_Doesnt_Exist_Then_404_Code_Is_Returned()
         {
+            const string identifier = "identifier";
             // ARRANGE
             InitializeFakeObjects();
             _representationStoreStub.Setup(r => r.GetRepresentation(It.IsAny<string>()))
                 .Returns((Representation)null);
+            _apiResponseFactoryStub.Setup(f => f.CreateError(HttpStatusCode.NotFound, string.Format(ErrorMessages.TheResourceDoesntExist, identifier)))
+                .Returns(new ApiActionResult
+                {
+                    StatusCode = (int)HttpStatusCode.NotFound
+                });
+                
 
             // ACT
-            var representation = _getRepresentationAction.Execute("identifier", "schema_identifier", "schema_type");
+            var result = _getRepresentationAction.Execute("identifier", "http://location/{id}", "schema_identifier", "schema_type");
 
             // ASSERT
-            Assert.Null(representation);
+            Assert.NotNull(result);
+            Assert.True(result.StatusCode == (int)HttpStatusCode.NotFound);
         }
 
         [Fact]
-        public void When_Representation_Exists_The_Representation_Is_Parsed()
+        public void When_Representation_Exists_The_Representation_Is_Parsed_And_200_Is_Returned()
         {
             // ARRANGE
             var representation = new Representation();
             const string schemaId = "schema";
             const string schemaType = "type";
+            const string locationPattern = "http://location/{id}";
             InitializeFakeObjects();
             _representationStoreStub.Setup(r => r.GetRepresentation(It.IsAny<string>()))
                 .Returns(representation);
+            _responseParserStub.Setup(r => r.Parse(representation, locationPattern, schemaId, schemaType))
+                .Returns(new Response
+                {
+                    Location = locationPattern
+                });
 
             // ACT
-            _getRepresentationAction.Execute("identifier", schemaId, schemaType);
+            _getRepresentationAction.Execute("identifier", locationPattern, schemaId, schemaType);
 
             // ASSERT
-            _responseParserStub.Verify(r => r.Parse(representation, schemaId, schemaType));
+            _responseParserStub.Verify(r => r.Parse(representation, locationPattern, schemaId, schemaType));
+            _apiResponseFactoryStub.Verify(a => a.CreateResultWithContent(HttpStatusCode.OK, It.IsAny<object>(), It.IsAny<string>()));
         }
 
         private void InitializeFakeObjects()
         {
             _representationStoreStub = new Mock<IRepresentationStore>();
             _responseParserStub = new Mock<IResponseParser>();
+            _apiResponseFactoryStub = new Mock<IApiResponseFactory>();
+            _parametersValidatorStub = new Mock<IParametersValidator>();
             _getRepresentationAction = new GetRepresentationAction(
                 _representationStoreStub.Object,
-                _responseParserStub.Object);
+                _responseParserStub.Object,
+                _apiResponseFactoryStub.Object,
+                _parametersValidatorStub.Object);
         }
     }
 }

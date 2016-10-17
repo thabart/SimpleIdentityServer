@@ -21,6 +21,7 @@ using SimpleIdentityServer.Scim.Core.Errors;
 using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Core.Parsers;
 using SimpleIdentityServer.Scim.Core.Stores;
+using SimpleIdentityServer.Scim.Core.Validators;
 using System;
 using Xunit;
 
@@ -29,6 +30,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
     public class ResponseParserFixture
     {
         private Mock<ISchemaStore> _schemaStoreStub;
+        private Mock<IParametersValidator> _parametersValidatorStub;
         private IRequestParser _requestParser;
         private IResponseParser _responseParser;
 
@@ -39,11 +41,13 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            Assert.Throws<ArgumentNullException>(() => _responseParser.Parse(null, null, null));
-            Assert.Throws<ArgumentNullException>(() => _responseParser.Parse(new Representation(), null, null));
-            Assert.Throws<ArgumentNullException>(() => _responseParser.Parse(new Representation(), string.Empty, null));
-            Assert.Throws<ArgumentNullException>(() => _responseParser.Parse(new Representation(), "schema_id", null));
-            Assert.Throws<ArgumentNullException>(() => _responseParser.Parse(new Representation(), "schema_id", string.Empty));
+            Assert.Throws<ArgumentNullException>(() => _responseParser.Parse(null, "http://localhost/{id}", null, null));
+            Assert.Throws<ArgumentNullException>(() => _responseParser.Parse(new Representation(), "http://localhost/{id}", null, null));
+            Assert.Throws<ArgumentNullException>(() => _responseParser.Parse(new Representation(), "http://localhost/{id}", null, null));
+            Assert.Throws<ArgumentNullException>(() => _responseParser.Parse(new Representation(), "http://localhost/{id}", null, null));
+            Assert.Throws<ArgumentNullException>(() => _responseParser.Parse(new Representation(), "http://localhost/{id}", string.Empty, null));
+            Assert.Throws<ArgumentNullException>(() => _responseParser.Parse(new Representation(), "http://localhost/{id}", "schemaid", null));
+            Assert.Throws<ArgumentNullException>(() => _responseParser.Parse(new Representation(), "http://localhost/{id}", "schemaid", string.Empty));
         }
 
         [Fact]
@@ -56,7 +60,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
                 .Returns(() => (SchemaResponse)null);
 
             // ACT & ASSERT
-            var exception = Assert.Throws<InvalidOperationException>(() => _responseParser.Parse(new Representation(), "schema_id", "schema_type"));
+            var exception = Assert.Throws<InvalidOperationException>(() => _responseParser.Parse(new Representation(), "http://localhost/{id}", "schema_id", "schema_type"));
             Assert.True(exception.Message == string.Format(ErrorMessages.TheSchemaDoesntExist, schemaId));
         }
         
@@ -79,7 +83,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             var result = _requestParser.Parse(jObj, Constants.SchemaUrns.Group);
 
             // ACT
-            var response = _responseParser.Parse(result, Constants.SchemaUrns.Group, "Group");
+            var response = _responseParser.Parse(result, "http://localhost/{id}", Constants.SchemaUrns.Group, "Group");
 
             // ASSERT
             Assert.NotNull(response);
@@ -88,8 +92,9 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
         private void InitializeFakeObjects()
         {
             _schemaStoreStub = new Mock<ISchemaStore>();
+            _parametersValidatorStub = new Mock<IParametersValidator>();
             _requestParser = new RequestParser(_schemaStoreStub.Object);
-            _responseParser = new ResponseParser(_schemaStoreStub.Object);
+            _responseParser = new ResponseParser(_schemaStoreStub.Object, _parametersValidatorStub.Object);
         }
     }
 }

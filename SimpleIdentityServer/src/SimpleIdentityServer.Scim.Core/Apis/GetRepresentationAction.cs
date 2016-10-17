@@ -14,10 +14,14 @@
 // limitations under the License.C:\Projects\SimpleIdentityServer\SimpleIdentityServer\src\SimpleIdentityServer.Scim.Core\DTOs\
 #endregion
 
-using Newtonsoft.Json.Linq;
+using SimpleIdentityServer.Scim.Core.Errors;
+using SimpleIdentityServer.Scim.Core.Factories;
 using SimpleIdentityServer.Scim.Core.Parsers;
+using SimpleIdentityServer.Scim.Core.Results;
 using SimpleIdentityServer.Scim.Core.Stores;
+using SimpleIdentityServer.Scim.Core.Validators;
 using System;
+using System.Net;
 
 namespace SimpleIdentityServer.Scim.Core.Apis
 {
@@ -28,23 +32,30 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         /// </summary>
         /// <exception cref="System.ArgumentNullException">Thrown when a parameter is null or empty</exception>
         /// <param name="identifier">Identifier of the representation.</param>
+        /// <param name="locationPattern">Location pattern of the representation.</param>
         /// <param name="schemaId">Identifier of the schema.</param>
         /// <param name="resourceType">Type of resource.</param>
         /// <returns>Representation or null if it doesn't exist.</returns>
-        JObject Execute(string identifier, string schemaId, string resourceType);
+        ApiActionResult Execute(string identifier, string locationPattern, string schemaId, string resourceType);
     }
 
     internal class GetRepresentationAction : IGetRepresentationAction
     {
         private readonly IRepresentationStore _representationStore;
         private readonly IResponseParser _responseParser;
+        private readonly IApiResponseFactory _apiResponseFactory;
+        private readonly IParametersValidator _parametersValidator;
 
         public GetRepresentationAction(
             IRepresentationStore representationStore,
-            IResponseParser responseParser)
+            IResponseParser responseParser,
+            IApiResponseFactory apiResponseFactory,
+            IParametersValidator parametersValidator)
         {
             _representationStore = representationStore;
             _responseParser = responseParser;
+            _apiResponseFactory = apiResponseFactory;
+            _parametersValidator = parametersValidator;
         }
 
         /// <summary>
@@ -52,16 +63,19 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         /// </summary>
         /// <exception cref="System.ArgumentNullException">Thrown when a parameter is null or empty</exception>
         /// <param name="identifier">Identifier of the representation.</param>
+        /// <param name="locationPattern">Location pattern of the representation.</param>
         /// <param name="schemaId">Identifier of the schema.</param>
         /// <param name="resourceType">Type of resource.</param>
         /// <returns>Representation or null if it doesn't exist.</returns>
-        public JObject Execute(string identifier, string schemaId, string resourceType)
+        public ApiActionResult Execute(string identifier, string locationPattern, string schemaId, string resourceType)
         {
+            // 1. Check parameters.
             if (string.IsNullOrWhiteSpace(identifier))
             {
                 throw new ArgumentNullException(nameof(identifier));
             }
 
+            _parametersValidator.ValidateLocationPattern(locationPattern);
             if (string.IsNullOrWhiteSpace(schemaId))
             {
                 throw new ArgumentNullException(nameof(schemaId));
@@ -72,13 +86,18 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                 throw new ArgumentNullException(nameof(resourceType));
             }
 
+            // 2. Check representation exists.
             var representation = _representationStore.GetRepresentation(identifier);
             if (representation == null)
             {
-                return null;
+                return _apiResponseFactory.CreateError(
+                    HttpStatusCode.NotFound,
+                    string.Format(ErrorMessages.TheResourceDoesntExist, identifier));
             }
 
-            return _responseParser.Parse(representation, schemaId, resourceType);
+            // 3. Parse the result and returns the representation.
+            var result = _responseParser.Parse(representation, locationPattern, schemaId, resourceType);
+            return _apiResponseFactory.CreateResultWithContent(HttpStatusCode.OK, result.Object, result.Location);
         }
     }
 }
