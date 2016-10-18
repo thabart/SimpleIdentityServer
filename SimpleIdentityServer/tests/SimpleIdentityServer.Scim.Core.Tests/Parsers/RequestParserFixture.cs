@@ -16,7 +16,6 @@
 
 using Moq;
 using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Scim.Core.DTOs;
 using SimpleIdentityServer.Scim.Core.Errors;
 using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Core.Parsers;

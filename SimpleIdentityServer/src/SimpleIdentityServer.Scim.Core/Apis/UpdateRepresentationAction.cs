@@ -110,22 +110,38 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             var complexTarget = target as ComplexRepresentationAttribute;
             if (complexTarget != null)
             {
-                if (!complexTarget.SchemaAttribute.MultiValued)
+                var schemaAttribute = complexTarget.SchemaAttribute;
+                if (schemaAttribute.MultiValued)
                 {
-                    foreach (var complexTargetAttr in complexTarget.Values)
+                    complexTarget = (complexTarget.Values.First() as ComplexRepresentationAttribute);
+                    complexSource = (complexSource.Values.First() as ComplexRepresentationAttribute);
+                    if (schemaAttribute.Mutability == Constants.SchemaAttributeMutability.Immutable)
                     {
-                        var complexSourceAttr = complexSource.Values.FirstOrDefault(v => v.SchemaAttribute.Name == complexTargetAttr.SchemaAttribute.Name);
-                        if (complexSourceAttr == null)
+                        if (complexTarget.Values.Count() != complexTarget.Values.Count())
                         {
-                            complexSource.Values = complexSource.Values.Concat(new[] { complexTargetAttr });
-                            continue;
-                        }
-
-                        if (!UpdateAttribute(complexSourceAttr, complexTargetAttr))
-                        {
+                            // TODO : returns error 400 && scimetype.
                             return false;
                         }
                     }
+
+                    complexSource.Values = complexTarget.Values;
+                    return true;
+                }
+
+                foreach (var complexTargetAttr in complexTarget.Values)
+                {
+                    var complexSourceAttr = complexSource.Values.FirstOrDefault(v => v.SchemaAttribute.Name == complexTargetAttr.SchemaAttribute.Name);
+                    // If doesn't exist then value is assigned
+                    if (complexSourceAttr != null)
+                    {
+                        complexSource.Values = complexSource.Values.Concat(new[] { complexTargetAttr });
+                        continue;
+                    }
+
+                   if (!UpdateAttribute(complexSourceAttr, complexTargetAttr))
+                   {
+                       return false;
+                   }
                 }
 
                 return true;

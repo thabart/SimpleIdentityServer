@@ -137,15 +137,16 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 var values = new List<RepresentationAttribute>();
                 if (complexAttribute.MultiValued)
                 {
+                    var subRepresentation = new ComplexRepresentationAttribute(null);
+                    var subValues = new List<RepresentationAttribute>();
                     // 3.1 Contains an array
                     foreach (var subToken in token)
                     {
-                        var subRepresentation = new ComplexRepresentationAttribute(null);
-                        var subValues = new List<RepresentationAttribute>();
                         setRepresentationCallback(complexAttribute, subValues, subToken);
-                        subRepresentation.Values = subValues;
-                        values.Add(subRepresentation);
                     }
+
+                    subRepresentation.Values = subValues;
+                    values.Add(subRepresentation);
                 }
                 else
                 {
