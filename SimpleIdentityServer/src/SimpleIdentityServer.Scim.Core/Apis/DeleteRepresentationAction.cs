@@ -65,7 +65,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             // 1. Get the representation
             var representation = _representationStore.GetRepresentation(id);
 
-            // 2. If the representation doesn't exist then return false
+            // 2. If the representation doesn't exist then 404 is returned
             if (representation == null)
             {
                 return _apiResponseFactory.CreateError(

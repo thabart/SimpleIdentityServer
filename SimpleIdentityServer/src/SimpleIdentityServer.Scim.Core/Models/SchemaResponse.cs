@@ -18,7 +18,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using static SimpleIdentityServer.Scim.Core.Constants;
 
-namespace SimpleIdentityServer.Scim.Core.DTOs
+namespace SimpleIdentityServer.Scim.Core.Models
 {
     [DataContract]
     public class SchemaAttributeResponse
@@ -85,7 +85,7 @@ namespace SimpleIdentityServer.Scim.Core.DTOs
     {
         public ComplexSchemaAttributeResponse()
         {
-            Type = Constants.SchemaAttributeTypes.Complex;
+            Type = SchemaAttributeTypes.Complex;
         }
 
         /// <summary>

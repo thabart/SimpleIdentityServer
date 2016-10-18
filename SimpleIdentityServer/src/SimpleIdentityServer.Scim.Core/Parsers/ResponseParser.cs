@@ -15,7 +15,6 @@
 #endregion
 
 using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Scim.Core.DTOs;
 using SimpleIdentityServer.Scim.Core.Errors;
 using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Core.Stores;
@@ -121,7 +120,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                         continue;
                     }
                     
-                    var attr = representation.Attributes.FirstOrDefault(a => a.Type == attribute.Name);
+                    var attr = representation.Attributes.FirstOrDefault(a => a.SchemaAttribute.Name == attribute.Name);
                     var token = GetToken(attr, attribute);
                     if (token != null)
                     {
@@ -197,7 +196,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                         var obj = new JObject();
                         foreach(var subAttr in subComplex.Values)
                         {
-                            var att = complexAttribute.SubAttributes.FirstOrDefault(a => a.Name == subAttr.Type);
+                            var att = complexAttribute.SubAttributes.FirstOrDefault(a => a.Name == subAttr.SchemaAttribute.Name);
                             if (att == null)
                             {
                                 continue;
@@ -209,14 +208,14 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                         array.Add(obj);
                     }
 
-                    return new JProperty(complexRepresentation.Type, array);
+                    return new JProperty(complexRepresentation.SchemaAttribute.Name, array);
                 }
 
                 var properties = new List<JToken>();
                 // 2.2 Complex attribute
                 foreach(var subRepresentation in complexRepresentation.Values)
                 {
-                    var subAttribute = complexAttribute.SubAttributes.FirstOrDefault(a => a.Name == subRepresentation.Type);
+                    var subAttribute = complexAttribute.SubAttributes.FirstOrDefault(a => a.Name == subRepresentation.SchemaAttribute.Name);
                     if (subAttribute == null)
                     {
                         continue;
@@ -226,7 +225,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 }
 
                 var props = new JObject(properties);
-                return new JProperty(complexRepresentation.Type, props);
+                return new JProperty(complexRepresentation.SchemaAttribute.Name, props);
             }
             
             // 3. Create singular attribute
@@ -258,7 +257,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                     throw new InvalidOperationException(string.Format(ErrorMessages.TheAttributeTypeIsNotCorrect, attribute.Name, attribute.Type));
                 }
 
-                return new JProperty(enumSingularRepresentation.Type, enumSingularRepresentation.Value);
+                return new JProperty(enumSingularRepresentation.SchemaAttribute.Name, enumSingularRepresentation.Value);
             }
             else
             {
@@ -268,7 +267,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                     throw new InvalidOperationException(string.Format(ErrorMessages.TheAttributeTypeIsNotCorrect, attribute.Name, attribute.Type));
                 }
 
-                return new JProperty(singularRepresentation.Type, singularRepresentation.Value);
+                return new JProperty(singularRepresentation.SchemaAttribute.Name, singularRepresentation.Value);
             }
         }
     }

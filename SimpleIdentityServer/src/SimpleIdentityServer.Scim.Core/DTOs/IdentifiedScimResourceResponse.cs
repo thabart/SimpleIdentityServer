@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Scim.Core.Models;
 using System.Runtime.Serialization;
 
 namespace SimpleIdentityServer.Scim.Core.DTOs

@@ -15,7 +15,6 @@
 #endregion
 
 using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Scim.Core.DTOs;
 using SimpleIdentityServer.Scim.Core.Errors;
 using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Core.Stores;
@@ -26,7 +25,15 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 {
     public interface IRequestParser
     {
-        Representation Parse(JToken jObj, string id);
+        /// <summary>
+        /// Parse JSON and returns its representation.
+        /// </summary>
+        /// <exception cref="ArgumentNullException">Thrown when a parameter is null or empty.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when something goes wrong while trying to parse the JSON.</exception>
+        /// <param name="jObj">JSON</param>
+        /// <param name="schemaId">Schema identifier</param>
+        /// <returns>Representation</returns>
+        Representation Parse(JToken jObj, string schemaId);
     }
 
     internal class RequestParser : IRequestParser
@@ -38,22 +45,30 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             _schemasStore = schemaStore;
         }
 
-        public Representation Parse(JToken jObj, string id)
+        /// <summary>
+        /// Parse JSON and returns its representation.
+        /// </summary>
+        /// <exception cref="ArgumentNullException">Thrown when a parameter is null or empty.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when something goes wrong while trying to parse the JSON.</exception>
+        /// <param name="jObj">JSON</param>
+        /// <param name="schemaId">Schema identifier</param>
+        /// <returns>Representation</returns>
+        public Representation Parse(JToken jObj, string schemaId)
         {
             if (jObj == null)
             {
                 throw new ArgumentNullException(nameof(jObj));
             }
 
-            if (string.IsNullOrWhiteSpace(id))
+            if (string.IsNullOrWhiteSpace(schemaId))
             {
-                throw new ArgumentNullException(nameof(id));
+                throw new ArgumentNullException(nameof(schemaId));
             }
 
-            var schema = _schemasStore.Get(id);
+            var schema = _schemasStore.Get(schemaId);
             if (schema == null)
             {
-                throw new InvalidOperationException(string.Format(ErrorMessages.TheSchemaDoesntExist, id));
+                throw new InvalidOperationException(string.Format(ErrorMessages.TheSchemaDoesntExist, schemaId));
             }
 
             var representation = new Representation();
@@ -118,14 +133,14 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             var complexAttribute = attribute as ComplexSchemaAttributeResponse;
             if (complexAttribute != null)
             {
-                var representation = new ComplexRepresentationAttribute(complexAttribute.Name);
+                var representation = new ComplexRepresentationAttribute(complexAttribute);
                 var values = new List<RepresentationAttribute>();
                 if (complexAttribute.MultiValued)
                 {
                     // 3.1 Contains an array
                     foreach (var subToken in token)
                     {
-                        var subRepresentation = new ComplexRepresentationAttribute(string.Empty);
+                        var subRepresentation = new ComplexRepresentationAttribute(null);
                         var subValues = new List<RepresentationAttribute>();
                         setRepresentationCallback(complexAttribute, subValues, subToken);
                         subRepresentation.Values = subValues;
@@ -167,10 +182,10 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             {
                 if (jArr != null)
                 {
-                    return new SingularRepresentationAttribute<IEnumerable<T>>(attribute.Name, jArr.Values<T>());
+                    return new SingularRepresentationAttribute<IEnumerable<T>>(attribute, jArr.Values<T>());
                 }
 
-                return new SingularRepresentationAttribute<T>(attribute.Name, token.Value<T>());
+                return new SingularRepresentationAttribute<T>(attribute, token.Value<T>());
             }
             catch (FormatException)
             {

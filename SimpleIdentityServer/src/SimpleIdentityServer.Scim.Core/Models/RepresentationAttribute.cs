@@ -20,17 +20,17 @@ namespace SimpleIdentityServer.Scim.Core.Models
 {
     public class RepresentationAttribute
     {
-        public RepresentationAttribute(string type)
+        public RepresentationAttribute(SchemaAttributeResponse schemaAttribute)
         {
-            Type = type;
+            SchemaAttribute = schemaAttribute;
         }
 
-        public string Type { get; private set; }
+        public SchemaAttributeResponse SchemaAttribute { get; private set; }
     }
 
     public class SingularRepresentationAttribute<T> : RepresentationAttribute
     {
-        public SingularRepresentationAttribute(string type, T value): base(type)
+        public SingularRepresentationAttribute(SchemaAttributeResponse type, T value): base(type)
         {
             Value = value;
         }
@@ -40,7 +40,7 @@ namespace SimpleIdentityServer.Scim.Core.Models
 
     public class ComplexRepresentationAttribute : RepresentationAttribute
     {
-        public ComplexRepresentationAttribute(string type): base(type)
+        public ComplexRepresentationAttribute(SchemaAttributeResponse type): base(type)
         {
         }
 

@@ -18,7 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.Scim.Core.DTOs
+namespace SimpleIdentityServer.Scim.Core.Models
 {
     /// <summary>
     /// Parameters are listed here : https://tools.ietf.org/html/rfc7643#section-3.1

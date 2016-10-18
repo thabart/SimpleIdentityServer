@@ -16,6 +16,7 @@
 
 using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Scim.Core.DTOs;
+using SimpleIdentityServer.Scim.Core.Models;
 using System;
 
 namespace SimpleIdentityServer.Scim.Startup.Controllers

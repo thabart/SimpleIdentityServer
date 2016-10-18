@@ -70,6 +70,17 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
             return GetActionResult(result);
         }
 
+        [HttpPut]
+        public ActionResult UpdateGroup([FromBody] JObject jObj)
+        {
+            if (jObj == null)
+            {
+                throw new ArgumentNullException(nameof(jObj));
+            }
+
+            return null;
+        }
+
         private string GetLocationPattern()
         {
             return new Uri(new Uri(Request.GetAbsoluteUriWithVirtualPath()), Constants.RoutePaths.GroupsController).AbsoluteUri + "/{id}";

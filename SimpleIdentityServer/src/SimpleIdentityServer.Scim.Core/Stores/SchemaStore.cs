@@ -14,7 +14,7 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Scim.Core.DTOs;
+using SimpleIdentityServer.Scim.Core.Models;
 using System.Collections.Generic;
 using System.Linq;
 
