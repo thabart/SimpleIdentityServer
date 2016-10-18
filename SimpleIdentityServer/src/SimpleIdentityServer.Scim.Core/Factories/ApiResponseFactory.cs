@@ -37,10 +37,21 @@ namespace SimpleIdentityServer.Scim.Core.Factories
         ApiActionResult CreateError(
             HttpStatusCode statusCode,
             string content);
+
+        ApiActionResult CreateError(
+            HttpStatusCode status,
+            ErrorResponse error);
     }
 
     internal class ApiResponseFactory : IApiResponseFactory
     {
+        private readonly IErrorResponseFactory _errorResponseFactory;
+
+        public ApiResponseFactory(IErrorResponseFactory errorResponseFactory)
+        {
+            _errorResponseFactory = errorResponseFactory;
+        }
+
         public ApiActionResult CreateEmptyResult(
             HttpStatusCode status)
         {
@@ -78,15 +89,18 @@ namespace SimpleIdentityServer.Scim.Core.Factories
             return new ApiActionResult
             {
                 StatusCode = (int)status,
-                Content = new ErrorResponse
-                {
-                    Schemas = new string[]
-                    {
-                        Constants.SchemaUrns.Error
-                    },
-                    Detail = detail,
-                    Status = (int)status
-                }
+                Content = _errorResponseFactory.CreateError(detail, status)
+            };
+        }
+
+        public ApiActionResult CreateError(
+            HttpStatusCode status,
+            ErrorResponse error)
+        {
+            return new ApiActionResult
+            {
+                StatusCode = (int)status,
+                Content = error
             };
         }
     }

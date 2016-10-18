@@ -63,7 +63,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 
         public ApiActionResult UpdateGroup(string id, JObject jObj, string locationPattern)
         {
-            return _updateRepresentationAction.Execute(id, jObj, Constants.SchemaUrns.Group);
+            return _updateRepresentationAction.Execute(id, jObj, Constants.SchemaUrns.Group, locationPattern, Constants.ResourceTypes.Group);
         }
     }
 }

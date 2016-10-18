@@ -15,12 +15,14 @@
 #endregion
 
 using Newtonsoft.Json.Linq;
+using SimpleIdentityServer.Scim.Core.DTOs;
 using SimpleIdentityServer.Scim.Core.Errors;
 using SimpleIdentityServer.Scim.Core.Factories;
 using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Core.Parsers;
 using SimpleIdentityServer.Scim.Core.Results;
 using SimpleIdentityServer.Scim.Core.Stores;
+using SimpleIdentityServer.Scim.Core.Validators;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,7 +32,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 {
     public interface IUpdateRepresentationAction
     {
-        ApiActionResult Execute(string id, JObject jObj, string schemaId);
+        ApiActionResult Execute(string id, JObject jObj, string schemaId, string locationPattern, string resourceType);
     }
 
     internal class UpdateRepresentationAction : IUpdateRepresentationAction
@@ -38,18 +40,27 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         private readonly IRequestParser _requestParser;
         private readonly IRepresentationStore _representationStore;
         private readonly IApiResponseFactory _apiResponseFactory;
+        private readonly IResponseParser _responseParser;
+        private readonly IParametersValidator _parametersValidator;
+        private readonly IErrorResponseFactory _errorResponseFactory;
 
         public UpdateRepresentationAction(
             IRequestParser requestParser,
             IRepresentationStore representationStore,
-            IApiResponseFactory apiResponseFactory)
+            IApiResponseFactory apiResponseFactory,
+            IResponseParser responseParser,
+            IParametersValidator parametersValidator,
+            IErrorResponseFactory errorResponseFactory)
         {
             _requestParser = requestParser;
             _representationStore = representationStore;
             _apiResponseFactory = apiResponseFactory;
+            _responseParser = responseParser;
+            _parametersValidator = parametersValidator;
+            _errorResponseFactory = errorResponseFactory;
         }
 
-        public ApiActionResult Execute(string id, JObject jObj, string schemaId)
+        public ApiActionResult Execute(string id, JObject jObj, string schemaId, string locationPattern, string resourceType)
         {
             // 1. Check parameters.
             if (string.IsNullOrWhiteSpace(id))
@@ -67,45 +78,69 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                 throw new ArgumentNullException(nameof(schemaId));
             }
 
+            _parametersValidator.ValidateLocationPattern(locationPattern);
+            if(string.IsNullOrWhiteSpace(resourceType))
+            {
+                throw new ArgumentNullException(nameof(resourceType));
+            }
+
             // 2. Parse the request.
             var representation = _requestParser.Parse(jObj, schemaId);
             var record = _representationStore.GetRepresentation(id);
 
-            // 3. If the representation doesn't exist then 404 is returned
+            // 3. If the representation doesn't exist then 404 is returned.
             if (record == null)
             {
                 return _apiResponseFactory.CreateError(
                     HttpStatusCode.NotFound,
-                    string.Format(ErrorMessages.TheResourceDoesntExist, representation.Id));
+                    string.Format(ErrorMessages.TheResourceDoesntExist, id));
             }
 
             // 4. Update attributes.
-            UpdateRepresentation(record, representation);
+            ErrorResponse error;
+            if (!UpdateRepresentation(record, representation, out error))
+            {
+                return _apiResponseFactory.CreateError(HttpStatusCode.BadRequest, error);
+            }
 
-            return null;
+            // 5. Parse the new representation.
+            var response = _responseParser.Parse(record, locationPattern, schemaId, resourceType);
+            return _apiResponseFactory.CreateResultWithContent(HttpStatusCode.OK,
+                response.Object,
+                response.Location);
         }
 
-        private ApiActionResult UpdateRepresentation(Representation source, Representation target)
+        private bool UpdateRepresentation(Representation source, Representation target, out ErrorResponse error)
         {
-            foreach (var attribute in source.Attributes)
+            error = null;
+            if (source.Attributes == null)
             {
-                var schemaAttribute = attribute.SchemaAttribute;
-                var attr = target.Attributes.FirstOrDefault(r => r.SchemaAttribute.Name == schemaAttribute.Name);
-                // 4.1. If the value doesn't exist then values are applied.
-                if (attr == null)
+                source.Attributes = new List<RepresentationAttribute>();
+            }
+
+            foreach (var targetAttribute in target.Attributes)
+            {
+                var sourceAttribute = source.Attributes.FirstOrDefault(r => r.SchemaAttribute.Name == targetAttribute.SchemaAttribute.Name);
+                // 1. If the attributes don't exist then set them.
+                if (sourceAttribute == null)
                 {
-                    target.Attributes = target.Attributes.Concat(new[] { attribute });
+                    source.Attributes = source.Attributes.Concat(new[] { targetAttribute });
                     continue;
                 }
 
-                UpdateAttribute(attribute, attr);
+                // 2. Update the attribute
+                if (!UpdateAttribute(sourceAttribute, targetAttribute, out error))
+                {
+                    return false;
+                }
             }
 
-            return null;
+            return true;
         }
 
-        private bool UpdateAttribute(RepresentationAttribute source, RepresentationAttribute target)
+        private bool UpdateAttribute(RepresentationAttribute source, RepresentationAttribute target, out ErrorResponse error)
         {
+            error = null;
             var complexSource = source as ComplexRepresentationAttribute;
             var complexTarget = target as ComplexRepresentationAttribute;
             if (complexTarget != null)
@@ -117,9 +152,12 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                     complexSource = (complexSource.Values.First() as ComplexRepresentationAttribute);
                     if (schemaAttribute.Mutability == Constants.SchemaAttributeMutability.Immutable)
                     {
+                        // TODO : check the content.
                         if (complexTarget.Values.Count() != complexTarget.Values.Count())
                         {
-                            // TODO : returns error 400 && scimetype.
+                            error = _errorResponseFactory.CreateError(string.Format(ErrorMessages.TheImmutableAttributeCannotBeUpdated, schemaAttribute.Name),
+                                HttpStatusCode.BadRequest,
+                                Constants.ScimTypeValues.Mutability);
                             return false;
                         }
                     }
@@ -131,14 +169,13 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                 foreach (var complexTargetAttr in complexTarget.Values)
                 {
                     var complexSourceAttr = complexSource.Values.FirstOrDefault(v => v.SchemaAttribute.Name == complexTargetAttr.SchemaAttribute.Name);
-                    // If doesn't exist then value is assigned
                     if (complexSourceAttr != null)
                     {
                         complexSource.Values = complexSource.Values.Concat(new[] { complexTargetAttr });
                         continue;
                     }
 
-                   if (!UpdateAttribute(complexSourceAttr, complexTargetAttr))
+                   if (!UpdateAttribute(complexSourceAttr, complexTargetAttr, out error))
                    {
                        return false;
                    }
@@ -147,12 +184,13 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                 return true;
             }
             
-            // Returns HTTPS STATUS CODE 400 if immutable attributes are not the same.
             if (target.SchemaAttribute.Mutability == Constants.SchemaAttributeMutability.Immutable)
             {
                 if (!Equals(source, target))
                 {
-                    // TODO : returns error 400 && scimetype.
+                    error = _errorResponseFactory.CreateError(string.Format(ErrorMessages.TheImmutableAttributeCannotBeUpdated, complexTarget.SchemaAttribute.Name),
+                        HttpStatusCode.BadRequest,
+                        Constants.ScimTypeValues.Mutability);
                     return false;
                 }
             }

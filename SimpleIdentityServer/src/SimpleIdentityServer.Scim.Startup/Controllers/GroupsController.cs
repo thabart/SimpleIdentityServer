@@ -78,8 +78,8 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
                 throw new ArgumentNullException(nameof(jObj));
             }
 
-            _groupsAction.UpdateGroup(id, jObj, GetLocationPattern());
-            return null;
+            var result = _groupsAction.UpdateGroup(id, jObj, GetLocationPattern());
+            return GetActionResult(result);
         }
 
         private string GetLocationPattern()
@@ -97,7 +97,7 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
             if (result.Content != null)
             {
                 var res = new ObjectResult(result.Content);
-                result.StatusCode = result.StatusCode;
+                res.StatusCode = result.StatusCode;
                 return res;
             }
 

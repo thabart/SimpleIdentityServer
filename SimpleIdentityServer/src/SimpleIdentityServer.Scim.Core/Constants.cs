@@ -29,6 +29,11 @@ namespace SimpleIdentityServer.Scim.Core
             public const string Ref = "$ref";
         }
 
+        public static class ScimTypeValues
+        {
+            public const string Mutability = "mutability";
+        }
+
         public static class UserResourceResponseNames
         {
             public const string UserName = "userName";
@@ -95,6 +100,11 @@ namespace SimpleIdentityServer.Scim.Core
         {
             public const string Detail = "detail";
             public const string Status = "status";
+        }
+
+        public static class EnrichedErrorResponseNames
+        {
+            public const string ScimType = "scimType";
         }
 
         public static class IdentifiedScimResourceNames

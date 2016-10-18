@@ -31,4 +31,11 @@ namespace SimpleIdentityServer.Scim.Core.DTOs
         [DataMember(Name = Constants.ErrorResponseNames.Status)]
         public int Status { get; set; }
     }
+
+    [DataContract]
+    public class EnrichedErrorResponse : ErrorResponse
+    {
+        [DataMember(Name = Constants.EnrichedErrorResponseNames.ScimType)]
+        public string ScimType { get; set; }
+    }
 }
