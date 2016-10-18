@@ -35,7 +35,7 @@ namespace SimpleIdentityServer.Scim.Core.Models
             Value = value;
         }
 
-        public T Value { get; private set; }
+        public T Value { get; set; }
     }
 
     public class ComplexRepresentationAttribute : RepresentationAttribute

@@ -24,6 +24,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         ApiActionResult AddGroup(JObject jObj, string locationPattern);
         ApiActionResult GetGroup(string id, string locationPattern);
         ApiActionResult RemoveGroup(string id);
+        ApiActionResult UpdateGroup(string id, JObject jObj, string locationPattern);
     }
 
     internal class GroupsAction : IGroupsAction
@@ -31,15 +32,18 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         private readonly IAddRepresentationAction _addRepresentationAction;
         private readonly IGetRepresentationAction _getRepresentationAction;
         private readonly IDeleteRepresentationAction _deleteRepresentationAction;
+        private readonly IUpdateRepresentationAction _updateRepresentationAction;
 
         public GroupsAction(
             IAddRepresentationAction addRepresentationAction,
             IGetRepresentationAction getRepresentationAction,
-            IDeleteRepresentationAction deleteRepresentationAction)
+            IDeleteRepresentationAction deleteRepresentationAction,
+            IUpdateRepresentationAction updateRepresentationAction)
         {
             _addRepresentationAction = addRepresentationAction;
             _getRepresentationAction = getRepresentationAction;
             _deleteRepresentationAction = deleteRepresentationAction;
+            _updateRepresentationAction = updateRepresentationAction;
         }
 
         public ApiActionResult AddGroup(JObject jObj, string locationPattern)
@@ -55,6 +59,11 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         public ApiActionResult RemoveGroup(string id)
         {
             return _deleteRepresentationAction.Execute(id);
+        }
+
+        public ApiActionResult UpdateGroup(string id, JObject jObj, string locationPattern)
+        {
+            return _updateRepresentationAction.Execute(id, jObj, Constants.SchemaUrns.Group);
         }
     }
 }

@@ -70,14 +70,15 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
             return GetActionResult(result);
         }
 
-        [HttpPut]
-        public ActionResult UpdateGroup([FromBody] JObject jObj)
+        [HttpPut("{id}")]
+        public ActionResult UpdateGroup(string id, [FromBody] JObject jObj)
         {
             if (jObj == null)
             {
                 throw new ArgumentNullException(nameof(jObj));
             }
 
+            _groupsAction.UpdateGroup(id, jObj, GetLocationPattern());
             return null;
         }
 
