@@ -30,5 +30,6 @@ namespace SimpleIdentityServer.Scim.Core.Errors
         public const string TheRepresentationCannotBeRemoved = "something goes wrong when trying to remove the resource";
         public const string TheLocationPatternIsNotCorrect = "the location pattern {0} is not correct";
         public const string TheImmutableAttributeCannotBeUpdated = "the immutable attribute {0} cannot be updated";
+        public const string TheRepresentationCannotBeUpdated = "the representation cannot be updated";
     }
 }

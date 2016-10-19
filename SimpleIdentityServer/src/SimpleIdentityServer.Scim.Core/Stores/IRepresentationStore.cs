@@ -25,5 +25,7 @@ namespace SimpleIdentityServer.Scim.Core.Stores
         Representation GetRepresentation(string id);
 
         bool RemoveRepresentation(Representation representation);
+
+        bool UpdateRepresentation(Representation representation);
     }
 }

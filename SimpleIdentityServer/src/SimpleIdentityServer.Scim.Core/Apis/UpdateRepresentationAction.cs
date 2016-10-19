@@ -103,7 +103,15 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                 return _apiResponseFactory.CreateError(HttpStatusCode.BadRequest, error);
             }
 
-            // 5. Parse the new representation.
+            // 5. Store the new representation.
+            record.LastModified = DateTime.UtcNow;
+            if (!_representationStore.UpdateRepresentation(record))
+            {
+                return _apiResponseFactory.CreateError(HttpStatusCode.InternalServerError,
+                   ErrorMessages.TheRepresentationCannotBeUpdated);
+            }
+
+            // 6. Parse the new representation.
             var response = _responseParser.Parse(record, locationPattern, schemaId, resourceType);
             return _apiResponseFactory.CreateResultWithContent(HttpStatusCode.OK,
                 response.Object,
@@ -188,7 +196,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             {
                 if (!Equals(source, target))
                 {
-                    error = _errorResponseFactory.CreateError(string.Format(ErrorMessages.TheImmutableAttributeCannotBeUpdated, complexTarget.SchemaAttribute.Name),
+                    error = _errorResponseFactory.CreateError(string.Format(ErrorMessages.TheImmutableAttributeCannotBeUpdated, target.SchemaAttribute.Name),
                         HttpStatusCode.BadRequest,
                         Constants.ScimTypeValues.Mutability);
                     return false;

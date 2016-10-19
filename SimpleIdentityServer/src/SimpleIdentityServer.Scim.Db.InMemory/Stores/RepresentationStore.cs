@@ -17,6 +17,7 @@
 using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Core.Stores;
 using System.Linq;
+using System;
 
 namespace SimpleIdentityServer.Scim.Db.InMemory.Stores
 {
@@ -43,6 +44,14 @@ namespace SimpleIdentityServer.Scim.Db.InMemory.Stores
             }
 
             representations.Remove(record);
+            return true;
+        }
+
+        public bool UpdateRepresentation(Representation representation)
+        {
+            var representations = Storage.Instance().Representations;
+            representations.Remove(representations.First(r => r.Id == representation.Id));
+            representations.Add(representation);
             return true;
         }
     }
