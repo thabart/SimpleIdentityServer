@@ -32,7 +32,7 @@ namespace SimpleIdentityServer.Scim.Core.Factories
             return new ErrorResponse
             {
                 Detail = detail,
-                Schemas = new [] { Constants.SchemaUrns.Error },
+                Schemas = new [] { Constants.Messages.Error },
                 Status = (int)status
             };
         }
@@ -42,7 +42,7 @@ namespace SimpleIdentityServer.Scim.Core.Factories
             return new EnrichedErrorResponse
             {
                 Detail = detail,
-                Schemas = new[] { Constants.SchemaUrns.Error },
+                Schemas = new[] { Constants.Messages.Error },
                 Status = (int)status,
                 ScimType = scimType
             };

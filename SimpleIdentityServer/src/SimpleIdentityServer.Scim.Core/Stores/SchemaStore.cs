@@ -22,8 +22,8 @@ namespace SimpleIdentityServer.Scim.Core.Stores
 {
     public interface ISchemaStore
     {
-        IEnumerable<SchemaResponse> GetAll();
-        SchemaResponse Get(string id);
+        IEnumerable<SchemaResponse> GetSchemas();
+        SchemaResponse GetSchema(string id);
     }
 
     internal class SchemaStore : ISchemaStore
@@ -259,7 +259,7 @@ namespace SimpleIdentityServer.Scim.Core.Stores
 
         private static SchemaResponse UserSchema = new SchemaResponse
         {
-            Id = "urn:ietf:params:scim:schemas:core:2.0:User",
+            Id = Constants.SchemaUrns.User,
             Name = "User",
             Description = "User Account",
             Attributes = CommonAttributes.Concat(new SchemaAttributeResponse[]
@@ -412,7 +412,7 @@ namespace SimpleIdentityServer.Scim.Core.Stores
             Meta = new MetaResponse
             {
                 ResourceType = "Schema",
-                Location = "urn:ietf:params:scim:schemas:core:2.0:User"
+                Location = Constants.SchemaUrns.User
             }
         };
 
@@ -442,7 +442,7 @@ namespace SimpleIdentityServer.Scim.Core.Stores
             Meta = new MetaResponse
             {
                 ResourceType = "Schema",
-                Location = "urn:ietf:params:scim:schemas:core:2.0:Group"
+                Location = Constants.SchemaUrns.Group
             }
         };
 
@@ -456,12 +456,12 @@ namespace SimpleIdentityServer.Scim.Core.Stores
 
         #region Public methods
 
-        public IEnumerable<SchemaResponse> GetAll()
+        public IEnumerable<SchemaResponse> GetSchemas()
         {
             return _schemas;
         }
 
-        public SchemaResponse Get(string id)
+        public SchemaResponse GetSchema(string id)
         {
             return _schemas.FirstOrDefault(s => s.Id == id);
         }

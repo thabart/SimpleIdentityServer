@@ -16,7 +16,6 @@
 
 using Moq;
 using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Scim.Core.DTOs;
 using SimpleIdentityServer.Scim.Core.Errors;
 using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Core.Parsers;
@@ -27,12 +26,12 @@ using Xunit;
 
 namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
 {
-    public class ResponseParserFixture
+    public class RepresentationResponseParserFixture
     {
         private Mock<ISchemaStore> _schemaStoreStub;
         private Mock<IParametersValidator> _parametersValidatorStub;
-        private IRequestParser _requestParser;
-        private IResponseParser _responseParser;
+        private IRepresentationRequestParser _requestParser;
+        private IRepresentationResponseParser _responseParser;
 
         [Fact]
         public void When_Null_Or_Empty_Parameters_Are_Parsed_Then_Exceptions_Are_Thrown()
@@ -56,7 +55,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             // ARRANGE
             const string schemaId = "schema_id";
             InitializeFakeObjects();
-            _schemaStoreStub.Setup(s => s.Get(It.IsAny<string>()))
+            _schemaStoreStub.Setup(s => s.GetSchema(It.IsAny<string>()))
                 .Returns(() => (SchemaResponse)null);
 
             // ACT & ASSERT
@@ -70,8 +69,8 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             var schemaStore = new SchemaStore();
             // ARRANGE
             InitializeFakeObjects();
-            _schemaStoreStub.Setup(s => s.Get(It.IsAny<string>()))
-                .Returns(schemaStore.Get(Constants.SchemaUrns.Group));
+            _schemaStoreStub.Setup(s => s.GetSchema(It.IsAny<string>()))
+                .Returns(schemaStore.GetSchema(Constants.SchemaUrns.Group));
             var jObj = JObject.Parse(@"{'schemas': ['urn:ietf:params:scim:schemas:core:2.0:Group']," +
             "'displayName': 'Group A'," +
             "'members': [" +
@@ -93,8 +92,8 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
         {
             _schemaStoreStub = new Mock<ISchemaStore>();
             _parametersValidatorStub = new Mock<IParametersValidator>();
-            _requestParser = new RequestParser(_schemaStoreStub.Object);
-            _responseParser = new ResponseParser(_schemaStoreStub.Object, _parametersValidatorStub.Object);
+            _requestParser = new RepresentationRequestParser(_schemaStoreStub.Object);
+            _responseParser = new RepresentationResponseParser(_schemaStoreStub.Object, _parametersValidatorStub.Object);
         }
     }
 }

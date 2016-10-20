@@ -23,7 +23,7 @@ using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Scim.Core.Parsers
 {
-    public interface IRequestParser
+    public interface IRepresentationRequestParser
     {
         /// <summary>
         /// Parse JSON and returns its representation.
@@ -36,11 +36,11 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         Representation Parse(JToken jObj, string schemaId);
     }
 
-    internal class RequestParser : IRequestParser
+    internal class RepresentationRequestParser : IRepresentationRequestParser
     {
         private readonly ISchemaStore _schemasStore;
 
-        public RequestParser(ISchemaStore schemaStore)
+        public RepresentationRequestParser(ISchemaStore schemaStore)
         {
             _schemasStore = schemaStore;
         }
@@ -65,7 +65,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 throw new ArgumentNullException(nameof(schemaId));
             }
 
-            var schema = _schemasStore.Get(schemaId);
+            var schema = _schemasStore.GetSchema(schemaId);
             if (schema == null)
             {
                 throw new InvalidOperationException(string.Format(ErrorMessages.TheSchemaDoesntExist, schemaId));

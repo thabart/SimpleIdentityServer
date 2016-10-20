@@ -37,18 +37,18 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 
     internal class UpdateRepresentationAction : IUpdateRepresentationAction
     {
-        private readonly IRequestParser _requestParser;
+        private readonly IRepresentationRequestParser _requestParser;
         private readonly IRepresentationStore _representationStore;
         private readonly IApiResponseFactory _apiResponseFactory;
-        private readonly IResponseParser _responseParser;
+        private readonly IRepresentationResponseParser _responseParser;
         private readonly IParametersValidator _parametersValidator;
         private readonly IErrorResponseFactory _errorResponseFactory;
 
         public UpdateRepresentationAction(
-            IRequestParser requestParser,
+            IRepresentationRequestParser requestParser,
             IRepresentationStore representationStore,
             IApiResponseFactory apiResponseFactory,
-            IResponseParser responseParser,
+            IRepresentationResponseParser responseParser,
             IParametersValidator parametersValidator,
             IErrorResponseFactory errorResponseFactory)
         {

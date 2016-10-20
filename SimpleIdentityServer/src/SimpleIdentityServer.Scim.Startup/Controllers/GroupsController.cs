@@ -82,6 +82,23 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
             return GetActionResult(result);
         }
 
+        [HttpPatch("{id}")]
+        public ActionResult PatchGroup(string id, [FromBody] JObject jObj)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            if (jObj == null)
+            {
+                throw new ArgumentNullException(nameof(jObj));
+            }
+
+            _groupsAction.PatchGroup(id, jObj);
+            return null;
+        }
+
         private string GetLocationPattern()
         {
             return new Uri(new Uri(Request.GetAbsoluteUriWithVirtualPath()), Constants.RoutePaths.GroupsController).AbsoluteUri + "/{id}";

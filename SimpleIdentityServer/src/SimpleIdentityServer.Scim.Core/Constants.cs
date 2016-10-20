@@ -96,6 +96,18 @@ namespace SimpleIdentityServer.Scim.Core
             public const string Meta = "meta";
         }
 
+        public static class PatchOperationsRequestNames
+        {
+            public const string Operations = "Operations";
+        }
+
+        public static class PatchOperationRequestNames
+        {
+            public const string Operation = "op";
+            public const string Path = "path";
+            public const string Value = "value";
+        }
+
         public static class ErrorResponseNames
         {
             public const string Detail = "detail";
@@ -276,7 +288,12 @@ namespace SimpleIdentityServer.Scim.Core
         {
             public const string Group = "urn:ietf:params:scim:schemas:core:2.0:Group";
             public const string User = "urn:ietf:params:scim:schemas:core:2.0:User";
+        }
+
+        public static class Messages
+        {
             public const string Error = "urn:ietf:params:scim:api:messages:2.0:Error";
+            public const string PatchOp = "urn:ietf:params:scim:api:messages:2.0:PatchOp";
         }
 
         public static class ResourceTypes

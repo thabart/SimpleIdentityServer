@@ -25,7 +25,7 @@ using System.Linq;
 
 namespace SimpleIdentityServer.Scim.Core.Parsers
 {
-    public interface IResponseParser
+    public interface IRepresentationResponseParser
     {
         /// <summary>
         /// Parse the representation into JSON and returns the result.
@@ -50,12 +50,12 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         public string Location { get; set; }
     }
 
-    internal class ResponseParser : IResponseParser
+    internal class RepresentationResponseParser : IRepresentationResponseParser
     {
         private readonly ISchemaStore _schemasStore;
         private readonly IParametersValidator _parametersValidator;
 
-        public ResponseParser(
+        public RepresentationResponseParser(
             ISchemaStore schemaStore,
             IParametersValidator parametersValidator)
         {
@@ -102,7 +102,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 throw new ArgumentNullException(nameof(resourceType));
             }
 
-            var schema = _schemasStore.Get(schemaId);
+            var schema = _schemasStore.GetSchema(schemaId);
             if (schema == null)
             {
                 throw new InvalidOperationException(string.Format(ErrorMessages.TheSchemaDoesntExist, schemaId));

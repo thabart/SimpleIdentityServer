@@ -32,13 +32,13 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
         [HttpGet("{id}")]
         public ActionResult Get(string id)
         {
-            return null;
+            return new OkObjectResult(_schemaStore.GetSchema(id));
         }
 
         [HttpGet]
         public ActionResult All()
         {
-            return new OkObjectResult(_schemaStore.GetAll());
+            return new OkObjectResult(_schemaStore.GetSchemas());
         }
     }
 }

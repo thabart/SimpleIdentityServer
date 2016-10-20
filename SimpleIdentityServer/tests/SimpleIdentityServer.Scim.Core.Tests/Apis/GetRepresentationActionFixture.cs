@@ -32,7 +32,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
     public class GetRepresentationActionFixture
     {
         private Mock<IRepresentationStore> _representationStoreStub;
-        private Mock<IResponseParser> _responseParserStub;
+        private Mock<IRepresentationResponseParser> _responseParserStub;
         private Mock<IApiResponseFactory> _apiResponseFactoryStub;
         private Mock<IParametersValidator> _parametersValidatorStub;
         private IGetRepresentationAction _getRepresentationAction;
@@ -103,7 +103,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
         private void InitializeFakeObjects()
         {
             _representationStoreStub = new Mock<IRepresentationStore>();
-            _responseParserStub = new Mock<IResponseParser>();
+            _responseParserStub = new Mock<IRepresentationResponseParser>();
             _apiResponseFactoryStub = new Mock<IApiResponseFactory>();
             _parametersValidatorStub = new Mock<IParametersValidator>();
             _getRepresentationAction = new GetRepresentationAction(

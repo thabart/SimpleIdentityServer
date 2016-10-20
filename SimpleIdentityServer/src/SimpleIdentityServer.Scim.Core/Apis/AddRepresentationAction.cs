@@ -33,16 +33,16 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 
     internal class AddRepresentationAction : IAddRepresentationAction
     {
-        private readonly IRequestParser _requestParser;
+        private readonly IRepresentationRequestParser _requestParser;
         private readonly IRepresentationStore _representationStore;
-        private readonly IResponseParser _responseParser;
+        private readonly IRepresentationResponseParser _responseParser;
         private readonly IApiResponseFactory _apiResponseFactory;
         private readonly IParametersValidator _parametersValidator;
 
         public AddRepresentationAction(
-            IRequestParser requestParser, 
+            IRepresentationRequestParser requestParser, 
             IRepresentationStore representationStore, 
-            IResponseParser responseParser,
+            IRepresentationResponseParser responseParser,
             IApiResponseFactory apiResponseFactory,
             IParametersValidator parametersValidator)
         {

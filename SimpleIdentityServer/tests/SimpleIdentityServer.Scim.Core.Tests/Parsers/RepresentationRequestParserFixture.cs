@@ -26,10 +26,10 @@ using Xunit;
 
 namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
 {
-    public class RequestParserFixture
+    public class RepresentationRequestParserFixture
     {
         private Mock<ISchemaStore> _schemaStoreStub;
-        private IRequestParser _requestParser;
+        private IRepresentationRequestParser _requestParser;
 
         [Fact]
         public void When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
@@ -47,7 +47,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
         {
             // ARRANGE
             InitializeFakeObjects();
-            _schemaStoreStub.Setup(s => s.Get(It.IsAny<string>()))
+            _schemaStoreStub.Setup(s => s.GetSchema(It.IsAny<string>()))
                 .Returns((SchemaResponse)null);
 
             // ACT & ASSERT
@@ -60,8 +60,8 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             var schemaStore = new SchemaStore();
             // ARRANGE
             InitializeFakeObjects();
-            _schemaStoreStub.Setup(s => s.Get(It.IsAny<string>()))
-                .Returns(schemaStore.Get(Constants.SchemaUrns.Group));
+            _schemaStoreStub.Setup(s => s.GetSchema(It.IsAny<string>()))
+                .Returns(schemaStore.GetSchema(Constants.SchemaUrns.Group));
             var jObj = JObject.Parse(@"{'schemas': ['urn:ietf:params:scim:schemas:core:2.0:Group']," +
             "'displayName': 'Group A'," +
             "'members': 'members'" +
@@ -78,8 +78,8 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             // ARRANGE
             var schemaStore = new SchemaStore();
             InitializeFakeObjects();
-            _schemaStoreStub.Setup(s => s.Get(It.IsAny<string>()))
-                .Returns(schemaStore.Get(Constants.SchemaUrns.User));
+            _schemaStoreStub.Setup(s => s.GetSchema(It.IsAny<string>()))
+                .Returns(schemaStore.GetSchema(Constants.SchemaUrns.User));
             var jObj = JObject.Parse(@"{'schemas': ['urn:ietf:params:scim:schemas:core:2.0:User']," +
             "'externalId': 'bjensen'," +
             "'userName': 'bjensen'," +
@@ -100,8 +100,8 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             var schemaStore = new SchemaStore();
             // ARRANGE
             InitializeFakeObjects();
-            _schemaStoreStub.Setup(s => s.Get(It.IsAny<string>()))
-                .Returns(schemaStore.Get(Constants.SchemaUrns.Group));
+            _schemaStoreStub.Setup(s => s.GetSchema(It.IsAny<string>()))
+                .Returns(schemaStore.GetSchema(Constants.SchemaUrns.Group));
             var jObj = JObject.Parse(@"{'schemas': ['urn:ietf:params:scim:schemas:core:2.0:Group'],"+
             "'displayName': 'Group A',"+
             "'members': ["+
@@ -137,8 +137,8 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             var schemaStore = new SchemaStore();
             // ARRANGE
             InitializeFakeObjects();
-            _schemaStoreStub.Setup(s => s.Get(It.IsAny<string>()))
-                .Returns(schemaStore.Get(Constants.SchemaUrns.Group));
+            _schemaStoreStub.Setup(s => s.GetSchema(It.IsAny<string>()))
+                .Returns(schemaStore.GetSchema(Constants.SchemaUrns.Group));
             var jObj = JObject.Parse(@"{'schemas': ['urn:ietf:params:scim:schemas:core:2.0:Group']," +
             "'displayName': 'Group A'," +
             "'members': [" +
@@ -183,8 +183,8 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             var schemaStore = new SchemaStore();
             // ARRANGE
             InitializeFakeObjects();
-            _schemaStoreStub.Setup(s => s.Get(It.IsAny<string>()))
-                .Returns(schemaStore.Get(Constants.SchemaUrns.User));
+            _schemaStoreStub.Setup(s => s.GetSchema(It.IsAny<string>()))
+                .Returns(schemaStore.GetSchema(Constants.SchemaUrns.User));
             var jObj = JObject.Parse(@"{'schemas': ['urn:ietf:params:scim:schemas:core:2.0:User']," +
             "'externalId': 'bjensen'," +
             "'userName': 'bjensen'," +
@@ -205,7 +205,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
         private void InitializeFakeObjects()
         {
             _schemaStoreStub = new Mock<ISchemaStore>();
-            _requestParser = new RequestParser(_schemaStoreStub.Object);
+            _requestParser = new RepresentationRequestParser(_schemaStoreStub.Object);
         }
     }
 }
