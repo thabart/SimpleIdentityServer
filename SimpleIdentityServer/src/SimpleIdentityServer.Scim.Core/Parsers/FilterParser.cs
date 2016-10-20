@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -61,11 +62,37 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         public string Name { get; set; }
         public AttributePath Next { get; set; }
         public Filter ValueFilter { get; set; }
+
+        public string Evaluate(JToken jObj)
+        {
+            var token = jObj.SelectToken(Name);
+            if (token == null)
+            {
+                return null;
+            }
+
+            if (Next != null)
+            {
+                return Next.Evaluate(token);
+            }
+
+            return token.ToString();
+        }
     }
 
     public class AttributeExpression : Expression
     {
         public AttributePath Path { get; set; }
+
+        public override string Evaluate(JToken jObj)
+        {
+            if (jObj == null)
+            {
+                throw new ArgumentNullException(nameof(jObj));
+            }
+
+            return Path.Evaluate(jObj);
+        }
     }
 
     public class CompAttributeExpression : Expression
@@ -73,6 +100,11 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         public AttributePath Path { get; set; }
         public ComparisonOperators Operator { get; set; }
         public string Value { get; set; }
+
+        public override string Evaluate(JToken jObj)
+        {
+            return null;
+        }
     }
     
     public class LogicalExpression : Expression
@@ -80,18 +112,25 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         public Expression AttributeLeft {  get; set; }
         public Expression AttributeRight { get; set; }
         public LogicalOperators Operator { get; set; }
+
+        public override string Evaluate(JToken jObj)
+        {
+            return null;
+        }
     }
 
-    public class Expression
+    public abstract class Expression
     {
+        public abstract string Evaluate(JToken jObj);
     }
 
     public class Filter
     {
         public Expression Expression { get; set; }
 
-        public void Evaluate()
+        public string Evaluate(JObject jObj)
         {
+            return Expression.Evaluate(jObj);
         }
     }
 

@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Scim.Core.Parsers;
 using System;
 using Xunit;
@@ -41,8 +42,11 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             // ARRANGE
             InitializeFakeObjects();
 
+            // { name : 'coucou'}
+            var jObj = JObject.Parse("{name: { firstName: 'thierry' }}");
+
             // ACT 
-            var result = _filterParser.Parse("name");
+            var result = _filterParser.Parse("name.firstName");
 
             // ASSERT
             Assert.NotNull(result);
@@ -52,6 +56,9 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             Assert.NotNull(attr);
             Assert.NotNull(attr.Path);
             Assert.True(attr.Path.Name == "name");
+
+            var ev = filter.Evaluate(jObj);
+            string s = "";
         }
 
         [Fact]
