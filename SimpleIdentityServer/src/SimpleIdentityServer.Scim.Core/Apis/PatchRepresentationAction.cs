@@ -15,9 +15,16 @@
 #endregion
 
 using Newtonsoft.Json.Linq;
+using SimpleIdentityServer.Scim.Core.Errors;
+using SimpleIdentityServer.Scim.Core.Factories;
+using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Core.Parsers;
 using SimpleIdentityServer.Scim.Core.Results;
+using SimpleIdentityServer.Scim.Core.Stores;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 
 namespace SimpleIdentityServer.Scim.Core.Apis
 {
@@ -29,10 +36,17 @@ namespace SimpleIdentityServer.Scim.Core.Apis
     internal class PatchRepresentationAction : IPatchRepresentationAction
     {
         private readonly IPatchRequestParser _patchRequestParser;
+        private readonly IRepresentationStore _representationStore;
+        private readonly IApiResponseFactory _apiResponseFactory;
 
-        public PatchRepresentationAction(IPatchRequestParser patchRequestParser)
+        public PatchRepresentationAction(
+            IPatchRequestParser patchRequestParser,
+            IRepresentationStore representationStore,
+            IApiResponseFactory apiResponseFactory)
         {
             _patchRequestParser = patchRequestParser;
+            _representationStore = representationStore;
+            _apiResponseFactory = apiResponseFactory;
         }
 
         public ApiActionResult Execute(string id, JObject jObj)
@@ -48,9 +62,84 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                 throw new ArgumentNullException(nameof(jObj));
             }
 
-            _patchRequestParser.Parse(jObj, "schema_id");
+            // 2. Check representation exists
+            var representation = _representationStore.GetRepresentation(id);
+            if (representation == null)
+            {
+                return _apiResponseFactory.CreateError(
+                    HttpStatusCode.NotFound,
+                    string.Format(ErrorMessages.TheResourceDoesntExist, id));
+            }
 
-            // 2. Parse the patch request.
+            // 3. Get patch operations.
+            var operations = _patchRequestParser.Parse(jObj);
+
+            // 4. Process operations.
+            foreach(var operation in operations)
+            {
+                // 4.1 Check path is filled-in.
+                if (operation.Type == Models.PatchOperations.remove 
+                    && string.IsNullOrWhiteSpace(operation.Path))
+                {
+                    return _apiResponseFactory.CreateError(
+                        HttpStatusCode.BadRequest,
+                        ErrorMessages.ThePathNeedsToBeSpecified);
+                }
+
+                // 4.2 Get attributes
+                GetAttributes(representation, operation.Path);
+            }
+
+            return null;
+        }
+
+        private static IEnumerable<RepresentationAttribute> GetAttributes(Representation representation, string path)
+        {
+            if (representation.Attributes == null ||
+                !representation.Attributes.Any())
+            {
+                return null;
+            }
+
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                return representation.Attributes;
+            }
+
+            var properties = path.Split('.');
+            var property = properties.First();
+            var attr = representation.Attributes.FirstOrDefault(a => a.SchemaAttribute.Name == property);
+            if (properties.Count() == 1)
+            {
+                var startArrayIndex = property.IndexOf('[');
+                var endArrayIndex = property.IndexOf(']');
+                if (startArrayIndex > -1 && endArrayIndex > -1)
+                {
+                    var arrayContent = property.Substring(startArrayIndex, endArrayIndex);
+                    string s = "";
+                }
+
+                return new[] { attr };
+            }
+
+            return GetAttributesByReflection(attr, properties, 1);
+        }
+        
+
+        private static IEnumerable<RepresentationAttribute> GetAttributesByReflection(
+            RepresentationAttribute attr, 
+            IEnumerable<string> properties, 
+            int index)
+        {
+            var property = properties.ElementAt(index);
+            var startArrayIndex = property.IndexOf('[');
+            var endArrayIndex = property.IndexOf(']');
+            if (startArrayIndex > -1 && endArrayIndex > -1)
+            {
+                var arrayContent = property.Substring(startArrayIndex, endArrayIndex);
+                string s = "";
+            }
+
             return null;
         }
     }

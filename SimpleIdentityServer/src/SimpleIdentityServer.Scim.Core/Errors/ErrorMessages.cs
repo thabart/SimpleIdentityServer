@@ -31,5 +31,8 @@ namespace SimpleIdentityServer.Scim.Core.Errors
         public const string TheLocationPatternIsNotCorrect = "the location pattern {0} is not correct";
         public const string TheImmutableAttributeCannotBeUpdated = "the immutable attribute {0} cannot be updated";
         public const string TheRepresentationCannotBeUpdated = "the representation cannot be updated";
+        public const string TheRequestIsNotAPatchOperation = "the request is not a patch operation because the schema is not correct";
+        public const string ThePatchOperationIsNotSupported = "the patch operation '{0}' is not supported";
+        public const string ThePathNeedsToBeSpecified = "the path needs to be specified";
     }
 }

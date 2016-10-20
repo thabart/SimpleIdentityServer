@@ -18,31 +18,58 @@ using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Scim.Core.DTOs;
 using SimpleIdentityServer.Scim.Core.Models;
 using System;
+using System.Linq;
 using System.Collections.Generic;
+using SimpleIdentityServer.Scim.Core.Errors;
 
 namespace SimpleIdentityServer.Scim.Core.Parsers
 {
     public interface IPatchRequestParser
     {
-        IEnumerable<PatchOperation> Parse(JObject jObj, string schemaId);
+        IEnumerable<PatchOperation> Parse(JObject jObj);
     }
 
     internal class PatchRequestParser : IPatchRequestParser
     {
-        public IEnumerable<PatchOperation> Parse(JObject jObj, string schemaId)
+        public IEnumerable<PatchOperation> Parse(JObject jObj)
         {
+            // 1. Check parameters.
             if (jObj == null)
             {
                 throw new ArgumentNullException(nameof(jObj));
             }
 
-            if (string.IsNullOrWhiteSpace(schemaId))
+            // 2. Parse the request.
+            var obj = jObj.ToObject<PatchOperationsRequest>();
+            if (!obj.Schemas.Contains(Constants.Messages.PatchOp))
             {
-                throw new ArgumentNullException(nameof(schemaId));
+                throw new InvalidOperationException(ErrorMessages.TheRequestIsNotAPatchOperation);
             }
 
-            var obj = jObj.ToObject<PatchOperationsRequest>();
-            return null;
+            if (obj.Operations == null)
+            {
+                return null;
+            }
+
+            var result = new List<PatchOperation>();
+            foreach(var operation in obj.Operations)
+            {
+                PatchOperations op;
+                if (!Enum.TryParse(operation.Operation, out op))
+                {
+                    throw new InvalidOperationException(string.Format(ErrorMessages.ThePatchOperationIsNotSupported,
+                        operation.Operation));
+                }
+
+                result.Add(new PatchOperation
+                {
+                    Type = op,
+                    Path = operation.Path,
+                    Value = operation.Value
+                });
+            }
+
+            return result;
         }
     }
 }

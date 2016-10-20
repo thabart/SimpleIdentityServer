@@ -14,19 +14,21 @@
 // limitations under the License.
 #endregion
 
-using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 
 namespace SimpleIdentityServer.Scim.Core.Models
 {
     public enum PatchOperations
     {
-        add
+        add,
+        remove,
+        replace
     }
 
     public class PatchOperation
     {
-        public PatchOperations Operations { get; set; }
+        public PatchOperations Type { get; set; }
         public string Path { get; set; }
-        public IEnumerable<Representation> Value { get; set; }
+        public JToken Value { get; set; }
     }
 }
