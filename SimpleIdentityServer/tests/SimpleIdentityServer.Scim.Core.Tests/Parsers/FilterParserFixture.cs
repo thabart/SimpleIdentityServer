@@ -14,8 +14,8 @@
 // limitations under the License.
 #endregion
 
-using System.Linq;
 using SimpleIdentityServer.Scim.Core.Parsers;
+using System;
 using Xunit;
 
 namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
@@ -25,7 +25,18 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
         private IFilterParser _filterParser;
 
         [Fact]
-        public void When_Parsing_Single_Attribute_Then_One_Attribute_Is_Returned()
+        public void When_Passing_Null_Or_Empty_Parameter_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+
+            // ACTS & ASSERTS
+            Assert.Throws<ArgumentNullException>(() => _filterParser.Parse(null));
+            Assert.Throws<ArgumentNullException>(() => _filterParser.Parse(string.Empty));
+        }
+
+        [Fact]
+        public void When_Parsing_One_Attribute_Then_One_Attribute_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -37,21 +48,96 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             Assert.NotNull(result);
             var filter = result as Filter;
             Assert.NotNull(filter);
+            var attr = filter.Expression as AttributeExpression;
+            Assert.NotNull(attr);
+            Assert.NotNull(attr.Path);
+            Assert.True(attr.Path.Name == "name");
         }
 
         [Fact]
-        public void When_Parsing_LogicalAttribute_Then_One_Attribute_Is_Returned()
+        public void When_Parsing_Three_Attributes_Then_Three_Attributes_Are_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT 
-            var result = _filterParser.Parse("meta.resourceType.name1[name.name eq 5] eq User and meta.resourceType.name2 eq User and meta.resourceType.name3 eq User or meta.resourceType.name4 eq User");
+            var result = _filterParser.Parse("name.firstName.firstLetter");
 
             // ASSERT
             Assert.NotNull(result);
             var filter = result as Filter;
             Assert.NotNull(filter);
+            // Check name
+            var attr = filter.Expression as AttributeExpression;
+            Assert.NotNull(attr);
+            Assert.NotNull(attr.Path);
+            Assert.True(attr.Path.Name == "name");
+            // Check firstName
+            var firstName = attr.Path.Next;
+            Assert.NotNull(firstName);
+            Assert.NotNull(firstName.Name == "firstName");
+            // Check firstLetter
+            var firstLetter = firstName.Next;
+            Assert.NotNull(firstLetter);
+            Assert.NotNull(firstLetter.Name == "firstName");
+        }
+
+        [Fact]
+        public void When_Parsing_Two_Attributes_And_Value_Filter_Then_Two_Attributes_With_Value_Filter_Are_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+
+            // ACT 
+            var result = _filterParser.Parse("name.firstName[firstLetter eq \"NO\"]");
+
+            // ASSERT
+            Assert.NotNull(result);
+            var filter = result as Filter;
+            Assert.NotNull(filter);
+            // Check name
+            var attr = filter.Expression as AttributeExpression;
+            Assert.NotNull(attr);
+            Assert.NotNull(attr.Path);
+            Assert.True(attr.Path.Name == "name");
+            // Check firstName
+            var firstName = attr.Path.Next;
+            Assert.NotNull(firstName);
+            Assert.NotNull(firstName.Name == "firstName");
+            // Check firstLetter
+            var valueFilter = firstName.ValueFilter;
+            Assert.NotNull(valueFilter);
+            var compAttr = valueFilter.Expression as CompAttributeExpression;
+            Assert.NotNull(compAttr);
+            Assert.True(compAttr.Operator == ComparisonOperators.eq);
+            Assert.True(compAttr.Path.Name == "firstLetter");
+            Assert.True(compAttr.Value == "\"NO\"");
+        }
+
+        [Fact]
+        public void When_Parsing_Two_Logical_Attributes_Then_Two_Attributes_Are_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+
+            // ACT 
+            var result = _filterParser.Parse("firstName eq thierry and lastName eq Habart");
+
+            // ASSERT
+            Assert.NotNull(result);
+            var filter = result as Filter;
+            Assert.NotNull(filter);
+            var logicalAttr = filter.Expression as LogicalExpression;
+            Assert.NotNull(logicalAttr);
+            Assert.True(logicalAttr.Operator == LogicalOperators.and);
+            var leftOperand = logicalAttr.AttributeLeft as CompAttributeExpression;
+            var rightOperand = logicalAttr.AttributeRight as CompAttributeExpression;
+            Assert.NotNull(leftOperand);
+            Assert.NotNull(rightOperand);
+            Assert.True(leftOperand.Operator == ComparisonOperators.eq);
+            Assert.True(rightOperand.Operator == ComparisonOperators.eq);
+            Assert.True(leftOperand.Path.Name == "firstName");
+            Assert.True(rightOperand.Path.Name == "lastName");
         }
 
         private void InitializeFakeObjects()
