@@ -46,7 +46,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             InitializeFakeObjects();
 
             // ACT 
-            var result = _filterParser.Parse("meta.resourceType.name eq User");
+            var result = _filterParser.Parse("meta.resourceType.name1[name.name eq 5] eq User and meta.resourceType.name2 eq User and meta.resourceType.name3 eq User or meta.resourceType.name4 eq User");
 
             // ASSERT
             Assert.NotNull(result);

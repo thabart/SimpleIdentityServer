@@ -117,20 +117,22 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             return ParseFilter(path);
         }
 
-        private Filter ParseFilter(string filter)
+        private static Filter ParseFilter(string filter)
         {
             var result = new Filter();
             var strBuilder = new StringBuilder();
             var attrs = GetStrings(filter);
             var isLogicalAttribute = attrs.Any(a => IsLogicalOperand(a));
+            if (attrs.Any(a => IsLogicalOperand(a)))
+            {
+                result.Expression = GetLogicalExpression(attrs);
+                return result;
+            }
+
             if (attrs.Any(a => IsComparisonOperand(a)))
             {
                 result.Expression = GetAttributeExpression(attrs);
-            }
-
-            if (attrs.Any(a => IsLogicalOperand(a)))
-            {
-
+                return result;
             }
 
             return result;
@@ -139,13 +141,41 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         private static Expression GetLogicalExpression(IEnumerable<string> parameters)
         {
             var indexes = FindAllIndexes(parameters, new[] { "and", "or" });
-            LogicalExpression logicalExpression = null;
+            Expression leftAttr = null;
+            int start = 0;
+            int i = 0;
             foreach (var index in indexes)
             {
-                
+                LogicalExpression logicalExpression = null;
+                var lastIndex = i == indexes.Count() - 1 ? parameters.Count() - 1 : 
+                    indexes.ElementAt(i + 1) - 1 - index;
+                var op = (LogicalOperators)Enum.Parse(typeof(LogicalOperators), parameters.ElementAt(index));
+                var rightOperand = parameters.Skip(index + 1).Take(lastIndex);
+                if (leftAttr == null)
+                {
+                    var leftOperand = parameters.Skip(start).Take(index - start);
+                    logicalExpression = new LogicalExpression
+                    {
+                        AttributeLeft = GetAttributeExpression(leftOperand),
+                        AttributeRight = GetAttributeExpression(rightOperand),
+                        Operator = op
+                    };
+                }
+                else
+                {
+                    logicalExpression = new LogicalExpression
+                    {
+                        AttributeLeft = leftAttr,
+                        AttributeRight = GetAttributeExpression(rightOperand),
+                        Operator = op
+                    };
+                }
+
+                leftAttr = logicalExpression;
+                i++;
             }
 
-            return null;
+            return leftAttr;
         }
 
         private static Expression GetAttributeExpression(IEnumerable<string> parameters)
@@ -166,10 +196,20 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             AttributePath tmp = null;
             foreach(var value in values)
             {
+                var startIndex = value.IndexOf('[');
+                var endIndex = value.IndexOf(']');
+
                 var attr = new AttributePath
                 {
                     Name = value
                 };
+
+                if (startIndex > -1 && endIndex > -1)
+                {
+                    var filter = value.Substring(startIndex + 1, endIndex - startIndex - 1);
+                    attr.ValueFilter = ParseFilter(filter);
+                }
+
                 if (result == null)
                 {
                     result = attr;
@@ -210,7 +250,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
                 // 1. Add the character.
                 if (i == filter.Length ||
-                    (level == 0 && !char.IsWhiteSpace(character) && !_openSign.Contains(character) && !_closeSign.Contains(character)) ||
+                    (level == 0 && !char.IsWhiteSpace(character)) ||
                     (level > 0))
                 {
                     strBuilder.Append(character);
@@ -219,7 +259,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 // 2. Add string.
                 if (level == 0 && (char.IsWhiteSpace(character) || i == filter.Length))
                 {
-                    attrs.Add(strBuilder.ToString());
+                    attrs.Add(strBuilder.ToString().TrimStart('(').TrimEnd(')'));
                     strBuilder.Clear();
                     continue;
                 }
