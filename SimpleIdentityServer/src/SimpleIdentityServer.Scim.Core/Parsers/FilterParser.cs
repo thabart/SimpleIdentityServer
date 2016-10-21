@@ -48,14 +48,15 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         le
     }
 
+    [Flags]
     public enum LogicalOperators
     {
         // Logical and
-        and,
+        and = 1,
         // Logical or
-        or,
+        or = 2,
         // Not function
-        not
+        not = 4
     }
 
     public class AttributePath
@@ -440,8 +441,9 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             {
                 var left = AttributeLeft.Evaluate(new[] { attr });
                 var right = AttributeRight.Evaluate(new[] { attr });
-                if ((Operator == LogicalOperators.and && left != null && right != null && left.Any() && right.Any())
-                   || (Operator == LogicalOperators.or && (left != null && left.Any()) || (right != null && right.Any())))
+                bool isNot = !Operator.HasFlag(LogicalOperators.not);
+                if ((Operator.HasFlag(LogicalOperators.and) && left != null && right != null && left.Any() && right.Any()) == isNot
+                   || (Operator.HasFlag(LogicalOperators.or) && (left != null && left.Any()) || (right != null && right.Any())) == isNot)
                 {
                     result.Add(attr);
                 }
@@ -519,6 +521,12 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             ']'
         };
 
+        private static string _and = Enum.GetName(typeof(LogicalOperators), LogicalOperators.and);
+        private static string _or = Enum.GetName(typeof(LogicalOperators), LogicalOperators.or);
+        private static string _not = Enum.GetName(typeof(LogicalOperators), LogicalOperators.not);
+        private static string _andNot = _and + " " + _not;
+        private static string _orNot = _or + " " + _not;
+
         public Filter Parse(string path)
         {
             if (string.IsNullOrWhiteSpace(path))
@@ -567,7 +575,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
                 return ParseFilter(s.First()).Expression;
             };
-            var indexes = FindAllIndexes(parameters, Enum.GetNames(typeof(LogicalOperators)));
+            var indexes = FindAllIndexes(parameters, new[] { _or, _and, _not, _andNot, _orNot });
             Expression leftAttr = null;
             int start = 0;
             int i = 0;
@@ -576,7 +584,21 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 LogicalExpression logicalExpression = null;
                 var lastIndex = i == indexes.Count() - 1 ? parameters.Count() - 1 : 
                     indexes.ElementAt(i + 1) - 1 - index;
-                var op = (LogicalOperators)Enum.Parse(typeof(LogicalOperators), parameters.ElementAt(index));
+                LogicalOperators op;
+                var opStr = parameters.ElementAt(index);
+                if (!Enum.TryParse(opStr, out op))
+                {
+                    if (opStr == _andNot)
+                    {
+                        op = LogicalOperators.and | LogicalOperators.not;
+                    }
+
+                    if (opStr == _orNot)
+                    {
+                        op = LogicalOperators.or | LogicalOperators.not;
+                    }
+                }
+
                 var rightOperand = parameters.Skip(index + 1).Take(lastIndex);
                 var attrRight = getAttributeExpression(rightOperand);
                 if (leftAttr == null)
@@ -660,7 +682,11 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
         private static bool IsLogicalOperand(string parameter)
         {
-            return Enum.GetNames(typeof(LogicalOperators)).Contains(parameter);
+            return parameter == _and ||
+                parameter == _or ||
+                parameter == _not ||
+                parameter == _andNot ||
+                parameter == _orNot;
         }
 
         private static bool IsComparisonOperand(string parameter)
@@ -711,6 +737,21 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 if (_openSign.Contains(character))
                 {
                     level++;
+                }
+            }
+
+            var indexes = FindAllIndexes(attrs, new[] { _not });
+            foreach (var index in indexes)
+            {
+                if (index == 0)
+                {
+                    continue;
+                }
+
+                if (new[] { _and, _or }.Contains(attrs[index - 1]))
+                {
+                    attrs[index - 1] = attrs[index - 1] + " " + attrs[index];
+                    attrs.RemoveAt(index);
                 }
             }
 

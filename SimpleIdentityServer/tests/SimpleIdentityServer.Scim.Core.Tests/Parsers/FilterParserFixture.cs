@@ -469,7 +469,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
         }
 
         [Fact]
-        public void When_Filtering_Representation_By_FirstName_Equals_To_Thierry_Or_Loki_Then_Two_Attributes_Are_Returned()
+        public void When_Filtering_Representation_By_FirstName_Equals_To_Thierry_Or_Lokit_Then_Two_Attributes_Are_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -486,7 +486,35 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
                     }
                 }
             };
-            var result = _filterParser.Parse("(name.firstName eq thierry) and (name.lastName eq lokit)");
+            var result = _filterParser.Parse("(name.firstName eq thierry) or (name.lastName eq lokit)");
+
+            // ACT 
+            var attributes = result.Evaluate(representation);
+
+            // ASSERTS
+            Assert.NotNull(attributes);
+            Assert.True(attributes.Count() == 1);
+        }
+
+        [Fact]
+        public void When_Filtering_Representation_By_FirstName_Equals_To_Thierry_And_Not_Equals_To_Lokit_Then_Attributes_Are_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var representation = new Representation
+            {
+                Attributes = new[]
+                {
+                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "name", Type = Constants.SchemaAttributeTypes.Complex })
+                    {
+                        Values = new [] {
+                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "thierry"),
+                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "lastName", Type = Constants.SchemaAttributeTypes.String }, "loki")
+                        }
+                    }
+                }
+            };
+            var result = _filterParser.Parse("(name.firstName eq thierry) and not (name.lastName eq lokit)");
 
             // ACT 
             var attributes = result.Evaluate(representation);
