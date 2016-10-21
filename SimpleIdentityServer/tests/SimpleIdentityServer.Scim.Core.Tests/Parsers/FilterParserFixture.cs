@@ -17,6 +17,7 @@
 using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Core.Parsers;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
@@ -143,7 +144,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
         }
 
         [Fact]
-        public void When_Filter_Representation_With_Simple_Path_Then_Attribute_Is_Returned()
+        public void When_Filtering_Representation_With_Simple_Path_Then_Attribute_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -168,6 +169,179 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             Assert.NotNull(attributes);
             Assert.True(attributes.Count() == 1);
             Assert.True(attributes.First().SchemaAttribute.Name == "firstName");
+        }
+
+        [Fact]
+        public void When_Filtering_Representation_By_FirstName_Equals_To_Thierry_Then_Attribute_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var representation = new Representation
+            {
+                Attributes = new[]
+                {
+                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "names", Type = Constants.SchemaAttributeTypes.Complex, MultiValued = true })
+                    {
+                        Values = new [] {
+                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "thierry"),
+                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "laetitia")
+                        }
+                    }
+                }
+            };
+            var result = _filterParser.Parse("names[firstName eq thierry]");
+
+            // ACT 
+            var attributes = result.Evaluate(representation);
+
+            // ASSERTS
+            Assert.NotNull(attributes);
+            Assert.True(attributes.Count() == 1);
+            Assert.True(attributes.First().SchemaAttribute.Name == "firstName");
+        }
+        
+        [Fact]
+        public void When_Filtering_Representation_By_FirstName_Not_Equals_To_Thierry_Then_Two_Attributes_Are_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var representation = new Representation
+            {
+                Attributes = new[]
+                {
+                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "names", Type = Constants.SchemaAttributeTypes.Complex, MultiValued = true })
+                    {
+                        Values = new [] {
+                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "thierry"),
+                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "thierry"),
+                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "laetitia"),
+                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "loki")
+                        }
+                    }
+                }
+            };
+            var result = _filterParser.Parse("names[firstName ne thierry]");
+
+            // ACT 
+            var attributes = result.Evaluate(representation);
+
+            // ASSERTS
+            Assert.NotNull(attributes);
+            Assert.True(attributes.Count() == 2);
+        }
+
+        [Fact]
+        public void When_Filtering_Representation_By_Name_Which_Dont_Contain_Thierry_Then_No_Attribute_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var representation = new Representation
+            {
+                Attributes = new[]
+                {
+                    new SingularRepresentationAttribute<IEnumerable<string>>(new SchemaAttributeResponse { Name = "names", Type = Constants.SchemaAttributeTypes.String, MultiValued = true }, new []
+                    {
+                        "loki",
+                        "loki",
+                        "laetitia",
+                        "loki"
+                    })
+                }
+            };
+            var result = _filterParser.Parse("names co thierry");
+
+            // ACT 
+            var attributes = result.Evaluate(representation);
+
+            // ASSERTS
+            Assert.NotNull(attributes);
+            Assert.True(attributes.Count() == 0);
+        }
+
+        [Fact]
+        public void When_Filtering_Representation_By_FirstName_Starts_With_Th_Then_Two_Attributes_Are_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var representation = new Representation
+            {
+                Attributes = new[]
+                {
+                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "names", Type = Constants.SchemaAttributeTypes.Complex, MultiValued = true })
+                    {
+                        Values = new [] {
+                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "thierry"),
+                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "thRRR"),
+                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "laetitia")
+                        }
+                    }
+                }
+            };
+            var result = _filterParser.Parse("names[firstName sw th]");
+
+            // ACT 
+            var attributes = result.Evaluate(representation);
+
+            // ASSERTS
+            Assert.NotNull(attributes);
+            Assert.True(attributes.Count() == 2);
+
+        }
+
+        [Fact]
+        public void When_Filtering_Representation_For_Age_Less_Than_24_Then_One_Attribute_Is_Returned()
+        {
+
+            // ARRANGE
+            InitializeFakeObjects();
+            var representation = new Representation
+            {
+                Attributes = new[]
+                {
+                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "persons", Type = Constants.SchemaAttributeTypes.Complex, MultiValued = true })
+                    {
+                        Values = new []
+                        {
+                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "person", Type = Constants.SchemaAttributeTypes.Complex })
+                            {
+                                Values = new []
+                                {
+                                    new SingularRepresentationAttribute<int>(new SchemaAttributeResponse { Name = "age", Type = Constants.SchemaAttributeTypes.Integer }, 23)
+                                }
+                            },
+                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "person", Type = Constants.SchemaAttributeTypes.Complex })
+                            {
+                                Values = new []
+                                {
+                                    new SingularRepresentationAttribute<int>(new SchemaAttributeResponse { Name = "age", Type = Constants.SchemaAttributeTypes.Integer }, 24)
+                                }
+                            },
+                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "person", Type = Constants.SchemaAttributeTypes.Complex })
+                            {
+                                Values = new []
+                                {
+                                    new SingularRepresentationAttribute<int>(new SchemaAttributeResponse { Name = "age", Type = Constants.SchemaAttributeTypes.Integer }, 25)
+                                }
+                            },
+                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "person", Type = Constants.SchemaAttributeTypes.Complex })
+                            {
+                                Values = new []
+                                {
+                                    new SingularRepresentationAttribute<int>(new SchemaAttributeResponse { Name = "age", Type = Constants.SchemaAttributeTypes.Integer }, 26)
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+            var result = _filterParser.Parse("persons[person.age lt 24]");
+
+            // ACT 
+            var attributes = result.Evaluate(representation);
+
+            // ASSERTS
+            Assert.NotNull(attributes);
+            Assert.True(attributes.Count() == 1);
         }
 
         private void InitializeFakeObjects()

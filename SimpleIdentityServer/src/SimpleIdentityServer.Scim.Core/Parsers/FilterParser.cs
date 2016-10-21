@@ -88,20 +88,31 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 return null;
             }
 
-            if (Next != null && representations.Any(r => r.SchemaAttribute.Type != Constants.SchemaAttributeTypes.Complex))
+            if ((ValueFilter != null && representations.Any(r => !r.SchemaAttribute.MultiValued)) ||
+                (Next != null && representations.Any(r => r.SchemaAttribute.Type != Constants.SchemaAttributeTypes.Complex)))
             {
                 return null;
             }
 
-            if (Next != null)
+            if (ValueFilter != null || Next != null)
             {
                 var subAttrs = new List<RepresentationAttribute>();
-                foreach(var representation in representations)
+                foreach (var representation in representations)
                 {
                     subAttrs.AddRange(((ComplexRepresentationAttribute)representation).Values);
                 }
 
-                return Next.Evaluate(subAttrs);
+                // Array
+                if (ValueFilter != null)
+                {
+                    return ValueFilter.Evaluate(subAttrs);
+                }
+
+                // Complex type
+                if (Next != null)
+                {
+                    return Next.Evaluate(subAttrs);
+                }
             }
 
             return representations;
@@ -136,7 +147,276 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
         protected override IEnumerable<RepresentationAttribute> EvaluateRepresentation(IEnumerable<RepresentationAttribute> representationAttrs)
         {
-            return null;
+            return Path.Evaluate(representationAttrs).Where(a => Compare(a, Operator, Value));
+        }
+
+        private static bool Compare(RepresentationAttribute attr, ComparisonOperators op, string value)
+        {
+            switch(attr.SchemaAttribute.Type)
+            {
+                case Constants.SchemaAttributeTypes.String:
+                    return Equals(attr, op, value);
+                case Constants.SchemaAttributeTypes.Boolean:
+                    var b = false;
+                    if (!bool.TryParse(value, out b))
+                    {
+                        return false;
+                    }
+
+                    return Equals(attr, op, b);
+                case Constants.SchemaAttributeTypes.DateTime:
+                    DateTime d = default(DateTime);
+                    if (!DateTime.TryParse(value, out d))
+                    {
+                        return false;
+                    }
+
+                    return Equals(attr, op, d);
+                case Constants.SchemaAttributeTypes.Decimal:
+                    decimal dec;
+                    if (!decimal.TryParse(value, out dec))
+                    {
+                        return false;
+                    }
+
+                    return Equals(attr, op, dec);
+                case Constants.SchemaAttributeTypes.Integer:
+                    int i;
+                    if (!int.TryParse(value, out i))
+                    {
+                        return false;
+                    }
+
+                    return Equals(attr, op, i);
+            }
+
+            return false;
+        }
+
+        private static bool Equals(RepresentationAttribute attr, ComparisonOperators op, string value)
+        {
+            if (attr.SchemaAttribute.MultiValued)
+            {
+                var enumAttr = attr as SingularRepresentationAttribute<IEnumerable<string>>;
+                if (enumAttr == null)
+                {
+                    return false;
+                }
+
+                switch(op)
+                {
+                    case ComparisonOperators.co:
+                        return enumAttr.Value.Contains(value);
+                }
+
+                return false;
+            }
+
+            var attrValue = attr as SingularRepresentationAttribute<string>;
+            if (attrValue == null)
+            {
+                return false;
+            }
+
+            switch(op)
+            {
+                case ComparisonOperators.eq:
+                    return attrValue.Value.Equals(value);
+                case ComparisonOperators.ne:
+                    return !attrValue.Value.Equals(value);
+                case ComparisonOperators.sw:
+                    return attrValue.Value.StartsWith(value);
+                case ComparisonOperators.ew:
+                    return attrValue.Value.EndsWith(value);
+                case ComparisonOperators.pr:
+                    return string.IsNullOrWhiteSpace(attrValue.Value);
+                case ComparisonOperators.gt:
+                    return attrValue.Value.CompareTo(value) > 0;
+                case ComparisonOperators.ge:
+                    return attrValue.Value.CompareTo(value) > 0 || attrValue.Value.Equals(value);
+                case ComparisonOperators.lt:
+                    return attrValue.Value.CompareTo(value) < 0;
+                case ComparisonOperators.le:
+                    return attrValue.Value.CompareTo(value) < 0 || attrValue.Value.Equals(value);
+            }
+
+            return false;
+        }
+
+        private static bool Equals(RepresentationAttribute attr, ComparisonOperators op, bool value)
+        {
+            if (attr.SchemaAttribute.MultiValued)
+            {
+                var enumAttr = attr as SingularRepresentationAttribute<IEnumerable<bool>>;
+                if (enumAttr == null)
+                {
+                    return false;
+                }
+
+                switch (op)
+                {
+                    case ComparisonOperators.co:
+                        return enumAttr.Value.Contains(value);
+                }
+
+                return false;
+            }
+
+            var attrValue = attr as SingularRepresentationAttribute<bool>;
+            if (attrValue == null)
+            {
+                return false;
+            }
+
+            switch (op)
+            {
+                case ComparisonOperators.eq:
+                    return attrValue.Value.Equals(value);
+                case ComparisonOperators.ne:
+                    return !attrValue.Value.Equals(value);
+                case ComparisonOperators.pr:
+                    return true;
+            }
+
+            return false;
+        }
+
+        private static bool Equals(RepresentationAttribute attr, ComparisonOperators op, DateTime value)
+        {
+            if (attr.SchemaAttribute.MultiValued)
+            {
+                var enumAttr = attr as SingularRepresentationAttribute<IEnumerable<DateTime>>;
+                if (enumAttr == null)
+                {
+                    return false;
+                }
+
+                switch (op)
+                {
+                    case ComparisonOperators.co:
+                        return enumAttr.Value.Contains(value);
+                }
+
+                return false;
+            }
+
+            var attrValue = attr as SingularRepresentationAttribute<DateTime>;
+            if (attrValue == null)
+            {
+                return false;
+            }
+
+            switch (op)
+            {
+                case ComparisonOperators.eq:
+                    return attrValue.Value.Equals(value);
+                case ComparisonOperators.ne:
+                    return !attrValue.Value.Equals(value);
+                case ComparisonOperators.pr:
+                    return attrValue.Value != null;
+                case ComparisonOperators.gt:
+                    return attrValue.Value.CompareTo(value) > 0;
+                case ComparisonOperators.ge:
+                    return attrValue.Value.CompareTo(value) > 0 || attrValue.Value.Equals(value);
+                case ComparisonOperators.lt:
+                    return attrValue.Value.CompareTo(value) < 0;
+                case ComparisonOperators.le:
+                    return attrValue.Value.CompareTo(value) < 0 || attrValue.Value.Equals(value);
+            }
+
+            return false;
+        }
+
+        private static bool Equals(RepresentationAttribute attr, ComparisonOperators op, decimal value)
+        {
+            if (attr.SchemaAttribute.MultiValued)
+            {
+                var enumAttr = attr as SingularRepresentationAttribute<IEnumerable<decimal>>;
+                if (enumAttr == null)
+                {
+                    return false;
+                }
+
+                switch (op)
+                {
+                    case ComparisonOperators.co:
+                        return enumAttr.Value.Contains(value);
+                }
+
+                return false;
+            }
+
+            var attrValue = attr as SingularRepresentationAttribute<decimal>;
+            if (attrValue == null)
+            {
+                return false;
+            }
+
+            switch (op)
+            {
+                case ComparisonOperators.eq:
+                    return attrValue.Value.Equals(value);
+                case ComparisonOperators.ne:
+                    return !attrValue.Value.Equals(value);
+                case ComparisonOperators.pr:
+                    return true;
+                case ComparisonOperators.gt:
+                    return attrValue.Value.CompareTo(value) > 0;
+                case ComparisonOperators.ge:
+                    return attrValue.Value.CompareTo(value) > 0 || attrValue.Value.Equals(value);
+                case ComparisonOperators.lt:
+                    return attrValue.Value.CompareTo(value) < 0;
+                case ComparisonOperators.le:
+                    return attrValue.Value.CompareTo(value) < 0 || attrValue.Value.Equals(value);
+            }
+
+            return false;
+        }
+
+        private static bool Equals(RepresentationAttribute attr, ComparisonOperators op, int value)
+        {
+            if (attr.SchemaAttribute.MultiValued)
+            {
+                var enumAttr = attr as SingularRepresentationAttribute<IEnumerable<int>>;
+                if (enumAttr == null)
+                {
+                    return false;
+                }
+
+                switch (op)
+                {
+                    case ComparisonOperators.co:
+                        return enumAttr.Value.Contains(value);
+                }
+
+                return false;
+            }
+
+            var attrValue = attr as SingularRepresentationAttribute<int>;
+            if (attrValue == null)
+            {
+                return false;
+            }
+
+            switch (op)
+            {
+                case ComparisonOperators.eq:
+                    return attrValue.Value.Equals(value);
+                case ComparisonOperators.ne:
+                    return !attrValue.Value.Equals(value);
+                case ComparisonOperators.pr:
+                    return true;
+                case ComparisonOperators.gt:
+                    return attrValue.Value.CompareTo(value) > 0;
+                case ComparisonOperators.ge:
+                    return attrValue.Value.CompareTo(value) > 0 || attrValue.Value.Equals(value);
+                case ComparisonOperators.lt:
+                    return attrValue.Value.CompareTo(value) < 0;
+                case ComparisonOperators.le:
+                    return attrValue.Value.CompareTo(value) < 0 || attrValue.Value.Equals(value);
+            }
+
+            return false;
         }
     }
     
@@ -168,6 +448,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
             return EvaluateToken(jToken);
         }
+
         public IEnumerable<RepresentationAttribute> Evaluate(Representation representation)
         {
             if (representation == null)
@@ -175,14 +456,21 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 throw new ArgumentNullException(nameof(representation));
             }
 
-            if (representation.Attributes == null)
+            return Evaluate(representation.Attributes);
+        }
+
+        public IEnumerable<RepresentationAttribute> Evaluate(IEnumerable<RepresentationAttribute> representationAttrs)
+        {
+            if (representationAttrs  == null)
             {
-                throw new ArgumentNullException(nameof(representation.Attributes));
+                throw new ArgumentNullException(nameof(representationAttrs));
             }
 
-            return EvaluateRepresentation(representation.Attributes);
+            return EvaluateRepresentation(representationAttrs);
         }
+
         protected abstract string EvaluateToken(JToken jToken);
+
         protected abstract IEnumerable<RepresentationAttribute> EvaluateRepresentation(IEnumerable<RepresentationAttribute> representationAttrs);
     }
 
@@ -197,7 +485,22 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
         public IEnumerable<RepresentationAttribute> Evaluate(Representation representation)
         {
+            if (Expression == null)
+            {
+                return null;
+            }
+
             return Expression.Evaluate(representation);
+        }
+
+        public IEnumerable<RepresentationAttribute> Evaluate(IEnumerable<RepresentationAttribute> representations)
+        {
+            if (Expression == null)
+            {
+                return null;
+            }
+
+            return Expression.Evaluate(representations);
         }
     }
 
@@ -258,7 +561,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
         private static Expression GetLogicalExpression(IEnumerable<string> parameters)
         {
-            var indexes = FindAllIndexes(parameters, new[] { "and", "or" });
+            var indexes = FindAllIndexes(parameters, Enum.GetNames(typeof(LogicalOperators)));
             Expression leftAttr = null;
             int start = 0;
             int i = 0;
@@ -344,12 +647,12 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
         private static bool IsLogicalOperand(string parameter)
         {
-            return new[] { "and", "or" }.Contains(parameter);
+            return Enum.GetNames(typeof(LogicalOperators)).Contains(parameter);
         }
 
         private static bool IsComparisonOperand(string parameter)
         {
-            return new[] { "eq" }.Contains(parameter);
+            return Enum.GetNames(typeof(ComparisonOperators)).Contains(parameter);
         }
 
         private static IEnumerable<string> SplitFilter(string filter)
