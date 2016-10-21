@@ -468,6 +468,34 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             Assert.True(secondAdr.SchemaAttribute.Name == "adr");
         }
 
+        [Fact]
+        public void When_Filtering_Representation_By_FirstName_Equals_To_Thierry_Or_Loki_Then_Two_Attributes_Are_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var representation = new Representation
+            {
+                Attributes = new[]
+                {
+                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "name", Type = Constants.SchemaAttributeTypes.Complex })
+                    {
+                        Values = new [] {
+                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "thierry"),
+                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "lastName", Type = Constants.SchemaAttributeTypes.String }, "loki")
+                        }
+                    }
+                }
+            };
+            var result = _filterParser.Parse("(name.firstName eq thierry) and (name.lastName eq lokit)");
+
+            // ACT 
+            var attributes = result.Evaluate(representation);
+
+            // ASSERTS
+            Assert.NotNull(attributes);
+            Assert.True(attributes.Count() == 1);
+        }
+
         private void InitializeFakeObjects()
         {
             _filterParser = new FilterParser();

@@ -130,11 +130,6 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
     {
         public AttributePath Path { get; set; }
 
-        protected override string EvaluateToken(JToken jToken)
-        {
-            return Path.Evaluate(jToken);
-        }
-
         protected override IEnumerable<RepresentationAttribute> EvaluateRepresentation(IEnumerable<RepresentationAttribute> representationAttrs)
         {
             return Path.Evaluate(representationAttrs);
@@ -146,11 +141,6 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         public AttributePath Path { get; set; }
         public ComparisonOperators Operator { get; set; }
         public string Value { get; set; }
-
-        protected override string EvaluateToken(JToken jToken)
-        {
-            return null;
-        }
 
         protected override IEnumerable<RepresentationAttribute> EvaluateRepresentation(IEnumerable<RepresentationAttribute> representationAttrs)
         {
@@ -443,29 +433,26 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         public Expression AttributeRight { get; set; }
         public LogicalOperators Operator { get; set; }
 
-        protected override string EvaluateToken(JToken jToken)
-        {
-            return null;
-        }
-
         protected override IEnumerable<RepresentationAttribute> EvaluateRepresentation(IEnumerable<RepresentationAttribute> representationAttrs)
         {
-            return null;
+            var result = new List<RepresentationAttribute>();
+            foreach(var attr in representationAttrs)
+            {
+                var left = AttributeLeft.Evaluate(new[] { attr });
+                var right = AttributeRight.Evaluate(new[] { attr });
+                if ((Operator == LogicalOperators.and && left != null && right != null && left.Any() && right.Any())
+                   || (Operator == LogicalOperators.or && (left != null && left.Any()) || (right != null && right.Any())))
+                {
+                    result.Add(attr);
+                }
+            }
+
+            return result;
         }
     }
 
     public abstract class Expression
     {
-        public string Evaluate(JToken jToken)
-        {
-            if (jToken == null)
-            {
-                throw new ArgumentNullException(nameof(jToken));
-            }
-
-            return EvaluateToken(jToken);
-        }
-
         public IEnumerable<RepresentationAttribute> Evaluate(Representation representation)
         {
             if (representation == null)
@@ -486,19 +473,12 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             return EvaluateRepresentation(representationAttrs);
         }
 
-        protected abstract string EvaluateToken(JToken jToken);
-
         protected abstract IEnumerable<RepresentationAttribute> EvaluateRepresentation(IEnumerable<RepresentationAttribute> representationAttrs);
     }
 
     public class Filter
     {
         public Expression Expression { get; set; }
-
-        public string Evaluate(JObject jObj)
-        {
-            return Expression.Evaluate(jObj);
-        }
 
         public IEnumerable<RepresentationAttribute> Evaluate(Representation representation)
         {
@@ -578,6 +558,15 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
         private static Expression GetLogicalExpression(IEnumerable<string> parameters)
         {
+            Func<IEnumerable<string>, Expression> getAttributeExpression = (s) =>
+            {
+                if (IsAttributeExpression(s))
+                {
+                    return GetAttributeExpression(s);
+                }
+
+                return ParseFilter(s.First()).Expression;
+            };
             var indexes = FindAllIndexes(parameters, Enum.GetNames(typeof(LogicalOperators)));
             Expression leftAttr = null;
             int start = 0;
@@ -589,13 +578,15 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                     indexes.ElementAt(i + 1) - 1 - index;
                 var op = (LogicalOperators)Enum.Parse(typeof(LogicalOperators), parameters.ElementAt(index));
                 var rightOperand = parameters.Skip(index + 1).Take(lastIndex);
+                var attrRight = getAttributeExpression(rightOperand);
                 if (leftAttr == null)
                 {
                     var leftOperand = parameters.Skip(start).Take(index - start);
+                    var attrLeft = getAttributeExpression(leftOperand);
                     logicalExpression = new LogicalExpression
                     {
-                        AttributeLeft = GetAttributeExpression(leftOperand),
-                        AttributeRight = GetAttributeExpression(rightOperand),
+                        AttributeLeft = attrLeft,
+                        AttributeRight = attrRight,
                         Operator = op
                     };
                 }
@@ -604,7 +595,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                     logicalExpression = new LogicalExpression
                     {
                         AttributeLeft = leftAttr,
-                        AttributeRight = GetAttributeExpression(rightOperand),
+                        AttributeRight = attrRight,
                         Operator = op
                     };
                 }
@@ -660,6 +651,11 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             }
 
             return result;
+        }
+
+        private static bool IsAttributeExpression(IEnumerable<string> parameters)
+        {
+            return parameters != null && parameters.Any() && (parameters.Count() == 2 || parameters.Count() == 3);
         }
 
         private static bool IsLogicalOperand(string parameter)
