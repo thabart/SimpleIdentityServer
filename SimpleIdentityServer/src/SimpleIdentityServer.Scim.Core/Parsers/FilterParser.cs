@@ -108,18 +108,17 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                     if (ValueFilter != null)
                     {
                         complexAttr.Values = ValueFilter.Evaluate(complexAttr.Values);
-                        continue;
                     }
 
                     if (Next != null)
                     {
                         subAttrs.AddRange(Next.Evaluate(complexAttr.Values));
                     }
+                }
 
-                    if (subAttrs.Any())
-                    {
-                        return subAttrs;
-                    }
+                if (subAttrs.Any())
+                {
+                    return subAttrs;
                 }
             }
 

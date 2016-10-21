@@ -364,9 +364,8 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
         }
 
         [Fact]
-        public void When_Filtering_Representation_By_Present_Adr_Then_Two_Attributes_Are_Returned()
+        public void When_Filtering_Representation_By_Existing_Adr_Then_Two_Attributes_Are_Returned()
         {
-
             // ARRANGE
             InitializeFakeObjects();
             var representation = new Representation
@@ -414,6 +413,59 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             Assert.NotNull(persons);
             var person = persons.Values;
             Assert.True(person.Count() == 2);
+        }
+
+        [Fact]
+        public void When_Filtering_Representation_By_Existing_Adr_And_Pickup_Only_Addresses_Then_Two_Adrs_Are_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var representation = new Representation
+            {
+                Attributes = new[]
+                {
+                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "persons", Type = Constants.SchemaAttributeTypes.Complex, MultiValued = true })
+                    {
+                        Values = new []
+                        {
+                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "person", Type = Constants.SchemaAttributeTypes.Complex })
+                            {
+                                Values = new []
+                                {
+                                    new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "adr", Type = Constants.SchemaAttributeTypes.String }, "adr1")
+                                }
+                            },
+                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "person", Type = Constants.SchemaAttributeTypes.Complex })
+                            {
+                                Values = new []
+                                {
+                                    new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "adr", Type = Constants.SchemaAttributeTypes.String }, "adr2")
+                                }
+                            },
+                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "person", Type = Constants.SchemaAttributeTypes.Complex })
+                            {
+                                Values = null
+                            },
+                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "person", Type = Constants.SchemaAttributeTypes.Complex })
+                            {
+                                Values = null
+                            }
+                        }
+                    }
+                }
+            };
+            var result = _filterParser.Parse("persons[person.adr pr].person.adr");
+
+            // ACT 
+            var attributes = result.Evaluate(representation);
+
+            // ASSERTS
+            Assert.NotNull(attributes);
+            Assert.True(attributes.Count() == 2);
+            var firstAdr = attributes.First() as SingularRepresentationAttribute<string>;
+            var secondAdr = attributes.ElementAt(1) as SingularRepresentationAttribute<string>;
+            Assert.True(firstAdr.SchemaAttribute.Name == "adr");
+            Assert.True(secondAdr.SchemaAttribute.Name == "adr");
         }
 
         private void InitializeFakeObjects()
