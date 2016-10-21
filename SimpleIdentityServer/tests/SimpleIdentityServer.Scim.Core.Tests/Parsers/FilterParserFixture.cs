@@ -14,9 +14,10 @@
 // limitations under the License.
 #endregion
 
-using Newtonsoft.Json.Linq;
+using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Core.Parsers;
 using System;
+using System.Linq;
 using Xunit;
 
 namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
@@ -42,11 +43,8 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             // ARRANGE
             InitializeFakeObjects();
 
-            // { name : 'coucou'}
-            var jObj = JObject.Parse("{name: { firstName: 'thierry' }}");
-
             // ACT 
-            var result = _filterParser.Parse("name.firstName");
+            var result = _filterParser.Parse("name");
 
             // ASSERT
             Assert.NotNull(result);
@@ -56,9 +54,6 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             Assert.NotNull(attr);
             Assert.NotNull(attr.Path);
             Assert.True(attr.Path.Name == "name");
-
-            var ev = filter.Evaluate(jObj);
-            string s = "";
         }
 
         [Fact]
@@ -145,6 +140,34 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             Assert.True(rightOperand.Operator == ComparisonOperators.eq);
             Assert.True(leftOperand.Path.Name == "firstName");
             Assert.True(rightOperand.Path.Name == "lastName");
+        }
+
+        [Fact]
+        public void When_Filter_Representation_With_Simple_Path_Then_Attribute_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var representation = new Representation
+            {
+                Attributes = new[]
+                {
+                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "name", Type = Constants.SchemaAttributeTypes.Complex })
+                    {
+                        Values = new [] {
+                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName" }, "thierry")
+                        }
+                    }
+                }
+            };
+            var result = _filterParser.Parse("name.firstName");
+
+            // ACT 
+            var attributes = result.Evaluate(representation);
+
+            // ASSERTS
+            Assert.NotNull(attributes);
+            Assert.True(attributes.Count() == 1);
+            Assert.True(attributes.First().SchemaAttribute.Name == "firstName");
         }
 
         private void InitializeFakeObjects()

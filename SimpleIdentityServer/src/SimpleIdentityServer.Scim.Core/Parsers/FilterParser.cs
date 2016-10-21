@@ -15,6 +15,7 @@
 #endregion
 
 using Newtonsoft.Json.Linq;
+using SimpleIdentityServer.Scim.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -78,20 +79,47 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
             return token.ToString();
         }
+
+        public IEnumerable<RepresentationAttribute> Evaluate(IEnumerable<RepresentationAttribute> representationAttrs)
+        {
+            var representations = representationAttrs.Where(r => r.SchemaAttribute.Name == Name);
+            if (!representations.Any())
+            {
+                return null;
+            }
+
+            if (Next != null && representations.Any(r => r.SchemaAttribute.Type != Constants.SchemaAttributeTypes.Complex))
+            {
+                return null;
+            }
+
+            if (Next != null)
+            {
+                var subAttrs = new List<RepresentationAttribute>();
+                foreach(var representation in representations)
+                {
+                    subAttrs.AddRange(((ComplexRepresentationAttribute)representation).Values);
+                }
+
+                return Next.Evaluate(subAttrs);
+            }
+
+            return representations;
+        }
     }
 
     public class AttributeExpression : Expression
     {
         public AttributePath Path { get; set; }
 
-        public override string Evaluate(JToken jObj)
+        protected override string EvaluateToken(JToken jToken)
         {
-            if (jObj == null)
-            {
-                throw new ArgumentNullException(nameof(jObj));
-            }
+            return Path.Evaluate(jToken);
+        }
 
-            return Path.Evaluate(jObj);
+        protected override IEnumerable<RepresentationAttribute> EvaluateRepresentation(IEnumerable<RepresentationAttribute> representationAttrs)
+        {
+            return Path.Evaluate(representationAttrs);
         }
     }
 
@@ -101,7 +129,12 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         public ComparisonOperators Operator { get; set; }
         public string Value { get; set; }
 
-        public override string Evaluate(JToken jObj)
+        protected override string EvaluateToken(JToken jToken)
+        {
+            return null;
+        }
+
+        protected override IEnumerable<RepresentationAttribute> EvaluateRepresentation(IEnumerable<RepresentationAttribute> representationAttrs)
         {
             return null;
         }
@@ -113,7 +146,12 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         public Expression AttributeRight { get; set; }
         public LogicalOperators Operator { get; set; }
 
-        public override string Evaluate(JToken jObj)
+        protected override string EvaluateToken(JToken jToken)
+        {
+            return null;
+        }
+
+        protected override IEnumerable<RepresentationAttribute> EvaluateRepresentation(IEnumerable<RepresentationAttribute> representationAttrs)
         {
             return null;
         }
@@ -121,7 +159,31 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
     public abstract class Expression
     {
-        public abstract string Evaluate(JToken jObj);
+        public string Evaluate(JToken jToken)
+        {
+            if (jToken == null)
+            {
+                throw new ArgumentNullException(nameof(jToken));
+            }
+
+            return EvaluateToken(jToken);
+        }
+        public IEnumerable<RepresentationAttribute> Evaluate(Representation representation)
+        {
+            if (representation == null)
+            {
+                throw new ArgumentNullException(nameof(representation));
+            }
+
+            if (representation.Attributes == null)
+            {
+                throw new ArgumentNullException(nameof(representation.Attributes));
+            }
+
+            return EvaluateRepresentation(representation.Attributes);
+        }
+        protected abstract string EvaluateToken(JToken jToken);
+        protected abstract IEnumerable<RepresentationAttribute> EvaluateRepresentation(IEnumerable<RepresentationAttribute> representationAttrs);
     }
 
     public class Filter
@@ -131,6 +193,11 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         public string Evaluate(JObject jObj)
         {
             return Expression.Evaluate(jObj);
+        }
+
+        public IEnumerable<RepresentationAttribute> Evaluate(Representation representation)
+        {
+            return Expression.Evaluate(representation);
         }
     }
 
