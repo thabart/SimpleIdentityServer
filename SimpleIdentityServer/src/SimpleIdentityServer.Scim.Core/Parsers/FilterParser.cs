@@ -99,19 +99,27 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 var subAttrs = new List<RepresentationAttribute>();
                 foreach (var representation in representations)
                 {
-                    subAttrs.AddRange(((ComplexRepresentationAttribute)representation).Values);
-                }
+                    var complexAttr = representation as ComplexRepresentationAttribute;
+                    if (complexAttr == null || complexAttr.Values == null)
+                    {
+                        continue;
+                    }
 
-                // Array
-                if (ValueFilter != null)
-                {
-                    return ValueFilter.Evaluate(subAttrs);
-                }
+                    if (ValueFilter != null)
+                    {
+                        complexAttr.Values = ValueFilter.Evaluate(complexAttr.Values);
+                        continue;
+                    }
 
-                // Complex type
-                if (Next != null)
-                {
-                    return Next.Evaluate(subAttrs);
+                    if (Next != null)
+                    {
+                        subAttrs.AddRange(Next.Evaluate(complexAttr.Values));
+                    }
+
+                    if (subAttrs.Any())
+                    {
+                        return subAttrs;
+                    }
                 }
             }
 
@@ -147,7 +155,17 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
         protected override IEnumerable<RepresentationAttribute> EvaluateRepresentation(IEnumerable<RepresentationAttribute> representationAttrs)
         {
-            return Path.Evaluate(representationAttrs).Where(a => Compare(a, Operator, Value));
+            var result = new List<RepresentationAttribute>();
+            foreach(var representationAttr in representationAttrs)
+            {
+                var attr = Path.Evaluate(new[] { representationAttr });
+                if (attr.Where(a => Compare(a, Operator, Value)).Any())
+                {
+                    result.Add(representationAttr);
+                }
+            }
+
+            return result;
         }
 
         private static bool Compare(RepresentationAttribute attr, ComparisonOperators op, string value)
@@ -229,7 +247,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 case ComparisonOperators.ew:
                     return attrValue.Value.EndsWith(value);
                 case ComparisonOperators.pr:
-                    return string.IsNullOrWhiteSpace(attrValue.Value);
+                    return !string.IsNullOrWhiteSpace(attrValue.Value);
                 case ComparisonOperators.gt:
                     return attrValue.Value.CompareTo(value) > 0;
                 case ComparisonOperators.ge:
@@ -605,7 +623,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             return new CompAttributeExpression
             {
                 Operator = op,
-                Value = parameters.ElementAt(2),
+                Value =  op != ComparisonOperators.pr ? parameters.ElementAt(2) : null,
                 Path = GetPath(parameters.First())
             };
         }
