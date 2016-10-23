@@ -551,6 +551,63 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             Assert.True(attributes.Count() == 1);
         }
 
+        [Fact]
+        public void When_Filtering_Representations_By_Complex_Filter_Then_Attributes_Are_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var representation = new Representation
+            {
+                Attributes = new[]
+                {
+                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "persons", Type = Constants.SchemaAttributeTypes.Complex, MultiValued = true })
+                    {
+                        Values = new []
+                        {
+                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "person", Type = Constants.SchemaAttributeTypes.Complex })
+                            {
+                                Values = new RepresentationAttribute[]
+                                {
+                                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "name", Type = Constants.SchemaAttributeTypes.Complex })
+                                    {
+                                        Values = new []
+                                        {
+                                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "laetitia"),
+                                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "lastName", Type = Constants.SchemaAttributeTypes.String }, "loki")
+                                        }
+                                    },
+                                    new SingularRepresentationAttribute<DateTime>(new SchemaAttributeResponse { Name = "birthDate", Type = Constants.SchemaAttributeTypes.DateTime }, DateTime.Parse("2011-05-13T04:42:34Z"))
+                                }
+                            },
+                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "person", Type = Constants.SchemaAttributeTypes.Complex })
+                            {
+                                Values = new RepresentationAttribute[]
+                                {
+                                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "name", Type = Constants.SchemaAttributeTypes.Complex })
+                                    {
+                                        Values = new []
+                                        {
+                                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "thierry"),
+                                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "lastName", Type = Constants.SchemaAttributeTypes.String }, "loki")
+                                        }
+                                    },
+                                    new SingularRepresentationAttribute<DateTime>(new SchemaAttributeResponse { Name = "birthDate", Type = Constants.SchemaAttributeTypes.DateTime }, DateTime.Parse("2011-06-13T04:42:34Z"))
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+            var result = _filterParser.Parse("persons[person.name.lastName eq loki and person.birthDate le 2011-05-13T04:42:34Z].person.name.firstName");
+
+            // ACT 
+            var attributes = result.Evaluate(representation);
+
+            // ASSERTS
+            Assert.NotNull(attributes);
+            Assert.True(attributes.Count() == 1);
+        }
+
         private void InitializeFakeObjects()
         {
             _filterParser = new FilterParser();
