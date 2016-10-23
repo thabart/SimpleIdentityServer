@@ -439,13 +439,24 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             var result = new List<RepresentationAttribute>();
             foreach(var attr in representationAttrs)
             {
-                var left = AttributeLeft.Evaluate(new[] { attr });
                 var right = AttributeRight.Evaluate(new[] { attr });
-                bool isNot = !Operator.HasFlag(LogicalOperators.not);
-                if ((Operator.HasFlag(LogicalOperators.and) && left != null && right != null && left.Any() && right.Any()) == isNot
-                   || (Operator.HasFlag(LogicalOperators.or) && (left != null && left.Any()) || (right != null && right.Any())) == isNot)
+                // 1. Not operator doesn't contain left operator.
+                if (!Operator.HasFlag(LogicalOperators.and) && !Operator.HasFlag(LogicalOperators.or))
                 {
-                    result.Add(attr);
+                    if (Operator.HasFlag(LogicalOperators.not) && !right.Any())
+                    {
+                        result.Add(attr);
+                    }
+                }
+                else
+                {
+                    bool isNot = !Operator.HasFlag(LogicalOperators.not);
+                    var left = AttributeLeft.Evaluate(new[] { attr });
+                    if ((Operator.HasFlag(LogicalOperators.and) && left != null && right != null && left.Any() && right.Any()) == isNot
+                       || (Operator.HasFlag(LogicalOperators.or) && (left != null && left.Any()) || (right != null && right.Any())) == isNot)
+                    {
+                        result.Add(attr);
+                    }
                 }
             }
 
@@ -586,6 +597,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                     indexes.ElementAt(i + 1) - 1 - index;
                 LogicalOperators op;
                 var opStr = parameters.ElementAt(index);
+                // 1. Parse "and not" & "or not".
                 if (!Enum.TryParse(opStr, out op))
                 {
                     if (opStr == _andNot)
@@ -599,27 +611,29 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                     }
                 }
 
+                // 2. Construct right operand & logical expression.
                 var rightOperand = parameters.Skip(index + 1).Take(lastIndex);
                 var attrRight = getAttributeExpression(rightOperand);
-                if (leftAttr == null)
+                logicalExpression = new LogicalExpression
                 {
-                    var leftOperand = parameters.Skip(start).Take(index - start);
-                    var attrLeft = getAttributeExpression(leftOperand);
-                    logicalExpression = new LogicalExpression
-                    {
-                        AttributeLeft = attrLeft,
-                        AttributeRight = attrRight,
-                        Operator = op
-                    };
-                }
-                else
+                    AttributeRight = attrRight,
+                    Operator = op
+                };
+
+                // 3. Assign left operand.
+                // "not" operator doesn't contain left operand.
+                if (op != LogicalOperators.not)
                 {
-                    logicalExpression = new LogicalExpression
+                    if (leftAttr == null)
                     {
-                        AttributeLeft = leftAttr,
-                        AttributeRight = attrRight,
-                        Operator = op
-                    };
+                        var leftOperand = parameters.Skip(start).Take(index - start);
+                        var attrLeft = getAttributeExpression(leftOperand);
+                        logicalExpression.AttributeLeft = attrLeft;
+                    }
+                    else
+                    {
+                        logicalExpression.AttributeLeft = leftAttr;
+                    }
                 }
 
                 leftAttr = logicalExpression;
