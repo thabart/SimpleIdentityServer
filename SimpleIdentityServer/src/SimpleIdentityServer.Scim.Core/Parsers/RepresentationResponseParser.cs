@@ -179,33 +179,31 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 // 2.1 Complex attribute[Complex attribute]
                 if (attribute.MultiValued)
                 {
-                    if (complexRepresentation.Values == null || !complexRepresentation.Values.Any())
-                    {
-                        throw new InvalidOperationException(string.Format(ErrorMessages.TheAttributeIsNotAnArray, attribute.Name));
-                    }
-
                     var array = new JArray();
-                    foreach(var subRepresentation in complexRepresentation.Values)
+                    if (complexRepresentation.Values != null)
                     {
-                        var subComplex = subRepresentation as ComplexRepresentationAttribute;
-                        if (subComplex == null)
+                        foreach (var subRepresentation in complexRepresentation.Values)
                         {
-                            throw new InvalidOperationException(ErrorMessages.TheComplexAttributeArrayShouldContainsOnlyComplexAttribute);
-                        }
-
-                        var obj = new JObject();
-                        foreach(var subAttr in subComplex.Values)
-                        {
-                            var att = complexAttribute.SubAttributes.FirstOrDefault(a => a.Name == subAttr.SchemaAttribute.Name);
-                            if (att == null)
+                            var subComplex = subRepresentation as ComplexRepresentationAttribute;
+                            if (subComplex == null)
                             {
-                                continue;
+                                throw new InvalidOperationException(ErrorMessages.TheComplexAttributeArrayShouldContainsOnlyComplexAttribute);
                             }
 
-                            obj.Add(GetToken(subAttr, att));
-                        }
+                            var obj = new JObject();
+                            foreach (var subAttr in subComplex.Values)
+                            {
+                                var att = complexAttribute.SubAttributes.FirstOrDefault(a => a.Name == subAttr.SchemaAttribute.Name);
+                                if (att == null)
+                                {
+                                    continue;
+                                }
 
-                        array.Add(obj);
+                                obj.Add(GetToken(subAttr, att));
+                            }
+
+                            array.Add(obj);
+                        }
                     }
 
                     return new JProperty(complexRepresentation.SchemaAttribute.Name, array);

@@ -32,6 +32,7 @@ namespace SimpleIdentityServer.Scim.Core
         public static class ScimTypeValues
         {
             public const string Mutability = "mutability";
+            public const string InvalidFilter = "invalidFilter";
         }
 
         public static class UserResourceResponseNames

@@ -95,8 +95,8 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
                 throw new ArgumentNullException(nameof(jObj));
             }
 
-            _groupsAction.PatchGroup(id, jObj);
-            return null;
+            var result = _groupsAction.PatchGroup(id, jObj, GetLocationPattern());
+            return GetActionResult(result);
         }
 
         private string GetLocationPattern()

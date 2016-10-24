@@ -25,7 +25,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         ApiActionResult GetGroup(string id, string locationPattern);
         ApiActionResult RemoveGroup(string id);
         ApiActionResult UpdateGroup(string id, JObject jObj, string locationPattern);
-        ApiActionResult PatchGroup(string id, JObject jObj);
+        ApiActionResult PatchGroup(string id, JObject jObj, string locationPattern);
     }
 
     internal class GroupsAction : IGroupsAction
@@ -70,9 +70,9 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             return _updateRepresentationAction.Execute(id, jObj, Constants.SchemaUrns.Group, locationPattern, Constants.ResourceTypes.Group);
         }
 
-        public ApiActionResult PatchGroup(string id, JObject jObj)
+        public ApiActionResult PatchGroup(string id, JObject jObj, string locationPattern)
         {
-            return _patchRepresentationAction.Execute(id, jObj);
+            return _patchRepresentationAction.Execute(id, jObj, Constants.SchemaUrns.Group, locationPattern, Constants.ResourceTypes.Group);
         }
     }
 }

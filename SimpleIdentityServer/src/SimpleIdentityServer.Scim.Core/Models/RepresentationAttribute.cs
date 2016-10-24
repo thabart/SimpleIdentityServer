@@ -15,6 +15,7 @@
 #endregion
 
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SimpleIdentityServer.Scim.Core.Models
 {
@@ -36,6 +37,27 @@ namespace SimpleIdentityServer.Scim.Core.Models
         }
 
         public T Value { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+            {
+                return false;
+            }
+
+            var representationObj = obj as SingularRepresentationAttribute<T>;
+            if (representationObj == null)
+            {
+                return false;
+            }
+
+            return representationObj.Value.Equals(Value);
+        }
+
+        public override int GetHashCode()
+        {
+            return Value.GetHashCode();
+        }
     }
 
     public class ComplexRepresentationAttribute : RepresentationAttribute
@@ -45,5 +67,21 @@ namespace SimpleIdentityServer.Scim.Core.Models
         }
 
         public IEnumerable<RepresentationAttribute> Values { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+            {
+                return false;
+            }
+
+            var complexRepresentation = obj as ComplexRepresentationAttribute;
+            if (complexRepresentation == null)
+            {
+                return false;
+            }
+
+            return Values.All(v => complexRepresentation.Values.Contains(v));
+        }
     }
 }
