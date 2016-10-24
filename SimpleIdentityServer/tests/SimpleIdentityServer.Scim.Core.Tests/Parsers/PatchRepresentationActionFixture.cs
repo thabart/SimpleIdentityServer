@@ -43,6 +43,8 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
         private Mock<IParametersValidator> _parametersValidatorStub;
         private IPatchRepresentationAction _patchRepresentationAction;
 
+        #region Global
+
         [Fact]
         public void When_Passing_Null_Or_Empty_Parameters_Then_Exceptions_Are_Thrown()
         {
@@ -229,6 +231,10 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             _errorResponseFactoryStub.Verify(a => a.CreateError(string.Format(ErrorMessages.TheImmutableAttributeCannotBeUpdated, "members"), HttpStatusCode.BadRequest, Constants.ScimTypeValues.Mutability));
         }
 
+        #endregion
+
+        #region Remove
+
         [Fact]
         public void When_Trying_To_Remove_An_Element_From_A_Not_Array_Then_BadRequest_Is_Returned()
         {
@@ -280,6 +286,122 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             // ASSERT
             _errorResponseFactoryStub.Verify(a => a.CreateError(ErrorMessages.TheRepresentationCannotBeRemovedBecauseItsNotAnArray, HttpStatusCode.BadRequest));
         }
+        
+        [Fact]
+        public void When_Attribute_Cannot_Be_Removed_Then_BadRequest_Is_Returned()
+        {
+            // ARRANGE
+            const string id = "id";
+            ErrorResponse errorResponse = new ErrorResponse
+            {
+                Status = (int)HttpStatusCode.BadRequest
+            };
+            InitializeFakeObjects();
+            _representationStoreStub.Setup(r => r.GetRepresentation(It.IsAny<string>()))
+                .Returns(new Representation
+                {
+                    Attributes = new[]
+                    {
+                        new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "members", MultiValued = true, Type = "not_supported" })
+                        {
+                            Values = new []
+                            {
+                                new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "thierry")
+                            }
+                        }
+                    }
+                });
+            _patchRequestParserStub.Setup(p => p.Parse(It.IsAny<JObject>(), out errorResponse))
+                .Returns(new[]
+                {
+                    new PatchOperation
+                    {
+                        Type = PatchOperations.remove,
+                        Path = "members"
+                    }
+                });
+            _filterParserStub.Setup(f => f.Parse(It.IsAny<string>()))
+                .Returns(new Filter
+                {
+                    Expression = new AttributeExpression
+                    {
+                        Path = new AttributePath
+                        {
+                            Name = "members"
+                        }
+                    }
+                });
+
+            // ACT
+            _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}", "resource_type");
+
+            // ASSERT
+            _errorResponseFactoryStub.Verify(a => a.CreateError(ErrorMessages.TheRepresentationCannotBeRemoved, HttpStatusCode.BadRequest));
+        }
+
+        #endregion
+
+        #region Add
+
+        [Fact]
+        public void When_Trying_To_Add_An_Element_To_A_Not_Array_Then_BadRequest_Is_Returned()
+        {
+            // ARRANGE
+            const string id = "id";
+            ErrorResponse errorResponse = new ErrorResponse();
+            InitializeFakeObjects();
+            _representationStoreStub.Setup(r => r.GetRepresentation(It.IsAny<string>()))
+                .Returns(new Representation
+                {
+                    Attributes = new[]
+                    {
+                        new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "members", MultiValued = false, Type = Constants.SchemaAttributeTypes.Complex })
+                        {
+                            Values = new []
+                            {
+                                new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "thierry")
+                            }
+                        }
+                    }
+                });
+            _patchRequestParserStub.Setup(p => p.Parse(It.IsAny<JObject>(), out errorResponse))
+                .Returns(new[]
+                {
+                    new PatchOperation
+                    {
+                        Type = PatchOperations.add,
+                        Path = "members",
+                        Value = JObject.Parse("{ members : [ { firstName : 'firstName' }] }")
+                    }
+                });
+            _filterParserStub.Setup(f => f.Parse(It.IsAny<string>()))
+                .Returns(new Filter
+                {
+                    Expression = new AttributeExpression
+                    {
+                        Path = new AttributePath
+                        {
+                            Name = "members"
+                        }
+                    }
+                });
+            _jsonParserStub.Setup(j => j.GetRepresentation(It.IsAny<JToken>(), It.IsAny<SchemaAttributeResponse>()))
+                .Returns(new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "members", MultiValued = false, Type = Constants.SchemaAttributeTypes.Complex })
+                {
+                    Values = new[]
+                    {
+                        new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "thierry2")
+                    }
+                });
+
+            // ACT
+            _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}", "resource_type");
+
+            // ASSERT
+            _errorResponseFactoryStub.Verify(a => a.CreateError(ErrorMessages.TheRepresentationCannotBeAddedBecauseItsNotAnArray, HttpStatusCode.BadRequest));
+        }
+
+        #endregion
 
         private void InitializeFakeObjects()
         {

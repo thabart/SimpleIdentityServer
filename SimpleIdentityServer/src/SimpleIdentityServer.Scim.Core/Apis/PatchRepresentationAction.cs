@@ -144,7 +144,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                 var filteredAttr = filteredAttrs.First();
                 var attr = attrs.First();
 
-                // Check mutability.
+                // 4.2.1 Check mutability.
                 if (filteredAttr.SchemaAttribute.Mutability == Constants.SchemaAttributeMutability.Immutable ||
                     filteredAttr.SchemaAttribute.Mutability == Constants.SchemaAttributeMutability.ReadOnly)
                 {
@@ -153,10 +153,18 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                         _errorResponseFactory.CreateError(string.Format(ErrorMessages.TheImmutableAttributeCannotBeUpdated, filteredAttr.SchemaAttribute.Name), HttpStatusCode.BadRequest, Constants.ScimTypeValues.Mutability));
                 }
 
-                RepresentationAttribute value;
+                RepresentationAttribute value = null;
                 if (operation.Value != null)
                 {
-                    value = _jsonParser.GetRepresentation(operation.Value, filteredAttr.SchemaAttribute);
+                    var name = filteredAttr.SchemaAttribute.Name;
+                    var token = operation.Value.SelectToken(name);
+                    if (token == null)
+                    {
+                        token = new JObject();
+                        token[name] = operation.Value;
+                    }
+
+                    value = _jsonParser.GetRepresentation(token, filteredAttr.SchemaAttribute);
                 }
 
                 // Check uniqueness
@@ -164,7 +172,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 
                 switch (operation.Type)
                 {
-                    // 4.2 Remove attributes.
+                    // 4.2.1.1 Remove attributes.
                     case PatchOperations.remove:
                         if (!attr.SchemaAttribute.MultiValued)
                         {
@@ -176,7 +184,36 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 
                         if (!Remove(attr, filteredAttr))
                         {
-                            return null;
+                            return _apiResponseFactory.CreateError(
+                                HttpStatusCode.BadRequest,
+                                _errorResponseFactory.CreateError(ErrorMessages.TheRepresentationCannotBeRemoved, HttpStatusCode.BadRequest)
+                            );
+                        }
+                        break;
+                    // 4.2.1.2 Add attribute.
+                    case PatchOperations.add:
+                        if (value == null)
+                        {
+                            return _apiResponseFactory.CreateError(
+                                HttpStatusCode.BadRequest,
+                                _errorResponseFactory.CreateError(ErrorMessages.TheValueMustBeSpecified, HttpStatusCode.BadRequest, Constants.ScimTypeValues.InvalidSyntax)
+                            );
+                        }
+
+                        if (!value.SchemaAttribute.MultiValued)
+                        {
+                            return _apiResponseFactory.CreateError(
+                                HttpStatusCode.BadRequest,
+                                _errorResponseFactory.CreateError(ErrorMessages.TheRepresentationCannotBeAddedBecauseItsNotAnArray, HttpStatusCode.BadRequest)
+                            );
+                        }
+
+                        if (!Add(attr, value))
+                        {
+                            return _apiResponseFactory.CreateError(
+                                HttpStatusCode.BadRequest,
+                                _errorResponseFactory.CreateError(ErrorMessages.TheRepresentationCannotBeAdded, HttpStatusCode.BadRequest)
+                            );
                         }
                         break;
                 }
@@ -248,6 +285,57 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                     }
 
                     cAttr.Values = cAttr.Values.Except(attrsToBeRemoved);
+                    break;
+                default:
+                    return false;
+            }
+
+            return true;
+        }
+
+        private bool Add(RepresentationAttribute attr, RepresentationAttribute attrToBeAdded)
+        {
+            switch (attr.SchemaAttribute.Type)
+            {
+                case Constants.SchemaAttributeTypes.String:
+                    var strAttr = attr as SingularRepresentationAttribute<IEnumerable<string>>;
+                    var strAttrToBeAdded = attrToBeAdded as SingularRepresentationAttribute<IEnumerable<string>>;
+                    if (strAttr == null || strAttrToBeAdded == null)
+                    {
+                        return false;
+                    }
+
+                    strAttr.Value = strAttr.Value.Concat(strAttrToBeAdded.Value);
+                    break;
+                case Constants.SchemaAttributeTypes.Boolean:
+                    var bAttr = attr as SingularRepresentationAttribute<IEnumerable<bool>>;
+                    var bAttrToBeAdded = attrToBeAdded as SingularRepresentationAttribute<IEnumerable<bool>>;
+                    if (bAttr == null || bAttrToBeAdded == null)
+                    {
+                        return false;
+                    }
+
+                    bAttr.Value = bAttr.Value.Concat(bAttrToBeAdded.Value);
+                    break;
+                case Constants.SchemaAttributeTypes.DateTime:
+                    var dAttr = attr as SingularRepresentationAttribute<IEnumerable<DateTime>>;
+                    var dAttrToBeAdded = attrToBeAdded as SingularRepresentationAttribute<IEnumerable<DateTime>>;
+                    if (dAttr == null || dAttrToBeAdded == null)
+                    {
+                        return false;
+                    }
+
+                    dAttr.Value = dAttr.Value.Concat(dAttrToBeAdded.Value);
+                    break;
+                case Constants.SchemaAttributeTypes.Complex:
+                    var cAttr = attr as ComplexRepresentationAttribute;
+                    var cAttrToBeAdded = attrToBeAdded as ComplexRepresentationAttribute;
+                    if (cAttr == null || cAttrToBeAdded == null)
+                    {
+                        return false;
+                    }
+                    
+                    cAttr.Values = cAttr.Values.Concat(cAttrToBeAdded.Values);
                     break;
                 default:
                     return false;

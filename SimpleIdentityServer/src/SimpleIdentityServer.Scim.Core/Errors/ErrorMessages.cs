@@ -28,6 +28,7 @@ namespace SimpleIdentityServer.Scim.Core.Errors
         public const string TheComplexAttributeArrayShouldContainsOnlyComplexAttribute = "complex attribute array should contains only complex attribute";
         public const string TheResourceDoesntExist = "Resource {0} not found";
         public const string TheRepresentationCannotBeRemoved = "something goes wrong when trying to remove the resource";
+        public const string TheRepresentationCannotBeAdded = "something goes wrong when trying to added the resource";
         public const string TheLocationPatternIsNotCorrect = "the location pattern {0} is not correct";
         public const string TheImmutableAttributeCannotBeUpdated = "the immutable attribute {0} cannot be updated";
         public const string TheRepresentationCannotBeUpdated = "the representation cannot be updated";
@@ -35,7 +36,9 @@ namespace SimpleIdentityServer.Scim.Core.Errors
         public const string ThePatchOperationIsNotSupported = "the patch operation '{0}' is not supported";
         public const string ThePathNeedsToBeSpecified = "the path needs to be specified";
         public const string TheRepresentationCannotBeRemovedBecauseItsNotAnArray = "cannot be removed because it's not an array";
+        public const string TheRepresentationCannotBeAddedBecauseItsNotAnArray = "cannot be added because it's not an array";
         public const string TheFilterIsNotCorrect = "the filter is not correct";
         public const string TheOperationsParameterMustBeSpecified = "the operations parameter must be specified";
+        public const string TheValueMustBeSpecified = "the value parameter must be specified";
     }
 }
