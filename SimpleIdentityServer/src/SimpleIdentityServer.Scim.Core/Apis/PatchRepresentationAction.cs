@@ -216,6 +216,37 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                             );
                         }
                         break;
+                    // 4.2.1.3 Replace attribute
+                    case PatchOperations.replace:
+                        if (value == null)
+                        {
+                            return _apiResponseFactory.CreateError(
+                                HttpStatusCode.BadRequest,
+                                _errorResponseFactory.CreateError(ErrorMessages.TheValueMustBeSpecified, HttpStatusCode.BadRequest, Constants.ScimTypeValues.InvalidSyntax)
+                            );
+                        }
+
+                        if (attr.SchemaAttribute.MultiValued)
+                        {
+                            if (!SetEnum(attr, value))
+                            {
+                                return _apiResponseFactory.CreateError(
+                                    HttpStatusCode.BadRequest,
+                                    _errorResponseFactory.CreateError(ErrorMessages.TheRepresentationCannotBeSet, HttpStatusCode.BadRequest)
+                                );
+                            }
+                        }
+                        else
+                        {
+                            if (!Set(attr, value))
+                            {
+                                return _apiResponseFactory.CreateError(
+                                    HttpStatusCode.BadRequest,
+                                    _errorResponseFactory.CreateError(ErrorMessages.TheRepresentationCannotBeSet, HttpStatusCode.BadRequest)
+                                );
+                            }
+                        }
+                        break;
                 }
             }
 
@@ -336,6 +367,108 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                     }
                     
                     cAttr.Values = cAttr.Values.Concat(cAttrToBeAdded.Values);
+                    break;
+                default:
+                    return false;
+            }
+
+            return true;
+        }
+
+        private bool Set(RepresentationAttribute attr, RepresentationAttribute attrToBeSet)
+        {
+            switch (attr.SchemaAttribute.Type)
+            {
+                case Constants.SchemaAttributeTypes.String:
+                    var strAttr = attr as SingularRepresentationAttribute<string>;
+                    var strAttrToBeSet = attrToBeSet as SingularRepresentationAttribute<string>;
+                    if (strAttr == null || strAttrToBeSet == null)
+                    {
+                        return false;
+                    }
+
+                    strAttr.Value = strAttrToBeSet.Value;
+                    break;
+                case Constants.SchemaAttributeTypes.Boolean:
+                    var bAttr = attr as SingularRepresentationAttribute<bool>;
+                    var bAttrToBeSet = attrToBeSet as SingularRepresentationAttribute<bool>;
+                    if (bAttr == null || bAttrToBeSet == null)
+                    {
+                        return false;
+                    }
+
+                    bAttr.Value = bAttrToBeSet.Value;
+                    break;
+                case Constants.SchemaAttributeTypes.DateTime:
+                    var dAttr = attr as SingularRepresentationAttribute<DateTime>;
+                    var dAttrToBeSet = attrToBeSet as SingularRepresentationAttribute<DateTime>;
+                    if (dAttr == null || dAttrToBeSet == null)
+                    {
+                        return false;
+                    }
+
+                    dAttr.Value = dAttrToBeSet.Value;
+                    break;
+                case Constants.SchemaAttributeTypes.Complex:
+                    var cAttr = attr as ComplexRepresentationAttribute;
+                    var cAttrToBSet = attrToBeSet as ComplexRepresentationAttribute;
+                    if (cAttr == null || cAttrToBSet == null)
+                    {
+                        return false;
+                    }
+
+                    cAttr.Values = cAttrToBSet.Values;
+                    break;
+                default:
+                    return false;
+            }
+
+            return true;
+        }
+
+        private bool SetEnum(RepresentationAttribute attr, RepresentationAttribute attrToBeSet)
+        {
+            switch (attr.SchemaAttribute.Type)
+            {
+                case Constants.SchemaAttributeTypes.String:
+                    var strAttr = attr as SingularRepresentationAttribute<IEnumerable<string>>;
+                    var strAttrToBeSet = attrToBeSet as SingularRepresentationAttribute<IEnumerable<string>>;
+                    if (strAttr == null || strAttrToBeSet == null)
+                    {
+                        return false;
+                    }
+
+                    strAttr.Value = strAttrToBeSet.Value;
+                    break;
+                case Constants.SchemaAttributeTypes.Boolean:
+                    var bAttr = attr as SingularRepresentationAttribute<IEnumerable<bool>>;
+                    var bAttrToBeSet = attrToBeSet as SingularRepresentationAttribute<IEnumerable<bool>>;
+                    if (bAttr == null || bAttrToBeSet == null)
+                    {
+                        return false;
+                    }
+
+                    bAttr.Value = bAttrToBeSet.Value;
+                    break;
+                case Constants.SchemaAttributeTypes.DateTime:
+                    var dAttr = attr as SingularRepresentationAttribute<IEnumerable<DateTime>>;
+                    var dAttrToBeSet = attrToBeSet as SingularRepresentationAttribute<IEnumerable<DateTime>>;
+                    if (dAttr == null || dAttrToBeSet == null)
+                    {
+                        return false;
+                    }
+
+                    dAttr.Value = dAttrToBeSet.Value;
+                    break;
+                case Constants.SchemaAttributeTypes.Complex:
+                    var cAttr = attr as ComplexRepresentationAttribute;
+                    var cAttrToBSet = attrToBeSet as ComplexRepresentationAttribute;
+                    if (cAttr == null || cAttrToBSet == null)
+                    {
+                        return false;
+                    }
+
+                    cAttr.Values = cAttrToBSet.Values;
                     break;
                 default:
                     return false;

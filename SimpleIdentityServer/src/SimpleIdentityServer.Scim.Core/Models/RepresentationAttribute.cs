@@ -81,7 +81,19 @@ namespace SimpleIdentityServer.Scim.Core.Models
                 return false;
             }
 
-            return Values.All(v => complexRepresentation.Values.Contains(v));
+            var result = Values.All(v => complexRepresentation.Values.Contains(v));
+            return result;
+        }
+
+        public override int GetHashCode()
+        {
+            int result = 0;
+            foreach(var value in Values)
+            {
+                result = result ^ value.GetHashCode();
+            }
+
+            return result;
         }
     }
 }
