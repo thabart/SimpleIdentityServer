@@ -22,8 +22,6 @@ using SimpleIdentityServer.Scim.Core.Parsers;
 using SimpleIdentityServer.Scim.Core.Results;
 using SimpleIdentityServer.Scim.Core.Stores;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 
 namespace SimpleIdentityServer.Scim.Core.Apis
@@ -38,15 +36,21 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         private readonly IPatchRequestParser _patchRequestParser;
         private readonly IRepresentationStore _representationStore;
         private readonly IApiResponseFactory _apiResponseFactory;
+        private readonly IFilterParser _filterParser;
+        private readonly IJsonParser _jsonParser;
 
         public PatchRepresentationAction(
             IPatchRequestParser patchRequestParser,
             IRepresentationStore representationStore,
-            IApiResponseFactory apiResponseFactory)
+            IApiResponseFactory apiResponseFactory,
+            IFilterParser filterParser,
+            IJsonParser jsonParser)
         {
             _patchRequestParser = patchRequestParser;
             _representationStore = representationStore;
             _apiResponseFactory = apiResponseFactory;
+            _filterParser = filterParser;
+            _jsonParser = jsonParser;
         }
 
         public ApiActionResult Execute(string id, JObject jObj)
@@ -86,58 +90,24 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                         ErrorMessages.ThePathNeedsToBeSpecified);
                 }
 
-                // 4.2 Get attributes
-                GetAttributes(representation, operation.Path);
-            }
-
-            return null;
-        }
-
-        private static IEnumerable<RepresentationAttribute> GetAttributes(Representation representation, string path)
-        {
-            if (representation.Attributes == null ||
-                !representation.Attributes.Any())
-            {
-                return null;
-            }
-
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                return representation.Attributes;
-            }
-
-            var properties = path.Split('.');
-            var property = properties.First();
-            var attr = representation.Attributes.FirstOrDefault(a => a.SchemaAttribute.Name == property);
-            if (properties.Count() == 1)
-            {
-                var startArrayIndex = property.IndexOf('[');
-                var endArrayIndex = property.IndexOf(']');
-                if (startArrayIndex > -1 && endArrayIndex > -1)
+                // 4.2 Process filter.
+                var filter = _filterParser.Parse(operation.Path);
+                var attrs = filter.Evaluate(representation);
+                foreach (var attr in attrs)
                 {
-                    var arrayContent = property.Substring(startArrayIndex, endArrayIndex);
-                    string s = "";
+                    switch(operation.Type)
+                    {
+                        case PatchOperations.remove:
+                            continue;
+                    }
+                    /*
+                    var value = _jsonParser.GetRepresentation(operation.Value, attr.SchemaAttribute);
+                    if (value == null)
+                    {
+                        continue;
+                    }
+                    */
                 }
-
-                return new[] { attr };
-            }
-
-            return GetAttributesByReflection(attr, properties, 1);
-        }
-        
-
-        private static IEnumerable<RepresentationAttribute> GetAttributesByReflection(
-            RepresentationAttribute attr, 
-            IEnumerable<string> properties, 
-            int index)
-        {
-            var property = properties.ElementAt(index);
-            var startArrayIndex = property.IndexOf('[');
-            var endArrayIndex = property.IndexOf(']');
-            if (startArrayIndex > -1 && endArrayIndex > -1)
-            {
-                var arrayContent = property.Substring(startArrayIndex, endArrayIndex);
-                string s = "";
             }
 
             return null;

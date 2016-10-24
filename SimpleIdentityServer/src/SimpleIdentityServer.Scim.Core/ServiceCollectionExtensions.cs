@@ -35,8 +35,10 @@ namespace SimpleIdentityServer.Scim.Core
 
             services.AddTransient<ISchemaStore, SchemaStore>();
             services.AddTransient<IRepresentationRequestParser, RepresentationRequestParser>();
+            services.AddTransient<IJsonParser, RepresentationRequestParser>();
             services.AddTransient<IRepresentationResponseParser, RepresentationResponseParser>();
             services.AddTransient<IPatchRequestParser, PatchRequestParser>();
+            services.AddTransient<IFilterParser, FilterParser>();
             services.AddTransient<IAddRepresentationAction, AddRepresentationAction>();
             services.AddTransient<IGetRepresentationAction, GetRepresentationAction>();
             services.AddTransient<IDeleteRepresentationAction, DeleteRepresentationAction>();

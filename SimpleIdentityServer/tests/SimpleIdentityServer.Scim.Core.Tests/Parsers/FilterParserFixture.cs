@@ -27,6 +27,8 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
     {
         private IFilterParser _filterParser;
 
+        #region Tests filter
+
         [Fact]
         public void When_Passing_Null_Or_Empty_Parameter_Then_Exception_Is_Thrown()
         {
@@ -606,7 +608,64 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             // ASSERTS
             Assert.NotNull(attributes);
             Assert.True(attributes.Count() == 1);
+            var firstName = attributes.First() as SingularRepresentationAttribute<string>;
+            Assert.NotNull(firstName);
+            Assert.True(firstName.Value == "laetitia");
         }
+
+        #endregion
+
+        #region Tests GetTarget
+
+        [Fact]
+        public void When_Passing_Null_Or_Empty_Parameter_To_GetTarget_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+
+            // ACTS  & ASSERTS
+            Assert.Throws<ArgumentNullException>(() => _filterParser.GetTarget(null));
+            Assert.Throws<ArgumentNullException>(() => _filterParser.GetTarget(string.Empty));
+        }
+
+        [Fact]
+        public void When_Passing_Invalid_Path_To_GetTarget_Then_Empty_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+
+            // ACTS & ASSERTS
+            Assert.True(_filterParser.GetTarget("not (name eq thierry)") == string.Empty);
+            Assert.True(_filterParser.GetTarget("names[name eq thierry") == string.Empty);
+        }
+
+        [Fact]
+        public void When_Parsing_SimpleFilter_Then_Target_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+
+            // ACTS & ASSERTS
+            Assert.True(_filterParser.GetTarget("names[name eq thierry]") == "names");
+            Assert.True(_filterParser.GetTarget("names") == "names");
+            Assert.True(string.IsNullOrEmpty(_filterParser.GetTarget("title pr and userType eq Employee")));
+            Assert.True(string.IsNullOrEmpty(_filterParser.GetTarget("persons[names co thierry] and userType eq Employee")));
+        }
+
+        [Fact]
+        public void When_Parsing_ComplexFilter_Then_Target_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+
+            // ACT
+            var result = _filterParser.GetTarget("persons[names co thierry].adrs[main sw MainStreet]");
+
+            // ASSERT
+            Assert.True(result == "persons.adrs");
+        }
+
+        #endregion
 
         private void InitializeFakeObjects()
         {

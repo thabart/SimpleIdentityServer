@@ -517,6 +517,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
     public interface IFilterParser
     {
         Filter Parse(string path);
+        string GetTarget(string path);
     }
 
     public class FilterParser : IFilterParser
@@ -546,6 +547,22 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             }
 
             return ParseFilter(path);
+        }
+
+        public string GetTarget(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            var elts = SplitFilter(path);
+            if (elts == null || !elts.Any() || elts.Any(e => IsLogicalOperand(e) || IsComparisonOperand(e)))
+            {
+                return string.Empty;
+            }
+
+            return CleanTarget(elts.First());
         }
 
         private static Filter ParseFilter(string filter)
@@ -654,7 +671,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             };
         }
 
-        public static AttributePath GetPath(string path)
+        private static AttributePath GetPath(string path)
         {
             var values = SplitPath(path);
             AttributePath result = null;
@@ -687,6 +704,25 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             }
 
             return result;
+        }
+
+        private static string CleanTarget(string target)
+        {
+            var openIndex = target.IndexOf('[');
+            var closeIndex = target.IndexOf(']');
+            if (openIndex > -1 && closeIndex > -1)
+            {
+                var start = target.Substring(0, openIndex);
+                var end = target.Substring(closeIndex + 1, target.Length  - closeIndex - 1);
+                return CleanTarget(start + end);
+            }
+
+            if (openIndex > -1 || closeIndex > -1)
+            {
+                return string.Empty;
+            }
+
+            return target;
         }
 
         private static bool IsAttributeExpression(IEnumerable<string> parameters)

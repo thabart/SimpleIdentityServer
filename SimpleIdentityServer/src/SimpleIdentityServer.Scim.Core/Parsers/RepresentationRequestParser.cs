@@ -36,7 +36,18 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         Representation Parse(JToken jObj, string schemaId);
     }
 
-    internal class RepresentationRequestParser : IRepresentationRequestParser
+    public interface IJsonParser
+    {
+        /// <summary>
+        /// Parse json and returns the representation.
+        /// </summary>
+        /// <param name="jObj">JSON</param>
+        /// <param name="attribute">Schema attribute</param>
+        /// <returns>Representation</returns>
+        RepresentationAttribute GetRepresentation(JToken jObj, SchemaAttributeResponse attribute);
+    }
+
+    internal class RepresentationRequestParser : IRepresentationRequestParser, IJsonParser
     {
         private readonly ISchemaStore _schemasStore;
 
@@ -93,8 +104,25 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             return representation;
         }
 
-        private RepresentationAttribute GetRepresentation(JToken jObj, SchemaAttributeResponse attribute)
+        /// <summary>
+        /// Parse json and returns the representation.
+        /// </summary>
+        /// <param name="jObj">JSON</param>
+        /// <param name="attribute">Schema attribute</param>
+        /// <returns>Representation</returns>
+        public RepresentationAttribute GetRepresentation(JToken jObj, SchemaAttributeResponse attribute)
         {
+            if (jObj == null)
+            {
+                throw new ArgumentNullException(nameof(jObj));
+            }
+
+            if (attribute == null)
+            {
+                throw new ArgumentNullException(nameof(attribute));
+            }
+
+
             Action<ComplexSchemaAttributeResponse, List<RepresentationAttribute>, JToken> setRepresentationCallback = (attr, lst, tok) =>
             {
                 foreach (var subAttribute in attr.SubAttributes)
