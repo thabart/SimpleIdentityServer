@@ -33,6 +33,14 @@ namespace SimpleIdentityServer.Scim.Core
         {
             public const string Mutability = "mutability";
             public const string InvalidFilter = "invalidFilter";
+            public const string TooMany = "tooMany";
+            public const string Uniqueness = "uniqueness";
+            public const string InvalidSyntax = "invalidSyntax";
+            public const string InvalidPath = "invalidPath";
+            public const string NoTarget = "noTarget";
+            public const string InvalidValue = "invalidValue";
+            public const string InvalidVers = "invalidVers";
+            public const string Sensitive = "sensitive";
         }
 
         public static class UserResourceResponseNames

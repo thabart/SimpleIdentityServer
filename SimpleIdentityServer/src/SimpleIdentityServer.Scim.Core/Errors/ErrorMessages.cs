@@ -36,5 +36,6 @@ namespace SimpleIdentityServer.Scim.Core.Errors
         public const string ThePathNeedsToBeSpecified = "the path needs to be specified";
         public const string TheRepresentationCannotBeRemovedBecauseItsNotAnArray = "cannot be removed because it's not an array";
         public const string TheFilterIsNotCorrect = "the filter is not correct";
+        public const string TheOperationsParameterMustBeSpecified = "the operations parameter must be specified";
     }
 }

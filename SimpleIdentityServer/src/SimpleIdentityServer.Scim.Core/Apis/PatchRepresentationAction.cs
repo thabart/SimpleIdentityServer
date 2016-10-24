@@ -15,6 +15,7 @@
 #endregion
 
 using Newtonsoft.Json.Linq;
+using SimpleIdentityServer.Scim.Core.DTOs;
 using SimpleIdentityServer.Scim.Core.Errors;
 using SimpleIdentityServer.Scim.Core.Factories;
 using SimpleIdentityServer.Scim.Core.Models;
@@ -99,7 +100,14 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             }
 
             // 3. Get patch operations.
-            var operations = _patchRequestParser.Parse(jObj);
+            ErrorResponse errorResponse;
+            var operations = _patchRequestParser.Parse(jObj, out errorResponse);
+            if (operations == null)
+            {
+                return _apiResponseFactory.CreateError(
+                    (HttpStatusCode)errorResponse.Status,
+                    errorResponse);
+            }
 
             // 4. Process operations.
             foreach (var operation in operations)
@@ -110,32 +118,50 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                 {
                     return _apiResponseFactory.CreateError(
                         HttpStatusCode.BadRequest,
-                        ErrorMessages.ThePathNeedsToBeSpecified);
+                         _errorResponseFactory.CreateError(ErrorMessages.ThePathNeedsToBeSpecified, HttpStatusCode.BadRequest, Constants.ScimTypeValues.InvalidSyntax));
                 }
 
-                // 4.2 Process filter.
-                var filter = _filterParser.Parse(operation.Path);
-                var filteredAttrs = filter.Evaluate(representation);
-                if (filteredAttrs == null)
-                {
-                    return _apiResponseFactory.CreateError(
-                        HttpStatusCode.BadRequest,
-                        _errorResponseFactory.CreateError(ErrorMessages.TheFilterIsNotCorrect,
-                            HttpStatusCode.BadRequest,
-                            Constants.ScimTypeValues.InvalidFilter)
-                    );
-                }
-
-                var target = _filterParser.GetTarget(operation.Path);
+                // 4.2 Process filter and execute operation.
                 var attrs = representation.Attributes;
-                if (!string.IsNullOrWhiteSpace(target))
+                var filteredAttrs = representation.Attributes;
+                if (!string.IsNullOrWhiteSpace(operation.Path))
                 {
+                    var filter = _filterParser.Parse(operation.Path);
+                    filteredAttrs = filter.Evaluate(representation);
+                    if (filteredAttrs == null || !filteredAttrs.Any())
+                    {
+                        return _apiResponseFactory.CreateError(
+                            HttpStatusCode.BadRequest,
+                            _errorResponseFactory.CreateError(ErrorMessages.TheFilterIsNotCorrect, HttpStatusCode.BadRequest, Constants.ScimTypeValues.InvalidFilter)
+                        );
+                    }
+
+                    var target = _filterParser.GetTarget(operation.Path);
                     var filterRepresentation = _filterParser.Parse(target);
                     attrs = filterRepresentation.Evaluate(representation);
                 }
 
                 var filteredAttr = filteredAttrs.First();
                 var attr = attrs.First();
+
+                // Check mutability.
+                if (filteredAttr.SchemaAttribute.Mutability == Constants.SchemaAttributeMutability.Immutable ||
+                    filteredAttr.SchemaAttribute.Mutability == Constants.SchemaAttributeMutability.ReadOnly)
+                {
+                    return _apiResponseFactory.CreateError(
+                        HttpStatusCode.BadRequest,
+                        _errorResponseFactory.CreateError(string.Format(ErrorMessages.TheImmutableAttributeCannotBeUpdated, filteredAttr.SchemaAttribute.Name), HttpStatusCode.BadRequest, Constants.ScimTypeValues.Mutability));
+                }
+
+                RepresentationAttribute value;
+                if (operation.Value != null)
+                {
+                    value = _jsonParser.GetRepresentation(operation.Value, filteredAttr.SchemaAttribute);
+                }
+
+                // Check uniqueness
+                // TODO.
+
                 switch (operation.Type)
                 {
                     // 4.2 Remove attributes.
@@ -144,14 +170,12 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                         {
                             return _apiResponseFactory.CreateError(
                                 HttpStatusCode.BadRequest,
-                                _errorResponseFactory.CreateError(ErrorMessages.TheRepresentationCannotBeRemovedBecauseItsNotAnArray,
-                                    HttpStatusCode.BadRequest)
+                                _errorResponseFactory.CreateError(ErrorMessages.TheRepresentationCannotBeRemovedBecauseItsNotAnArray, HttpStatusCode.BadRequest)
                             );
                         }
 
                         if (!Remove(attr, filteredAttr))
                         {
-                            // Returns an error.
                             return null;
                         }
                         break;

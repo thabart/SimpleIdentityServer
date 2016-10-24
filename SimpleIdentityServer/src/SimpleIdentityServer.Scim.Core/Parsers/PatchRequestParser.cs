@@ -16,24 +16,48 @@
 
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Scim.Core.DTOs;
+using SimpleIdentityServer.Scim.Core.Errors;
+using SimpleIdentityServer.Scim.Core.Factories;
 using SimpleIdentityServer.Scim.Core.Models;
 using System;
-using System.Linq;
 using System.Collections.Generic;
-using SimpleIdentityServer.Scim.Core.Errors;
+using System.Linq;
+using System.Net;
 
 namespace SimpleIdentityServer.Scim.Core.Parsers
 {
     public interface IPatchRequestParser
     {
-        IEnumerable<PatchOperation> Parse(JObject jObj);
+        /// <summary>
+        /// Parse the object and returns the PatchOperation.
+        /// </summary>
+        /// <exception cref="ArgumentNullException">Thrown when the parameter is null</exception>
+        /// <param name="jObj">Json that will be parsed.</param>
+        /// <param name="errorResponse">Error response.</param>
+        /// <returns>Patch operation or null</returns>
+        IEnumerable<PatchOperation> Parse(JObject jObj, out ErrorResponse errorResponse);
     }
 
     internal class PatchRequestParser : IPatchRequestParser
     {
-        public IEnumerable<PatchOperation> Parse(JObject jObj)
+        private IErrorResponseFactory _errorResponseFactory;
+
+        public PatchRequestParser(IErrorResponseFactory errorResponseFactory)
         {
-            // 1. Check parameters.
+            _errorResponseFactory = errorResponseFactory;
+        }
+
+        /// <summary>
+        /// Parse the object and returns the PatchOperation.
+        /// </summary>
+        /// <exception cref="ArgumentNullException">Thrown when the parameter is null</exception>
+        /// <param name="jObj">Json that will be parsed.</param>
+        /// <param name="errorResponse">Error response.</param>
+        /// <returns>Patch operation or null</returns>
+        public IEnumerable<PatchOperation> Parse(JObject jObj, out ErrorResponse errorResponse)
+        {
+            errorResponse = null;
+            // 1. Check parameter.
             if (jObj == null)
             {
                 throw new ArgumentNullException(nameof(jObj));
@@ -48,6 +72,10 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
             if (obj.Operations == null)
             {
+                errorResponse = _errorResponseFactory.CreateError(
+                    ErrorMessages.TheOperationsParameterMustBeSpecified,
+                    HttpStatusCode.BadRequest,
+                    Constants.ScimTypeValues.InvalidSyntax);
                 return null;
             }
 
@@ -57,8 +85,11 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 PatchOperations op;
                 if (!Enum.TryParse(operation.Operation, out op))
                 {
-                    throw new InvalidOperationException(string.Format(ErrorMessages.ThePatchOperationIsNotSupported,
-                        operation.Operation));
+                    errorResponse = _errorResponseFactory.CreateError(
+                        string.Format(ErrorMessages.ThePatchOperationIsNotSupported, operation.Operation),
+                        HttpStatusCode.BadRequest,
+                        Constants.ScimTypeValues.InvalidSyntax);
+                    return null;
                 }
 
                 result.Add(new PatchOperation
