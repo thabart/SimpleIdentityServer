@@ -15,17 +15,38 @@
 #endregion
 
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
+using SimpleIdentityServer.Scim.Core.Apis;
+using SimpleIdentityServer.Scim.Startup.Extensions;
+using System;
 
 namespace SimpleIdentityServer.Scim.Startup.Controllers
 {
     [Route(Constants.RoutePaths.UsersController)]
     public class UsersController : Controller
     {
-        [HttpPost]
-        public async Task<ActionResult> Create()
+        private readonly IUsersAction _usersAction;
+
+        public UsersController(IUsersAction usersAction)
         {
-            return null;
+            _usersAction = usersAction;
+        }
+
+        [HttpPost]
+        public ActionResult Create([FromBody] JObject jObj)
+        {
+            if (jObj == null)
+            {
+                throw new ArgumentNullException(nameof(jObj));
+            }
+
+            var result = _usersAction.AddUser(jObj, GetLocationPattern());
+            return this.GetActionResult(result);
+        }
+
+        private string GetLocationPattern()
+        {
+            return new Uri(new Uri(Request.GetAbsoluteUriWithVirtualPath()), Constants.RoutePaths.UsersController).AbsoluteUri + "/{id}";
         }
     }
 }

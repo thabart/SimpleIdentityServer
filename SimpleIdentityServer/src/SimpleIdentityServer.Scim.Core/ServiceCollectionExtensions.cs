@@ -45,6 +45,7 @@ namespace SimpleIdentityServer.Scim.Core
             services.AddTransient<IUpdateRepresentationAction, UpdateRepresentationAction>();
             services.AddTransient<IPatchRepresentationAction, PatchRepresentationAction>();
             services.AddTransient<IGroupsAction, GroupsAction>();
+            services.AddTransient<IUsersAction, UsersAction>();
             services.AddTransient<IApiResponseFactory, ApiResponseFactory>();
             services.AddTransient<IErrorResponseFactory, ErrorResponseFactory>();
             services.AddTransient<IParametersValidator, ParametersValidator>();

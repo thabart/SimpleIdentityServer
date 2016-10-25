@@ -15,10 +15,8 @@
 #endregion
 
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Scim.Core.Apis;
-using SimpleIdentityServer.Scim.Core.Results;
 using SimpleIdentityServer.Scim.Startup.Extensions;
 using System;
 
@@ -43,7 +41,7 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
             }
 
             var result = _groupsAction.AddGroup(jObj, GetLocationPattern());
-            return GetActionResult(result);
+            return this.GetActionResult(result);
         }
 
         [HttpGet("{id}")]
@@ -55,7 +53,7 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
             }
 
             var result = _groupsAction.GetGroup(id, GetLocationPattern());
-            return GetActionResult(result);
+            return this.GetActionResult(result);
         }
 
         [HttpDelete("{id}")]
@@ -67,7 +65,7 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
             }
 
             var result = _groupsAction.RemoveGroup(id);
-            return GetActionResult(result);
+            return this.GetActionResult(result);
         }
 
         [HttpPut("{id}")]
@@ -79,7 +77,7 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
             }
 
             var result = _groupsAction.UpdateGroup(id, jObj, GetLocationPattern());
-            return GetActionResult(result);
+            return this.GetActionResult(result);
         }
 
         [HttpPatch("{id}")]
@@ -96,29 +94,12 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
             }
 
             var result = _groupsAction.PatchGroup(id, jObj, GetLocationPattern());
-            return GetActionResult(result);
+            return this.GetActionResult(result);
         }
 
         private string GetLocationPattern()
         {
             return new Uri(new Uri(Request.GetAbsoluteUriWithVirtualPath()), Constants.RoutePaths.GroupsController).AbsoluteUri + "/{id}";
-        }
-
-        private ActionResult GetActionResult(ApiActionResult result)
-        {
-            if (!string.IsNullOrWhiteSpace(result.Location))
-            {
-                HttpContext.Response.Headers[HeaderNames.Location] = result.Location;
-            }
-
-            if (result.Content != null)
-            {
-                var res = new ObjectResult(result.Content);
-                res.StatusCode = result.StatusCode;
-                return res;
-            }
-
-            return new StatusCodeResult(result.StatusCode.Value);
         }
     }
 }

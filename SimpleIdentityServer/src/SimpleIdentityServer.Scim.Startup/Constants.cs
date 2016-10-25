@@ -21,9 +21,9 @@ namespace SimpleIdentityServer.Scim.Startup
         public static class RoutePaths
         {
             public const string GroupsController = "Groups";
+            public const string UsersController = "Users";
             public const string SchemasController = "Schemas";
             public const string ServiceProviderConfigController = "ServiceProviderConfig";
-            public const string UsersController = "UsersController";
         }
     }
 }
