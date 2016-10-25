@@ -313,24 +313,26 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
                             // 23 YO
                             new ComplexRepresentationAttribute(new SchemaAttributeResponse { Type = Constants.SchemaAttributeTypes.Complex })
                             {
-                                Values = new []
+                                Values = new RepresentationAttribute[]
                                 {
-                                    new SingularRepresentationAttribute<int>(new SchemaAttributeResponse { Name = "age", Type = Constants.SchemaAttributeTypes.Integer }, 23)
+                                    new SingularRepresentationAttribute<int>(new SchemaAttributeResponse { Name = "age", Type = Constants.SchemaAttributeTypes.Integer }, 23),
+                                    new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "firstName")
                                 }
                             },
                             // 24 YO
                             new ComplexRepresentationAttribute(new SchemaAttributeResponse { Type = Constants.SchemaAttributeTypes.Complex })
                             {
-                                Values = new []
+                                Values = new RepresentationAttribute[]
                                 {
-                                    new SingularRepresentationAttribute<int>(new SchemaAttributeResponse { Name = "age", Type = Constants.SchemaAttributeTypes.Integer }, 24)
+                                    new SingularRepresentationAttribute<int>(new SchemaAttributeResponse { Name = "age", Type = Constants.SchemaAttributeTypes.Integer }, 24),
+                                    new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "firstName")
                                 }
                             }
                         }
                     }
                 }
             };
-            var result = _filterParser.Parse("persons[age lt 24]");
+            var result = _filterParser.Parse("persons[age lt 24 and firstName eq firstName]");
 
             // ACT 
             var attributes = result.Evaluate(representation);

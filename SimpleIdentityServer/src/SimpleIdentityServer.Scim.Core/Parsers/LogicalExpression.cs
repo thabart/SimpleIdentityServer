@@ -56,8 +56,8 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 {
                     bool isNot = !Operator.HasFlag(LogicalOperators.not);
                     var left = AttributeLeft.Evaluate(new[] { attr });
-                    if ((Operator.HasFlag(LogicalOperators.and) && left != null && right != null && left.Any() && right.Any()) == isNot
-                       || (Operator.HasFlag(LogicalOperators.or) && (left != null && left.Any()) || (right != null && right.Any())) == isNot)
+                    if ((Operator.HasFlag(LogicalOperators.and) && left != null && right != null && left.Count() >= 1 && right.Count() >= 1) == isNot
+                       || (Operator.HasFlag(LogicalOperators.or) && ((left != null && left.Count() >= 1) || (right != null && right.Count() >= 1))) == isNot)
                     {
                         result.Add(attr);
                     }

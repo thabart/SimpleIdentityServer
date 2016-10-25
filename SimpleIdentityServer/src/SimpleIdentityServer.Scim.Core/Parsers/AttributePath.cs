@@ -49,7 +49,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             if (!representations.Any())
             {
                 var lst = new List<RepresentationAttribute>();
-                foreach(var representationAttr in representationAttrs)
+                foreach (var representationAttr in representationAttrs)
                 {
                     var c = representationAttr as ComplexRepresentationAttribute;
                     if (c == null || !c.Values.Any(val => val.SchemaAttribute.Name == Name))
@@ -68,7 +68,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 representations = lst;
             }
 
-            representations = representations.Select(r => (RepresentationAttribute)r.Clone()).ToList();
+            // representations = representations.Select(r => (RepresentationAttribute)r.Clone()).ToList();
             if ((ValueFilter != null && representations.Any(r => !r.SchemaAttribute.MultiValued)) ||
                 (Next != null && representations.Any(r => r.SchemaAttribute.Type != Constants.SchemaAttributeTypes.Complex)))
             {
@@ -78,25 +78,31 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             if (ValueFilter != null || Next != null)
             {
                 var subAttrs = new List<RepresentationAttribute>();
+                var lst = new List<RepresentationAttribute>();
                 foreach (var representation in representations)
                 {
+                    var record = representation;
                     var complexAttr = representation as ComplexRepresentationAttribute;
-                    if (complexAttr == null || complexAttr.Values == null)
+                    if (complexAttr != null && complexAttr.Values != null)
                     {
-                        continue;
+                        if (ValueFilter != null)
+                        {
+                            record = new ComplexRepresentationAttribute(complexAttr.SchemaAttribute)
+                            {
+                                Values = ValueFilter.Evaluate(complexAttr.Values)
+                            };
+                        }
+
+                        if (Next != null && complexAttr.Values != null && complexAttr.Values.Any())
+                        {
+                            subAttrs.AddRange(Next.Evaluate(((ComplexRepresentationAttribute)record).Values));
+                        }
                     }
 
-                    if (ValueFilter != null)
-                    {
-                        complexAttr.Values = ValueFilter.Evaluate(complexAttr.Values);
-                    }
-
-                    if (Next != null && complexAttr.Values != null && complexAttr.Values.Any())
-                    {
-                        subAttrs.AddRange(Next.Evaluate(complexAttr.Values));
-                    }
+                    lst.Add(record);
                 }
 
+                representations = lst;
                 if (subAttrs.Any())
                 {
                     return subAttrs;

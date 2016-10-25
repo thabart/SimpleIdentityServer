@@ -315,7 +315,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                         attrsToBeRemoved.Add(removed);
                     }
 
-                    cAttr.Values = cAttr.Values.Except(attrsToBeRemoved);
+                    cAttr.Values = cAttr.Values.Where(v => !attrsToBeRemoved.Contains(v));
                     break;
                 default:
                     return false;
