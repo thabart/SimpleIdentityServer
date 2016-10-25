@@ -68,6 +68,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 representations = lst;
             }
 
+            representations = representations.Select(r => (RepresentationAttribute)r.Clone()).ToList();
             if ((ValueFilter != null && representations.Any(r => !r.SchemaAttribute.MultiValued)) ||
                 (Next != null && representations.Any(r => r.SchemaAttribute.Type != Constants.SchemaAttributeTypes.Complex)))
             {
@@ -85,8 +86,6 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                         continue;
                     }
 
-                    complexAttr = (ComplexRepresentationAttribute)complexAttr.Clone();
-                    complexAttr.Clone();
                     if (ValueFilter != null)
                     {
                         complexAttr.Values = ValueFilter.Evaluate(complexAttr.Values);

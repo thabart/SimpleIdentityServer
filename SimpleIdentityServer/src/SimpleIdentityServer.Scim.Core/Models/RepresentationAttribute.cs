@@ -115,9 +115,12 @@ namespace SimpleIdentityServer.Scim.Core.Models
         protected override object CloneObj()
         {
             var newValues = new List<RepresentationAttribute>();
-            foreach(var value in Values)
+            if (Values != null)
             {
-                newValues.Add((RepresentationAttribute)value.Clone());
+                foreach (var value in Values)
+                {
+                    newValues.Add((RepresentationAttribute)value.Clone());
+                }
             }
 
             return new ComplexRepresentationAttribute(SchemaAttribute)
