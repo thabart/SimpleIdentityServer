@@ -311,38 +311,26 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
                         Values = new []
                         {
                             // 23 YO
-                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "person", Type = Constants.SchemaAttributeTypes.Complex })
+                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Type = Constants.SchemaAttributeTypes.Complex })
                             {
                                 Values = new []
                                 {
-                                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "information", Type = Constants.SchemaAttributeTypes.Complex })
-                                    {
-                                        Values = new []
-                                        {
-                                            new SingularRepresentationAttribute<int>(new SchemaAttributeResponse { Name = "age", Type = Constants.SchemaAttributeTypes.Integer }, 23)
-                                        }
-                                    }
+                                    new SingularRepresentationAttribute<int>(new SchemaAttributeResponse { Name = "age", Type = Constants.SchemaAttributeTypes.Integer }, 23)
                                 }
                             },
                             // 24 YO
-                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "person", Type = Constants.SchemaAttributeTypes.Complex })
+                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Type = Constants.SchemaAttributeTypes.Complex })
                             {
                                 Values = new []
                                 {
-                                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "information", Type = Constants.SchemaAttributeTypes.Complex })
-                                    {
-                                        Values = new []
-                                        {
-                                            new SingularRepresentationAttribute<int>(new SchemaAttributeResponse { Name = "age", Type = Constants.SchemaAttributeTypes.Integer }, 24)
-                                        }
-                                    }
+                                    new SingularRepresentationAttribute<int>(new SchemaAttributeResponse { Name = "age", Type = Constants.SchemaAttributeTypes.Integer }, 24)
                                 }
                             }
                         }
                     }
                 }
             };
-            var result = _filterParser.Parse("persons[person.information.age lt 24]");
+            var result = _filterParser.Parse("persons[age lt 24]");
 
             // ACT 
             var attributes = result.Evaluate(representation);
@@ -353,13 +341,9 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             var persons = attributes.First() as ComplexRepresentationAttribute;
             Assert.NotNull(persons);
             Assert.True(persons.SchemaAttribute.Name == "persons");
-            var person = persons.Values.First() as ComplexRepresentationAttribute;
-            Assert.NotNull(person);
-            Assert.True(person.SchemaAttribute.Name == "person");
-            var information = person.Values.First() as ComplexRepresentationAttribute;
-            Assert.NotNull(information);
-            Assert.True(information.SchemaAttribute.Name == "information");
-            var age = information.Values.First() as SingularRepresentationAttribute<int>;
+            var empty = persons.Values.First() as ComplexRepresentationAttribute;
+            Assert.NotNull(empty);
+            var age = empty.Values.First() as SingularRepresentationAttribute<int>;
             Assert.NotNull(age);
             Assert.True(age.SchemaAttribute.Name == "age");
             Assert.True(age.Value == 23);

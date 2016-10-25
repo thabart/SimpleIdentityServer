@@ -14,12 +14,13 @@
 // limitations under the License.
 #endregion
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace SimpleIdentityServer.Scim.Core.Models
 {
-    public class RepresentationAttribute
+    public class RepresentationAttribute : ICloneable
     {
         public RepresentationAttribute(SchemaAttributeResponse schemaAttribute)
         {
@@ -27,6 +28,16 @@ namespace SimpleIdentityServer.Scim.Core.Models
         }
 
         public SchemaAttributeResponse SchemaAttribute { get; private set; }
+
+        public object Clone()
+        {
+            return CloneObj();
+        }
+
+        protected virtual object CloneObj()
+        {
+            return new RepresentationAttribute(SchemaAttribute);
+        }
     }
 
     public class SingularRepresentationAttribute<T> : RepresentationAttribute
@@ -57,6 +68,11 @@ namespace SimpleIdentityServer.Scim.Core.Models
         public override int GetHashCode()
         {
             return Value.GetHashCode();
+        }
+
+        protected override object CloneObj()
+        {
+            return new SingularRepresentationAttribute<T>(SchemaAttribute, Value);
         }
     }
 
@@ -94,6 +110,20 @@ namespace SimpleIdentityServer.Scim.Core.Models
             }
 
             return result;
+        }
+
+        protected override object CloneObj()
+        {
+            var newValues = new List<RepresentationAttribute>();
+            foreach(var value in Values)
+            {
+                newValues.Add((RepresentationAttribute)value.Clone());
+            }
+
+            return new ComplexRepresentationAttribute(SchemaAttribute)
+            {
+                Values = newValues
+            };
         }
     }
 }

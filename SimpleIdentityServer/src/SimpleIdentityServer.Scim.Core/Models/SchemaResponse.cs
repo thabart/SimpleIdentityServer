@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using static SimpleIdentityServer.Scim.Core.Constants;
