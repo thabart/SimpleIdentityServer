@@ -78,6 +78,18 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
             return this.GetActionResult(result);
         }
 
+        [HttpDelete("{id}")]
+        public ActionResult DeleteUser(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            var result = _usersAction.RemoveUser(id);
+            return this.GetActionResult(result);
+        }
+
         private string GetLocationPattern()
         {
             return new Uri(new Uri(Request.GetAbsoluteUriWithVirtualPath()), Constants.RoutePaths.UsersController).AbsoluteUri + "/{id}";

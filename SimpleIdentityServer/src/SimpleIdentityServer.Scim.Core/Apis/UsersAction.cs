@@ -24,6 +24,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         ApiActionResult AddUser(JObject jObj, string locationPattern);
         ApiActionResult UpdateUser(string id, JObject jObj, string locationPattern);
         ApiActionResult PatchUser(string id, JObject jObj, string locationPattern);
+        ApiActionResult RemoveUser(string id);
     }
 
     internal class UsersAction : IUsersAction
@@ -31,15 +32,18 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         private readonly IAddRepresentationAction _addRepresentationAction;
         private readonly IUpdateRepresentationAction _updateRepresentationAction;
         private readonly IPatchRepresentationAction _patchRepresentationAction;
+        private readonly IDeleteRepresentationAction _deleteRepresentationAction;
 
         public UsersAction(
             IAddRepresentationAction addRepresentationAction,
             IUpdateRepresentationAction updateRepresentationAction,
-            IPatchRepresentationAction patchRepresentationAction)
+            IPatchRepresentationAction patchRepresentationAction,
+            IDeleteRepresentationAction deleteRepresentationAction)
         {
             _addRepresentationAction = addRepresentationAction;
             _updateRepresentationAction = updateRepresentationAction;
             _patchRepresentationAction = patchRepresentationAction;
+            _deleteRepresentationAction = deleteRepresentationAction;
         }
 
         public ApiActionResult AddUser(JObject jObj, string locationPattern)
@@ -55,6 +59,11 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         public ApiActionResult PatchUser(string id, JObject jObj, string locationPattern)
         {
             return _patchRepresentationAction.Execute(id, jObj, Constants.SchemaUrns.User, locationPattern, Constants.ResourceTypes.User);
+        }
+
+        public ApiActionResult RemoveUser(string id)
+        {
+            return _deleteRepresentationAction.Execute(id);
         }
     }
 }
