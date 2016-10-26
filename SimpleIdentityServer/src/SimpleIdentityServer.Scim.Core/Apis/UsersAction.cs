@@ -25,6 +25,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         ApiActionResult UpdateUser(string id, JObject jObj, string locationPattern);
         ApiActionResult PatchUser(string id, JObject jObj, string locationPattern);
         ApiActionResult RemoveUser(string id);
+        ApiActionResult GetUser(string id, string locationPattern);
     }
 
     internal class UsersAction : IUsersAction
@@ -33,17 +34,20 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         private readonly IUpdateRepresentationAction _updateRepresentationAction;
         private readonly IPatchRepresentationAction _patchRepresentationAction;
         private readonly IDeleteRepresentationAction _deleteRepresentationAction;
+        private readonly IGetRepresentationAction _getRepresentationAction;
 
         public UsersAction(
             IAddRepresentationAction addRepresentationAction,
             IUpdateRepresentationAction updateRepresentationAction,
             IPatchRepresentationAction patchRepresentationAction,
-            IDeleteRepresentationAction deleteRepresentationAction)
+            IDeleteRepresentationAction deleteRepresentationAction,
+            IGetRepresentationAction getRepresentationAction)
         {
             _addRepresentationAction = addRepresentationAction;
             _updateRepresentationAction = updateRepresentationAction;
             _patchRepresentationAction = patchRepresentationAction;
             _deleteRepresentationAction = deleteRepresentationAction;
+            _getRepresentationAction = getRepresentationAction;
         }
 
         public ApiActionResult AddUser(JObject jObj, string locationPattern)
@@ -64,6 +68,11 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         public ApiActionResult RemoveUser(string id)
         {
             return _deleteRepresentationAction.Execute(id);
+        }
+
+        public ApiActionResult GetUser(string id, string locationPattern)
+        {
+            return _getRepresentationAction.Execute(id, locationPattern, Constants.SchemaUrns.User, Constants.ResourceTypes.User);
         }
     }
 }

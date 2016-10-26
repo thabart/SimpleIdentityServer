@@ -90,6 +90,18 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
             return this.GetActionResult(result);
         }
 
+        [HttpGet("{id}")]
+        public ActionResult GetUser(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            var result = _usersAction.GetUser(id, GetLocationPattern());
+            return this.GetActionResult(result);
+        }
+
         private string GetLocationPattern()
         {
             return new Uri(new Uri(Request.GetAbsoluteUriWithVirtualPath()), Constants.RoutePaths.UsersController).AbsoluteUri + "/{id}";
