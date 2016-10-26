@@ -79,7 +79,8 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
                "'value': 'bulkId:ytrewq'" +
              "}" +
            "]}");
-            var result = _requestParser.Parse(jObj, Constants.SchemaUrns.Group);
+            string error;
+            var result = _requestParser.Parse(jObj, Constants.SchemaUrns.Group, CheckStrategies.Strong, out error);
 
             // ACT
             var response = _responseParser.Parse(result, "http://localhost/{id}", Constants.SchemaUrns.Group, "Group");

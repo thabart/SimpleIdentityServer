@@ -63,7 +63,8 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
             // ARRANGE
             const string identifier = "id";
             InitializeFakeObjects();
-            _requestParserStub.Setup(r => r.Parse(It.IsAny<JObject>(), It.IsAny<string>()))
+            string error;
+            _requestParserStub.Setup(r => r.Parse(It.IsAny<JObject>(), It.IsAny<string>(), CheckStrategies.Strong, out error))
                 .Returns(new Representation());
             _representationStoreStub.Setup(r => r.GetRepresentation(It.IsAny<string>()))
                 .Returns((Representation)null);
@@ -91,7 +92,8 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
             string mutability = string.Empty,
                 message = string.Empty;
             InitializeFakeObjects();
-            _requestParserStub.Setup(r => r.Parse(It.IsAny<JObject>(), It.IsAny<string>()))
+            string error;
+            _requestParserStub.Setup(r => r.Parse(It.IsAny<JObject>(), It.IsAny<string>(), CheckStrategies.Strong, out error))
                 .Returns(new Representation
                 {
                     Attributes = new[] 
@@ -146,8 +148,9 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
             const string identifier = "id";
             var code = HttpStatusCode.Accepted;
             var message = string.Empty;
+            string error;
             InitializeFakeObjects();
-            _requestParserStub.Setup(r => r.Parse(It.IsAny<JObject>(), It.IsAny<string>()))
+            _requestParserStub.Setup(r => r.Parse(It.IsAny<JObject>(), It.IsAny<string>(), CheckStrategies.Strong, out error))
                 .Returns(new Representation
                 {
                     Attributes = new[]

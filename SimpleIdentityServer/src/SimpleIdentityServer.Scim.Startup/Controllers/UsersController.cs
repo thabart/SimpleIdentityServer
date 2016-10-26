@@ -44,6 +44,40 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
             return this.GetActionResult(result);
         }
 
+        [HttpPatch("{id}")]
+        public ActionResult PatchUser(string id, [FromBody] JObject jObj)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            if (jObj == null)
+            {
+                throw new ArgumentNullException(nameof(jObj));
+            }
+
+            var result = _usersAction.PatchUser(id, jObj, GetLocationPattern());
+            return this.GetActionResult(result);
+        }
+
+        [HttpPut("{id}")]
+        public ActionResult UpdateUser(string id, [FromBody] JObject jObj)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            if (jObj == null)
+            {
+                throw new ArgumentNullException(nameof(jObj));
+            }
+
+            var result = _usersAction.UpdateUser(id, jObj, GetLocationPattern());
+            return this.GetActionResult(result);
+        }
+
         private string GetLocationPattern()
         {
             return new Uri(new Uri(Request.GetAbsoluteUriWithVirtualPath()), Constants.RoutePaths.UsersController).AbsoluteUri + "/{id}";

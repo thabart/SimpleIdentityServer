@@ -45,6 +45,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         private readonly IErrorResponseFactory _errorResponseFactory;
         private readonly IRepresentationResponseParser _responseParser;
         private readonly IParametersValidator _parametersValidator;
+        private readonly IRepresentationRequestParser _representationRequestParser;
 
         public PatchRepresentationAction(
             IPatchRequestParser patchRequestParser,
@@ -54,7 +55,8 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             IJsonParser jsonParser,
             IErrorResponseFactory errorResponseFactory,
             IRepresentationResponseParser responseParser,
-            IParametersValidator parametersValidator)
+            IParametersValidator parametersValidator,
+            IRepresentationRequestParser representationRequestParser)
         {
             _patchRequestParser = patchRequestParser;
             _representationStore = representationStore;
@@ -64,6 +66,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             _errorResponseFactory = errorResponseFactory;
             _responseParser = responseParser;
             _parametersValidator = parametersValidator;
+            _representationRequestParser = representationRequestParser;
         }
 
         public ApiActionResult Execute(string id, JObject jObj, string schemaId, string locationPattern, string resourceType)
@@ -121,14 +124,24 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                          _errorResponseFactory.CreateError(ErrorMessages.ThePathNeedsToBeSpecified, HttpStatusCode.BadRequest, Constants.ScimTypeValues.InvalidSyntax));
                 }
 
-                // 4.2 Process filter and execute operation.
-                var attrs = representation.Attributes;
-                var filteredAttrs = representation.Attributes;
+                // 4.2 Check value is filled-in.
+                if ((operation.Type == PatchOperations.add || operation.Type == PatchOperations.replace) &&
+                    operation.Value == null)
+                {
+                    return _apiResponseFactory.CreateError(
+                        HttpStatusCode.BadRequest,
+                         _errorResponseFactory.CreateError(ErrorMessages.TheValueNeedsToBeSpecified, HttpStatusCode.BadRequest, Constants.ScimTypeValues.InvalidSyntax));
+                }
+
+                // 4.3 Process filter & get values.
+                IEnumerable<RepresentationAttribute> attrs = null;
+                IEnumerable<RepresentationAttribute> filteredAttrs = null;
                 if (!string.IsNullOrWhiteSpace(operation.Path))
                 {
+                    // 4.3.1 Process filter.
                     var filter = _filterParser.Parse(operation.Path);
-                    filteredAttrs = filter.Evaluate(representation);
-                    if (filteredAttrs == null || !filteredAttrs.Any())
+                    var filtered = filter.Evaluate(representation);
+                    if (filtered == null || !filtered.Any())
                     {
                         return _apiResponseFactory.CreateError(
                             HttpStatusCode.BadRequest,
@@ -136,117 +149,184 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                         );
                     }
 
+                    // 4.3.2 Get targeted attributes.
                     var target = _filterParser.GetTarget(operation.Path);
                     var filterRepresentation = _filterParser.Parse(target);
                     attrs = filterRepresentation.Evaluate(representation);
-                }
 
-                var filteredAttr = filteredAttrs.First();
-                var attr = attrs.First();
-
-                // 4.2.1 Check mutability.
-                if (filteredAttr.SchemaAttribute.Mutability == Constants.SchemaAttributeMutability.Immutable ||
-                    filteredAttr.SchemaAttribute.Mutability == Constants.SchemaAttributeMutability.ReadOnly)
-                {
-                    return _apiResponseFactory.CreateError(
-                        HttpStatusCode.BadRequest,
-                        _errorResponseFactory.CreateError(string.Format(ErrorMessages.TheImmutableAttributeCannotBeUpdated, filteredAttr.SchemaAttribute.Name), HttpStatusCode.BadRequest, Constants.ScimTypeValues.Mutability));
-                }
-
-                RepresentationAttribute value = null;
-                if (operation.Value != null)
-                {
-                    var name = filteredAttr.SchemaAttribute.Name;
-                    var token = operation.Value.SelectToken(name);
-                    if (token == null)
+                    if (operation.Type == PatchOperations.remove)
                     {
-                        token = new JObject();
-                        token[name] = operation.Value;
+                        // 4.3.3 If operation = remove then values are not retrieved.
+                        filteredAttrs = filtered;
                     }
+                    else
+                    {
+                        // 4.3.4 if operation = replace or add then retrieve values.
+                        var name = filtered.First().SchemaAttribute.Name;
+                        var token = operation.Value.SelectToken(name);
+                        if (token == null)
+                        {
+                            token = new JObject();
+                            token[name] = operation.Value;
+                        }
 
-                    value = _jsonParser.GetRepresentation(token, filteredAttr.SchemaAttribute);
+                        string error;
+                        var value = _jsonParser.GetRepresentation(token, filtered.First().SchemaAttribute, CheckStrategies.Standard, out error);
+                        if (value == null)
+                        {
+                            return _apiResponseFactory.CreateError(
+                            HttpStatusCode.BadRequest,
+                            _errorResponseFactory.CreateError(error, HttpStatusCode.BadRequest, Constants.ScimTypeValues.InvalidSyntax));
+                        }
+                        filteredAttrs = new[] { value };
+                    }
                 }
 
-                // Check uniqueness
-                // TODO.
-
-                switch (operation.Type)
+                // 4.4 If there's no filter then parse the value with the schema.
+                if (filteredAttrs == null)
                 {
-                    // 4.2.1.1 Remove attributes.
-                    case PatchOperations.remove:
-                        if (!attr.SchemaAttribute.MultiValued)
+                    if (operation.Value != null)
+                    {
+                        string error;
+                        var repr = _representationRequestParser.Parse(operation.Value, schemaId, CheckStrategies.Standard, out error);
+                        if (repr == null)
                         {
                             return _apiResponseFactory.CreateError(
                                 HttpStatusCode.BadRequest,
-                                _errorResponseFactory.CreateError(ErrorMessages.TheRepresentationCannotBeRemovedBecauseItsNotAnArray, HttpStatusCode.BadRequest)
-                            );
+                                _errorResponseFactory.CreateError(error, HttpStatusCode.BadRequest, Constants.ScimTypeValues.InvalidSyntax));
                         }
 
-                        if (!Remove(attr, filteredAttr))
-                        {
-                            return _apiResponseFactory.CreateError(
-                                HttpStatusCode.BadRequest,
-                                _errorResponseFactory.CreateError(ErrorMessages.TheRepresentationCannotBeRemoved, HttpStatusCode.BadRequest)
-                            );
-                        }
-                        break;
-                    // 4.2.1.2 Add attribute.
-                    case PatchOperations.add:
-                        if (value == null)
-                        {
-                            return _apiResponseFactory.CreateError(
-                                HttpStatusCode.BadRequest,
-                                _errorResponseFactory.CreateError(ErrorMessages.TheValueMustBeSpecified, HttpStatusCode.BadRequest, Constants.ScimTypeValues.InvalidSyntax)
-                            );
-                        }
+                        filteredAttrs = repr.Attributes;
+                        attrs = representation.Attributes;
+                    }
+                }
 
-                        if (!value.SchemaAttribute.MultiValued)
-                        {
-                            return _apiResponseFactory.CreateError(
-                                HttpStatusCode.BadRequest,
-                                _errorResponseFactory.CreateError(ErrorMessages.TheRepresentationCannotBeAddedBecauseItsNotAnArray, HttpStatusCode.BadRequest)
-                            );
-                        }
+                foreach (var filteredAttr in filteredAttrs)
+                {
+                    var attr = attrs.FirstOrDefault(a => a.SchemaAttribute.Name == filteredAttr.SchemaAttribute.Name);
+                    // 4.5.1 Check mutability.
+                    if (filteredAttr.SchemaAttribute.Mutability == Constants.SchemaAttributeMutability.Immutable ||
+                        filteredAttr.SchemaAttribute.Mutability == Constants.SchemaAttributeMutability.ReadOnly)
+                    {
+                        return _apiResponseFactory.CreateError(
+                            HttpStatusCode.BadRequest,
+                            _errorResponseFactory.CreateError(string.Format(ErrorMessages.TheImmutableAttributeCannotBeUpdated, filteredAttr.SchemaAttribute.Name), HttpStatusCode.BadRequest, Constants.ScimTypeValues.Mutability));
+                    }                
 
-                        if (!Add(attr, value))
-                        {
-                            return _apiResponseFactory.CreateError(
-                                HttpStatusCode.BadRequest,
-                                _errorResponseFactory.CreateError(ErrorMessages.TheRepresentationCannotBeAdded, HttpStatusCode.BadRequest)
-                            );
-                        }
-                        break;
-                    // 4.2.1.3 Replace attribute
-                    case PatchOperations.replace:
-                        if (value == null)
-                        {
-                            return _apiResponseFactory.CreateError(
-                                HttpStatusCode.BadRequest,
-                                _errorResponseFactory.CreateError(ErrorMessages.TheValueMustBeSpecified, HttpStatusCode.BadRequest, Constants.ScimTypeValues.InvalidSyntax)
-                            );
-                        }
+                    // TODO : Check uniqueness.
 
-                        if (attr.SchemaAttribute.MultiValued)
-                        {
-                            if (!SetEnum(attr, value))
+                    switch (operation.Type)
+                    {
+                        // 4.5.2.1 Remove attributes.
+                        case PatchOperations.remove:
+                            if (attr == null)
                             {
                                 return _apiResponseFactory.CreateError(
                                     HttpStatusCode.BadRequest,
-                                    _errorResponseFactory.CreateError(ErrorMessages.TheRepresentationCannotBeSet, HttpStatusCode.BadRequest)
+                                    _errorResponseFactory.CreateError(string.Format(ErrorMessages.TheAttributeDoesntExist, filteredAttr.SchemaAttribute.Name), HttpStatusCode.BadRequest)
                                 );
                             }
-                        }
-                        else
-                        {
-                            if (!Set(attr, value))
+
+                            if (filteredAttr.SchemaAttribute.MultiValued)
+                            {
+                                // 4.5.2.1.1 Remove attribute from array
+                                if (!Remove(attr, filteredAttr))
+                                {
+                                    return _apiResponseFactory.CreateError(
+                                        HttpStatusCode.BadRequest,
+                                        _errorResponseFactory.CreateError(ErrorMessages.TheRepresentationCannotBeRemoved, HttpStatusCode.BadRequest)
+                                    );
+                                }
+                            }
+                            else
+                            {
+                                // 4.5.2.1.2 Remove attribute from complex representation.
+                                if (attr.Parent != null)
+                                {
+                                    var complexParent = attr.Parent as ComplexRepresentationAttribute;
+                                    if (complexParent == null)
+                                    {
+                                        continue;
+                                    }
+
+                                    complexParent.Values = complexParent.Values.Where(v => !v.Equals(attr));
+                                }
+                                else
+                                {
+                                    representation.Attributes = representation.Attributes.Where(v => !v.Equals(attr));
+                                }
+                            }
+                            break;
+                        // 4.5.2.2 Add attribute.
+                        case PatchOperations.add:
+                            if (string.IsNullOrWhiteSpace(operation.Path) && attr == null)
+                            {
+                                representation.Attributes = representation.Attributes.Concat(new[] { filteredAttr });
+                                continue;
+                            }
+
+                            if (attr == null)
                             {
                                 return _apiResponseFactory.CreateError(
                                     HttpStatusCode.BadRequest,
-                                    _errorResponseFactory.CreateError(ErrorMessages.TheRepresentationCannotBeSet, HttpStatusCode.BadRequest)
+                                    _errorResponseFactory.CreateError(string.Format(ErrorMessages.TheAttributeDoesntExist, filteredAttr.SchemaAttribute.Name), HttpStatusCode.BadRequest)
                                 );
                             }
-                        }
-                        break;
+
+                            if (!filteredAttr.SchemaAttribute.MultiValued)
+                            {
+                                if (!Set(attr, filteredAttr))
+                                {
+                                    return _apiResponseFactory.CreateError(
+                                        HttpStatusCode.BadRequest,
+                                        _errorResponseFactory.CreateError(ErrorMessages.TheRepresentationCannotBeSet, HttpStatusCode.BadRequest)
+                                    );
+                                }
+                            }
+                            else
+                            {
+                                if (!Add(attr, filteredAttr))
+                                {
+                                    return _apiResponseFactory.CreateError(
+                                        HttpStatusCode.BadRequest,
+                                        _errorResponseFactory.CreateError(ErrorMessages.TheRepresentationCannotBeAdded, HttpStatusCode.BadRequest)
+                                    );
+                                }
+
+                            }
+                            break;
+                        // 4.5.2.3 Replace attribute
+                        case PatchOperations.replace:
+                            if (attr == null)
+                            {
+                                return _apiResponseFactory.CreateError(
+                                    HttpStatusCode.BadRequest,
+                                    _errorResponseFactory.CreateError(string.Format(ErrorMessages.TheAttributeDoesntExist, filteredAttr.SchemaAttribute.Name), HttpStatusCode.BadRequest)
+                                );
+                            }
+
+                            if (attr.SchemaAttribute.MultiValued)
+                            {
+                                if (!SetEnum(attr, filteredAttr))
+                                {
+                                    return _apiResponseFactory.CreateError(
+                                        HttpStatusCode.BadRequest,
+                                        _errorResponseFactory.CreateError(ErrorMessages.TheRepresentationCannotBeSet, HttpStatusCode.BadRequest)
+                                    );
+                                }
+                            }
+                            else
+                            {
+                                if (!Set(attr, filteredAttr))
+                                {
+                                    return _apiResponseFactory.CreateError(
+                                        HttpStatusCode.BadRequest,
+                                        _errorResponseFactory.CreateError(ErrorMessages.TheRepresentationCannotBeSet, HttpStatusCode.BadRequest)
+                                    );
+                                }
+                            }
+                            break;
+                    }
                 }
             }
 
@@ -259,6 +339,69 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             return _apiResponseFactory.CreateResultWithContent(HttpStatusCode.OK,
                 response.Object,
                 response.Location);
+        }
+
+        private bool RemoveEnum(RepresentationAttribute attr, RepresentationAttribute attrToBeRemoved)
+        {
+            switch (attr.SchemaAttribute.Type)
+            {
+                case Constants.SchemaAttributeTypes.String:
+                    var strAttr = attr as SingularRepresentationAttribute<IEnumerable<string>>;
+                    var strAttrToBeRemoved = attrToBeRemoved as SingularRepresentationAttribute<IEnumerable<string>>;
+                    if (strAttr == null || strAttrToBeRemoved == null)
+                    {
+                        return false;
+                    }
+
+                    strAttr.Value = strAttr.Value.Except(strAttrToBeRemoved.Value);
+                    break;
+                case Constants.SchemaAttributeTypes.Boolean:
+                    var bAttr = attr as SingularRepresentationAttribute<IEnumerable<bool>>;
+                    var bAttrToBeRemoved = attrToBeRemoved as SingularRepresentationAttribute<IEnumerable<bool>>;
+                    if (bAttr == null || bAttrToBeRemoved == null)
+                    {
+                        return false;
+                    }
+
+                    bAttr.Value = bAttr.Value.Except(bAttrToBeRemoved.Value);
+                    break;
+                case Constants.SchemaAttributeTypes.DateTime:
+                    var dAttr = attr as SingularRepresentationAttribute<IEnumerable<DateTime>>;
+                    var dAttrToBeRemoved = attrToBeRemoved as SingularRepresentationAttribute<IEnumerable<DateTime>>;
+                    if (dAttr == null || dAttrToBeRemoved == null)
+                    {
+                        return false;
+                    }
+
+                    dAttr.Value = dAttr.Value.Except(dAttrToBeRemoved.Value);
+                    break;
+                case Constants.SchemaAttributeTypes.Complex:
+                    var cAttr = attr as ComplexRepresentationAttribute;
+                    var cAttrToBeRemoved = attrToBeRemoved as ComplexRepresentationAttribute;
+                    if (cAttr == null || cAttrToBeRemoved == null)
+                    {
+                        return false;
+                    }
+
+                    var attrsToBeRemoved = new List<RepresentationAttribute>();
+                    foreach(var attrToBeRemovedValue in cAttrToBeRemoved.Values)
+                    {
+                        var removed = cAttr.Values.FirstOrDefault(c => attrToBeRemovedValue.Equals(c));
+                        if (removed == null)
+                        {
+                            continue;
+                        }
+
+                        attrsToBeRemoved.Add(removed);
+                    }
+
+                    cAttr.Values = cAttr.Values.Where(v => !attrsToBeRemoved.Contains(v));
+                    break;
+                default:
+                    return false;
+            }
+
+            return true;
         }
 
         private bool Remove(RepresentationAttribute attr, RepresentationAttribute attrToBeRemoved)
@@ -304,7 +447,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                     }
 
                     var attrsToBeRemoved = new List<RepresentationAttribute>();
-                    foreach(var attrToBeRemovedValue in cAttrToBeRemoved.Values)
+                    foreach (var attrToBeRemovedValue in cAttrToBeRemoved.Values)
                     {
                         var removed = cAttr.Values.FirstOrDefault(c => attrToBeRemovedValue.Equals(c));
                         if (removed == null)

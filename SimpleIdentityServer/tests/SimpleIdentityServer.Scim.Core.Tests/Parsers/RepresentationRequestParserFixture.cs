@@ -36,26 +36,32 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
         {
             // ARRANGE
             InitializeFakeObjects();
+            string error;
 
             // ACTS & ASSERTS
-            Assert.Throws<ArgumentNullException>(() => _requestParser.Parse(null, null));
-            Assert.Throws<ArgumentNullException>(() => _requestParser.Parse(new JObject(), null));
+            Assert.Throws<ArgumentNullException>(() => _requestParser.Parse(null, null, CheckStrategies.Strong, out error));
+            Assert.Throws<ArgumentNullException>(() => _requestParser.Parse(new JObject(), null, CheckStrategies.Strong, out error));
         }
 
         [Fact]
-        public void When_Schema_Doesnt_Exist_Then_Exception_Is_Thrown()
+        public void When_Schema_Doesnt_Exist_Then_Null_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
             _schemaStoreStub.Setup(s => s.GetSchema(It.IsAny<string>()))
                 .Returns((SchemaResponse)null);
+            string error;
 
-            // ACT & ASSERT
-            var exception = Assert.Throws<InvalidOperationException>(() => _requestParser.Parse(new JObject(), "invalid"));
+            // ACT
+            var result = _requestParser.Parse(new JObject(), "invalid", CheckStrategies.Strong, out error);
+
+            // ASSERT
+            Assert.Null(result);
+            Assert.True(error == string.Format(ErrorMessages.TheSchemaDoesntExist, "invalid"));
         }
 
         [Fact]
-        public void When_Expecting_Array_But_Its_Singular_Then_Exception_Is_Thrown()
+        public void When_Expecting_Array_But_Its_Singular_Then_Null_Is_Returned()
         {
             var schemaStore = new SchemaStore();
             // ARRANGE
@@ -66,14 +72,18 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             "'displayName': 'Group A'," +
             "'members': 'members'" +
            "}");
+            var errorMessage = string.Empty;
 
-            // ACT & ASSERT
-            var exception = Assert.Throws<InvalidOperationException>(() => _requestParser.Parse(jObj, Constants.SchemaUrns.Group));
-            Assert.True(exception.Message == string.Format(ErrorMessages.TheAttributeIsNotAnArray, "members"));
+            // ACT
+            var result =_requestParser.Parse(jObj, Constants.SchemaUrns.Group, CheckStrategies.Strong, out errorMessage);
+
+            // ASSERT
+            Assert.Null(result);
+            Assert.True(errorMessage == string.Format(ErrorMessages.TheAttributeIsNotAnArray, "members"));
         }
         
         [Fact]
-        public void When_Expecting_Boolean_But_Its_A_String_Then_Exception_Is_Thrown()
+        public void When_Expecting_Boolean_But_Its_A_String_Then_Null_Is_Returned()
         {
             // ARRANGE
             var schemaStore = new SchemaStore();
@@ -88,10 +98,14 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
                 "'givenName':'Barbara'" +
             "},"+
             "'active': 'active'}");
+            string error;
 
-            // ACT & ASSERT
-            var exception = Assert.Throws<InvalidOperationException>(() => _requestParser.Parse(jObj, Constants.SchemaUrns.User));
-            Assert.True(exception.Message == string.Format(ErrorMessages.TheAttributeTypeIsNotCorrect, "active", Constants.SchemaAttributeTypes.Boolean));
+            // ACT
+            var result = _requestParser.Parse(jObj, Constants.SchemaUrns.User, CheckStrategies.Strong, out error);
+
+            // ASSERTS
+            Assert.Null(result);
+            Assert.True(error == string.Format(ErrorMessages.TheAttributeTypeIsNotCorrect, "active", Constants.SchemaAttributeTypes.Boolean));
         }
 
         [Fact]
@@ -110,9 +124,10 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
                "'value': 'bulkId:ytrewq'"+
              "}"+
            "]}");
+            string error;
 
             // ACT
-            var result = _requestParser.Parse(jObj, Constants.SchemaUrns.Group);
+            var result = _requestParser.Parse(jObj, Constants.SchemaUrns.Group, CheckStrategies.Strong, out error);
 
             // ASSERTS
             Assert.NotNull(result);
@@ -155,9 +170,10 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
                "'value': 'bulkId:ytrewq'" +
              "}" +
            "]}");
+            string error;
 
             // ACT
-            var result = _requestParser.Parse(jObj, Constants.SchemaUrns.Group);
+            var result = _requestParser.Parse(jObj, Constants.SchemaUrns.Group, CheckStrategies.Strong, out error);
 
 
             // ASSERTS
@@ -192,9 +208,10 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
                 "'familyName': 'Jensen',"+
                 "'givenName':'Barbara'" +
             "}}");
+            string error;
 
             // ACT
-            var result = _requestParser.Parse(jObj, Constants.SchemaUrns.Group);
+            var result = _requestParser.Parse(jObj, Constants.SchemaUrns.Group, CheckStrategies.Strong, out error);
 
 
             // ASSERTS

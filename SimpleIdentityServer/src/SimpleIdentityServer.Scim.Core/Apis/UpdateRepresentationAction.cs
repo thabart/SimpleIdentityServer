@@ -85,7 +85,15 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             }
 
             // 2. Parse the request.
-            var representation = _requestParser.Parse(jObj, schemaId);
+            string errorStr;
+            var representation = _requestParser.Parse(jObj, schemaId, CheckStrategies.Strong, out errorStr);
+            if (representation == null)
+            {
+                return _apiResponseFactory.CreateError(
+                    HttpStatusCode.BadRequest,
+                    errorStr);
+            }
+
             var record = _representationStore.GetRepresentation(id);
 
             // 3. If the representation doesn't exist then 404 is returned.

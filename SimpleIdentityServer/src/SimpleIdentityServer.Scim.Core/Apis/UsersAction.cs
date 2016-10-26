@@ -22,20 +22,39 @@ namespace SimpleIdentityServer.Scim.Core.Apis
     public interface IUsersAction
     {
         ApiActionResult AddUser(JObject jObj, string locationPattern);
+        ApiActionResult UpdateUser(string id, JObject jObj, string locationPattern);
+        ApiActionResult PatchUser(string id, JObject jObj, string locationPattern);
     }
 
     internal class UsersAction : IUsersAction
     {
         private readonly IAddRepresentationAction _addRepresentationAction;
+        private readonly IUpdateRepresentationAction _updateRepresentationAction;
+        private readonly IPatchRepresentationAction _patchRepresentationAction;
 
-        public UsersAction(IAddRepresentationAction addRepresentationAction)
+        public UsersAction(
+            IAddRepresentationAction addRepresentationAction,
+            IUpdateRepresentationAction updateRepresentationAction,
+            IPatchRepresentationAction patchRepresentationAction)
         {
             _addRepresentationAction = addRepresentationAction;
+            _updateRepresentationAction = updateRepresentationAction;
+            _patchRepresentationAction = patchRepresentationAction;
         }
 
         public ApiActionResult AddUser(JObject jObj, string locationPattern)
         {
             return _addRepresentationAction.Execute(jObj, locationPattern, Constants.SchemaUrns.User, Constants.ResourceTypes.User);
+        }
+
+        public ApiActionResult UpdateUser(string id, JObject jObj, string locationPattern)
+        {
+            return _updateRepresentationAction.Execute(id, jObj, Constants.SchemaUrns.User, locationPattern, Constants.ResourceTypes.User);
+        }
+
+        public ApiActionResult PatchUser(string id, JObject jObj, string locationPattern)
+        {
+            return _patchRepresentationAction.Execute(id, jObj, Constants.SchemaUrns.User, locationPattern, Constants.ResourceTypes.User);
         }
     }
 }

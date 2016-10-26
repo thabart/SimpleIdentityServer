@@ -29,6 +29,8 @@ namespace SimpleIdentityServer.Scim.Core.Models
 
         public SchemaAttributeResponse SchemaAttribute { get; private set; }
 
+        public RepresentationAttribute Parent { get; set; }
+
         public object Clone()
         {
             return CloneObj();

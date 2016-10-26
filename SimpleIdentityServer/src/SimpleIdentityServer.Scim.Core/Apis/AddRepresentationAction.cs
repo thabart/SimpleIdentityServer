@@ -67,11 +67,12 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             }
 
             // 1. Parse the request
-            var result = _requestParser.Parse(jObj, schemaId);
+            string error;
+            var result = _requestParser.Parse(jObj, schemaId, CheckStrategies.Strong, out error);
             if (result == null)
             {
                 return _apiResponseFactory.CreateError(HttpStatusCode.InternalServerError,
-                    ErrorMessages.TheRequestCannotBeParsedForSomeReason);
+                    error);
             }
 
             // 2. Set parameters
