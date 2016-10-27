@@ -15,6 +15,7 @@
 #endregion
 
 using SimpleIdentityServer.Scim.Core.Models;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Scim.Core.Stores
 {
@@ -23,6 +24,8 @@ namespace SimpleIdentityServer.Scim.Core.Stores
         bool AddRepresentation(Representation representation);
 
         Representation GetRepresentation(string id);
+
+        IEnumerable<Representation> GetRepresentations(string resourceType);
 
         bool RemoveRepresentation(Representation representation);
 

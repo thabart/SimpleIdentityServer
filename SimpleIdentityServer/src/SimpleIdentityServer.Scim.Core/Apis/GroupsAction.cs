@@ -29,6 +29,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         ApiActionResult UpdateGroup(string id, JObject jObj, string locationPattern);
         ApiActionResult PatchGroup(string id, JObject jObj, string locationPattern);
         ApiActionResult SearchGroups(JObject jObj);
+        ApiActionResult SearchGroups(IQueryCollection query);
     }
 
     internal class GroupsAction : IGroupsAction
@@ -39,6 +40,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         private readonly IUpdateRepresentationAction _updateRepresentationAction;
         private readonly IPatchRepresentationAction _patchRepresentationAction;
         private readonly ISearchParameterParser _searchParameterParser;
+        private readonly IGetRepresentationsAction _getRepresentationsAction;
 
         public GroupsAction(
             IAddRepresentationAction addRepresentationAction,
@@ -46,7 +48,8 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             IDeleteRepresentationAction deleteRepresentationAction,
             IUpdateRepresentationAction updateRepresentationAction,
             IPatchRepresentationAction patchRepresentationAction,
-            ISearchParameterParser searchParameterParser)
+            ISearchParameterParser searchParameterParser,
+            IGetRepresentationsAction getRepresentationsAction)
         {
             _addRepresentationAction = addRepresentationAction;
             _getRepresentationAction = getRepresentationAction;
@@ -54,6 +57,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             _updateRepresentationAction = updateRepresentationAction;
             _patchRepresentationAction = patchRepresentationAction;
             _searchParameterParser = searchParameterParser;
+            _getRepresentationsAction = getRepresentationsAction;
         }
 
         public ApiActionResult AddGroup(JObject jObj, string locationPattern)
@@ -82,10 +86,16 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             return _patchRepresentationAction.Execute(id, jObj, Constants.SchemaUrns.Group, locationPattern, Constants.ResourceTypes.Group);
         }
 
+        public ApiActionResult SearchGroups(IQueryCollection query)
+        {
+            var searchParam = _searchParameterParser.ParseQuery(query);
+            return _getRepresentationsAction.Execute(Constants.ResourceTypes.Group, searchParam);
+        }
+
         public ApiActionResult SearchGroups(JObject jObj)
         {
-            _searchParameterParser.ParseJson(jObj);
-            return null;
+            var searchParam = _searchParameterParser.ParseJson(jObj);
+            return _getRepresentationsAction.Execute(Constants.ResourceTypes.Group, searchParam);
         }
     }
 }

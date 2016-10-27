@@ -18,6 +18,7 @@ using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Core.Stores;
 using System.Linq;
 using System;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Scim.Db.InMemory.Stores
 {
@@ -32,6 +33,11 @@ namespace SimpleIdentityServer.Scim.Db.InMemory.Stores
         public Representation GetRepresentation(string id)
         {
             return Storage.Instance().Representations.FirstOrDefault(r => r.Id == id);
+        }
+
+        public IEnumerable<Representation> GetRepresentations(string resourceType)
+        {
+            return Storage.Instance().Representations.Where(r => r.ResourceType == resourceType);
         }
 
         public bool RemoveRepresentation(Representation representation)

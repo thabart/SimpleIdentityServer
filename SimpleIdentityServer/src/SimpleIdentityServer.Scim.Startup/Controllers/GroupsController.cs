@@ -57,17 +57,17 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetGroups()
+        public ActionResult SearchGroups()
         {
-            var query = Request.Query;
-            return null;
+            var result = _groupsAction.SearchGroups(Request.Query);
+            return this.GetActionResult(result);
         }
 
         [HttpPost(".search")]
         public ActionResult SearchGroups([FromBody] JObject jObj)
         {
-            _groupsAction.SearchGroups(jObj);
-            return null;
+            var result = _groupsAction.SearchGroups(jObj);
+            return this.GetActionResult(result);
         }
 
         [HttpDelete("{id}")]

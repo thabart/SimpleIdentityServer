@@ -46,7 +46,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         Descending
     }
 
-    internal class SearchParameter
+    public class SearchParameter
     {
         /// <summary>
         /// Names of resource attributes to return in the response.

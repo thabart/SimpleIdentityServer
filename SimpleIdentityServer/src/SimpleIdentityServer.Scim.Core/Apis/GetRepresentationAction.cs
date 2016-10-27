@@ -31,7 +31,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         /// <summary>
         /// Get the representation.
         /// </summary>
-        /// <exception cref="System.ArgumentNullException">Thrown when a parameter is null or empty</exception>
+        /// <exception cref="ArgumentNullException">Thrown when a parameter is null or empty</exception>
         /// <param name="identifier">Identifier of the representation.</param>
         /// <param name="locationPattern">Location pattern of the representation.</param>
         /// <param name="schemaId">Identifier of the schema.</param>
@@ -62,7 +62,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         /// <summary>
         /// Get the representation.
         /// </summary>
-        /// <exception cref="System.ArgumentNullException">Thrown when a parameter is null or empty</exception>
+        /// <exception cref="ArgumentNullException">Thrown when a parameter is null or empty</exception>
         /// <param name="identifier">Identifier of the representation.</param>
         /// <param name="locationPattern">Location pattern of the representation.</param>
         /// <param name="schemaId">Identifier of the schema.</param>
@@ -98,6 +98,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 
             // 3. Parse the result and returns the representation.
             var result = _responseParser.Parse(representation, locationPattern, schemaId, resourceType, OperationTypes.Query);
+            
             return _apiResponseFactory.CreateResultWithContent(HttpStatusCode.OK, result.Object, result.Location);
         }
     }

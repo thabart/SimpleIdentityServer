@@ -44,6 +44,17 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             string schemaId, 
             string resourceType,
             OperationTypes operationType);
+
+        /// <summary>
+        /// Filter the representations and return the result.
+        /// </summary>
+        /// <exception cref="ArgumentNullException">Thrown when representations are null.</exception>
+        /// <param name="representationAttributes">Representations to filter.</param>
+        /// <param name="searchParameter">Search parameters.</param>
+        /// <returns>Filtered response</returns>
+        IEnumerable<object> Filter(
+            IEnumerable<Representation> representations,
+            SearchParameter searchParameter);
     }
 
     public class Response
@@ -149,9 +160,100 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             };
         }
 
+        /// <summary>
+        /// Filter the representations and return the result.
+        /// </summary>
+        /// <exception cref="ArgumentNullException">Thrown when representations are null.</exception>
+        /// <param name="representationAttributes">Representations to filter.</param>
+        /// <param name="searchParameter">Search parameters.</param>
+        /// <returns>Filtered response</returns>
+        public IEnumerable<object> Filter(
+            IEnumerable<Representation> representations,
+            SearchParameter searchParameter)
+        {
+            if (representations == null)
+            {
+                throw new ArgumentNullException(nameof(representations));
+            }
+
+            IEnumerable<string> commonAttrs = new[]
+            {
+                Constants.MetaResponseNames.ResourceType,
+                Constants.MetaResponseNames.Created,
+                Constants.MetaResponseNames.LastModified,
+                Constants.MetaResponseNames.Version,
+                Constants.MetaResponseNames.Location
+            };
+
+            var result = new List<IEnumerable<object>>();
+            foreach(var representation in representations)
+            {
+                var attributes = representation.Attributes;
+                // 1. Apply filter on the values.
+                if (searchParameter.Filter != null)
+                {
+                    attributes = searchParameter.Filter.Evaluate(representation);
+                }
+
+                if (!attributes.Any())
+                {
+                    continue;
+                }
+
+                // 2. Include & exclude the attributes.
+                attributes = attributes.Where(a =>
+                    (searchParameter.Attributes == null || searchParameter.Attributes.Contains(a.SchemaAttribute.Name))
+                    && (searchParameter.ExcludedAttributes == null || !searchParameter.ExcludedAttributes.Contains(a.SchemaAttribute.Name)));
+
+                // 3. Add all attributes
+                var obj = new JObject();
+                foreach (var token in attributes.Select(a => GetToken(a, a.SchemaAttribute)))
+                {
+                    obj.Add(token);
+                }
+
+                // 4. Include & exclude common attributes.
+                var filteredCommonAttrs = commonAttrs.Where(a =>
+                    (searchParameter.Attributes == null || searchParameter.Attributes.Contains(a))
+                    && (searchParameter.ExcludedAttributes == null || !searchParameter.ExcludedAttributes.Contains(a)));
+                var properties = new List<JProperty>();
+                foreach(var filteredCommonAttr in filteredCommonAttrs)
+                {
+                    if (filteredCommonAttr == Constants.MetaResponseNames.ResourceType)
+                    {
+                        properties.Add(new JProperty(filteredCommonAttr, representation.ResourceType));
+                    }
+                    if (filteredCommonAttr == Constants.MetaResponseNames.Created)
+                    {
+                        properties.Add(new JProperty(filteredCommonAttr, representation.Created));
+                    }
+                    if (filteredCommonAttr == Constants.MetaResponseNames.LastModified)
+                    {
+                        properties.Add(new JProperty(filteredCommonAttr, representation.LastModified));
+                    }
+                    if (filteredCommonAttr == Constants.MetaResponseNames.Version)
+                    {
+                        properties.Add(new JProperty(filteredCommonAttr, representation.Version));
+                    }
+                    if (filteredCommonAttr == Constants.MetaResponseNames.Location)
+                    {
+                        properties.Add(new JProperty(filteredCommonAttr, "location"));
+                    }
+                }
+                
+                if (properties.Any())
+                {
+                    obj[Constants.ScimResourceNames.Meta] = new JObject(properties);
+                }
+
+                result.Add(obj);
+            }
+
+            return result;
+        }
+
         private static void SetCommonAttributes(JObject jObj, string location, Representation representation, string resourceType)
         {
-            // TODO : set the location.
             jObj.Add(new JProperty(Constants.IdentifiedScimResourceNames.Id, representation.Id));
             var properties = new JProperty[]
             {

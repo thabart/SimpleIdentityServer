@@ -35,19 +35,22 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         private readonly IPatchRepresentationAction _patchRepresentationAction;
         private readonly IDeleteRepresentationAction _deleteRepresentationAction;
         private readonly IGetRepresentationAction _getRepresentationAction;
+        private readonly IGetRepresentationsAction _getRepresentationsAction;
 
         public UsersAction(
             IAddRepresentationAction addRepresentationAction,
             IUpdateRepresentationAction updateRepresentationAction,
             IPatchRepresentationAction patchRepresentationAction,
             IDeleteRepresentationAction deleteRepresentationAction,
-            IGetRepresentationAction getRepresentationAction)
+            IGetRepresentationAction getRepresentationAction,
+            IGetRepresentationsAction getRepresentationsAction)
         {
             _addRepresentationAction = addRepresentationAction;
             _updateRepresentationAction = updateRepresentationAction;
             _patchRepresentationAction = patchRepresentationAction;
             _deleteRepresentationAction = deleteRepresentationAction;
             _getRepresentationAction = getRepresentationAction;
+            _getRepresentationsAction = getRepresentationsAction;
         }
 
         public ApiActionResult AddUser(JObject jObj, string locationPattern)
@@ -73,6 +76,11 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         public ApiActionResult GetUser(string id, string locationPattern)
         {
             return _getRepresentationAction.Execute(id, locationPattern, Constants.SchemaUrns.User, Constants.ResourceTypes.User);
+        }
+
+        public ApiActionResult GetUsers(string locationPattern)
+        {
+            return _getRepresentationsAction.Execute(Constants.ResourceTypes.User, null);
         }
     }
 }
