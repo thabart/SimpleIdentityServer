@@ -14,7 +14,9 @@
 // limitations under the License.C:\Projects\SimpleIdentityServer\SimpleIdentityServer\src\SimpleIdentityServer.Scim.Core\DTOs\
 #endregion
 
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Linq;
+using SimpleIdentityServer.Scim.Core.Parsers;
 using SimpleIdentityServer.Scim.Core.Results;
 
 namespace SimpleIdentityServer.Scim.Core.Apis
@@ -22,10 +24,11 @@ namespace SimpleIdentityServer.Scim.Core.Apis
     public interface IGroupsAction
     {
         ApiActionResult AddGroup(JObject jObj, string locationPattern);
-        ApiActionResult GetGroup(string id, string locationPattern);
+        ApiActionResult GetGroup(string id, string locationPattern, IQueryCollection query);
         ApiActionResult RemoveGroup(string id);
         ApiActionResult UpdateGroup(string id, JObject jObj, string locationPattern);
         ApiActionResult PatchGroup(string id, JObject jObj, string locationPattern);
+        ApiActionResult SearchGroups(JObject jObj);
     }
 
     internal class GroupsAction : IGroupsAction
@@ -35,19 +38,22 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         private readonly IDeleteRepresentationAction _deleteRepresentationAction;
         private readonly IUpdateRepresentationAction _updateRepresentationAction;
         private readonly IPatchRepresentationAction _patchRepresentationAction;
+        private readonly ISearchParameterParser _searchParameterParser;
 
         public GroupsAction(
             IAddRepresentationAction addRepresentationAction,
             IGetRepresentationAction getRepresentationAction,
             IDeleteRepresentationAction deleteRepresentationAction,
             IUpdateRepresentationAction updateRepresentationAction,
-            IPatchRepresentationAction patchRepresentationAction)
+            IPatchRepresentationAction patchRepresentationAction,
+            ISearchParameterParser searchParameterParser)
         {
             _addRepresentationAction = addRepresentationAction;
             _getRepresentationAction = getRepresentationAction;
             _deleteRepresentationAction = deleteRepresentationAction;
             _updateRepresentationAction = updateRepresentationAction;
             _patchRepresentationAction = patchRepresentationAction;
+            _searchParameterParser = searchParameterParser;
         }
 
         public ApiActionResult AddGroup(JObject jObj, string locationPattern)
@@ -55,8 +61,9 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             return _addRepresentationAction.Execute(jObj, locationPattern, Constants.SchemaUrns.Group, Constants.ResourceTypes.Group);
         }
 
-        public ApiActionResult GetGroup(string id, string locationPattern)
+        public ApiActionResult GetGroup(string id, string locationPattern, IQueryCollection query)
         {
+            var searchParameter = _searchParameterParser.ParseQuery(query);
             return _getRepresentationAction.Execute(id, locationPattern, Constants.SchemaUrns.Group, Constants.ResourceTypes.Group);
         }
 
@@ -73,6 +80,12 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         public ApiActionResult PatchGroup(string id, JObject jObj, string locationPattern)
         {
             return _patchRepresentationAction.Execute(id, jObj, Constants.SchemaUrns.Group, locationPattern, Constants.ResourceTypes.Group);
+        }
+
+        public ApiActionResult SearchGroups(JObject jObj)
+        {
+            _searchParameterParser.ParseJson(jObj);
+            return null;
         }
     }
 }

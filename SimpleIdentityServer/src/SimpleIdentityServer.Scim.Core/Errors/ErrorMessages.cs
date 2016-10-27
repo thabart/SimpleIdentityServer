@@ -44,5 +44,6 @@ namespace SimpleIdentityServer.Scim.Core.Errors
         public const string TheFilterIsNotCorrect = "the filter is not correct";
         public const string TheOperationsParameterMustBeSpecified = "the operations parameter must be specified";
         public const string TheValueMustBeSpecified = "the value parameter must be specified";
+        public const string TheParameterIsNotValid = "the parameter {0} is not valid";
     }
 }

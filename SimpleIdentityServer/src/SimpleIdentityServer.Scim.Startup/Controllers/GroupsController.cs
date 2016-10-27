@@ -52,8 +52,22 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
                 throw new ArgumentNullException(nameof(id));
             }
 
-            var result = _groupsAction.GetGroup(id, GetLocationPattern());
+            var result = _groupsAction.GetGroup(id, GetLocationPattern(), Request.Query);
             return this.GetActionResult(result);
+        }
+
+        [HttpGet]
+        public ActionResult GetGroups()
+        {
+            var query = Request.Query;
+            return null;
+        }
+
+        [HttpPost(".search")]
+        public ActionResult SearchGroups([FromBody] JObject jObj)
+        {
+            _groupsAction.SearchGroups(jObj);
+            return null;
         }
 
         [HttpDelete("{id}")]
