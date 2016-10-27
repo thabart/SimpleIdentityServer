@@ -85,7 +85,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             _representationStore.AddRepresentation(result);
 
             // 3. Transform and returns the representation.
-            var response = _responseParser.Parse(result, locationPattern, schemaId, resourceType);
+            var response = _responseParser.Parse(result, locationPattern, schemaId, resourceType, OperationTypes.Modification);
             return _apiResponseFactory.CreateResultWithContent(HttpStatusCode.Created, response.Object, response.Location);
         }
     }

@@ -120,7 +120,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             }
 
             // 6. Parse the new representation.
-            var response = _responseParser.Parse(record, locationPattern, schemaId, resourceType);
+            var response = _responseParser.Parse(record, locationPattern, schemaId, resourceType, OperationTypes.Modification);
             return _apiResponseFactory.CreateResultWithContent(HttpStatusCode.OK,
                 response.Object,
                 response.Location);

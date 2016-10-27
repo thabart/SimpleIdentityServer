@@ -275,8 +275,8 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                         }
                     }
                 });
-            _responseParserStub.Setup(p => p.Parse(It.IsAny<Representation>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Callback((Representation repr, string loc, string schem, string resou) =>
+            _responseParserStub.Setup(p => p.Parse(It.IsAny<Representation>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), OperationTypes.Modification))
+                .Callback((Representation repr, string loc, string schem, string resou, OperationTypes op) =>
                 {
                     result = repr;
                 })
@@ -341,8 +341,8 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                         }
                     }
                 });
-            _responseParserStub.Setup(p => p.Parse(It.IsAny<Representation>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Callback((Representation repr, string loc, string schem, string resou) =>
+            _responseParserStub.Setup(p => p.Parse(It.IsAny<Representation>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), OperationTypes.Modification))
+                .Callback((Representation repr, string loc, string schem, string resou, OperationTypes op) =>
                 {
                     result = repr;
                 })
@@ -510,8 +510,8 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                         Value = JObject.Parse("{ members : [ { firstName : 'firstName' }] }")
                     }
                 });
-            _responseParserStub.Setup(p => p.Parse(It.IsAny<Representation>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Callback((Representation repr, string loc, string schem, string resou) =>
+            _responseParserStub.Setup(p => p.Parse(It.IsAny<Representation>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), OperationTypes.Modification))
+                .Callback((Representation repr, string loc, string schem, string resou, OperationTypes op) =>
                 {
                     result = repr;
                 })

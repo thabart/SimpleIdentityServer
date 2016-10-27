@@ -40,13 +40,13 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            Assert.Throws<ArgumentNullException>(() => _responseParser.Parse(null, "http://localhost/{id}", null, null));
-            Assert.Throws<ArgumentNullException>(() => _responseParser.Parse(new Representation(), "http://localhost/{id}", null, null));
-            Assert.Throws<ArgumentNullException>(() => _responseParser.Parse(new Representation(), "http://localhost/{id}", null, null));
-            Assert.Throws<ArgumentNullException>(() => _responseParser.Parse(new Representation(), "http://localhost/{id}", null, null));
-            Assert.Throws<ArgumentNullException>(() => _responseParser.Parse(new Representation(), "http://localhost/{id}", string.Empty, null));
-            Assert.Throws<ArgumentNullException>(() => _responseParser.Parse(new Representation(), "http://localhost/{id}", "schemaid", null));
-            Assert.Throws<ArgumentNullException>(() => _responseParser.Parse(new Representation(), "http://localhost/{id}", "schemaid", string.Empty));
+            Assert.Throws<ArgumentNullException>(() => _responseParser.Parse(null, "http://localhost/{id}", null, null, OperationTypes.Modification));
+            Assert.Throws<ArgumentNullException>(() => _responseParser.Parse(new Representation(), "http://localhost/{id}", null, null, OperationTypes.Modification));
+            Assert.Throws<ArgumentNullException>(() => _responseParser.Parse(new Representation(), "http://localhost/{id}", null, null, OperationTypes.Modification));
+            Assert.Throws<ArgumentNullException>(() => _responseParser.Parse(new Representation(), "http://localhost/{id}", null, null, OperationTypes.Modification));
+            Assert.Throws<ArgumentNullException>(() => _responseParser.Parse(new Representation(), "http://localhost/{id}", string.Empty, null, OperationTypes.Modification));
+            Assert.Throws<ArgumentNullException>(() => _responseParser.Parse(new Representation(), "http://localhost/{id}", "schemaid", null, OperationTypes.Modification));
+            Assert.Throws<ArgumentNullException>(() => _responseParser.Parse(new Representation(), "http://localhost/{id}", "schemaid", string.Empty, OperationTypes.Modification));
         }
 
         [Fact]
@@ -59,7 +59,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
                 .Returns(() => (SchemaResponse)null);
 
             // ACT & ASSERT
-            var exception = Assert.Throws<InvalidOperationException>(() => _responseParser.Parse(new Representation(), "http://localhost/{id}", "schema_id", "schema_type"));
+            var exception = Assert.Throws<InvalidOperationException>(() => _responseParser.Parse(new Representation(), "http://localhost/{id}", "schema_id", "schema_type", OperationTypes.Modification));
             Assert.True(exception.Message == string.Format(ErrorMessages.TheSchemaDoesntExist, schemaId));
         }
         
@@ -83,7 +83,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             var result = _requestParser.Parse(jObj, Constants.SchemaUrns.Group, CheckStrategies.Strong, out error);
 
             // ACT
-            var response = _responseParser.Parse(result, "http://localhost/{id}", Constants.SchemaUrns.Group, "Group");
+            var response = _responseParser.Parse(result, "http://localhost/{id}", Constants.SchemaUrns.Group, "Group", OperationTypes.Modification);
 
             // ASSERT
             Assert.NotNull(response);

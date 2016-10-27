@@ -86,7 +86,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
             InitializeFakeObjects();
             _representationStoreStub.Setup(r => r.GetRepresentation(It.IsAny<string>()))
                 .Returns(representation);
-            _responseParserStub.Setup(r => r.Parse(representation, locationPattern, schemaId, schemaType))
+            _responseParserStub.Setup(r => r.Parse(representation, locationPattern, schemaId, schemaType, OperationTypes.Query))
                 .Returns(new Response
                 {
                     Location = locationPattern
@@ -96,7 +96,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
             _getRepresentationAction.Execute("identifier", locationPattern, schemaId, schemaType);
 
             // ASSERT
-            _responseParserStub.Verify(r => r.Parse(representation, locationPattern, schemaId, schemaType));
+            _responseParserStub.Verify(r => r.Parse(representation, locationPattern, schemaId, schemaType, OperationTypes.Query));
             _apiResponseFactoryStub.Verify(a => a.CreateResultWithContent(HttpStatusCode.OK, It.IsAny<object>(), It.IsAny<string>()));
         }
 

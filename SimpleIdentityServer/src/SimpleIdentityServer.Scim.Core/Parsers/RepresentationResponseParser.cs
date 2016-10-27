@@ -36,18 +36,26 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         /// <param name="locationPattern">Location pattern of the representation.</param>
         /// <param name="schemaId">Identifier of the schema.</param>
         /// <param name="resourceType">Type of resource.</param>
+        /// <param name="operationType">Type of operation.</param>
         /// <returns>JSON representation</returns>
         Response Parse(
             Representation representation, 
             string locationPattern, 
             string schemaId, 
-            string resourceType);
+            string resourceType,
+            OperationTypes operationType);
     }
 
     public class Response
     {
         public JObject Object { get; set; }
         public string Location { get; set; }
+    }
+
+    public enum OperationTypes
+    {
+        Query,
+        Modification
     }
 
     internal class RepresentationResponseParser : IRepresentationResponseParser
@@ -72,12 +80,14 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         /// <param name="locationPattern">Location pattern of the representation.</param>
         /// <param name="schemaId">Identifier of the schema.</param>
         /// <param name="resourceType">Type of resource.</param>
+        /// <param name="operationType">Type of operation.</param>
         /// <returns>JSON representation</returns>
         public Response Parse(
             Representation representation, 
             string locationPattern, 
             string schemaId, 
-            string resourceType)
+            string resourceType,
+            OperationTypes operationType)
         {
             if (representation == null)
             {
@@ -114,8 +124,9 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             {
                 foreach (var attribute in schema.Attributes)
                 {
-                    // 1. Ignore the attribute with readonly mutability.
-                    if (attribute.Mutability == Constants.SchemaAttributeMutability.ReadOnly)
+                    // Ignore the attributes.
+                    if ((attribute.Returned ==  Constants.SchemaAttributeReturned.Never) ||
+                        (operationType == OperationTypes.Query && attribute.Returned == Constants.SchemaAttributeReturned.Request))
                     {
                         continue;
                     }
