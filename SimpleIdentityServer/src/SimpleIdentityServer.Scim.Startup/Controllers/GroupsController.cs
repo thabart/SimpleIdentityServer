@@ -59,14 +59,14 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
         [HttpGet]
         public ActionResult SearchGroups()
         {
-            var result = _groupsAction.SearchGroups(Request.Query);
+            var result = _groupsAction.SearchGroups(Request.Query, GetLocationPattern());
             return this.GetActionResult(result);
         }
 
         [HttpPost(".search")]
         public ActionResult SearchGroups([FromBody] JObject jObj)
         {
-            var result = _groupsAction.SearchGroups(jObj);
+            var result = _groupsAction.SearchGroups(jObj, GetLocationPattern());
             return this.GetActionResult(result);
         }
 

@@ -50,6 +50,7 @@ namespace SimpleIdentityServer.Scim.Core
             services.AddTransient<IUsersAction, UsersAction>();
             services.AddTransient<IApiResponseFactory, ApiResponseFactory>();
             services.AddTransient<IErrorResponseFactory, ErrorResponseFactory>();
+            services.AddTransient<ICommonAttributesFactory, CommonAttributesFactory>();
             services.AddTransient<IParametersValidator, ParametersValidator>();
             return services;
         }

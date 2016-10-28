@@ -17,10 +17,10 @@
 using Moq;
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Scim.Core.Errors;
+using SimpleIdentityServer.Scim.Core.Factories;
 using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Core.Parsers;
 using SimpleIdentityServer.Scim.Core.Stores;
-using SimpleIdentityServer.Scim.Core.Validators;
 using System;
 using Xunit;
 
@@ -29,7 +29,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
     public class RepresentationResponseParserFixture
     {
         private Mock<ISchemaStore> _schemaStoreStub;
-        private Mock<IParametersValidator> _parametersValidatorStub;
+        private Mock<ICommonAttributesFactory> _commonAttributesFactoryStub;
         private IRepresentationRequestParser _requestParser;
         private IRepresentationResponseParser _responseParser;
 
@@ -40,13 +40,11 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            Assert.Throws<ArgumentNullException>(() => _responseParser.Parse(null, "http://localhost/{id}", null, null, OperationTypes.Modification));
-            Assert.Throws<ArgumentNullException>(() => _responseParser.Parse(new Representation(), "http://localhost/{id}", null, null, OperationTypes.Modification));
-            Assert.Throws<ArgumentNullException>(() => _responseParser.Parse(new Representation(), "http://localhost/{id}", null, null, OperationTypes.Modification));
-            Assert.Throws<ArgumentNullException>(() => _responseParser.Parse(new Representation(), "http://localhost/{id}", null, null, OperationTypes.Modification));
-            Assert.Throws<ArgumentNullException>(() => _responseParser.Parse(new Representation(), "http://localhost/{id}", string.Empty, null, OperationTypes.Modification));
-            Assert.Throws<ArgumentNullException>(() => _responseParser.Parse(new Representation(), "http://localhost/{id}", "schemaid", null, OperationTypes.Modification));
-            Assert.Throws<ArgumentNullException>(() => _responseParser.Parse(new Representation(), "http://localhost/{id}", "schemaid", string.Empty, OperationTypes.Modification));
+            Assert.Throws<ArgumentNullException>(() => _responseParser.Parse(null, "http://localhost/{id}", null, OperationTypes.Modification));
+            Assert.Throws<ArgumentNullException>(() => _responseParser.Parse(new Representation(), "http://localhost/{id}", null, OperationTypes.Modification));
+            Assert.Throws<ArgumentNullException>(() => _responseParser.Parse(new Representation(), "http://localhost/{id}", null, OperationTypes.Modification));
+            Assert.Throws<ArgumentNullException>(() => _responseParser.Parse(new Representation(), "http://localhost/{id}", null, OperationTypes.Modification));
+            Assert.Throws<ArgumentNullException>(() => _responseParser.Parse(new Representation(), "http://localhost/{id}", string.Empty, OperationTypes.Modification));
         }
 
         [Fact]
@@ -59,7 +57,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
                 .Returns(() => (SchemaResponse)null);
 
             // ACT & ASSERT
-            var exception = Assert.Throws<InvalidOperationException>(() => _responseParser.Parse(new Representation(), "http://localhost/{id}", "schema_id", "schema_type", OperationTypes.Modification));
+            var exception = Assert.Throws<InvalidOperationException>(() => _responseParser.Parse(new Representation(), "http://localhost/{id}", "schema_id", OperationTypes.Modification));
             Assert.True(exception.Message == string.Format(ErrorMessages.TheSchemaDoesntExist, schemaId));
         }
         
@@ -81,9 +79,13 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
            "]}");
             string error;
             var result = _requestParser.Parse(jObj, Constants.SchemaUrns.Group, CheckStrategies.Strong, out error);
+            _commonAttributesFactoryStub.Setup(c => c.CreateIdJson(It.IsAny<Representation>()))
+                .Returns(new JProperty(Constants.IdentifiedScimResourceNames.Id, "id"));
+            _commonAttributesFactoryStub.Setup(c => c.CreateMetaDataAttributeJson(It.IsAny<Representation>(), It.IsAny<string>()))
+                .Returns(new[] { new JProperty(Constants.ScimResourceNames.Meta, "meta") });
 
             // ACT
-            var response = _responseParser.Parse(result, "http://localhost/{id}", Constants.SchemaUrns.Group, "Group", OperationTypes.Modification);
+            var response = _responseParser.Parse(result, "http://localhost/{id}", Constants.SchemaUrns.Group, OperationTypes.Modification);
 
             // ASSERT
             Assert.NotNull(response);
@@ -92,9 +94,9 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
         private void InitializeFakeObjects()
         {
             _schemaStoreStub = new Mock<ISchemaStore>();
-            _parametersValidatorStub = new Mock<IParametersValidator>();
+            _commonAttributesFactoryStub = new Mock<ICommonAttributesFactory>();
             _requestParser = new RepresentationRequestParser(_schemaStoreStub.Object);
-            _responseParser = new RepresentationResponseParser(_schemaStoreStub.Object, _parametersValidatorStub.Object);
+            _responseParser = new RepresentationResponseParser(_schemaStoreStub.Object, _commonAttributesFactoryStub.Object);
         }
     }
 }

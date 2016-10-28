@@ -32,7 +32,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 {
     public interface IPatchRepresentationAction
     {
-        ApiActionResult Execute(string id, JObject jObj, string schemaId, string locationPattern, string resourceType);
+        ApiActionResult Execute(string id, JObject jObj, string schemaId, string locationPattern);
     }
 
     internal class PatchRepresentationAction : IPatchRepresentationAction
@@ -69,7 +69,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             _representationRequestParser = representationRequestParser;
         }
 
-        public ApiActionResult Execute(string id, JObject jObj, string schemaId, string locationPattern, string resourceType)
+        public ApiActionResult Execute(string id, JObject jObj, string schemaId, string locationPattern)
         {
             // 1. Check parameters.
             if (string.IsNullOrWhiteSpace(id))
@@ -88,10 +88,6 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             }
 
             _parametersValidator.ValidateLocationPattern(locationPattern);
-            if (string.IsNullOrWhiteSpace(resourceType))
-            {
-                throw new ArgumentNullException(nameof(resourceType));
-            }
 
             // 2. Check representation exists
             var representation = _representationStore.GetRepresentation(id);
@@ -334,8 +330,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             _representationStore.UpdateRepresentation(representation);
 
             // 6. Returns the JSON representation.
-            // TODO : replace locationPattern.
-            var response = _responseParser.Parse(representation, locationPattern, schemaId, resourceType, OperationTypes.Modification);
+            var response = _responseParser.Parse(representation, locationPattern.Replace("{id}", id), schemaId, OperationTypes.Modification);
             return _apiResponseFactory.CreateResultWithContent(HttpStatusCode.OK,
                 response.Object,
                 response.Location);

@@ -24,6 +24,7 @@ namespace SimpleIdentityServer.Scim.Core.Stores
     {
         IEnumerable<SchemaResponse> GetSchemas();
         SchemaResponse GetSchema(string id);
+        IEnumerable<SchemaAttributeResponse> GetCommonAttributes();
     }
 
     internal class SchemaStore : ISchemaStore
@@ -464,6 +465,11 @@ namespace SimpleIdentityServer.Scim.Core.Stores
         public SchemaResponse GetSchema(string id)
         {
             return _schemas.FirstOrDefault(s => s.Id == id);
+        }
+
+        public IEnumerable<SchemaAttributeResponse> GetCommonAttributes()
+        {
+            return CommonAttributes;
         }
 
         #endregion

@@ -105,6 +105,25 @@ namespace SimpleIdentityServer.Scim.Core
             public const string Meta = "meta";
         }
 
+        public static class SearchParameterNames
+        {
+            public const string Attributes = "attributes";
+            public const string ExcludedAttributes = "excludedAttributes";
+            public const string Filter = "filter";
+            public const string SortBy = "sortBy";
+            public const string SortOrder = "sortOrder";
+            public const string StartIndex = "startIndex";
+            public const string Count = "count";
+        }
+
+        public static class SearchParameterResponseNames
+        {
+            public static string TotalResults = "totalResults";
+            public static string Resources = "Resources";
+            public static string StartIndex = "startIndex";
+            public static string ItemsPerPage = "itemsPerPage";
+        }
+
         public static class PatchOperationsRequestNames
         {
             public const string Operations = "Operations";
@@ -303,8 +322,9 @@ namespace SimpleIdentityServer.Scim.Core
         {
             public const string Error = "urn:ietf:params:scim:api:messages:2.0:Error";
             public const string PatchOp = "urn:ietf:params:scim:api:messages:2.0:PatchOp";
+            public const string ListResponse = "urn:ietf:params:scim:api:messages:2.0:ListResponse";
         }
-
+        
         public static class ResourceTypes
         {
             public const string Group = "Group";

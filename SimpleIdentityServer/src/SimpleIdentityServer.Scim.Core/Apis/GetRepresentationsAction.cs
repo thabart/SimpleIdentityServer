@@ -14,33 +14,44 @@
 // limitations under the License.
 #endregion
 
+using Newtonsoft.Json.Linq;
+using SimpleIdentityServer.Scim.Core.Factories;
 using SimpleIdentityServer.Scim.Core.Parsers;
 using SimpleIdentityServer.Scim.Core.Results;
 using SimpleIdentityServer.Scim.Core.Stores;
+using SimpleIdentityServer.Scim.Core.Validators;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SimpleIdentityServer.Scim.Core.Apis
 {
     public interface IGetRepresentationsAction
     {
-        ApiActionResult Execute(string resourceType, SearchParameter searchParameter);
+        ApiActionResult Execute(string resourceType, SearchParameter searchParameter, string locationPattern);
     }
 
     internal class GetRepresentationsAction : IGetRepresentationsAction
     {
         private readonly IRepresentationStore _representationStore;
         private readonly IRepresentationResponseParser _representationResponseParser;
+        private readonly ICommonAttributesFactory _commonAttributesFactory;
+        private readonly IParametersValidator _parametersValidator;
 
         public GetRepresentationsAction(
             IRepresentationStore representationStore,
-            IRepresentationResponseParser representationResponseParser)
+            IRepresentationResponseParser representationResponseParser,
+            ICommonAttributesFactory commonAttributesFactory,
+            IParametersValidator parametersValidator)
         {
+            _commonAttributesFactory = commonAttributesFactory;
             _representationStore = representationStore;
             _representationResponseParser = representationResponseParser;
+            _parametersValidator = parametersValidator;
         }
 
-        public ApiActionResult Execute(string resourceType, SearchParameter searchParameter)
-        {            
+        public ApiActionResult Execute(string resourceType, SearchParameter searchParameter, string locationPattern)
+        {
             // 1. Check parameters.
             if (string.IsNullOrWhiteSpace(resourceType))
             {
@@ -52,14 +63,41 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                 throw new ArgumentNullException(nameof(searchParameter));
             }
 
-            // 2. Get representations.
+            _parametersValidator.ValidateLocationPattern(locationPattern);
+
+            // 2. Get representations & add the common attributes.
             var representations = _representationStore.GetRepresentations(resourceType);
+            foreach(var representation in representations)
+            {
+                var location = locationPattern.Replace("{id}", representation.Id);
+                representation.Attributes = representation.Attributes.Concat(new[] 
+                {
+                    _commonAttributesFactory.CreateMetaDataAttribute(representation, location),
+                    _commonAttributesFactory.CreateId(representation)
+                });
+            }
+
+            // 3. Filter the representations.
             var result = _representationResponseParser.Filter(representations, searchParameter);
+
+            // 4. Construct response.
             return new ApiActionResult
             {
-                Content = result,
+                Content = CreateResponse(result),
                 StatusCode = 200
             };
+        }
+
+        private JObject CreateResponse(IEnumerable<object> resources)
+        {
+            var result = new JObject();
+            var schemas = new JArray();
+            var content = new JArray();
+            content.Add(resources);
+            schemas.Add(Constants.Messages.ListResponse);
+            result.Add(Constants.ScimResourceNames.Schemas, schemas);
+            result[Constants.SearchParameterResponseNames.Resources] = content;
+            return result;
         }
     }
 }

@@ -35,9 +35,8 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         /// <param name="identifier">Identifier of the representation.</param>
         /// <param name="locationPattern">Location pattern of the representation.</param>
         /// <param name="schemaId">Identifier of the schema.</param>
-        /// <param name="resourceType">Type of resource.</param>
         /// <returns>Representation or null if it doesn't exist.</returns>
-        ApiActionResult Execute(string identifier, string locationPattern, string schemaId, string resourceType);
+        ApiActionResult Execute(string identifier, string locationPattern, string schemaId);
     }
 
     internal class GetRepresentationAction : IGetRepresentationAction
@@ -66,9 +65,8 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         /// <param name="identifier">Identifier of the representation.</param>
         /// <param name="locationPattern">Location pattern of the representation.</param>
         /// <param name="schemaId">Identifier of the schema.</param>
-        /// <param name="resourceType">Type of resource.</param>
         /// <returns>Representation or null if it doesn't exist.</returns>
-        public ApiActionResult Execute(string identifier, string locationPattern, string schemaId, string resourceType)
+        public ApiActionResult Execute(string identifier, string locationPattern, string schemaId)
         {
             // 1. Check parameters.
             if (string.IsNullOrWhiteSpace(identifier))
@@ -82,11 +80,6 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                 throw new ArgumentNullException(nameof(schemaId));
             }
 
-            if (string.IsNullOrWhiteSpace(resourceType))
-            {
-                throw new ArgumentNullException(nameof(resourceType));
-            }
-
             // 2. Check representation exists.
             var representation = _representationStore.GetRepresentation(identifier);
             if (representation == null)
@@ -97,7 +90,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             }
 
             // 3. Parse the result and returns the representation.
-            var result = _responseParser.Parse(representation, locationPattern, schemaId, resourceType, OperationTypes.Query);
+            var result = _responseParser.Parse(representation, locationPattern, schemaId, OperationTypes.Query);
             
             return _apiResponseFactory.CreateResultWithContent(HttpStatusCode.OK, result.Object, result.Location);
         }

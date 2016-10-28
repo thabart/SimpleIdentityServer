@@ -77,9 +77,12 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             // ARRANGE
             InitializeFakeObjects();
             var filter = new Filter();
+            var sortByFilder = new Filter();
             var query = QueryHelpers.ParseQuery("attributes=att1&attributes=att2&excludedAttributes=ex1&sortBy=name&startIndex=2&count=3&sortOrder=ascending&filter=filter");
             _filterParserStub.Setup(f => f.Parse("filter"))
                 .Returns(filter);
+            _filterParserStub.Setup(f => f.Parse("name"))
+                .Returns(sortByFilder);
 
             // ACT
             var result = _searchParameterParser.ParseQuery(new QueryCollection(query));
@@ -88,7 +91,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             Assert.NotNull(result);
             Assert.True(result.Attributes.All(r => new[] { "att1", "att2" }.Contains(r)));
             Assert.True(result.ExcludedAttributes.All(r => new[] { "ex1" }.Contains(r)));
-            Assert.True(result.SortBy == "name");
+            Assert.True(result.SortBy == sortByFilder);
             Assert.True(result.StartIndex == 2);
             Assert.True(result.Count == 3);
             Assert.True(result.SortOrder == SortOrders.Ascending);
@@ -130,9 +133,12 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             // ARRANGE
             InitializeFakeObjects();
             var filter = new Filter();
+            var sortByFilder = new Filter();
             var json = JObject.Parse("{attributes:['att1','att2'], excludedAttributes: ['ex1'], startIndex:2, count:3, sortBy:'name', sortOrder:'ascending', filter:'filter'}");
             _filterParserStub.Setup(f => f.Parse("filter"))
                 .Returns(filter);
+            _filterParserStub.Setup(f => f.Parse("name"))
+                .Returns(sortByFilder);
 
             // ACT
             var result = _searchParameterParser.ParseJson(json);
@@ -141,7 +147,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             Assert.NotNull(result);
             Assert.True(result.Attributes.All(r => new[] { "att1", "att2" }.Contains(r)));
             Assert.True(result.ExcludedAttributes.All(r => new[] { "ex1" }.Contains(r)));
-            Assert.True(result.SortBy == "name");
+            Assert.True(result.SortBy == sortByFilder);
             Assert.True(result.StartIndex == 2);
             Assert.True(result.Count == 3);
             Assert.True(result.SortOrder == SortOrders.Ascending);

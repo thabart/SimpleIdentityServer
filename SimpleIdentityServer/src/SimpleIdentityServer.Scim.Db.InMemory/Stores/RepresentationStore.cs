@@ -17,7 +17,6 @@
 using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Core.Stores;
 using System.Linq;
-using System;
 using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Scim.Db.InMemory.Stores

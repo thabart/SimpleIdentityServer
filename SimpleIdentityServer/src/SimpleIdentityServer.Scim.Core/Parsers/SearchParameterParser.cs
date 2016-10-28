@@ -48,6 +48,13 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
     public class SearchParameter
     {
+        public SearchParameter()
+        {
+            Count = 100;
+            StartIndex = 1;
+            SortOrder = SortOrders.Ascending;
+        }
+
         /// <summary>
         /// Names of resource attributes to return in the response.
         /// </summary>
@@ -63,7 +70,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         /// <summary>
         /// Indicate whose value SHALL be used to order the returned responses.
         /// </summary>
-        public string SortBy { get; set; }
+        public Filter SortBy { get; set; }
         /// <summary>
         /// In which the "sortBy" parameter is applied.
         /// </summary>
@@ -80,16 +87,6 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
     internal class SearchParameterParser : ISearchParameterParser
     {
-        private static class SearchParameterNames
-        {
-            public static string Attributes = "attributes";
-            public static string ExcludedAttributes = "excludedAttributes";
-            public static string Filter = "filter";
-            public static string SortBy = "sortBy";
-            public static string SortOrder = "sortOrder";
-            public static string StartIndex = "startIndex";
-            public static string Count = "count";
-        }
 
         private static class SortOrderNames
         {
@@ -120,13 +117,13 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
             foreach(var key in query.Keys)
             {
-                TrySetEnum((r) => result.Attributes = r, key, SearchParameterNames.Attributes, query);
-                TrySetEnum((r) => result.ExcludedAttributes = r, key, SearchParameterNames.ExcludedAttributes, query);
-                TrySetStr((r) => result.Filter = GetFilter(r), key, SearchParameterNames.Filter, query);
-                TrySetStr((r) => result.SortBy = r, key, SearchParameterNames.SortBy, query);
-                TrySetStr((r) => result.SortOrder = GetSortOrder(r), key, SearchParameterNames.SortOrder, query);
-                TrySetInt((r) => result.StartIndex = r, key, SearchParameterNames.StartIndex, query);
-                TrySetInt((r) => result.Count = r, key, SearchParameterNames.Count, query);
+                TrySetEnum((r) => result.Attributes = r, key, Constants.SearchParameterNames.Attributes, query);
+                TrySetEnum((r) => result.ExcludedAttributes = r, key, Constants.SearchParameterNames.ExcludedAttributes, query);
+                TrySetStr((r) => result.Filter = GetFilter(r), key, Constants.SearchParameterNames.Filter, query);
+                TrySetStr((r) => result.SortBy = GetFilter(r), key, Constants.SearchParameterNames.SortBy, query);
+                TrySetStr((r) => result.SortOrder = GetSortOrder(r), key, Constants.SearchParameterNames.SortOrder, query);
+                TrySetInt((r) => result.StartIndex = r, key, Constants.SearchParameterNames.StartIndex, query);
+                TrySetInt((r) => result.Count = r, key, Constants.SearchParameterNames.Count, query);
             }
 
             return result;
@@ -148,39 +145,39 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
             JArray jArr;
             JValue jVal;
-            if (TryGetToken(json, SearchParameterNames.Attributes, out jArr))
+            if (TryGetToken(json, Constants.SearchParameterNames.Attributes, out jArr))
             {
                 result.Attributes = jArr.Values<string>();
             }
 
-            if (TryGetToken(json, SearchParameterNames.ExcludedAttributes, out jArr))
+            if (TryGetToken(json, Constants.SearchParameterNames.ExcludedAttributes, out jArr))
             {
                 result.ExcludedAttributes = jArr.Values<string>();
             }
 
-            if (TryGetToken(json, SearchParameterNames.Filter, out jVal))
+            if (TryGetToken(json, Constants.SearchParameterNames.Filter, out jVal))
             {
                 result.Filter = GetFilter(jVal.Value<string>());
             }
 
-            if (TryGetToken(json, SearchParameterNames.SortBy, out jVal))
+            if (TryGetToken(json, Constants.SearchParameterNames.SortBy, out jVal))
             {
-                result.SortBy = jVal.Value<string>();
+                result.SortBy = GetFilter(jVal.Value<string>());
             }
 
-            if (TryGetToken(json, SearchParameterNames.SortOrder, out jVal))
+            if (TryGetToken(json, Constants.SearchParameterNames.SortOrder, out jVal))
             {
                 result.SortOrder = GetSortOrder(jVal.Value<string>());
             }
 
-            if (TryGetToken(json, SearchParameterNames.StartIndex, out jVal))
+            if (TryGetToken(json, Constants.SearchParameterNames.StartIndex, out jVal))
             {
-                result.StartIndex = GetInt(jVal.Value<string>(), SearchParameterNames.StartIndex);
+                result.StartIndex = GetInt(jVal.Value<string>(), Constants.SearchParameterNames.StartIndex);
             }
 
-            if (TryGetToken(json, SearchParameterNames.Count, out jVal))
+            if (TryGetToken(json, Constants.SearchParameterNames.Count, out jVal))
             {
-                result.Count = GetInt(jVal.Value<string>(), SearchParameterNames.Count);
+                result.Count = GetInt(jVal.Value<string>(), Constants.SearchParameterNames.Count);
             }
 
             return result;
@@ -191,7 +188,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             var filter = _filterParser.Parse(value);
             if (filter == null)
             {
-                throw new InvalidOperationException(string.Format(ErrorMessages.TheParameterIsNotValid, SearchParameterNames.Filter));
+                throw new InvalidOperationException(string.Format(ErrorMessages.TheParameterIsNotValid, Constants.SearchParameterNames.Filter));
             }
 
             return filter;
@@ -248,7 +245,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             }
             else
             {
-                throw new InvalidOperationException(string.Format(ErrorMessages.TheParameterIsNotValid, SearchParameterNames.SortOrder));
+                throw new InvalidOperationException(string.Format(ErrorMessages.TheParameterIsNotValid, Constants.SearchParameterNames.SortOrder));
             }
 
             return sortOrder;

@@ -54,13 +54,11 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            Assert.Throws<ArgumentNullException>(() => _patchRepresentationAction.Execute(null, null, null, null, null));
-            Assert.Throws<ArgumentNullException>(() => _patchRepresentationAction.Execute(string.Empty, null, null, null, null));
-            Assert.Throws<ArgumentNullException>(() => _patchRepresentationAction.Execute("id", null, null, null, null));
-            Assert.Throws<ArgumentNullException>(() => _patchRepresentationAction.Execute("id", new JObject(), null, null, null));
-            Assert.Throws<ArgumentNullException>(() => _patchRepresentationAction.Execute("id", new JObject(), string.Empty, null, null));
-            Assert.Throws<ArgumentNullException>(() => _patchRepresentationAction.Execute("id", new JObject(), "schemaid", "http://localhost:{id}", null));
-            Assert.Throws<ArgumentNullException>(() => _patchRepresentationAction.Execute("id", new JObject(), "schemaid", "http://localhost:{id}", string.Empty));
+            Assert.Throws<ArgumentNullException>(() => _patchRepresentationAction.Execute(null, null, null, null));
+            Assert.Throws<ArgumentNullException>(() => _patchRepresentationAction.Execute(string.Empty, null, null, null));
+            Assert.Throws<ArgumentNullException>(() => _patchRepresentationAction.Execute("id", null, null, null));
+            Assert.Throws<ArgumentNullException>(() => _patchRepresentationAction.Execute("id", new JObject(), null, null));
+            Assert.Throws<ArgumentNullException>(() => _patchRepresentationAction.Execute("id", new JObject(), string.Empty, null));
         }
 
         [Fact]
@@ -73,7 +71,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                 .Returns((Representation)null);
 
             // ACT
-            _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}", "resource_type");
+            _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
 
             // ASSERTS
             _apiResponseFactoryStub.Verify(a => a.CreateError(HttpStatusCode.NotFound, string.Format(ErrorMessages.TheResourceDoesntExist, id)));
@@ -95,7 +93,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                 .Returns((IEnumerable<PatchOperation>)null);
 
             // ACT
-            _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}", "resource_type");
+            _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
 
             // ASSERT
             _apiResponseFactoryStub.Verify(a => a.CreateError((HttpStatusCode)errorResponse.Status, errorResponse));
@@ -123,7 +121,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                 });
 
             // ACT
-            _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}", "resource_type");
+            _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
 
             // ASSERT
             _errorResponseFactoryStub.Verify(a => a.CreateError(ErrorMessages.ThePathNeedsToBeSpecified, HttpStatusCode.BadRequest, Constants.ScimTypeValues.InvalidSyntax));
@@ -175,7 +173,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                 });
             
             // ACT
-            _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}", "resource_type");
+            _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
 
             // ASSERT
             _errorResponseFactoryStub.Verify(a => a.CreateError(ErrorMessages.TheFilterIsNotCorrect, HttpStatusCode.BadRequest, Constants.ScimTypeValues.InvalidFilter));
@@ -227,7 +225,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                 });
 
             // ACT
-            _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}", "resource_type");
+            _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
 
             // ASSERT
             _errorResponseFactoryStub.Verify(a => a.CreateError(string.Format(ErrorMessages.TheImmutableAttributeCannotBeUpdated, "members"), HttpStatusCode.BadRequest, Constants.ScimTypeValues.Mutability));
@@ -275,8 +273,8 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                         }
                     }
                 });
-            _responseParserStub.Setup(p => p.Parse(It.IsAny<Representation>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), OperationTypes.Modification))
-                .Callback((Representation repr, string loc, string schem, string resou, OperationTypes op) =>
+            _responseParserStub.Setup(p => p.Parse(It.IsAny<Representation>(), It.IsAny<string>(), It.IsAny<string>(), OperationTypes.Modification))
+                .Callback((Representation repr, string loc, string schem, OperationTypes op) =>
                 {
                     result = repr;
                 })
@@ -287,7 +285,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                 });
 
             // ACT
-            _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}", "resource_type");
+            _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
 
             // ASSERT
             Assert.NotNull(result);
@@ -341,8 +339,8 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                         }
                     }
                 });
-            _responseParserStub.Setup(p => p.Parse(It.IsAny<Representation>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), OperationTypes.Modification))
-                .Callback((Representation repr, string loc, string schem, string resou, OperationTypes op) =>
+            _responseParserStub.Setup(p => p.Parse(It.IsAny<Representation>(), It.IsAny<string>(), It.IsAny<string>(), OperationTypes.Modification))
+                .Callback((Representation repr, string loc, string schem, OperationTypes op) =>
                 {
                     result = repr;
                 })
@@ -353,7 +351,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                 });
 
             // ACT
-            _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}", "resource_type");
+            _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
 
             // ASSERT
             Assert.NotNull(result);
@@ -409,7 +407,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                 });
 
             // ACT
-            _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}", "resource_type");
+            _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
 
             // ASSERT
             _errorResponseFactoryStub.Verify(a => a.CreateError(ErrorMessages.TheRepresentationCannotBeRemoved, HttpStatusCode.BadRequest));
@@ -466,7 +464,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                 .Returns((RepresentationAttribute)null);
 
             // ACT
-            _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}", "resource_type");
+            _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
 
             // ASSERT
             _errorResponseFactoryStub.Verify(a => a.CreateError(ErrorMessages.TheValueNeedsToBeSpecified, HttpStatusCode.BadRequest, Constants.ScimTypeValues.InvalidSyntax));
@@ -510,8 +508,8 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                         Value = JObject.Parse("{ members : [ { firstName : 'firstName' }] }")
                     }
                 });
-            _responseParserStub.Setup(p => p.Parse(It.IsAny<Representation>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), OperationTypes.Modification))
-                .Callback((Representation repr, string loc, string schem, string resou, OperationTypes op) =>
+            _responseParserStub.Setup(p => p.Parse(It.IsAny<Representation>(), It.IsAny<string>(), It.IsAny<string>(), OperationTypes.Modification))
+                .Callback((Representation repr, string loc, string schem, OperationTypes op) =>
                 {
                     result = repr;
                 })
@@ -523,7 +521,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                 
 
             // ACT
-            _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}", "resource_type");
+            _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
 
             // ASSERT
             Assert.NotNull(result);
@@ -540,7 +538,6 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
             {
                 Attributes = new RepresentationAttribute[0]
             };
-            Representation result = null;
             ErrorResponse errorResponse = new ErrorResponse();
             InitializeFakeObjects();
             _patchRequestParserStub.Setup(p => p.Parse(It.IsAny<JObject>(), out errorResponse))
@@ -559,7 +556,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
 
 
             // ACT
-            _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}", "resource_type");
+            _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
 
             // ASSERT
             _apiResponseFactoryStub.Verify(a => a.CreateError(HttpStatusCode.BadRequest, It.IsAny<ErrorResponse>()));
@@ -616,7 +613,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                 .Returns((RepresentationAttribute)null);
 
             // ACT
-            _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}", "resource_type");
+            _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
 
             // ASSERT
             _errorResponseFactoryStub.Verify(a => a.CreateError(ErrorMessages.TheValueNeedsToBeSpecified, HttpStatusCode.BadRequest, Constants.ScimTypeValues.InvalidSyntax));
@@ -675,7 +672,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                 });
 
             // ACT
-            _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}", "resource_type");
+            _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
 
             // ASSERT
             _errorResponseFactoryStub.Verify(a => a.CreateError(ErrorMessages.TheRepresentationCannotBeSet, HttpStatusCode.BadRequest));

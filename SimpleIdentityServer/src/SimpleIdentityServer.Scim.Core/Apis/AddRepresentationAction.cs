@@ -15,7 +15,6 @@
 #endregion
 
 using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Scim.Core.Errors;
 using SimpleIdentityServer.Scim.Core.Factories;
 using SimpleIdentityServer.Scim.Core.Parsers;
 using SimpleIdentityServer.Scim.Core.Results;
@@ -85,7 +84,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             _representationStore.AddRepresentation(result);
 
             // 3. Transform and returns the representation.
-            var response = _responseParser.Parse(result, locationPattern, schemaId, resourceType, OperationTypes.Modification);
+            var response = _responseParser.Parse(result, locationPattern, schemaId, OperationTypes.Modification);
             return _apiResponseFactory.CreateResultWithContent(HttpStatusCode.Created, response.Object, response.Location);
         }
     }

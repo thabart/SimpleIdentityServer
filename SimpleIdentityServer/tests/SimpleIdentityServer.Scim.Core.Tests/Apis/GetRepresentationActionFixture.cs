@@ -44,12 +44,10 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            Assert.Throws<ArgumentNullException>(() => _getRepresentationAction.Execute(null, "http://location/{id}", null, null));
-            Assert.Throws<ArgumentNullException>(() => _getRepresentationAction.Execute(string.Empty, "http://location/{id}", null, null));
-            Assert.Throws<ArgumentNullException>(() => _getRepresentationAction.Execute("identifier", "http://location/{id}", null, null));
-            Assert.Throws<ArgumentNullException>(() => _getRepresentationAction.Execute("identifier", "http://location/{id}", string.Empty, null));
-            Assert.Throws<ArgumentNullException>(() => _getRepresentationAction.Execute("identifier", "http://location/{id}", "schema_identifier", null));
-            Assert.Throws<ArgumentNullException>(() => _getRepresentationAction.Execute("identifier", "http://location/{id}", "schema_identifier", string.Empty));
+            Assert.Throws<ArgumentNullException>(() => _getRepresentationAction.Execute(null, "http://location/{id}", null));
+            Assert.Throws<ArgumentNullException>(() => _getRepresentationAction.Execute(string.Empty, "http://location/{id}", null));
+            Assert.Throws<ArgumentNullException>(() => _getRepresentationAction.Execute("identifier", "http://location/{id}", null));
+            Assert.Throws<ArgumentNullException>(() => _getRepresentationAction.Execute("identifier", "http://location/{id}", string.Empty));
         }
 
         [Fact]
@@ -68,7 +66,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                 
 
             // ACT
-            var result = _getRepresentationAction.Execute("identifier", "http://location/{id}", "schema_identifier", "schema_type");
+            var result = _getRepresentationAction.Execute("identifier", "http://location/{id}", "schema_identifier");
 
             // ASSERT
             Assert.NotNull(result);
@@ -81,22 +79,21 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
             // ARRANGE
             var representation = new Representation();
             const string schemaId = "schema";
-            const string schemaType = "type";
-            const string locationPattern = "http://location/{id}";
+            const string location = "http://location/{id}";
             InitializeFakeObjects();
             _representationStoreStub.Setup(r => r.GetRepresentation(It.IsAny<string>()))
                 .Returns(representation);
-            _responseParserStub.Setup(r => r.Parse(representation, locationPattern, schemaId, schemaType, OperationTypes.Query))
+            _responseParserStub.Setup(r => r.Parse(representation, location, schemaId, OperationTypes.Query))
                 .Returns(new Response
                 {
-                    Location = locationPattern
+                    Location = location
                 });
 
             // ACT
-            _getRepresentationAction.Execute("identifier", locationPattern, schemaId, schemaType);
+            _getRepresentationAction.Execute("identifier", location, schemaId);
 
             // ASSERT
-            _responseParserStub.Verify(r => r.Parse(representation, locationPattern, schemaId, schemaType, OperationTypes.Query));
+            _responseParserStub.Verify(r => r.Parse(representation, location, schemaId, OperationTypes.Query));
             _apiResponseFactoryStub.Verify(a => a.CreateResultWithContent(HttpStatusCode.OK, It.IsAny<object>(), It.IsAny<string>()));
         }
 

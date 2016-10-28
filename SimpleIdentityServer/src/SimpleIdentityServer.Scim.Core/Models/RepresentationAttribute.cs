@@ -20,7 +20,7 @@ using System.Linq;
 
 namespace SimpleIdentityServer.Scim.Core.Models
 {
-    public class RepresentationAttribute : ICloneable
+    public class RepresentationAttribute : ICloneable, IComparable
     {
         public RepresentationAttribute(SchemaAttributeResponse schemaAttribute)
         {
@@ -31,6 +31,14 @@ namespace SimpleIdentityServer.Scim.Core.Models
 
         public RepresentationAttribute Parent { get; set; }
 
+        public string FullPath
+        {
+            get
+            {
+                return GetFullPath();
+            }
+        }
+
         public object Clone()
         {
             return CloneObj();
@@ -39,6 +47,53 @@ namespace SimpleIdentityServer.Scim.Core.Models
         protected virtual object CloneObj()
         {
             return new RepresentationAttribute(SchemaAttribute);
+        }
+
+        private string GetFullPath()
+        {
+            var parents = new List<RepresentationAttribute>();
+            var names = new List<string>();
+            if (SchemaAttribute != null)
+            {
+                names.Add(SchemaAttribute.Name);
+            }
+
+            GetParents(this, parents);
+            parents.Reverse();
+            var parentNames = names.Concat(parents.Where(p => p.SchemaAttribute != null).Select(p => p.SchemaAttribute.Name));
+            return string.Join(".", parentNames);
+        }
+
+        private IEnumerable<RepresentationAttribute> GetParents(RepresentationAttribute representation, IEnumerable<RepresentationAttribute> parents)
+        {
+            if (representation.Parent == null)
+            {
+                return parents;
+            }
+
+            parents = parents.Concat(new[] { representation });
+            return GetParents(representation.Parent, parents);
+        }
+
+        public int CompareTo(object obj)
+        {
+            if (obj == null)
+            {
+                return 1;
+            }
+
+            var representation = obj as RepresentationAttribute;
+            if (representation == null)
+            {
+                return 1;
+            }
+
+            return CompareTo(representation);
+        }
+
+        protected virtual int CompareTo(RepresentationAttribute attr)
+        {
+            return 0;
         }
     }
 
@@ -75,6 +130,71 @@ namespace SimpleIdentityServer.Scim.Core.Models
         protected override object CloneObj()
         {
             return new SingularRepresentationAttribute<T>(SchemaAttribute, Value);
+        }
+
+        protected override int CompareTo(RepresentationAttribute attr)
+        {
+            var singular = attr as SingularRepresentationAttribute<T>;
+            if (singular == null)
+            {
+                return 1;
+            }
+
+            return CompareTo(singular.Value);
+        }
+
+        private int CompareTo(T target)
+        {
+            switch(SchemaAttribute.Type)
+            {
+                case Constants.SchemaAttributeTypes.String:
+                    if (SchemaAttribute.MultiValued)
+                    {
+                        return -1;
+                    }
+
+                    var ss = Value as string;
+                    var ts = target as string;
+                    return ss.CompareTo(ts);
+                case Constants.SchemaAttributeTypes.Boolean:
+                    if (SchemaAttribute.MultiValued)
+                    {
+                        return -1;
+                    }
+
+                    var sb = bool.Parse(Value as string);
+                    var tb = bool.Parse(target as string);
+                    return sb.CompareTo(tb);
+                case Constants.SchemaAttributeTypes.Integer:
+                    if (SchemaAttribute.MultiValued)
+                    {
+                        return -1;
+                    }
+
+                    var si = int.Parse(Value as string);
+                    var ti = int.Parse(target as string);
+                    return si.CompareTo(ti);
+                case Constants.SchemaAttributeTypes.Decimal:
+                    if (SchemaAttribute.MultiValued)
+                    {
+                        return -1;
+                    }
+
+                    var sd = decimal.Parse(Value as string);
+                    var td = decimal.Parse(target as string);
+                    return sd.CompareTo(td);
+                case Constants.SchemaAttributeTypes.DateTime:
+                    if (SchemaAttribute.MultiValued)
+                    {
+                        return -1;
+                    }
+
+                    var sdt = DateTime.Parse(Value as string);
+                    var tdt = DateTime.Parse(target as string);
+                    return sdt.CompareTo(tdt);
+            }
+
+            return -1;
         }
     }
 
@@ -129,6 +249,17 @@ namespace SimpleIdentityServer.Scim.Core.Models
             {
                 Values = newValues
             };
+        }
+
+        protected override int CompareTo(RepresentationAttribute attr)
+        {
+            var complex = attr as ComplexRepresentationAttribute;
+            if (complex == null)
+            {
+                return 1;
+            }
+
+            return 1;
         }
     }
 }

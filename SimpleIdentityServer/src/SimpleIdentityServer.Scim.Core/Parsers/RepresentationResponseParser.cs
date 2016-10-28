@@ -16,9 +16,9 @@
 
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Scim.Core.Errors;
+using SimpleIdentityServer.Scim.Core.Factories;
 using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Core.Stores;
-using SimpleIdentityServer.Scim.Core.Validators;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,16 +33,14 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         /// <exception cref="System.ArgumentNullException">Thrown when parameters are null empty</exception>
         /// <exception cref="System.InvalidOperationException">Thrown when error occured during the parsing.</exception>
         /// <param name="representation">Representation that will be parsed.</param>
-        /// <param name="locationPattern">Location pattern of the representation.</param>
+        /// <param name="location">Location of the representation.</param>
         /// <param name="schemaId">Identifier of the schema.</param>
-        /// <param name="resourceType">Type of resource.</param>
         /// <param name="operationType">Type of operation.</param>
         /// <returns>JSON representation</returns>
         Response Parse(
             Representation representation, 
-            string locationPattern, 
+            string location,
             string schemaId, 
-            string resourceType,
             OperationTypes operationType);
 
         /// <summary>
@@ -72,14 +70,14 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
     internal class RepresentationResponseParser : IRepresentationResponseParser
     {
         private readonly ISchemaStore _schemasStore;
-        private readonly IParametersValidator _parametersValidator;
+        private readonly ICommonAttributesFactory _commonAttributesFactory;
 
         public RepresentationResponseParser(
             ISchemaStore schemaStore,
-            IParametersValidator parametersValidator)
+            ICommonAttributesFactory commonAttributeFactory)
         {
             _schemasStore = schemaStore;
-            _parametersValidator = parametersValidator;
+            _commonAttributesFactory = commonAttributeFactory;
         }
 
         /// <summary>
@@ -88,16 +86,14 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         /// <exception cref="System.ArgumentNullException">Thrown when parameters are null empty</exception>
         /// <exception cref="System.InvalidOperationException">Thrown when error occured during the parsing.</exception>
         /// <param name="representation">Representation that will be parsed.</param>
-        /// <param name="locationPattern">Location pattern of the representation.</param>
+        /// <param name="location">Location of the representation</param>
         /// <param name="schemaId">Identifier of the schema.</param>
-        /// <param name="resourceType">Type of resource.</param>
         /// <param name="operationType">Type of operation.</param>
         /// <returns>JSON representation</returns>
         public Response Parse(
             Representation representation, 
-            string locationPattern, 
-            string schemaId, 
-            string resourceType,
+            string location,
+            string schemaId,
             OperationTypes operationType)
         {
             if (representation == null)
@@ -105,22 +101,9 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 throw new ArgumentNullException(nameof(representation));
             }
 
-            _parametersValidator.ValidateLocationPattern(locationPattern);
-            if (!locationPattern.Contains("{id}"))
-            {
-                throw new ArgumentException(
-                    string.Format(ErrorMessages.TheLocationPatternIsNotCorrect,
-                    locationPattern));
-            }
-
             if (string.IsNullOrWhiteSpace(schemaId))
             {
                 throw new ArgumentNullException(nameof(schemaId));
-            }
-
-            if (string.IsNullOrWhiteSpace(resourceType))
-            {
-                throw new ArgumentNullException(nameof(resourceType));
             }
 
             var schema = _schemasStore.GetSchema(schemaId);
@@ -150,9 +133,8 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                     }
                 }
             }
-
-            var location = locationPattern.Replace("{id}", representation.Id);
-            SetCommonAttributes(result, location, representation, resourceType);
+            
+            SetCommonAttributes(result, location, representation);
             return new Response
             {
                 Location = location,
@@ -184,8 +166,23 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 Constants.MetaResponseNames.Version,
                 Constants.MetaResponseNames.Location
             };
+                                   
+            var result = new JArray();
+            // 1. Sort the representations.
+            if (searchParameter.SortBy != null)
+            {
+                var comparer = new RepresentationComparer(searchParameter.SortBy);
+                if (searchParameter.SortOrder == SortOrders.Ascending)
+                {
+                    representations = representations.OrderBy(repr => repr, comparer);
+                }
+                else
+                {
+                    representations = representations.OrderByDescending(repr => repr, comparer);
+                }
+            }
 
-            var result = new List<IEnumerable<object>>();
+            // 2. Filter the representations.
             foreach(var representation in representations)
             {
                 var attributes = representation.Attributes;
@@ -202,8 +199,8 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
                 // 2. Include & exclude the attributes.
                 attributes = attributes.Where(a =>
-                    (searchParameter.Attributes == null || searchParameter.Attributes.Contains(a.SchemaAttribute.Name))
-                    && (searchParameter.ExcludedAttributes == null || !searchParameter.ExcludedAttributes.Contains(a.SchemaAttribute.Name)));
+                    (searchParameter.Attributes == null || searchParameter.Attributes.Contains(a.FullPath))
+                    && (searchParameter.ExcludedAttributes == null || !searchParameter.ExcludedAttributes.Contains(a.FullPath)));
 
                 // 3. Add all attributes
                 var obj = new JObject();
@@ -212,58 +209,18 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                     obj.Add(token);
                 }
 
-                // 4. Include & exclude common attributes.
-                var filteredCommonAttrs = commonAttrs.Where(a =>
-                    (searchParameter.Attributes == null || searchParameter.Attributes.Contains(a))
-                    && (searchParameter.ExcludedAttributes == null || !searchParameter.ExcludedAttributes.Contains(a)));
-                var properties = new List<JProperty>();
-                foreach(var filteredCommonAttr in filteredCommonAttrs)
-                {
-                    if (filteredCommonAttr == Constants.MetaResponseNames.ResourceType)
-                    {
-                        properties.Add(new JProperty(filteredCommonAttr, representation.ResourceType));
-                    }
-                    if (filteredCommonAttr == Constants.MetaResponseNames.Created)
-                    {
-                        properties.Add(new JProperty(filteredCommonAttr, representation.Created));
-                    }
-                    if (filteredCommonAttr == Constants.MetaResponseNames.LastModified)
-                    {
-                        properties.Add(new JProperty(filteredCommonAttr, representation.LastModified));
-                    }
-                    if (filteredCommonAttr == Constants.MetaResponseNames.Version)
-                    {
-                        properties.Add(new JProperty(filteredCommonAttr, representation.Version));
-                    }
-                    if (filteredCommonAttr == Constants.MetaResponseNames.Location)
-                    {
-                        properties.Add(new JProperty(filteredCommonAttr, "location"));
-                    }
-                }
-                
-                if (properties.Any())
-                {
-                    obj[Constants.ScimResourceNames.Meta] = new JObject(properties);
-                }
-
                 result.Add(obj);
             }
 
-            return result;
+            // 3. Paginate the representations.
+            return result.Skip(searchParameter.StartIndex - 1)
+                .Take(searchParameter.Count);
         }
 
-        private static void SetCommonAttributes(JObject jObj, string location, Representation representation, string resourceType)
+        private void SetCommonAttributes(JObject jObj, string location, Representation representation)
         {
-            jObj.Add(new JProperty(Constants.IdentifiedScimResourceNames.Id, representation.Id));
-            var properties = new JProperty[]
-            {
-                new JProperty(Constants.MetaResponseNames.ResourceType, resourceType),
-                new JProperty(Constants.MetaResponseNames.Created, representation.Created),
-                new JProperty(Constants.MetaResponseNames.LastModified, representation.LastModified),
-                new JProperty(Constants.MetaResponseNames.Version, representation.Version),
-                new JProperty(Constants.MetaResponseNames.Location, location)
-            };
-            jObj[Constants.ScimResourceNames.Meta] = new JObject(properties);
+            jObj.Add(_commonAttributesFactory.CreateIdJson(representation));
+            jObj[Constants.ScimResourceNames.Meta] = new JObject(_commonAttributesFactory.CreateMetaDataAttributeJson(representation, location));
         }
 
         private static JToken GetToken(RepresentationAttribute attr, SchemaAttributeResponse attribute)
@@ -380,6 +337,45 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
                 return new JProperty(singularRepresentation.SchemaAttribute.Name, singularRepresentation.Value);
             }
+        }
+    }
+
+    internal class RepresentationComparer : IComparer<Representation>
+    {
+        private readonly Filter _filter;
+
+        public RepresentationComparer(Filter filter)
+        {
+            _filter = filter;
+        }
+
+        public int Compare(Representation x, Representation y)
+        {
+            if (x == null)
+            {
+                return -1;
+            }
+
+            if (y == null)
+            {
+                return 1;
+            }
+
+            var xAttrs = _filter.Evaluate(x);
+            var yAttrs = _filter.Evaluate(y);
+            if (xAttrs == null || !xAttrs.Any())
+            {
+                return -1;
+            }
+
+            if (yAttrs == null || !yAttrs.Any())
+            {
+                return 1;
+            }
+
+            var xAttr = xAttrs.First();
+            var yAttr = yAttrs.First();
+            return xAttr.CompareTo(yAttr);
         }
     }
 }
