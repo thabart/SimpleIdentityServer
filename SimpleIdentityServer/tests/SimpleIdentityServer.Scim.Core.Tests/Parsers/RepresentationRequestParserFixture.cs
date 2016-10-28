@@ -30,6 +30,9 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
     {
         private Mock<ISchemaStore> _schemaStoreStub;
         private IRepresentationRequestParser _requestParser;
+        private IJsonParser _jsonParser;
+
+        #region Parse
 
         [Fact]
         public void When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
@@ -219,10 +222,14 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             Assert.True(result.Attributes.Count() == 3);
         }
 
+        #endregion
+
         private void InitializeFakeObjects()
         {
             _schemaStoreStub = new Mock<ISchemaStore>();
-            _requestParser = new RepresentationRequestParser(_schemaStoreStub.Object);
+            var parser = new RepresentationRequestParser(_schemaStoreStub.Object);
+            _requestParser = parser;
+            _jsonParser = parser;
         }
     }
 }

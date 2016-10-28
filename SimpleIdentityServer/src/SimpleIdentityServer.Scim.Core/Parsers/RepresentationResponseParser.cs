@@ -50,9 +50,17 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         /// <param name="representationAttributes">Representations to filter.</param>
         /// <param name="searchParameter">Search parameters.</param>
         /// <returns>Filtered response</returns>
-        IEnumerable<object> Filter(
+        FilterResult Filter(
             IEnumerable<Representation> representations,
             SearchParameter searchParameter);
+    }
+
+    public class FilterResult
+    {
+        public int? ItemsPerPage { get; set; }
+        public int? StartIndex { get; set; }
+        public int TotalNumbers { get; set; }
+        public IEnumerable<object> Values { get; set; }
     }
 
     public class Response
@@ -149,13 +157,18 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         /// <param name="representationAttributes">Representations to filter.</param>
         /// <param name="searchParameter">Search parameters.</param>
         /// <returns>Filtered response</returns>
-        public IEnumerable<object> Filter(
+        public FilterResult Filter(
             IEnumerable<Representation> representations,
             SearchParameter searchParameter)
         {
             if (representations == null)
             {
                 throw new ArgumentNullException(nameof(representations));
+            }
+
+            if (searchParameter == null)
+            {
+                throw new ArgumentNullException(nameof(searchParameter));
             }
 
             IEnumerable<string> commonAttrs = new[]
@@ -181,26 +194,42 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                     representations = representations.OrderByDescending(repr => repr, comparer);
                 }
             }
-
+            
             // 2. Filter the representations.
             foreach(var representation in representations)
             {
-                var attributes = representation.Attributes;
                 // 1. Apply filter on the values.
                 if (searchParameter.Filter != null)
                 {
-                    attributes = searchParameter.Filter.Evaluate(representation);
-                }
-
-                if (!attributes.Any())
-                {
-                    continue;
+                    if (!searchParameter.Filter.Evaluate(representation).Any())
+                    {
+                        continue;
+                    }
                 }
 
                 // 2. Include & exclude the attributes.
-                attributes = attributes.Where(a =>
-                    (searchParameter.Attributes == null || searchParameter.Attributes.Contains(a.FullPath))
-                    && (searchParameter.ExcludedAttributes == null || !searchParameter.ExcludedAttributes.Contains(a.FullPath)));
+                IEnumerable<RepresentationAttribute> attributes = null;
+                if (searchParameter.Attributes != null && searchParameter.Attributes.Any())
+                {
+                    attributes = new List<RepresentationAttribute>();
+                    foreach (var attrFilter in searchParameter.Attributes)
+                    {
+                        attributes = attributes.Concat(attrFilter.Evaluate(representation));
+                    }
+                }
+                else if (searchParameter.ExcludedAttributes != null && searchParameter.ExcludedAttributes.Any())
+                {
+                    
+                }
+                else
+                {
+                    attributes = representation.Attributes;
+                }
+
+                if (attributes == null || !attributes.Any())
+                {
+                    continue;
+                }
 
                 // 3. Add all attributes
                 var obj = new JObject();
@@ -212,9 +241,20 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 result.Add(obj);
             }
 
+            var filterResult = new FilterResult();
+            if (result.Count() > searchParameter.Count)
+            {
+                filterResult.StartIndex = searchParameter.StartIndex;
+                filterResult.ItemsPerPage = searchParameter.Count;
+                filterResult.Values = result.Skip(searchParameter.StartIndex - 1).Take(searchParameter.Count);
+            }
+            else
+            {
+                filterResult.Values = result;
+            }
+
             // 3. Paginate the representations.
-            return result.Skip(searchParameter.StartIndex - 1)
-                .Take(searchParameter.Count);
+            return filterResult;
         }
 
         private void SetCommonAttributes(JObject jObj, string location, Representation representation)

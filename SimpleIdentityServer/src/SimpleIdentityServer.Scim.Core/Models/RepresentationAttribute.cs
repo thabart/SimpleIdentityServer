@@ -145,50 +145,31 @@ namespace SimpleIdentityServer.Scim.Core.Models
 
         private int CompareTo(T target)
         {
-            switch(SchemaAttribute.Type)
+            if (SchemaAttribute.MultiValued)
+            {
+                return 0;
+            }
+
+            switch (SchemaAttribute.Type)
             {
                 case Constants.SchemaAttributeTypes.String:
-                    if (SchemaAttribute.MultiValued)
-                    {
-                        return -1;
-                    }
 
                     var ss = Value as string;
                     var ts = target as string;
                     return ss.CompareTo(ts);
                 case Constants.SchemaAttributeTypes.Boolean:
-                    if (SchemaAttribute.MultiValued)
-                    {
-                        return -1;
-                    }
-
                     var sb = bool.Parse(Value as string);
                     var tb = bool.Parse(target as string);
                     return sb.CompareTo(tb);
                 case Constants.SchemaAttributeTypes.Integer:
-                    if (SchemaAttribute.MultiValued)
-                    {
-                        return -1;
-                    }
-
                     var si = int.Parse(Value as string);
                     var ti = int.Parse(target as string);
                     return si.CompareTo(ti);
                 case Constants.SchemaAttributeTypes.Decimal:
-                    if (SchemaAttribute.MultiValued)
-                    {
-                        return -1;
-                    }
-
                     var sd = decimal.Parse(Value as string);
                     var td = decimal.Parse(target as string);
                     return sd.CompareTo(td);
                 case Constants.SchemaAttributeTypes.DateTime:
-                    if (SchemaAttribute.MultiValued)
-                    {
-                        return -1;
-                    }
-
                     var sdt = DateTime.Parse(Value as string);
                     var tdt = DateTime.Parse(target as string);
                     return sdt.CompareTo(tdt);
@@ -254,12 +235,24 @@ namespace SimpleIdentityServer.Scim.Core.Models
         protected override int CompareTo(RepresentationAttribute attr)
         {
             var complex = attr as ComplexRepresentationAttribute;
-            if (complex == null)
+            if (complex == null || complex.Values == null)
             {
                 return 1;
             }
 
-            return 1;
+            if (Values == null)
+            {
+                return -1;
+            }
+
+            var sourcePrimary = Values.FirstOrDefault(p => p.SchemaAttribute != null && p.SchemaAttribute.Name == Constants.MultiValueAttributeNames.Primary);
+            var targetPrimary = complex.Values.FirstOrDefault(p => p.SchemaAttribute != null && p.SchemaAttribute.Name == Constants.MultiValueAttributeNames.Primary);
+            if (sourcePrimary == null || targetPrimary == null)
+            {
+                return 0;
+            }
+
+            return sourcePrimary.CompareTo(targetPrimary);
         }
     }
 }

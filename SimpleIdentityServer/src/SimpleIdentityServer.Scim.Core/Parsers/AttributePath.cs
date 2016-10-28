@@ -52,7 +52,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 foreach (var representationAttr in representationAttrs)
                 {
                     var c = representationAttr as ComplexRepresentationAttribute;
-                    if (c == null || !c.Values.Any(val => val.SchemaAttribute.Name == Name))
+                    if (c == null || !c.Values.Any(val => val.SchemaAttribute != null && val.SchemaAttribute.Name == Name))
                     {
                         continue;
                     }

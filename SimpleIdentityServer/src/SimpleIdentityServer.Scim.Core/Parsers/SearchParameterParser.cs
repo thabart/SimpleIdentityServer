@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Scim.Core.Errors;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Scim.Core.Parsers
@@ -58,7 +59,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         /// <summary>
         /// Names of resource attributes to return in the response.
         /// </summary>
-        public IEnumerable<string> Attributes { get; set; }
+        public IEnumerable<Filter> Attributes { get; set; }
         /// <summary>
         /// Names of resource attributes to be removed from the default set of attributes to return.
         /// </summary>
@@ -117,13 +118,13 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
             foreach(var key in query.Keys)
             {
-                TrySetEnum((r) => result.Attributes = r, key, Constants.SearchParameterNames.Attributes, query);
+                TrySetEnum((r) => result.Attributes = r.Select(a => GetFilter(a)), key, Constants.SearchParameterNames.Attributes, query);
                 TrySetEnum((r) => result.ExcludedAttributes = r, key, Constants.SearchParameterNames.ExcludedAttributes, query);
                 TrySetStr((r) => result.Filter = GetFilter(r), key, Constants.SearchParameterNames.Filter, query);
                 TrySetStr((r) => result.SortBy = GetFilter(r), key, Constants.SearchParameterNames.SortBy, query);
                 TrySetStr((r) => result.SortOrder = GetSortOrder(r), key, Constants.SearchParameterNames.SortOrder, query);
-                TrySetInt((r) => result.StartIndex = r, key, Constants.SearchParameterNames.StartIndex, query);
-                TrySetInt((r) => result.Count = r, key, Constants.SearchParameterNames.Count, query);
+                TrySetInt((r) => result.StartIndex = r <= 0 ? result.StartIndex : r, key, Constants.SearchParameterNames.StartIndex, query);
+                TrySetInt((r) => result.Count = r <= 0 ? result.Count : r, key, Constants.SearchParameterNames.Count, query);
             }
 
             return result;
@@ -147,7 +148,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             JValue jVal;
             if (TryGetToken(json, Constants.SearchParameterNames.Attributes, out jArr))
             {
-                result.Attributes = jArr.Values<string>();
+                result.Attributes = (jArr.Values<string>()).Select(a => GetFilter(a));
             }
 
             if (TryGetToken(json, Constants.SearchParameterNames.ExcludedAttributes, out jArr))
@@ -172,12 +173,14 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
             if (TryGetToken(json, Constants.SearchParameterNames.StartIndex, out jVal))
             {
-                result.StartIndex = GetInt(jVal.Value<string>(), Constants.SearchParameterNames.StartIndex);
+                var i = GetInt(jVal.Value<string>(), Constants.SearchParameterNames.StartIndex);
+                result.StartIndex = i <= 0 ? result.StartIndex : i;
             }
 
             if (TryGetToken(json, Constants.SearchParameterNames.Count, out jVal))
             {
-                result.Count = GetInt(jVal.Value<string>(), Constants.SearchParameterNames.Count);
+                var i = GetInt(jVal.Value<string>(), Constants.SearchParameterNames.Count);
+                result.Count = i <= 0 ? result.Count : i;
             }
 
             return result;

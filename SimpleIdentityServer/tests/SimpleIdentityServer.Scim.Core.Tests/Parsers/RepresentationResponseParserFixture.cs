@@ -30,8 +30,11 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
     {
         private Mock<ISchemaStore> _schemaStoreStub;
         private Mock<ICommonAttributesFactory> _commonAttributesFactoryStub;
+        private IFilterParser _filterParser;
         private IRepresentationRequestParser _requestParser;
         private IRepresentationResponseParser _responseParser;
+
+        #region Parse
 
         [Fact]
         public void When_Null_Or_Empty_Parameters_Are_Parsed_Then_Exceptions_Are_Thrown()
@@ -91,10 +94,99 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             Assert.NotNull(response);
         }
 
+        #endregion
+
+        #region Filter
+
+        [Fact]
+        public void When_Passing_Null_Parameter_To_Filter_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+
+            // ACT & ASSERT
+            Assert.Throws<ArgumentNullException>(() => _responseParser.Filter(null, null));
+            Assert.Throws<ArgumentNullException>(() => _responseParser.Filter(new[] { new Representation() }, null));
+        }
+
+        [Fact]
+        public void When_Filtering_Groups_Then_Correct_Results_Are_Returned()
+        {
+            var schemaStore = new SchemaStore();
+            // ARRANGE
+            InitializeFakeObjects();
+            _schemaStoreStub.Setup(s => s.GetSchema(It.IsAny<string>()))
+                .Returns(schemaStore.GetSchema(Constants.SchemaUrns.Group));
+            var firstObj = JObject.Parse(@"{'schemas': ['urn:ietf:params:scim:schemas:core:2.0:Group']," +
+            "'displayName': 'Group A'," +
+            "'members': [" +
+             "{" +
+               "'type': 'Group1'," +
+               "'value': 'bulkId:ytrewq'" +
+             "}" +
+           "]}");
+            var secondObj = JObject.Parse(@"{'schemas': ['urn:ietf:params:scim:schemas:core:2.0:Group']," +
+            "'displayName': 'Group A'," +
+            "'members': [" +
+             "{" +
+               "'type': 'Group3'," +
+               "'value': 'bulkId:ytrewq'" +
+             "}" +
+           "]}");
+            var thirdObj = JObject.Parse(@"{'schemas': ['urn:ietf:params:scim:schemas:core:2.0:Group']," +
+            "'displayName': 'Group A'," +
+            "'members': [" +
+             "{" +
+               "'type': 'Group2'," +
+               "'value': 'bulkId:ytrewq'" +
+             "}" +
+           "]}");
+            string error;
+            var firstGroup = _requestParser.Parse(firstObj, Constants.SchemaUrns.Group, CheckStrategies.Strong, out error);
+            var secondGroup = _requestParser.Parse(secondObj, Constants.SchemaUrns.Group, CheckStrategies.Strong, out error);
+            var thirdGroup = _requestParser.Parse(thirdObj, Constants.SchemaUrns.Group, CheckStrategies.Strong, out error);
+            var groups = new[] { firstGroup, secondGroup, thirdGroup };
+            var searchOrderAscending = new SearchParameter
+            {
+                Filter = null,
+                SortBy = _filterParser.Parse("members.type"),
+                SortOrder = SortOrders.Ascending
+            };
+            var searchOrderDescending = new SearchParameter
+            {
+                Filter = null,
+                SortBy = _filterParser.Parse("members.type"),
+                SortOrder = SortOrders.Descending
+            };
+            var searchOrderAscFilterPaginate = new SearchParameter
+            {
+                Filter = _filterParser.Parse("displayName sw Group"),
+                Count = 2,
+                StartIndex = 2,
+                Attributes = new [] { _filterParser.Parse("members.type") },
+                ExcludedAttributes = new [] { "displayName" },
+                SortBy = _filterParser.Parse("members.type"),
+                SortOrder = SortOrders.Ascending
+            };
+
+            // ACTS
+            var ascendingResult = _responseParser.Filter(groups, searchOrderAscending);
+            var descendingResult = _responseParser.Filter(groups, searchOrderDescending);
+            var filteredResult = _responseParser.Filter(groups, searchOrderAscFilterPaginate);
+
+            // ASSERTS
+            Assert.NotNull(ascendingResult);
+            Assert.NotNull(descendingResult);
+            Assert.NotNull(filteredResult);
+        }
+
+        #endregion
+
         private void InitializeFakeObjects()
         {
             _schemaStoreStub = new Mock<ISchemaStore>();
             _commonAttributesFactoryStub = new Mock<ICommonAttributesFactory>();
+            _filterParser = new FilterParser();
             _requestParser = new RepresentationRequestParser(_schemaStoreStub.Object);
             _responseParser = new RepresentationResponseParser(_schemaStoreStub.Object, _commonAttributesFactoryStub.Object);
         }
