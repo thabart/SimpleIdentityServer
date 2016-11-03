@@ -63,7 +63,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         /// <summary>
         /// Names of resource attributes to be removed from the default set of attributes to return.
         /// </summary>
-        public IEnumerable<string> ExcludedAttributes { get; set; }
+        public IEnumerable<Filter> ExcludedAttributes { get; set; }
         /// <summary>
         /// Filter used to request a subset of resources.
         /// </summary>
@@ -119,7 +119,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             foreach(var key in query.Keys)
             {
                 TrySetEnum((r) => result.Attributes = r.Select(a => GetFilter(a)), key, Constants.SearchParameterNames.Attributes, query);
-                TrySetEnum((r) => result.ExcludedAttributes = r, key, Constants.SearchParameterNames.ExcludedAttributes, query);
+                TrySetEnum((r) => result.ExcludedAttributes = r.Select(a => GetFilter(a)), key, Constants.SearchParameterNames.ExcludedAttributes, query);
                 TrySetStr((r) => result.Filter = GetFilter(r), key, Constants.SearchParameterNames.Filter, query);
                 TrySetStr((r) => result.SortBy = GetFilter(r), key, Constants.SearchParameterNames.SortBy, query);
                 TrySetStr((r) => result.SortOrder = GetSortOrder(r), key, Constants.SearchParameterNames.SortOrder, query);
@@ -153,7 +153,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
             if (TryGetToken(json, Constants.SearchParameterNames.ExcludedAttributes, out jArr))
             {
-                result.ExcludedAttributes = jArr.Values<string>();
+                result.ExcludedAttributes = (jArr.Values<string>()).Select(a => GetFilter(a));
             }
 
             if (TryGetToken(json, Constants.SearchParameterNames.Filter, out jVal))

@@ -207,8 +207,31 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                     }
                 }
 
-                // 2. Include & exclude the attributes.
+                // 2. Exclude & include certains attributes.
                 IEnumerable<RepresentationAttribute> attributes = null;
+                if (searchParameter.ExcludedAttributes != null && searchParameter.ExcludedAttributes.Any())
+                {
+                    foreach (var excludedAttrFilter in searchParameter.ExcludedAttributes)
+                    {
+                        var excludedAttrs = excludedAttrFilter.Evaluate(representation);
+                        if (excludedAttrs == null)
+                        {
+                            continue;
+                        }
+
+                        foreach (var excludedAttr in excludedAttrs)
+                        {
+                            var excludedParent = excludedAttr.Parent as ComplexRepresentationAttribute;
+                            if (excludedParent == null)
+                            {
+                                continue;
+                            }
+
+                            excludedParent.Values = excludedParent.Values.Where(v => !excludedAttrs.Contains(v));
+                        }
+                    }
+                }
+
                 if (searchParameter.Attributes != null && searchParameter.Attributes.Any())
                 {
                     attributes = new List<RepresentationAttribute>();
@@ -216,10 +239,6 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                     {
                         attributes = attributes.Concat(attrFilter.Evaluate(representation));
                     }
-                }
-                else if (searchParameter.ExcludedAttributes != null && searchParameter.ExcludedAttributes.Any())
-                {
-                    
                 }
                 else
                 {

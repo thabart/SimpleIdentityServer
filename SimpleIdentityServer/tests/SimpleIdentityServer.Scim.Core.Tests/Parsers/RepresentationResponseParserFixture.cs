@@ -164,7 +164,15 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
                 Count = 2,
                 StartIndex = 2,
                 Attributes = new [] { _filterParser.Parse("members.type") },
-                ExcludedAttributes = new [] { "displayName" },
+                SortBy = _filterParser.Parse("members.type"),
+                SortOrder = SortOrders.Ascending
+            };
+            var searchOrderAscExcludeAttrsPaginate = new SearchParameter
+            {
+                Filter = _filterParser.Parse("displayName sw Group"),
+                Count = 2,
+                StartIndex = 2,
+                ExcludedAttributes = new[] { _filterParser.Parse("members.value") },
                 SortBy = _filterParser.Parse("members.type"),
                 SortOrder = SortOrders.Ascending
             };
@@ -173,11 +181,13 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             var ascendingResult = _responseParser.Filter(groups, searchOrderAscending);
             var descendingResult = _responseParser.Filter(groups, searchOrderDescending);
             var filteredResult = _responseParser.Filter(groups, searchOrderAscFilterPaginate);
+            var secondFilteredResult = _responseParser.Filter(groups, searchOrderAscExcludeAttrsPaginate);
 
             // ASSERTS
             Assert.NotNull(ascendingResult);
             Assert.NotNull(descendingResult);
             Assert.NotNull(filteredResult);
+            Assert.NotNull(secondFilteredResult);
         }
 
         #endregion
