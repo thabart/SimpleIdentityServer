@@ -77,13 +77,16 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
         public void When_Representation_Exists_The_Representation_Is_Parsed_And_200_Is_Returned()
         {
             // ARRANGE
-            var representation = new Representation();
+            var representation = new Representation
+            {
+                Id = "id"
+            };
             const string schemaId = "schema";
             const string location = "http://location/{id}";
             InitializeFakeObjects();
             _representationStoreStub.Setup(r => r.GetRepresentation(It.IsAny<string>()))
                 .Returns(representation);
-            _responseParserStub.Setup(r => r.Parse(representation, location, schemaId, OperationTypes.Query))
+            _responseParserStub.Setup(r => r.Parse(representation, location.Replace("{id}", representation.Id), schemaId, OperationTypes.Query))
                 .Returns(new Response
                 {
                     Location = location
@@ -93,7 +96,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
             _getRepresentationAction.Execute("identifier", location, schemaId);
 
             // ASSERT
-            _responseParserStub.Verify(r => r.Parse(representation, location, schemaId, OperationTypes.Query));
+            _responseParserStub.Verify(r => r.Parse(representation, location.Replace("{id}", representation.Id), schemaId, OperationTypes.Query));
             _apiResponseFactoryStub.Verify(a => a.CreateResultWithContent(HttpStatusCode.OK, It.IsAny<object>(), It.IsAny<string>()));
         }
 

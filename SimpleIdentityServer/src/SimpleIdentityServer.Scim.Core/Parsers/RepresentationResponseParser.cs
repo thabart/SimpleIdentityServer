@@ -272,6 +272,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 filterResult.Values = result;
             }
 
+            filterResult.TotalNumbers = result.Count();
             // 3. Paginate the representations.
             return filterResult;
         }

@@ -41,6 +41,32 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         protected override IEnumerable<RepresentationAttribute> EvaluateRepresentation(IEnumerable<RepresentationAttribute> representationAttrs)
         {
             var result = new List<RepresentationAttribute>();
+            var fullNames = representationAttrs.Select(r => r.FullPath);
+            // 1. Evaluate the attributes of a representation.
+            if (representationAttrs.All(r => fullNames.Count(n => r.FullPath.Equals(n)) == 1))
+            {
+                var right = AttributeRight.Evaluate(representationAttrs);
+                // 1. Not operator doesn't contain left operator.
+                if (!Operator.HasFlag(LogicalOperators.and) && !Operator.HasFlag(LogicalOperators.or))
+                {
+                    if (Operator.HasFlag(LogicalOperators.not) && !right.Any())
+                    {
+                        return representationAttrs;
+                    }
+
+                }
+                bool isNot = !Operator.HasFlag(LogicalOperators.not);
+                var left = AttributeLeft.Evaluate(representationAttrs);
+                if ((Operator.HasFlag(LogicalOperators.and) && left != null && right != null && left.Count() >= 1 && right.Count() >= 1) == isNot
+                   || (Operator.HasFlag(LogicalOperators.or) && ((left != null && left.Count() >= 1) || (right != null && right.Count() >= 1))) == isNot)
+                {
+                    return representationAttrs;
+                }
+
+                return result;
+            }
+
+            // 2. Evaluate the attribute of an array.
             foreach (var attr in representationAttrs)
             {
                 var right = AttributeRight.Evaluate(new[] { attr });

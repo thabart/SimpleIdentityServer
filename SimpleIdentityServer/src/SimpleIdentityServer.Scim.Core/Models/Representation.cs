@@ -15,11 +15,12 @@
 #endregion
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Scim.Core.Models
 {
-    public class Representation
+    public class Representation : ICloneable
     {
         public string Id { get; set; }
         public string ResourceType { get; set; }
@@ -27,5 +28,24 @@ namespace SimpleIdentityServer.Scim.Core.Models
         public DateTime LastModified { get; set; }
         public string Version { get; set; }
         public IEnumerable<RepresentationAttribute> Attributes { get; set; }
+
+        public object Clone()
+        {
+            var result = new Representation
+            {
+                Id = Id,
+                Created = Created,
+                ResourceType = ResourceType,
+                LastModified = LastModified,
+                Version = Version
+            };
+
+            if (Attributes != null)
+            {
+                result.Attributes = Attributes.Select(a => a.Clone() as RepresentationAttribute);
+            }
+
+            return result;
+        }
     }
 }

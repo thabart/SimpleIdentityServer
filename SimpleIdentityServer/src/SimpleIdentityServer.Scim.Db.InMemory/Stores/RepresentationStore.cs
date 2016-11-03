@@ -31,12 +31,12 @@ namespace SimpleIdentityServer.Scim.Db.InMemory.Stores
 
         public Representation GetRepresentation(string id)
         {
-            return Storage.Instance().Representations.FirstOrDefault(r => r.Id == id);
+            return Storage.Instance().Representations.FirstOrDefault(r => r.Id == id).Clone() as Representation;
         }
 
         public IEnumerable<Representation> GetRepresentations(string resourceType)
         {
-            return Storage.Instance().Representations.Where(r => r.ResourceType == resourceType);
+            return Storage.Instance().Representations.Where(r => r.ResourceType == resourceType).Select(r => r.Clone() as Representation);
         }
 
         public bool RemoveRepresentation(Representation representation)

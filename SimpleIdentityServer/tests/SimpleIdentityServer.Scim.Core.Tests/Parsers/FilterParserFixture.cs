@@ -599,6 +599,39 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             Assert.True(firstName.Value == "laetitia");
         }
 
+        [Fact]
+        public void When_Filtering_Representation_By_Existing_Name_And_UserName_Eq_To_Bjensen_Then_Attribute_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var representation = new Representation
+            {
+                Attributes = new RepresentationAttribute[]
+                {
+                    new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "userName", Type = Constants.SchemaAttributeTypes.String }, "laetitia"),
+                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "name", Type = Constants.SchemaAttributeTypes.Complex })
+                    {
+                        Values = new RepresentationAttribute[]
+                        {
+                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "thierry"),
+                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "lastName", Type = Constants.SchemaAttributeTypes.String }, "loki")
+                        }
+                    }
+                }
+            };
+            var result = _filterParser.Parse("name pr and userName eq laetitia");
+
+            // ACT 
+            var attributes = result.Evaluate(representation);
+
+            // ASSERTS
+            Assert.NotNull(attributes);
+            Assert.True(attributes.Count() == 2);
+            var firstName = attributes.First() as SingularRepresentationAttribute<string>;
+            Assert.NotNull(firstName);
+            Assert.True(firstName.Value == "laetitia");
+        }
+
         #endregion
 
         #region Tests GetTarget

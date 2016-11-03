@@ -102,6 +102,20 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
             return this.GetActionResult(result);
         }
 
+        [HttpGet]
+        public ActionResult SearchUsers()
+        {
+            var result = _usersAction.SearchUsers(Request.Query, GetLocationPattern());
+            return this.GetActionResult(result);
+        }
+
+        [HttpPost(".search")]
+        public ActionResult SearchUsers([FromBody] JObject jObj)
+        {
+            var result = _usersAction.SearchUsers(jObj, GetLocationPattern());
+            return this.GetActionResult(result);
+        }
+
         private string GetLocationPattern()
         {
             return new Uri(new Uri(Request.GetAbsoluteUriWithVirtualPath()), Constants.RoutePaths.UsersController).AbsoluteUri + "/{id}";

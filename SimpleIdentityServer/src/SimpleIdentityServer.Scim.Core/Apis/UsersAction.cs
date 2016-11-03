@@ -14,8 +14,11 @@
 // limitations under the License.
 #endregion
 
+using System;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Scim.Core.Results;
+using SimpleIdentityServer.Scim.Core.Parsers;
 
 namespace SimpleIdentityServer.Scim.Core.Apis
 {
@@ -26,6 +29,8 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         ApiActionResult PatchUser(string id, JObject jObj, string locationPattern);
         ApiActionResult RemoveUser(string id);
         ApiActionResult GetUser(string id, string locationPattern);
+        ApiActionResult SearchUsers(JObject jObj, string locationPattern);
+        ApiActionResult SearchUsers(IQueryCollection query, string locationPattern);
     }
 
     internal class UsersAction : IUsersAction
@@ -36,6 +41,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         private readonly IDeleteRepresentationAction _deleteRepresentationAction;
         private readonly IGetRepresentationAction _getRepresentationAction;
         private readonly IGetRepresentationsAction _getRepresentationsAction;
+        private readonly ISearchParameterParser _searchParameterParser;
 
         public UsersAction(
             IAddRepresentationAction addRepresentationAction,
@@ -43,7 +49,8 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             IPatchRepresentationAction patchRepresentationAction,
             IDeleteRepresentationAction deleteRepresentationAction,
             IGetRepresentationAction getRepresentationAction,
-            IGetRepresentationsAction getRepresentationsAction)
+            IGetRepresentationsAction getRepresentationsAction,
+            ISearchParameterParser searchParameterParser)
         {
             _addRepresentationAction = addRepresentationAction;
             _updateRepresentationAction = updateRepresentationAction;
@@ -51,6 +58,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             _deleteRepresentationAction = deleteRepresentationAction;
             _getRepresentationAction = getRepresentationAction;
             _getRepresentationsAction = getRepresentationsAction;
+            _searchParameterParser = searchParameterParser;
         }
 
         public ApiActionResult AddUser(JObject jObj, string locationPattern)
@@ -76,6 +84,18 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         public ApiActionResult GetUser(string id, string locationPattern)
         {
             return _getRepresentationAction.Execute(id, locationPattern, Constants.SchemaUrns.User);
+        }
+
+        public ApiActionResult SearchUsers(JObject jObj, string locationPattern)
+        {
+            var searchParam = _searchParameterParser.ParseJson(jObj);
+            return _getRepresentationsAction.Execute(Constants.ResourceTypes.User, searchParam, locationPattern);
+        }
+
+        public ApiActionResult SearchUsers(IQueryCollection query, string locationPattern)
+        {
+            var searchParam = _searchParameterParser.ParseQuery(query);
+            return _getRepresentationsAction.Execute(Constants.ResourceTypes.User, searchParam, locationPattern);
         }
     }
 }

@@ -104,9 +104,22 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                     }
 
                     return Equals(attr, op, i);
+                case Constants.SchemaAttributeTypes.Complex:
+                    var complexAttr = attr as ComplexRepresentationAttribute;
+                    if (complexAttr == null)
+                    {
+                        return false;
+                    }
+
+                    return Equals(complexAttr, op, value);
             }
 
             return false;
+        }
+
+        private static bool Equals(ComplexRepresentationAttribute attr, ComparisonOperators op, string value)
+        {
+            return attr.Values != null && op == ComparisonOperators.pr;
         }
 
         private static bool Equals(RepresentationAttribute attr, ComparisonOperators op, string value)
