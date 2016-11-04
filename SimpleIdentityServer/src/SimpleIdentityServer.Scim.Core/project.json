@@ -22,7 +22,8 @@
           "type": "build",
           "version": ""
         },
-        "System.Runtime.Serialization": "4.0.0.0"
+        "System.Runtime.Serialization": "4.0.0.0",
+        "System.Net.Http": "4.0.0.0"
       },
       "buildOptions": {
         "define": [

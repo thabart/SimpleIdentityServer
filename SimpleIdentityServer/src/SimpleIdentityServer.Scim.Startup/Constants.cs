@@ -24,6 +24,7 @@ namespace SimpleIdentityServer.Scim.Startup
             public const string UsersController = "Users";
             public const string SchemasController = "Schemas";
             public const string ServiceProviderConfigController = "ServiceProviderConfig";
+            public const string BulkController = "Bulk";
         }
     }
 }

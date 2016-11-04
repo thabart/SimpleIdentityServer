@@ -67,7 +67,11 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             var obj = jObj.ToObject<PatchOperationsRequest>();
             if (!obj.Schemas.Contains(Constants.Messages.PatchOp))
             {
-                throw new InvalidOperationException(ErrorMessages.TheRequestIsNotAPatchOperation);
+                errorResponse = _errorResponseFactory.CreateError(
+                    ErrorMessages.TheRequestIsNotAPatchOperation,
+                    HttpStatusCode.BadRequest,
+                    Constants.ScimTypeValues.InvalidSyntax);
+                return null;
             }
 
             if (obj.Operations == null)

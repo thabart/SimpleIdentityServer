@@ -34,7 +34,13 @@ namespace SimpleIdentityServer.Scim.Core.Errors
         public const string TheImmutableAttributeCannotBeUpdated = "the immutable attribute {0} cannot be updated";
         public const string TheRepresentationCannotBeUpdated = "the representation cannot be updated";
         public const string TheRequestIsNotAPatchOperation = "the request is not a patch operation because the schema is not correct";
+        public const string TheRequestIsNotABulkOperation = "the request is not a bulk operation because the schema is not correct";
         public const string ThePatchOperationIsNotSupported = "the patch operation '{0}' is not supported";
+        public const string TheBulkMethodIsNotSupported = "the bulk method '{0}' is not supported";
+        public const string TheBulkOperationPathIsRequired = "the bulk operation path is required";
+        public const string TheBulkOperationPathIsNotSupported = "the bulk operation path '{0}' is not supported";
+        public const string TheBulkDataParameterMustBeSpecified = "the 'data' parameter must be specified";
+        public const string TheBulkIdParameterMustBeSpecified = "the 'bulkId' parameter must be specified";
         public const string ThePathNeedsToBeSpecified = "the path needs to be specified";
         public const string TheValueNeedsToBeSpecified = "the value needs to be specified";
         public const string TheValueIsNotCompliantWithTheSchema = "the value is not compliant with the schema {0}";

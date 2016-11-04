@@ -116,6 +116,21 @@ namespace SimpleIdentityServer.Scim.Core
             public const string Count = "count";
         }
 
+        public static class BulkRequestNames
+        {
+            public const string FailOnErrors = "failOnErrors";
+            public const string Operations = "Operations";
+        }
+
+        public static class BulkOperationRequestNames
+        {
+            public const string Method = "method";
+            public const string BulkId = "bulkId";
+            public const string Version = "version";
+            public const string Path = "path";
+            public const string Data = "data";
+        }
+
         public static class SearchParameterResponseNames
         {
             public static string TotalResults = "totalResults";
@@ -323,6 +338,7 @@ namespace SimpleIdentityServer.Scim.Core
             public const string Error = "urn:ietf:params:scim:api:messages:2.0:Error";
             public const string PatchOp = "urn:ietf:params:scim:api:messages:2.0:PatchOp";
             public const string ListResponse = "urn:ietf:params:scim:api:messages:2.0:ListResponse";
+            public const string Bulk = "urn:ietf:params:scim:api:messages:2.0:BulkRequest";
         }
         
         public static class ResourceTypes
