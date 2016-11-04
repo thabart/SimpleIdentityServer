@@ -173,8 +173,9 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             {
                 try
                 {
+                    JObject data = operation.Data as JObject;
                     // 3.1. Check data
-                    if (operation.Data == null)
+                    if (data == null)
                     {
                         errorResponse = _errorResponseFactory.CreateError(
                             ErrorMessages.TheBulkDataParameterMustBeSpecified,
@@ -230,7 +231,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                     var schema = schemas.First(s => s.Name == resourceType);
                     operations.Add(new BulkOperationResult
                     {
-                        Data = operation.Data,
+                        Data = data,
                         BulkId = operation.BulkId,
                         Method = httpMethod,
                         Version = operation.Version,

@@ -22,7 +22,6 @@ using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Core.Parsers;
 using SimpleIdentityServer.Scim.Core.Results;
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 
@@ -39,17 +38,24 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         private readonly IApiResponseFactory _apiResponseFactory;
         private readonly IAddRepresentationAction _addRepresentationAction;
         private readonly IErrorResponseFactory _errorResponseFactory;
+        private readonly IDeleteRepresentationAction _deleteRepresentationAction;
+        private readonly IUpdateRepresentationAction _updateRepresentationAction;
+        private readonly IPatchRepresentationAction _patchRepresentationAction;
 
         public BulkAction(
             IBulkRequestParser bulkRequestParser,
             IApiResponseFactory apiResponseFactory,
             IAddRepresentationAction addRepresentationAction,
+            IDeleteRepresentationAction deleteRepresentationAction,
+            IUpdateRepresentationAction updateRepresentationAction,
             IErrorResponseFactory errorResponseFactory)
         {
             _bulkRequestParser = bulkRequestParser;
             _apiResponseFactory = apiResponseFactory;
             _addRepresentationAction = addRepresentationAction;
             _errorResponseFactory = errorResponseFactory;
+            _deleteRepresentationAction = deleteRepresentationAction;
+            _updateRepresentationAction = updateRepresentationAction;
         }
 
         public ApiActionResult Execute(JObject jObj, string baseUrl)
@@ -78,7 +84,15 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                 ApiActionResult operationResult = null;
                 if (operation.Method == HttpMethod.Post)
                 {
-                    operationResult = _addRepresentationAction.Execute(operation.Data as JObject, operation.LocationPattern, operation.SchemaId, operation.ResourceType);
+                    operationResult = _addRepresentationAction.Execute(operation.Data, operation.LocationPattern, operation.SchemaId, operation.ResourceType);
+                }
+                else if (operation.Method == HttpMethod.Put)
+                {
+                    operationResult = _updateRepresentationAction.Execute(operation.ResourceId, operation.Data, operation.SchemaId, operation.LocationPattern, operation.ResourceType);
+                }
+                else if (operation.Method == HttpMethod.Delete)
+                {
+                    operationResult = _deleteRepresentationAction.Execute(operation.ResourceId);
                 }
                 
                 // 3.2. If maximum number of errors has been reached then return an error.
@@ -139,7 +153,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             
             if (apiActionResult.Content != null)
             {
-                result.Add(new JProperty(Constants.BulkOperationResponseNames.Response, apiActionResult.Content));
+                result.Add(new JProperty(Constants.BulkOperationResponseNames.Response, JObject.FromObject(apiActionResult.Content)));
             }
 
             return result;

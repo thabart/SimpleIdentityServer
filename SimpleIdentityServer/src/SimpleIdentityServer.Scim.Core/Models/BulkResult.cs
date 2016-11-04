@@ -51,7 +51,7 @@ namespace SimpleIdentityServer.Scim.Core.Models
         /// <summary>
         /// Resource data as it would appear for a single SCIM POST, PUT etc ...
         /// </summary>
-        public JToken Data { get; set; }
+        public JObject Data { get; set; }
         /// <summary>
         /// Location pattern.
         /// </summary>

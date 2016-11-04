@@ -31,7 +31,13 @@ namespace SimpleIdentityServer.Scim.Db.InMemory.Stores
 
         public Representation GetRepresentation(string id)
         {
-            return Storage.Instance().Representations.FirstOrDefault(r => r.Id == id).Clone() as Representation;
+            var representation = Storage.Instance().Representations.FirstOrDefault(r => r.Id == id);
+            if (representation == null)
+            {
+                return null;
+            }
+
+            return representation.Clone() as Representation;
         }
 
         public IEnumerable<Representation> GetRepresentations(string resourceType)
