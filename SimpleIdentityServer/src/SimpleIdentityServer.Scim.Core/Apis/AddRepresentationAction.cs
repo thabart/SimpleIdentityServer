@@ -15,6 +15,7 @@
 #endregion
 
 using Newtonsoft.Json.Linq;
+using SimpleIdentityServer.Scim.Core.Errors;
 using SimpleIdentityServer.Scim.Core.Factories;
 using SimpleIdentityServer.Scim.Core.Parsers;
 using SimpleIdentityServer.Scim.Core.Results;
@@ -27,6 +28,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 {
     public interface IAddRepresentationAction
     {
+        ApiActionResult Execute(JObject jObj, string locationPattern, string schemaId, string resourceType, string id);
         ApiActionResult Execute(JObject jObj, string locationPattern, string schemaId, string resourceType);
     }
 
@@ -51,12 +53,20 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             _apiResponseFactory = apiResponseFactory;
             _parametersValidator = parametersValidator;
         }
-
-        public ApiActionResult Execute(JObject jObj, string locationPattern, string schemaId, string resourceType)
+        
+        public ApiActionResult Execute(JObject jObj, string locationPattern, string schemaId, string resourceType, string id)
         {
             if (jObj == null)
             {
                 throw new ArgumentNullException(nameof(jObj));
+            }
+
+            // 1. Check resource exists.
+            if (_representationStore.GetRepresentation(id) != null)
+            {
+                return _apiResponseFactory.CreateError(
+                    HttpStatusCode.InternalServerError,
+                    string.Format(ErrorMessages.TheResourceAlreadyExist, id));
             }
 
             _parametersValidator.ValidateLocationPattern(locationPattern);
@@ -65,7 +75,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                 throw new ArgumentNullException(nameof(schemaId));
             }
 
-            // 1. Parse the request
+            // 2. Parse the request
             string error;
             var result = _requestParser.Parse(jObj, schemaId, CheckStrategies.Strong, out error);
             if (result == null)
@@ -74,18 +84,23 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                     error);
             }
 
-            // 2. Set parameters
-            result.Id = Guid.NewGuid().ToString();
+            // 3. Set parameters
+            result.Id = id;
             result.Created = DateTime.UtcNow;
             result.LastModified = DateTime.UtcNow;
             result.ResourceType = resourceType;
 
-            // 2. Save the request
+            // 4. Save the request
             _representationStore.AddRepresentation(result);
 
-            // 3. Transform and returns the representation.
+            // 5. Transform and returns the representation.
             var response = _responseParser.Parse(result, locationPattern.Replace("{id}", result.Id), schemaId, OperationTypes.Modification);
             return _apiResponseFactory.CreateResultWithContent(HttpStatusCode.Created, response.Object, response.Location);
+        }
+
+        public ApiActionResult Execute(JObject jObj, string locationPattern, string schemaId, string resourceType)
+        {
+            return Execute(jObj, locationPattern, schemaId, resourceType, Guid.NewGuid().ToString());
         }
     }
 }

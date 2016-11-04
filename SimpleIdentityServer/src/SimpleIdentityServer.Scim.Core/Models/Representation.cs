@@ -42,7 +42,7 @@ namespace SimpleIdentityServer.Scim.Core.Models
 
             if (Attributes != null)
             {
-                result.Attributes = Attributes.Select(a => a.Clone() as RepresentationAttribute);
+                result.Attributes = Attributes.Select(a => a.Clone() as RepresentationAttribute).ToList();
             }
 
             return result;

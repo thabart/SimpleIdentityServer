@@ -186,7 +186,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
                     // 3.2. Check method
                     var httpMethod = new HttpMethod(operation.Method);
-                    if (!new [] { HttpMethod.Post, HttpMethod.Put, HttpMethod.Delete }.Contains(httpMethod))
+                    if (!new [] { HttpMethod.Post, HttpMethod.Put, HttpMethod.Delete, new HttpMethod("PATCH") }.Contains(httpMethod))
                     {
                         errorResponse = getBulkMethodNotSupported(operation.Method);
                         return null;

@@ -27,6 +27,7 @@ namespace SimpleIdentityServer.Scim.Core.Errors
         public const string TheRequestCannotBeParsedForSomeReason = "the request cannot be parsed for some reason";
         public const string TheComplexAttributeArrayShouldContainsOnlyComplexAttribute = "complex attribute array should contains only complex attribute";
         public const string TheResourceDoesntExist = "The resource '{0}' doesn't exist";
+        public const string TheResourceAlreadyExist = "the resource with id '{0}' already exists";
         public const string TheRepresentationCannotBeRemoved = "something goes wrong when trying to remove the resource";
         public const string TheRepresentationCannotBeAdded = "something goes wrong when trying to added the resource";
         public const string TheRepresentationCannotBeSet = "something goes wrong when trying to replace the resource";

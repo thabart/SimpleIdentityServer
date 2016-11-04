@@ -48,6 +48,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             IAddRepresentationAction addRepresentationAction,
             IDeleteRepresentationAction deleteRepresentationAction,
             IUpdateRepresentationAction updateRepresentationAction,
+            IPatchRepresentationAction patchRepresentationAction,
             IErrorResponseFactory errorResponseFactory)
         {
             _bulkRequestParser = bulkRequestParser;
@@ -56,6 +57,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             _errorResponseFactory = errorResponseFactory;
             _deleteRepresentationAction = deleteRepresentationAction;
             _updateRepresentationAction = updateRepresentationAction;
+            _patchRepresentationAction = patchRepresentationAction;
         }
 
         public ApiActionResult Execute(JObject jObj, string baseUrl)
@@ -93,6 +95,10 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                 else if (operation.Method == HttpMethod.Delete)
                 {
                     operationResult = _deleteRepresentationAction.Execute(operation.ResourceId);
+                }
+                else if (operation.Method.Method == "PATCH")
+                {
+                    operationResult = _patchRepresentationAction.Execute(operation.ResourceId, operation.Data, operation.SchemaId, operation.LocationPattern);
                 }
                 
                 // 3.2. If maximum number of errors has been reached then return an error.
