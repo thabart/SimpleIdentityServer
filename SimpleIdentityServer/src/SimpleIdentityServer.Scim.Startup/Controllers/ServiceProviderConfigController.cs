@@ -15,6 +15,7 @@
 #endregion
 
 using Microsoft.AspNetCore.Mvc;
+using SimpleIdentityServer.Scim.Core;
 using SimpleIdentityServer.Scim.Core.DTOs;
 using SimpleIdentityServer.Scim.Core.Models;
 using System;

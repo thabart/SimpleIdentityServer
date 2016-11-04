@@ -261,7 +261,7 @@ namespace SimpleIdentityServer.Scim.Core.Stores
         private static SchemaResponse UserSchema = new SchemaResponse
         {
             Id = Constants.SchemaUrns.User,
-            Name = "User",
+            Name = Constants.ResourceTypes.User,
             Description = "User Account",
             Attributes = CommonAttributes.Concat(new SchemaAttributeResponse[]
             {
@@ -431,7 +431,7 @@ namespace SimpleIdentityServer.Scim.Core.Stores
         private static SchemaResponse GroupSchema = new SchemaResponse
         {
             Id = Constants.SchemaUrns.Group,
-            Name = "Group",
+            Name = Constants.ResourceTypes.Group,
             Description = "Group",
             Attributes = CommonAttributes.Concat(new SchemaAttributeResponse[]
             {

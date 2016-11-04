@@ -39,7 +39,11 @@ namespace SimpleIdentityServer.Scim.Core.Models
         /// <summary>
         /// Name of the schema.
         /// </summary>
-        public string SchemaName { get; set; }
+        public string SchemaId { get; set; }
+        /// <summary>
+        /// Resource type.
+        /// </summary>
+        public string ResourceType { get; set; }
         /// <summary>
         /// Resource identifier.
         /// </summary>
@@ -48,6 +52,14 @@ namespace SimpleIdentityServer.Scim.Core.Models
         /// Resource data as it would appear for a single SCIM POST, PUT etc ...
         /// </summary>
         public JToken Data { get; set; }
+        /// <summary>
+        /// Location pattern.
+        /// </summary>
+        public string LocationPattern { get; set; }
+        /// <summary>
+        /// Gets or sets the path.
+        /// </summary>
+        public string Path { get; set; }
     }
 
     public class BulkResult

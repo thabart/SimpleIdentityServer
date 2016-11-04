@@ -51,5 +51,6 @@ namespace SimpleIdentityServer.Scim.Core.Errors
         public const string TheOperationsParameterMustBeSpecified = "the operations parameter must be specified";
         public const string TheValueMustBeSpecified = "the value parameter must be specified";
         public const string TheParameterIsNotValid = "the parameter {0} is not valid";
+        public const string TheMaximumNumberOfErrorHasBeenReached = "the maximum number of errors '{0}' has been reached";
     }
 }

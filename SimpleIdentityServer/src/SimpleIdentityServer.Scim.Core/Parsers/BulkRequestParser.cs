@@ -33,10 +33,13 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         /// <summary>
         /// Parse the JSON and return the bulk request.
         /// </summary>
+        /// <exception cref="ArgumentNullException">Thrown when a REQUIRED parameter is null or empty.</exception>
+        /// <exception cref="FormatException">Thrown when the 'baseUrlPattern' parameter  is not correctly formatted.</exception>
         /// <param name="jObj">JSON that will be parsed.</param>
+        /// <param name="baseUrlPattern">Base url pattern.</param>
         /// <param name="errorResponse">Error.</param>
         /// <returns>Bulk request or null.</returns>
-        BulkResult Parse(JObject jObj, out ErrorResponse errorResponse);
+        BulkResult Parse(JObject jObj, string baseUrlPattern, out ErrorResponse errorResponse);
     }
 
     internal class BulkRequestParser : IBulkRequestParser
@@ -55,16 +58,29 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         /// <summary>
         /// Parse the JSON and return the bulk request.
         /// </summary>
+        /// <exception cref="ArgumentNullException">Thrown when a REQUIRED parameter is null or empty.</exception>
+        /// <exception cref="FormatException">Thrown when the 'baseUrlPattern' parameter  is not correctly formatted.</exception>
         /// <param name="jObj">JSON that will be parsed.</param>
+        /// <param name="baseUrlPattern">Base url pattern.</param>
         /// <param name="errorResponse">Error.</param>
         /// <returns>Bulk request or null.</returns>
-        public BulkResult Parse(JObject jObj, out ErrorResponse errorResponse)
+        public BulkResult Parse(JObject jObj, string baseUrlPattern, out ErrorResponse errorResponse)
         {
             errorResponse = null;
             // 1. Check parameters.
             if (jObj == null)
             {
                 throw new ArgumentNullException(nameof(jObj));
+            }
+
+            if (string.IsNullOrWhiteSpace(baseUrlPattern))
+            {
+                throw new ArgumentNullException(nameof(baseUrlPattern));
+            }
+
+            if (!baseUrlPattern.Contains("{rootPath}"))
+            {
+                throw new FormatException("the baseUrlPattern is not correctly formatted");
             }
 
             // 2. Parse the request.
@@ -99,54 +115,57 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                         HttpStatusCode.BadRequest,
                         Constants.ScimTypeValues.InvalidSyntax);
             };
-            Func<string, string> extractIdFromPath = (path) =>
+            Func<string, IList<string>> splitPath = (path) =>
             {
                 if (string.IsNullOrWhiteSpace(path))
                 {
                     return null;
                 }
 
+                path = path.TrimStart('/');
                 var subPaths = path.Split('/');
                 if (!subPaths.Any() || subPaths.Count() > 2)
                 {
                     return null;
                 }
 
-                return subPaths[1];
+                return subPaths;
             };
-            Func<string, string> extractSchemaName = (path) =>
+            Func<IList<string>, string> extractRootPath = (subPaths) =>
             {
-                if (string.IsNullOrWhiteSpace(path))
-                {
-                    return null;
-                }
-
-                var subPaths = path.Split('/');
-                if (!subPaths.Any() || subPaths.Count() > 2)
+                if (subPaths == null)
                 {
                     return null;
                 }
 
                 return subPaths[0];
             };
-            Func<string, string, bool> checkPath = (schemaName, path) =>
+            Func<IList<string>, string> extractId = (subPaths) =>
             {
-                if (!path.StartsWith(schemaName))
+                if (subPaths == null || subPaths.Count() < 2)
                 {
-                    return false;
+                    return null;
                 }
 
-                var id = extractIdFromPath(path);
-                if (string.IsNullOrWhiteSpace(id))
+                return subPaths[1];
+            };
+            Func<string, string> getResourceType = (subPath) =>
+            {
+                if (subPath == null)
                 {
-                    return false;
+                    return null;
                 }
 
-                return true;
+                if (!Constants.MappingRoutePathsToResourceTypes.ContainsKey(subPath))
+                {
+                    return null;
+                }
+
+                return Constants.MappingRoutePathsToResourceTypes[subPath];
             };
 
             var schemas = _schemaStore.GetSchemas();
-            var schemaNames = schemas.Select(s => s.Name.StartsWith("/") ? s.Name : "/"+s.Name);
+            var resourceTypes = schemas.Select(s => s.Name);
 
             // 3. Check operation parameters are correct.
             var operations = new List<BulkOperationResult>();
@@ -182,8 +201,13 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                         return null;
                     }
 
-                    if (!(schemaNames.Contains(operation.Path) && httpMethod == HttpMethod.Post)
-                        || !(schemaNames.Any(s => checkPath(s, operation.Path) && httpMethod != HttpMethod.Post)))
+                    var subPaths = splitPath(operation.Path);
+                    var rootPath = extractRootPath(subPaths);
+                    var resourceId = extractId(subPaths);
+                    var resourceType = getResourceType(rootPath);
+                    if (string.IsNullOrWhiteSpace(resourceType) ||
+                        !resourceTypes.Contains(resourceType) ||
+                        (httpMethod != HttpMethod.Post && string.IsNullOrWhiteSpace(resourceId)))
                     {
                         errorResponse = _errorResponseFactory.CreateError(
                             string.Format(ErrorMessages.TheBulkOperationPathIsNotSupported, operation.Path),
@@ -202,14 +226,19 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                         return null;
                     }
 
+
+                    var schema = schemas.First(s => s.Name == resourceType);
                     operations.Add(new BulkOperationResult
                     {
                         Data = operation.Data,
                         BulkId = operation.BulkId,
                         Method = httpMethod,
                         Version = operation.Version,
-                        ResourceId = extractIdFromPath(operation.Path),
-                        SchemaName = extractSchemaName(operation.Path)
+                        ResourceId = resourceId,
+                        SchemaId = schema.Id,
+                        ResourceType = resourceType,
+                        LocationPattern = baseUrlPattern.Replace("{rootPath}", rootPath) + "/{id}",
+                        Path = operation.Path
                     });
                 }
                 catch(Exception)

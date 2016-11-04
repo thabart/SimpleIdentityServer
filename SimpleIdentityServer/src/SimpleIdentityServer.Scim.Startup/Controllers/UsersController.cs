@@ -16,6 +16,7 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
+using SimpleIdentityServer.Scim.Core;
 using SimpleIdentityServer.Scim.Core.Apis;
 using SimpleIdentityServer.Scim.Startup.Extensions;
 using System;

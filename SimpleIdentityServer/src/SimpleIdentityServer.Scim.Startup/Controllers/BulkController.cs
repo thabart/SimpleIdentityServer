@@ -16,13 +16,14 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
+using SimpleIdentityServer.Scim.Core;
 using SimpleIdentityServer.Scim.Core.Apis;
 using SimpleIdentityServer.Scim.Startup.Extensions;
 using System;
 
 namespace SimpleIdentityServer.Scim.Startup.Controllers
 {
-    [Route(Constants.RoutePaths.GroupsController)]
+    [Route(Constants.RoutePaths.BulkController)]
     public class BulkController : Controller
     {
         private readonly IBulkAction _bulkAction;
@@ -40,8 +41,13 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
                 throw new ArgumentNullException(nameof(jObj));
             }
 
-            var result = _bulkAction.Execute(jObj);
+            var result = _bulkAction.Execute(jObj, GetLocationPattern());
             return this.GetActionResult(result);
+        }
+
+        private string GetLocationPattern()
+        {
+            return Request.GetAbsoluteUriWithVirtualPath() + "/{rootPath}";
         }
     }
 }

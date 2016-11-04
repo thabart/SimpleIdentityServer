@@ -14,6 +14,8 @@
 // limitations under the License.
 #endregion
 
+using System.Collections.Generic;
+
 namespace SimpleIdentityServer.Scim.Core
 {
     public static class Constants
@@ -129,6 +131,13 @@ namespace SimpleIdentityServer.Scim.Core
             public const string Version = "version";
             public const string Path = "path";
             public const string Data = "data";
+        }
+
+        public static class BulkOperationResponseNames
+        {
+            public const string Location = "location";
+            public const string Response = "response";
+            public const string Status = "status";
         }
 
         public static class SearchParameterResponseNames
@@ -339,6 +348,7 @@ namespace SimpleIdentityServer.Scim.Core
             public const string PatchOp = "urn:ietf:params:scim:api:messages:2.0:PatchOp";
             public const string ListResponse = "urn:ietf:params:scim:api:messages:2.0:ListResponse";
             public const string Bulk = "urn:ietf:params:scim:api:messages:2.0:BulkRequest";
+            public const string BulkResponse = "urn:ietf:params:scim:api:messages:2.0:BulkResponse";
         }
         
         public static class ResourceTypes
@@ -348,5 +358,26 @@ namespace SimpleIdentityServer.Scim.Core
         }
 
         #endregion
+
+        public static class RoutePaths
+        {
+            public const string GroupsController = "Groups";
+            public const string UsersController = "Users";
+            public const string SchemasController = "Schemas";
+            public const string ServiceProviderConfigController = "ServiceProviderConfig";
+            public const string BulkController = "Bulk";
+        }
+
+        public static Dictionary<string, string> MappingRoutePathsToResourceTypes = new Dictionary<string, string>
+        {
+            {
+                RoutePaths.UsersController,
+                ResourceTypes.User
+            },
+            {
+                RoutePaths.GroupsController,
+                ResourceTypes.Group
+            }
+        };
     }
 }

@@ -21,5 +21,9 @@ namespace SimpleIdentityServer.Scim.Core.Results
         public int? StatusCode { get; set; }
         public object Content { get; set; }
         public string Location { get; set; }
+        public bool IsSucceed()
+        {
+            return StatusCode < 300;
+        }
     }
 }
