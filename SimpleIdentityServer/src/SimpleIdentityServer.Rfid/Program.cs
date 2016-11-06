@@ -16,6 +16,7 @@
 
 using SimpleIdentityServer.Rfid.Menu;
 using System;
+using System.Text;
 
 namespace SimpleIdentityServer.Rfid
 {
@@ -23,22 +24,47 @@ namespace SimpleIdentityServer.Rfid
     {
         static void Main(string[] args)
         {
+            // Port : Port_#0004.Hub_#0003
+            // VID : FFFF
+            // PID : 0035
+            var b = GetIdToken();
             Console.Title = "RFID reader & writer";
+            LaunchListener();
+            Console.ReadLine();
+        }
+
+        private static void LaunchListener()
+        {
+            var listener = new CardListener();
+            listener.Start();
+            listener.CardReceived += CardReceived;
+            Console.WriteLine("Press a key to exit the application ...");
+        }
+
+        private static void CardReceived(object sender, CardReceivedArgs e)
+        {
+            Console.WriteLine($"Card number received {e.CardNumber}");
+        }
+
+        private static void LaunchMenu()
+        {
             var home = new ChoiceMenuItem();
             var reader = new ChoiceMenuItem("Execute system commands");
             reader.Add(new ReaderSerialNumberMenuItem());
             home.Add(reader);
             home.Execute();
-            Console.ReadLine();
-            /*
-            var serialNumber = new byte[9];
-            // 1. Get serialize number.
-            var number = Reader.GetSerNum(serialNumber);
-            // 2. Control the led.
-            byte[] buffer = new byte[1];
-            var result = Reader.ControlLED(20, 6, buffer);
-            Console.ReadLine();
-            */
+        }
+
+        private static void WriteIdentityToken(byte[] bytes)
+        {
+            byte mode = 0x00;
+            // int nRet = Reader.MF_Write(mode, blk_add, num_blk, snr, buffer);
+        }
+
+        static byte[] GetIdToken()
+        {
+            const string idToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ";
+            return  Encoding.UTF8.GetBytes(idToken);
         }
     }
 }
