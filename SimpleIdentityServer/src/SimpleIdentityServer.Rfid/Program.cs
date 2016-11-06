@@ -16,7 +16,9 @@
 
 using SimpleIdentityServer.Rfid.Menu;
 using System;
+using System.Linq;
 using System.Text;
+using Microsoft.Owin.Hosting;
 
 namespace SimpleIdentityServer.Rfid
 {
@@ -27,10 +29,18 @@ namespace SimpleIdentityServer.Rfid
             // Port : Port_#0004.Hub_#0003
             // VID : FFFF
             // PID : 0035
-            var b = GetIdToken();
+            // var b = GetIdToken();
+            // WriteIdentityToken(b);
             Console.Title = "RFID reader & writer";
+            using (WebApp.Start<Startup>("http://localhost:8080"))
+            {
+                Console.WriteLine("Server running at http://localhost:8080/");
+                Console.ReadLine();
+            }
+            /*
             LaunchListener();
             Console.ReadLine();
+            */
         }
 
         private static void LaunchListener()
@@ -57,8 +67,44 @@ namespace SimpleIdentityServer.Rfid
 
         private static void WriteIdentityToken(byte[] bytes)
         {
+            // ISO Standard 14443A Memory type EEPROM
+            // Number of blocks : 47
+            // Block size : 16 bytes.
+            // More information see : http://blog.pepperl-fuchs.us/high-capacity-rfid-tags
             byte mode = 0x00;
-            // int nRet = Reader.MF_Write(mode, blk_add, num_blk, snr, buffer);
+            int startIndex = 0x0D;
+            int numberOfBlocks = 30;
+            byte[] buffer = new byte[16 * numberOfBlocks],
+                serialNumber = new byte[]
+                {
+                    0xFF,
+                    0xFF,
+                    0xFF,
+                    0xFF,
+                    0xFF,
+                    0xFF,
+                    0,0,0,0,0,0,0,0,0,0
+                };
+            if (bytes.Length > buffer.Length)
+            {
+                throw new ArgumentOutOfRangeException("Length is too high");
+            }
+
+            Buffer.BlockCopy(bytes, 0, buffer, 0, bytes.Length);
+            for (var i = 1; i < numberOfBlocks; i++)
+            {
+                try
+                {
+                    var temp = buffer.Skip(i * 16).Take(16).ToArray();
+                    var tempIndex = Convert.ToByte(startIndex);
+                    int nRet = Reader.MF_Write(mode, tempIndex, 1, serialNumber, temp);
+                    startIndex = startIndex + 1;
+                }
+                catch (Exception)
+                {
+                    string s = "";
+                }
+            }
         }
 
         static byte[] GetIdToken()
