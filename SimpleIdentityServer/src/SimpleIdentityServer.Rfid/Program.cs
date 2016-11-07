@@ -28,7 +28,6 @@ namespace SimpleIdentityServer.Rfid
     {
         static void Main(string[] args)
         {
-            Console.Title = "RFID reader & writer";
             // 1. Launch signal-r
             using (WebApp.Start<Startup>("http://localhost:8080"))
             {

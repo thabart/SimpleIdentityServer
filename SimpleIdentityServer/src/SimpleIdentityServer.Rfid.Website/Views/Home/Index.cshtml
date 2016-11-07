@@ -1,18 +1,33 @@
-﻿<h1>Home</h1>
-<div>
-    <p>The card number is :</p><div id="cardNumber">UNKNOWN</div>
-</div>
+﻿<h1>Authenticate</h1>
+<div id="success-status" style="color:green;">Is connected</div>
+<div id="failed-status" style="color:red;">Is not connected</div>
+<form id="form">
+    <div class="form-group">
+        <label>Card number</label>
+        <input type="text" class="form-control" placeholder="Card number" />
+    </div>
+    <div class="form-group">
+        <label>Identity token</label>
+        <input type="password" class="form-control" placeholder="Identity token" />
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
 @section scripts
 {
     <script type="text/javascript">
         $(document).ready(function () {
+            $("#failed-status").hide();
+            $("#success-status").hide();
             var rfid = $.connection.rfidHub;
             rfid.client.newCard = function (card) {
                 var cardNumber = card.CardNumber;
                 $("#cardNumber").html(cardNumber);
             };
             $.connection.hub.start().done(function () {
-                console.log("start listening ...");
+                $("#success-status").show();
+            });
+            $.connection.hub.error(function (error) {
+                $("#failed-status").show();
             });
         });
     </script>
