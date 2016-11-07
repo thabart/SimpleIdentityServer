@@ -14,21 +14,19 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Host.DTOs.Request;
-using SimpleIdentityServer.Host.DTOs.Response;
-using SimpleIdentityServer.Host.ViewModels;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
+using SimpleIdentityServer.Core.Results;
+using SimpleIdentityServer.Host.DTOs.Request;
+using SimpleIdentityServer.Host.DTOs.Response;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Display = SimpleIdentityServer.Host.DTOs.Request.Display;
 using ResponseMode = SimpleIdentityServer.Host.DTOs.Request.ResponseMode;
-using SimpleIdentityServer.Api.ViewModels;
-using SimpleIdentityServer.Core.Results;
 
 namespace SimpleIdentityServer.Host.Extensions
 {
@@ -80,18 +78,6 @@ namespace SimpleIdentityServer.Host.Extensions
             return result;
         }
 
-        public static UpdateUserParameter ToParameter(this UpdateResourceOwnerViewModel updateResourceOwnerViewModel)
-        {
-            return new UpdateUserParameter
-            {
-                Name = updateResourceOwnerViewModel.Name,
-                Password = updateResourceOwnerViewModel.NewPassword,
-                TwoFactorAuthentication = updateResourceOwnerViewModel.TwoAuthenticationFactor,
-                Email = updateResourceOwnerViewModel.Email,
-                Phone = updateResourceOwnerViewModel.PhoneNumber
-            };
-        }
-
         public static RevokeTokenParameter ToParameter(this RevocationRequest revocationRequest)
         {
             return new RevokeTokenParameter
@@ -105,15 +91,6 @@ namespace SimpleIdentityServer.Host.Extensions
             };
         }
 
-        public static LocalAuthenticationParameter ToParameter(this AuthorizeViewModel viewModel)
-        {
-            return new LocalAuthenticationParameter
-            {
-                UserName = viewModel.UserName,
-                Password = viewModel.Password
-            };
-        }
-
         public static IntrospectionParameter ToParameter(this IntrospectionRequest viewModel)
         {
             return new IntrospectionParameter
@@ -124,15 +101,6 @@ namespace SimpleIdentityServer.Host.Extensions
                 ClientSecret = viewModel.client_secret,
                 Token = viewModel.token,
                 TokenTypeHint = viewModel.token_type_hint
-            };
-        }
-
-        public static LocalAuthenticationParameter ToParameter(this AuthorizeOpenIdViewModel viewModel)
-        {
-            return new LocalAuthenticationParameter
-            {
-                UserName = viewModel.UserName,
-                Password = viewModel.Password                
             };
         }
 

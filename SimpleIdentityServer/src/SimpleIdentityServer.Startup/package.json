@@ -1,5 +1,5 @@
 {
-  "name": "SimpleIdentityServer.Host",
+  "name": "SimpleIdentityServer.Startup",
   "version": "0.0.0",
   "devDependencies": {
     "gulp": "^3.9.0",

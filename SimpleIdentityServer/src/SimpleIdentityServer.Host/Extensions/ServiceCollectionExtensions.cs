@@ -14,17 +14,13 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.Elasticsearch;
 using SimpleIdentityServer.Authentication.Middleware;
-using SimpleIdentityServer.Authentication.Middleware.Extensions;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Configuration.Client;
 using SimpleIdentityServer.Core;
@@ -33,17 +29,12 @@ using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Services;
-using SimpleIdentityServer.Core.TwoFactors;
 using SimpleIdentityServer.DataAccess.SqlServer;
 using SimpleIdentityServer.Host.Configuration;
-using SimpleIdentityServer.Host.Controllers;
-using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.Host.Parsers;
-using SimpleIdentityServer.Host.TwoFactors;
 using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.RateLimitation;
 using System;
-using System.Reflection;
 
 namespace SimpleIdentityServer.Host
 {
@@ -208,9 +199,7 @@ namespace SimpleIdentityServer.Host
         {
             var configurationParameters = new ConfigurationParameters
             {
-                ConfigurationUrl = configurationEdpOptions.ConfigurationUrl,
-                ClientId = configurationEdpOptions.ClientId,
-                ClientSecret = configurationEdpOptions.ClientSecret
+                ConfigurationUrl = configurationEdpOptions.ConfigurationUrl
             };
             services.AddSimpleIdentityServerCore();
             services.AddSimpleIdentityServerJwt();
@@ -227,22 +216,6 @@ namespace SimpleIdentityServer.Host
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddSingleton<IEncryptedPasswordFactory, EncryptedPasswordFactory>();
             services.AddSingleton(configurationParameters);
-            services.AddAuthentication(opts => opts.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme);
-            services.AddAuthorization(opts =>
-            {
-                opts.AddPolicy("Connected", policy => policy.RequireAssertion((ctx) => {
-                    return ctx.User.Identity != null && ctx.User.Identity.AuthenticationType == CookieAuthenticationDefaults.AuthenticationScheme;
-                }));
-            });
-            services.AddMvc();
-            services.AddAuthenticationMiddleware();
-            services.Configure<RazorViewEngineOptions>(options =>
-            {
-                options.FileProviders.Add(new EmbeddedFileProvider(
-                        typeof(AuthenticateController).GetTypeInfo().Assembly,
-                        "SimpleIdentityServer.Host"
-                ));
-            });
 
             // Configure SeriLog pipeline
             Func<LogEvent, bool> serilogFilter = (e) =>
@@ -283,13 +256,6 @@ namespace SimpleIdentityServer.Host
             services.AddTransient<ISimpleIdentityServerEventSource, SimpleIdentityServerEventSource>();
             services.AddTransient<IManagerEventSource, ManagerEventSource>();
             services.AddSingleton<ILogger>(log);
-
-            // Configure two factors authentication
-            var twoFactorServiceStore = new TwoFactorServiceStore();
-            var factory = new SimpleIdServerConfigurationClientFactory();
-            twoFactorServiceStore.Add(new TwilioSmsService(factory, configurationParameters.ConfigurationUrl));
-            twoFactorServiceStore.Add(new EmailService(factory, configurationParameters.ConfigurationUrl));
-            services.AddSingleton<ITwoFactorServiceStore>(twoFactorServiceStore);
         }
         
         #endregion

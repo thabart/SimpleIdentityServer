@@ -17,7 +17,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Host.ViewModels;
 
-namespace SimpleIdentityServer.Api.Controllers
+namespace SimpleIdentityServer.Startup.Controllers
 {
     public class FormController : Controller
     {

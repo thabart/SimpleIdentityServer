@@ -16,6 +16,7 @@
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using System.IO;
 
 namespace SimpleIdentityServer.Startup
 {
@@ -33,6 +34,7 @@ namespace SimpleIdentityServer.Startup
                 {
                     options.UseHttps("SimpleIdServer.pfx");
                 })
+                .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseConfiguration(configuration)
                 .UseStartup<Startup>()
                 .Build();

@@ -28,7 +28,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SimpleIdentityServer.Api.Controllers
+namespace SimpleIdentityServer.Startup.Controllers
 {
     [Authorize("Connected")]
     public class ConsentController : Controller

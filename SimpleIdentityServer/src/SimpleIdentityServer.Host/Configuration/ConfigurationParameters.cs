@@ -19,7 +19,5 @@ namespace SimpleIdentityServer.Host.Configuration
     public class ConfigurationParameters
     {
         public string ConfigurationUrl { get; set; }
-        public string ClientId { get; set; }
-        public string ClientSecret { get; set;  }
     }
 }

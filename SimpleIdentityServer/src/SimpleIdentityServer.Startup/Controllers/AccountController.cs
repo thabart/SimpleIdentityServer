@@ -22,7 +22,7 @@ using SimpleIdentityServer.Host.ViewModels;
 using System;
 using System.Threading.Tasks;
 
-namespace SimpleIdentityServer.Host.Controllers
+namespace SimpleIdentityServer.Startup.Controllers
 {
     public class AccountController : Controller
     {

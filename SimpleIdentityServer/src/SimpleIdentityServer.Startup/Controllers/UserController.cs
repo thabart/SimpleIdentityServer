@@ -27,8 +27,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SimpleIdentityServer.Startup.Extensions;
 
-namespace SimpleIdentityServer.Api.Controllers
+namespace SimpleIdentityServer.Startup.Controllers
 {
     [Authorize("Connected")]
     public class UserController : Controller

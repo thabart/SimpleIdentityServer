@@ -37,8 +37,9 @@ using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using SimpleIdentityServer.Startup.Extensions;
 
-namespace SimpleIdentityServer.Host.Controllers
+namespace SimpleIdentityServer.Startup.Controllers
 {
     public class AuthenticateController : Controller
     {
@@ -274,7 +275,7 @@ namespace SimpleIdentityServer.Host.Controllers
 
             // 4. Authenticate the resource owner
             var authenticationManager = this.GetAuthenticationManager();
-            await authenticationManager.SignOutAsync(Constants.TwoFactorCookieName);
+            await authenticationManager.SignOutAsync(Host.Constants.TwoFactorCookieName);
             await SetLocalCookie(authenticationManager, authenticatedUser.Claims);
             return RedirectToAction("Index", "User");
         }
@@ -503,9 +504,9 @@ namespace SimpleIdentityServer.Host.Controllers
 
         private async Task SetTwoFactorCookie(AuthenticationManager authenticationManager, IEnumerable<Claim> claims)
         {
-            var identity = new ClaimsIdentity(claims, Constants.TwoFactorCookieName);
+            var identity = new ClaimsIdentity(claims, Host.Constants.TwoFactorCookieName);
             var principal = new ClaimsPrincipal(identity);
-            await authenticationManager.SignInAsync(Constants.TwoFactorCookieName,
+            await authenticationManager.SignInAsync(Host.Constants.TwoFactorCookieName,
                     principal,
                     new AuthenticationProperties
                     {

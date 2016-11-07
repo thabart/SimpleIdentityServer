@@ -53,6 +53,7 @@ namespace SimpleIdentityServer.Host
             public const string Introspection = "introspect";
             public const string Get401 = "Error/401";            
             public const string Get404 = "Error/404";
+            public const string Get505 = "Error/505";
         }
 
         public static class RevocationRequestNames

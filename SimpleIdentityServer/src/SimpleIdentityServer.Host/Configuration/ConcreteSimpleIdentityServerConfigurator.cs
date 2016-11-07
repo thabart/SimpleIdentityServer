@@ -78,22 +78,6 @@ namespace SimpleIdentityServer.Host.Configuration
             return GetCurrentPath();
         }
 
-        public string GetWellKnownOpenIdEndPoint()
-        {
-            var currentPath = GetCurrentPath();
-            if (!currentPath.EndsWith("/"))
-            {
-                currentPath = string.Concat(currentPath, "/");
-            }
-
-            return string.Concat(GetCurrentPath(), Constants.EndPoints.DiscoveryAction);
-        }
-
-        public string GetWellKnownConfigurationEndPoint()
-        {
-            return _configurationParameters.ConfigurationUrl;
-        }
-
         #endregion
 
         #region Private methods

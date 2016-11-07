@@ -14,10 +14,20 @@
 // limitations under the License.
 #endregion
 
-namespace SimpleIdentityServer.Host.ViewModels
+using Microsoft.AspNetCore.Mvc;
+
+namespace SimpleIdentityServer.Startup.Controllers
 {
-    public class HomeViewModel
-    {
-        public bool IsSwaggerEnabled { get; set; }
+    public class HomeController : Controller
+    {        
+        #region Public methods
+        
+        [HttpGet]
+        public ActionResult Index() 
+        {
+            return View();    
+        }
+        
+        #endregion
     }
 }

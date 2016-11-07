@@ -16,7 +16,7 @@
 
 using Microsoft.AspNetCore.Mvc;
 
-namespace SimpleIdentityServer.Api.Controllers
+namespace SimpleIdentityServer.Startup.Controllers
 {
     public class ErrorController : Controller
     {
@@ -28,6 +28,11 @@ namespace SimpleIdentityServer.Api.Controllers
         public ActionResult Get404() 
         {
             return View();    
+        }
+
+        public ActionResult Get505()
+        {
+            return View();
         }
     }
 }
