@@ -93,6 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CardListener.cs" />
+    <Compile Include="Hubs\RfidHub.cs" />
     <Compile Include="Menu\BackMenuItem.cs" />
     <Compile Include="Menu\ChoiceMenuItem.cs" />
     <Compile Include="Menu\BaseMenuItem.cs" />

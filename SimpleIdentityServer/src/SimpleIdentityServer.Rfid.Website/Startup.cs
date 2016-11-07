@@ -57,6 +57,8 @@ namespace SimpleIdentityServer.Rfid.Website
             // Enable CORS
             app.UseCors("AllowAll");
 
+            app.UseStaticFiles();
+
             // Launch ASP.NET MVC
             app.UseMvc(routes =>
             {

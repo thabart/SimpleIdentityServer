@@ -19,6 +19,8 @@ using System;
 using System.Linq;
 using System.Text;
 using Microsoft.Owin.Hosting;
+using SimpleIdentityServer.Rfid.Hubs;
+using Microsoft.AspNet.SignalR;
 
 namespace SimpleIdentityServer.Rfid
 {
@@ -26,30 +28,43 @@ namespace SimpleIdentityServer.Rfid
     {
         static void Main(string[] args)
         {
-            // Port : Port_#0004.Hub_#0003
-            // VID : FFFF
-            // PID : 0035
-            // var b = GetIdToken();
-            // WriteIdentityToken(b);
             Console.Title = "RFID reader & writer";
+            // 1. Launch signal-r
             using (WebApp.Start<Startup>("http://localhost:8080"))
             {
                 Console.WriteLine("Server running at http://localhost:8080/");
+                // 2. Launch the listener
+                LaunchListener();
                 Console.ReadLine();
             }
         }
 
         private static void LaunchListener()
         {
+            // INFORMATION ABOUT THE RFID READER.
+            // Port : Port_#0004.Hub_#0003
+            // VID : FFFF
+            // PID : 0035
             var listener = new CardListener();
             listener.Start();
             listener.CardReceived += CardReceived;
-            Console.WriteLine("Press a key to exit the application ...");
         }
 
         private static void CardReceived(object sender, CardReceivedArgs e)
         {
             Console.WriteLine($"Card number received {e.CardNumber}");
+            var rfidHub = GlobalHost.ConnectionManager.GetHubContext<RfidHub>();
+            try
+            {
+                rfidHub.Clients.All.newCard(new RfidCard
+                {
+                    CardNumber = e.CardNumber
+                });
+            }
+            catch(Exception)
+            {
+
+            }
         }
 
         private static void LaunchMenu()

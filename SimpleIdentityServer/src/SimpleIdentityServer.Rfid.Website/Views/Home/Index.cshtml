@@ -1,1 +1,19 @@
 ﻿<h1>Home</h1>
+<div>
+    <p>The card number is :</p><div id="cardNumber">UNKNOWN</div>
+</div>
+@section scripts
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var rfid = $.connection.rfidHub;
+            rfid.client.newCard = function (card) {
+                var cardNumber = card.CardNumber;
+                $("#cardNumber").html(cardNumber);
+            };
+            $.connection.hub.start().done(function () {
+                console.log("start listening ...");
+            });
+        });
+    </script>
+}
