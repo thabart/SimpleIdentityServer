@@ -232,12 +232,12 @@ namespace SimpleIdentityServer.Startup
                         controller = "Error",
                         action = "Get404"
                     });
-                routes.MapRoute("Error505Route",
-                    Host.Constants.EndPoints.Get505,
+                routes.MapRoute("Error500Route",
+                    Host.Constants.EndPoints.Get500,
                     new
                     {
                         controller = "Error",
-                        action = "Get505"
+                        action = "Get500"
                     });
                 routes.MapRoute(
                     name: "default",

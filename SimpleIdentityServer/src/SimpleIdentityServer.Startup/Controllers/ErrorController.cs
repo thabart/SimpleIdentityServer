@@ -30,7 +30,7 @@ namespace SimpleIdentityServer.Startup.Controllers
             return View();    
         }
 
-        public ActionResult Get505()
+        public ActionResult Get500()
         {
             return View();
         }
