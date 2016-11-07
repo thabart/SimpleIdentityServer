@@ -37,10 +37,6 @@ namespace SimpleIdentityServer.Rfid
                 Console.WriteLine("Server running at http://localhost:8080/");
                 Console.ReadLine();
             }
-            /*
-            LaunchListener();
-            Console.ReadLine();
-            */
         }
 
         private static void LaunchListener()

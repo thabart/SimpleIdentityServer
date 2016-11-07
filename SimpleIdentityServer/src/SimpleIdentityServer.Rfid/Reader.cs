@@ -18,6 +18,14 @@ using System.Runtime.InteropServices;
 
 namespace SimpleIdentityServer.Rfid
 {
+    internal enum RequestModes
+    {
+        KeyA = 0x00,
+        KeyB = 0x01,
+        RequestIdle = 0x26,
+        RequestAll = 0x52
+    }
+
     internal static class Reader
     {
         #region System settings
@@ -51,13 +59,54 @@ namespace SimpleIdentityServer.Rfid
         [DllImport("function.dll")]
         public static extern int ControlBuzzer(int freq, int duration, [In]byte[] buffer);
 
+        /// <summary>
+        /// Get user information from the module.
+        /// </summary>
+        /// <param name="block">Number of the data area.</param>
+        /// <param name="length">The length of data</param>
+        /// <param name="buffer">Returned data.</param>
+        /// <returns></returns>
+        [DllImport("function.dll")]
+        public static extern int ReadUserInfo(byte block, byte length, [In]byte[] buffer);
+
+        /// <summary>
+        /// The module provider the four data blocks to user.
+        /// Each block have 120 bytes space.
+        /// </summary>
+        /// <param name="block">The number of the data area.</param>
+        /// <param name="length">The length of the data (the length must be less than 120).</param>
+        /// <param name="buffer">Data</param>
+        /// <returns></returns>
+        [DllImport("function.dll")]
+        public static extern int WriteUserInfo(byte block, byte length, [In] byte[] buffer);
+
         #endregion
 
         #region 14443A-MF
 
+        /// <summary>
+        /// The Read command integrates the low level commands (Request, Anti-Collision, Select, Authentication)
+        /// Let the user to select the card and read data from the memory blocks by a single command.
+        /// </summary>
+        /// <param name="mode">Mode control</param>
+        /// <param name="blk_add">Number of blocks to be read (Max 4).</param>
+        /// <param name="num_blk">The start address of blocks to be read (the range is 0~63).</param>
+        /// <param name="snr">The six bytes block key.</param>
+        /// <param name="buffer">Data read fropm the card.</param>
+        /// <returns></returns>
         [DllImport("function.dll")]
         public static extern int MF_Read(byte mode, byte blk_add, byte num_blk, [In]byte[] snr, [In]byte[] buffer);
 
+        /// <summary>
+        /// The write command integrates the low level commands (Request, Anti-Collision, Select, Authentication)
+        /// and let the user to select the card and write data to the memory blocks by a single command.
+        /// </summary>
+        /// <param name="mode">Mode control</param>
+        /// <param name="blk_add">Number of blocks to be write.</param>
+        /// <param name="num_blk">The start address of blocks to be write.</param>
+        /// <param name="snr">6 bytes block key.</param>
+        /// <param name="buffer">Data.</param>
+        /// <returns></returns>
         [DllImport("function.dll")]
         public static extern int MF_Write(byte mode, byte blk_add, byte num_blk, [In]byte[] snr, [In]byte[] buffer);
 
@@ -85,6 +134,14 @@ namespace SimpleIdentityServer.Rfid
         [DllImport("function.dll")]
         public static extern int MF_Restore([In]byte[] commHandle, int DeviceAddress, byte mode, byte cardlength, [In]byte[] carddata);
 
+        /// <summary>
+        /// The High level Command integrates the low level commands (Request, AntiColl1, Select) and get the SNR of selected card.
+        /// </summary>
+        /// <param name="mode"></param>
+        /// <param name="halt"></param>
+        /// <param name="snr"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
         [DllImport("function.dll")]
         public static extern int MF_Getsnr(int mode, int halt, [In]byte[] snr, [In]byte[] value);
 
