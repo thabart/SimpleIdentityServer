@@ -4,11 +4,11 @@
 <form id="form">
     <div class="form-group">
         <label>Card number</label>
-        <input type="text" class="form-control" placeholder="Card number" />
+        <input type="text" class="form-control" placeholder="Card number" id="card-number" readonly />
     </div>
     <div class="form-group">
         <label>Identity token</label>
-        <input type="password" class="form-control" placeholder="Identity token" />
+        <input type="password" class="form-control" placeholder="Identity token" readonly />
     </div>
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>
@@ -21,7 +21,7 @@
             var rfid = $.connection.rfidHub;
             rfid.client.newCard = function (card) {
                 var cardNumber = card.CardNumber;
-                $("#cardNumber").html(cardNumber);
+                $("#card-number").val(cardNumber);
             };
             $.connection.hub.start().done(function () {
                 $("#success-status").show();
