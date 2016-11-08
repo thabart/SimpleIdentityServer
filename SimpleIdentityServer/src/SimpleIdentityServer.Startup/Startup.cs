@@ -24,11 +24,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SimpleIdentityServer.Authentication.Middleware;
 using SimpleIdentityServer.Authentication.Middleware.Extensions;
-using SimpleIdentityServer.Configuration.Client;
-using SimpleIdentityServer.Core.TwoFactors;
 using SimpleIdentityServer.Host;
 using SimpleIdentityServer.RateLimitation.Configuration;
-using SimpleIdentityServer.Startup.TwoFactors;
 using System.Collections.Generic;
 using WebApiContrib.Core.Storage;
 
@@ -155,12 +152,6 @@ namespace SimpleIdentityServer.Startup
                     return ctx.User.Identity != null && ctx.User.Identity.AuthenticationType == CookieAuthenticationDefaults.AuthenticationScheme;
                 }));
             });
-            // 8. Configure two factors authentication
-            var twoFactorServiceStore = new TwoFactorServiceStore();
-            var factory = new SimpleIdServerConfigurationClientFactory();
-            twoFactorServiceStore.Add(new TwilioSmsService(factory, _configurationEdpOptions.ConfigurationUrl));
-            twoFactorServiceStore.Add(new EmailService(factory, _configurationEdpOptions.ConfigurationUrl));
-            services.AddSingleton<ITwoFactorServiceStore>(twoFactorServiceStore);
         }
 
         public void Configure(IApplicationBuilder app,

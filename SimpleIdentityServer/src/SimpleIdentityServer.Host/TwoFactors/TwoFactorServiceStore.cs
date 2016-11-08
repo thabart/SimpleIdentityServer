@@ -19,7 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SimpleIdentityServer.Startup.TwoFactors
+namespace SimpleIdentityServer.Host.TwoFactors
 {
     internal class TwoFactorServiceStore : ITwoFactorServiceStore
     {

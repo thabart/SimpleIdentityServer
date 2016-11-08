@@ -28,9 +28,11 @@ using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Services;
+using SimpleIdentityServer.Core.TwoFactors;
 using SimpleIdentityServer.DataAccess.SqlServer;
 using SimpleIdentityServer.Host.Configuration;
 using SimpleIdentityServer.Host.Parsers;
+using SimpleIdentityServer.Host.TwoFactors;
 using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.RateLimitation;
 using System;
@@ -257,6 +259,11 @@ namespace SimpleIdentityServer.Host
             services.AddTransient<ISimpleIdentityServerEventSource, SimpleIdentityServerEventSource>();
             services.AddTransient<IManagerEventSource, ManagerEventSource>();
             services.AddSingleton<ILogger>(log);
+            var twoFactorServiceStore = new TwoFactorServiceStore();
+            var factory = new SimpleIdServerConfigurationClientFactory();
+            twoFactorServiceStore.Add(new TwilioSmsService(factory, configurationUrl));
+            twoFactorServiceStore.Add(new EmailService(factory, configurationUrl));
+            services.AddSingleton<ITwoFactorServiceStore>(twoFactorServiceStore);
         }
         
         #endregion

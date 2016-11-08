@@ -93,6 +93,7 @@ namespace SimpleIdentityServer.Host
                 using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
                 {
                     var simpleIdentityServerContext = serviceScope.ServiceProvider.GetService<SimpleIdentityServerContext>();
+                    // 6C919615
                     simpleIdentityServerContext.Database.EnsureCreated();
                     simpleIdentityServerContext.EnsureSeedData();
                 }

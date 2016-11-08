@@ -43,20 +43,13 @@ namespace SimpleIdentityServer.Startup.Controllers
 {
     public class AuthenticateController : Controller
     {
-        private const string ExternalAuthenticateCookieName = "SimpleIdentityServer-{0}";
-        
-        private const string DefaultLanguage = "en";
-        
+        private const string ExternalAuthenticateCookieName = "SimpleIdentityServer-{0}";        
+        private const string DefaultLanguage = "en";        
         private readonly IAuthenticateActions _authenticateActions;
-
         private readonly IDataProtector _dataProtector;
-
         private readonly IEncoder _encoder;
-
-        private readonly ITranslationManager _translationManager;
-        
-        private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
-        
+        private readonly ITranslationManager _translationManager;        
+        private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;        
         private readonly IUrlHelper _urlHelper;
 
         public AuthenticateController(

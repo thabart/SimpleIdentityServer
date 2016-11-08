@@ -32,7 +32,6 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
     public sealed class LocalUserAuthenticationAction : ILocalUserAuthenticationAction
     {
         private readonly IResourceOwnerService _resourceOwnerService;
-
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
 
         #region Constructor

@@ -16,11 +16,9 @@
 
 using SimpleIdentityServer.Configuration.Client;
 using SimpleIdentityServer.Configuration.Client.Setting;
-using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.TwoFactors;
-using SimpleIdentityServer.Host.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -30,7 +28,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SimpleIdentityServer.Startup.TwoFactors
+namespace SimpleIdentityServer.Host.TwoFactors
 {
     public class TwilioSmsService : ITwoFactorAuthenticationService
     {

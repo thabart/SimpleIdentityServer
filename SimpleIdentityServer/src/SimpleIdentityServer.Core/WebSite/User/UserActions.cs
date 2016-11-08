@@ -37,13 +37,9 @@ namespace SimpleIdentityServer.Core.WebSite.User
     internal class UserActions : IUserActions
     {
         private readonly IGetConsentsOperation _getConsentsOperation;
-
         private readonly IRemoveConsentOperation _removeConsentOperation;
-
         private readonly IGetUserOperation _getUserOperation;
-
         private readonly IUpdateUserOperation _updateUserOperation;
-
         private readonly IConfirmUserOperation _confirmUserOperation;
 
         #region Constructor

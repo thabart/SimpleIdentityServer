@@ -34,9 +34,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
         #region Fields
 
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
-
         private readonly IConfirmationCodeRepository _confirmationCodeRepository;
-
         private readonly ITwoFactorAuthenticationHandler _twoFactorAuthenticationHandler;
 
         #endregion

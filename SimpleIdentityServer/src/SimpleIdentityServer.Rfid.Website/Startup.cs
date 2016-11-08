@@ -22,7 +22,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SimpleIdentityServer.Authentication.Middleware;
+using SimpleIdentityServer.DataAccess.SqlServer;
 using SimpleIdentityServer.Host;
+using SimpleIdentityServer.Rfid.Website.Extensions;
 
 namespace SimpleIdentityServer.Rfid.Website
 {
@@ -94,7 +96,7 @@ namespace SimpleIdentityServer.Rfid.Website
             // 5. Use simpleIdentityServer
             app.UseSimpleIdentityServer(new HostingOptions
             {
-                IsDataMigrated = true,
+                IsDataMigrated = false,
                 IsDeveloperModeEnabled = false
             }, loggerFactory);
             // 6. Launch ASP.NET MVC
@@ -105,6 +107,13 @@ namespace SimpleIdentityServer.Rfid.Website
                     template: "{controller}/{action}/{id?}",
                     defaults: new { controller = "Home", action = "Index" });
             });
+            // 7. Populate the data
+            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                var simpleIdentityServerContext = serviceScope.ServiceProvider.GetService<SimpleIdentityServerContext>();
+                simpleIdentityServerContext.Database.EnsureCreated();
+                simpleIdentityServerContext.EnsureSeedData();
+            }
         }
     }
 }

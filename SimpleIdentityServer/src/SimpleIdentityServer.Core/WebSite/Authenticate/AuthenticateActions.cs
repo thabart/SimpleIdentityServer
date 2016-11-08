@@ -58,19 +58,12 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
     public class AuthenticateActions : IAuthenticateActions
     {
         private readonly IAuthenticateResourceOwnerOpenIdAction _authenticateResourceOwnerOpenIdAction;
-
         private readonly ILocalOpenIdUserAuthenticationAction _localOpenIdUserAuthenticationAction;
-
         private readonly IExternalOpenIdUserAuthenticationAction _externalOpenIdUserAuthenticationAction;
-
         private readonly ILocalUserAuthenticationAction _localUserAuthenticationAction;
-
         private readonly ILoginCallbackAction _loginCallbackAction;
-
         private readonly IGenerateAndSendCodeAction _generateAndSendCodeAction;
-
         private readonly IValidateConfirmationCodeAction _validateConfirmationCodeAction;
-
         private readonly IRemoveConfirmationCodeAction _removeConfirmationCodeAction;
 
         public AuthenticateActions(

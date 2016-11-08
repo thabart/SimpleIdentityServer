@@ -25,7 +25,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SimpleIdentityServer.Startup.TwoFactors
+namespace SimpleIdentityServer.Host.TwoFactors
 {
     public class EmailService : ITwoFactorAuthenticationService
     {
