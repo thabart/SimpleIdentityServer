@@ -14,15 +14,25 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
+using SimpleIdentityServer.Host.Extensions;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Rfid.Website.Controllers
 {
-    public class HomeController : Controller
+    public class AuthenticateController : Controller
     {
         public ActionResult Index()
         {
             return View();
+        }
+
+        public async Task<ActionResult> Logout()
+        {
+            var authenticationManager = this.GetAuthenticationManager();
+            await authenticationManager.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Index", "Authenticate");
         }
     }
 }

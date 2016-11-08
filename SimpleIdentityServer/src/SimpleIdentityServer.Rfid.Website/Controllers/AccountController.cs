@@ -14,11 +14,13 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace SimpleIdentityServer.Rfid.Website.Controllers
 {
-    public class HomeController : Controller
+    [Authorize("Connected")]
+    public class AccountController : Controller
     {
         public ActionResult Index()
         {

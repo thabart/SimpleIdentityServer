@@ -14,8 +14,10 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -57,7 +59,15 @@ namespace SimpleIdentityServer.Rfid.Website
                 .AllowAnyHeader()));
             // 2. Add the dependencies to run ASP.NET MVC
             services.AddMvc();
-            // 3. Add the dependencies to run SimpleIdentityServer
+            // 3. Add authentication
+            services.AddAuthentication(opts => opts.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme);
+            services.AddAuthorization(opts =>
+            {
+                opts.AddPolicy("Connected", policy => policy.RequireAssertion((ctx) => {
+                    return ctx.User.Identity != null && ctx.User.Identity.AuthenticationType == CookieAuthenticationDefaults.AuthenticationScheme;
+                }));
+            });
+            // 4. Add the dependencies to run SimpleIdentityServer
             services.AddSimpleIdentityServer(new DataSourceOptions
             {
                 DataSourceType = DataSourceTypes.InMemory
@@ -74,13 +84,20 @@ namespace SimpleIdentityServer.Rfid.Website
             app.UseCors("AllowAll");
             // 3. Use static files
             app.UseStaticFiles();
-            // 4. Use simpleIdentityServer
+            // 4. Use cookie authentication.
+            app.UseCookieAuthentication(new CookieAuthenticationOptions
+            {
+                AutomaticAuthenticate = true,
+                AutomaticChallenge = true,
+                LoginPath = new PathString("/Authenticate")
+            });
+            // 5. Use simpleIdentityServer
             app.UseSimpleIdentityServer(new HostingOptions
             {
                 IsDataMigrated = true,
                 IsDeveloperModeEnabled = false
             }, loggerFactory);
-            // 5. Launch ASP.NET MVC
+            // 6. Launch ASP.NET MVC
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

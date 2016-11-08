@@ -1,34 +1,53 @@
-﻿<h1>Authenticate</h1>
-<div id="success-status" style="color:green;">Is connected</div>
-<div id="failed-status" style="color:red;">Is not connected</div>
-<form id="form">
-    <div class="form-group">
-        <label>Card number</label>
-        <input type="text" class="form-control" placeholder="Card number" id="card-number" readonly />
-    </div>
-    <div class="form-group">
-        <label>Identity token</label>
-        <input type="password" class="form-control" placeholder="Identity token" readonly />
-    </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
-</form>
-@section scripts
-{
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $("#failed-status").hide();
-            $("#success-status").hide();
-            var rfid = $.connection.rfidHub;
-            rfid.client.newCard = function (card) {
-                var cardNumber = card.CardNumber;
-                $("#card-number").val(cardNumber);
-            };
-            $.connection.hub.start().done(function () {
-                $("#success-status").show();
-            });
-            $.connection.hub.error(function (error) {
-                $("#failed-status").show();
-            });
-        });
-    </script>
+﻿@using SimpleIdentityServer.Host.Extensions
+@{
+    var user = await this.GetAuthenticatedUser();
 }
+
+<div class="row">
+    <h1>Dashboard</h1>
+    <a href="@Url.Content("~/.well-known/openid-configuration")">
+        <section class="col-md-3 tile">
+            <div class="header"></div>
+            <div class="row clicked">
+                <div class="col-md-4 picture">
+                    <img src="@Url.Content("~/img/openid.png")" />
+                </div>
+                <div class="col-md-8 title">
+                    <h4>OpenId contract</h4>
+                </div>
+            </div>
+        </section>
+    </a>
+    @if (user != null && user.Identity != null && user.Identity.IsAuthenticated)
+    {
+        <a href="@Url.Content("~/Account")">
+            <section class="col-md-3 tile">
+                <div class="header"></div>
+                <div class="row clicked">
+                    <div class="col-md-4 picture">
+                        <img src="@Url.Content("~/img/Unknown.png")" />
+                    </div>
+                    <div class="col-md-8 title">
+                        <h4>Authenticate</h4>
+                    </div>
+                </div>
+            </section>
+        </a>
+    }
+    else
+    {
+        <a href="@Url.Content("~/Authenticate")">
+            <section class="col-md-3 tile">
+                <div class="header"></div>
+                <div class="row clicked">
+                    <div class="col-md-4 picture">
+                        <img src="@Url.Content("~/img/Unknown.png")" />
+                    </div>
+                    <div class="col-md-8 title">
+                        <h4>Authenticate</h4>
+                    </div>
+                </div>
+            </section>
+        </a>
+    }
+</div>
