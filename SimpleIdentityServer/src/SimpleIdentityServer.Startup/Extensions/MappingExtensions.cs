@@ -14,9 +14,8 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Api.ViewModels;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Host.ViewModels;
+using SimpleIdentityServer.Startup.ViewModels;
 
 namespace SimpleIdentityServer.Startup.Extensions
 {

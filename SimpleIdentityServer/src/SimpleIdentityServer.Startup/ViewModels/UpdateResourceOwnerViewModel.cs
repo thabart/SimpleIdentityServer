@@ -17,7 +17,7 @@
 using SimpleIdentityServer.Core.Models;
 using System.ComponentModel.DataAnnotations;
 
-namespace SimpleIdentityServer.Host.ViewModels
+namespace SimpleIdentityServer.Startup.ViewModels
 {
     public class UpdateResourceOwnerViewModel
     {

@@ -2,12 +2,7 @@
     ViewBag.Title = "Consent";
 }
 
-@model SimpleIdentityServer.Startup.ViewModels.ConsentViewModel
-
-@{
-    var accessToCode = ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.ApplicationWouldLikeToCode];
-    var accessToValue = string.Format(accessToCode, Model.ClientDisplayName);
-}
+@model SimpleIdentityServer.Rfid.Website.ViewModels.ConsentViewModel
 
 <div class="row">
     <div class="col-md-12">
@@ -23,13 +18,13 @@
         </div>
         <div>
             <h2>
-                @accessToValue
+                Application @Model.ClientDisplayName would like to access
             </h2>
         </div>
         @if (Model.AllowedScopeDescriptions.Any())
         {
             <div>
-                <h4>@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.ScopesCode]</h4>
+                <h4>Scopes</h4>
             </div>
             <div>
                 <ul class="list-group">
@@ -42,11 +37,11 @@
                 </ul>
             </div>
         }
-        
+
         @if (Model.AllowedIndividualClaims.Any())
         {
             <div class="row">
-                <h4>@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.IndividualClaimsCode]</h4>
+                <h4>Claims</h4>
             </div>
             <div class="row">
                 <ul class="list-group">
@@ -59,25 +54,25 @@
                 </ul>
             </div>
         }
-        
+
         @if (!string.IsNullOrWhiteSpace(Model.PolicyUri) ||
-            !string.IsNullOrWhiteSpace(Model.TosUri))
+                !string.IsNullOrWhiteSpace(Model.TosUri))
         {
             <div style="padding-bottom: 10px;">
                 @if (!string.IsNullOrWhiteSpace(Model.PolicyUri))
                 {
-                    <a href="@Model.PolicyUri" target="_blank">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.LinkToThePolicy] &nbsp;</a>
+                    <a href="@Model.PolicyUri" target="_blank">Link to policy</a>
                 }
                 @if (!string.IsNullOrWhiteSpace(Model.TosUri))
                 {
-                    <a href="@Model.TosUri" target="_blank">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.Tos]</a>
+                    <a href="@Model.TosUri" target="_blank">TOS</a>
                 }
             </div>
         }
-        
+
         <div>
-            <a href="@Url.Action("Cancel", new { code = Model.Code })" class="btn btn-default">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.CancelCode]</a>
-            <a href="@Url.Action("Confirm", new { code = Model.Code })" class="btn btn-default">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.ConfirmCode]</a>
+            <a href="@Url.Action("Cancel", new { code = Model.Code })" class="btn btn-default">Cancel</a>
+            <a href="@Url.Action("Confirm", new { code = Model.Code })" class="btn btn-default">Confirm</a>
         </div>
     </div>
 </div>

@@ -15,12 +15,15 @@
 #endregion
 
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Parameters;
+using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.Authenticate;
+using SimpleIdentityServer.Host.DTOs.Request;
 using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.Rfid.Website.ViewModels;
 using System;
@@ -34,10 +37,16 @@ namespace SimpleIdentityServer.Rfid.Website.Controllers
 {
     public class AuthenticateController : Controller
     {
+        private const string DefaultLanguage = "en";
         private readonly IAuthenticateActions _authenticateActions;
+        private readonly IDataProtector _dataProtector;
 
-        public AuthenticateController(IAuthenticateActions authenticateActions)
+        public AuthenticateController(
+            IAuthenticateActions authenticateActions,
+            IDataProtectionProvider dataProtectionProvider,
+            ITranslationManager translationManager)
         {
+            _dataProtector = dataProtectionProvider.CreateProtector("Request");
             _authenticateActions = authenticateActions;
         }
 
@@ -82,6 +91,94 @@ namespace SimpleIdentityServer.Rfid.Website.Controllers
                 ModelState.AddModelError("invalid_credentials", ex.Message);
                 return View(loginViewModel);
             }
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> OpenId(string code)
+        {
+            if (string.IsNullOrWhiteSpace(code))
+            {
+                throw new ArgumentNullException(nameof(code));
+            }
+
+            var authenticatedUser = await this.GetAuthenticatedUser();
+            var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
+            var actionResult = _authenticateActions.AuthenticateResourceOwnerOpenId(
+                request.ToParameter(),
+                authenticatedUser,
+                code);
+            var result = this.CreateRedirectionFromActionResult(actionResult,
+                request);
+            if (result != null)
+            {
+                return result;
+            }
+            
+            var viewModel = new LoginOpenIdViewModel
+            {
+                Code = code
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> OpenId(LoginOpenIdViewModel loginViewModel)
+        {
+            if (loginViewModel == null)
+            {
+                throw new ArgumentNullException(nameof(loginViewModel));
+            }
+
+            if (string.IsNullOrWhiteSpace(loginViewModel.Code))
+            {
+                throw new ArgumentNullException(nameof(loginViewModel.Code));
+            }
+
+            var uiLocales = DefaultLanguage;
+            try
+            {
+                // 1. Decrypt the request
+                var request = _dataProtector.Unprotect<AuthorizationRequest>(loginViewModel.Code);
+                // 2. Retrieve the default language
+                uiLocales = string.IsNullOrWhiteSpace(request.ui_locales) ? DefaultLanguage : request.ui_locales;
+                // 3. Check the state of the view model
+                if (!ModelState.IsValid)
+                {
+                    return View("OpenId", loginViewModel);
+                }
+
+                // 4. Local authentication
+                var claims = new List<Claim>();
+                var actionResult = _authenticateActions.LocalOpenIdUserAuthentication(new LocalAuthenticationParameter
+                    {
+                        Password = loginViewModel.Password,
+                        UserName = loginViewModel.CardNumber
+                    },
+                    request.ToParameter(),
+                    loginViewModel.Code,
+                    out claims);
+                var subject = claims.First(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject).Value;
+
+                // 5. Authenticate the user by adding a cookie
+                var authenticationManager = this.GetAuthenticationManager();
+                await SetLocalCookie(authenticationManager, claims);
+
+                // 6. Redirect the user agent
+                var result = this.CreateRedirectionFromActionResult(actionResult,
+                    request);
+                if (result != null)
+                {
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("invalid_credentials", ex.Message);
+            }
+
+            // TranslateView(uiLocales);
+            return View("OpenId", loginViewModel);
         }
 
         public async Task<ActionResult> Logout()

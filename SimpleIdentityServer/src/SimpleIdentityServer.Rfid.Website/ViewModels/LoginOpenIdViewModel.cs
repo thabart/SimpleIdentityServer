@@ -1,5 +1,5 @@
 ﻿#region copyright
-// Copyright 2015 Habart Thierry
+// Copyright 2016 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,12 +16,15 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace SimpleIdentityServer.Startup.ViewModels
+namespace SimpleIdentityServer.Rfid.Website.ViewModels
 {
-    public class CodeViewModel
+    public class LoginOpenIdViewModel
     {
-        [Required]
-        [Display(Name = "Code")]
         public string Code { get; set; }
+        [Required(ErrorMessage = "the card number is required")]
+        public string CardNumber { get; set; }
+        [Required(ErrorMessage = "the password is required")]
+        public string Password { get; set; }
+        public bool IsChecked { get; set; }
     }
 }

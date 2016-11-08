@@ -16,7 +16,7 @@
 
 using System.Collections.Generic;
 
-namespace SimpleIdentityServer.Host.ViewModels
+namespace SimpleIdentityServer.Startup.ViewModels
 {
     public class ConsentViewModel
     {

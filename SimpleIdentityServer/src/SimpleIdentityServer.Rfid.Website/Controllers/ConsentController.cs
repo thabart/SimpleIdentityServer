@@ -1,5 +1,5 @@
 ﻿#region copyright
-// Copyright 2015 Habart Thierry
+// Copyright 2016 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,36 +17,32 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
+using Org.BouncyCastle.Utilities.Encoders;
 using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Protector;
-using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.Consent;
 using SimpleIdentityServer.Host.DTOs.Request;
 using SimpleIdentityServer.Host.Extensions;
-using SimpleIdentityServer.Startup.ViewModels;
+using SimpleIdentityServer.Rfid.Website.ViewModels;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SimpleIdentityServer.Startup.Controllers
+namespace SimpleIdentityServer.Rfid.Website.Controllers
 {
     [Authorize("Connected")]
     public class ConsentController : Controller
     {
         private readonly IConsentActions _consentActions;
         private readonly IDataProtector _dataProtector;
-        private readonly ITranslationManager _translationManager;
 
         public ConsentController(
             IConsentActions consentActions,
-            IDataProtectionProvider dataProtectionProvider,
-            ITranslationManager translationManager)
+            IDataProtectionProvider dataProtectionProvider)
         {
             _consentActions = consentActions;
             _dataProtector = dataProtectionProvider.CreateProtector("Request");
-            _translationManager = translationManager;
         }
-        
+
         public async Task<ActionResult> Index(string code)
         {
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
@@ -55,9 +51,9 @@ namespace SimpleIdentityServer.Startup.Controllers
             var claims = new List<string>();
             var authenticatedUser = await this.GetAuthenticatedUser();
             var actionResult = _consentActions.DisplayConsent(request.ToParameter(),
-                authenticatedUser, 
-                out client, 
-                out scopes, 
+                authenticatedUser,
+                out client,
+                out scopes,
                 out claims);
 
             var result = this.CreateRedirectionFromActionResult(actionResult, request);
@@ -66,7 +62,6 @@ namespace SimpleIdentityServer.Startup.Controllers
                 return result;
             }
 
-            TranslateConsentScreen(request.ui_locales);
             var viewModel = new ConsentViewModel
             {
                 ClientDisplayName = client.ClientName,
@@ -79,13 +74,13 @@ namespace SimpleIdentityServer.Startup.Controllers
             };
             return View(viewModel);
         }
-        
+
         public async Task<ActionResult> Confirm(string code)
         {
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
             var parameter = request.ToParameter();
             var authenticatedUser = await this.GetAuthenticatedUser();
-            var actionResult =_consentActions.ConfirmConsent(parameter,
+            var actionResult = _consentActions.ConfirmConsent(parameter,
                 authenticatedUser);
 
             return this.CreateRedirectionFromActionResult(actionResult,
@@ -102,22 +97,6 @@ namespace SimpleIdentityServer.Startup.Controllers
         {
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
             return Redirect(request.redirect_uri);
-        }
-
-        private void TranslateConsentScreen(string uiLocales)
-        {
-            // Retrieve the translation and store them in a ViewBag
-            var translations = _translationManager.GetTranslations(uiLocales, new List<string>
-            {
-                Core.Constants.StandardTranslationCodes.ApplicationWouldLikeToCode,
-                Core.Constants.StandardTranslationCodes.IndividualClaimsCode,
-                Core.Constants.StandardTranslationCodes.ScopesCode,
-                Core.Constants.StandardTranslationCodes.CancelCode,
-                Core.Constants.StandardTranslationCodes.ConfirmCode,
-                Core.Constants.StandardTranslationCodes.LinkToThePolicy,
-                Core.Constants.StandardTranslationCodes.Tos
-            });
-            ViewBag.Translations = translations;
         }
     }
 }

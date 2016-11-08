@@ -16,7 +16,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace SimpleIdentityServer.Api.ViewModels
+namespace SimpleIdentityServer.Startup.ViewModels
 {
     public class AuthorizeViewModel
     {

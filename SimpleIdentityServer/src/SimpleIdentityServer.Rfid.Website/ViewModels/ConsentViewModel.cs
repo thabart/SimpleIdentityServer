@@ -1,5 +1,5 @@
 ﻿#region copyright
-// Copyright 2015 Habart Thierry
+// Copyright 2016 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,14 +14,19 @@
 // limitations under the License.
 #endregion
 
-using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
 
-namespace SimpleIdentityServer.Startup.ViewModels
+namespace SimpleIdentityServer.Rfid.Website.ViewModels
 {
-    public class CodeViewModel
+    public class ConsentViewModel
     {
-        [Required]
-        [Display(Name = "Code")]
+        public string Id { get; set; }
+        public string ClientDisplayName { get; set; }
+        public List<string> AllowedScopeDescriptions { get; set; }
+        public List<string> AllowedIndividualClaims { get; set; }
+        public string LogoUri { get; set; }
+        public string PolicyUri { get; set; }
+        public string TosUri { get; set; }
         public string Code { get; set; }
     }
 }

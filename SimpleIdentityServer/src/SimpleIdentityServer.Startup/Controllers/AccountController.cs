@@ -18,7 +18,7 @@ using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.WebSite.Account;
 using SimpleIdentityServer.Host.Extensions;
-using SimpleIdentityServer.Host.ViewModels;
+using SimpleIdentityServer.Startup.ViewModels;
 using System;
 using System.Threading.Tasks;
 

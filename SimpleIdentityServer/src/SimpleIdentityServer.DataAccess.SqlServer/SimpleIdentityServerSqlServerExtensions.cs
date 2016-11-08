@@ -64,7 +64,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
         {
             RegisterServices(serviceCollection);
             serviceCollection.AddEntityFramework()
-                .AddDbContext<SimpleIdentityServerContext>(options => options.UseInMemoryDatabase());
+                .AddDbContext<SimpleIdentityServerContext>(options => options.UseInMemoryDatabase().ConfigureWarnings(warnings => warnings.Ignore(InMemoryEventId.TransactionIgnoredWarning)));
             return serviceCollection;
         }
 

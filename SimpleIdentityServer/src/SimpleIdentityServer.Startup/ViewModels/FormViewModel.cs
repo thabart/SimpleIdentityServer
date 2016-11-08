@@ -14,7 +14,7 @@
 // limitations under the License.
 #endregion
 
-namespace SimpleIdentityServer.Host.ViewModels
+namespace SimpleIdentityServer.Startup.ViewModels
 {
     public class FormViewModel
     {

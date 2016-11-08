@@ -21,7 +21,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using SimpleIdentityServer.Authentication.Middleware;
 using SimpleIdentityServer.DataAccess.SqlServer;
 using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Rfid.Website.Extensions;

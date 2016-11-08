@@ -22,7 +22,7 @@ using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.User;
 using SimpleIdentityServer.Host.Extensions;
-using SimpleIdentityServer.Host.ViewModels;
+using SimpleIdentityServer.Startup.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
