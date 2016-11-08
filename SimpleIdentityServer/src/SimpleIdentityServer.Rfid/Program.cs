@@ -14,13 +14,14 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.AspNet.SignalR;
+using Microsoft.Owin.Hosting;
+using SimpleIdentityServer.Rfid.Card;
+using SimpleIdentityServer.Rfid.Hubs;
 using SimpleIdentityServer.Rfid.Menu;
 using System;
 using System.Linq;
 using System.Text;
-using Microsoft.Owin.Hosting;
-using SimpleIdentityServer.Rfid.Hubs;
-using Microsoft.AspNet.SignalR;
 
 namespace SimpleIdentityServer.Rfid
 {

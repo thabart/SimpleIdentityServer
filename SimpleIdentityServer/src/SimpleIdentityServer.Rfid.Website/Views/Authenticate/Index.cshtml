@@ -27,7 +27,7 @@
                 <span style="color:red;">@string.Join(",", passwordState.Errors.Select(e => e.ErrorMessage))</span>
             }
         </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" class="btn btn-primary">Submit</button><input type="button" class="btn btn-default" id="refresh" value="Refresh" />
     </form>
 </div>
 
@@ -42,11 +42,20 @@
                 var cardNumber = card.CardNumber;
                 $("#card-number").val(cardNumber);
             };
+            rfid.client.cardInformation = function (card) {
+                var cardNumber = card.CardNumber;
+                $("#card-number").val(cardNumber);
+            };
             $.connection.hub.start().done(function () {
                 $("#success-status").show();
+                $("#failed-status").hide();
             });
             $.connection.hub.error(function (error) {
                 $("#failed-status").show();
+                $("#success-status").hide();
+            });
+            $("#refresh").on('click', function () {
+                rfid.server.sendCardInformation();
             });
         });
     </script>

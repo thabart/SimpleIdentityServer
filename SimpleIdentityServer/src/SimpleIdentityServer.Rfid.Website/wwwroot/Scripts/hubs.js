@@ -81,6 +81,9 @@
         proxies.rfidHub = this.createHubProxy('rfidHub');
         proxies.rfidHub.client = {};
         proxies.rfidHub.server = {
+            sendCardInformation: function () {
+                return proxies.rfidHub.invoke('SendCardInformation');
+            }
             /*
             getUsers: function () {
                 /// <summary>Calls the GetUsers method on the server-side Chat hub.&#10;Returns a jQuery.Deferred() promise.</summary>

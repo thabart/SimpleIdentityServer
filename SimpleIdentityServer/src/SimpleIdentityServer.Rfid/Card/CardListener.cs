@@ -15,11 +15,10 @@
 #endregion
 
 using System;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SimpleIdentityServer.Rfid
+namespace SimpleIdentityServer.Rfid.Card
 {
     internal class CardReceivedArgs : EventArgs
     {
@@ -58,8 +57,6 @@ namespace SimpleIdentityServer.Rfid
 
         private Task ListenCard()
         {
-            byte mode = 0x26, halt = 0x00;
-            byte[] snr = new byte[1], value = new byte[4];
             return new Task(() =>
             {
                 while(true)
@@ -69,15 +66,15 @@ namespace SimpleIdentityServer.Rfid
                         Console.WriteLine("Task cancelled");
                         break;
                     }
-                    
-                    var ret = Reader.MF_Getsnr(mode, halt, snr, value);
-                    if (ret != 0)
+
+                    int ret;
+                    var cardNumber = CardReaderHelper.GetSerialNumberCard(out ret);
+                    if (string.IsNullOrWhiteSpace(cardNumber))
                     {
                         _cardNumber = string.Empty;
                     }
                     else
                     {
-                        var cardNumber = ToStr(value);
                         if (cardNumber != _cardNumber)
                         {
                             _cardNumber = cardNumber;
@@ -93,17 +90,6 @@ namespace SimpleIdentityServer.Rfid
                     Thread.Sleep(1000);
                 }
             });
-        }
-
-        private static string ToStr(byte[] bytes)
-        {
-            var builder = new StringBuilder();
-            foreach (var b in bytes)
-            {
-                builder.AppendFormat("{0:X2}", b);
-            }
-
-            return builder.ToString();
         }
 
         public void Dispose()
