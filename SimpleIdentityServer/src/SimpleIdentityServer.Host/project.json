@@ -40,8 +40,7 @@
     "SimpleIdentityServer.Core": { "target": "project" },
     "SimpleIdentityServer.Core.Jwt": { "target": "project" },
     "SimpleIdentityServer.DataAccess.SqlServer": { "target": "project" },
-    "SimpleIdentityServer.RateLimitation": { "target": "project" },
-    "SimpleIdentityServer.Authentication.Middleware": { "target": "project" }
+    "SimpleIdentityServer.RateLimitation": { "target": "project" }
   },
   "frameworks": {
     "net46": {

@@ -59,6 +59,15 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
             return serviceCollection;
         }
 
+        public static IServiceCollection AddSimpleIdentityServerInMemory(
+            this IServiceCollection serviceCollection)
+        {
+            RegisterServices(serviceCollection);
+            serviceCollection.AddEntityFramework()
+                .AddDbContext<SimpleIdentityServerContext>(options => options.UseInMemoryDatabase());
+            return serviceCollection;
+        }
+
         #endregion
 
         #region Private method

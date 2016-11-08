@@ -53,17 +53,6 @@ namespace SimpleIdentityServer.Host.Extensions
             return user ?? new ClaimsPrincipal(new ClaimsIdentity());
         }
 
-        public static async Task<ClaimsPrincipal> GetAuthenticatedUserExternal(this Controller controller)
-        {
-            if (controller == null)
-            {
-                throw new ArgumentNullException(nameof(controller));
-            }
-
-            var user = await controller.HttpContext.Authentication.AuthenticateAsync(Authentication.Middleware.Constants.CookieName);
-            return user ?? new ClaimsPrincipal(new ClaimsIdentity());
-        }
-
         public static AuthenticationManager GetAuthenticationManager(this Controller controller) 
         {
             return controller.HttpContext.Authentication;

@@ -20,7 +20,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.Elasticsearch;
-using SimpleIdentityServer.Authentication.Middleware;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Configuration.Client;
 using SimpleIdentityServer.Core;
@@ -42,7 +41,8 @@ namespace SimpleIdentityServer.Host
     {
         SqlServer,
         SqlLite,
-        Postgre
+        Postgre,
+        InMemory
     }
     
     public sealed class DataSourceOptions
@@ -113,7 +113,7 @@ namespace SimpleIdentityServer.Host
             this IServiceCollection serviceCollection,
             Action<DataSourceOptions> dataSourceCallback,
             Action<LoggingOptions> loggingOptionsCallback,
-            Action<ConfigurationEdpOptions> configurationEdpOptionsCallback) 
+            string configurationUrl) 
         {
             if (dataSourceCallback == null)
             {
@@ -125,28 +125,26 @@ namespace SimpleIdentityServer.Host
                 throw new ArgumentNullException(nameof(loggingOptionsCallback));
             }
 
-            if (configurationEdpOptionsCallback == null)
+            if (string.IsNullOrWhiteSpace(configurationUrl))
             {
-                throw new ArgumentNullException(nameof(configurationEdpOptionsCallback));
+                throw new ArgumentNullException(nameof(configurationUrl));
             }
             
             var dataSourceOptions = new DataSourceOptions();
             var loggingOptions = new LoggingOptions();
-            var configurationEdpOptions = new ConfigurationEdpOptions();
             dataSourceCallback(dataSourceOptions);
             loggingOptionsCallback(loggingOptions);
-            configurationEdpOptionsCallback(configurationEdpOptions);
             serviceCollection.AddSimpleIdentityServer(
                 dataSourceOptions,
                 loggingOptions,
-                configurationEdpOptions);
+                configurationUrl);
         }
         
         public static void AddSimpleIdentityServer(
             this IServiceCollection serviceCollection, 
             DataSourceOptions dataSourceOptions,
             LoggingOptions loggingOptions,
-            ConfigurationEdpOptions configurationEdpOptions) 
+            string configurationUrl) 
         {
             if (dataSourceOptions == null) {
                 throw new ArgumentNullException(nameof(dataSourceOptions));
@@ -157,30 +155,33 @@ namespace SimpleIdentityServer.Host
                 throw new ArgumentNullException(nameof(loggingOptions));
             }
 
-            if (configurationEdpOptions == null)
+            if (string.IsNullOrWhiteSpace(configurationUrl))
             {
-                throw new ArgumentNullException(nameof(configurationEdpOptions));
+                throw new ArgumentNullException(nameof(configurationUrl));
             }
 
-            if (dataSourceOptions.DataSourceType == DataSourceTypes.SqlServer)
+            switch(dataSourceOptions.DataSourceType)
             {
-                serviceCollection.AddSimpleIdentityServerSqlServer(dataSourceOptions.ConnectionString);
-            }
-
-            if (dataSourceOptions.DataSourceType == DataSourceTypes.SqlLite)
-            {
-                serviceCollection.AddSimpleIdentityServerSqlLite(dataSourceOptions.ConnectionString);
-            }
-
-            if (dataSourceOptions.DataSourceType == DataSourceTypes.Postgre)
-            {
-                serviceCollection.AddSimpleIdentityServerPostgre(dataSourceOptions.ConnectionString);
+                case DataSourceTypes.SqlServer:
+                    serviceCollection.AddSimpleIdentityServerSqlServer(dataSourceOptions.ConnectionString);
+                    break;
+                case DataSourceTypes.SqlLite:
+                    serviceCollection.AddSimpleIdentityServerSqlLite(dataSourceOptions.ConnectionString);
+                    break;
+                case DataSourceTypes.Postgre:
+                    serviceCollection.AddSimpleIdentityServerPostgre(dataSourceOptions.ConnectionString);
+                    break;
+                case DataSourceTypes.InMemory:
+                    serviceCollection.AddSimpleIdentityServerInMemory();
+                    break;
+                default:
+                    throw new ArgumentException($"the data source '{dataSourceOptions.DataSourceType}' type is not supported");
             }
             
             ConfigureSimpleIdentityServer(
                 serviceCollection, 
                 loggingOptions,
-                configurationEdpOptions);
+                configurationUrl);
         }
         
         #endregion
@@ -195,11 +196,11 @@ namespace SimpleIdentityServer.Host
         private static void ConfigureSimpleIdentityServer(
             IServiceCollection services,
             LoggingOptions loggingOptions,
-            ConfigurationEdpOptions configurationEdpOptions) 
+            string configurationUrl) 
         {
             var configurationParameters = new ConfigurationParameters
             {
-                ConfigurationUrl = configurationEdpOptions.ConfigurationUrl
+                ConfigurationUrl = configurationUrl
             };
             services.AddSimpleIdentityServerCore();
             services.AddSimpleIdentityServerJwt();

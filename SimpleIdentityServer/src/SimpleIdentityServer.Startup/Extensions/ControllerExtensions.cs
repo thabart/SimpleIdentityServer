@@ -15,14 +15,23 @@
 #endregion
 
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
-namespace SimpleIdentityServer.Rfid.Website.Controllers
+namespace SimpleIdentityServer.Startup.Extensions
 {
-    public class HomeController : Controller
+    internal static class ControllerExtensions
     {
-        public ActionResult Index()
+        public static async Task<ClaimsPrincipal> GetAuthenticatedUserExternal(this Controller controller)
         {
-            return View();
+            if (controller == null)
+            {
+                throw new ArgumentNullException(nameof(controller));
+            }
+
+            var user = await controller.HttpContext.Authentication.AuthenticateAsync(Authentication.Middleware.Constants.CookieName);
+            return user ?? new ClaimsPrincipal(new ClaimsIdentity());
         }
     }
 }

@@ -141,7 +141,7 @@ namespace SimpleIdentityServer.Startup
             {
                 DataSourceType = dataSourceType,
                 ConnectionString = connectionString
-            }, loggingOptions, _configurationEdpOptions);
+            }, loggingOptions, _configurationEdpOptions.ConfigurationUrl);
             // 5. Enable logging
             services.AddLogging();
             // 6. Configure MVC

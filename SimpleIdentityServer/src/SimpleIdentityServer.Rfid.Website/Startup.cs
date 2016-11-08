@@ -19,6 +19,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using SimpleIdentityServer.Authentication.Middleware;
+using SimpleIdentityServer.Host;
 
 namespace SimpleIdentityServer.Rfid.Website
 {
@@ -38,28 +40,47 @@ namespace SimpleIdentityServer.Rfid.Website
 
         public void ConfigureServices(IServiceCollection services)
         {
-            // Add the dependencies needed to enable CORS
+            var loggingOptions = new LoggingOptions
+            {
+                ElasticsearchOptions = new ElasticsearchOptions
+                {
+                    IsEnabled = false
+                },
+                FileLogOptions = new FileLogOptions
+                {
+                    IsEnabled = false
+                }
+            };
+            // 1. Add the dependencies needed to enable CORS
             services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader()));
-
-            // Add the dependencies needed to run MVC
+            // 2. Add the dependencies to run ASP.NET MVC
             services.AddMvc();
+            // 3. Add the dependencies to run SimpleIdentityServer
+            services.AddSimpleIdentityServer(new DataSourceOptions
+            {
+                DataSourceType = DataSourceTypes.InMemory
+            }, loggingOptions, "http://localhost:5004/configuration");
         }
 
         public void Configure(IApplicationBuilder app,
             IHostingEnvironment env,
             ILoggerFactory loggerFactory)
         {
-            // Display status code page
+            // 1. Display status code page
             app.UseStatusCodePages();
-
-            // Enable CORS
+            // 2. Enable CORS
             app.UseCors("AllowAll");
-
+            // 3. Use static files
             app.UseStaticFiles();
-
-            // Launch ASP.NET MVC
+            // 4. Use simpleIdentityServer
+            app.UseSimpleIdentityServer(new HostingOptions
+            {
+                IsDataMigrated = true,
+                IsDeveloperModeEnabled = false
+            }, loggerFactory);
+            // 5. Launch ASP.NET MVC
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
