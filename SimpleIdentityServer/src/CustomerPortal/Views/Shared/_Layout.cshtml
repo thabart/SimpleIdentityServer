@@ -19,23 +19,28 @@
                         <span class="navbar-brand">Customer portal</span>
                     </a>
                 </div>
-                @if (User != null && User.Identity != null && User.Identity.IsAuthenticated)
-                {
-                    var userName = User.Identity.Name;
                     <ul class="nav navbar-nav navbar-right">
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">Welcome @userName</a>
-                            <ul class="dropdown-menu">
-                                <li>
-                                    <a href="@Url.Content("~/Account")">Profile</a>
-                                </li>
-                                <li>
-                                    <a href="@Url.Content("~/Authenticate/Logout")">Disconnect</a>
-                                </li>
-                            </ul>
-                        </li>
+                        @if (User != null && User.Identity != null && User.Identity.IsAuthenticated)
+                        {
+                            var userName = User.Identity.Name;
+
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">Welcome @userName</a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a href="@Url.Content("~/Account")">Profile</a>
+                                    </li>
+                                    <li>
+                                        <a href="@Url.Content("~/Authenticate/Logout")">Disconnect</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        else
+                        {
+                            <li><a href="@Url.Content("~/Authenticate")">Login</a></li>
+                        }
                     </ul>
-                }
             </div>
         </div>
 

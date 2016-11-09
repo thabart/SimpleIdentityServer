@@ -20,7 +20,7 @@ using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Host.Extensions;
 using System.IO;
 
-namespace SimpleIdentityServer.Host.Configuration
+namespace SimpleIdentityServer.Startup.Configuration
 {
     public class ConcreteSimpleIdentityServerConfigurator : ISimpleIdentityServerConfigurator
     {

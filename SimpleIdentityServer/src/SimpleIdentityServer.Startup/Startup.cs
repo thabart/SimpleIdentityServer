@@ -24,8 +24,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SimpleIdentityServer.Authentication.Middleware;
 using SimpleIdentityServer.Authentication.Middleware.Extensions;
+using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Host;
 using SimpleIdentityServer.RateLimitation.Configuration;
+using SimpleIdentityServer.Startup.Configuration;
 using System.Collections.Generic;
 using WebApiContrib.Core.Storage;
 
@@ -139,6 +141,11 @@ namespace SimpleIdentityServer.Startup
                 DataSourceType = dataSourceType,
                 ConnectionString = connectionString
             }, loggingOptions, _configurationEdpOptions.ConfigurationUrl);
+            services.AddTransient<ISimpleIdentityServerConfigurator, ConcreteSimpleIdentityServerConfigurator>();
+            services.AddSingleton(new ConfigurationParameters
+            {
+                ConfigurationUrl = _configurationEdpOptions.ConfigurationUrl
+            });
             // 5. Enable logging
             services.AddLogging();
             // 6. Configure MVC

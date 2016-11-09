@@ -33,7 +33,10 @@ namespace SimpleIdentityServer.Core.Common.Extensions
 
         public static string Base64EncodeBytes(this byte[] bytes)
         {
-            return Convert.ToBase64String(bytes);
+            return Convert.ToBase64String(bytes)
+                .Split('=')[0]
+                .Replace('+', '-')
+                .Replace('/', '_');
         }
 
         public static string Base64Decode(this string base64EncodedData)
@@ -48,20 +51,20 @@ namespace SimpleIdentityServer.Core.Common.Extensions
             var s = base64EncodedData
                 .Trim()
                 .Replace(" ", "+")
-                .Replace('-', '+') // 62nd char of encoding
-                .Replace('_', '/'); // 63nd char of encoding
+                .Replace('-', '+') 
+                .Replace('_', '/');
             switch (s.Length%4)
             {
-                case 0: // No pad chars in this case
+                case 0:
                     return Convert.FromBase64String(s);
-                case 2: // Two pad chars
+                case 2:
                     s += "==";
                     goto case 0;
-                case 3: // One pad char
+                case 3:
                     s += "=";
                     goto case 0;
                 default:
-                    throw new Exception("Illegal base64url string!");
+                    throw new InvalidOperationException("Illegal base64url string!");
             }
         }
     }

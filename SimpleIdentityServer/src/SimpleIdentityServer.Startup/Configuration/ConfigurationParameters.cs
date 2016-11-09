@@ -14,7 +14,7 @@
 // limitations under the License.
 #endregion
 
-namespace SimpleIdentityServer.Host.Configuration
+namespace SimpleIdentityServer.Startup.Configuration
 {
     public class ConfigurationParameters
     {

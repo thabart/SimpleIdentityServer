@@ -21,6 +21,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Protocols;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.IdentityModel.Tokens;
+using System.Net.Http;
 
 namespace CustomerPortal
 {
@@ -66,6 +70,28 @@ namespace CustomerPortal
                 AutomaticAuthenticate = true,
                 AutomaticChallenge = true,
                 LoginPath = new PathString("/Authenticate")
+            });
+            app.UseCookieAuthentication(new CookieAuthenticationOptions
+            {
+                AuthenticationScheme = "External-CustomerPortal"
+            });
+            app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
+            {
+                AuthenticationScheme = "RFID",
+                SignInScheme = Constants.ExternalCookieName,
+                DisplayName = "RFID",
+                ClientId = "CustomerPortal",
+                ClientSecret = "CustomerPortal",
+                MetadataAddress = "http://localhost:5100/.well-known/openid-configuration",
+                TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = false,
+                    ValidateAudience = true,
+                    ValidAudience = "CustomerPortal"
+                },
+                ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>("http://localhost:5100/.well-known/openid-configuration",
+                        new OpenIdConnectConfigurationRetriever(),
+                        new HttpDocumentRetriever(new HttpClient()) { RequireHttps = false })
             });
             // 5. Launch ASP.NET MVC
             app.UseMvc(routes =>

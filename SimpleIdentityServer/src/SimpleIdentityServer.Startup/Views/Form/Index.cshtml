@@ -23,10 +23,6 @@
     {
         <input type="hidden" name="@Constants.StandardAuthorizationResponseNames.IdTokenName" value="@Model.IdToken" />
     }
-    @if (!string.IsNullOrWhiteSpace(Model.State))
-    {
-        <input type="hidden" name="state" value="@Model.State" />
-    }
 </form>
 
 

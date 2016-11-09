@@ -200,10 +200,6 @@ namespace SimpleIdentityServer.Host
             LoggingOptions loggingOptions,
             string configurationUrl) 
         {
-            var configurationParameters = new ConfigurationParameters
-            {
-                ConfigurationUrl = configurationUrl
-            };
             services.AddSimpleIdentityServerCore();
             services.AddSimpleIdentityServerJwt();
             services.AddRateLimitation();
@@ -214,11 +210,9 @@ namespace SimpleIdentityServer.Host
             services.AddTransient<IResourceOwnerService, InMemoryUserService>();
             services.AddTransient<IRedirectInstructionParser, RedirectInstructionParser>();
             services.AddTransient<IActionResultParser, ActionResultParser>();
-            services.AddTransient<ISimpleIdentityServerConfigurator, ConcreteSimpleIdentityServerConfigurator>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddSingleton<IEncryptedPasswordFactory, EncryptedPasswordFactory>();
-            services.AddSingleton(configurationParameters);
 
             // Configure SeriLog pipeline
             Func<LogEvent, bool> serilogFilter = (e) =>

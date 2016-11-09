@@ -21,8 +21,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.DataAccess.SqlServer;
 using SimpleIdentityServer.Host;
+using SimpleIdentityServer.Rfid.Website.Configuration;
 using SimpleIdentityServer.Rfid.Website.Extensions;
 
 namespace SimpleIdentityServer.Rfid.Website
@@ -73,6 +75,7 @@ namespace SimpleIdentityServer.Rfid.Website
             {
                 DataSourceType = DataSourceTypes.InMemory
             }, loggingOptions, "http://localhost:5004/configuration");
+            services.AddTransient<ISimpleIdentityServerConfigurator, ConcreteSimpleIdentityServerConfigurator>();
         }
 
         public void Configure(IApplicationBuilder app,

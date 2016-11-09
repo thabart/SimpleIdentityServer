@@ -18,18 +18,65 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using CustomerPortal.Extensions;
+using System.Linq;
+using SimpleIdentityServer.Rfid.Website.ViewModels;
+using Microsoft.Extensions.WebEncoders;
+using Microsoft.AspNetCore.Http.Authentication;
+using System;
 
 namespace CustomerPortal.Controllers
 {
     public class AuthenticateController : Controller
     {
-        public AuthenticateController()
+        public ActionResult Index(string returnUrl)
         {
+            var providers = HttpContext.Authentication.GetAuthenticationSchemes()
+                .Where(x => x.DisplayName != null)
+                .Select(x => new ExternalProviderViewModel
+                {
+                    AuthenticationScheme = x.AuthenticationScheme,
+                    DisplayName = x.DisplayName
+                });
+            var viewModel = new LoginViewModel
+            {
+                ExternalProviders = providers,
+                ReturnUrl = returnUrl
+            };
+            return View(viewModel);
         }
 
-        public ActionResult Index()
+        public async Task ExternalProvider(string provider, string returnUrl)
         {
-            return View();
+            if (returnUrl != null)
+            {
+                returnUrl = UrlEncoder.Default.UrlEncode(returnUrl);
+            }
+
+            returnUrl = "/Authenticate/ExternalLoginCallback?returnUrl=" + returnUrl;
+            await HttpContext.Authentication.ChallengeAsync(provider, new AuthenticationProperties()
+            {
+                RedirectUri = returnUrl
+            });
+        }
+
+        public async Task<ActionResult> ExternalLoginCallback(string returnUrl)
+        {
+            var info = await HttpContext.Authentication.GetAuthenticateInfoAsync(Constants.ExternalCookieName);
+            var tempUser = info?.Principal;
+            if (tempUser == null)
+            {
+                throw new Exception("External authentication error");
+            }
+
+            await HttpContext.Authentication.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, tempUser);
+            await HttpContext.Authentication.SignOutAsync(Constants.ExternalCookieName);
+
+            if (!string.IsNullOrWhiteSpace(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+
+            return Redirect("~/");
         }
 
         public async Task<ActionResult> Logout()
