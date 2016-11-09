@@ -15,28 +15,30 @@
 #endregion
 
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
-using CustomerPortal.Extensions;
 
-namespace CustomerPortal.Controllers
+namespace CustomerPortal.Extensions
 {
-    public class AuthenticateController : Controller
+    public static class ControllerExtensions
     {
-        public AuthenticateController()
+        public static async Task<ClaimsPrincipal> GetAuthenticatedUser(this Controller controller)
         {
+            if (controller == null)
+            {
+                throw new ArgumentNullException(nameof(controller));
+            }
+
+            var user = await controller.HttpContext.Authentication.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return user ?? new ClaimsPrincipal(new ClaimsIdentity());
         }
 
-        public ActionResult Index()
+        public static AuthenticationManager GetAuthenticationManager(this Controller controller)
         {
-            return View();
-        }
-
-        public async Task<ActionResult> Logout()
-        {
-            var authenticationManager = this.GetAuthenticationManager();
-            await authenticationManager.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return RedirectToAction("Index", "Authenticate");
+            return controller.HttpContext.Authentication;
         }
     }
 }

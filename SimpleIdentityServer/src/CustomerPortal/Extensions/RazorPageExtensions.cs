@@ -15,28 +15,24 @@
 #endregion
 
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Razor;
+using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
-using CustomerPortal.Extensions;
 
-namespace CustomerPortal.Controllers
+namespace CustomerPortal
 {
-    public class AuthenticateController : Controller
+    public static class RazorPageExtensions
     {
-        public AuthenticateController()
+        public static async Task<ClaimsPrincipal> GetAuthenticatedUser(this RazorPage razorPage)
         {
-        }
+            if (razorPage == null)
+            {
+                throw new ArgumentNullException(nameof(razorPage));
+            }
 
-        public ActionResult Index()
-        {
-            return View();
-        }
-
-        public async Task<ActionResult> Logout()
-        {
-            var authenticationManager = this.GetAuthenticationManager();
-            await authenticationManager.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return RedirectToAction("Index", "Authenticate");
+            var user = await razorPage.Context.Authentication.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return user ?? new ClaimsPrincipal(new ClaimsIdentity());
         }
     }
 }

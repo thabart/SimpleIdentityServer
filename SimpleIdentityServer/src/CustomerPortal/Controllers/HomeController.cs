@@ -16,7 +16,7 @@
 
 using Microsoft.AspNetCore.Mvc;
 
-namespace SimpleIdentityServer.Rfid.Website.Controllers
+namespace CustomerPortal.Controllers
 {
     public class HomeController : Controller
     {

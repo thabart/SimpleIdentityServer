@@ -9,9 +9,7 @@
         <link rel="stylesheet" href="~/css/style.theme.css" />
         <link rel="stylesheet" href="~/css/home.index.css" />
         <script src="~/Scripts/jquery-3.1.1.js"></script>
-        <script src="~/Scripts/jquery.signalR-2.2.1.js"></script>
         <script src="~/Scripts/bootstrap.js"></script>
-        <script src="~/Scripts/hubs.js"></script>
     </head>
     <body>
         <div class="navbar navbar-inverse navbar-static-top">
@@ -21,19 +19,9 @@
                         <span class="navbar-brand">Customer portal</span>
                     </a>
                 </div>
-                @*@if (user != null && user.Identity != null && user.Identity.IsAuthenticated)
+                @if (User != null && User.Identity != null && User.Identity.IsAuthenticated)
                 {
-                    var claimsIdentity = user.Identity as ClaimsIdentity;
-                    var userName = "Unknown";
-                    if (claimsIdentity != null)
-                    {
-                        var claimName = claimsIdentity.Claims.FirstOrDefault(c => c.Type == Constants.StandardResourceOwnerClaimNames.Name);
-                        if (claimName != null)
-                        {
-                            userName = claimName.Value;
-                        }
-                    }
-
+                    var userName = User.Identity.Name;
                     <ul class="nav navbar-nav navbar-right">
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">Welcome @userName</a>
@@ -47,7 +35,7 @@
                             </ul>
                         </li>
                     </ul>
-                }*@
+                }
             </div>
         </div>
 
