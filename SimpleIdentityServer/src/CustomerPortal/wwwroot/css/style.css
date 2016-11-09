@@ -1,0 +1,22 @@
+body, h1, h2, h3, h4, h5, h6 {
+    font-family: "Segoe UI Light", "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #666;
+    font-weight: 300;
+}
+
+h2 {
+    font-size: 2em;
+}
+
+.col-center {
+    margin: auto;
+    text-align: center;
+}
+
+h1.errorbox {
+    background-color:rgba(218, 218, 218, 0.63); 
+    padding:10px;
+}
