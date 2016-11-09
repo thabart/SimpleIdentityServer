@@ -52,6 +52,12 @@ namespace CustomerPortal
             services.AddMvc();
             // 3. Add authentication
             services.AddAuthentication(opts => opts.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme);
+            services.AddAuthorization(opts =>
+            {
+                opts.AddPolicy("Connected", policy => policy.RequireAssertion((ctx) => {
+                    return ctx.User.Identity != null && ctx.User.Identity.IsAuthenticated;
+                }));
+            });
         }
 
         public void Configure(IApplicationBuilder app,

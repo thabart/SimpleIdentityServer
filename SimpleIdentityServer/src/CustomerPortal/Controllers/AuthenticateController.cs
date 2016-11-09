@@ -76,7 +76,7 @@ namespace CustomerPortal.Controllers
                 return Redirect(returnUrl);
             }
 
-            return Redirect("~/");
+            return Redirect("~/Account");
         }
 
         public async Task<ActionResult> Logout()
