@@ -14,15 +14,24 @@
 // limitations under the License.
 #endregion
 
-namespace CustomerPortal.Core.Authenticate
+using CustomerPortal.Core.Authenticate;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+
+namespace CustomerPortal.Core
 {
-    public interface IAuthenticateActions
+    public static class ServiceCollectionExtensions
     {
+        public static IServiceCollection AddDependencies(IServiceCollection services)
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
 
-    }
-
-    internal class AuthenticateActions : IAuthenticateActions
-    {
-
+            services.AddTransient<IAuthenticateActions, AuthenticateActions>();
+            services.AddTransient<IGetResourceOwnerByCardAction, GetResourceOwnerByCardAction>();
+            return services;
+        }
     }
 }

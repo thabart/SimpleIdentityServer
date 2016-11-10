@@ -19,7 +19,10 @@ using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Services;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 
 namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
@@ -32,23 +35,23 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
     internal class LoginCallbackAction : ILoginCallbackAction
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
-
+        private readonly IClaimRepository _claimRepository;
         private readonly ISecurityHelper _securityHelper;
+        private readonly IAuthenticateResourceOwnerService _authenticateResourceOwnerService;
 
-        #region Constructor
 
         public LoginCallbackAction(
             IResourceOwnerRepository resourceOwnerRepository,
-            ISecurityHelper securityHelper)
+            IClaimRepository claimRepository,
+            ISecurityHelper securityHelper,
+            IAuthenticateResourceOwnerService authenticateResourceOwnerService)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
+            _claimRepository = claimRepository;
             _securityHelper = securityHelper;
+            _authenticateResourceOwnerService = authenticateResourceOwnerService;
         }
-
-        #endregion
-
-        #region Public methods
-
+        
         public void Execute(ClaimsPrincipal claimsPrincipal)
         {
             if (claimsPrincipal == null)
@@ -64,7 +67,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                       Errors.ErrorCodes.UnhandledExceptionCode,
                       Errors.ErrorDescriptions.TheUserNeedsToBeAuthenticated);
             }
-
+            
             var subject = claimsPrincipal.GetSubject();
             if (string.IsNullOrWhiteSpace(subject))
             {
@@ -73,7 +76,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                     Errors.ErrorDescriptions.TheRoCannotBeCreated);
             }
 
-            var resourceOwner = _resourceOwnerRepository.GetBySubject(subject);
+            var resourceOwner = _authenticateResourceOwnerService.AuthenticateResourceOwner(subject);
             if (resourceOwner != null)
             {
                 return;
@@ -82,32 +85,19 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
             var clearPassword = Guid.NewGuid().ToString();
             resourceOwner = new ResourceOwner
             {
-                Id = claimsPrincipal.GetSubject(),
-                Name = claimsPrincipal.GetName() ?? subject,
-                Password = _securityHelper.ComputeHash(clearPassword),
-                BirthDate = claimsPrincipal.GetBirthDate(),
-                Email = claimsPrincipal.GetEmail(),
-                EmailVerified = claimsPrincipal.GetEmailVerified(),
-                FamilyName = claimsPrincipal.GetFamilyName(),
-                Gender = claimsPrincipal.GetGender(),
-                GivenName = claimsPrincipal.GetGivenName(),
-                Locale = claimsPrincipal.GetLocale(),
-                MiddleName = claimsPrincipal.GetMiddleName(),
-                NickName = claimsPrincipal.GetNickName(),
-                PhoneNumber = claimsPrincipal.GetPhoneNumber(),
-                PhoneNumberVerified = claimsPrincipal.GetPhoneNumberVerified(),
-                Picture  = claimsPrincipal.GetPicture(),
-                PreferredUserName = claimsPrincipal.GetPreferredUserName(),
-                Profile  = claimsPrincipal.GetProfile(),
-                WebSite = claimsPrincipal.GetWebSite(),
-                ZoneInfo = claimsPrincipal.GetZoneInfo(),
-                UpdatedAt = DateTime.Now.ConvertToUnixTimestamp(),
-                IsLocalAccount = false
+                Id = Guid.NewGuid().ToString(),
+                IsLocalAccount = false,
+                TwoFactorAuthentication = TwoFactorAuthentications.NONE,
+                Claims = new List<Claim>()
             };
+
+            var claims = _claimRepository.GetAll();
+            foreach(var claim in claimsPrincipal.Claims.Where(c => claims.Contains(c.Type)))
+            {
+                resourceOwner.Claims.Add(claim);
+            }
 
             _resourceOwnerRepository.Insert(resourceOwner);
         }
-
-        #endregion
     }
 }

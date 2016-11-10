@@ -18,7 +18,7 @@ using SimpleIdentityServer.Core.Models;
 using System;
 using System.Threading.Tasks;
 
-namespace SimpleIdentityServer.Core.TwoFactors
+namespace SimpleIdentityServer.Core.Services
 {
     public interface ITwoFactorAuthenticationHandler
     {

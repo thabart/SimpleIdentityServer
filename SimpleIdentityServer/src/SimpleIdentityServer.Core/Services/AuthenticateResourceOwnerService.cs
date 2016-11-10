@@ -14,16 +14,13 @@
 // limitations under the License.
 #endregion
 
-using System.Collections.Generic;
+using SimpleIdentityServer.Core.Models;
 
-namespace SimpleIdentityServer.DataAccess.SqlServer.Models
+namespace SimpleIdentityServer.Core.Services
 {
-    public class Role
+    public interface IAuthenticateResourceOwnerService
     {
-        public string Name { get; set; }
-
-        public string Description { get; set; }
-
-        public virtual List<ResourceOwnerRole> ResourceOwnerRoles { get; set; }
+        ResourceOwner AuthenticateResourceOwner(string login);
+        ResourceOwner AuthenticateResourceOwner(string login, string password);
     }
 }

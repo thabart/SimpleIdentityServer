@@ -20,6 +20,7 @@ using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.WebSite.Account.Actions;
 using System;
 using Xunit;
@@ -29,13 +30,10 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Account
     public class AddResourceOwnerActionFixture
     {
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
-
         private Mock<ISecurityHelper> _securityHelperStub;
-
+        private Mock<IAuthenticateResourceOwnerService> _authenticateResourceOwnerServiceStub;
         private IAddResourceOwnerAction _addResourceOwnerAction;
-
-        #region Exceptions
-
+        
         [Fact]
         public void When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
         {
@@ -47,7 +45,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Account
             Assert.Throws<ArgumentNullException>(() => _addResourceOwnerAction.Execute(new AddUserParameter()));
             Assert.Throws<ArgumentNullException>(() => _addResourceOwnerAction.Execute(new AddUserParameter
             {
-                Name = "name"
+                Login = "name"
             }));
         }
 
@@ -58,11 +56,11 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Account
             InitializeFakeObjects();
             var parameter = new AddUserParameter
             {
-                Name = "name",
+                Login = "name",
                 Password = "password"
             };
 
-            _resourceOwnerRepositoryStub.Setup(r => r.GetResourceOwnerByCredentials(It.IsAny<string>(), It.IsAny<string>()))
+            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwner(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(new ResourceOwner());
 
             // ACT
@@ -73,11 +71,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Account
             Assert.True(exception.Code == Errors.ErrorCodes.UnhandledExceptionCode);
             Assert.True(exception.Message == Errors.ErrorDescriptions.TheRoWithCredentialsAlreadyExists);
         }
-
-        #endregion
-
-        #region Happy path
-
+        
         [Fact]
         public void When_Add_ResourceOwner_Then_Operation_Is_Called()
         {
@@ -85,11 +79,11 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Account
             InitializeFakeObjects();
             var parameter = new AddUserParameter
             {
-                Name = "name",
+                Login = "name",
                 Password = "password"
             };
 
-            _resourceOwnerRepositoryStub.Setup(r => r.GetResourceOwnerByCredentials(It.IsAny<string>(), It.IsAny<string>()))
+            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwner(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns((ResourceOwner)null);
 
             // ACT
@@ -99,19 +93,15 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Account
             _resourceOwnerRepositoryStub.Verify(r => r.Insert(It.IsAny<ResourceOwner>()));
         }
 
-        #endregion
-
-        #region Private methods
-
         private void InitializeFakeObjects()
         {
             _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
             _securityHelperStub = new Mock<ISecurityHelper>();
+            _authenticateResourceOwnerServiceStub = new Mock<IAuthenticateResourceOwnerService>();
             _addResourceOwnerAction = new AddResourceOwnerAction(
                 _resourceOwnerRepositoryStub.Object,
-                _securityHelperStub.Object);
+                _securityHelperStub.Object,
+                _authenticateResourceOwnerServiceStub.Object);
         }
-
-        #endregion
     }
 }

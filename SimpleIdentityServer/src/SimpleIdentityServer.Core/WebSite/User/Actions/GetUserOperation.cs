@@ -20,6 +20,7 @@ using System;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
+using SimpleIdentityServer.Core.Services;
 
 namespace SimpleIdentityServer.Core.WebSite.User.Actions
 {
@@ -31,19 +32,16 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
     internal class GetUserOperation : IGetUserOperation
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
-        
-        #region Constructor
+        private readonly IAuthenticateResourceOwnerService _authenticateResourceOwnerService;
 
         public GetUserOperation(
-            IResourceOwnerRepository resourceOwnerRepository)
+            IResourceOwnerRepository resourceOwnerRepository,
+            IAuthenticateResourceOwnerService authenticateResourceOwnerService)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
+            _authenticateResourceOwnerService = authenticateResourceOwnerService;
         }
-
-        #endregion
-
-        #region Public methods
-
+        
         public ResourceOwner Execute(ClaimsPrincipal claimsPrincipal)
         {
             if (claimsPrincipal == null)
@@ -67,8 +65,8 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                     Errors.ErrorCodes.UnhandledExceptionCode,
                     Errors.ErrorDescriptions.TheSubjectCannotBeRetrieved);
             }
-
-            var result = _resourceOwnerRepository.GetBySubject(subject);
+            
+            var result = _authenticateResourceOwnerService.AuthenticateResourceOwner(subject);
             if (result == null)
             {
                 throw new IdentityServerException(
@@ -78,7 +76,5 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
 
             return result;
         }
-
-        #endregion
     }
 }

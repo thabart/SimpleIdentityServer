@@ -22,20 +22,13 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
 {
     public static class ResourceOwnerMapping
     {
-        #region Public static methods
-
         public static void AddResourceOwnerMapping(this ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ResourceOwner>()
                 .ToTable("resourceOwners")
                 .HasKey(j => j.Id);
             modelBuilder.Entity<ResourceOwner>()
-                .HasOne(r => r.Address)
-                .WithOne(a => a.ResourceOwner)
-                .HasForeignKey<Address>(a => a.ResourceOwnerForeignKey)
-                .OnDelete(DeleteBehavior.Cascade);
-            modelBuilder.Entity<ResourceOwner>()
-                .HasMany(r => r.ResourceOwnerRoles)
+                .HasMany(r => r.Claims)
                 .WithOne(o => o.ResourceOwner)
                 .HasForeignKey(a => a.ResourceOwnerId)
                 .OnDelete(DeleteBehavior.Cascade);
@@ -45,7 +38,5 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
                 .HasForeignKey(a => a.ResourceOwnerId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
-
-        #endregion
     }
 }

@@ -14,22 +14,13 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.EntityFrameworkCore;
-using SimpleIdentityServer.DataAccess.SqlServer.Models;
+using System.Collections.Generic;
 
-namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
+namespace SimpleIdentityServer.Core.Repositories
 {
-    public static class ResourceOwnerRoleMapping
+    public interface IClaimRepository
     {
-        #region Public static methods
-
-        public static void AddResourceOwnerRoleMapping(this ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<ResourceOwnerRole>()
-                .ToTable("resourceOwnerRoles")
-                .HasKey(r => new { r.ResourceOwnerId, r.RoleName });
-        }
-
-        #endregion
+        IList<string> GetAll();
+        bool HasClaim(string name);
     }
 }

@@ -26,41 +26,26 @@ using SimpleIdentityServer.Logging;
 using System;
 namespace SimpleIdentityServer.Host
 {
-    public class HostingOptions
-    {
-        /// <summary>
-        /// Enable or disable the developer mode
-        /// </summary>
-        public bool IsDeveloperModeEnabled { get; set; }
-
-        /// <summary>
-        /// Migrate the data
-        /// </summary>
-        public bool IsDataMigrated { get; set; }
-    }
-
     public static class ApplicationBuilderExtensions 
     {        
-        #region Public static methods
-        
         public static void UseSimpleIdentityServer(this IApplicationBuilder app,
-            Action<HostingOptions> hostingCallback,
+            Action<IdentityServerOptions> optionsCallback,
             ILoggerFactory loggerFactory) 
         {
-            if (hostingCallback == null) 
+            if (optionsCallback == null) 
             {
-                throw new ArgumentNullException(nameof(hostingCallback));    
+                throw new ArgumentNullException(nameof(optionsCallback));    
             }
             
-            var hostingOptions = new HostingOptions();
-            hostingCallback(hostingOptions);
+            var hostingOptions = new IdentityServerOptions();
+            optionsCallback(hostingOptions);
             app.UseSimpleIdentityServer(hostingOptions,
                 loggerFactory);
         }
         
         public static void UseSimpleIdentityServer(
             this IApplicationBuilder app,
-            HostingOptions hostingOptions,
+            IdentityServerOptions hostingOptions,
             ILoggerFactory loggerFactory) 
         {
             if (hostingOptions == null)
@@ -93,7 +78,6 @@ namespace SimpleIdentityServer.Host
                 using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
                 {
                     var simpleIdentityServerContext = serviceScope.ServiceProvider.GetService<SimpleIdentityServerContext>();
-                    // 6C919615
                     simpleIdentityServerContext.Database.EnsureCreated();
                     simpleIdentityServerContext.EnsureSeedData();
                 }
@@ -102,7 +86,5 @@ namespace SimpleIdentityServer.Host
             // 4. Add logging
             loggerFactory.AddSerilog();
         }
-        
-        #endregion        
     }
 }

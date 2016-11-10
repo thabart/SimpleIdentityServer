@@ -1,0 +1,106 @@
+﻿#region copyright
+// Copyright 2015 Habart Thierry
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
+using SimpleIdentityServer.Core.Services;
+
+namespace SimpleIdentityServer.Host
+{
+    public sealed class LoggingOptions
+    {
+        public FileLogOptions FileLogOptions { get; set; }
+
+        public ElasticsearchOptions ElasticsearchOptions { get; set; }
+    }
+
+    public sealed class FileLogOptions
+    {
+        #region Constructor
+
+        public FileLogOptions()
+        {
+            PathFormat = "log-{Date}.txt";
+        }
+
+        #endregion
+
+        #region Properties
+
+        public bool IsEnabled { get; set; }
+
+        public string PathFormat { get; set; }
+
+        #endregion
+    }
+
+    public sealed class ElasticsearchOptions
+    {
+        #region Constructor
+
+        public ElasticsearchOptions()
+        {
+            Url = "http://localhost:9200";
+        }
+
+        #endregion
+
+        #region Properties
+
+        public bool IsEnabled { get; set; }
+
+        public string Url { get; set; }
+
+        #endregion
+    }
+
+    public enum DataSourceTypes
+    {
+        SqlServer,
+        SqlLite,
+        Postgre,
+        InMemory
+    }
+
+    public sealed class DataSourceOptions
+    {
+        public bool IsDataMigrated { get; set; }
+        /// <summary>
+        /// Choose the type of your DataSource
+        /// </summary>
+        public DataSourceTypes DataSourceType { get; set; }
+
+        /// <summary>
+        /// Connection string
+        /// </summary>
+        public string ConnectionString { get; set; }
+    }
+
+    public class IdentityServerOptions
+    {
+        /// <summary>
+        /// Enable or disable the developer mode
+        /// </summary>
+        public bool IsDeveloperModeEnabled { get; set; }
+        /// <summary>
+        /// Configure the data source.
+        /// </summary>
+        public DataSourceOptions DataSource { get; set; }
+        /// <summary>
+        /// Configure the SERILOG logging.
+        /// </summary>
+        public LoggingOptions Logging { get; set; }
+        public IAuthenticateResourceOwnerService AuthenticateResourceOwner { get; set; }
+    }
+}

@@ -1,5 +1,5 @@
 ﻿#region copyright
-// Copyright 2015 Habart Thierry
+// Copyright 2016 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,16 +14,9 @@
 // limitations under the License.
 #endregion
 
-namespace SimpleIdentityServer.DataAccess.SqlServer.Models
+namespace CustomerPortal.Core.Repositories
 {
-    public class ResourceOwnerRole
+    public class IResourceOwnerRepository
     {
-        public string RoleName { get; set; }
-
-        public string ResourceOwnerId { get; set; }
-
-        public ResourceOwner ResourceOwner { get; set; }
-
-        public Role Role { get; set; }
     }
 }

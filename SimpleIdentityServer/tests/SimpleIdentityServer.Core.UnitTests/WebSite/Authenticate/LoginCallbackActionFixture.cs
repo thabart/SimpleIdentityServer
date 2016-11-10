@@ -19,8 +19,10 @@ using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;
 using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 using Xunit;
 
@@ -29,13 +31,11 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
     public class LoginCallbackActionFixture
     {
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
-
         private Mock<ISecurityHelper> _securityHelperStub;
-
+        private Mock<IClaimRepository> _claimRepositoryStub;
+        private Mock<IAuthenticateResourceOwnerService> _authenticateResourceOwnerServiceStub;
         private ILoginCallbackAction _loginCallbackAction;
-
-        #region Exceptions
-
+        
         [Fact]
         public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
@@ -79,10 +79,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             Assert.True(exception.Code == Errors.ErrorCodes.UnhandledExceptionCode);
             Assert.True(exception.Message == Errors.ErrorDescriptions.TheRoCannotBeCreated);
         }
-
-        #endregion
-
-        #region Happy path
+        
 
         [Fact]
         public void When_Ro_Exists_Then_No_Ro_Is_Inserted()
@@ -92,7 +89,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             var claimsIdentity = new ClaimsIdentity("test");
             claimsIdentity.AddClaim(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, "subject"));
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            _resourceOwnerRepositoryStub.Setup(r => r.GetBySubject(It.IsAny<string>()))
+            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwner(It.IsAny<string>()))
                 .Returns(new ResourceOwner());
 
             // ACT
@@ -110,29 +107,28 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             var claimsIdentity = new ClaimsIdentity("test");
             claimsIdentity.AddClaim(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, "subject"));
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            _resourceOwnerRepositoryStub.Setup(r => r.GetBySubject(It.IsAny<string>()))
+            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwner(It.IsAny<string>()))
                 .Returns((ResourceOwner)null);
+            _claimRepositoryStub.Setup(c => c.GetAll()).Returns(new List<string>());
 
             // ACT
             _loginCallbackAction.Execute(claimsPrincipal);
 
             // ASSERT
             _resourceOwnerRepositoryStub.Verify(r => r.Insert(It.IsAny<ResourceOwner>()));
-        }
-
-        #endregion
-
-        #region Private methods
+        }        
 
         private void InitializeFakeObjects()
         {
             _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
             _securityHelperStub = new Mock<ISecurityHelper>();
+            _claimRepositoryStub = new Mock<IClaimRepository>();
+            _authenticateResourceOwnerServiceStub = new Mock<IAuthenticateResourceOwnerService>();
             _loginCallbackAction = new LoginCallbackAction(
                 _resourceOwnerRepositoryStub.Object,
-                _securityHelperStub.Object);
+                _claimRepositoryStub.Object,
+                _securityHelperStub.Object,
+                _authenticateResourceOwnerServiceStub.Object);
         }
-
-        #endregion
     }
 }

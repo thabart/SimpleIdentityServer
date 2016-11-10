@@ -16,13 +16,9 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 {
     public sealed class LocalOpenIdUserAuthenticationActionFixture
     {
-
-        private Mock<IResourceOwnerService> _resourceOwnerServiceFake;
-
+        private Mock<IAuthenticateResourceOwnerService> _authenticateResourceOwnerServiceStub;
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryFake;
-
         private Mock<IAuthenticateHelper> _authenticateHelperFake;
-
         private ILocalOpenIdUserAuthenticationAction _localUserAuthenticationAction;
 
         [Fact]
@@ -48,8 +44,8 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             var localAuthenticationParameter = new LocalAuthenticationParameter();
             var authorizationParameter = new AuthorizationParameter();
             List<Claim> claims;
-            _resourceOwnerServiceFake.Setup(r => r.Authenticate(It.IsAny<string>(),
-                It.IsAny<string>())).Returns(string.Empty);
+            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwner(It.IsAny<string>(),
+                It.IsAny<string>())).Returns((ResourceOwner)null);
 
             // ACT & ASSERT
             Assert.Throws<IdentityServerAuthenticationException>(
@@ -69,10 +65,8 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             {
                 Id = subject
             };
-            _resourceOwnerServiceFake.Setup(r => r.Authenticate(It.IsAny<string>(),
-                It.IsAny<string>())).Returns(subject);
-            _resourceOwnerRepositoryFake.Setup(r => r.GetBySubject(It.IsAny<string>()))
-                .Returns(resourceOwner);
+            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwner(It.IsAny<string>(),
+                It.IsAny<string>())).Returns(resourceOwner);
 
             // ACT
             _localUserAuthenticationAction.Execute(localAuthenticationParameter,
@@ -87,11 +81,11 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 
         private void InitializeFakeObjects()
         {
-            _resourceOwnerServiceFake = new Mock<IResourceOwnerService>();
+            _authenticateResourceOwnerServiceStub = new Mock<IAuthenticateResourceOwnerService>();
             _resourceOwnerRepositoryFake = new Mock<IResourceOwnerRepository>();
             _authenticateHelperFake = new Mock<IAuthenticateHelper>();
             _localUserAuthenticationAction = new LocalOpenIdUserAuthenticationAction(
-                _resourceOwnerServiceFake.Object,
+                _authenticateResourceOwnerServiceStub.Object,
                 _resourceOwnerRepositoryFake.Object,
                 _authenticateHelperFake.Object);
         }

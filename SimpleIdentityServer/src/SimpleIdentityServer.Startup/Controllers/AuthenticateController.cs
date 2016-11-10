@@ -118,7 +118,7 @@ namespace SimpleIdentityServer.Startup.Controllers
             try
             {
                 var resourceOwner = _authenticateActions.LocalUserAuthentication(authorizeViewModel.ToParameter());
-                var claims = resourceOwner.ToClaims();
+                var claims = resourceOwner.Claims;
                 claims.Add(new Claim(ClaimTypes.AuthenticationInstant,
                     DateTimeOffset.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture),
                     ClaimValueTypes.Integer));

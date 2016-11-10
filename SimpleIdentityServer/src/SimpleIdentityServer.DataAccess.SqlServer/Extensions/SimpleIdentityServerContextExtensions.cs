@@ -26,8 +26,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
 {
     public static class SimpleIdentityServerContextExtensions
     {
-        #region Public static methods
-
         public static void EnsureSeedData(this SimpleIdentityServerContext context)
         {
             InsertRoles(context);
@@ -39,11 +37,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
             InsertClients(context);
             context.SaveChanges();
         }
-
-        #endregion
-
-        #region Private static methods
-
+        
         private static void InsertRoles(SimpleIdentityServerContext context)
         {
             if (!context.Roles.Any())
@@ -521,9 +515,9 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         WebSite = "https://github.com/thabart",
                         ZoneInfo = "Europe/Paris",
                         Password = "5E884898DA28047151D0E56F8DC6292773603D0D6AABBDD62A11EF721D1542D8",
-                        ResourceOwnerRoles = new List<ResourceOwnerRole>
+                        ResourceOwnerRoles = new List<ResourceOwnerClaim>
                         {
-                            new ResourceOwnerRole
+                            new ResourceOwnerClaim
                             {
                                 RoleName = "administrator"
                             }
@@ -842,7 +836,5 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                 });
             }
         }
-
-        #endregion
     }
 }

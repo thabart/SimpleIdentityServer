@@ -23,182 +23,85 @@ using Serilog.Sinks.Elasticsearch;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Configuration.Client;
 using SimpleIdentityServer.Core;
-using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Services;
-using SimpleIdentityServer.Core.TwoFactors;
 using SimpleIdentityServer.DataAccess.SqlServer;
 using SimpleIdentityServer.Host.Configuration;
 using SimpleIdentityServer.Host.Parsers;
-using SimpleIdentityServer.Host.TwoFactors;
+using SimpleIdentityServer.Host.Services;
 using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.RateLimitation;
 using System;
 
 namespace SimpleIdentityServer.Host
 {
-    public enum DataSourceTypes 
-    {
-        SqlServer,
-        SqlLite,
-        Postgre,
-        InMemory
-    }
-    
-    public sealed class DataSourceOptions
-    {        
-        /// <summary>
-        /// Choose the type of your DataSource
-        /// </summary>
-        public DataSourceTypes DataSourceType { get; set;}
-        
-         /// <summary>
-        /// Connection string
-        /// </summary>
-        public string ConnectionString { get; set;}
-    }
-
-    public sealed class LoggingOptions
-    {
-        public FileLogOptions FileLogOptions { get; set; }
-
-        public ElasticsearchOptions ElasticsearchOptions { get; set; }
-    }
-
-    public sealed class FileLogOptions
-    {
-        #region Constructor
-
-        public FileLogOptions()
-        {
-            PathFormat = "log-{Date}.txt";
-        }
-
-        #endregion
-
-        #region Properties
-
-        public bool IsEnabled { get; set; }
-
-        public string PathFormat { get; set; }
-
-        #endregion
-    }
-
-    public sealed class ElasticsearchOptions
-    {
-        #region Constructor
-
-        public ElasticsearchOptions()
-        {
-            Url = "http://localhost:9200";
-        }
-
-        #endregion
-
-        #region Properties
-
-        public bool IsEnabled { get; set; }
-
-        public string Url { get; set; }
-
-        #endregion
-    }
-        
     public static class ServiceCollectionExtensions 
-    {
-        #region Public static methods
+    {        
+        public static void AddSimpleIdentityServer(
+            this IServiceCollection serviceCollection,
+            Action<IdentityServerOptions> optionsCallback) 
+        {
+            if (optionsCallback == null)
+            {
+                throw new ArgumentNullException(nameof(optionsCallback));
+            }
+            
+            var options = new IdentityServerOptions();
+            optionsCallback(options);
+            serviceCollection.AddSimpleIdentityServer(
+                options);
+        }
         
         public static void AddSimpleIdentityServer(
             this IServiceCollection serviceCollection,
-            Action<DataSourceOptions> dataSourceCallback,
-            Action<LoggingOptions> loggingOptionsCallback,
-            string configurationUrl) 
+            IdentityServerOptions options) 
         {
-            if (dataSourceCallback == null)
-            {
-                throw new ArgumentNullException(nameof(dataSourceCallback));
-            }
-
-            if (loggingOptionsCallback == null)
-            {
-                throw new ArgumentNullException(nameof(loggingOptionsCallback));
-            }
-
-            if (string.IsNullOrWhiteSpace(configurationUrl))
-            {
-                throw new ArgumentNullException(nameof(configurationUrl));
-            }
-            
-            var dataSourceOptions = new DataSourceOptions();
-            var loggingOptions = new LoggingOptions();
-            dataSourceCallback(dataSourceOptions);
-            loggingOptionsCallback(loggingOptions);
-            serviceCollection.AddSimpleIdentityServer(
-                dataSourceOptions,
-                loggingOptions,
-                configurationUrl);
-        }
-        
-        public static void AddSimpleIdentityServer(
-            this IServiceCollection serviceCollection, 
-            DataSourceOptions dataSourceOptions,
-            LoggingOptions loggingOptions,
-            string configurationUrl) 
-        {
-            if (dataSourceOptions == null) {
-                throw new ArgumentNullException(nameof(dataSourceOptions));
+            if (options == null) {
+                throw new ArgumentNullException(nameof(options));
             }           
 
-            if (loggingOptions == null)
+            if (options.Logging == null)
             {
-                throw new ArgumentNullException(nameof(loggingOptions));
+                throw new ArgumentNullException(nameof(options.Logging));
             }
 
-            if (string.IsNullOrWhiteSpace(configurationUrl))
+            if (options.DataSource == null)
             {
-                throw new ArgumentNullException(nameof(configurationUrl));
+                throw new ArgumentNullException(nameof(options.DataSource));
             }
 
-            switch(dataSourceOptions.DataSourceType)
+            switch(options.DataSource.DataSourceType)
             {
                 case DataSourceTypes.SqlServer:
-                    serviceCollection.AddSimpleIdentityServerSqlServer(dataSourceOptions.ConnectionString);
+                    serviceCollection.AddSimpleIdentityServerSqlServer(options.DataSource.ConnectionString);
                     break;
                 case DataSourceTypes.SqlLite:
-                    serviceCollection.AddSimpleIdentityServerSqlLite(dataSourceOptions.ConnectionString);
+                    serviceCollection.AddSimpleIdentityServerSqlLite(options.DataSource.ConnectionString);
                     break;
                 case DataSourceTypes.Postgre:
-                    serviceCollection.AddSimpleIdentityServerPostgre(dataSourceOptions.ConnectionString);
+                    serviceCollection.AddSimpleIdentityServerPostgre(options.DataSource.ConnectionString);
                     break;
                 case DataSourceTypes.InMemory:
                     serviceCollection.AddSimpleIdentityServerInMemory();
                     break;
                 default:
-                    throw new ArgumentException($"the data source '{dataSourceOptions.DataSourceType}' type is not supported");
+                    throw new ArgumentException($"the data source '{options.DataSource.DataSourceType}' type is not supported");
             }
             
             ConfigureSimpleIdentityServer(
                 serviceCollection, 
-                loggingOptions,
-                configurationUrl);
+                options);
         }
-        
-        #endregion
-        
-        #region Private static methods
-        
+                
         /// <summary>
         /// Add all the dependencies needed to run Simple Identity Server
         /// </summary>
         /// <param name="services"></param>
-        /// <param name="swaggerOptions"></param>
         private static void ConfigureSimpleIdentityServer(
             IServiceCollection services,
-            LoggingOptions loggingOptions,
-            string configurationUrl) 
+            IdentityServerOptions options)
         {
             services.AddSimpleIdentityServerCore();
             services.AddSimpleIdentityServerJwt();
@@ -206,6 +109,16 @@ namespace SimpleIdentityServer.Host
             services.AddIdServerClient();
             services.AddConfigurationClient();
             services.AddDataProtection();
+            if (options.AuthenticateResourceOwner == null)
+            {
+                services.AddTransient<IAuthenticateResourceOwnerService, DefaultAuthenticateResourceOwerService>();
+            }
+            else
+            {
+                services.AddSingleton(options.AuthenticateResourceOwner);
+            }
+
+            services.AddSingleton<>();
             services.AddTransient<ICertificateStore, CertificateStore>();
             services.AddTransient<IResourceOwnerService, InMemoryUserService>();
             services.AddTransient<IRedirectInstructionParser, RedirectInstructionParser>();
@@ -230,16 +143,16 @@ namespace SimpleIdentityServer.Host
                 .MinimumLevel.Information()
                 .Enrich.FromLogContext()
                 .WriteTo.ColoredConsole();
-            if (loggingOptions.FileLogOptions != null &&
-                loggingOptions.FileLogOptions.IsEnabled)
+            if (options.Logging.FileLogOptions != null &&
+                options.Logging.FileLogOptions.IsEnabled)
             {
-                logger.WriteTo.RollingFile(loggingOptions.FileLogOptions.PathFormat);
+                logger.WriteTo.RollingFile(options.Logging.FileLogOptions.PathFormat);
             }
 
-            if (loggingOptions.ElasticsearchOptions != null &&
-                loggingOptions.ElasticsearchOptions.IsEnabled)
+            if (options.Logging.ElasticsearchOptions != null &&
+                options.Logging.ElasticsearchOptions.IsEnabled)
             {
-                logger.WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(loggingOptions.ElasticsearchOptions.Url))
+                logger.WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(options.Logging.ElasticsearchOptions.Url))
                 {
                     AutoRegisterTemplate = true,
                     IndexFormat = "simpleidserver-{0:yyyy.MM.dd}"
@@ -253,13 +166,13 @@ namespace SimpleIdentityServer.Host
             services.AddTransient<ISimpleIdentityServerEventSource, SimpleIdentityServerEventSource>();
             services.AddTransient<IManagerEventSource, ManagerEventSource>();
             services.AddSingleton<ILogger>(log);
+            /*
             var twoFactorServiceStore = new TwoFactorServiceStore();
             var factory = new SimpleIdServerConfigurationClientFactory();
             twoFactorServiceStore.Add(new TwilioSmsService(factory, configurationUrl));
             twoFactorServiceStore.Add(new EmailService(factory, configurationUrl));
             services.AddSingleton<ITwoFactorServiceStore>(twoFactorServiceStore);
+            */
         }
-        
-        #endregion
     }
 }

@@ -14,15 +14,22 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Models;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using SimpleIdentityServer.DataAccess.SqlServer.Models;
 
-namespace SimpleIdentityServer.Core.TwoFactors
+namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
 {
-    public interface ITwoFactorAuthenticationService
+    public static class ResourceOwnerClaimMapping
     {
-        Task SendAsync(string code, ResourceOwner user);
+        #region Public static methods
 
-        int Code { get; }
+        public static void AddResourceOwnerClaimMapping(this ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<ResourceOwnerClaim>()
+                .ToTable("resourceOwnerClaims")
+                .HasKey(r => r.Id);
+        }
+
+        #endregion
     }
 }

@@ -42,8 +42,9 @@ namespace SimpleIdentityServer.Core.Validators
         public ResourceOwner ValidateResourceOwnerCredentials(string userName, string password)
         {
             var hashPassword = _securityHelper.ComputeHash(password);
-            var resourceOwner = _resourceOwnerRepository.GetResourceOwnerByCredentials(userName, hashPassword);
-            return resourceOwner;
+            // var resourceOwner = _resourceOwnerRepository.GetResourceOwnerByCredentials(userName, hashPassword);
+            // return resourceOwner;
+            return null;
         }
     }
 }

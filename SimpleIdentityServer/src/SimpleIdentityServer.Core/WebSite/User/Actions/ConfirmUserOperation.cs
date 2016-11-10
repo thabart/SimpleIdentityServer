@@ -17,6 +17,7 @@
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Services;
 using System;
 using System.Security.Claims;
 
@@ -30,18 +31,16 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
     internal class ConfirmUserOperation : IConfirmUserOperation
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
+        private readonly IAuthenticateResourceOwnerService _authenticateResourceOwnerService;
 
-        #region Constructor
-
-        public ConfirmUserOperation(IResourceOwnerRepository resourceOwnerRepository)
+        public ConfirmUserOperation(
+            IResourceOwnerRepository resourceOwnerRepository,
+            IAuthenticateResourceOwnerService authenticateResourceOwnerService)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
+            _authenticateResourceOwnerService = authenticateResourceOwnerService;
         }
-
-        #endregion
-
-        #region Public methods
-
+        
         public void Execute(ClaimsPrincipal claimsPrincipal)
         {
             if (claimsPrincipal == null)
@@ -65,8 +64,8 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                     Errors.ErrorCodes.UnhandledExceptionCode,
                     Errors.ErrorDescriptions.TheSubjectCannotBeRetrieved);
             }
-
-            var result = _resourceOwnerRepository.GetBySubject(subject);
+            
+            var result = _authenticateResourceOwnerService.AuthenticateResourceOwner(subject);
             if (result == null)
             {
                 throw new IdentityServerException(
@@ -84,7 +83,5 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
             result.IsLocalAccount = true;
             _resourceOwnerRepository.Update(result);
         }
-
-        #endregion
     }
 }

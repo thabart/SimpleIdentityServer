@@ -1,5 +1,5 @@
 ﻿#region copyright
-// Copyright 2016 Habart Thierry
+// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,15 +14,15 @@
 // limitations under the License.
 #endregion
 
-namespace CustomerPortal.Core.Authenticate
+namespace SimpleIdentityServer.DataAccess.SqlServer.Models
 {
-    public interface IAuthenticateActions
+    public class ResourceOwnerClaim
     {
-
-    }
-
-    internal class AuthenticateActions : IAuthenticateActions
-    {
-
+        public string Id { get; set; }
+        public string ResourceOwnerId { get; set; }
+        public string ClaimCode { get; set; }
+        public string Value { get; set; }
+        public ResourceOwner ResourceOwner { get; set; }
+        public Claim Claim { get; set; }
     }
 }

@@ -18,7 +18,7 @@ using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
-using SimpleIdentityServer.Core.TwoFactors;
+using SimpleIdentityServer.Core.Services;
 using System;
 using System.Threading.Tasks;
 
@@ -31,29 +31,23 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 
     internal class GenerateAndSendCodeAction : IGenerateAndSendCodeAction
     {
-        #region Fields
-
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
         private readonly IConfirmationCodeRepository _confirmationCodeRepository;
         private readonly ITwoFactorAuthenticationHandler _twoFactorAuthenticationHandler;
-
-        #endregion
-
-        #region Constructor
+        private readonly IAuthenticateResourceOwnerService _authenticateResourceOwnerService;
 
         public GenerateAndSendCodeAction(
             IResourceOwnerRepository resourceOwnerRepository,
             IConfirmationCodeRepository confirmationCodeRepository,
-            ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler)
+            ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler,
+            IAuthenticateResourceOwnerService authenticateResourceOwnerService)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
             _confirmationCodeRepository = confirmationCodeRepository;
             _twoFactorAuthenticationHandler = twoFactorAuthenticationHandler;
+            _authenticateResourceOwnerService = authenticateResourceOwnerService;
         }
-
-        #endregion
-
-        #region Public methods
+        
 
         public async Task<string> ExecuteAsync(string subject)
         {
@@ -61,8 +55,8 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
             {
                 throw new ArgumentNullException(nameof(subject));
             }
-
-            var resourceOwner = _resourceOwnerRepository.GetBySubject(subject);
+            
+            var resourceOwner = _authenticateResourceOwnerService.AuthenticateResourceOwner(subject);
             if (resourceOwner == null)
             {
                 throw new IdentityServerException(
@@ -95,11 +89,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
             await _twoFactorAuthenticationHandler.SendCode(confirmationCode.Code, (int)resourceOwner.TwoFactorAuthentication, resourceOwner);
             return confirmationCode.Code;
         }
-
-        #endregion
-
-        #region Private methods
-
+        
         private string GetCode()
         {
             var random = new Random();
@@ -111,7 +101,5 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 
             return number.ToString();
         }
-
-        #endregion
     }
 }

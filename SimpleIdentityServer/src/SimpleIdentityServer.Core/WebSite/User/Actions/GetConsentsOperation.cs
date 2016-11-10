@@ -31,17 +31,11 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
     {
         private readonly IConsentRepository _consentRepository;
 
-        #region Constructor
-
         public GetConsentsOperation(IConsentRepository consentRepository)
         {
             _consentRepository = consentRepository;
         }
-
-        #endregion
-
-        #region Public methods
-
+        
         public List<Models.Consent> Execute(ClaimsPrincipal claimsPrincipal)
         {
             if (claimsPrincipal == null ||
@@ -53,7 +47,5 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
             var subject = claimsPrincipal.GetSubject();
             return _consentRepository.GetConsentsForGivenUser(subject);
         }
-
-        #endregion
     }
 }

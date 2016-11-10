@@ -1,23 +1,18 @@
-﻿using System;
-using System.Linq;
-using Moq;
+﻿using Moq;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;
+using System;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 {
     public sealed class LocalUserAuthenticationActionFixture
     {
-        private Mock<IResourceOwnerService> _resourceOwnerServiceStub;
-        
-        private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
-
+        private Mock<IAuthenticateResourceOwnerService> _authenticateResourceOwnerServiceStub;
         private ILocalUserAuthenticationAction _localUserAuthenticationAction;
 
         [Fact]
@@ -40,9 +35,9 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
                 UserName = "username",
                 Password = "password"
             };
-            _resourceOwnerServiceStub.Setup(r => r.Authenticate(It.IsAny<string>(),
+            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwner(It.IsAny<string>(),
                 It.IsAny<string>()))
-                .Returns(() => null);
+                .Returns((ResourceOwner)null);
 
             // ACT & ASSERT
             var exception = Assert.Throws<IdentityServerAuthenticationException>(() => _localUserAuthenticationAction.Execute(parameter));
@@ -64,10 +59,8 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             {
                 Id = subject
             };
-            _resourceOwnerServiceStub.Setup(r => r.Authenticate(It.IsAny<string>(),
+            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwner(It.IsAny<string>(),
                 It.IsAny<string>()))
-                .Returns("subject");
-            _resourceOwnerRepositoryStub.Setup(r => r.GetBySubject(It.IsAny<string>()))
                 .Returns(resourceOwner);
 
             // ACT
@@ -79,11 +72,8 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 
         private void InitializeFakeObjects()
         {
-            _resourceOwnerServiceStub = new Mock<IResourceOwnerService>();
-            _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
-            _localUserAuthenticationAction = new LocalUserAuthenticationAction(
-                _resourceOwnerServiceStub.Object,
-                _resourceOwnerRepositoryStub.Object);
+            _authenticateResourceOwnerServiceStub = new Mock<IAuthenticateResourceOwnerService>();
+            _localUserAuthenticationAction = new LocalUserAuthenticationAction(_authenticateResourceOwnerServiceStub.Object);
             
         }
     }

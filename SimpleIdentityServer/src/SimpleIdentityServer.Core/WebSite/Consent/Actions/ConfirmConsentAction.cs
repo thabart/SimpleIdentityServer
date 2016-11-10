@@ -30,6 +30,7 @@ using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Logging;
 using System;
+using SimpleIdentityServer.Core.Services;
 
 namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
 {
@@ -43,22 +44,15 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
     public class ConfirmConsentAction : IConfirmConsentAction
     {
         private readonly IConsentRepository _consentRepository;
-
         private readonly IClientRepository _clientRepository;
-
         private readonly IScopeRepository _scopeRepository;
-
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
-
         private readonly IParameterParserHelper _parameterParserHelper;
-
         private readonly IActionResultFactory _actionResultFactory;
-
         private readonly IGenerateAuthorizationResponse _generateAuthorizationResponse;
-
         private readonly IConsentHelper _consentHelper;
-
         private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
+        private readonly IAuthenticateResourceOwnerService _authenticateResourceOwnerService;
 
         public ConfirmConsentAction(
             IConsentRepository consentRepository,
@@ -69,7 +63,8 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
             IActionResultFactory actionResultFactory,
             IGenerateAuthorizationResponse generateAuthorizationResponse,
             IConsentHelper consentHelper,
-            ISimpleIdentityServerEventSource simpleIdentityServerEventSource)
+            ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
+            IAuthenticateResourceOwnerService authenticateResourceOwnerService)
         {
             _consentRepository = consentRepository;
             _clientRepository = clientRepository;
@@ -80,6 +75,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
             _generateAuthorizationResponse = generateAuthorizationResponse;
             _consentHelper = consentHelper;
             _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
+            _authenticateResourceOwnerService = authenticateResourceOwnerService;
         }
 
         /// <summary>
@@ -120,7 +116,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
                     assignedConsent = new Models.Consent
                     {
                         Client = _clientRepository.GetClientById(authorizationParameter.ClientId),
-                        ResourceOwner = _resourceOwnerRepository.GetBySubject(subject),
+                        ResourceOwner = _authenticateResourceOwnerService.AuthenticateResourceOwner(subject),
                         Claims = claimsParameter.GetClaimNames()
                     };
                 }
@@ -131,7 +127,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
                     {
                         Client = _clientRepository.GetClientById(authorizationParameter.ClientId),
                         GrantedScopes = GetScopes(authorizationParameter.Scope),
-                        ResourceOwner = _resourceOwnerRepository.GetBySubject(subject)
+                        ResourceOwner = _authenticateResourceOwnerService.AuthenticateResourceOwner(subject),
                     };
                 }
 

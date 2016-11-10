@@ -1,5 +1,5 @@
 ﻿#region copyright
-// Copyright 2016 Habart Thierry
+// Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,15 +14,15 @@
 // limitations under the License.
 #endregion
 
-namespace CustomerPortal.Core.Authenticate
+using SimpleIdentityServer.Core.Models;
+using System.Threading.Tasks;
+
+namespace SimpleIdentityServer.Core.Services
 {
-    public interface IAuthenticateActions
+    public interface ITwoFactorAuthenticationService
     {
+        Task SendAsync(string code, ResourceOwner user);
 
-    }
-
-    internal class AuthenticateActions : IAuthenticateActions
-    {
-
+        int Code { get; }
     }
 }

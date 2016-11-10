@@ -10,14 +10,16 @@ using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Repositories;
 using Xunit;
+using SimpleIdentityServer.Core.Services;
 
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 {
     public sealed class ExternalOpenIdUserAuthenticationActionFixture
     {
         private Mock<IAuthenticateHelper> _authenticateHelperStub;
-
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
+        private Mock<IAuthenticateResourceOwnerService> _authenticateResourceOwnerServiceStub;
+        private Mock<IClaimRepository> _claimRepositoryStub;
         private IExternalOpenIdUserAuthenticationAction _externalOpenIdUserAuthenticationAction;
 
         [Fact]
@@ -79,8 +81,9 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             {
                 Type = TypeActionResult.None
             };
-            _resourceOwnerRepositoryStub.Setup(r => r.GetBySubject(It.IsAny<string>()))
+            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwner(It.IsAny<string>()))
                 .Returns(() => null);
+            _claimRepositoryStub.Setup(c => c.GetAll()).Returns(new List<string>());
             _authenticateHelperStub.Setup(a => a.ProcessRedirection(It.IsAny<AuthorizationParameter>(),
                 It.IsAny<string>(),
                 It.IsAny<string>(),
@@ -102,9 +105,13 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
         {
             _authenticateHelperStub = new Mock<IAuthenticateHelper>();
             _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
+            _authenticateResourceOwnerServiceStub = new Mock<IAuthenticateResourceOwnerService>();
+            _claimRepositoryStub = new Mock<IClaimRepository>();
             _externalOpenIdUserAuthenticationAction = new ExternalOpenIdUserAuthenticationAction(
                 _authenticateHelperStub.Object,
-                _resourceOwnerRepositoryStub.Object);
+                _resourceOwnerRepositoryStub.Object,
+                _authenticateResourceOwnerServiceStub.Object,
+                _claimRepositoryStub.Object);
         }
     }
 }

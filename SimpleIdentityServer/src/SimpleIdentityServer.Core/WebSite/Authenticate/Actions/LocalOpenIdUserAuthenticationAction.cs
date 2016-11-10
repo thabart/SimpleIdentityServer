@@ -15,6 +15,7 @@
 #endregion
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Security.Claims;
@@ -49,18 +50,18 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 
     public class LocalOpenIdUserAuthenticationAction : ILocalOpenIdUserAuthenticationAction
     {
-        private readonly IResourceOwnerService _resourceOwnerService;
+        private readonly IAuthenticateResourceOwnerService _authenticateResourceOwnerService;
 
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
 
         private readonly IAuthenticateHelper _authenticateHelper;
 
         public LocalOpenIdUserAuthenticationAction(
-            IResourceOwnerService resourceOwnerService,
+            IAuthenticateResourceOwnerService authenticateResourceOwnerService,
             IResourceOwnerRepository resourceOwnerRepository,
             IAuthenticateHelper authenticateHelper)
         {
-            _resourceOwnerService = resourceOwnerService;
+            _authenticateResourceOwnerService = authenticateResourceOwnerService;
             _resourceOwnerRepository = resourceOwnerRepository;
             _authenticateHelper = authenticateHelper;
         }
@@ -93,23 +94,21 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                 throw new ArgumentNullException("authorizationParameter");
             }
 
-            var subject = _resourceOwnerService.Authenticate(localAuthenticationParameter.UserName,
+            var resourceOwner = _authenticateResourceOwnerService.AuthenticateResourceOwner(localAuthenticationParameter.UserName,
                 localAuthenticationParameter.Password);
-            if (string.IsNullOrEmpty(subject))
+            if (resourceOwner == null)
             {
                 claims = new List<Claim>();
                 throw new IdentityServerAuthenticationException("the resource owner credentials are not correct");
             }
-
-            var resourceOwner = _resourceOwnerRepository.GetBySubject(subject);
-            claims = resourceOwner.ToClaims();
+            claims = resourceOwner.Claims.ToList();
             claims.Add(new Claim(ClaimTypes.AuthenticationInstant,
                 DateTimeOffset.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture),
                 ClaimValueTypes.Integer));
 
             return _authenticateHelper.ProcessRedirection(authorizationParameter,
                 code,
-                subject,
+                resourceOwner.Id,
                 claims);
         }
 

@@ -9,6 +9,7 @@ using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Results;
+using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.WebSite.Consent.Actions;
 using SimpleIdentityServer.Logging;
 using System;
@@ -21,22 +22,15 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
     public sealed class ConfirmConsentFixture
     {
         private Mock<IConsentRepository> _consentRepositoryFake;
-
         private Mock<IClientRepository> _clientRepositoryFake;
-
         private Mock<IScopeRepository> _scopeRepositoryFake;
-
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryFake;
-
         private Mock<IParameterParserHelper> _parameterParserHelperFake;
-
         private Mock<IActionResultFactory> _actionResultFactoryFake;
-
         private Mock<IGenerateAuthorizationResponse> _generateAuthorizationResponseFake;
-
         private Mock<IConsentHelper> _consentHelperFake;
-
         private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSource;
+        private Mock<IAuthenticateResourceOwnerService> _authenticateResourceOwnerServiceStub;
 
         private IConfirmConsentAction _confirmConsentAction;
 
@@ -92,7 +86,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
                 .Returns(client);
             _parameterParserHelperFake.Setup(p => p.ParseScopeParameters(It.IsAny<string>()))
                 .Returns(new List<string>());
-            _resourceOwnerRepositoryFake.Setup(r => r.GetBySubject(It.IsAny<string>()))
+            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwner(It.IsAny<string>()))
                 .Returns(resourceOwner);
             _actionResultFactoryFake.Setup(a => a.CreateAnEmptyActionResultWithRedirectionToCallBackUrl())
                 .Returns(actionResult);
@@ -153,7 +147,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
                 .Returns(client);
             _parameterParserHelperFake.Setup(p => p.ParseScopeParameters(It.IsAny<string>()))
                 .Returns(new List<string>());
-            _resourceOwnerRepositoryFake.Setup(r => r.GetBySubject(It.IsAny<string>()))
+            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwner(It.IsAny<string>()))
                 .Returns(resourceOwner);
             _actionResultFactoryFake.Setup(a => a.CreateAnEmptyActionResultWithRedirectionToCallBackUrl())
                 .Returns(actionResult);
@@ -214,7 +208,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
                 .Returns(client);
             _parameterParserHelperFake.Setup(p => p.ParseScopeParameters(It.IsAny<string>()))
                 .Returns(new List<string>());
-            _resourceOwnerRepositoryFake.Setup(r => r.GetBySubject(It.IsAny<string>()))
+            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwner(It.IsAny<string>()))
                 .Returns(resourceOwner);
             _actionResultFactoryFake.Setup(a => a.CreateAnEmptyActionResultWithRedirectionToCallBackUrl())
                 .Returns(actionResult);
@@ -241,6 +235,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             _generateAuthorizationResponseFake = new Mock<IGenerateAuthorizationResponse>();
             _consentHelperFake = new Mock<IConsentHelper>();
             _simpleIdentityServerEventSource = new Mock<ISimpleIdentityServerEventSource>();
+            _authenticateResourceOwnerServiceStub = new Mock<IAuthenticateResourceOwnerService>();
             _confirmConsentAction = new ConfirmConsentAction(
                 _consentRepositoryFake.Object,
                 _clientRepositoryFake.Object,
@@ -250,7 +245,8 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
                 _actionResultFactoryFake.Object,
                 _generateAuthorizationResponseFake.Object,
                 _consentHelperFake.Object,
-                _simpleIdentityServerEventSource.Object);
+                _simpleIdentityServerEventSource.Object,
+                _authenticateResourceOwnerServiceStub.Object);
         }
     }
 }

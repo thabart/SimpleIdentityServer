@@ -27,7 +27,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
     public sealed  class AuthorizationCodeRepository : IAuthorizationCodeRepository
     {
         private readonly SimpleIdentityServerContext _context;
-
         private readonly IManagerEventSource _managerEventSource;
         
         #region Constructor

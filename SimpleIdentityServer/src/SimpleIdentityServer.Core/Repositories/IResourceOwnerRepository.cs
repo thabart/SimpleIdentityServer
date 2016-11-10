@@ -21,16 +21,10 @@ namespace SimpleIdentityServer.Core.Repositories
 {
     public interface IResourceOwnerRepository
     {
-        ResourceOwner GetResourceOwnerByCredentials(string userName, string hashedPassword);
-
         bool Insert(ResourceOwner resourceOwner);
-
-        ResourceOwner GetBySubject(string subject);
-
         bool Update(ResourceOwner resourceOwner);
-
         List<ResourceOwner> GetAll();
-
-        bool Delete(string subject);    
+        bool Delete(string subject);
+        List<ResourceOwner> GetResourceOwners(IEnumerable<System.Security.Claims.Claim> claims);
     }
 }

@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-
-using Moq;
-
+﻿using Moq;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
+using System;
+using System.Collections.Generic;
+using System.Security.Claims;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
@@ -17,11 +15,8 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
     public sealed class AuthenticateResourceOwnerOpenIdActionFixture
     {
         private Mock<IParameterParserHelper> _parameterParserHelperFake;
-
         private Mock<IActionResultFactory> _actionResultFactoryFake;
-
         private Mock<IAuthenticateHelper> _authenticateHelperFake;
-
         private IAuthenticateResourceOwnerOpenIdAction _authenticateResourceOwnerOpenIdAction;
 
         [Fact]

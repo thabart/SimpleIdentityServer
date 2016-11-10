@@ -18,6 +18,7 @@ using Moq;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.WebSite.User.Actions;
 using System;
 using System.Security.Claims;
@@ -28,10 +29,8 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
     public class GetUserOperationFixture
     {
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
-        
+        private Mock<IAuthenticateResourceOwnerService> _authenticateResourceOwnerServiceStub;
         private IGetUserOperation _getUserOperation;
-
-        #region Exceptions
 
         [Fact]
         public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
@@ -85,7 +84,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             var claimsIdentity = new ClaimsIdentity("test");
             claimsIdentity.AddClaim(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, "subject"));
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            _resourceOwnerRepositoryStub.Setup(r => r.GetBySubject(It.IsAny<string>()))
+            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwner(It.IsAny<string>()))
                 .Returns((ResourceOwner)null);
 
             // ACT
@@ -97,10 +96,6 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             Assert.True(exception.Message == Errors.ErrorDescriptions.TheRoDoesntExist);
         }
         
-        #endregion
-
-        #region Happy path
-
         [Fact]
         public void When_Correct_Subject_Is_Passed_Then_ResourceOwner_Is_Returned()
         {
@@ -109,7 +104,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             var claimsIdentity = new ClaimsIdentity("test");
             claimsIdentity.AddClaim(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, "subject"));
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            _resourceOwnerRepositoryStub.Setup(r => r.GetBySubject(It.IsAny<string>()))
+            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwner(It.IsAny<string>()))
                 .Returns(new ResourceOwner());
 
             // ACT
@@ -118,18 +113,14 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             // ASSERT
             Assert.NotNull(result);
         }
-
-        #endregion
-
-        #region Private methods
-
+        
         private void InitializeFakeObjects()
         {
             _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
+            _authenticateResourceOwnerServiceStub = new Mock<IAuthenticateResourceOwnerService>();
             _getUserOperation = new GetUserOperation(
-                _resourceOwnerRepositoryStub.Object);
+                _resourceOwnerRepositoryStub.Object,
+                _authenticateResourceOwnerServiceStub.Object);
         }
-
-        #endregion
     }
 }

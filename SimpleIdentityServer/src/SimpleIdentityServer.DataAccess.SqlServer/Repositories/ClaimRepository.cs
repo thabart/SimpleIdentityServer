@@ -14,18 +14,29 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.EntityFrameworkCore;
-using SimpleIdentityServer.DataAccess.SqlServer.Models;
+using System.Linq;
+using System.Collections.Generic;
+using SimpleIdentityServer.Core.Repositories;
 
-namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
+namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 {
-    public static class AddressMapping
+    internal class ClaimRepository : IClaimRepository
     {
-        public static void AddAddressMapping(this ModelBuilder modelBuilder)
+        private readonly SimpleIdentityServerContext _context;
+
+        public ClaimRepository(SimpleIdentityServerContext context)
         {
-            modelBuilder.Entity<Address>()
-                .ToTable("addresses")
-                .HasKey(a => a.Id);
+            _context = context;
+        }
+        
+        public IList<string> GetAll()
+        {
+            return _context.Claims.Select(c => c.Code).ToList();
+        }
+
+        public bool HasClaim(string name)
+        {
+            return _context.Claims.Any(c => c.Code == name);
         }
     }
 }

@@ -18,86 +18,60 @@ using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Services;
 using System;
-using System.ComponentModel.DataAnnotations;
 
 namespace SimpleIdentityServer.Core.WebSite.User.Actions
 {
     public interface IUpdateUserOperation
     {
-        void Execute(UpdateUserParameter updateUserParameter);
+        bool Execute(UpdateUserParameter updateUserParameter);
     }
 
     internal class UpdateUserOperation : IUpdateUserOperation
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
-
         private readonly ISecurityHelper _securityHelper;
-
-        #region Constructor
+        private readonly IAuthenticateResourceOwnerService _authenticateResourceOwnerService;
 
         public UpdateUserOperation(
             IResourceOwnerRepository resourceOwnerRepository,
-            ISecurityHelper securityHelper)
+            ISecurityHelper securityHelper,
+            IAuthenticateResourceOwnerService authenticateResourceOwnerService)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
             _securityHelper = securityHelper;
+            _authenticateResourceOwnerService = authenticateResourceOwnerService;
         }
-
-        #endregion
-
-        #region Public methods
-
-        public void Execute(UpdateUserParameter updateUserParameter)
+        
+        public bool Execute(UpdateUserParameter updateUserParameter)
         {
             if (updateUserParameter == null)
             {
                 throw new ArgumentNullException(nameof(updateUserParameter));
             }
 
-            if (string.IsNullOrWhiteSpace(updateUserParameter.Id))
+            if (string.IsNullOrWhiteSpace(updateUserParameter.Login))
             {
-                throw new ArgumentNullException(nameof(updateUserParameter.Id));
+                throw new ArgumentNullException(nameof(updateUserParameter.Login));
             }
 
-            if (string.IsNullOrWhiteSpace(updateUserParameter.Name))
-            {
-                throw new ArgumentNullException(nameof(updateUserParameter.Name));
-            }
-
-            if (!string.IsNullOrWhiteSpace(updateUserParameter.Email) && !new EmailAddressAttribute().IsValid(updateUserParameter.Email))
-            {
-                throw new ArgumentException($"not a valid email address {updateUserParameter.Email}");
-            }
-
-            var resourceOwner = _resourceOwnerRepository.GetBySubject(updateUserParameter.Id);
+            var resourceOwner = _authenticateResourceOwnerService.AuthenticateResourceOwner(updateUserParameter.Login);
             if (resourceOwner == null)
             {
                 throw new IdentityServerException(
                     Errors.ErrorCodes.InternalError,
                     Errors.ErrorDescriptions.TheRoDoesntExist);
             }
-
-            var user = _resourceOwnerRepository.GetResourceOwnerByCredentials(updateUserParameter.Name, resourceOwner.Password);
-            if (user != null && user.Id != updateUserParameter.Id)
-            {
-                throw new IdentityServerException(
-                    Errors.ErrorCodes.InternalError,
-                    Errors.ErrorDescriptions.TheRoWithCredentialsAlreadyExists);
-            }
-
-            resourceOwner.Name = updateUserParameter.Name;
-            resourceOwner.Email = updateUserParameter.Email;
+            
             resourceOwner.TwoFactorAuthentication = updateUserParameter.TwoFactorAuthentication;
-            resourceOwner.PhoneNumber = updateUserParameter.Phone;
             if (!string.IsNullOrWhiteSpace(updateUserParameter.Password))
             {
                 resourceOwner.Password = _securityHelper.ComputeHash(updateUserParameter.Password);
             }
+            resourceOwner.Claims = updateUserParameter.Claims;
 
-            _resourceOwnerRepository.Update(resourceOwner);
+            return _resourceOwnerRepository.Update(resourceOwner);
         }
-
-        #endregion
     }
 }

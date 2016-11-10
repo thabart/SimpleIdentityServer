@@ -141,7 +141,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             }
 
             // Generate the user information payload and store it.
-            var claims = resourceOwner.ToClaims();
+            var claims = resourceOwner.Claims;
             var claimsIdentity = new ClaimsIdentity(claims, "simpleIdentityServer");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             var authorizationParameter = new AuthorizationParameter

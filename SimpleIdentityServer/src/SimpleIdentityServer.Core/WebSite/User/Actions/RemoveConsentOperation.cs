@@ -27,18 +27,12 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
     internal class RemoveConsentOperation : IRemoveConsentOperation
     {
         private readonly IConsentRepository _consentRepository;
-
-        #region Constructor
-
+        
         public RemoveConsentOperation(IConsentRepository consentRepository)
         {
             _consentRepository = consentRepository;
         }
-
-        #endregion
-
-        #region Public methods
-
+        
         public bool Execute(string consentId)
         {
             if (string.IsNullOrWhiteSpace(consentId))
@@ -53,7 +47,5 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
 
             return _consentRepository.DeleteConsent(consentToBeDeleted);
         }
-
-        #endregion
     }
 }

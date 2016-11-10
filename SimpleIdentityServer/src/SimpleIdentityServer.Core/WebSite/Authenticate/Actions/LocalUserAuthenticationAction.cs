@@ -18,7 +18,6 @@ using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Services;
 using System;
 
@@ -31,23 +30,13 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 
     public sealed class LocalUserAuthenticationAction : ILocalUserAuthenticationAction
     {
-        private readonly IResourceOwnerService _resourceOwnerService;
-        private readonly IResourceOwnerRepository _resourceOwnerRepository;
+        private readonly IAuthenticateResourceOwnerService _authenticateResourceOwnerService;
 
-        #region Constructor
-
-        public LocalUserAuthenticationAction(
-            IResourceOwnerService resourceOwnerService,
-            IResourceOwnerRepository resourceOwnerRepository)
+        public LocalUserAuthenticationAction(IAuthenticateResourceOwnerService authenticateResourceOwnerService)
         {
-            _resourceOwnerService = resourceOwnerService;
-            _resourceOwnerRepository = resourceOwnerRepository;
+            _authenticateResourceOwnerService = authenticateResourceOwnerService;
         }
-
-        #endregion
-
-        #region Public methods
-
+        
         public ResourceOwner Execute(LocalAuthenticationParameter localAuthenticationParameter)
         {
             if (localAuthenticationParameter == null)
@@ -55,16 +44,14 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                 throw new ArgumentNullException("localAuthenticationParameter");
             }
 
-            var subject = _resourceOwnerService.Authenticate(localAuthenticationParameter.UserName,
+            var record = _authenticateResourceOwnerService.AuthenticateResourceOwner(localAuthenticationParameter.UserName,
                 localAuthenticationParameter.Password);
-            if (string.IsNullOrWhiteSpace(subject))
+            if (record == null)
             {
                 throw new IdentityServerAuthenticationException(ErrorDescriptions.TheResourceOwnerCredentialsAreNotCorrect);
             }
-            
-            return _resourceOwnerRepository.GetBySubject(subject);
-        }
 
-        #endregion
+            return record;
+        }
     }
 }

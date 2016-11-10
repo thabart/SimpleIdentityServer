@@ -8,6 +8,7 @@ using SimpleIdentityServer.Core.Jwt;
 using Domain = SimpleIdentityServer.Core.Models;
 using Model = SimpleIdentityServer.DataAccess.SqlServer.Models;
 using Jwt = SimpleIdentityServer.Core.Jwt;
+using System.Security.Claims;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
 {
@@ -41,51 +42,19 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
 
         public static Domain.ResourceOwner ToDomain(this Model.ResourceOwner resourceOwner)
         {
-            var roleNames = new List<string>();
-            if (resourceOwner.ResourceOwnerRoles != null 
-                && resourceOwner.ResourceOwnerRoles.Any())
+            var claims = new List<Claim>();
+            if (resourceOwner.Claims != null 
+                && resourceOwner.Claims.Any())
             {
-                resourceOwner.ResourceOwnerRoles.ForEach(r => roleNames.Add(r.RoleName));
+                resourceOwner.Claims.ForEach(r => claims.Add(new Claim(r.ClaimCode, r.Value)));
             }
 
             return new Domain.ResourceOwner
             {
-                BirthDate = resourceOwner.BirthDate,
-                Name = resourceOwner.Name,
-                Email = resourceOwner.Email,
-                EmailVerified = resourceOwner.EmailVerified,
-                FamilyName = resourceOwner.FamilyName,
-                Gender = resourceOwner.Gender,
-                GivenName = resourceOwner.GivenName,
                 Id = resourceOwner.Id,
-                Locale = resourceOwner.Locale,
-                MiddleName = resourceOwner.MiddleName,
-                NickName = resourceOwner.NickName,
-                Password = resourceOwner.Password,
-                PhoneNumber = resourceOwner.PhoneNumber,
-                PhoneNumberVerified = resourceOwner.PhoneNumberVerified,
-                Picture = resourceOwner.Picture,
-                PreferredUserName = resourceOwner.PreferredUserName,
-                Profile = resourceOwner.Profile,
-                UpdatedAt = resourceOwner.UpdatedAt,
-                WebSite = resourceOwner.WebSite,
-                ZoneInfo = resourceOwner.ZoneInfo,
-                Address = resourceOwner.Address == null ? null : resourceOwner.Address.ToDomain(),
-                Roles = roleNames,
                 IsLocalAccount = resourceOwner.IsLocalAccount,
-                TwoFactorAuthentication = (Domain.TwoFactorAuthentications)resourceOwner.TwoFactorAuthentication
-            };
-        }
-
-        public static Domain.Address ToDomain(this Model.Address address)
-        {
-            return new Domain.Address
-            {
-                Country = address.Country,
-                Formatted = address.Formatted,
-                Locality = address.Locality,
-                PostalCode = address.PostalCode,
-                Region = address.Region
+                TwoFactorAuthentication = (Domain.TwoFactorAuthentications)resourceOwner.TwoFactorAuthentication,
+                Claims = claims
             };
         }
 

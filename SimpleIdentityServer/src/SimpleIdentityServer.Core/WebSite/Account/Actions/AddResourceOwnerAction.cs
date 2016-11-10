@@ -19,6 +19,7 @@ using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Services;
 using System;
 
 namespace SimpleIdentityServer.Core.WebSite.Account.Actions
@@ -30,28 +31,20 @@ namespace SimpleIdentityServer.Core.WebSite.Account.Actions
 
     public class AddResourceOwnerAction : IAddResourceOwnerAction
     {
-        #region Fields
-
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
-
         private readonly ISecurityHelper _securityHelper;
-
-        #endregion
-
-        #region Constructor
+        private readonly IAuthenticateResourceOwnerService _authenticateResourceOwnerService;
 
         public AddResourceOwnerAction(
             IResourceOwnerRepository resourceOwnerRepository,
-            ISecurityHelper securityHelper)
+            ISecurityHelper securityHelper,
+            IAuthenticateResourceOwnerService authenticateResourceOwnerService)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
             _securityHelper = securityHelper;
+            _authenticateResourceOwnerService = authenticateResourceOwnerService;
         }
-
-        #endregion
-
-        #region Public methods
-
+        
         public void Execute(AddUserParameter addUserParameter)
         {
             if (addUserParameter == null)
@@ -59,9 +52,9 @@ namespace SimpleIdentityServer.Core.WebSite.Account.Actions
                 throw new ArgumentNullException(nameof(addUserParameter));
             }
 
-            if (string.IsNullOrEmpty(addUserParameter.Name))
+            if (string.IsNullOrEmpty(addUserParameter.Login))
             {
-                throw new ArgumentNullException(nameof(addUserParameter.Name));
+                throw new ArgumentNullException(nameof(addUserParameter.Login));
             }
 
             if (string.IsNullOrWhiteSpace(addUserParameter.Password))
@@ -70,7 +63,8 @@ namespace SimpleIdentityServer.Core.WebSite.Account.Actions
             }
 
             var hashedPassword = _securityHelper.ComputeHash(addUserParameter.Password);
-            if (_resourceOwnerRepository.GetResourceOwnerByCredentials(addUserParameter.Name, hashedPassword) != null)
+            if (_authenticateResourceOwnerService.AuthenticateResourceOwner(addUserParameter.Login,
+                hashedPassword) != null)
             {
                 throw new IdentityServerException(
                     Errors.ErrorCodes.UnhandledExceptionCode,
@@ -79,14 +73,12 @@ namespace SimpleIdentityServer.Core.WebSite.Account.Actions
 
             var newResourceOwner = new ResourceOwner
             {
-                Id = Guid.NewGuid().ToString(),
-                Name = addUserParameter.Name,
-                Password = hashedPassword,
+                Id = addUserParameter.Login,
+                Claims = addUserParameter.Claims,
+                TwoFactorAuthentication = TwoFactorAuthentications.NONE,
                 IsLocalAccount = true
             };
             _resourceOwnerRepository.Insert(newResourceOwner);
         }
-
-        #endregion
     }
 }

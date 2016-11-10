@@ -26,6 +26,7 @@ using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Extensions;
+using SimpleIdentityServer.Core.Services;
 
 namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 {
@@ -40,20 +41,21 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
     public sealed class ExternalOpenIdUserAuthenticationAction : IExternalOpenIdUserAuthenticationAction
     {
         private readonly IAuthenticateHelper _authenticateHelper;
-
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
-
-        #region Constructors
+        private readonly IAuthenticateResourceOwnerService _authenticateResourceOwnerService;
+        private readonly IClaimRepository _claimRepository;
 
         public ExternalOpenIdUserAuthenticationAction(
             IAuthenticateHelper authenticateHelper,
-            IResourceOwnerRepository resourceOwnerRepository)
+            IResourceOwnerRepository resourceOwnerRepository,
+            IAuthenticateResourceOwnerService authenticateResourceOwnerService,
+            IClaimRepository claimRepository)
         {
             _authenticateHelper = authenticateHelper;
             _resourceOwnerRepository = resourceOwnerRepository;
+            _authenticateResourceOwnerService = authenticateResourceOwnerService;
+            _claimRepository = claimRepository;
         }
-
-        #endregion
 
         #region Public methods
 
@@ -78,29 +80,28 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
             }
 
             var subjectClaim = claims.GetSubject();
-            var nameClaim = claims.FirstOrDefault(r => r.Type == Jwt.Constants.StandardResourceOwnerClaimNames.Name);
-            var givenNameClaim = claims.FirstOrDefault(r => r.Type == Jwt.Constants.StandardResourceOwnerClaimNames.GivenName);
-            var familyNameClaim = claims.FirstOrDefault(r => r.Type == Jwt.Constants.StandardResourceOwnerClaimNames.FamilyName);
             if (string.IsNullOrWhiteSpace(subjectClaim))
             {
                 throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode,
                     ErrorDescriptions.NoSubjectCanBeExtracted);
             }
-
-            var resourceOwner = _resourceOwnerRepository.GetBySubject(subjectClaim);
+            
+            var resourceOwner = _authenticateResourceOwnerService.AuthenticateResourceOwner(subjectClaim);
             if (resourceOwner == null)
             {
+                var standardClaims = _claimRepository.GetAll();
                 resourceOwner = new ResourceOwner
                 {
                     Id = subjectClaim,
-                    Name = nameClaim == null ? string.Empty : nameClaim.Value,
-                    GivenName = givenNameClaim == null ? string.Empty : givenNameClaim.Value,
-                    FamilyName = familyNameClaim == null ? string.Empty : familyNameClaim.Value,
+                    IsLocalAccount = false,
+                    TwoFactorAuthentication = TwoFactorAuthentications.NONE,
+                    Claims = claims.Where(c => standardClaims.Any(sc => sc == c.Type)).ToList()
                 };
 
+                
                 _resourceOwnerRepository.Insert(resourceOwner);
             }
-
+            
             return _authenticateHelper.ProcessRedirection(authorizationParameter,
                 code,
                 "subject",

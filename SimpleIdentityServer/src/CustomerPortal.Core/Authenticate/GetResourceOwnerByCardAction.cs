@@ -1,5 +1,5 @@
 ﻿#region copyright
-// Copyright 2015 Habart Thierry
+// Copyright 2016 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,10 +14,20 @@
 // limitations under the License.
 #endregion
 
-namespace SimpleIdentityServer.Core.Services
+namespace CustomerPortal.Core.Authenticate
 {
-    public interface IResourceOwnerService
+    public interface IGetResourceOwnerByCardAction
     {
-        string Authenticate(string userName, string password);
+
+    }
+
+    internal class GetResourceOwnerByCardAction : IGetResourceOwnerByCardAction
+    {
+        public GetResourceOwnerByCardAction()
+        {
+
+        }
+
+
     }
 }

@@ -36,8 +36,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
 
         public virtual DbSet<Claim> Claims { get; set; }
 
-        public virtual DbSet<Address> Addresses { get; set; }
-
         public virtual DbSet<ResourceOwner> ResourceOwners { get; set; }
 
         public virtual DbSet<JsonWebKey> JsonWebKeys { get; set; } 
@@ -58,15 +56,12 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
 
         public virtual DbSet<ScopeClaim> ScopeClaims { get; set; }
 
-        public virtual DbSet<ResourceOwnerRole> ResourceOwnerRoles { get; set; }
-
-        public virtual DbSet<Role> Roles { get; set; }
+        public virtual DbSet<ResourceOwnerClaim> ResourceOwnerClaims { get; set; }
 
         public virtual DbSet<ConfirmationCode> ConfirmationCodes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.AddAddressMapping();
             modelBuilder.AddAuthorizationCodeMapping();
             modelBuilder.AddClaimMapping();
             modelBuilder.AddClientMapping();
@@ -80,8 +75,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
             modelBuilder.AddScopeMapping();
             modelBuilder.AddTranslationMapping();
             modelBuilder.AddClientScopeMapping();
-            modelBuilder.AddRoleMapping();
-            modelBuilder.AddResourceOwnerRoleMapping();
+            modelBuilder.AddResourceOwnerClaimMapping();
             modelBuilder.AddConfirmationCodeMapping();
             base.OnModelCreating(modelBuilder);
         }

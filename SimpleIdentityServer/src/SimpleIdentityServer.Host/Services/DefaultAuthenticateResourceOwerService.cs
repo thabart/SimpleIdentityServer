@@ -14,35 +14,36 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Helpers;
+using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Services;
+using System;
 
-namespace SimpleIdentityServer.Core.Services
+namespace SimpleIdentityServer.Host.Services
 {
-    public class InMemoryUserService : IResourceOwnerService
+    public class DefaultAuthenticateResourceOwerService : IAuthenticateResourceOwnerService
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
 
-        private readonly ISecurityHelper _securityHelper;
-
-        public InMemoryUserService(
-            IResourceOwnerRepository resourceOwnerRepository,
-            ISecurityHelper securityHelper)
+        public DefaultAuthenticateResourceOwerService(IResourceOwnerRepository resourceOwnerRepository)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
-            _securityHelper = securityHelper;
         }
 
-        public string Authenticate(string userName, string password)
+        public ResourceOwner AuthenticateResourceOwner(string login)
         {
-            var hashedPassword = _securityHelper.ComputeHash(password);
-            var user = _resourceOwnerRepository.GetResourceOwnerByCredentials(userName, hashedPassword);
-            if (user == null || !user.IsLocalAccount)
+            if (string.IsNullOrWhiteSpace(login))
             {
-                return null;
+                throw new ArgumentNullException(nameof(login));
             }
 
-            return user.Id;
+            return null;
+        }
+
+        public ResourceOwner AuthenticateResourceOwner(string login, string password)
+        {
+            var resourceOwner = AuthenticateResourceOwner(login);
+            return resourceOwner;
         }
     }
 }
