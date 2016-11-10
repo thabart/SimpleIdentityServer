@@ -83,7 +83,7 @@ namespace CustomerPortal
             });
             app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
             {
-                AuthenticationScheme = "RFID",
+                AuthenticationScheme = Constants.RfidProvider,
                 SignInScheme = Constants.ExternalCookieName,
                 DisplayName = "RFID",
                 ClientId = "CustomerPortal",
@@ -98,6 +98,15 @@ namespace CustomerPortal
                 ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>("http://localhost:5100/.well-known/openid-configuration",
                         new OpenIdConnectConfigurationRetriever(),
                         new HttpDocumentRetriever(new HttpClient()) { RequireHttps = false })
+            });
+            app.UseMicrosoftAccountAuthentication(new MicrosoftAccountOptions
+            {
+                DisplayName = "MicrosoftAccount",
+                AuthenticationScheme = Constants.MicrosoftProvider,
+                ClientId = "f152ac01-1d88-4f2a-9d9a-49d0023e836f",
+                ClientSecret = "Mns9R7fgARynJQR2dtAGznq",
+                SaveTokens = true,
+                SignInScheme = Constants.ExternalCookieName,
             });
             // 5. Launch ASP.NET MVC
             app.UseMvc(routes =>

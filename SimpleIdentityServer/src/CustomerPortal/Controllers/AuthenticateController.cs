@@ -23,6 +23,7 @@ using SimpleIdentityServer.Rfid.Website.ViewModels;
 using Microsoft.Extensions.WebEncoders;
 using Microsoft.AspNetCore.Http.Authentication;
 using System;
+using System.Security.Claims;
 
 namespace CustomerPortal.Controllers
 {
@@ -55,12 +56,14 @@ namespace CustomerPortal.Controllers
             returnUrl = "/Authenticate/ExternalLoginCallback?returnUrl=" + returnUrl;
             await HttpContext.Authentication.ChallengeAsync(provider, new AuthenticationProperties()
             {
-                RedirectUri = returnUrl
+                RedirectUri = returnUrl,
+                Items = { { "scheme", provider } }
             });
         }
 
         public async Task<ActionResult> ExternalLoginCallback(string returnUrl)
         {
+            // 1. Check parameters
             var info = await HttpContext.Authentication.GetAuthenticateInfoAsync(Constants.ExternalCookieName);
             var tempUser = info?.Principal;
             if (tempUser == null)
@@ -68,7 +71,31 @@ namespace CustomerPortal.Controllers
                 throw new Exception("External authentication error");
             }
 
-            await HttpContext.Authentication.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, tempUser);
+            if (!info.Properties.Items.Any(p => p.Key == "scheme"))
+            {
+                throw new Exception("the scheme cannot be retrieved");
+            }
+
+            var subjectClaim = tempUser.Claims.FirstOrDefault(c => c.Type == SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject);
+            if (subjectClaim == null)
+            {
+                subjectClaim = tempUser.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+            }
+
+            if (subjectClaim == null)
+            {
+                throw new Exception("the subject cannot be retrieved");
+            }
+
+            // 2. Check card exists & retrieve the user
+            var subject = subjectClaim.Value;
+            var scheme = info.Properties.Items["scheme"];
+            if (scheme == Constants.RfidProvider)
+            {
+
+            }
+
+                await HttpContext.Authentication.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, tempUser);
             await HttpContext.Authentication.SignOutAsync(Constants.ExternalCookieName);
 
             if (!string.IsNullOrWhiteSpace(returnUrl))

@@ -14,12 +14,9 @@
 // limitations under the License.
 #endregion
 
-namespace CustomerPortal
+namespace CustomerPortal.Core.Authenticate
 {
-    internal static class Constants
+    internal class AuthenticateActions
     {
-        public const string ExternalCookieName = "External-CustomerPortal";
-        public const string RfidProvider = "RFID";
-        public const string MicrosoftProvider = "MicrosoftAccount";
     }
 }

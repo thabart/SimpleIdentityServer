@@ -26,5 +26,10 @@ namespace CustomerPortal.Controllers
         {
             return View();
         }
+
+        public ActionResult CreateLocalAccount()
+        {
+            return View();
+        }
     }
 }

@@ -37,6 +37,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02. Rfid Layer", "02. Rfid 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.Rfid", "src\SimpleIdentityServer.Rfid\SimpleIdentityServer.Rfid.csproj", "{D9CD4E2B-F9BA-4C26-B9A6-A871E0BB0460}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Authentication.Middleware", "src\SimpleIdentityServer.Authentication.Middleware\SimpleIdentityServer.Authentication.Middleware.xproj", "{DFF4E756-7D4B-4F7F-A51A-0C1D288E4728}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "WebApiContrib.Core.Storage", "src\WebApiContrib.Core.Storage\WebApiContrib.Core.Storage.xproj", "{B69E21CE-5EE9-4166-9CC2-5E0B08BA5DD2}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "WsFederation", "src\WsFederation\WsFederation.xproj", "{425AEB49-216C-4FE1-AC85-286DEBFAD63A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -99,6 +105,18 @@ Global
 		{D9CD4E2B-F9BA-4C26-B9A6-A871E0BB0460}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D9CD4E2B-F9BA-4C26-B9A6-A871E0BB0460}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D9CD4E2B-F9BA-4C26-B9A6-A871E0BB0460}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFF4E756-7D4B-4F7F-A51A-0C1D288E4728}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFF4E756-7D4B-4F7F-A51A-0C1D288E4728}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFF4E756-7D4B-4F7F-A51A-0C1D288E4728}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFF4E756-7D4B-4F7F-A51A-0C1D288E4728}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B69E21CE-5EE9-4166-9CC2-5E0B08BA5DD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B69E21CE-5EE9-4166-9CC2-5E0B08BA5DD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B69E21CE-5EE9-4166-9CC2-5E0B08BA5DD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B69E21CE-5EE9-4166-9CC2-5E0B08BA5DD2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{425AEB49-216C-4FE1-AC85-286DEBFAD63A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{425AEB49-216C-4FE1-AC85-286DEBFAD63A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{425AEB49-216C-4FE1-AC85-286DEBFAD63A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{425AEB49-216C-4FE1-AC85-286DEBFAD63A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -118,5 +136,8 @@ Global
 		{797FB01A-3748-4FDF-B031-D7A1F8498142} = {CB0B0065-A281-409F-8690-691127CCB580}
 		{DF0EED7B-81EB-47FF-92D0-B6223B2A1594} = {CB0B0065-A281-409F-8690-691127CCB580}
 		{D9CD4E2B-F9BA-4C26-B9A6-A871E0BB0460} = {6E8F6655-A0E1-47AB-8A8C-3DB7F94BA83B}
+		{DFF4E756-7D4B-4F7F-A51A-0C1D288E4728} = {CB0B0065-A281-409F-8690-691127CCB580}
+		{B69E21CE-5EE9-4166-9CC2-5E0B08BA5DD2} = {CB0B0065-A281-409F-8690-691127CCB580}
+		{425AEB49-216C-4FE1-AC85-286DEBFAD63A} = {CB0B0065-A281-409F-8690-691127CCB580}
 	EndGlobalSection
 EndGlobal
