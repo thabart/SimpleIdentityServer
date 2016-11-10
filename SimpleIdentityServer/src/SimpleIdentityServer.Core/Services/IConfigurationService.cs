@@ -14,10 +14,18 @@
 // limitations under the License.
 #endregion
 
-namespace SimpleIdentityServer.Startup.Configuration
+using System;
+
+namespace SimpleIdentityServer.Core.Services
 {
-    public class ConfigurationParameters
+    public interface IConfigurationService
     {
-        public string ConfigurationUrl { get; set; }
+        string GetIssuerName();
+
+        double GetTokenValidityPeriodInSeconds();
+
+        double GetAuthorizationCodeValidityPeriodInSeconds();
+
+        string DefaultLanguage();
     }
 }

@@ -45,15 +45,20 @@ namespace SimpleIdentityServer.Host
         
         public static void UseSimpleIdentityServer(
             this IApplicationBuilder app,
-            IdentityServerOptions hostingOptions,
+            IdentityServerOptions options,
             ILoggerFactory loggerFactory) 
         {
-            if (hostingOptions == null)
+            if (options == null)
             {
-                throw new ArgumentNullException(nameof(hostingOptions));
+                throw new ArgumentNullException(nameof(options));
             }
 
-            if (hostingOptions.IsDeveloperModeEnabled)
+            if (options.DataSource == null)
+            {
+                throw new ArgumentNullException(nameof(options.DataSource));
+            }
+
+            if (options.IsDeveloperModeEnabled)
             {
                 app.UseDeveloperExceptionPage();
             }
@@ -73,7 +78,7 @@ namespace SimpleIdentityServer.Host
             app.UseXFrame();
 
             // 3. Migrate all the database
-            if (hostingOptions.IsDataMigrated)
+            if (options.DataSource.IsDataMigrated)
             {
                 using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
                 {

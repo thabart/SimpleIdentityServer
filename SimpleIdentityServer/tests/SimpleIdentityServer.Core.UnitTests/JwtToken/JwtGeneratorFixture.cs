@@ -16,7 +16,6 @@
 
 using System.Linq;
 using Moq;
-using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
@@ -38,6 +37,7 @@ using System.Security.Cryptography;
 using Xunit;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Services;
 
 namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 {
@@ -45,7 +45,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
     {
         private IJwtGenerator _jwtGenerator;
 
-        private Mock<ISimpleIdentityServerConfigurator> _simpleIdentityServerConfigurator;
+        private Mock<IConfigurationService> _simpleIdentityServerConfigurator;
 
         private Mock<IClientRepository> _clientRepositoryStub;
                 
@@ -1057,7 +1057,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 
         private void InitializeMockObjects()
         {
-            _simpleIdentityServerConfigurator = new Mock<ISimpleIdentityServerConfigurator>();
+            _simpleIdentityServerConfigurator = new Mock<IConfigurationService>();
             _clientRepositoryStub = new Mock<IClientRepository>();
             _jsonWebKeyRepositoryStub = new Mock<IJsonWebKeyRepository>();
             _scopeRepositoryStub = new Mock<IScopeRepository>();

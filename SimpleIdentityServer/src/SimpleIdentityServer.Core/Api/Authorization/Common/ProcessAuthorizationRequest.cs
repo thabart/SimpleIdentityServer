@@ -29,8 +29,8 @@ using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.Core.Services;
 
 namespace SimpleIdentityServer.Core.Api.Authorization.Common
 {
@@ -44,19 +44,12 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
     public class ProcessAuthorizationRequest : IProcessAuthorizationRequest
     {
         private readonly IParameterParserHelper _parameterParserHelper;
-
         private readonly IClientValidator _clientValidator;
-
         private readonly IScopeValidator _scopeValidator;
-
         private readonly IActionResultFactory _actionResultFactory;
-
         private readonly IConsentHelper _consentHelper;
-
         private readonly IJwtParser _jwtParser;
-
-        private readonly ISimpleIdentityServerConfigurator _simpleIdentityServerConfigurator;
-
+        private readonly IConfigurationService _configurationService;
         private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
 
         public ProcessAuthorizationRequest(
@@ -66,7 +59,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
             IActionResultFactory actionResultFactory,
             IConsentHelper consentHelper,
             IJwtParser jwtParser,
-            ISimpleIdentityServerConfigurator simpleIdentityServerConfigurator,
+            IConfigurationService configurationService,
             ISimpleIdentityServerEventSource simpleIdentityServerEventSource)
         {
             _parameterParserHelper = parameterParserHelper;
@@ -75,7 +68,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
             _actionResultFactory = actionResultFactory;
             _consentHelper = consentHelper;
             _jwtParser = jwtParser;
-            _simpleIdentityServerConfigurator = simpleIdentityServerConfigurator;
+            _configurationService = configurationService;
             _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
         }
 
@@ -262,7 +255,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
                         authorizationParameter.State);
                 }
 
-                var issuerName = _simpleIdentityServerConfigurator.GetIssuerName();
+                var issuerName = _configurationService.GetIssuerName();
                 if (jwsPayload.Audiences == null ||
                     !jwsPayload.Audiences.Any() ||
                     !jwsPayload.Audiences.Contains(issuerName))

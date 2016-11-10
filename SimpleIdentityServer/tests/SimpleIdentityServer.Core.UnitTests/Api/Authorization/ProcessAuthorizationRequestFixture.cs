@@ -19,7 +19,6 @@ using SimpleIdentityServer.Core.Jwt.Encrypt;
 using SimpleIdentityServer.Core.Jwt.Encrypt.Encryption;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using Moq;
-using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Mapping;
 using SimpleIdentityServer.Logging;

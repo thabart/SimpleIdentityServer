@@ -118,14 +118,38 @@ namespace SimpleIdentityServer.Host
                 services.AddSingleton(options.AuthenticateResourceOwner);
             }
 
-            services.AddSingleton<>();
+            if (options.TwoFactorServiceStore == null)
+            {
+                services.AddTransient<ITwoFactorServiceStore, TwoFactorServiceStore>();
+            }
+            else
+            {
+                services.AddSingleton(options.TwoFactorServiceStore);
+            }
+
+            if (options.ConfigurationService == null)
+            {
+                services.AddTransient<IConfigurationService, DefaultConfigurationService>();
+            }
+            else
+            {
+                services.AddSingleton(options.ConfigurationService);
+            }
+
+            if (options.PasswordService == null)
+            {
+                services.AddTransient<IPasswordService, DefaultPasswordService>();
+            }
+            else
+            {
+                services.AddSingleton(options.PasswordService);
+            }
+
             services.AddTransient<ICertificateStore, CertificateStore>();
-            services.AddTransient<IResourceOwnerService, InMemoryUserService>();
             services.AddTransient<IRedirectInstructionParser, RedirectInstructionParser>();
             services.AddTransient<IActionResultParser, ActionResultParser>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
-            services.AddSingleton<IEncryptedPasswordFactory, EncryptedPasswordFactory>();
 
             // Configure SeriLog pipeline
             Func<LogEvent, bool> serilogFilter = (e) =>

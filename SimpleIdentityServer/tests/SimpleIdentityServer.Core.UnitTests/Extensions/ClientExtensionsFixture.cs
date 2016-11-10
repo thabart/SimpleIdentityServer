@@ -1,6 +1,5 @@
 ﻿using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Jwt;
-using SimpleIdentityServer.Core.Models;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Extensions

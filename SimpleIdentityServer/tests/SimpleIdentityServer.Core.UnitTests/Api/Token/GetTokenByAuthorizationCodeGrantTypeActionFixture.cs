@@ -17,7 +17,6 @@
 using Moq;
 using SimpleIdentityServer.Core.Api.Token.Actions;
 using SimpleIdentityServer.Core.Authenticate;
-using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
@@ -25,10 +24,10 @@ using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
 using System;
-using System.Collections.Generic;
 using System.Net.Http.Headers;
 using Xunit;
 
@@ -40,7 +39,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
         private Mock<IAuthorizationCodeRepository> _authorizationCodeRepositoryFake;
 
-        private Mock<ISimpleIdentityServerConfigurator> _simpleIdentityServerConfiguratorFake;
+        private Mock<IConfigurationService> _simpleIdentityServerConfiguratorFake;
 
         private Mock<IGrantedTokenGeneratorHelper> _grantedTokenGeneratorHelperFake;
 
@@ -432,12 +431,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
         {
             _clientValidatorFake = new Mock<IClientValidator>();
             _authorizationCodeRepositoryFake = new Mock<IAuthorizationCodeRepository>();
-            _simpleIdentityServerConfiguratorFake = new Mock<ISimpleIdentityServerConfigurator>();
             _grantedTokenGeneratorHelperFake = new Mock<IGrantedTokenGeneratorHelper>();
             _grantedTokenRepositoryFake = new Mock<IGrantedTokenRepository>();
             _authenticateClientFake = new Mock<IAuthenticateClient>();
             _clientHelper = new Mock<IClientHelper>();
-            _simpleIdentityServerConfiguratorFake = new Mock<ISimpleIdentityServerConfigurator>();
+            _simpleIdentityServerConfiguratorFake = new Mock<IConfigurationService>();
             _simpleIdentityServerEventSourceFake = new Mock<ISimpleIdentityServerEventSource>();
             _authenticateInstructionGeneratorStub = new Mock<IAuthenticateInstructionGenerator>();
             _grantedTokenHelperStub = new Mock<IGrantedTokenHelper>();

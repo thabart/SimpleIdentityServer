@@ -18,7 +18,7 @@ using System;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Models;
 using System.Text;
-using SimpleIdentityServer.Core.Configuration;
+using SimpleIdentityServer.Core.Services;
 
 namespace SimpleIdentityServer.Core.Helpers
 {
@@ -33,17 +33,13 @@ namespace SimpleIdentityServer.Core.Helpers
 
     public class GrantedTokenGeneratorHelper : IGrantedTokenGeneratorHelper
     {
-        #region Fields
-
-        private readonly ISimpleIdentityServerConfigurator _simpleIdentityServerConfigurator;
-
-        #endregion
+        private readonly IConfigurationService _configurationService;
 
         #region Constructor
 
-        public GrantedTokenGeneratorHelper(ISimpleIdentityServerConfigurator simpleIdentityServerConfigurator)
+        public GrantedTokenGeneratorHelper(IConfigurationService configurationService)
         {
-            _simpleIdentityServerConfigurator = simpleIdentityServerConfigurator;
+            _configurationService = configurationService;
         }
 
         #endregion
@@ -66,7 +62,7 @@ namespace SimpleIdentityServer.Core.Helpers
                 throw new ArgumentNullException(nameof(scope));
             }
 
-            var expiresIn = (int)_simpleIdentityServerConfigurator.GetTokenValidityPeriodInSeconds();
+            var expiresIn = (int)_configurationService.GetTokenValidityPeriodInSeconds();
             var accessTokenId = Encoding.UTF8.GetBytes(Guid.NewGuid().ToString());
             var refreshTokenId = Encoding.UTF8.GetBytes(Guid.NewGuid().ToString());
             return new GrantedToken

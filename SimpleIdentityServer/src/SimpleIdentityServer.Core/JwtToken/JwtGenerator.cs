@@ -15,7 +15,6 @@
 #endregion
 
 using SimpleIdentityServer.Core.Common.Extensions;
-using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
@@ -27,6 +26,7 @@ using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.Validators;
 using System;
 using System.Collections.Generic;
@@ -75,7 +75,7 @@ namespace SimpleIdentityServer.Core.JwtToken
 
     public class JwtGenerator : IJwtGenerator
     {
-        private readonly ISimpleIdentityServerConfigurator _simpleIdentityServerConfigurator;
+        private readonly IConfigurationService _configurationService;
 
         private readonly IClientRepository _clientRepository;
 
@@ -134,7 +134,7 @@ namespace SimpleIdentityServer.Core.JwtToken
         };
 
         public JwtGenerator(
-            ISimpleIdentityServerConfigurator simpleIdentityServerConfigurator,
+            IConfigurationService configurationService,
             IClientRepository clientRepository,
             IClientValidator clientValidator,
             IJsonWebKeyRepository jsonWebKeyRepository,
@@ -144,7 +144,7 @@ namespace SimpleIdentityServer.Core.JwtToken
             IJwsGenerator jwsGenerator,
             IJweGenerator jweGenerator)
         {
-            _simpleIdentityServerConfigurator = simpleIdentityServerConfigurator;
+            _configurationService = configurationService;
             _clientRepository = clientRepository;
             _clientValidator = clientValidator;
             _jsonWebKeyRepository = jsonWebKeyRepository;
@@ -438,7 +438,7 @@ namespace SimpleIdentityServer.Core.JwtToken
             var azpParameter = claimParameters.FirstOrDefault(c => c.Name == Jwt.Constants.StandardClaimNames.Azp);
 
             var timeKeyValuePair = GetExpirationAndIssuedTime();
-            var issuerName = _simpleIdentityServerConfigurator.GetIssuerName();
+            var issuerName = _configurationService.GetIssuerName();
             var audiences = new List<string>();
             var expirationInSeconds = timeKeyValuePair.Key;
             var issuedAtTime = timeKeyValuePair.Value;
@@ -712,7 +712,7 @@ namespace SimpleIdentityServer.Core.JwtToken
         private KeyValuePair<double, double> GetExpirationAndIssuedTime()
         {
             var currentDateTime = DateTimeOffset.UtcNow;
-            var expiredDateTime = currentDateTime.AddSeconds(_simpleIdentityServerConfigurator.GetTokenValidityPeriodInSeconds());
+            var expiredDateTime = currentDateTime.AddSeconds(_configurationService.GetTokenValidityPeriodInSeconds());
             var expirationInSeconds = expiredDateTime.ConvertToUnixTimestamp();
             var iatInSeconds = currentDateTime.ConvertToUnixTimestamp();
             return new KeyValuePair<double, double>(expirationInSeconds, iatInSeconds);

@@ -1,15 +1,13 @@
-﻿using System;
-using Moq;
-
+﻿using Moq;
 using SimpleIdentityServer.Core.Authenticate;
-using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.Validators;
+using System;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Authenticate
@@ -18,7 +16,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
     {
         private Mock<IJwsParser> _jwsParserFake;
         
-        private Mock<ISimpleIdentityServerConfigurator> _simpleIdentityServerConfiguratorFake;
+        private Mock<IConfigurationService> _simpleIdentityServerConfiguratorFake;
 
         private Mock<IClientValidator> _clientValidatorFake;
 
@@ -471,7 +469,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
         private void InitializeFakeObjects()
         {
             _jwsParserFake = new Mock<IJwsParser>();
-            _simpleIdentityServerConfiguratorFake = new Mock<ISimpleIdentityServerConfigurator>();
+            _simpleIdentityServerConfiguratorFake = new Mock<IConfigurationService>();
             _clientValidatorFake = new Mock<IClientValidator>();
             _jwtParserFake = new Mock<IJwtParser>();
             _clientAssertionAuthentication = new ClientAssertionAuthentication(

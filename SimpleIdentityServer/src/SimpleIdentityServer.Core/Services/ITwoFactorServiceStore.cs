@@ -14,16 +14,11 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace SimpleIdentityServer.Core.Services
 {
     public interface ITwoFactorServiceStore
     {
         void Add(ITwoFactorAuthenticationService service);
-
         ITwoFactorAuthenticationService Get(int twoFactorAuthType);
     }
 }

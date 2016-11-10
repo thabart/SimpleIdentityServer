@@ -96,13 +96,30 @@ namespace SimpleIdentityServer.Startup.Controllers
             }
 
             ViewBag.IsUpdated = false;
+            var email = string.Empty;
+            var phoneNumber = string.Empty;
+            if(user.Claims != null)
+            {
+                var emailClaim = user.Claims.FirstOrDefault(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Email);
+                var phoneNumberClaim = user.Claims.FirstOrDefault(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber);
+                if (emailClaim != null)
+                {
+                    email = emailClaim.Value;
+                }
+
+                if (phoneNumberClaim != null)
+                {
+                    phoneNumber = phoneNumberClaim.Value;
+                }
+            }
+
             return View(new UpdateResourceOwnerViewModel
             {
-                Email = user.Email,
-                Name = user.Name,
+                Email = email,
+                Name = user.Id,
                 Password = user.Password,
                 TwoAuthenticationFactor = user.TwoFactorAuthentication,
-                PhoneNumber = user.PhoneNumber
+                PhoneNumber = phoneNumber
             });
         }
 
@@ -133,7 +150,7 @@ namespace SimpleIdentityServer.Startup.Controllers
 
             // 3. Update the resource owner
             var parameter = viewModel.ToParameter();
-            parameter.Id = user.Id;
+            parameter.Login = user.Id;
             _userActions.UpdateUser(parameter);
 
             // 4. Returns translated view
@@ -209,7 +226,7 @@ namespace SimpleIdentityServer.Startup.Controllers
         private async Task<ResourceOwner> GetCurrentUser()
         {
             var authenticatedUser = await this.GetAuthenticatedUser();
-            return  _userActions.GetUser(authenticatedUser);
+            return _userActions.GetUser(authenticatedUser);
         }
 
         private bool SetUserEditViewBag(ResourceOwner user)

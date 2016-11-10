@@ -15,10 +15,9 @@
 #endregion
 
 using Moq;
-using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Helpers;
+using SimpleIdentityServer.Core.Services;
 using System;
-using System.Collections.Generic;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Helpers
@@ -27,7 +26,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
     {
         #region Fields
 
-        private Mock<ISimpleIdentityServerConfigurator> _simpleIdentityServerConfiguratorStub;
+        private Mock<IConfigurationService> _simpleIdentityServerConfiguratorStub;
 
         private IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
 
@@ -73,7 +72,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
 
         private void InitializeFakeObjects()
         {
-            _simpleIdentityServerConfiguratorStub = new Mock<ISimpleIdentityServerConfigurator>();
+            _simpleIdentityServerConfiguratorStub = new Mock<IConfigurationService>();
             _grantedTokenGeneratorHelper = new GrantedTokenGeneratorHelper(_simpleIdentityServerConfiguratorStub.Object);
         }
 

@@ -26,7 +26,7 @@ using System;
 using System.Collections.Generic;
 using Xunit;
 using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Factories;
+using SimpleIdentityServer.Core.Services;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
 {
@@ -39,7 +39,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
 
         private Mock<IGenerateClientFromRegistrationRequest> _generateClientFromRegistrationRequest;
 
-        private Mock<IEncryptedPasswordFactory> _encryptedPasswordFactoryStub;
+        private Mock<IPasswordService> _encryptedPasswordFactoryStub;
 
         private IRegisterClientAction _registerClientAction;
 
@@ -187,7 +187,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
             _simpleIdentityServerEventSourceFake = new Mock<ISimpleIdentityServerEventSource>();
             _clientRepositoryFake = new Mock<IClientRepository>();
             _generateClientFromRegistrationRequest = new Mock<IGenerateClientFromRegistrationRequest>();
-            _encryptedPasswordFactoryStub = new Mock<IEncryptedPasswordFactory>();
+            _encryptedPasswordFactoryStub = new Mock<IPasswordService>();
             _registerClientAction = new RegisterClientAction(
                 _simpleIdentityServerEventSourceFake.Object,
                 _clientRepositoryFake.Object,

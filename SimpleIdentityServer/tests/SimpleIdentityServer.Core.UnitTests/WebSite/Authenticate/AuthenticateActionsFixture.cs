@@ -165,7 +165,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             var resourceOwner = new ResourceOwner
             {
                 Password = "password",
-                Name = "username"
+                Id = "username"
             };
             _localUserAuthenticationActionFake.Setup(l => l.Execute(It.IsAny<LocalAuthenticationParameter>()))
                 .Returns(resourceOwner);
@@ -175,7 +175,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 
             // ASSERT
             Assert.NotNull(result);
-            Assert.True(result.Name == "username" && result.Password == "password");
+            Assert.True(result.Id == "username" && result.Password == "password");
         }
 
         [Fact]

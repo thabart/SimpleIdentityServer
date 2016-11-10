@@ -15,12 +15,8 @@
 #endregion
 
 using Moq;
-using SimpleIdentityServer.Client;
-using SimpleIdentityServer.Configuration.Client;
-using SimpleIdentityServer.Core.Configuration;
-using SimpleIdentityServer.Core.TwoFactors;
+using SimpleIdentityServer.Core.Services;
 using System;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.TwoFactors

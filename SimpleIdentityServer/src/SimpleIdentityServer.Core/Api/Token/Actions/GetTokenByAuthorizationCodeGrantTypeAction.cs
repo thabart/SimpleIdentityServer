@@ -17,7 +17,6 @@
 using System;
 using System.Net.Http.Headers;
 using SimpleIdentityServer.Core.Authenticate;
-using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
@@ -27,6 +26,7 @@ using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Core.Extensions;
+using SimpleIdentityServer.Core.Services;
 
 namespace SimpleIdentityServer.Core.Api.Token.Actions
 {
@@ -39,23 +39,14 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
     public class GetTokenByAuthorizationCodeGrantTypeAction : IGetTokenByAuthorizationCodeGrantTypeAction
     {
         private readonly IAuthenticateInstructionGenerator _authenticateInstructionGenerator;
-
         private readonly IClientValidator _clientValidator;
-
         private readonly IAuthorizationCodeRepository _authorizationCodeRepository;
-
-        private readonly ISimpleIdentityServerConfigurator _simpleIdentityServerConfigurator;
-
+        private readonly IConfigurationService _configurationService;
         private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
-
         private readonly IGrantedTokenRepository _grantedTokenRepository;
-
         private readonly IAuthenticateClient _authenticateClient;
-
         private readonly IClientHelper _clientHelper;
-
         private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
-
         private readonly IGrantedTokenHelper _grantedTokenHelper;
 
         #region Constructor
@@ -63,7 +54,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
         public GetTokenByAuthorizationCodeGrantTypeAction(
             IClientValidator clientValidator,
             IAuthorizationCodeRepository authorizationCodeRepository,
-            ISimpleIdentityServerConfigurator simpleIdentityServerConfigurator,
+            IConfigurationService configurationService,
             IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
             IGrantedTokenRepository grantedTokenRepository,
             IAuthenticateClient authenticateClient,
@@ -74,7 +65,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
         {
             _clientValidator = clientValidator;
             _authorizationCodeRepository = authorizationCodeRepository;
-            _simpleIdentityServerConfigurator = simpleIdentityServerConfigurator;
+            _configurationService = configurationService;
             _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
             _grantedTokenRepository = grantedTokenRepository;
             _authenticateClient = authenticateClient;
@@ -182,7 +173,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             }
 
             // Ensure the authorization code is still valid.
-            var authCodeValidity = _simpleIdentityServerConfigurator.GetAuthorizationCodeValidityPeriodInSeconds();
+            var authCodeValidity = _configurationService.GetAuthorizationCodeValidityPeriodInSeconds();
             var expirationDateTime = authorizationCode.CreateDateTime.AddSeconds(authCodeValidity);
             var currentDateTime = DateTime.UtcNow;
             if (currentDateTime > expirationDateTime)

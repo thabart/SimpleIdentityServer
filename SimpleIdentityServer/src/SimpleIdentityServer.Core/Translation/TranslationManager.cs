@@ -13,13 +13,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
+using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Services;
 using System;
 using System.Collections.Generic;
-
-using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Configuration;
 using System.Linq;
-using SimpleIdentityServer.Core.Repositories;
 
 namespace SimpleIdentityServer.Core.Translation
 {
@@ -32,15 +31,15 @@ namespace SimpleIdentityServer.Core.Translation
 
     public class TranslationManager : ITranslationManager
     {
-        private readonly ISimpleIdentityServerConfigurator _configurator;
+        private readonly IConfigurationService _configurationService;
 
         private readonly ITranslationRepository _translationRepository;
 
         public TranslationManager(
-            ISimpleIdentityServerConfigurator configurator,
+            IConfigurationService configurationService,
             ITranslationRepository translationRepository)
         {
-            _configurator = configurator;
+            _configurationService = configurationService;
             _translationRepository = translationRepository;
         }
 
@@ -80,7 +79,7 @@ namespace SimpleIdentityServer.Core.Translation
         {
             if (string.IsNullOrWhiteSpace(concatenateListOfCodeLanguages))
             {
-                return _configurator.DefaultLanguage();
+                return _configurationService.DefaultLanguage();
             }
 
             var listOfCodeLanguages = concatenateListOfCodeLanguages.Split(' ');
@@ -88,7 +87,7 @@ namespace SimpleIdentityServer.Core.Translation
             if (listOfCodeLanguages == null || !listOfCodeLanguages.Any() ||
                 supportedCodeLanguages == null || !supportedCodeLanguages.Any())
             {
-                return _configurator.DefaultLanguage();
+                return _configurationService.DefaultLanguage();
             }
 
             foreach (var codeLanguage in listOfCodeLanguages)
@@ -99,7 +98,7 @@ namespace SimpleIdentityServer.Core.Translation
                 }
             }
 
-            return _configurator.DefaultLanguage();
+            return _configurationService.DefaultLanguage();
         }
     }
 }

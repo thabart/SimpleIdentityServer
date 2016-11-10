@@ -157,5 +157,43 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                 return false;
             }
         }
+
+        public Domains.ResourceOwner Get(string id)
+        {
+            try
+            {
+                var result = _context.ResourceOwners.FirstOrDefault(r => r.Id == id);
+                if (result == null)
+                {
+                    return null;
+                }
+
+                return result.ToDomain();
+            }
+            catch (Exception ex)
+            {
+                _managerEventSource.Failure(ex);
+                return null;
+            }
+        }
+
+        public Domains.ResourceOwner Get(string id, string password)
+        {
+            try
+            {
+                var result = _context.ResourceOwners.FirstOrDefault(r => r.Id == id && r.Password == password);
+                if (result == null)
+                {
+                    return null;
+                }
+
+                return result.ToDomain();
+            }
+            catch (Exception ex)
+            {
+                _managerEventSource.Failure(ex);
+                return null;
+            }
+        }
     }
 }

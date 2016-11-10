@@ -16,6 +16,8 @@
 
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Startup.ViewModels;
+using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace SimpleIdentityServer.Startup.Extensions
 {
@@ -25,11 +27,14 @@ namespace SimpleIdentityServer.Startup.Extensions
         {
             return new UpdateUserParameter
             {
-                Name = updateResourceOwnerViewModel.Name,
                 Password = updateResourceOwnerViewModel.NewPassword,
                 TwoFactorAuthentication = updateResourceOwnerViewModel.TwoAuthenticationFactor,
-                Email = updateResourceOwnerViewModel.Email,
-                Phone = updateResourceOwnerViewModel.PhoneNumber
+                Claims = new List<Claim>
+                {
+                    new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Email, updateResourceOwnerViewModel.Email),
+                    new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Email, updateResourceOwnerViewModel.PhoneNumber)
+                },
+                Login = updateResourceOwnerViewModel.Name
             };
         }
 

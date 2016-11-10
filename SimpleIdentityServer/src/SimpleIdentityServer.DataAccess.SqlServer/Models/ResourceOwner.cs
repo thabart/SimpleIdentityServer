@@ -25,6 +25,10 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Models
         /// </summary>
         public string Id { get; set; }
         /// <summary>
+        /// Gets or sets the password.
+        /// </summary>
+        public string Password { get; set; }
+        /// <summary>
         /// Gets or sets local account
         /// </summary>
         public bool IsLocalAccount { get; set; }

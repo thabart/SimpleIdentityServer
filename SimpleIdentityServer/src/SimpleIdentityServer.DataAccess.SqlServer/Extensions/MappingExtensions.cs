@@ -54,7 +54,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                 Id = resourceOwner.Id,
                 IsLocalAccount = resourceOwner.IsLocalAccount,
                 TwoFactorAuthentication = (Domain.TwoFactorAuthentications)resourceOwner.TwoFactorAuthentication,
-                Claims = claims
+                Claims = claims,
+                Password = resourceOwner.Password
             };
         }
 

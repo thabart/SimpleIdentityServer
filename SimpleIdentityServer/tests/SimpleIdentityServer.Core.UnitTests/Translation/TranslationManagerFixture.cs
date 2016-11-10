@@ -1,6 +1,6 @@
 ﻿using Moq;
-using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.Translation;
 using System;
 using System.Collections.Generic;
@@ -11,7 +11,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Translation
 {
     public sealed class TranslationManagerFixture
     {
-        private Mock<ISimpleIdentityServerConfigurator> _simpleIdentityServerConfiguratorFake;
+        private Mock<IConfigurationService> _simpleIdentityServerConfiguratorFake;
 
         private Mock<ITranslationRepository> _translationRepositoryFake;
 
@@ -83,7 +83,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Translation
 
         private void InitializeFakeObjects()
         {
-            _simpleIdentityServerConfiguratorFake = new Mock<ISimpleIdentityServerConfigurator>();
+            _simpleIdentityServerConfiguratorFake = new Mock<IConfigurationService>();
             _translationRepositoryFake = new Mock<ITranslationRepository>();
             _translationManager = new TranslationManager(
                 _simpleIdentityServerConfiguratorFake.Object,

@@ -26,6 +26,7 @@ using System.Linq;
 using System.Collections.Generic;
 using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Factories;
+using SimpleIdentityServer.Core.Services;
 
 namespace SimpleIdentityServer.Core.Api.Registration.Actions
 {
@@ -42,13 +43,13 @@ namespace SimpleIdentityServer.Core.Api.Registration.Actions
 
         private readonly IGenerateClientFromRegistrationRequest _generateClientFromRegistrationRequest;
 
-        private readonly IEncryptedPasswordFactory _encryptedPasswordFactory;
+        private readonly IPasswordService _encryptedPasswordFactory;
 
         public RegisterClientAction(
             ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
             IClientRepository clientRepository,
             IGenerateClientFromRegistrationRequest generateClientFromRegistrationRequest,
-            IEncryptedPasswordFactory encryptedPasswordFactory)
+            IPasswordService encryptedPasswordFactory)
         {
             _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
             _clientRepository = clientRepository;

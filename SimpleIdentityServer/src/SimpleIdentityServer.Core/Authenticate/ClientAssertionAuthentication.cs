@@ -16,13 +16,13 @@
 
 using System;
 using System.Linq;
-using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Validators;
+using SimpleIdentityServer.Core.Services;
 
 namespace SimpleIdentityServer.Core.Authenticate
 {
@@ -55,22 +55,19 @@ namespace SimpleIdentityServer.Core.Authenticate
 
     public class ClientAssertionAuthentication : IClientAssertionAuthentication
     {
-        private readonly IJwsParser _jwsParser;
-        
-        private readonly ISimpleIdentityServerConfigurator _simpleIdentityServerConfigurator;
-
+        private readonly IJwsParser _jwsParser;        
+        private readonly IConfigurationService _configurationService;
         private readonly IClientValidator _clientValidator;
-
         private readonly IJwtParser _jwtParser;
 
         public ClientAssertionAuthentication(
             IJwsParser jwsParser,
-            ISimpleIdentityServerConfigurator simpleIdentityServerConfigurator,
+            IConfigurationService configurationService,
             IClientValidator clientValidator,
             IJwtParser jwtParser)
         {
             _jwsParser = jwsParser;
-            _simpleIdentityServerConfigurator = simpleIdentityServerConfigurator;
+            _configurationService = configurationService;
             _clientValidator = clientValidator;
             _jwtParser = jwtParser;
         }
@@ -214,7 +211,7 @@ namespace SimpleIdentityServer.Core.Authenticate
         {
             // The checks are coming from this url : http://openid.net/specs/openid-connect-core-1_0.html#ClientAuthentication
             messageError = string.Empty;
-            var expectedIssuer = _simpleIdentityServerConfigurator.GetIssuerName();
+            var expectedIssuer = _configurationService.GetIssuerName();
             var jwsIssuer = jwsPayload.Issuer;
             var jwsSubject = jwsPayload.GetClaimValue(Jwt.Constants.StandardResourceOwnerClaimNames.Subject);
             var jwsAudiences = jwsPayload.Audiences;

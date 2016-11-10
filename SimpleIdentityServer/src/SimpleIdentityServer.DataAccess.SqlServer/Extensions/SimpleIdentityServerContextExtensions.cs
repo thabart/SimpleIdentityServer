@@ -28,7 +28,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
     {
         public static void EnsureSeedData(this SimpleIdentityServerContext context)
         {
-            InsertRoles(context);
             InsertClaims(context);
             InsertScopes(context);
             InsertTranslations(context);
@@ -36,21 +35,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
             InsertJsonWebKeys(context);
             InsertClients(context);
             context.SaveChanges();
-        }
-        
-        private static void InsertRoles(SimpleIdentityServerContext context)
-        {
-            if (!context.Roles.Any())
-            {
-                context.Roles.AddRange(new[]
-                {
-                    new Role
-                    {
-                        Name = "administrator",
-                        Description = "administrator role"
-                    }
-                });
-            }
         }
 
         private static void InsertClaims(SimpleIdentityServerContext context)
@@ -491,37 +475,124 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                     new ResourceOwner
                     {
                         Id = Guid.NewGuid().ToString(),
-                        Name = "administrator",
-                        Address = new Address
-                        {
-                            Id = Guid.NewGuid().ToString(),
-                            Country  = "France"
-                        },
-                        BirthDate = "1989-10-07",
-                        Email = "habarthierry@hotmail.fr",
-                        EmailVerified = true,
-                        FamilyName = "habart",
-                        Gender = "M",
-                        GivenName = "Habart Thierry",
-                        Locale = "fr-FR",
-                        MiddleName = "Thierry",
-                        NickName = "Titi",
-                        PhoneNumber = "+32485350536",
-                        PhoneNumberVerified = true,
-                        Picture = "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Shiba_inu_taiki.jpg/220px-Shiba_inu_taiki.jpg",
-                        PreferredUserName = "Thierry",
-                        Profile = "http://localhost/profile",
-                        UpdatedAt = DateTime.Now.ConvertToUnixTimestamp(),
-                        WebSite = "https://github.com/thabart",
-                        ZoneInfo = "Europe/Paris",
-                        Password = "5E884898DA28047151D0E56F8DC6292773603D0D6AABBDD62A11EF721D1542D8",
-                        ResourceOwnerRoles = new List<ResourceOwnerClaim>
+                        Claims = new List<ResourceOwnerClaim>
                         {
                             new ResourceOwnerClaim
                             {
-                                RoleName = "administrator"
+                                Id = Guid.NewGuid().ToString(),
+                                ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Role,
+                                Value = "administrator"
+                            },
+                            new ResourceOwnerClaim
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Address,
+                                Value = "{ country : 'france' }"
+                            },
+                            new ResourceOwnerClaim
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.BirthDate,
+                                Value = "1989-10-07"
+                            },
+                            new ResourceOwnerClaim
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Email,
+                                Value = "habarthierry@hotmail.fr"
+                            },
+                            new ResourceOwnerClaim
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.EmailVerified,
+                                Value = "true"
+                            },
+                            new ResourceOwnerClaim
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.FamilyName,
+                                Value = "habart"
+                            },
+                            new ResourceOwnerClaim
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Gender,
+                                Value = "M"
+                            },
+                            new ResourceOwnerClaim
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.GivenName,
+                                Value = "Habart Thierry"
+                            },
+                            new ResourceOwnerClaim
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Locale,
+                                Value = "fr-FR"
+                            },
+                            new ResourceOwnerClaim
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.MiddleName,
+                                Value = "Thierry"
+                            },
+                            new ResourceOwnerClaim
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.NickName,
+                                Value = "Titi"
+                            },
+                            new ResourceOwnerClaim
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber,
+                                Value = "+32485350536"
+                            },
+                            new ResourceOwnerClaim
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumberVerified,
+                                Value = "true"
+                            },
+                            new ResourceOwnerClaim
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Picture,
+                                Value = "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Shiba_inu_taiki.jpg/220px-Shiba_inu_taiki.jpg"
+                            },
+                            new ResourceOwnerClaim
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.PreferredUserName,
+                                Value = "Thierry"
+                            },
+                            new ResourceOwnerClaim
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Profile,
+                                Value = "http://localhost/profile"
+                            },
+                            new ResourceOwnerClaim
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt,
+                                Value = DateTime.Now.ConvertToUnixTimestamp().ToString()
+                            },
+                            new ResourceOwnerClaim
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.WebSite,
+                                Value = "https://github.com/thabart"
+                            },
+                            new ResourceOwnerClaim
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.ZoneInfo,
+                                Value = "Europe/Paris"
                             }
                         },
+                        Password = "5E884898DA28047151D0E56F8DC6292773603D0D6AABBDD62A11EF721D1542D8",
                         IsLocalAccount = true
                     }
                 });

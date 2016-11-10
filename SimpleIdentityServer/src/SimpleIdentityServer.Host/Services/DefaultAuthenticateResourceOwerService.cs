@@ -37,13 +37,23 @@ namespace SimpleIdentityServer.Host.Services
                 throw new ArgumentNullException(nameof(login));
             }
 
-            return null;
+            return _resourceOwnerRepository.Get(login);
         }
 
         public ResourceOwner AuthenticateResourceOwner(string login, string password)
         {
-            var resourceOwner = AuthenticateResourceOwner(login);
-            return resourceOwner;
+            if (string.IsNullOrWhiteSpace(login))
+            {
+                throw new ArgumentNullException(nameof(login));
+            }
+
+            // TODO : Encrypt the password !!!!
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                throw new ArgumentNullException(nameof(password));
+            }
+
+            return _resourceOwnerRepository.Get(login, password);
         }
     }
 }

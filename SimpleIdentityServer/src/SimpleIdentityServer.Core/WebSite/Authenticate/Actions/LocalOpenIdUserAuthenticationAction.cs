@@ -101,7 +101,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                 claims = new List<Claim>();
                 throw new IdentityServerAuthenticationException("the resource owner credentials are not correct");
             }
-            claims = resourceOwner.Claims.ToList();
+            claims = resourceOwner.Claims == null ? new List<Claim>() : resourceOwner.Claims.ToList();
             claims.Add(new Claim(ClaimTypes.AuthenticationInstant,
                 DateTimeOffset.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture),
                 ClaimValueTypes.Integer));

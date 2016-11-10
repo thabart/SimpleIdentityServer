@@ -18,7 +18,7 @@ using SimpleIdentityServer.Configuration.Client;
 using SimpleIdentityServer.Configuration.Client.Setting;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.TwoFactors;
+using SimpleIdentityServer.Core.Services;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -28,9 +28,9 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SimpleIdentityServer.Host.TwoFactors
+namespace SimpleIdentityServer.Host.Services
 {
-    public class TwilioSmsService : ITwoFactorAuthenticationService
+    public class DefaultTwilioSmsService : ITwoFactorAuthenticationService
     {
         private const string TwilioSmsEndpointFormat = "https://api.twilio.com/2010-04-01/Accounts/{0}/Messages.json";
         private const string TwilioAccountSid = "TwilioAccountSid";
@@ -59,7 +59,7 @@ namespace SimpleIdentityServer.Host.TwoFactors
 
         private readonly string _configurationUrl;
 
-        public TwilioSmsService(
+        public DefaultTwilioSmsService(
             ISimpleIdServerConfigurationClientFactory simpleIdServerConfigurationClientFactory,
             string configurationUrl)
         {
@@ -93,7 +93,13 @@ namespace SimpleIdentityServer.Host.TwoFactors
                 throw new ArgumentNullException(nameof(user));
             }
 
-            if (string.IsNullOrWhiteSpace(user.PhoneNumber))
+            if (user.Claims == null)
+            {
+                throw new ArgumentNullException(nameof(user.Claims));
+            }
+
+            var phoneNumberClaim = user.Claims.FirstOrDefault(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber);
+            if (phoneNumberClaim == null)
             {
                 throw new ArgumentException("the phone number is missing");
             }
@@ -110,7 +116,7 @@ namespace SimpleIdentityServer.Host.TwoFactors
              AccountSid = dic[TwilioAccountSid].Value,
              AuthToken = dic[TwilioAuthToken].Value,
              FromNumber = dic[TwilioFromNumber].Value,
-            }, user.PhoneNumber, string.Format(dic[TwilioMessage].Value, code));
+            }, phoneNumberClaim.Value, string.Format(dic[TwilioMessage].Value, code));
         }
 
         private async Task<bool> SendMessage(

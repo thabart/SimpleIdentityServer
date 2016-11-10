@@ -101,6 +101,21 @@ namespace SimpleIdentityServer.Host
         /// Configure the SERILOG logging.
         /// </summary>
         public LoggingOptions Logging { get; set; }
+        /// <summary>
+        /// Service used to authenticate the resource owner.
+        /// </summary>
         public IAuthenticateResourceOwnerService AuthenticateResourceOwner { get; set; }
+        /// <summary>
+        /// Service used for Two factor authentication (send a validation token).
+        /// </summary>
+        public ITwoFactorServiceStore TwoFactorServiceStore { get; set; }
+        /// <summary>
+        /// Service used to retrieve configurations (expiration date time etc ...)
+        /// </summary>
+        public IConfigurationService ConfigurationService { get; set; }
+        /// <summary>
+        /// Service used to encrypt the password
+        /// </summary>
+        public IPasswordService PasswordService { get; set; }
     }
 }

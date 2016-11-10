@@ -73,7 +73,7 @@ namespace SimpleIdentityServer.Startup.Controllers
 
             _accountActions.AddResourceOwner(new AddUserParameter
             {
-                Name = updateResourceOwnerViewModel.Name,
+                Login = updateResourceOwnerViewModel.Name,
                 Password = updateResourceOwnerViewModel.Password
             });
 

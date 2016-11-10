@@ -83,6 +83,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
             serviceCollection.AddTransient<IGrantedTokenRepository, GrantedTokenRepository>();
             serviceCollection.AddTransient<IJsonWebKeyRepository, JsonWebKeyRepository>();
             serviceCollection.AddTransient<IConfirmationCodeRepository, ConfirmationCodeRepository>();
+            serviceCollection.AddTransient<IClaimRepository, ClaimRepository>();
         }
 
         #endregion

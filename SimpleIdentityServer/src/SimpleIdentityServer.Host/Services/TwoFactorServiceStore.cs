@@ -14,12 +14,12 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.TwoFactors;
+using SimpleIdentityServer.Core.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SimpleIdentityServer.Host.TwoFactors
+namespace SimpleIdentityServer.Host.Services
 {
     internal class TwoFactorServiceStore : ITwoFactorServiceStore
     {

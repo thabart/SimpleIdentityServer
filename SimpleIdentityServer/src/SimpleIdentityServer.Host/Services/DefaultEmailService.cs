@@ -19,15 +19,15 @@ using MimeKit;
 using SimpleIdentityServer.Configuration.Client;
 using SimpleIdentityServer.Configuration.Client.Setting;
 using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.TwoFactors;
+using SimpleIdentityServer.Core.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SimpleIdentityServer.Host.TwoFactors
+namespace SimpleIdentityServer.Host.Services
 {
-    public class EmailService : ITwoFactorAuthenticationService
+    public class DefaultEmailService : ITwoFactorAuthenticationService
     {
         private const string EmailFromName = "EmailFromName";
         private const string EmailFromAddress = "EmailFromAddress";
@@ -56,7 +56,7 @@ namespace SimpleIdentityServer.Host.TwoFactors
 
         private readonly string _configurationUrl;
 
-        public EmailService(
+        public DefaultEmailService(
             ISimpleIdServerConfigurationClientFactory simpleIdServerConfigurationClientFactory,
             string configurationUrl)
         {
@@ -94,11 +94,29 @@ namespace SimpleIdentityServer.Host.TwoFactors
                 throw new ArgumentNullException(nameof(user));
             }
 
-            if (string.IsNullOrEmpty(user.Email))
+            if (user.Claims == null)
             {
-                throw new ArgumentException("the email is not valid");
+                throw new ArgumentNullException(nameof(user.Claims));
             }
 
+            // 1. Try to fetch the email.
+            var emailClaim = user.Claims.FirstOrDefault(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Email);
+            if (emailClaim == null)
+            {
+                throw new ArgumentException("the email is not present");
+            }
+
+            // 2. Try to fetch the display name.
+            string displayName;
+            var displayNameClaim = user.Claims.FirstOrDefault(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Name);
+            if (displayNameClaim == null)
+            {
+                displayName = user.Id;
+            }
+            else
+            {
+                displayName = displayNameClaim.Value;
+            }
             var settings = await _settingClient.GetSettingsByResolving(_configurationUrl);
             if (!_settingNames.All(k => settings.Any(s => s.Key == k)))
             {
@@ -108,7 +126,7 @@ namespace SimpleIdentityServer.Host.TwoFactors
             var dic = settings.ToDictionary(s => s.Key);
             var message = new MimeMessage();
             message.From.Add(new MailboxAddress(dic[EmailFromName].Value, dic[EmailFromAddress].Value));
-            message.To.Add(new MailboxAddress(user.Name, user.Email));
+            message.To.Add(new MailboxAddress(displayName, emailClaim.Value));
             message.Subject = dic[EmailSubject].Value;
             var bodyBuilder = new BodyBuilder()
             {

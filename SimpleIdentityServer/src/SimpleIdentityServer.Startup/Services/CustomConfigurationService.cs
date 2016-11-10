@@ -16,39 +16,23 @@
 
 using Microsoft.AspNetCore.Http;
 using SimpleIdentityServer.Configuration.Client;
-using SimpleIdentityServer.Core.Configuration;
+using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Host.Extensions;
-using System.IO;
 
 namespace SimpleIdentityServer.Startup.Configuration
 {
-    public class ConcreteSimpleIdentityServerConfigurator : ISimpleIdentityServerConfigurator
+    public class CustomConfigurationService : IConfigurationService
     {
-        #region Fields
-
         private readonly IHttpContextAccessor _httpContextAccessor;
-
         private readonly ISimpleIdServerConfigurationClientFactory _simpleIdServerConfigurationClientFactory;
 
-        private readonly ConfigurationParameters _configurationParameters;
-
-        #endregion
-
-        #region Constructor
-
-        public ConcreteSimpleIdentityServerConfigurator(
+        public CustomConfigurationService(
             IHttpContextAccessor httpContextAccessor,
-            ISimpleIdServerConfigurationClientFactory simpleIdServerConfigurationClientFactory,
-            ConfigurationParameters configurationParameters)
+            ISimpleIdServerConfigurationClientFactory simpleIdServerConfigurationClientFactory)
         {
             _httpContextAccessor = httpContextAccessor;
             _simpleIdServerConfigurationClientFactory = simpleIdServerConfigurationClientFactory;
-            _configurationParameters = configurationParameters;
         }
-
-        #endregion
-
-        #region Public methods
 
         /// <summary>
         /// Returns the validity of an access token or identity token in seconds
@@ -77,11 +61,7 @@ namespace SimpleIdentityServer.Startup.Configuration
         {
             return GetCurrentPath();
         }
-
-        #endregion
-
-        #region Private methods
-
+        
         private double GetExpirationTime(string key)
         {
             double result = 0;
@@ -89,7 +69,7 @@ namespace SimpleIdentityServer.Startup.Configuration
             try
             {
                 var setting = _simpleIdServerConfigurationClientFactory.GetSettingClient()
-                    .GetSettingByResolving(key, _configurationParameters.ConfigurationUrl)
+                    .GetSettingByResolving(key, /*_configurationParameters.ConfigurationUrl*/ null)
                     .Result;
                 if (setting == null || !double.TryParse(setting.Value, out result))
                 {
@@ -110,7 +90,5 @@ namespace SimpleIdentityServer.Startup.Configuration
             var request = _httpContextAccessor.HttpContext.Request;
             return request.GetAbsoluteUriWithVirtualPath();
         }
-
-        #endregion
     }
 }

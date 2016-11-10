@@ -18,16 +18,12 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SimpleIdentityServer.Authentication.Middleware;
 using SimpleIdentityServer.Authentication.Middleware.Extensions;
-using SimpleIdentityServer.Core.Configuration;
 using SimpleIdentityServer.Host;
-using SimpleIdentityServer.RateLimitation.Configuration;
-using SimpleIdentityServer.Startup.Configuration;
 using System.Collections.Generic;
 using WebApiContrib.Core.Storage;
 
@@ -35,16 +31,10 @@ namespace SimpleIdentityServer.Startup
 {
     public class Startup
     {
-        private ConfigurationEdpOptions _configurationEdpOptions;
-
-        #region Properties
-
+        private AuthenticationMiddlewareOptions _authenticationOptions;
+        private IdentityServerOptions _options;
         public IConfigurationRoot Configuration { get; set; }
-
-        #endregion
-
-        #region Public methods
-
+        
         public Startup(IHostingEnvironment env)
         {
             // Load all the configuration information from the "json" file & the environment variables.
@@ -53,14 +43,49 @@ namespace SimpleIdentityServer.Startup
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
-            _configurationEdpOptions = new ConfigurationEdpOptions
+            _authenticationOptions = new AuthenticationMiddlewareOptions
             {
-                ConfigurationUrl = Configuration["ConfigurationUrl"],
-                ClientId = Configuration["ClientId"],
-                ClientSecret = Configuration["ClientSecret"],
-                Scopes = new List<string>
+                IdServer = new IdServerOptions
                 {
-                    "display_configuration"
+                    ExternalLoginCallback = "/Authenticate/LoginCallback",
+                    LoginUrls = new List<string>
+                    {
+                        "/Authenticate",
+                        "/Authenticate/ExternalLogin",
+                        "/Authenticate/OpenId",
+                        "/Authenticate/LocalLoginOpenId",
+                        "/Authenticate/LocalLogin",
+                        "/Authenticate/ExternalLoginOpenId"
+                    }
+                },
+                ConfigurationEdp = new ConfigurationEdpOptions
+                {
+                    ConfigurationUrl = Configuration["ConfigurationUrl"],
+                    ClientId = Configuration["ClientId"],
+                    ClientSecret = Configuration["ClientSecret"],
+                    Scopes = new List<string>
+                    {
+                        "display_configuration"
+                    }
+                }
+            };
+            _options = new IdentityServerOptions
+            {
+                IsDeveloperModeEnabled = false,
+                DataSource = new DataSourceOptions
+                {
+                    DataSourceType = DataSourceTypes.InMemory
+                },
+                Logging = new LoggingOptions
+                {
+                    ElasticsearchOptions = new ElasticsearchOptions
+                    {
+                        IsEnabled = false
+                    },
+                    FileLogOptions = new FileLogOptions
+                    {
+                        IsEnabled = false
+                    }
                 }
             };
         }
@@ -108,8 +133,8 @@ namespace SimpleIdentityServer.Startup
             services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader()));
-            var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
             // 3. Configure the rate limitation
+            /*
             services.Configure<RateLimitationOptions>(opt =>
             {
                 opt.IsEnabled = true;
@@ -124,28 +149,10 @@ namespace SimpleIdentityServer.Startup
                 };
                 opt.MemoryCache = new MemoryCache(new MemoryCacheOptions());
             });
-			
-            var dataSourceType = DataSourceTypes.SqlServer;
-            if (isSqlLite)
-            {
-                dataSourceType = DataSourceTypes.SqlLite;
-            }
-            else if(isPostgre)
-            {
-                dataSourceType = DataSourceTypes.Postgre;
-            }
+            */
 
             // 4. Configure Simple identity server
-            services.AddSimpleIdentityServer(new DataSourceOptions
-            {
-                DataSourceType = dataSourceType,
-                ConnectionString = connectionString
-            }, loggingOptions, _configurationEdpOptions.ConfigurationUrl);
-            services.AddTransient<ISimpleIdentityServerConfigurator, ConcreteSimpleIdentityServerConfigurator>();
-            services.AddSingleton(new ConfigurationParameters
-            {
-                ConfigurationUrl = _configurationEdpOptions.ConfigurationUrl
-            });
+            services.AddSimpleIdentityServer(_options);
             // 5. Enable logging
             services.AddLogging();
             // 6. Configure MVC
@@ -165,25 +172,6 @@ namespace SimpleIdentityServer.Startup
             IHostingEnvironment env,
             ILoggerFactory loggerFactory)
         {
-            var isDataMigrated = Configuration["DATA_MIGRATED"] == null ? false : bool.Parse(Configuration["DATA_MIGRATED"]);
-            var authenticationOptions = new AuthenticationMiddlewareOptions
-            {
-                IdServer = new IdServerOptions
-                {
-                    ExternalLoginCallback = "/Authenticate/LoginCallback",
-                    LoginUrls = new List<string>
-                    {
-                        "/Authenticate",
-                        "/Authenticate/ExternalLogin",
-                        "/Authenticate/OpenId",
-                        "/Authenticate/LocalLoginOpenId",
-                        "/Authenticate/LocalLogin",
-                        "/Authenticate/ExternalLoginOpenId"
-                    }
-                },
-                ConfigurationEdp = _configurationEdpOptions
-            };
-
             //1 . Enable CORS.
             app.UseCors("AllowAll");
             // 2. Use static files.
@@ -206,13 +194,9 @@ namespace SimpleIdentityServer.Startup
                 LoginPath = new PathString("/Authenticate")
             });
             // 5. Enable multi parties authentication.
-            app.UseAuthentication(authenticationOptions);
+            // app.UseAuthentication(_authenticationOptions);
             // 6. Enable SimpleIdentityServer
-            app.UseSimpleIdentityServer(new HostingOptions
-            {
-                IsDataMigrated = isDataMigrated,
-                IsDeveloperModeEnabled = false
-            }, loggerFactory);
+            app.UseSimpleIdentityServer(_options, loggerFactory);
             // 7. Configure ASP.NET MVC
             app.UseMvc(routes =>
             {
@@ -242,7 +226,5 @@ namespace SimpleIdentityServer.Startup
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
         }
-
-        #endregion
     }
 }

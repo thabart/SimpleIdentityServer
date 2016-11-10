@@ -14,12 +14,11 @@
 // limitations under the License.
 #endregion
 
-using System;
-using SimpleIdentityServer.Core.Factories;
+using SimpleIdentityServer.Core.Services;
 
 namespace SimpleIdentityServer.Host.Configuration
 {
-    public class EncryptedPasswordFactory : IEncryptedPasswordFactory
+    public class DefaultPasswordService : IPasswordService
     {
         public string Encrypt(string password)
         {
