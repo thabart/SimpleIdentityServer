@@ -253,6 +253,12 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                     new Translation
                     {
                         LanguageTag = "en",
+                        Code = Constants.StandardTranslationCodes.NameCode,
+                        Value = "Name"
+                    },
+                    new Translation
+                    {
+                        LanguageTag = "en",
                         Code = Constants.StandardTranslationCodes.LoginCode,
                         Value = "Login"
                     },
@@ -325,8 +331,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                     new Translation
                     {
                         LanguageTag = "en",
-                        Code = Constants.StandardTranslationCodes.YourLogin,
-                        Value = "Your login"
+                        Code = Constants.StandardTranslationCodes.YourName,
+                        Value = "Your name"
                     },
                     new Translation
                     {
@@ -392,6 +398,12 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                     new Translation
                     {
                         LanguageTag = "se",
+                        Code = Constants.StandardTranslationCodes.NameCode,
+                        Value = "Logga in"
+                    },
+                    new Translation
+                    {
+                        LanguageTag = "se",
                         Code = Constants.StandardTranslationCodes.LoginCode,
                         Value = "Logga in"
                     },
@@ -435,7 +447,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                     new Translation
                     {
                         LanguageTag = "fr",
-                        Code = Constants.StandardTranslationCodes.LoginCode,
+                        Code = Constants.StandardTranslationCodes.YourName,
                         Value = "S'authentifier"
                     },
                     new Translation
@@ -474,9 +486,15 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                 {
                     new ResourceOwner
                     {
-                        Id = Guid.NewGuid().ToString(),
+                        Id = "administrator",
                         Claims = new List<ResourceOwnerClaim>
                         {
+                            new ResourceOwnerClaim
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject,
+                                Value = "administrator"
+                            },
                             new ResourceOwnerClaim
                             {
                                 Id = Guid.NewGuid().ToString(),
@@ -896,6 +914,10 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                             new ClientScope
                             {
                                 ScopeName = "profile"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "address"
                             }
                         },
                         GrantTypes = "1",

@@ -343,11 +343,12 @@ namespace SimpleIdentityServer.Core
             public const string ApplicationWouldLikeToCode = "application_would_like_to";
             public const string ScopesCode = "scopes";
             public const string IndividualClaimsCode = "individual_claims";
-            public const string LoginCode = "login";
+            public const string NameCode = "Name";
             public const string LoginExternalAccount = "login_external_account";
             public const string LoginLocalAccount = "login_local_account";
             public const string UserNameCode = "username";
             public const string PasswordCode = "password";
+            public const string LoginCode = "login";
             public const string RememberMyLoginCode = "remember_my_login";
             public const string CancelCode = "cancel";
             public const string ConfirmCode = "confirm";
@@ -356,7 +357,7 @@ namespace SimpleIdentityServer.Core
             public const string SendCode = "send_code";
             public const string Code = "code";
             public const string EditResourceOwner = "edit_resource_owner";
-            public const string YourLogin = "your_login";
+            public const string YourName = "your_name";
             public const string YourPassword = "your_password";
             public const string Email = "email";
             public const string YourEmail = "your_email";

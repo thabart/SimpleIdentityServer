@@ -25,7 +25,12 @@
             <!-- Login -->
             <fieldset class="form-group">
                 <label class="control-label">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.LoginCode]</label>
-                @Html.TextBoxFor(i => i.Name, new { @class = "form-control", placeholder= @ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.YourLogin ] })
+                @Html.TextBoxFor(i => i.Login, new { type = "text", @class = "form-control", @readonly = true })
+            </fieldset>
+            <!-- Name -->
+            <fieldset class="form-group">
+                <label class="control-label">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.NameCode]</label>
+                @Html.TextBoxFor(i => i.Name, new { @class = "form-control", placeholder= @ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.YourName ] })
                 @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
             </fieldset>
             <!-- Hashed password -->

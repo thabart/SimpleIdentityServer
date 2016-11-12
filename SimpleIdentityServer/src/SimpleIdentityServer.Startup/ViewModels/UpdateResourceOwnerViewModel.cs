@@ -21,6 +21,7 @@ namespace SimpleIdentityServer.Startup.ViewModels
 {
     public class UpdateResourceOwnerViewModel
     {
+        public string Login { get; set; }
         [Required]
         public string Name { get; set; }
 

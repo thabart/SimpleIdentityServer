@@ -98,10 +98,12 @@ namespace SimpleIdentityServer.Startup.Controllers
             ViewBag.IsUpdated = false;
             var email = string.Empty;
             var phoneNumber = string.Empty;
+            var name = string.Empty;
             if(user.Claims != null)
             {
                 var emailClaim = user.Claims.FirstOrDefault(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Email);
                 var phoneNumberClaim = user.Claims.FirstOrDefault(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber);
+                var nameClaim = user.Claims.FirstOrDefault(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Name);
                 if (emailClaim != null)
                 {
                     email = emailClaim.Value;
@@ -111,12 +113,18 @@ namespace SimpleIdentityServer.Startup.Controllers
                 {
                     phoneNumber = phoneNumberClaim.Value;
                 }
+
+                if (nameClaim != null)
+                {
+                    name = nameClaim.Value;
+                }
             }
 
             return View(new UpdateResourceOwnerViewModel
             {
+                Login = user.Id,
                 Email = email,
-                Name = user.Id,
+                Name = name,
                 Password = user.Password,
                 TwoAuthenticationFactor = user.TwoFactorAuthentication,
                 PhoneNumber = phoneNumber
@@ -150,6 +158,11 @@ namespace SimpleIdentityServer.Startup.Controllers
 
             // 3. Update the resource owner
             var parameter = viewModel.ToParameter();
+            foreach(var newClaim in user.Claims.Where(uc => !parameter.Claims.Any(pc => pc.Type == uc.Type)))
+            {
+                parameter.Claims.Add(newClaim);
+            }
+
             parameter.Login = user.Id;
             _userActions.UpdateUser(parameter);
 
@@ -245,9 +258,10 @@ namespace SimpleIdentityServer.Startup.Controllers
         {
             var translations = _translationManager.GetTranslations(uiLocales, new List<string>
             {
-                Core.Constants.StandardTranslationCodes.EditResourceOwner,
                 Core.Constants.StandardTranslationCodes.LoginCode,
-                Core.Constants.StandardTranslationCodes.YourLogin,
+                Core.Constants.StandardTranslationCodes.EditResourceOwner,
+                Core.Constants.StandardTranslationCodes.NameCode,
+                Core.Constants.StandardTranslationCodes.YourName,
                 Core.Constants.StandardTranslationCodes.PasswordCode,
                 Core.Constants.StandardTranslationCodes.YourPassword,
                 Core.Constants.StandardTranslationCodes.Email,

@@ -74,7 +74,8 @@ namespace SimpleIdentityServer.Startup
                 IsDeveloperModeEnabled = false,
                 DataSource = new DataSourceOptions
                 {
-                    DataSourceType = DataSourceTypes.InMemory
+                    DataSourceType = DataSourceTypes.InMemory,
+                    IsDataMigrated = true
                 },
                 Logging = new LoggingOptions
                 {

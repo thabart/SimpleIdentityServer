@@ -31,8 +31,10 @@ namespace SimpleIdentityServer.Startup.Extensions
                 TwoFactorAuthentication = updateResourceOwnerViewModel.TwoAuthenticationFactor,
                 Claims = new List<Claim>
                 {
+
+                    new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Name, updateResourceOwnerViewModel.Name),
                     new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Email, updateResourceOwnerViewModel.Email),
-                    new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Email, updateResourceOwnerViewModel.PhoneNumber)
+                    new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber, updateResourceOwnerViewModel.PhoneNumber)
                 },
                 Login = updateResourceOwnerViewModel.Name
             };

@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Services;
@@ -24,10 +25,14 @@ namespace SimpleIdentityServer.Host.Services
     public class DefaultAuthenticateResourceOwerService : IAuthenticateResourceOwnerService
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
+        private readonly ISecurityHelper _securityHelper;
 
-        public DefaultAuthenticateResourceOwerService(IResourceOwnerRepository resourceOwnerRepository)
+        public DefaultAuthenticateResourceOwerService(
+            IResourceOwnerRepository resourceOwnerRepository,
+            ISecurityHelper securityHelper)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
+            _securityHelper = securityHelper;
         }
 
         public ResourceOwner AuthenticateResourceOwner(string login)
@@ -46,14 +51,13 @@ namespace SimpleIdentityServer.Host.Services
             {
                 throw new ArgumentNullException(nameof(login));
             }
-
-            // TODO : Encrypt the password !!!!
+              
             if (string.IsNullOrWhiteSpace(password))
             {
                 throw new ArgumentNullException(nameof(password));
             }
 
-            return _resourceOwnerRepository.Get(login, password);
+            return _resourceOwnerRepository.Get(login, _securityHelper.ComputeHash(password));
         }
     }
 }

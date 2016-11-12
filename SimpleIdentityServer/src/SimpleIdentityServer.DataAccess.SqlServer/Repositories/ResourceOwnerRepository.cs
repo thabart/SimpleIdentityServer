@@ -88,6 +88,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                     return false;
                 }
 
+                record.Password = resourceOwner.Password;
                 record.IsLocalAccount = resourceOwner.IsLocalAccount;
                 record.TwoFactorAuthentication = (int)resourceOwner.TwoFactorAuthentication;
                 record.Claims = new List<ResourceOwnerClaim>();
@@ -97,6 +98,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                     {
                         record.Claims.Add(new ResourceOwnerClaim
                         {
+                            Id = Guid.NewGuid().ToString(),
                             ResourceOwnerId = record.Id,
                             ClaimCode = claim.Type,
                             Value = claim.Value
@@ -162,7 +164,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
         {
             try
             {
-                var result = _context.ResourceOwners.FirstOrDefault(r => r.Id == id);
+                var result = _context.ResourceOwners.Include(r => r.Claims).FirstOrDefault(r => r.Id == id);
                 if (result == null)
                 {
                     return null;
@@ -181,7 +183,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
         {
             try
             {
-                var result = _context.ResourceOwners.FirstOrDefault(r => r.Id == id && r.Password == password);
+                var result = _context.ResourceOwners.Include(r => r.Claims).FirstOrDefault(r => r.Id == id && r.Password == password);
                 if (result == null)
                 {
                     return null;
