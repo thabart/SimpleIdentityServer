@@ -16,7 +16,6 @@
 
 using Moq;
 using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Services;
@@ -31,7 +30,6 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
     public class LoginCallbackActionFixture
     {
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
-        private Mock<ISecurityHelper> _securityHelperStub;
         private Mock<IClaimRepository> _claimRepositoryStub;
         private Mock<IAuthenticateResourceOwnerService> _authenticateResourceOwnerServiceStub;
         private ILoginCallbackAction _loginCallbackAction;
@@ -121,13 +119,11 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
         private void InitializeFakeObjects()
         {
             _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
-            _securityHelperStub = new Mock<ISecurityHelper>();
             _claimRepositoryStub = new Mock<IClaimRepository>();
             _authenticateResourceOwnerServiceStub = new Mock<IAuthenticateResourceOwnerService>();
             _loginCallbackAction = new LoginCallbackAction(
                 _resourceOwnerRepositoryStub.Object,
                 _claimRepositoryStub.Object,
-                _securityHelperStub.Object,
                 _authenticateResourceOwnerServiceStub.Object);
         }
     }

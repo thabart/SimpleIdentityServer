@@ -30,7 +30,6 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Account
     public class AddResourceOwnerActionFixture
     {
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
-        private Mock<ISecurityHelper> _securityHelperStub;
         private Mock<IAuthenticateResourceOwnerService> _authenticateResourceOwnerServiceStub;
         private IAddResourceOwnerAction _addResourceOwnerAction;
         
@@ -96,11 +95,9 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Account
         private void InitializeFakeObjects()
         {
             _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
-            _securityHelperStub = new Mock<ISecurityHelper>();
             _authenticateResourceOwnerServiceStub = new Mock<IAuthenticateResourceOwnerService>();
             _addResourceOwnerAction = new AddResourceOwnerAction(
                 _resourceOwnerRepositoryStub.Object,
-                _securityHelperStub.Object,
                 _authenticateResourceOwnerServiceStub.Object);
         }
     }

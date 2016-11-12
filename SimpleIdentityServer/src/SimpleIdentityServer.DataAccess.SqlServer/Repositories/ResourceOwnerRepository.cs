@@ -46,6 +46,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                 var user = new ResourceOwner
                 {
                     Id = resourceOwner.Id,
+                    Password = resourceOwner.Password,
                     IsLocalAccount = resourceOwner.IsLocalAccount,
                     TwoFactorAuthentication = (int)resourceOwner.TwoFactorAuthentication,
                     Claims = new List<ResourceOwnerClaim>()
@@ -57,6 +58,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                     {
                         user.Claims.Add(new ResourceOwnerClaim
                         {
+                            Id = Guid.NewGuid().ToString(),
                             ResourceOwnerId = user.Id,
                             ClaimCode = claim.Type,
                             Value = claim.Value

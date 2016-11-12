@@ -32,16 +32,13 @@ namespace SimpleIdentityServer.Core.WebSite.Account.Actions
     public class AddResourceOwnerAction : IAddResourceOwnerAction
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
-        private readonly ISecurityHelper _securityHelper;
         private readonly IAuthenticateResourceOwnerService _authenticateResourceOwnerService;
 
         public AddResourceOwnerAction(
             IResourceOwnerRepository resourceOwnerRepository,
-            ISecurityHelper securityHelper,
             IAuthenticateResourceOwnerService authenticateResourceOwnerService)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
-            _securityHelper = securityHelper;
             _authenticateResourceOwnerService = authenticateResourceOwnerService;
         }
         
@@ -61,10 +58,9 @@ namespace SimpleIdentityServer.Core.WebSite.Account.Actions
             {
                 throw new ArgumentNullException(nameof(addUserParameter.Password));
             }
-
-            var hashedPassword = _securityHelper.ComputeHash(addUserParameter.Password);
+            
             if (_authenticateResourceOwnerService.AuthenticateResourceOwner(addUserParameter.Login,
-                hashedPassword) != null)
+                addUserParameter.Password) != null)
             {
                 throw new IdentityServerException(
                     Errors.ErrorCodes.UnhandledExceptionCode,
@@ -76,7 +72,8 @@ namespace SimpleIdentityServer.Core.WebSite.Account.Actions
                 Id = addUserParameter.Login,
                 Claims = addUserParameter.Claims,
                 TwoFactorAuthentication = TwoFactorAuthentications.NONE,
-                IsLocalAccount = true
+                IsLocalAccount = true,
+                Password = _authenticateResourceOwnerService.GetHashedPassword(addUserParameter.Password)
             };
             _resourceOwnerRepository.Insert(newResourceOwner);
         }

@@ -31,16 +31,13 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
     internal class UpdateUserOperation : IUpdateUserOperation
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
-        private readonly ISecurityHelper _securityHelper;
         private readonly IAuthenticateResourceOwnerService _authenticateResourceOwnerService;
 
         public UpdateUserOperation(
             IResourceOwnerRepository resourceOwnerRepository,
-            ISecurityHelper securityHelper,
             IAuthenticateResourceOwnerService authenticateResourceOwnerService)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
-            _securityHelper = securityHelper;
             _authenticateResourceOwnerService = authenticateResourceOwnerService;
         }
         
@@ -67,10 +64,10 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
             resourceOwner.TwoFactorAuthentication = updateUserParameter.TwoFactorAuthentication;
             if (!string.IsNullOrWhiteSpace(updateUserParameter.Password))
             {
-                resourceOwner.Password = _securityHelper.ComputeHash(updateUserParameter.Password);
+                resourceOwner.Password = _authenticateResourceOwnerService.GetHashedPassword(updateUserParameter.Password);
             }
-            resourceOwner.Claims = updateUserParameter.Claims;
 
+            resourceOwner.Claims = updateUserParameter.Claims;
             return _resourceOwnerRepository.Update(resourceOwner);
         }
     }

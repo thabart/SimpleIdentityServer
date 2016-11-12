@@ -20,6 +20,7 @@ namespace SimpleIdentityServer.Core.Services
 {
     public interface IAuthenticateResourceOwnerService
     {
+        string GetHashedPassword(string password);
         ResourceOwner AuthenticateResourceOwner(string login);
         ResourceOwner AuthenticateResourceOwner(string login, string password);
     }

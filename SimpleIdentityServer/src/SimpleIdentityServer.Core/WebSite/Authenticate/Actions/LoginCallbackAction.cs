@@ -36,19 +36,16 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
         private readonly IClaimRepository _claimRepository;
-        private readonly ISecurityHelper _securityHelper;
         private readonly IAuthenticateResourceOwnerService _authenticateResourceOwnerService;
 
 
         public LoginCallbackAction(
             IResourceOwnerRepository resourceOwnerRepository,
             IClaimRepository claimRepository,
-            ISecurityHelper securityHelper,
             IAuthenticateResourceOwnerService authenticateResourceOwnerService)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
             _claimRepository = claimRepository;
-            _securityHelper = securityHelper;
             _authenticateResourceOwnerService = authenticateResourceOwnerService;
         }
         
@@ -88,7 +85,8 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                 Id = Guid.NewGuid().ToString(),
                 IsLocalAccount = false,
                 TwoFactorAuthentication = TwoFactorAuthentications.NONE,
-                Claims = new List<Claim>()
+                Claims = new List<Claim>(),
+                Password = _authenticateResourceOwnerService.GetHashedPassword(clearPassword)
             };
 
             var claims = _claimRepository.GetAll();

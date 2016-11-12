@@ -32,6 +32,7 @@ using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
 using Xunit;
 using System.Net.Http.Headers;
+using SimpleIdentityServer.Core.Services;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 {
@@ -43,7 +44,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
         private Mock<IScopeValidator> _scopeValidatorFake;
 
-        private Mock<IResourceOwnerValidator> _resourceOwnerValidatorFake;
+        private Mock<IAuthenticateResourceOwnerService> _resourceOwnerValidatorFake;
 
         private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSourceFake;
 
@@ -129,7 +130,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), out message))
                 .Returns(() => client);
             _resourceOwnerValidatorFake.Setup(
-                r => r.ValidateResourceOwnerCredentials(It.IsAny<string>(), It.IsAny<string>()))
+                r => r.AuthenticateResourceOwner(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(() => null);
 
             // ACT & ASSERTS
@@ -165,7 +166,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), out message))
                 .Returns(() => client);
             _resourceOwnerValidatorFake.Setup(
-                r => r.ValidateResourceOwnerCredentials(It.IsAny<string>(), It.IsAny<string>()))
+                r => r.AuthenticateResourceOwner(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(() => resourceOwner);
             _scopeValidatorFake.Setup(s => s.IsScopesValid(It.IsAny<string>(), It.IsAny<Models.Client>(), out message))
                 .Returns(() => new List<string>());
@@ -216,7 +217,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), out message))
                 .Returns(() => client);
             _resourceOwnerValidatorFake.Setup(
-                r => r.ValidateResourceOwnerCredentials(It.IsAny<string>(), It.IsAny<string>()))
+                r => r.AuthenticateResourceOwner(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(() => resourceOwner);
             _scopeValidatorFake.Setup(s => s.IsScopesValid(It.IsAny<string>(), It.IsAny<Models.Client>(), out message))
                 .Returns(() => new List<string> { invalidScope });
@@ -250,7 +251,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _grantedTokenRepositoryFake = new Mock<IGrantedTokenRepository>();
             _grantedTokenGeneratorHelperFake = new Mock<IGrantedTokenGeneratorHelper>();
             _scopeValidatorFake = new Mock<IScopeValidator>();
-            _resourceOwnerValidatorFake = new Mock<IResourceOwnerValidator>();
+            _resourceOwnerValidatorFake = new Mock<IAuthenticateResourceOwnerService>();
             _simpleIdentityServerEventSourceFake = new Mock<ISimpleIdentityServerEventSource>();
             _authenticateClientFake = new Mock<IAuthenticateClient>();
             _jwtGeneratorFake = new Mock<IJwtGenerator>();

@@ -20,6 +20,8 @@ using SimpleIdentityServer.Core.WebSite.Account;
 using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.Startup.ViewModels;
 using System;
+using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Startup.Controllers
@@ -73,8 +75,12 @@ namespace SimpleIdentityServer.Startup.Controllers
 
             _accountActions.AddResourceOwner(new AddUserParameter
             {
-                Login = updateResourceOwnerViewModel.Name,
-                Password = updateResourceOwnerViewModel.Password
+                Login = updateResourceOwnerViewModel.Login,
+                Password = updateResourceOwnerViewModel.Password,
+                Claims = new List<Claim>
+                {
+                    new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, updateResourceOwnerViewModel.Login)
+                }
             });
 
             return RedirectToAction("Index", "Authenticate");
