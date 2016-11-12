@@ -19,6 +19,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Configuration.Core.Repositories;
 using SimpleIdentityServer.Configuration.EF.Repositories;
+using System;
 
 namespace SimpleIdentityServer.Configuration.EF
 {
@@ -27,25 +28,58 @@ namespace SimpleIdentityServer.Configuration.EF
         #region Public static methods
 
         public static IServiceCollection AddSimpleIdentityServerSqlServer(
-            this IServiceCollection serviceCollection,
+            this IServiceCollection services,
             string connectionString)
         {
-            RegisterServices(serviceCollection);
-            serviceCollection.AddEntityFramework()
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new ArgumentNullException(nameof(connectionString));
+            }
+
+            RegisterServices(services);
+            services.AddEntityFramework()
                 .AddDbContext<SimpleIdentityServerConfigurationContext>(options =>
                     options.UseSqlServer(connectionString));
-            return serviceCollection;
+            return services;
         }
 
         public static IServiceCollection AddSimpleIdentityServerPostgre(
-            this IServiceCollection serviceCollection,
+            this IServiceCollection services,
             string connectionString)
         {
-            RegisterServices(serviceCollection);
-            serviceCollection.AddEntityFramework()
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new ArgumentNullException(nameof(connectionString));
+            }
+
+            RegisterServices(services);
+            services.AddEntityFramework()
                 .AddDbContext<SimpleIdentityServerConfigurationContext>(options =>
                     options.UseNpgsql(connectionString));
-            return serviceCollection;
+            return services;
+        }
+
+        public static IServiceCollection AddSimpleIdentityServerInMemory(this IServiceCollection services)
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            RegisterServices(services);
+            services.AddEntityFramework()
+                .AddDbContext<SimpleIdentityServerConfigurationContext>(options => options.UseInMemoryDatabase().ConfigureWarnings(warnings => warnings.Ignore(InMemoryEventId.TransactionIgnoredWarning)));
+            return services;
         }
 
         #endregion

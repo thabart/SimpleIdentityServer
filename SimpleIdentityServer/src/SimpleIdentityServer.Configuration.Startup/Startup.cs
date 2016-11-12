@@ -109,6 +109,10 @@ namespace SimpleIdentityServer.Configuration.Startup
             else if (isPostgre)
             {
                 services.AddSimpleIdentityServerPostgre(connectionString);
+            } 
+            else
+            {
+                services.AddSimpleIdentityServerInMemory();
             }
 
             // Configure caching

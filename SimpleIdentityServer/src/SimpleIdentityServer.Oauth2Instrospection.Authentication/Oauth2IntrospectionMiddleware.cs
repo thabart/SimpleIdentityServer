@@ -37,15 +37,10 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
     public class Oauth2IntrospectionMiddleware<TOptions> where TOptions : Oauth2IntrospectionOptions, new()
     {
         private const string AuthorizationName = "Authorization";
-
         private const string BearerName = "Bearer";
-
         private readonly Oauth2IntrospectionOptions _options;
-
         private readonly HttpClient _httpClient;
-
         private readonly RequestDelegate _next;
-
         private readonly RequestDelegate _nullAuthenticationNext;
 
         #region Constructor
@@ -108,13 +103,20 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
                     var accessToken = GetAccessToken(authorizationValue);
                     if (!string.IsNullOrWhiteSpace(accessToken))
                     {
-                        var introspectionResponse = await GetIntrospectionResponse(
-                            _options,
-                            accessToken);
-
-                        if (introspectionResponse != null)
+                        try
                         {
-                            context.User = CreateClaimPrincipal(introspectionResponse);
+                            var introspectionResponse = await GetIntrospectionResponse(
+                                _options,
+                                accessToken);
+
+                            if (introspectionResponse != null)
+                            {
+                                context.User = CreateClaimPrincipal(introspectionResponse);
+                            }
+                        }
+                        catch(Exception)
+                        {
+                            // TODO : Log the errors
                         }
                     }
                 }
