@@ -30,6 +30,7 @@ using SimpleIdentityServer.Oauth2Instrospection.Authentication;
 using System;
 using WebApiContrib.Core.Concurrency;
 using WebApiContrib.Core.Storage;
+using WebApiContrib.Core.Storage.InMemory;
 
 namespace SimpleIdentityServer.Configuration.Startup
 {
@@ -126,7 +127,7 @@ namespace SimpleIdentityServer.Configuration.Startup
             }
             else if (cachingDatabase == "INMEMORY")
             {
-                services.AddConcurrency(opt => opt.UseInMemoryStorage());
+                services.AddConcurrency(opt => opt.UseInMemory());
             }
 
             // Configure logging

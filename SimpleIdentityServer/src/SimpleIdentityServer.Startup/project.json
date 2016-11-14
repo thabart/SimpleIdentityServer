@@ -15,6 +15,7 @@
     "Microsoft.AspNetCore.Server.Kestrel.Https": "1.0.0",
     "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0",
     "SimpleIdentityServer.Host": { "target": "project" },
+    "WebApiContrib.Core.Storage.InMemory": { "target": "project" },
     "WebApiContrib.Core.Storage.Redis": { "target": "project" },
     "SimpleIdentityServer.Authentication.Middleware": { "target": "project" }
   },

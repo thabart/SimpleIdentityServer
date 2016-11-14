@@ -82,7 +82,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
             var clearPassword = Guid.NewGuid().ToString();
             resourceOwner = new ResourceOwner
             {
-                Id = Guid.NewGuid().ToString(),
+                Id = subject,
                 IsLocalAccount = false,
                 TwoFactorAuthentication = TwoFactorAuthentications.NONE,
                 Claims = new List<Claim>(),

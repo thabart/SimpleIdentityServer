@@ -1,17 +1,19 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
-namespace WebApiContrib.Core.Storage
+namespace WebApiContrib.Core.Storage.InMemory
 {
     public class InMemoryStorage : IStorage
     {
         private readonly IMemoryCache _memoryCache;
+        private readonly IList<string> _keys;
 
         public InMemoryStorage()
         {
+            _keys = new List<string>();
             var builder = new ServiceCollection();
             builder.AddMemoryCache();
             var provider = builder.BuildServiceProvider();
@@ -52,6 +54,10 @@ namespace WebApiContrib.Core.Storage
         public void Set(string key, object value)
         {
             _memoryCache.Set(key, value);
+            if (!_keys.Contains(key))
+            {
+                _keys.Add(key);
+            }
         }
 
         public Task SetAsync(string key, object value)
@@ -67,6 +73,10 @@ namespace WebApiContrib.Core.Storage
             }
 
             _memoryCache.Remove(key);
+            if (!_keys.Contains(key))
+            {
+                _keys.Remove(key);
+            }
         }
 
         public Task RemoveAsync(string key)
@@ -76,19 +86,30 @@ namespace WebApiContrib.Core.Storage
 
         public IEnumerable<Record> GetAll()
         {
-            // IMPLEMENT
-            return new List<Record>();
+            var result = new List<Record>();
+            foreach(var key in _keys)
+            {
+                var value = TryGetValue<Record>(key);
+                if (value != null)
+                {
+                    result.Add(value);
+                }
+            }
+
+            return result;
         }
 
         public void RemoveAll()
         {
-            // IMPLEMENT
+            foreach(var key in _keys)
+            {
+                Remove(key);
+            }
         }
 
         public Task RemoveAllAsync()
         {
-            // IMPLEMENT
-            return Task.FromResult(0);
+            return Task.Factory.StartNew(() => RemoveAll());
         }
     }
 }

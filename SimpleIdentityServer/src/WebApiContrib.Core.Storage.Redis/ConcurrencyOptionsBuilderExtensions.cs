@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Caching.Redis;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 using WebApiContrib.Core.Storage.Redis;

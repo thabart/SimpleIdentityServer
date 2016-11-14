@@ -35,6 +35,7 @@
     "SimpleIdentityServer.Configuration.EF": { "target": "project" },
     "SimpleIdentityServer.Configuration.Host": { "target": "project" },
     "WebApiContrib.Core.Storage.Redis": { "target": "project" },
+    "WebApiContrib.Core.Storage.InMemory": { "target": "project" },
     "WebApiContrib.Core.Concurrency": { "target": "project" }
   },
   "frameworks": {

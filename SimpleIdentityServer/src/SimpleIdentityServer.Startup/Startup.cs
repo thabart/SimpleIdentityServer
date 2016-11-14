@@ -26,6 +26,7 @@ using SimpleIdentityServer.Authentication.Middleware.Extensions;
 using SimpleIdentityServer.Host;
 using System.Collections.Generic;
 using WebApiContrib.Core.Storage;
+using WebApiContrib.Core.Storage.InMemory;
 
 namespace SimpleIdentityServer.Startup
 {
@@ -127,7 +128,7 @@ namespace SimpleIdentityServer.Startup
             }
             else if (cachingDatabase == "INMEMORY")
             {
-                services.AddStorage(opt => opt.UseInMemoryStorage());
+                services.AddStorage(opt => opt.UseInMemory());
             }
 
             // 2. Add the dependencies needed to enable CORS
@@ -195,7 +196,7 @@ namespace SimpleIdentityServer.Startup
                 LoginPath = new PathString("/Authenticate")
             });
             // 5. Enable multi parties authentication.
-            // app.UseAuthentication(_authenticationOptions);
+            app.UseAuthentication(_authenticationOptions);
             // 6. Enable SimpleIdentityServer
             app.UseSimpleIdentityServer(_options, loggerFactory);
             // 7. Configure ASP.NET MVC
