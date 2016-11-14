@@ -20,6 +20,8 @@ using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Services;
 using System;
+using System.Linq;
+using System.Security.Claims;
 
 namespace SimpleIdentityServer.Core.WebSite.User.Actions
 {
@@ -68,6 +70,17 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
             }
 
             resourceOwner.Claims = updateUserParameter.Claims;
+            if (resourceOwner.Claims != null)
+            {
+                Claim updatedClaim;
+                if (((updatedClaim = resourceOwner.Claims.FirstOrDefault(c => c.Type == Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt)) != null))
+                {
+                    resourceOwner.Claims.Remove(updatedClaim);
+                }
+
+                resourceOwner.Claims.Add(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt, DateTime.UtcNow.ToString()));
+            }
+
             return _resourceOwnerRepository.Update(resourceOwner);
         }
     }

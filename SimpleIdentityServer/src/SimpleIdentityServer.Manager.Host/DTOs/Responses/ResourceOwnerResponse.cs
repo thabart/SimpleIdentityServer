@@ -22,62 +22,8 @@ namespace SimpleIdentityServer.Manager.Host.DTOs.Responses
     [DataContract]
     public class ResourceOwnerResponse
     {       
-        [DataMember(Name = Constants.ResourceOwnerResponseNames.Id)]
-        public string Id { get; set; }
-
-        [DataMember(Name = Constants.ResourceOwnerResponseNames.Name)]
-        public string Name { get; set; }
-
-        [DataMember(Name = Constants.ResourceOwnerResponseNames.GivenName)]
-        public string GivenName { get; set; }
-
-        [DataMember(Name = Constants.ResourceOwnerResponseNames.FamilyName)]
-        public string FamilyName { get; set; }
-
-        [DataMember(Name = Constants.ResourceOwnerResponseNames.MiddleName)]
-        public string MiddleName { get; set; }
-
-        [DataMember(Name = Constants.ResourceOwnerResponseNames.NickName)]
-        public string NickName { get; set; }
-
-        [DataMember(Name = Constants.ResourceOwnerResponseNames.PreferredUserName)]
-        public string PreferredUserName { get; set; }
-
-        [DataMember(Name = Constants.ResourceOwnerResponseNames.Profile)]
-        public string Profile { get; set; }
-
-        [DataMember(Name = Constants.ResourceOwnerResponseNames.Picture)]
-        public string Picture { get; set; }
-
-        [DataMember(Name = Constants.ResourceOwnerResponseNames.WebSite)]
-        public string WebSite { get; set; }
-
-        [DataMember(Name = Constants.ResourceOwnerResponseNames.Email)]
-        public string Email { get; set; }
-
-        [DataMember(Name = Constants.ResourceOwnerResponseNames.EmailVerified)]
-        public bool EmailVerified { get; set; }
-
-        [DataMember(Name = Constants.ResourceOwnerResponseNames.Gender)]
-        public string Gender { get; set; }
-
-        [DataMember(Name = Constants.ResourceOwnerResponseNames.BirthDate)]
-        public string BirthDate { get; set; }
-
-        [DataMember(Name = Constants.ResourceOwnerResponseNames.ZoneInfo)]
-        public string ZoneInfo { get; set; }
-
-        [DataMember(Name = Constants.ResourceOwnerResponseNames.Locale)]
-        public string Locale { get; set; }
-
-        [DataMember(Name = Constants.ResourceOwnerResponseNames.PhoneNumber)]
-        public string PhoneNumber { get; set; }
-
-        [DataMember(Name = Constants.ResourceOwnerResponseNames.PhoneNumberVerified)]
-        public bool PhoneNumberVerified { get; set; }
-
-        [DataMember(Name = Constants.ResourceOwnerResponseNames.UpdatedAt)]
-        public double UpdatedAt { get; set; }
+        [DataMember(Name = Constants.ResourceOwnerResponseNames.Login)]
+        public string Login { get; set; }
 
         [DataMember(Name = Constants.ResourceOwnerResponseNames.Password)]
         public string Password { get; set; }
@@ -85,7 +31,7 @@ namespace SimpleIdentityServer.Manager.Host.DTOs.Responses
         [DataMember(Name = Constants.ResourceOwnerResponseNames.IsLocalAccount)]
         public bool IsLocalAccount { get; set; }
 
-        [DataMember(Name = Constants.ResourceOwnerResponseNames.Roles)]
-        public List<string> Roles { get; set; }
+        [DataMember(Name = Constants.ResourceOwnerResponseNames.Claims)]
+        public List<KeyValuePair<string, string>> Claims { get; set; }
     }
 }

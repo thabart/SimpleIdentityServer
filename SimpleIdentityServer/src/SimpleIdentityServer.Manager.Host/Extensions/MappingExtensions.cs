@@ -23,6 +23,7 @@ using SimpleIdentityServer.Manager.Host.DTOs.Responses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 
 namespace SimpleIdentityServer.Manager.Host.Extensions
 {
@@ -32,30 +33,18 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
     
         public static ResourceOwner ToParameter(this ResourceOwnerResponse request)
         {
+            var claims = new List<Claim>();
+            if (request.Claims != null)
+            {
+                claims = request.Claims.Select(s => new Claim(s.Key, s.Value)).ToList();
+            }
+
             return new ResourceOwner
             {
-                BirthDate = request.BirthDate,
-                Email = request.Email,
-                EmailVerified = request.EmailVerified,
-                FamilyName = request.FamilyName,
-                Gender = request.Gender,
-                GivenName = request.GivenName,
-                Id = request.Id,
-                Locale = request.Locale,
-                MiddleName = request.MiddleName,
-                Name = request.Name,
-                NickName = request.NickName,
+                Id = request.Login,
                 Password = request.Password,
-                PhoneNumber = request.PhoneNumber,
-                PhoneNumberVerified = request.PhoneNumberVerified,
-                Picture = request.Picture,
-                PreferredUserName = request.PreferredUserName,
-                Profile = request.Profile,
-                Roles = request.Roles,
-                UpdatedAt = request.UpdatedAt,
-                WebSite = request.WebSite,
-                ZoneInfo = request.ZoneInfo,
-                IsLocalAccount = request.IsLocalAccount
+                IsLocalAccount = request.IsLocalAccount,
+                Claims = claims
             };
         }
 
@@ -63,7 +52,7 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
         {
             return new AddUserParameter
             {
-                Name = request.Subject,
+                Login = request.Subject,
                 Password = request.Password
             };
         }
@@ -443,30 +432,18 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
 
         public static ResourceOwnerResponse ToDto(this ResourceOwner resourceOwner)
         {
+            var claims = new List<KeyValuePair<string, string>>();
+            if (resourceOwner.Claims != null)
+            {
+                claims = resourceOwner.Claims.Select(s => new KeyValuePair<string, string>(s.Type, s.Value)).ToList();
+            }
+
             return new ResourceOwnerResponse
             {
-                BirthDate = resourceOwner.BirthDate,
-                Email = resourceOwner.Email,
-                EmailVerified = resourceOwner.EmailVerified,
-                FamilyName = resourceOwner.FamilyName,
-                Gender = resourceOwner.Gender,
-                GivenName = resourceOwner.GivenName,
-                Id = resourceOwner.Id,
-                Locale = resourceOwner.Locale,
-                MiddleName = resourceOwner.MiddleName,
-                Name = resourceOwner.Name,
-                NickName = resourceOwner.NickName,
+                Login = resourceOwner.Id,
                 Password = resourceOwner.Password,
-                PhoneNumber = resourceOwner.PhoneNumber,
-                PhoneNumberVerified = resourceOwner.PhoneNumberVerified,
-                Picture = resourceOwner.Picture,
-                PreferredUserName = resourceOwner.PreferredUserName,
-                Profile = resourceOwner.Profile,
-                Roles = resourceOwner.Roles,
-                UpdatedAt = resourceOwner.UpdatedAt,
-                WebSite = resourceOwner.WebSite,
-                ZoneInfo = resourceOwner.ZoneInfo,
-                IsLocalAccount = resourceOwner.IsLocalAccount
+                IsLocalAccount = resourceOwner.IsLocalAccount,
+                Claims = claims
             };
         }
 

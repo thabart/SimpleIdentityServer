@@ -116,7 +116,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
             }
 
             _resourceOwnerActions.UpdateResourceOwner(resourceOwnerResponse.ToParameter());
-            await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwner + resourceOwnerResponse.Id, false);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwner + resourceOwnerResponse.Login, false);
             return new NoContentResult();
         }
 

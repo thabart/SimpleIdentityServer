@@ -19,6 +19,7 @@ using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Services;
 using System;
+using System.Linq;
 using System.Security.Claims;
 
 namespace SimpleIdentityServer.Core.WebSite.User.Actions
@@ -81,6 +82,17 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
             }
 
             result.IsLocalAccount = true;
+            if (result.Claims != null)
+            {
+                Claim updatedClaim;
+                if (((updatedClaim = result.Claims.FirstOrDefault(c => c.Type == Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt)) != null))
+                {
+                    result.Claims.Remove(updatedClaim);
+                }
+
+                result.Claims.Add(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt, DateTime.UtcNow.ToString()));
+            }
+
             _resourceOwnerRepository.Update(result);
         }
     }

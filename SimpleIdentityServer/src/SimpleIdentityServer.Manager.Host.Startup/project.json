@@ -30,6 +30,9 @@
     "SimpleIdentityServer.DataAccess.SqlServer": "*",
     "WebApiContrib.Core.Storage.Redis": {
       "target": "project"
+    },
+    "WebApiContrib.Core.Storage.InMemory": {
+      "target": "project"
     }
   },
   "frameworks": {

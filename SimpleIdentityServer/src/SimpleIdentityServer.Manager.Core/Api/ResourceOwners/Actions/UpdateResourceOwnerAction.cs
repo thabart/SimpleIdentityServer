@@ -19,6 +19,8 @@ using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Manager.Core.Errors;
 using SimpleIdentityServer.Manager.Core.Exceptions;
 using System;
+using System.Linq;
+using System.Security.Claims;
 
 namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners.Actions
 {
@@ -30,18 +32,12 @@ namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners.Actions
     internal class UpdateResourceOwnerAction : IUpdateResourceOwnerAction
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
-
-        #region Constructor
-
+        
         public UpdateResourceOwnerAction(
             IResourceOwnerRepository resourceOwnerRepository)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
         }
-
-        #endregion
-
-        #region Public methods
 
         public bool Execute(ResourceOwner parameter)
         {
@@ -55,16 +51,25 @@ namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners.Actions
                 throw new ArgumentNullException(nameof(parameter.Id));
             }
 
-            if (_resourceOwnerRepository.GetBySubject(parameter.Id) == null)
+            if (_resourceOwnerRepository.Get(parameter.Id) == null)
             {
                 throw new IdentityServerManagerException(
                     ErrorCodes.InvalidParameterCode,
                     string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, parameter.Id));
             }
-            
+
+            if (parameter.Claims != null)
+            {
+                Claim updatedClaim;
+                if (((updatedClaim = parameter.Claims.FirstOrDefault(c => c.Type == SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt)) != null))
+                {
+                    parameter.Claims.Remove(updatedClaim);
+                }
+
+                parameter.Claims.Add(new Claim(SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt, DateTime.UtcNow.ToString()));
+            }
+
             return _resourceOwnerRepository.Update(parameter);
         }
-
-        #endregion
     }
 }

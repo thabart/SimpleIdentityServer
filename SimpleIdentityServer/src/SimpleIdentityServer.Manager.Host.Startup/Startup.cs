@@ -19,17 +19,19 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.DataAccess.SqlServer;
 using SimpleIdentityServer.Manager.Host.Extensions;
 using WebApiContrib.Core.Concurrency;
 using WebApiContrib.Core.Storage;
+using WebApiContrib.Core.Storage.InMemory;
 
 namespace SimpleIdentityServer.Manager.Host.Startup
 {
 
     public class Startup
     {
+        private readonly ManagerOptions _options;
+
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -38,6 +40,33 @@ namespace SimpleIdentityServer.Manager.Host.Startup
 
             builder.AddEnvironmentVariables();
             Configuration = builder.Build();
+            var isLogFileEnabled = bool.Parse(Configuration["Log:File:Enabled"]);
+            var isElasticSearchEnabled = bool.Parse(Configuration["Log:Elasticsearch:Enabled"]);
+            var introspectionUrl = Configuration["AuthorizationServer"] + "/introspect";
+            var clientId = Configuration["ClientId"];
+            var clientSecret = Configuration["ClientSecret"];
+            _options = new ManagerOptions
+            {
+                 Logging = new LoggingOptions
+                 {
+                     ElasticsearchOptions = new ElasticsearchOptions
+                     {
+                         IsEnabled = isElasticSearchEnabled,
+                         Url = Configuration["Log:Elasticsearch:Url"]
+                     },
+                     FileLogOptions = new FileLogOptions
+                     {
+                         IsEnabled = isLogFileEnabled,
+                         PathFormat = Configuration["Log:File:PathFormat"]
+                     }
+                 },
+                 Introspection = new IntrospectOptions
+                 {
+                     IntrospectionUrl = introspectionUrl,
+                     ClientId = clientId,
+                     ClientSecret = clientSecret
+                 }
+            };
         }
 
         public IConfigurationRoot Configuration { get; set; }
@@ -48,17 +77,17 @@ namespace SimpleIdentityServer.Manager.Host.Startup
             var cachingConnectionPath = Configuration["Caching:ConnectionPath"];
             var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
             var databaseType = Configuration["DatabaseType"];
-            var authorizationUrl = Configuration["AuthorizationServer"] + "/authorization";
-            var isLogFileEnabled = bool.Parse(Configuration["Log:File:Enabled"]);
-            var isElasticSearchEnabled = bool.Parse(Configuration["Log:Elasticsearch:Enabled"]);
-            var tokenUrl = authorizationUrl + "/token";
-            services.AddSingleton<IEncryptedPasswordFactory, EncryptedPasswordFactory>();
             if (string.IsNullOrWhiteSpace(cachingDatabase))
             {
                 cachingDatabase = "INMEMORY";
             }
 
-            // Configure the caching
+            if (string.IsNullOrWhiteSpace(databaseType))
+            {
+                databaseType = "INMEMORY";
+            }
+
+            // 1. Configure the caching
             if (cachingDatabase == "REDIS")
             {
                 services.AddConcurrency(opt => opt.UseRedis(o =>
@@ -69,11 +98,10 @@ namespace SimpleIdentityServer.Manager.Host.Startup
             }
             else if (cachingDatabase == "INMEMORY")
             {
-                services.AddConcurrency(opt => opt.UseInMemoryStorage());
+                services.AddConcurrency(opt => opt.UseInMemory());
             }
-
-
-            // Configure database
+            
+            // 2. Configure database
             if (databaseType == "SQLITE")
             {
                 services.AddSimpleIdentityServerSqlLite(connectionString);
@@ -82,46 +110,24 @@ namespace SimpleIdentityServer.Manager.Host.Startup
             {
                 services.AddSimpleIdentityServerPostgre(connectionString);
             }
-            else
+            else if (databaseType == "SQL")
             {
                 services.AddSimpleIdentityServerSqlServer(connectionString);
             }
+            else
+            {
+                services.AddSimpleIdentityServerInMemory();
+            }
 
-            // Configure the manager
-            services.AddSimpleIdentityServerManager(new AuthorizationServerOptions
-            {
-                AuthorizationUrl = authorizationUrl,
-                TokenUrl = tokenUrl
-            },
-            new LoggingOptions
-            {
-                ElasticsearchOptions = new ElasticsearchOptions
-                {
-                    IsEnabled = isElasticSearchEnabled,
-                    Url = Configuration["Log:Elasticsearch:Url"]
-                },
-                FileLogOptions = new FileLogOptions
-                {
-                    IsEnabled = isLogFileEnabled,
-                    PathFormat = Configuration["Log:File:PathFormat"]
-                }
-            });
+            // 3. Configure the manager
+            services.AddSimpleIdentityServerManager(_options);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            var introspectionUrl = Configuration["AuthorizationServer"] + "/introspect";
-            var clientId = Configuration["ClientId"];
-            var clientSecret = Configuration["ClientSecret"];
             loggerFactory.AddConsole();
             loggerFactory.AddDebug();
-
-            app.UseSimpleIdentityServerManager(loggerFactory, new AuthorizationServerOptions
-            {
-                IntrospectionUrl = introspectionUrl,
-                ClientId = clientId,
-                ClientSecret = clientSecret
-            });
+            app.UseSimpleIdentityServerManager(loggerFactory, _options);
         }
     }
 }

@@ -49,7 +49,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners.Actions
                 throw new ArgumentNullException(nameof(subject));
             }
 
-            var resourceOwner = _resourceOwnerRepository.GetBySubject(subject);
+            var resourceOwner = _resourceOwnerRepository.Get(subject);
             if (resourceOwner == null)
             {
                 throw new IdentityServerManagerException(ErrorCodes.InvalidRequestCode,

@@ -25,6 +25,8 @@ using SimpleIdentityServer.Manager.Core;
 using System;
 using SimpleIdentityServer.Configuration.Client;
 using SimpleIdentityServer.Client;
+using SimpleIdentityServer.Core.Services;
+using SimpleIdentityServer.Manager.Host.Startup;
 
 namespace SimpleIdentityServer.Manager.Host.Extensions
 {
@@ -32,39 +34,48 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
     {
         public static void AddSimpleIdentityServerManager(
             this IServiceCollection serviceCollection,
-            AuthorizationServerOptions authorizationServerOptions,
-            LoggingOptions loggingOptions)
+            ManagerOptions managerOptions)
         {
-            if (authorizationServerOptions == null)
+            if (managerOptions == null)
             {
-                throw new ArgumentNullException(nameof(authorizationServerOptions));
+                throw new ArgumentNullException(nameof(managerOptions));
             }
 
-            // Add the dependencies needed to enable CORS
+            if (managerOptions.Logging == null)
+            {
+                throw new ArgumentNullException(nameof(managerOptions.Logging));
+            }
+
+            if (managerOptions.PasswordService == null)
+            {
+                serviceCollection.AddTransient<IPasswordService, DefaultPasswordService>();
+            }
+            else
+            {
+                serviceCollection.AddSingleton(managerOptions.PasswordService);
+            }
+
+            // 1. Add the dependencies needed to enable CORS
             serviceCollection.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
                 .AllowAnyMethod()
-                .AllowAnyHeader()));            
-
+                .AllowAnyHeader()));
+            // 2. Register all the dependencies.
             serviceCollection.AddSimpleIdentityServerCore();
             serviceCollection.AddSimpleIdentityServerManagerCore();
             serviceCollection.AddConfigurationClient();
             serviceCollection.AddIdServerClient();
-
-            // Add authentication
+            // 3. Register the dependencies to run the authentication.
             serviceCollection.AddAuthentication();
-
-            // Add authorization policy rules
+            // 4. Add authorization policies
             serviceCollection.AddAuthorization(options =>
             {
                 options.AddPolicy("manager", policy => policy.RequireClaim("scope", "openid_manager"));
             });
-
+            // 5. Add JWT parsers.
             serviceCollection.AddSimpleIdentityServerJwt();
-
-            // Add the dependencies needed to run MVC
+            // 6. Add the dependencies needed to run MVC
             serviceCollection.AddMvc();
-
-            // Configure SeriLog pipeline
+            // 7. Configure Serilog
             Func<LogEvent, bool> serilogFilter = (e) =>
             {
                 var ctx = e.Properties["SourceContext"];
@@ -75,21 +86,19 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
                     e.Level == LogEventLevel.Error ||
                     e.Level == LogEventLevel.Fatal;
             };
-
             var logger = new LoggerConfiguration()
                 .MinimumLevel.Information()
                 .Enrich.FromLogContext()
                 .WriteTo.ColoredConsole();
-            if (loggingOptions.FileLogOptions != null &&
-                loggingOptions.FileLogOptions.IsEnabled)
+            if (managerOptions.Logging.FileLogOptions != null &&
+                managerOptions.Logging.FileLogOptions.IsEnabled)
             {
-                logger.WriteTo.RollingFile(loggingOptions.FileLogOptions.PathFormat);
+                logger.WriteTo.RollingFile(managerOptions.Logging.FileLogOptions.PathFormat);
             }
-
-            if (loggingOptions.ElasticsearchOptions != null &&
-                loggingOptions.ElasticsearchOptions.IsEnabled)
+            if (managerOptions.Logging.ElasticsearchOptions != null &&
+                managerOptions.Logging.ElasticsearchOptions.IsEnabled)
             {
-                logger.WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(loggingOptions.ElasticsearchOptions.Url))
+                logger.WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(managerOptions.Logging.ElasticsearchOptions.Url))
                 {
                     AutoRegisterTemplate = true,
                     IndexFormat = "manager-{0:yyyy.MM.dd}",

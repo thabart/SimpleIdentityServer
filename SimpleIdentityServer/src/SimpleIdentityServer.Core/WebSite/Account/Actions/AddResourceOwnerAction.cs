@@ -21,6 +21,9 @@ using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Services;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 
 namespace SimpleIdentityServer.Core.WebSite.Account.Actions
 {
@@ -67,6 +70,17 @@ namespace SimpleIdentityServer.Core.WebSite.Account.Actions
                     Errors.ErrorDescriptions.TheRoWithCredentialsAlreadyExists);
             }
 
+            if (addUserParameter.Claims == null)
+            {
+                addUserParameter.Claims = new List<Claim>();
+            }
+
+            Claim updatedClaim;
+            if (((updatedClaim = addUserParameter.Claims.FirstOrDefault(c => c.Type == Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt)) != null))
+            {
+                addUserParameter.Claims.Remove(updatedClaim);
+            }
+
             var newResourceOwner = new ResourceOwner
             {
                 Id = addUserParameter.Login,
@@ -75,6 +89,8 @@ namespace SimpleIdentityServer.Core.WebSite.Account.Actions
                 IsLocalAccount = true,
                 Password = _authenticateResourceOwnerService.GetHashedPassword(addUserParameter.Password)
             };
+
+            newResourceOwner.Claims.Add(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt, DateTime.UtcNow.ToString()));
             _resourceOwnerRepository.Insert(newResourceOwner);
         }
     }

@@ -29,35 +29,38 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
         public static void UseSimpleIdentityServerManager(
             this IApplicationBuilder applicationBuilder,
             ILoggerFactory loggerFactory,
-            AuthorizationServerOptions authorizationServerOptions)
+            ManagerOptions options)
         {
-            if (authorizationServerOptions == null)
+            if (options == null)
             {
-                throw new ArgumentNullException(nameof(authorizationServerOptions));
+                throw new ArgumentNullException(nameof(options));
             }
 
+            if (options.Introspection == null)
+            {
+                throw new ArgumentNullException(nameof(options.Introspection));
+            }
+            
+            // 1. Use log.
             loggerFactory.AddSerilog();
-
-            // Display status code page
+            // 2. Display status code page.
             applicationBuilder.UseStatusCodePages();
-
-            // Enable CORS
+            // 3. Enable CORS
             applicationBuilder.UseCors("AllowAll");
-
-            // Enable custom exception handler
+            // 4. Enable custom exception handler
             applicationBuilder.UseSimpleIdentityServerManagerExceptionHandler(new ExceptionHandlerMiddlewareOptions
             {
                 ManagerEventSource = (IManagerEventSource)applicationBuilder.ApplicationServices.GetService(typeof(IManagerEventSource))
             });
+            // 5. Enable introspection.
             var introspectionOptions = new Oauth2IntrospectionOptions
             {
-                InstrospectionEndPoint = authorizationServerOptions.IntrospectionUrl,
-                ClientId = authorizationServerOptions.ClientId,
-                ClientSecret = authorizationServerOptions.ClientSecret
+                InstrospectionEndPoint = options.Introspection.IntrospectionUrl,
+                ClientId = options.Introspection.ClientId,
+                ClientSecret = options.Introspection.ClientSecret
             };
             applicationBuilder.UseAuthenticationWithIntrospection(introspectionOptions);
-
-            // Launch ASP.NET MVC
+            // 6. Launch ASP.NET API
             applicationBuilder.UseMvc(routes =>
             {
                 routes.MapRoute(
