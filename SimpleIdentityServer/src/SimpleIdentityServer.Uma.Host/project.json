@@ -43,6 +43,7 @@
     "SimpleIdentityServer.Uma.EF": { "target": "project" },
     "SimpleIdentityServer.Oauth2Instrospection.Authentication": { "target": "project" },
     "WebApiContrib.Core.Storage.Redis": { "target": "project" },
+    "WebApiContrib.Core.Storage.InMemory": { "target": "project" },
     "WebApiContrib.Core.Concurrency": { "target": "project" }
   },
   "frameworks": {

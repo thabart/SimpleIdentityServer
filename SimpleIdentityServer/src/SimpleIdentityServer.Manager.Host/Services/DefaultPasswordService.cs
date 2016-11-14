@@ -16,7 +16,7 @@
 
 using SimpleIdentityServer.Core.Services;
 
-namespace SimpleIdentityServer.Manager.Host.Startup
+namespace SimpleIdentityServer.Manager.Host.Services
 {
     public class DefaultPasswordService : IPasswordService
     {

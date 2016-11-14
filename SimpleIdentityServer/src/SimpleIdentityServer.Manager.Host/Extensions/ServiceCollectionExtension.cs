@@ -18,15 +18,15 @@ using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.Elasticsearch;
+using SimpleIdentityServer.Client;
+using SimpleIdentityServer.Configuration.Client;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Jwt;
+using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Manager.Core;
+using SimpleIdentityServer.Manager.Host.Services;
 using System;
-using SimpleIdentityServer.Configuration.Client;
-using SimpleIdentityServer.Client;
-using SimpleIdentityServer.Core.Services;
-using SimpleIdentityServer.Manager.Host.Startup;
 
 namespace SimpleIdentityServer.Manager.Host.Extensions
 {
@@ -53,6 +53,15 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
             else
             {
                 serviceCollection.AddSingleton(managerOptions.PasswordService);
+            }
+
+            if (managerOptions.AuthenticateResourceOwnerService == null)
+            {
+                serviceCollection.AddTransient<IAuthenticateResourceOwnerService, DefaultAuthenticateResourceOwerService>();
+            }
+            else
+            {
+                serviceCollection.AddSingleton(managerOptions.AuthenticateResourceOwnerService);
             }
 
             // 1. Add the dependencies needed to enable CORS

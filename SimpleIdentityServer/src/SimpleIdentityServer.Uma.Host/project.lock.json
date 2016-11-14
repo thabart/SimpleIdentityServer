@@ -1015,6 +1015,18 @@
           "lib/netstandard1.3/Microsoft.EntityFrameworkCore.dll": {}
         }
       },
+      "Microsoft.EntityFrameworkCore.InMemory/1.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.EntityFrameworkCore": "1.0.0"
+        },
+        "compile": {
+          "lib/netstandard1.3/Microsoft.EntityFrameworkCore.InMemory.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard1.3/Microsoft.EntityFrameworkCore.InMemory.dll": {}
+        }
+      },
       "Microsoft.EntityFrameworkCore.Relational/1.0.0": {
         "type": "package",
         "dependencies": {
@@ -4462,6 +4474,7 @@
         "type": "project",
         "framework": ".NETCoreApp,Version=v1.0",
         "dependencies": {
+          "Microsoft.EntityFrameworkCore.InMemory": "1.0.0",
           "Microsoft.EntityFrameworkCore.SqlServer": "1.0.0",
           "Microsoft.EntityFrameworkCore.Sqlite": "1.0.0",
           "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0",
@@ -4514,7 +4527,7 @@
           "System.Dynamic.Runtime": "4.0.11",
           "System.Net.Http": "4.1.0",
           "System.Private.DataContractSerialization": "4.1.1",
-          "WebApiContrib.Core.Storage": "(, )"
+          "WebApiContrib.Core.Storage": "1.0.0"
         },
         "compile": {
           "netstandard1.6/WebApiContrib.Core.Concurrency.dll": {}
@@ -4530,7 +4543,6 @@
           "Microsoft.AspNetCore.Mvc": "1.0.0",
           "Microsoft.AspNetCore.Mvc.Core": "1.0.0",
           "Microsoft.Extensions.Caching.Abstractions": "1.0.0",
-          "Microsoft.Extensions.Caching.Memory": "1.0.0",
           "Microsoft.Extensions.DependencyInjection": "1.0.0",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
           "Microsoft.Extensions.Options": "1.0.0",
@@ -4546,12 +4558,26 @@
           "netstandard1.6/WebApiContrib.Core.Storage.dll": {}
         }
       },
+      "WebApiContrib.Core.Storage.InMemory/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v1.6",
+        "dependencies": {
+          "Microsoft.Extensions.Caching.Memory": "1.0.0",
+          "WebApiContrib.Core.Storage": "1.0.0"
+        },
+        "compile": {
+          "netstandard1.6/WebApiContrib.Core.Storage.InMemory.dll": {}
+        },
+        "runtime": {
+          "netstandard1.6/WebApiContrib.Core.Storage.InMemory.dll": {}
+        }
+      },
       "WebApiContrib.Core.Storage.Redis/1.0.0": {
         "type": "project",
         "framework": ".NETStandard,Version=v1.6",
         "dependencies": {
           "Microsoft.Extensions.Caching.Redis.Core": "1.0.2",
-          "WebApiContrib.Core.Storage": "(, )"
+          "WebApiContrib.Core.Storage": "1.0.0"
         },
         "compile": {
           "netstandard1.6/WebApiContrib.Core.Storage.Redis.dll": {}
@@ -5453,6 +5479,18 @@
         },
         "runtime": {
           "lib/net451/Microsoft.EntityFrameworkCore.dll": {}
+        }
+      },
+      "Microsoft.EntityFrameworkCore.InMemory/1.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.EntityFrameworkCore": "1.0.0"
+        },
+        "compile": {
+          "lib/net451/Microsoft.EntityFrameworkCore.InMemory.dll": {}
+        },
+        "runtime": {
+          "lib/net451/Microsoft.EntityFrameworkCore.InMemory.dll": {}
         }
       },
       "Microsoft.EntityFrameworkCore.Relational/1.0.0": {
@@ -7037,6 +7075,7 @@
         "type": "project",
         "framework": ".NETFramework,Version=v4.6",
         "dependencies": {
+          "Microsoft.EntityFrameworkCore.InMemory": "1.0.0",
           "Microsoft.EntityFrameworkCore.SqlServer": "1.0.0",
           "Microsoft.EntityFrameworkCore.Sqlite": "1.0.0",
           "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0",
@@ -7064,7 +7103,7 @@
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
           "Microsoft.Extensions.Options": "1.0.0",
           "Newtonsoft.Json": "9.0.1",
-          "WebApiContrib.Core.Storage": "(, )"
+          "WebApiContrib.Core.Storage": "1.0.0"
         },
         "frameworkAssemblies": [
           "System.Net.Http",
@@ -7085,7 +7124,6 @@
           "Microsoft.AspNetCore.Mvc": "1.0.0",
           "Microsoft.AspNetCore.Mvc.Core": "1.0.0",
           "Microsoft.Extensions.Caching.Abstractions": "1.0.0",
-          "Microsoft.Extensions.Caching.Memory": "1.0.0",
           "Microsoft.Extensions.DependencyInjection": "1.0.0",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
           "Microsoft.Extensions.Options": "1.0.0",
@@ -7103,12 +7141,26 @@
           "net451/WebApiContrib.Core.Storage.dll": {}
         }
       },
+      "WebApiContrib.Core.Storage.InMemory/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.5.1",
+        "dependencies": {
+          "Microsoft.Extensions.Caching.Memory": "1.0.0",
+          "WebApiContrib.Core.Storage": "1.0.0"
+        },
+        "compile": {
+          "net451/WebApiContrib.Core.Storage.InMemory.dll": {}
+        },
+        "runtime": {
+          "net451/WebApiContrib.Core.Storage.InMemory.dll": {}
+        }
+      },
       "WebApiContrib.Core.Storage.Redis/1.0.0": {
         "type": "project",
         "framework": ".NETFramework,Version=v4.5.1",
         "dependencies": {
           "Microsoft.Extensions.Caching.Redis.Core": "1.0.2",
-          "WebApiContrib.Core.Storage": "(, )"
+          "WebApiContrib.Core.Storage": "1.0.0"
         },
         "compile": {
           "net451/WebApiContrib.Core.Storage.Redis.dll": {}
@@ -7908,6 +7960,19 @@
         "lib/net451/Microsoft.EntityFrameworkCore.xml",
         "lib/netstandard1.3/Microsoft.EntityFrameworkCore.dll",
         "lib/netstandard1.3/Microsoft.EntityFrameworkCore.xml"
+      ]
+    },
+    "Microsoft.EntityFrameworkCore.InMemory/1.0.0": {
+      "sha512": "0HGcrblJnPlW9EHLFKZ4uSFXOVbvtIymPNsbD+PoAm2B12oe8ImTgWHAgeYbCDLWHyETyN3D1sn8sqkqbo+uog==",
+      "type": "package",
+      "path": "Microsoft.EntityFrameworkCore.InMemory/1.0.0",
+      "files": [
+        "Microsoft.EntityFrameworkCore.InMemory.1.0.0.nupkg.sha512",
+        "Microsoft.EntityFrameworkCore.InMemory.nuspec",
+        "lib/net451/Microsoft.EntityFrameworkCore.InMemory.dll",
+        "lib/net451/Microsoft.EntityFrameworkCore.InMemory.xml",
+        "lib/netstandard1.3/Microsoft.EntityFrameworkCore.InMemory.dll",
+        "lib/netstandard1.3/Microsoft.EntityFrameworkCore.InMemory.xml"
       ]
     },
     "Microsoft.EntityFrameworkCore.Relational/1.0.0": {
@@ -13844,6 +13909,11 @@
       "path": "../WebApiContrib.Core.Storage/project.json",
       "msbuildProject": "../WebApiContrib.Core.Storage/WebApiContrib.Core.Storage.xproj"
     },
+    "WebApiContrib.Core.Storage.InMemory/1.0.0": {
+      "type": "project",
+      "path": "../WebApiContrib.Core.Storage.InMemory/project.json",
+      "msbuildProject": "../WebApiContrib.Core.Storage.InMemory/WebApiContrib.Core.Storage.InMemory.xproj"
+    },
     "WebApiContrib.Core.Storage.Redis/1.0.0": {
       "type": "project",
       "path": "../WebApiContrib.Core.Storage.Redis/project.json",
@@ -13878,6 +13948,7 @@
       "SimpleIdentityServer.Uma.Core",
       "SimpleIdentityServer.Uma.EF",
       "WebApiContrib.Core.Concurrency",
+      "WebApiContrib.Core.Storage.InMemory",
       "WebApiContrib.Core.Storage.Redis"
     ],
     ".NETCoreApp,Version=v1.0": [

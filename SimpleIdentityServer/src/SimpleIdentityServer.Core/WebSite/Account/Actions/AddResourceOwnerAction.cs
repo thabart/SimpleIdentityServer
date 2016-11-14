@@ -15,7 +15,6 @@
 #endregion
 
 using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;

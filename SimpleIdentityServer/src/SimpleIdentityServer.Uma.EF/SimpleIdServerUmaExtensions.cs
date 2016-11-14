@@ -31,6 +31,11 @@ namespace SimpleIdentityServer.Uma.EF
             this IServiceCollection serviceCollection,
             string connectionString)
         {
+            if (serviceCollection == null)
+            {
+                throw new ArgumentNullException(nameof(serviceCollection));
+            }
+
             if (string.IsNullOrWhiteSpace(connectionString))
             {
                 throw new ArgumentNullException(nameof(connectionString));
@@ -46,6 +51,11 @@ namespace SimpleIdentityServer.Uma.EF
             this IServiceCollection serviceCollection,
             string connectionString)
         {
+            if (serviceCollection == null)
+            {
+                throw new ArgumentNullException(nameof(serviceCollection));
+            }
+
             if (string.IsNullOrWhiteSpace(connectionString))
             {
                 throw new ArgumentNullException(nameof(connectionString));
@@ -54,6 +64,19 @@ namespace SimpleIdentityServer.Uma.EF
             RegisterServices(serviceCollection);
             serviceCollection.AddEntityFramework()
                             .AddDbContext<SimpleIdServerUmaContext>(options => options.UseNpgsql(connectionString));
+            return serviceCollection;
+        }
+
+        public static IServiceCollection AddSimpleIdServerUmaInMemory(this IServiceCollection serviceCollection)
+        {
+            if (serviceCollection == null)
+            {
+                throw new ArgumentNullException(nameof(serviceCollection));
+            }
+
+            RegisterServices(serviceCollection);
+            serviceCollection.AddEntityFramework()
+                            .AddDbContext<SimpleIdServerUmaContext>(options => options.UseInMemoryDatabase());
             return serviceCollection;
         }
 

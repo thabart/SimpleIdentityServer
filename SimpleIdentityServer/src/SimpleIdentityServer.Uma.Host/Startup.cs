@@ -35,6 +35,7 @@ using SimpleIdentityServer.Uma.Logging;
 using System;
 using WebApiContrib.Core.Concurrency;
 using WebApiContrib.Core.Storage;
+using WebApiContrib.Core.Storage.InMemory;
 
 namespace SimpleIdentityServer.Uma.Host
 {
@@ -54,25 +55,21 @@ namespace SimpleIdentityServer.Uma.Host
         
         public void ConfigureServices(IServiceCollection services)
         {
-            // Add the dependencies needed to run Swagger
+            // 1. Add the dependencies
             RegisterServices(services);
-
-            // Add authorization policies
+            // 2. Add authorization policies
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("UmaProtection", policy => policy.RequireClaim("scope", "uma_protection"));
                 options.AddPolicy("Authorization", policy => policy.RequireClaim("scope", "uma_authorization"));
             });
-
-            // Add the dependencies needed to enable CORS
+            // 3. Add the dependencies needed to enable CORS
             services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader()));
-
-            // Add authentication
+            // 4. Add authentication
             services.AddAuthentication();
-
-            // Add the dependencies needed to run MVC
+            // 5. Add the dependencies needed to run ASP.NET API
             services.AddMvc();
         }
 
@@ -85,10 +82,9 @@ namespace SimpleIdentityServer.Uma.Host
 
             loggerFactory.AddSerilog();
 
-            // Display status code page
+            // 1. Display status code page
             app.UseStatusCodePages();
-
-            // Enable OAUTH authentication
+            // 2. Enable OAUTH authentication
             var introspectionOptions = new Oauth2IntrospectionOptions
             {
                 InstrospectionEndPoint = introspectionUrl,
@@ -96,8 +92,7 @@ namespace SimpleIdentityServer.Uma.Host
                 ClientSecret = clientSecret
             };
             app.UseAuthenticationWithIntrospection(introspectionOptions);
-
-            // Insert seed data
+            // 3. Insert seed data
             if (isDataMigrated)
             {
                 using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
@@ -107,17 +102,14 @@ namespace SimpleIdentityServer.Uma.Host
                     simpleIdServerUmaContext.EnsureSeedData();
                 }
             }
-
-            // Enable CORS
+            // 4. Enable CORS
             app.UseCors("AllowAll");
-
-            // Display exception
+            // 5. Display exception
             app.UseUmaExceptionHandler(new ExceptionHandlerMiddlewareOptions
             {
                 UmaEventSource = app.ApplicationServices.GetService<IUmaServerEventSource>()
             });
-
-            // Launch ASP.NET MVC
+            // 6. Launch ASP.NET MVC
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
@@ -138,6 +130,7 @@ namespace SimpleIdentityServer.Uma.Host
             var tokenEndPoint = Configuration["OpenId:TokenEndPoint"];
             var isSqlServer = bool.Parse(Configuration["isSqlServer"]);
             var isPostgre = bool.Parse(Configuration["isPostgre"]);
+            var isInMemory = bool.Parse(Configuration["isInMemory"]);
             var isLogFileEnabled = bool.Parse(Configuration["Log:File:Enabled"]);
             var isElasticSearchEnabled = bool.Parse(Configuration["Log:Elasticsearch:Enabled"]);
             var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
@@ -166,7 +159,7 @@ namespace SimpleIdentityServer.Uma.Host
             }
             else if (cachingDatabase == "INMEMORY")
             {
-                services.AddConcurrency(opt => opt.UseInMemoryStorage());
+                services.AddConcurrency(opt => opt.UseInMemory());
             }
 
             if (isSqlServer)
@@ -177,6 +170,11 @@ namespace SimpleIdentityServer.Uma.Host
             if (isPostgre)
             {
                 services.AddSimpleIdServerUmaPostgresql(connectionString);
+            }
+
+            if (isInMemory)
+            {
+                services.AddSimpleIdServerUmaInMemory();
             }
 
             var logger = new LoggerConfiguration()
