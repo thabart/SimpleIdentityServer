@@ -77,7 +77,7 @@ namespace SimpleIdentityServer.Rfid.Website.Controllers
                     UserName = loginViewModel.CardNumber
                 });
                 // 2. Store the claims into the cookie.
-                var claims = resourceOwner.ToClaims();
+                var claims = resourceOwner.Claims;
                 claims.Add(new Claim(ClaimTypes.AuthenticationInstant,
                     DateTimeOffset.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture),
                     ClaimValueTypes.Integer));

@@ -247,19 +247,19 @@ namespace SimpleIdentityServer.Rfid.Website.Extensions
                     new Translation
                     {
                         LanguageTag = "en",
-                        Code = Constants.StandardTranslationCodes.ApplicationWouldLikeToCode,
+                        Code = Core.Constants.StandardTranslationCodes.ApplicationWouldLikeToCode,
                         Value = "the client {0} would like to access"
                     },
                     new Translation
                     {
                         LanguageTag = "en",
-                        Code = Constants.StandardTranslationCodes.IndividualClaimsCode,
+                        Code = Core.Constants.StandardTranslationCodes.IndividualClaimsCode,
                         Value = "individual claims"
                     },
                     new Translation
                     {
                         LanguageTag = "en",
-                        Code = Constants.StandardTranslationCodes.LoginCode,
+                        Code = Core.Constants.StandardTranslationCodes.LoginCode,
                         Value = "Login"
                     },
                     new Translation
@@ -271,201 +271,201 @@ namespace SimpleIdentityServer.Rfid.Website.Extensions
                     new Translation
                     {
                         LanguageTag = "en",
-                        Code = Constants.StandardTranslationCodes.UserNameCode,
+                        Code = Core.Constants.StandardTranslationCodes.UserNameCode,
                         Value = "Username"
                     },
                     new Translation
                     {
                         LanguageTag = "en",
-                        Code = Constants.StandardTranslationCodes.ConfirmCode,
+                        Code = Core.Constants.StandardTranslationCodes.ConfirmCode,
                         Value = "Confirm"
                     },
                     new Translation
                     {
                         LanguageTag = "en",
-                        Code = Constants.StandardTranslationCodes.CancelCode,
+                        Code = Core.Constants.StandardTranslationCodes.CancelCode,
                         Value = "Cancel"
                     },
                     new Translation
                     {
                         LanguageTag = "en",
-                        Code = Constants.StandardTranslationCodes.LoginLocalAccount,
+                        Code = Core.Constants.StandardTranslationCodes.LoginLocalAccount,
                         Value = "Login with your local account"
                     },
                     new Translation
                     {
                         LanguageTag = "en",
-                        Code = Constants.StandardTranslationCodes.LoginExternalAccount,
+                        Code = Core.Constants.StandardTranslationCodes.LoginExternalAccount,
                         Value = "Login with your external account"
                     },
                     new Translation
                     {
                         LanguageTag = "en",
-                        Code = Constants.StandardTranslationCodes.LinkToThePolicy,
+                        Code = Core.Constants.StandardTranslationCodes.LinkToThePolicy,
                         Value = "policy"
                     },
                     new Translation
                     {
                         LanguageTag = "en",
-                        Code = Constants.StandardTranslationCodes.Tos,
+                        Code = Core.Constants.StandardTranslationCodes.Tos,
                         Value = "Terms of Service"
                     },
                     new Translation
                     {
                         LanguageTag = "en",
-                        Code = Constants.StandardTranslationCodes.SendCode,
+                        Code = Core.Constants.StandardTranslationCodes.SendCode,
                         Value = "Send code"
                     },
                     new Translation
                     {
                         LanguageTag = "en",
-                        Code = Constants.StandardTranslationCodes.Code,
+                        Code = Core.Constants.StandardTranslationCodes.Code,
                         Value = "Code"
                     },
                     new Translation
                     {
                         LanguageTag = "en",
-                        Code = Constants.StandardTranslationCodes.EditResourceOwner,
+                        Code = Core.Constants.StandardTranslationCodes.EditResourceOwner,
                         Value = "Edit resource owner"
                     },
                     new Translation
                     {
                         LanguageTag = "en",
-                        Code = Constants.StandardTranslationCodes.YourName,
+                        Code = Core.Constants.StandardTranslationCodes.YourName,
                         Value = "Your name"
                     },
                     new Translation
                     {
                         LanguageTag = "en",
-                        Code = Constants.StandardTranslationCodes.YourPassword,
+                        Code = Core.Constants.StandardTranslationCodes.YourPassword,
                         Value = "Your password"
                     },
                     new Translation
                     {
                         LanguageTag = "en",
-                        Code = Constants.StandardTranslationCodes.Email,
+                        Code = Core.Constants.StandardTranslationCodes.Email,
                         Value = "Email"
                     },
                     new Translation
                     {
                         LanguageTag = "en",
-                        Code = Constants.StandardTranslationCodes.YourEmail,
+                        Code = Core.Constants.StandardTranslationCodes.YourEmail,
                         Value = "Your email"
                     },
                     new Translation
                     {
                         LanguageTag = "en",
-                        Code = Constants.StandardTranslationCodes.TwoAuthenticationFactor,
+                        Code = Core.Constants.StandardTranslationCodes.TwoAuthenticationFactor,
                         Value = "Two authentication factor"
                     },
                     new Translation
                     {
                         LanguageTag = "en",
-                        Code = Constants.StandardTranslationCodes.UserIsUpdated,
+                        Code = Core.Constants.StandardTranslationCodes.UserIsUpdated,
                         Value = "User has been updated"
                     },
                     new Translation
                     {
                         LanguageTag = "en",
-                        Code = Constants.StandardTranslationCodes.SendConfirmationCode,
+                        Code = Core.Constants.StandardTranslationCodes.SendConfirmationCode,
                         Value = "Send a confirmation code"
                     },
                     new Translation
                     {
                         LanguageTag = "en",
-                        Code = Constants.StandardTranslationCodes.Phone,
+                        Code = Core.Constants.StandardTranslationCodes.Phone,
                         Value = "Phone"
                     },
                     new Translation
                     {
                         LanguageTag = "en",
-                        Code = Constants.StandardTranslationCodes.HashedPassword,
+                        Code = Core.Constants.StandardTranslationCodes.HashedPassword,
                         Value = "Hashed password"
                     },
                     // Swedish
                     new Translation
                     {
                         LanguageTag = "se",
-                        Code = Constants.StandardTranslationCodes.ApplicationWouldLikeToCode,
+                        Code = Core.Constants.StandardTranslationCodes.ApplicationWouldLikeToCode,
                         Value = "tillämpning {0} skulle vilja:"
                     },
                     new Translation
                     {
                         LanguageTag = "se",
-                        Code = Constants.StandardTranslationCodes.IndividualClaimsCode,
+                        Code = Core.Constants.StandardTranslationCodes.IndividualClaimsCode,
                         Value = "enskilda anspråk"
                     },
                     new Translation
                     {
                         LanguageTag = "se",
-                        Code = Constants.StandardTranslationCodes.LoginCode,
+                        Code = Core.Constants.StandardTranslationCodes.LoginCode,
                         Value = "Logga in"
                     },
                     new Translation
                     {
                         LanguageTag = "se",
-                        Code = Constants.StandardTranslationCodes.PasswordCode,
+                        Code = Core.Constants.StandardTranslationCodes.PasswordCode,
                         Value = "Lösenord"
                     },
                     new Translation
                     {
                         LanguageTag = "se",
-                        Code = Constants.StandardTranslationCodes.UserNameCode,
+                        Code = Core.Constants.StandardTranslationCodes.UserNameCode,
                         Value = "Användarnamn"
                     },
                     new Translation
                     {
                         LanguageTag = "se",
-                        Code = Constants.StandardTranslationCodes.ConfirmCode,
+                        Code = Core.Constants.StandardTranslationCodes.ConfirmCode,
                         Value = "bekräfta"
                     },
                     new Translation
                     {
                         LanguageTag = "se",
-                        Code = Constants.StandardTranslationCodes.CancelCode,
+                        Code = Core.Constants.StandardTranslationCodes.CancelCode,
                         Value = "annullera"
                     },
                     // French                
                     new Translation
                     {
                         LanguageTag = "fr",
-                        Code = Constants.StandardTranslationCodes.ApplicationWouldLikeToCode,
+                        Code = Core.Constants.StandardTranslationCodes.ApplicationWouldLikeToCode,
                         Value = "L'application veut accéder à:"
                     },
                     new Translation
                     {
                         LanguageTag = "fr",
-                        Code = Constants.StandardTranslationCodes.IndividualClaimsCode,
+                        Code = Core.Constants.StandardTranslationCodes.IndividualClaimsCode,
                         Value = "Les claims"
                     },
                     new Translation
                     {
                         LanguageTag = "fr",
-                        Code = Constants.StandardTranslationCodes.LoginCode,
+                        Code = Core.Constants.StandardTranslationCodes.LoginCode,
                         Value = "S'authentifier"
                     },
                     new Translation
                     {
                         LanguageTag = "fr",
-                        Code = Constants.StandardTranslationCodes.PasswordCode,
+                        Code = Core.Constants.StandardTranslationCodes.PasswordCode,
                         Value = "Mot de passe"
                     },
                     new Translation
                     {
                         LanguageTag = "fr",
-                        Code = Constants.StandardTranslationCodes.UserNameCode,
+                        Code = Core.Constants.StandardTranslationCodes.UserNameCode,
                         Value = "Nom d'utilisateur"
                     },
                     new Translation
                     {
                         LanguageTag = "fr",
-                        Code = Constants.StandardTranslationCodes.ConfirmCode,
+                        Code = Core.Constants.StandardTranslationCodes.ConfirmCode,
                         Value = "confirmer"
                     },
                     new Translation
                     {
                         LanguageTag = "fr",
-                        Code = Constants.StandardTranslationCodes.CancelCode,
+                        Code = Core.Constants.StandardTranslationCodes.CancelCode,
                         Value = "annuler"
                     }
                 });
@@ -492,7 +492,7 @@ namespace SimpleIdentityServer.Rfid.Website.Extensions
                             new ResourceOwnerClaim
                             {
                                 Id = Guid.NewGuid().ToString(),
-                                ClaimCode = "card_number",
+                                ClaimCode = Constants.CardClaims.CardNumber,
                                 Value = "6C919615"
                             }
                         },

@@ -115,7 +115,7 @@ namespace SimpleIdentityServer.Host
             }
             else
             {
-                services.AddSingleton(options.AuthenticateResourceOwner);
+                services.AddTransient(typeof(IAuthenticateResourceOwnerService), options.AuthenticateResourceOwner);
             }
 
             if (options.TwoFactorServiceStore == null)
