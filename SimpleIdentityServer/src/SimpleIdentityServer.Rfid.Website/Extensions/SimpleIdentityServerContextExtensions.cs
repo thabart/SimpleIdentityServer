@@ -15,7 +15,6 @@
 #endregion
 
 using SimpleIdentityServer.Core;
-using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.DataAccess.SqlServer;
 using SimpleIdentityServer.DataAccess.SqlServer.Models;
 using System;
@@ -31,7 +30,6 @@ namespace SimpleIdentityServer.Rfid.Website.Extensions
 
         public static void EnsureSeedData(this SimpleIdentityServerContext context)
         {
-            InsertRoles(context);
             InsertClaims(context);
             InsertScopes(context);
             InsertTranslations(context);
@@ -44,21 +42,6 @@ namespace SimpleIdentityServer.Rfid.Website.Extensions
         #endregion
 
         #region Private static methods
-
-        private static void InsertRoles(SimpleIdentityServerContext context)
-        {
-            if (!context.Roles.Any())
-            {
-                context.Roles.AddRange(new[]
-                {
-                    new Role
-                    {
-                        Name = "administrator",
-                        Description = "administrator role"
-                    }
-                });
-            }
-        }
 
         private static void InsertClaims(SimpleIdentityServerContext context)
         {
@@ -348,8 +331,8 @@ namespace SimpleIdentityServer.Rfid.Website.Extensions
                     new Translation
                     {
                         LanguageTag = "en",
-                        Code = Constants.StandardTranslationCodes.YourLogin,
-                        Value = "Your login"
+                        Code = Constants.StandardTranslationCodes.YourName,
+                        Value = "Your name"
                     },
                     new Translation
                     {
@@ -498,37 +481,22 @@ namespace SimpleIdentityServer.Rfid.Website.Extensions
                     new ResourceOwner
                     {
                         Id = Guid.NewGuid().ToString(),
-                        Name = "6C919615",
-                        Address = new Address
+                        Claims = new List<ResourceOwnerClaim>
                         {
-                            Id = Guid.NewGuid().ToString(),
-                            Country  = "France"
-                        },
-                        BirthDate = "1989-10-07",
-                        Email = "habarthierry@hotmail.fr",
-                        EmailVerified = true,
-                        FamilyName = "habart",
-                        Gender = "M",
-                        GivenName = "Habart Thierry",
-                        Locale = "fr-FR",
-                        MiddleName = "Thierry",
-                        NickName = "Titi",
-                        PhoneNumber = "+32485350536",
-                        PhoneNumberVerified = true,
-                        Picture = "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Shiba_inu_taiki.jpg/220px-Shiba_inu_taiki.jpg",
-                        PreferredUserName = "Thierry",
-                        Profile = "http://localhost/profile",
-                        UpdatedAt = DateTime.Now.ConvertToUnixTimestamp(),
-                        WebSite = "https://github.com/thabart",
-                        ZoneInfo = "Europe/Paris",
-                        Password = "5E884898DA28047151D0E56F8DC6292773603D0D6AABBDD62A11EF721D1542D8",
-                        ResourceOwnerRoles = new List<ResourceOwnerRole>
-                        {
-                            new ResourceOwnerRole
+                            new ResourceOwnerClaim
                             {
-                                RoleName = "administrator"
+                                Id = Guid.NewGuid().ToString(),
+                                ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Name,
+                                Value = "Thierry Habart"
+                            },
+                            new ResourceOwnerClaim
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                ClaimCode = "card_number",
+                                Value = "6C919615"
                             }
                         },
+                        Password = "5E884898DA28047151D0E56F8DC6292773603D0D6AABBDD62A11EF721D1542D8",
                         IsLocalAccount = true
                     }
                 });

@@ -42,6 +42,11 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
 
         public static Domain.ResourceOwner ToDomain(this Model.ResourceOwner resourceOwner)
         {
+            if (resourceOwner == null)
+            {
+                return null;
+            }
+
             var claims = new List<Claim>();
             if (resourceOwner.Claims != null 
                 && resourceOwner.Claims.Any())

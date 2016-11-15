@@ -124,7 +124,7 @@ namespace SimpleIdentityServer.Host
             }
             else
             {
-                services.AddSingleton(options.TwoFactorServiceStore);
+                services.AddTransient(typeof(IConfigurationService), options.TwoFactorServiceStore);
             }
 
             if (options.ConfigurationService == null)
@@ -133,7 +133,7 @@ namespace SimpleIdentityServer.Host
             }
             else
             {
-                services.AddSingleton(options.ConfigurationService);
+                services.AddTransient(typeof(IConfigurationService), options.ConfigurationService);
             }
 
             if (options.PasswordService == null)
@@ -142,7 +142,7 @@ namespace SimpleIdentityServer.Host
             }
             else
             {
-                services.AddSingleton(options.PasswordService);
+                services.AddTransient(typeof(IPasswordService), options.PasswordService);
             }
 
             services.AddTransient<ICertificateStore, CertificateStore>();
