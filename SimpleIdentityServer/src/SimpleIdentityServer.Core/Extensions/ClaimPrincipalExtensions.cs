@@ -59,6 +59,12 @@ namespace SimpleIdentityServer.Core.Extensions
 
         public static string GetSubject(this IEnumerable<Claim> claims)
         {
+            var claim = GetSubjectClaim(claims);
+            return claim == null ? null : claim.Value;
+        }
+
+        public static Claim GetSubjectClaim(this IEnumerable<Claim> claims)
+        {
             if (claims == null)
             {
                 return null;
@@ -74,7 +80,7 @@ namespace SimpleIdentityServer.Core.Extensions
                 }
             }
 
-            return claim.Value;
+            return claim;
         }
 
         public static string GetName(this ClaimsPrincipal principal)

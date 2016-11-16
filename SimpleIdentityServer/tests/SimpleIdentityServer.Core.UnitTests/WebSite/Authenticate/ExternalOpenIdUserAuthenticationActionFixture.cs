@@ -31,12 +31,13 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             {
                 new Claim("sub", "subject")
             };
+            IEnumerable<Claim> filteredClaim = null;
             var authorizationParameter = new AuthorizationParameter();
 
             // ACTS & ASSERTS
-            Assert.Throws<ArgumentNullException>(() => _externalOpenIdUserAuthenticationAction.Execute(null, null, null));
-            Assert.Throws<ArgumentNullException>(() => _externalOpenIdUserAuthenticationAction.Execute(claims, null, null));
-            Assert.Throws<ArgumentNullException>(() => _externalOpenIdUserAuthenticationAction.Execute(claims, authorizationParameter, null));
+            Assert.Throws<ArgumentNullException>(() => _externalOpenIdUserAuthenticationAction.Execute(null, null, null, out filteredClaim));
+            Assert.Throws<ArgumentNullException>(() => _externalOpenIdUserAuthenticationAction.Execute(claims, null, null, out filteredClaim));
+            Assert.Throws<ArgumentNullException>(() => _externalOpenIdUserAuthenticationAction.Execute(claims, authorizationParameter, null, out filteredClaim));
         }
 
         [Fact]
@@ -44,6 +45,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
         {
             // ARRANGE
             InitializeFakeObjects();
+            IEnumerable<Claim> filteredClaim = null;
             const string subject = "subject";
             var claims = new List<Claim>
             {
@@ -61,7 +63,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
                 It.IsAny<List<Claim>>())).Returns(actionResult);
 
             // ACT & ASSERT
-            var exception = Assert.Throws<IdentityServerException>(() => _externalOpenIdUserAuthenticationAction.Execute(claims, authorizationParameter, code));
+            var exception = Assert.Throws<IdentityServerException>(() => _externalOpenIdUserAuthenticationAction.Execute(claims, authorizationParameter, code, out filteredClaim));
             Assert.True(exception.Message == ErrorDescriptions.NoSubjectCanBeExtracted);
         }
 
@@ -70,6 +72,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
         {
             // ARRANGE
             InitializeFakeObjects();
+            IEnumerable<Claim> filteredClaim = null;
             const string subject = "subject";
             var claims = new List<Claim>
             {
@@ -90,7 +93,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
                 It.IsAny<List<Claim>>())).Returns(actionResult);
 
             // ACT
-            var result = _externalOpenIdUserAuthenticationAction.Execute(claims, authorizationParameter, code);
+            var result = _externalOpenIdUserAuthenticationAction.Execute(claims, authorizationParameter, code, out filteredClaim);
 
             // ASSERT
             Assert.NotNull(result);

@@ -16,6 +16,7 @@
 
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Startup.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 
@@ -25,23 +26,43 @@ namespace SimpleIdentityServer.Startup.Extensions
     {
         public static UpdateUserParameter ToParameter(this UpdateResourceOwnerViewModel updateResourceOwnerViewModel)
         {
-            return new UpdateUserParameter
+            if (updateResourceOwnerViewModel == null)
+            {
+                throw new ArgumentNullException(nameof(updateResourceOwnerViewModel));
+            }
+
+            var result = new UpdateUserParameter
             {
                 Password = updateResourceOwnerViewModel.NewPassword,
                 TwoFactorAuthentication = updateResourceOwnerViewModel.TwoAuthenticationFactor,
-                Claims = new List<Claim>
-                {
-
-                    new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Name, updateResourceOwnerViewModel.Name),
-                    new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Email, updateResourceOwnerViewModel.Email),
-                    new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber, updateResourceOwnerViewModel.PhoneNumber)
-                },
+                Claims = new List<Claim>(),
                 Login = updateResourceOwnerViewModel.Name
             };
+            if (!string.IsNullOrWhiteSpace(updateResourceOwnerViewModel.Name))
+            {
+                result.Claims.Add(new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Name, updateResourceOwnerViewModel.Name));
+            }
+
+            if (!string.IsNullOrWhiteSpace(updateResourceOwnerViewModel.Email))
+            {
+                result.Claims.Add(new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Email, updateResourceOwnerViewModel.Email));
+            }
+
+            if (!string.IsNullOrWhiteSpace(updateResourceOwnerViewModel.PhoneNumber))
+            {
+                result.Claims.Add(new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber, updateResourceOwnerViewModel.PhoneNumber));
+            }
+
+            return result;
         }
 
         public static LocalAuthenticationParameter ToParameter(this AuthorizeViewModel viewModel)
         {
+            if (viewModel == null)
+            {
+                throw new ArgumentNullException(nameof(viewModel));
+            }
+
             return new LocalAuthenticationParameter
             {
                 UserName = viewModel.UserName,
@@ -51,6 +72,11 @@ namespace SimpleIdentityServer.Startup.Extensions
 
         public static LocalAuthenticationParameter ToParameter(this AuthorizeOpenIdViewModel viewModel)
         {
+            if (viewModel == null)
+            {
+                throw new ArgumentNullException(nameof(viewModel));
+            }
+
             return new LocalAuthenticationParameter
             {
                 UserName = viewModel.UserName,
@@ -59,3 +85,4 @@ namespace SimpleIdentityServer.Startup.Extensions
         }
     }
 }
+ 

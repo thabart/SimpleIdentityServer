@@ -108,6 +108,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
         {
             // ARRANGE
             InitializeFakeObjects();
+            IEnumerable<Claim> filteredClaims = null;
             var claims = new List<Claim>
             {
                 new Claim("sub", "subject")
@@ -115,9 +116,9 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             var authorizationParameter = new AuthorizationParameter();
 
             // ACTS & ASSERTS
-            Assert.Throws<ArgumentNullException>(() => _authenticateActions.ExternalOpenIdUserAuthentication(null, null, null));
-            Assert.Throws<ArgumentNullException>(() => _authenticateActions.ExternalOpenIdUserAuthentication(claims, null, null));
-            Assert.Throws<ArgumentNullException>(() => _authenticateActions.ExternalOpenIdUserAuthentication(claims, authorizationParameter, null));
+            Assert.Throws<ArgumentNullException>(() => _authenticateActions.ExternalOpenIdUserAuthentication(null, null, null, out filteredClaims));
+            Assert.Throws<ArgumentNullException>(() => _authenticateActions.ExternalOpenIdUserAuthentication(claims, null, null, out filteredClaims));
+            Assert.Throws<ArgumentNullException>(() => _authenticateActions.ExternalOpenIdUserAuthentication(claims, authorizationParameter, null, out filteredClaims));
         }
 
         [Fact]
@@ -125,6 +126,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
         {
             // ARRANGE
             InitializeFakeObjects();
+            IEnumerable<Claim> filteredClaims = null;
             var claims = new List<Claim>
             {
                 new Claim("sub", "subject")
@@ -133,13 +135,13 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             var code = "code";
 
             // ACT
-            _authenticateActions.ExternalOpenIdUserAuthentication(claims, authorizationParameter, code);
+            _authenticateActions.ExternalOpenIdUserAuthentication(claims, authorizationParameter, code, out filteredClaims);
 
             // ASSERT
             _externalUserAuthenticationFake.Verify(a => a.Execute(
                 claims,
                 authorizationParameter,
-                code));
+                code, out filteredClaims));
         }
 
         [Fact]

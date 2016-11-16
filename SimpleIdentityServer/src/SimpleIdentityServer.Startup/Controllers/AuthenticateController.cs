@@ -174,11 +174,11 @@ namespace SimpleIdentityServer.Startup.Controllers
 
             // 1. Check if the user exists and insert it
             var authenticatedUser = await this.GetAuthenticatedUserExternal();
-            _authenticateActions.LoginCallback(authenticatedUser);
+            var claims = _authenticateActions.LoginCallback(authenticatedUser);
 
             // 2. Set cookie
             var authManager = this.GetAuthenticationManager();
-            await SetLocalCookie(authManager, authenticatedUser.Claims);
+            await SetLocalCookie(authManager, claims);
             await authManager.SignOutAsync(Authentication.Middleware.Constants.CookieName);
 
             // 3. Redirect to the profile
@@ -435,20 +435,22 @@ namespace SimpleIdentityServer.Startup.Controllers
             // 5. Rerieve the claims
             var claimsIdentity = authenticatedUser.Identity as ClaimsIdentity;
             var claims = claimsIdentity.Claims.ToList();
+            IEnumerable<Claim> fileredClaims = null;
 
-            // 6. Store into new cookie
-            var authenticationManager = this.GetAuthenticationManager();
-            await SetLocalCookie(authenticationManager, claims);
-            await authenticationManager.SignOutAsync(Authentication.Middleware.Constants.CookieName);
-
-            // 7. Continue the open-id flow
+            // 6. Try to authenticate the resource owner & returns the claims.
             var authorizationRequest = _dataProtector.Unprotect<AuthorizationRequest>(request);
             var actionResult = _authenticateActions.ExternalOpenIdUserAuthentication(
                 claims,
                 authorizationRequest.ToParameter(),
-                request); 
+                request,
+                out fileredClaims);
+
+            // 7. Store claims into new cookie
             if (actionResult != null)
             {
+                var authenticationManager = this.GetAuthenticationManager();
+                await SetLocalCookie(authenticationManager, fileredClaims);
+                await authenticationManager.SignOutAsync(Authentication.Middleware.Constants.CookieName);
                 return this.CreateRedirectionFromActionResult(actionResult,
                     authorizationRequest);
             }

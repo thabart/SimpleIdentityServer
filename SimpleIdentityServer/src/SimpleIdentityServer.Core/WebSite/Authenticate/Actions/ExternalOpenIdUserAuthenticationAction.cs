@@ -14,19 +14,19 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Errors;
+using SimpleIdentityServer.Core.Exceptions;
+using SimpleIdentityServer.Core.Extensions;
+using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Parameters;
+using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Results;
+using SimpleIdentityServer.Core.Services;
+using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Results;
-using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
-using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Repositories;
-using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.Core.Services;
 
 namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 {
@@ -35,7 +35,8 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
         ActionResult Execute(
             List<Claim> claims,
             AuthorizationParameter authorizationParameter,
-            string code);
+            string code,
+            out IEnumerable<Claim> filteredClaims);
     }
 
     public sealed class ExternalOpenIdUserAuthenticationAction : IExternalOpenIdUserAuthenticationAction
@@ -60,8 +61,11 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
         public ActionResult Execute(
             List<Claim> claims,
             AuthorizationParameter authorizationParameter,
-            string code)
+            string code,
+            out IEnumerable<Claim> filteredClaims)
         {
+            filteredClaims = null;
+            // 1. Check parameters.
             if (claims == null || !claims.Any())
             {
                 throw new ArgumentNullException("claims");
@@ -77,6 +81,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                 throw new ArgumentNullException("code");
             }
 
+            // 2. Subject cannot be extracted.
             var subject = claims.GetSubject();
             if (string.IsNullOrWhiteSpace(subject))
             {
@@ -84,6 +89,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                     ErrorDescriptions.NoSubjectCanBeExtracted);
             }
             
+            // 3. Create the resource owner if needed.
             var resourceOwner = _authenticateResourceOwnerService.AuthenticateResourceOwner(subject);
             if (resourceOwner == null)
             {
@@ -94,10 +100,16 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                     IsLocalAccount = false,
                     TwoFactorAuthentication = TwoFactorAuthentications.NONE,
                     Claims = claims.Where(c => standardClaims.Any(sc => sc == c.Type)).ToList()
-                };                
+                };
+                if (!resourceOwner.Claims.Any(c => c.Type == Jwt.Constants.StandardResourceOwnerClaimNames.Subject))
+                {
+                    resourceOwner.Claims.Add(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject));
+                }
+
                 _resourceOwnerRepository.Insert(resourceOwner);
             }
-            
+
+            filteredClaims = resourceOwner.Claims;
             return _authenticateHelper.ProcessRedirection(authorizationParameter,
                 code,
                 "subject",

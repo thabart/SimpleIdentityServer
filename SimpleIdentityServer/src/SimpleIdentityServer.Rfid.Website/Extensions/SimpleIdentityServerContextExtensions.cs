@@ -47,7 +47,7 @@ namespace SimpleIdentityServer.Rfid.Website.Extensions
             if (!context.Claims.Any())
             {
                 context.Claims.AddRange(new[] {
-                    new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject },
+                    new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, IsIdentifier = true },
                     new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Name },
                     new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.FamilyName },
                     new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.GivenName },
@@ -68,7 +68,7 @@ namespace SimpleIdentityServer.Rfid.Website.Extensions
                     new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber },
                     new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumberVerified },
                     new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Role },
-                    new Claim { Code = Constants.CardClaims.CardNumber, IsIdentifier = true }
+                    new Claim { Code = Constants.CardClaims.CardNumber }
                 });
             }
         }
@@ -514,6 +514,33 @@ namespace SimpleIdentityServer.Rfid.Website.Extensions
                                 Id = Guid.NewGuid().ToString(),
                                 ClaimCode = Constants.CardClaims.CardNumber,
                                 Value = "6C919615"
+                            }
+                        },
+                        Password = "5E884898DA28047151D0E56F8DC6292773603D0D6AABBDD62A11EF721D1542D8",
+                        IsLocalAccount = true
+                    },
+                    new ResourceOwner
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Claims = new List<ResourceOwnerClaim>
+                        {
+                            new ResourceOwnerClaim
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject,
+                                Value = "6C8F9615"
+                            },
+                            new ResourceOwnerClaim
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Name,
+                                Value = "Loki Habart"
+                            },
+                            new ResourceOwnerClaim
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                ClaimCode = Constants.CardClaims.CardNumber,
+                                Value = "6C8F9615"
                             }
                         },
                         Password = "5E884898DA28047151D0E56F8DC6292773603D0D6AABBDD62A11EF721D1542D8",

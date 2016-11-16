@@ -28,7 +28,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 {
     public interface ILoginCallbackAction
     {
-        void Execute(ClaimsPrincipal claimsPrincipal);
+        IEnumerable<Claim> Execute(ClaimsPrincipal claimsPrincipal);
     }
 
     internal class LoginCallbackAction : ILoginCallbackAction
@@ -48,13 +48,15 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
             _authenticateResourceOwnerService = authenticateResourceOwnerService;
         }
         
-        public void Execute(ClaimsPrincipal claimsPrincipal)
+        public IEnumerable<Claim> Execute(ClaimsPrincipal claimsPrincipal)
         {
+            // 1. Check parameters.
             if (claimsPrincipal == null)
             {
                 throw new ArgumentNullException(nameof(claimsPrincipal));
             }
 
+            // 2. Check the user is authenticated.
             if (claimsPrincipal.Identity == null ||
                 !claimsPrincipal.Identity.IsAuthenticated ||
                 !(claimsPrincipal.Identity is ClaimsIdentity))
@@ -64,6 +66,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                       Errors.ErrorDescriptions.TheUserNeedsToBeAuthenticated);
             }
             
+            // 3. Check the subject exists.
             var subject = claimsPrincipal.GetSubject();
             if (string.IsNullOrWhiteSpace(subject))
             {
@@ -72,12 +75,14 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                     Errors.ErrorDescriptions.TheRoCannotBeCreated);
             }
             
+            // 4. If a user already exists with the same subject then ignore.
             var resourceOwner = _authenticateResourceOwnerService.AuthenticateResourceOwner(subject);
             if (resourceOwner != null)
             {
-                return;
+                return resourceOwner.Claims;
             }
 
+            // 5. Insert the resource owner.
             var clearPassword = Guid.NewGuid().ToString();
             resourceOwner = new ResourceOwner
             {
@@ -87,14 +92,19 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                 Claims = new List<Claim>(),
                 Password = _authenticateResourceOwnerService.GetHashedPassword(clearPassword)
             };
-
             var claims = _claimRepository.GetAll();
             foreach(var claim in claimsPrincipal.Claims.Where(c => claims.Contains(c.Type)))
             {
                 resourceOwner.Claims.Add(claim);
             }
 
+            if (!resourceOwner.Claims.Any(c => c.Type == Jwt.Constants.StandardResourceOwnerClaimNames.Subject))
+            {
+                resourceOwner.Claims.Add(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject));
+            }
+
             _resourceOwnerRepository.Insert(resourceOwner);
+            return resourceOwner.Claims;
         }
     }
 }

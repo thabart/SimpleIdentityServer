@@ -44,9 +44,10 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
         ActionResult ExternalOpenIdUserAuthentication(
             List<Claim> claims,
             AuthorizationParameter authorizationParameter,
-            string code);
+            string code,
+            out IEnumerable<Claim> filteredClaims);
 
-        void LoginCallback(ClaimsPrincipal claimsPrincipal);
+        IEnumerable<Claim> LoginCallback(ClaimsPrincipal claimsPrincipal);
 
         Task<string> GenerateAndSendCode(string subject);
 
@@ -143,7 +144,8 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
         public ActionResult ExternalOpenIdUserAuthentication(
             List<Claim> claims, 
             AuthorizationParameter authorizationParameter, 
-            string code)
+            string code,
+            out IEnumerable<Claim> filteredClaims)
         {
             if (claims == null || !claims.Any())
             {
@@ -162,12 +164,13 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
 
             return _externalOpenIdUserAuthenticationAction.Execute(claims,
                 authorizationParameter,
-                code);
+                code,
+                out filteredClaims);
         }
 
-        public void LoginCallback(ClaimsPrincipal claimsPrincipal)
+        public IEnumerable<Claim> LoginCallback(ClaimsPrincipal claimsPrincipal)
         {
-            _loginCallbackAction.Execute(claimsPrincipal);
+            return _loginCallbackAction.Execute(claimsPrincipal);
         }
 
         public async Task<string> GenerateAndSendCode(string subject)

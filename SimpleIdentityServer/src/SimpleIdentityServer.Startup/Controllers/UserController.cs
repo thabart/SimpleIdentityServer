@@ -97,14 +97,21 @@ namespace SimpleIdentityServer.Startup.Controllers
             }
 
             ViewBag.IsUpdated = false;
-            var email = string.Empty;
-            var phoneNumber = string.Empty;
-            var name = string.Empty;
+            string subject = string.Empty,
+                email = string.Empty,
+                phoneNumber = string.Empty,
+                name = string.Empty;
             if(user.Claims != null)
             {
+                var subjectClaim = user.Claims.FirstOrDefault(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject);
                 var emailClaim = user.Claims.FirstOrDefault(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Email);
                 var phoneNumberClaim = user.Claims.FirstOrDefault(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber);
                 var nameClaim = user.Claims.FirstOrDefault(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Name);
+                if (subjectClaim != null)
+                {
+                    subject = subjectClaim.Value;
+                }
+
                 if (emailClaim != null)
                 {
                     email = emailClaim.Value;
@@ -123,7 +130,7 @@ namespace SimpleIdentityServer.Startup.Controllers
 
             return View(new UpdateResourceOwnerViewModel
             {
-                Login = user.Id,
+                Login = subject,
                 Email = email,
                 Name = name,
                 Password = user.Password,
