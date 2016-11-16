@@ -21,7 +21,6 @@ using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Services;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 
 namespace SimpleIdentityServer.Core.WebSite.Account.Actions
@@ -69,33 +68,20 @@ namespace SimpleIdentityServer.Core.WebSite.Account.Actions
                     Errors.ErrorDescriptions.TheRoWithCredentialsAlreadyExists);
             }
 
-            if (addUserParameter.Claims == null)
+            var claims = new List<Claim>
             {
-                addUserParameter.Claims = new List<Claim>();
-            }
-
-            RemoveClaim(addUserParameter.Claims, Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt);
-            RemoveClaim(addUserParameter.Claims, Jwt.Constants.StandardResourceOwnerClaimNames.Subject);
+                new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt, DateTime.UtcNow.ToString()),
+                new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, addUserParameter.Login)
+            };
             var newResourceOwner = new ResourceOwner
             {
-                Id = addUserParameter.Login,
-                Claims = addUserParameter.Claims,
+                Id = Guid.NewGuid().ToString(),
+                Claims = claims,
                 TwoFactorAuthentication = TwoFactorAuthentications.NONE,
                 IsLocalAccount = true,
                 Password = _authenticateResourceOwnerService.GetHashedPassword(addUserParameter.Password)
-            };
-
-            newResourceOwner.Claims.Add(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt, DateTime.UtcNow.ToString()));
+            };            
             _resourceOwnerRepository.Insert(newResourceOwner);
-        }
-
-        private static void RemoveClaim(IList<Claim> claims, string type)
-        {
-            Claim claim;
-            if (((claim = claims.FirstOrDefault(c => c.Type == type)) != null))
-            {
-                claims.Remove(claim);
-            }
         }
     }
 }

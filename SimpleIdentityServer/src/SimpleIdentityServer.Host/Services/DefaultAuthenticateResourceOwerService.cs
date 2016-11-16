@@ -40,7 +40,7 @@ namespace SimpleIdentityServer.Host.Services
                 throw new ArgumentNullException(nameof(login));
             }
 
-            return _resourceOwnerRepository.Get(login);
+            return _resourceOwnerRepository.GetByUniqueClaim(login);
         }
 
         public ResourceOwner AuthenticateResourceOwner(string login, string password)
@@ -55,7 +55,7 @@ namespace SimpleIdentityServer.Host.Services
                 throw new ArgumentNullException(nameof(password));
             }
 
-            return _resourceOwnerRepository.Get(login, GetHashedPassword(password));
+            return _resourceOwnerRepository.GetByUniqueClaim(login, GetHashedPassword(password));
         }
 
         public string GetHashedPassword(string password)

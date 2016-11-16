@@ -53,7 +53,7 @@ namespace SimpleIdentityServer.Startup.Controllers
             var client = new Core.Models.Client();
             var scopes = new List<Scope>();
             var claims = new List<string>();
-            var authenticatedUser = await this.GetAuthenticatedUser();
+            var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName);
             var actionResult = _consentActions.DisplayConsent(request.ToParameter(),
                 authenticatedUser, 
                 out client, 
@@ -84,7 +84,7 @@ namespace SimpleIdentityServer.Startup.Controllers
         {
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
             var parameter = request.ToParameter();
-            var authenticatedUser = await this.GetAuthenticatedUser();
+            var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName);
             var actionResult =_consentActions.ConfirmConsent(parameter,
                 authenticatedUser);
 

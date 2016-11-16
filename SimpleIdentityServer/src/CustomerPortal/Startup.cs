@@ -53,11 +53,11 @@ namespace CustomerPortal
             // 2. Add the dependencies to run ASP.NET MVC
             services.AddMvc();
             // 3. Add authentication
-            services.AddAuthentication(opts => opts.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme);
+            services.AddAuthentication(opts => opts.SignInScheme = Constants.CookieName);
             services.AddAuthorization(opts =>
             {
                 opts.AddPolicy("Connected", policy => policy.RequireAssertion((ctx) => {
-                    return ctx.User.Identity != null && ctx.User.Identity.IsAuthenticated;
+                    return ctx.User.Identity != null && ctx.User.Identity.IsAuthenticated && ctx.User.Identity.AuthenticationType == Constants.CookieName;
                 }));
             });
         }
@@ -77,7 +77,9 @@ namespace CustomerPortal
             {
                 AutomaticAuthenticate = true,
                 AutomaticChallenge = true,
-                LoginPath = new PathString("/Authenticate")
+                LoginPath = new PathString("/Authenticate"),
+                AuthenticationScheme = Constants.CookieName,
+                CookieName = Constants.CookieName
             });
             app.UseCookieAuthentication(new CookieAuthenticationOptions
             {

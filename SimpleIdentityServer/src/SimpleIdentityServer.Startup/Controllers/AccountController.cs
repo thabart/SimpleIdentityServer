@@ -48,7 +48,7 @@ namespace SimpleIdentityServer.Startup.Controllers
         [HttpGet]
         public async Task<ActionResult> Index()
         {
-            var authenticatedUser = await this.GetAuthenticatedUser();
+            var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName);
             if (authenticatedUser != null &&
                 authenticatedUser.Identity.IsAuthenticated)
             {
@@ -66,7 +66,7 @@ namespace SimpleIdentityServer.Startup.Controllers
                 throw new ArgumentNullException(nameof(updateResourceOwnerViewModel));
             }
 
-            var authenticatedUser = await this.GetAuthenticatedUser();
+            var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName);
             if (authenticatedUser != null &&
                 authenticatedUser.Identity.IsAuthenticated)
             {
@@ -76,11 +76,7 @@ namespace SimpleIdentityServer.Startup.Controllers
             _accountActions.AddResourceOwner(new AddUserParameter
             {
                 Login = updateResourceOwnerViewModel.Login,
-                Password = updateResourceOwnerViewModel.Password,
-                Claims = new List<Claim>
-                {
-                    new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, updateResourceOwnerViewModel.Login)
-                }
+                Password = updateResourceOwnerViewModel.Password
             });
 
             return RedirectToAction("Index", "Authenticate");

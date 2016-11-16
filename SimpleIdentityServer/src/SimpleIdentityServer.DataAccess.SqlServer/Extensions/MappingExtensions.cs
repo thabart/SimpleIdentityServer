@@ -47,10 +47,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                 return null;
             }
 
-            var claims = new List<Claim>
-            {
-                new Claim(Constants.StandardResourceOwnerClaimNames.Subject, resourceOwner.Id)
-            };
+            var claims = new List<Claim>();
             if (resourceOwner.Claims != null 
                 && resourceOwner.Claims.Any())
             {

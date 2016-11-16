@@ -164,11 +164,19 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             }
         }
 
-        public Domains.ResourceOwner Get(string id)
+        public Domains.ResourceOwner GetByUniqueClaim(string id)
         {
             try
             {
-                var result = _context.ResourceOwners.Include(r => r.Claims).FirstOrDefault(r => r.Id == id);
+                var claimIdentifier = _context.Claims.FirstOrDefault(c => c.IsIdentifier);
+                if (claimIdentifier == null)
+                {
+                    throw new InvalidOperationException("no claim can be used to uniquely identified the resource owner");
+                }
+
+                var result = _context.ResourceOwners
+                    .Include(r => r.Claims)
+                    .FirstOrDefault(r => r.Claims.Any(c => c.ClaimCode == claimIdentifier.Code && c.Value == id));
                 if (result == null)
                 {
                     return null;
@@ -183,11 +191,19 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             }
         }
 
-        public Domains.ResourceOwner Get(string id, string password)
+        public Domains.ResourceOwner GetByUniqueClaim(string id, string password)
         {
             try
             {
-                var result = _context.ResourceOwners.Include(r => r.Claims).FirstOrDefault(r => r.Id == id && r.Password == password);
+                var claimIdentifier = _context.Claims.FirstOrDefault(c => c.IsIdentifier);
+                if (claimIdentifier == null)
+                {
+                    throw new InvalidOperationException("no claim can be used to uniquely identified the resource owner");
+                }
+
+                var result = _context.ResourceOwners
+                    .Include(r => r.Claims)
+                    .FirstOrDefault(r => r.Claims.Any(c => c.ClaimCode == claimIdentifier.Code && c.Value == id) && r.Password == password);
                 if (result == null)
                 {
                     return null;

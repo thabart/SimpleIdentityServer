@@ -3,7 +3,7 @@
 @using SimpleIdentityServer.Core.Jwt
 
 @{
-    var user = await this.GetAuthenticatedUser();
+    var user = await this.GetAuthenticatedUser(SimpleIdentityServer.Rfid.Website.Constants.CookieName);
 }
 
 <!DOCTYPE html>
@@ -48,6 +48,9 @@
                             <ul class="dropdown-menu">
                                 <li>
                                     <a href="@Url.Content("~/Account")">Profile</a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Content("~/Account/Consent")">Consent</a>
                                 </li>
                                 <li>
                                     <a href="@Url.Content("~/Authenticate/Logout")">Disconnect</a>

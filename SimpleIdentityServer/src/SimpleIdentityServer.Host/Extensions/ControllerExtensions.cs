@@ -14,7 +14,6 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
@@ -31,14 +30,19 @@ namespace SimpleIdentityServer.Host.Extensions
 {
     public static class ControllerExtensions
     {
-        public static async Task<ClaimsPrincipal> GetAuthenticatedUser(this Controller controller)
+        public static async Task<ClaimsPrincipal> GetAuthenticatedUser(this Controller controller, string scheme)
         {
             if (controller == null)
             {
                 throw new ArgumentNullException(nameof(controller));
             }
 
-            var user = await controller.HttpContext.Authentication.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            if (string.IsNullOrWhiteSpace(scheme))
+            {
+                throw new ArgumentNullException(scheme);
+            }
+
+            var user = await controller.HttpContext.Authentication.AuthenticateAsync(scheme);
             return user ?? new ClaimsPrincipal(new ClaimsIdentity());
         }
 

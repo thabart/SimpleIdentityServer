@@ -23,6 +23,5 @@ namespace SimpleIdentityServer.Core.Parameters
     {
         public string Login { get; set; }
         public string Password { get; set; }
-        public IList<Claim> Claims { get; set; }
     }
 }

@@ -16,7 +16,7 @@
 
 namespace SimpleIdentityServer.Rfid.Website
 {
-    internal static class Constants
+    public static class Constants
     {
         public static class CardClaims
         {
@@ -27,5 +27,7 @@ namespace SimpleIdentityServer.Rfid.Website
         {
             public const string Card = "card";
         }
+
+        public const string CookieName = "RfidCookie";
     }
 }

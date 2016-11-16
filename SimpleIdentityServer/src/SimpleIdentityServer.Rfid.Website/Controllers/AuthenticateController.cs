@@ -101,7 +101,7 @@ namespace SimpleIdentityServer.Rfid.Website.Controllers
                 throw new ArgumentNullException(nameof(code));
             }
 
-            var authenticatedUser = await this.GetAuthenticatedUser();
+            var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName);
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
             var actionResult = _authenticateActions.AuthenticateResourceOwnerOpenId(
                 request.ToParameter(),
@@ -184,15 +184,15 @@ namespace SimpleIdentityServer.Rfid.Website.Controllers
         public async Task<ActionResult> Logout()
         {
             var authenticationManager = this.GetAuthenticationManager();
-            await authenticationManager.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            await authenticationManager.SignOutAsync(Constants.CookieName);
             return RedirectToAction("Index", "Authenticate");
         }
                 
         private async Task SetLocalCookie(AuthenticationManager authenticationManager, IEnumerable<Claim> claims)
         {
-            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var identity = new ClaimsIdentity(claims, Constants.CookieName);
             var principal = new ClaimsPrincipal(identity);
-            await authenticationManager.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
+            await authenticationManager.SignInAsync(Constants.CookieName,
                 principal,
                 new AuthenticationProperties
                 {

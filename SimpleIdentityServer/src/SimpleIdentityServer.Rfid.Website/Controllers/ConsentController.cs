@@ -17,7 +17,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
-using Org.BouncyCastle.Utilities.Encoders;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.WebSite.Consent;
 using SimpleIdentityServer.Host.DTOs.Request;
@@ -49,7 +48,7 @@ namespace SimpleIdentityServer.Rfid.Website.Controllers
             var client = new Core.Models.Client();
             var scopes = new List<Scope>();
             var claims = new List<string>();
-            var authenticatedUser = await this.GetAuthenticatedUser();
+            var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName);
             var actionResult = _consentActions.DisplayConsent(request.ToParameter(),
                 authenticatedUser,
                 out client,
@@ -79,7 +78,7 @@ namespace SimpleIdentityServer.Rfid.Website.Controllers
         {
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
             var parameter = request.ToParameter();
-            var authenticatedUser = await this.GetAuthenticatedUser();
+            var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName);
             var actionResult = _consentActions.ConfirmConsent(parameter,
                 authenticatedUser);
 

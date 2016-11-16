@@ -76,6 +76,7 @@ namespace CustomerPortal.Controllers
                 throw new Exception("the scheme cannot be retrieved");
             }
 
+            // 2. Check subject claim exists.
             var subjectClaim = tempUser.Claims.FirstOrDefault(c => c.Type == SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject);
             if (subjectClaim == null)
             {
@@ -87,17 +88,17 @@ namespace CustomerPortal.Controllers
                 throw new Exception("the subject cannot be retrieved");
             }
 
-            // 2. Check card exists & retrieve the user
-            var subject = subjectClaim.Value;
+            // 3. Check card exists & retrieve the user
             var scheme = info.Properties.Items["scheme"];
             if (scheme == Constants.RfidProvider)
             {
 
             }
 
-                await HttpContext.Authentication.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, tempUser);
+            var identity = new ClaimsIdentity(tempUser.Claims, Constants.CookieName);
+            var user = new ClaimsPrincipal(identity);
+            await HttpContext.Authentication.SignInAsync(Constants.CookieName, user);
             await HttpContext.Authentication.SignOutAsync(Constants.ExternalCookieName);
-
             if (!string.IsNullOrWhiteSpace(returnUrl))
             {
                 return Redirect(returnUrl);
@@ -109,7 +110,7 @@ namespace CustomerPortal.Controllers
         public async Task<ActionResult> Logout()
         {
             var authenticationManager = this.GetAuthenticationManager();
-            await authenticationManager.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            await authenticationManager.SignOutAsync(Constants.CookieName);
             return RedirectToAction("Index", "Authenticate");
         }
     }

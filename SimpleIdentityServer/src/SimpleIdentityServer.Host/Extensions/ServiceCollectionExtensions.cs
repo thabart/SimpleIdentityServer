@@ -145,6 +145,7 @@ namespace SimpleIdentityServer.Host
                 services.AddTransient(typeof(IPasswordService), options.PasswordService);
             }
 
+            services.AddSingleton(options.Authenticate);
             services.AddTransient<ICertificateStore, CertificateStore>();
             services.AddTransient<IRedirectInstructionParser, RedirectInstructionParser>();
             services.AddTransient<IActionResultParser, ActionResultParser>();

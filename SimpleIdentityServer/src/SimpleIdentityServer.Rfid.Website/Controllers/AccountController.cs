@@ -16,15 +16,90 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.WebSite.User.Actions;
+using SimpleIdentityServer.Host.Extensions;
+using SimpleIdentityServer.Rfid.Website.ViewModels;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Rfid.Website.Controllers
 {
     [Authorize("Connected")]
     public class AccountController : Controller
     {
+        private readonly IGetConsentsOperation _getConsentsOperation;
+        private readonly IGetUserOperation _getUserOperation;
+        private readonly IRemoveConsentOperation _removeConsentOperation;
+
+        public AccountController(
+            IGetConsentsOperation getConsentsOperation,
+            IGetUserOperation getUserOperation,
+            IRemoveConsentOperation removeConsentOperation)
+        {
+            _getConsentsOperation = getConsentsOperation;
+            _getUserOperation = getUserOperation;
+            _removeConsentOperation = removeConsentOperation;
+        }
+
+        [HttpGet]
         public ActionResult Index()
         {
             return View();
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> Consent()
+        {
+            return View(await GetConsents());
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> Consent(string id)
+        {
+            if (!_removeConsentOperation.Execute(id))
+            {
+                ViewBag.ErrorMessage = "the consent cannot be deleted";
+                return View(await GetConsents());
+            }
+
+            return RedirectToAction("Consent");
+        }
+
+        private async Task<ResourceOwner> GetCurrentUser()
+        {
+            var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName);
+            return _getUserOperation.Execute(authenticatedUser);
+        }
+
+        private async Task<List<ConsentViewModel>> GetConsents()
+        {
+            var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName);
+            var consents = _getConsentsOperation.Execute(authenticatedUser);
+            var result = new List<ConsentViewModel>();
+            foreach (var consent in consents)
+            {
+                var client = consent.Client;
+                var scopes = consent.GrantedScopes;
+                var claims = consent.Claims;
+                var viewModel = new ConsentViewModel
+                {
+                    Id = consent.Id,
+                    ClientDisplayName = client == null ? string.Empty : client.ClientName,
+                    AllowedScopeDescriptions = scopes == null || !scopes.Any() ?
+                        new List<string>() :
+                        scopes.Select(g => g.Description).ToList(),
+                    AllowedIndividualClaims = claims == null ? new List<string>() : claims,
+                    LogoUri = client == null ? string.Empty : client.LogoUri,
+                    PolicyUri = client == null ? string.Empty : client.PolicyUri,
+                    TosUri = client == null ? string.Empty : client.TosUri
+                };
+
+                result.Add(viewModel);
+            }
+
+            return result;
         }
     }
 }

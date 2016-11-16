@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.AspNetCore.Authentication.Cookies;
 using SimpleIdentityServer.Core.Services;
 using System;
 
@@ -88,8 +89,17 @@ namespace SimpleIdentityServer.Host
         public string ConnectionString { get; set; }
     }
 
+    public class AuthenticateOptions
+    {
+        public string CookieName = CookieAuthenticationDefaults.AuthenticationScheme;
+    }
+
     public class IdentityServerOptions
     {
+        public IdentityServerOptions()
+        {
+            Authenticate = new AuthenticateOptions();
+        }
         /// <summary>
         /// Enable or disable the developer mode
         /// </summary>
@@ -102,6 +112,10 @@ namespace SimpleIdentityServer.Host
         /// Configure the SERILOG logging.
         /// </summary>
         public LoggingOptions Logging { get; set; }
+        /// <summary>
+        /// Configure authentication.
+        /// </summary>
+        public AuthenticateOptions Authenticate { get; set; }
         /// <summary>
         /// Service used to authenticate the resource owner.
         /// </summary>

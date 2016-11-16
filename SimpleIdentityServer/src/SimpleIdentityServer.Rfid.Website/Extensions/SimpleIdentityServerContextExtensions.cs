@@ -68,7 +68,7 @@ namespace SimpleIdentityServer.Rfid.Website.Extensions
                     new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber },
                     new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumberVerified },
                     new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Role },
-                    new Claim { Code = Constants.CardClaims.CardNumber }
+                    new Claim { Code = Constants.CardClaims.CardNumber, IsIdentifier = true }
                 });
             }
         }
@@ -494,9 +494,15 @@ namespace SimpleIdentityServer.Rfid.Website.Extensions
                 {
                     new ResourceOwner
                     {
-                        Id = "6C919615",
+                        Id = Guid.NewGuid().ToString(),
                         Claims = new List<ResourceOwnerClaim>
                         {
+                            new ResourceOwnerClaim
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject,
+                                Value = "6C919615"
+                            },
                             new ResourceOwnerClaim
                             {
                                 Id = Guid.NewGuid().ToString(),

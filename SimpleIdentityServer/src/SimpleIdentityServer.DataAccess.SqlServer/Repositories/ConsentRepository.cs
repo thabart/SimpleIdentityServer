@@ -28,23 +28,31 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
     public sealed class ConsentRepository : IConsentRepository
     {
         private readonly SimpleIdentityServerContext _context;
-
+        private readonly IResourceOwnerRepository _resourceOwnerRepository;
         private readonly IManagerEventSource _managerEventSource;
 
         public ConsentRepository(
             SimpleIdentityServerContext context,
+            IResourceOwnerRepository resourceOwnerRepository,
             IManagerEventSource managerEventSource)
         {
             _context = context;
+            _resourceOwnerRepository = resourceOwnerRepository;
             _managerEventSource = managerEventSource;
         }
 
         public List<Core.Models.Consent> GetConsentsForGivenUser(string subject)
         {
+            var resourceOwner = _resourceOwnerRepository.GetByUniqueClaim(subject);
+            if (resourceOwner == null)
+            {
+                return new List<Core.Models.Consent>();
+            }
+
             var consents = _context.Consents
                 .Include(c => c.Client)
                 .Include(c => c.ResourceOwner)
-                .Where(c => c.ResourceOwner.Id == subject)
+                .Where(c => c.ResourceOwner.Id == resourceOwner.Id)
                 .ToList();
 
             foreach(var consent in consents)

@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SimpleIdentityServer.Startup.Extensions;
+using SimpleIdentityServer.Core.Extensions;
 
 namespace SimpleIdentityServer.Startup.Controllers
 {
@@ -141,6 +142,7 @@ namespace SimpleIdentityServer.Startup.Controllers
             }
 
             // 1. Set view bag
+            var subject = (await this.GetAuthenticatedUser(Constants.CookieName)).GetSubject();
             var user = await GetCurrentUser();
             if (!SetUserEditViewBag(user))
             {
@@ -163,7 +165,7 @@ namespace SimpleIdentityServer.Startup.Controllers
                 parameter.Claims.Add(newClaim);
             }
 
-            parameter.Login = user.Id;
+            parameter.Login = subject;
             _userActions.UpdateUser(parameter);
 
             // 4. Returns translated view
@@ -198,7 +200,7 @@ namespace SimpleIdentityServer.Startup.Controllers
         [HttpGet]
         public async Task<ActionResult> Confirm()
         {
-            var user = await this.GetAuthenticatedUser();
+            var user = await this.GetAuthenticatedUser(Constants.CookieName);
             _userActions.ConfirmUser(user);
             return RedirectToAction("Index");
         }
@@ -209,7 +211,7 @@ namespace SimpleIdentityServer.Startup.Controllers
 
         private async Task<ActionResult> GetConsents()
         {
-            var authenticatedUser = await this.GetAuthenticatedUser();
+            var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName);
             var consents = _userActions.GetConsents(authenticatedUser);
             var result = new List<ConsentViewModel>();
             foreach (var consent in consents)
@@ -238,7 +240,7 @@ namespace SimpleIdentityServer.Startup.Controllers
 
         private async Task<ResourceOwner> GetCurrentUser()
         {
-            var authenticatedUser = await this.GetAuthenticatedUser();
+            var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName);
             return _userActions.GetUser(authenticatedUser);
         }
 

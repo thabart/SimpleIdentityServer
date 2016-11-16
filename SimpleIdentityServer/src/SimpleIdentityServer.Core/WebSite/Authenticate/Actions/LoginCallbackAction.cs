@@ -16,7 +16,6 @@
 
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Services;
@@ -72,8 +71,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                     Errors.ErrorCodes.UnhandledExceptionCode,
                     Errors.ErrorDescriptions.TheRoCannotBeCreated);
             }
-
-            RemoveClaim(claimsPrincipal.Claims.ToList(), Jwt.Constants.StandardResourceOwnerClaimNames.Subject);
+            
             var resourceOwner = _authenticateResourceOwnerService.AuthenticateResourceOwner(subject);
             if (resourceOwner != null)
             {
@@ -83,7 +81,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
             var clearPassword = Guid.NewGuid().ToString();
             resourceOwner = new ResourceOwner
             {
-                Id = subject,
+                Id = Guid.NewGuid().ToString(),
                 IsLocalAccount = false,
                 TwoFactorAuthentication = TwoFactorAuthentications.NONE,
                 Claims = new List<Claim>(),
@@ -97,15 +95,6 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
             }
 
             _resourceOwnerRepository.Insert(resourceOwner);
-        }
-
-        private static void RemoveClaim(IList<Claim> claims, string type)
-        {
-            Claim claim;
-            if (((claim = claims.FirstOrDefault(c => c.Type == type)) != null))
-            {
-                claims.Remove(claim);
-            }
         }
     }
 }

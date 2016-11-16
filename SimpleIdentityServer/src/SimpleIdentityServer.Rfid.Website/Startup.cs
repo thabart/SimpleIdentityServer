@@ -14,7 +14,6 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -24,7 +23,6 @@ using Microsoft.Extensions.Logging;
 using SimpleIdentityServer.DataAccess.SqlServer;
 using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Rfid.Website.Extensions;
-using SimpleIdentityServer.Rfid.Website.Services;
 
 namespace SimpleIdentityServer.Rfid.Website
 {
@@ -59,8 +57,11 @@ namespace SimpleIdentityServer.Rfid.Website
                     DataSourceType = DataSourceTypes.InMemory,
                     IsDataMigrated = false
                 },
-                IsDeveloperModeEnabled = false,
-                AuthenticateResourceOwner = typeof(CustomAuthenticateResourceOwnerService)
+                Authenticate = new AuthenticateOptions
+                {
+                    CookieName = Constants.CookieName
+                },
+                IsDeveloperModeEnabled = false
             };
         }
 
@@ -73,11 +74,11 @@ namespace SimpleIdentityServer.Rfid.Website
             // 2. Add the dependencies to run ASP.NET MVC
             services.AddMvc();
             // 3. Add authentication
-            services.AddAuthentication(opts => opts.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme);
+            services.AddAuthentication();
             services.AddAuthorization(opts =>
             {
                 opts.AddPolicy("Connected", policy => policy.RequireAssertion((ctx) => {
-                    return ctx.User.Identity != null && ctx.User.Identity.AuthenticationType == CookieAuthenticationDefaults.AuthenticationScheme;
+                    return ctx.User.Identity != null && ctx.User.Identity.AuthenticationType == Constants.CookieName;
                 }));
             });
             // 4. Add the dependencies to run SimpleIdentityServer
@@ -99,7 +100,10 @@ namespace SimpleIdentityServer.Rfid.Website
             {
                 AutomaticAuthenticate = true,
                 AutomaticChallenge = true,
-                LoginPath = new PathString("/Authenticate")
+                SlidingExpiration = false,
+                LoginPath = new PathString("/Authenticate"),
+                AuthenticationScheme = Constants.CookieName,
+                CookieName = Constants.CookieName
             });
             // 5. Use simpleIdentityServer
             app.UseSimpleIdentityServer(_options, loggerFactory);

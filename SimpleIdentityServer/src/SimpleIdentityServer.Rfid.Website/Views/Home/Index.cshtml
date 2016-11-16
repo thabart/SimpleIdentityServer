@@ -1,6 +1,6 @@
 ﻿@using SimpleIdentityServer.Host.Extensions
 @{
-    var user = await this.GetAuthenticatedUser();
+    var user = await this.GetAuthenticatedUser(SimpleIdentityServer.Rfid.Website.Constants.CookieName);
 }
 
 <div class="row">

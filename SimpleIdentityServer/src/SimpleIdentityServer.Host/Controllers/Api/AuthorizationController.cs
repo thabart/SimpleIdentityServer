@@ -37,27 +37,26 @@ namespace SimpleIdentityServer.Api.Controllers.Api
     public class AuthorizationController : Controller
     {
         private readonly IAuthorizationActions _authorizationActions;
-
         private readonly IDataProtector _dataProtector;
-
         private readonly IEncoder _encoder;
-
         private readonly IActionResultParser _actionResultParser;
-
         private readonly IJwtParser _jwtParser;
+        private readonly AuthenticateOptions _authenticateOptions;
 
         public AuthorizationController(
             IAuthorizationActions authorizationActions,
             IDataProtectionProvider dataProtectionProvider,
             IEncoder encoder,
             IActionResultParser actionResultParser,
-            IJwtParser jwtParser)
+            IJwtParser jwtParser,
+            AuthenticateOptions authenticateOptions)
         {
             _authorizationActions = authorizationActions;
             _dataProtector = dataProtectionProvider.CreateProtector("Request");
             _encoder = encoder;
             _actionResultParser = actionResultParser;
             _jwtParser = jwtParser;
+            _authenticateOptions = authenticateOptions;
         }
 
         #region Public methods
@@ -73,7 +72,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             }
 
             authorizationRequest = await ResolveAuthorizationRequest(authorizationRequest);
-            var authenticatedUser = await this.GetAuthenticatedUser();
+            var authenticatedUser = await this.GetAuthenticatedUser(_authenticateOptions.CookieName);
             var parameter = authorizationRequest.ToParameter();
             var actionResult = _authorizationActions.GetAuthorization(
                 parameter,

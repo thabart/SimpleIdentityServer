@@ -21,8 +21,8 @@ namespace SimpleIdentityServer.Core.Repositories
 {
     public interface IResourceOwnerRepository
     {
-        ResourceOwner Get(string id);
-        ResourceOwner Get(string id, string password);
+        ResourceOwner GetByUniqueClaim(string id);
+        ResourceOwner GetByUniqueClaim(string id, string password);
         bool Insert(ResourceOwner resourceOwner);
         bool Update(ResourceOwner resourceOwner);
         List<ResourceOwner> GetAll();

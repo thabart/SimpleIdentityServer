@@ -14,7 +14,6 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -88,6 +87,10 @@ namespace SimpleIdentityServer.Startup
                     {
                         IsEnabled = false
                     }
+                },
+                Authenticate = new AuthenticateOptions
+                {
+                    CookieName = Constants.CookieName
                 }
             };
         }
@@ -161,11 +164,11 @@ namespace SimpleIdentityServer.Startup
             services.AddMvc();
             // 7. Add authentication dependencies & configure it.
             services.AddAuthenticationMiddleware();
-            services.AddAuthentication(opts => opts.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme);
+            services.AddAuthentication(opts => opts.SignInScheme = Constants.CookieName);
             services.AddAuthorization(opts =>
             {
                 opts.AddPolicy("Connected", policy => policy.RequireAssertion((ctx) => {
-                    return ctx.User.Identity != null && ctx.User.Identity.AuthenticationType == CookieAuthenticationDefaults.AuthenticationScheme;
+                    return ctx.User.Identity != null && ctx.User.Identity.AuthenticationType == Constants.CookieName;
                 }));
             });
         }
@@ -193,7 +196,9 @@ namespace SimpleIdentityServer.Startup
             {
                 AutomaticAuthenticate = true,
                 AutomaticChallenge = true,
-                LoginPath = new PathString("/Authenticate")
+                LoginPath = new PathString("/Authenticate"),
+                AuthenticationScheme = Constants.CookieName,
+                CookieName = Constants.CookieName
             });
             // 5. Enable multi parties authentication.
             app.UseAuthentication(_authenticationOptions);

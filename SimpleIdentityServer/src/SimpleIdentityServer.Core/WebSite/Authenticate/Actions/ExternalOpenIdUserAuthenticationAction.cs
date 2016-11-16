@@ -83,15 +83,14 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                 throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode,
                     ErrorDescriptions.NoSubjectCanBeExtracted);
             }
-
-            RemoveClaim(claims, Jwt.Constants.StandardResourceOwnerClaimNames.Subject);
+            
             var resourceOwner = _authenticateResourceOwnerService.AuthenticateResourceOwner(subject);
             if (resourceOwner == null)
             {
                 var standardClaims = _claimRepository.GetAll();
                 resourceOwner = new ResourceOwner
                 {
-                    Id = subject,
+                    Id = Guid.NewGuid().ToString(),
                     IsLocalAccount = false,
                     TwoFactorAuthentication = TwoFactorAuthentications.NONE,
                     Claims = claims.Where(c => standardClaims.Any(sc => sc == c.Type)).ToList()
@@ -103,15 +102,6 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                 code,
                 "subject",
                 claims);
-        }
-
-        private static void RemoveClaim(IList<Claim> claims, string type)
-        {
-            Claim claim;
-            if (((claim = claims.FirstOrDefault(c => c.Type == type)) != null))
-            {
-                claims.Remove(claim);
-            }
         }
     }
 }

@@ -70,10 +70,10 @@ namespace SimpleIdentityServer.Startup.Controllers
         
         #region Public methods
         
-        public ActionResult Logout()
+        public async Task<ActionResult> Logout()
         {
             var authenticationManager = this.GetAuthenticationManager();
-            authenticationManager.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme).Wait();
+            await authenticationManager.SignOutAsync(Constants.CookieName);
             return RedirectToAction("Index", "Authenticate");
         }
                 
@@ -81,7 +81,7 @@ namespace SimpleIdentityServer.Startup.Controllers
         
         public async Task<ActionResult> Index(string name)
         {
-            var authenticatedUser = await this.GetAuthenticatedUser();
+            var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName);
             if (authenticatedUser == null ||
                 authenticatedUser.Identity == null ||
                 !authenticatedUser.Identity.IsAuthenticated)
@@ -96,7 +96,7 @@ namespace SimpleIdentityServer.Startup.Controllers
         [HttpPost]
         public async Task<ActionResult> LocalLogin(AuthorizeViewModel authorizeViewModel)
         {
-            var authenticatedUser = await this.GetAuthenticatedUser();
+            var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName);
             if (authenticatedUser != null &&
                 authenticatedUser.Identity != null &&
                 authenticatedUser.Identity.IsAuthenticated)
@@ -284,7 +284,7 @@ namespace SimpleIdentityServer.Startup.Controllers
                 throw new ArgumentNullException(nameof(code));
             }
 
-            var authenticatedUser = await this.GetAuthenticatedUser();
+            var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName);
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
             var actionResult = _authenticateActions.AuthenticateResourceOwnerOpenId(
                 request.ToParameter(),
@@ -483,9 +483,9 @@ namespace SimpleIdentityServer.Startup.Controllers
 
         private async Task SetLocalCookie(AuthenticationManager authenticationManager, IEnumerable<Claim> claims)
         {
-            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var identity = new ClaimsIdentity(claims, Constants.CookieName);
             var principal = new ClaimsPrincipal(identity);
-            await authenticationManager.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
+            await authenticationManager.SignInAsync(Constants.CookieName,
                 principal,
                 new AuthenticationProperties
                 {

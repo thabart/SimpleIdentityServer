@@ -24,14 +24,19 @@ namespace SimpleIdentityServer.Host.Extensions
 {
     public static class RazorPageExtensions
     {
-        public static async Task<ClaimsPrincipal> GetAuthenticatedUser(this RazorPage razorPage)
+        public static async Task<ClaimsPrincipal> GetAuthenticatedUser(this RazorPage razorPage, string scheme)
         {
             if (razorPage == null)
             {
                 throw new ArgumentNullException(nameof(razorPage));
             }
 
-            var user = await razorPage.Context.Authentication.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            if (string.IsNullOrWhiteSpace(scheme))
+            {
+                throw new ArgumentNullException(nameof(scheme));
+            }
+
+            var user = await razorPage.Context.Authentication.AuthenticateAsync(scheme);
             return user ?? new ClaimsPrincipal(new ClaimsIdentity());
         }
 

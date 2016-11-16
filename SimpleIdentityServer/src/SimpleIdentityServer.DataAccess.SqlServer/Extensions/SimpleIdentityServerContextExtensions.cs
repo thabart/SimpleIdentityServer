@@ -42,7 +42,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
             if (!context.Claims.Any())
             {
                 context.Claims.AddRange(new[] {
-                    new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject },
+                    new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, IsIdentifier = true },
                     new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Name },
                     new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.FamilyName },
                     new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.GivenName },
@@ -486,13 +486,13 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                 {
                     new ResourceOwner
                     {
-                        Id = "administrator",
+                        Id = Guid.NewGuid().ToString(),
                         Claims = new List<ResourceOwnerClaim>
                         {
                             new ResourceOwnerClaim
                             {
                                 Id = Guid.NewGuid().ToString(),
-                                ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject,
+                                ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject,                                
                                 Value = "administrator"
                             },
                             new ResourceOwnerClaim
