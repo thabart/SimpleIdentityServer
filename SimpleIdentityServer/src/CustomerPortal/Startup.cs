@@ -15,6 +15,7 @@
 #endregion
 
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -25,6 +26,7 @@ using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace CustomerPortal
 {
@@ -81,7 +83,7 @@ namespace CustomerPortal
             {
                 AuthenticationScheme = "External-CustomerPortal"
             });
-            app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
+            var openIdOptions = new OpenIdConnectOptions
             {
                 AuthenticationScheme = Constants.RfidProvider,
                 SignInScheme = Constants.ExternalCookieName,
@@ -98,7 +100,9 @@ namespace CustomerPortal
                 ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>("http://localhost:5100/.well-known/openid-configuration",
                         new OpenIdConnectConfigurationRetriever(),
                         new HttpDocumentRetriever(new HttpClient()) { RequireHttps = false })
-            });
+            };
+            openIdOptions.Scope.Add("card");
+            app.UseOpenIdConnectAuthentication(openIdOptions);
             app.UseMicrosoftAccountAuthentication(new MicrosoftAccountOptions
             {
                 DisplayName = "MicrosoftAccount",

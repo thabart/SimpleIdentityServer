@@ -14,7 +14,6 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core;
 using SimpleIdentityServer.DataAccess.SqlServer;
 using SimpleIdentityServer.DataAccess.SqlServer.Models;
 using System;
@@ -68,7 +67,8 @@ namespace SimpleIdentityServer.Rfid.Website.Extensions
                     new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Address },
                     new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber },
                     new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumberVerified },
-                    new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Role }
+                    new Claim { Code = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Role },
+                    new Claim { Code = Constants.CardClaims.CardNumber }
                 });
             }
         }
@@ -234,6 +234,20 @@ namespace SimpleIdentityServer.Rfid.Website.Extensions
                         IsOpenIdScope = false,
                         IsDisplayedInConsent = true,
                         Type = ScopeType.ProtectedApi
+                    },
+                    // Scope used to retrieve the card information
+                    new Scope
+                    {
+                        Name = Constants.RfidScopes.Card,
+                        Description = "Access to the RFID card information",
+                        IsExposed = true,
+                        IsDisplayedInConsent = true,
+                        IsOpenIdScope = false,
+                        Type = ScopeType.ResourceOwner,
+                        ScopeClaims = new List<ScopeClaim>
+                        {
+                            new ScopeClaim { ClaimCode = Constants.CardClaims.CardNumber }
+                        }
                     }
                 });
             }
@@ -480,7 +494,7 @@ namespace SimpleIdentityServer.Rfid.Website.Extensions
                 {
                     new ResourceOwner
                     {
-                        Id = Guid.NewGuid().ToString(),
+                        Id = "6C919615",
                         Claims = new List<ResourceOwnerClaim>
                         {
                             new ResourceOwnerClaim
@@ -571,6 +585,10 @@ namespace SimpleIdentityServer.Rfid.Website.Extensions
                             new ClientScope
                             {
                                 ScopeName = "profile"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = Constants.RfidScopes.Card
                             }
                         },
                         GrantTypes = "1",

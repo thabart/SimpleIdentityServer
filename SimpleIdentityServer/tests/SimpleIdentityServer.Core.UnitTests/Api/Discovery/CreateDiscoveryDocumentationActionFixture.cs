@@ -10,8 +10,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Discovery
 {
     public class CreateDiscoveryDocumentationActionFixture
     {
-        private Mock<IScopeRepository> _scopeRepositoryFake;
-
+        private Mock<IScopeRepository> _scopeRepositoryStub;
+        private Mock<IClaimRepository> _claimRepositoryStub;
         private ICreateDiscoveryDocumentationAction _createDiscoveryDocumentationAction;
 
         [Fact]
@@ -40,8 +40,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Discovery
                     Name = secondScopeName
                 }
             };
-            _scopeRepositoryFake.Setup(s => s.GetAllScopes())
+            _scopeRepositoryStub.Setup(s => s.GetAllScopes())
                 .Returns(scopes);
+            _claimRepositoryStub.Setup(c => c.GetAll())
+                .Returns(() => new List<string> { "claim" });
 
             // ACT
             var discoveryInformation = _createDiscoveryDocumentationAction.Execute();
@@ -56,8 +58,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Discovery
 
         private void InitializeFakeObjects()
         {
-            _scopeRepositoryFake = new Mock<IScopeRepository>();
-            _createDiscoveryDocumentationAction = new CreateDiscoveryDocumentationAction(_scopeRepositoryFake.Object);
+            _scopeRepositoryStub = new Mock<IScopeRepository>();
+            _claimRepositoryStub = new Mock<IClaimRepository>();
+            _createDiscoveryDocumentationAction = new CreateDiscoveryDocumentationAction(
+                _scopeRepositoryStub.Object,
+                _claimRepositoryStub.Object);
         }
     }
 }

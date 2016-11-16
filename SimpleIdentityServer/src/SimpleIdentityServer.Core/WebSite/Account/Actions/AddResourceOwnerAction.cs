@@ -74,12 +74,8 @@ namespace SimpleIdentityServer.Core.WebSite.Account.Actions
                 addUserParameter.Claims = new List<Claim>();
             }
 
-            Claim updatedClaim;
-            if (((updatedClaim = addUserParameter.Claims.FirstOrDefault(c => c.Type == Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt)) != null))
-            {
-                addUserParameter.Claims.Remove(updatedClaim);
-            }
-
+            RemoveClaim(addUserParameter.Claims, Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt);
+            RemoveClaim(addUserParameter.Claims, Jwt.Constants.StandardResourceOwnerClaimNames.Subject);
             var newResourceOwner = new ResourceOwner
             {
                 Id = addUserParameter.Login,
@@ -91,6 +87,15 @@ namespace SimpleIdentityServer.Core.WebSite.Account.Actions
 
             newResourceOwner.Claims.Add(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt, DateTime.UtcNow.ToString()));
             _resourceOwnerRepository.Insert(newResourceOwner);
+        }
+
+        private static void RemoveClaim(IList<Claim> claims, string type)
+        {
+            Claim claim;
+            if (((claim = claims.FirstOrDefault(c => c.Type == type)) != null))
+            {
+                claims.Remove(claim);
+            }
         }
     }
 }

@@ -73,6 +73,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                     Errors.ErrorDescriptions.TheRoCannotBeCreated);
             }
 
+            RemoveClaim(claimsPrincipal.Claims.ToList(), Jwt.Constants.StandardResourceOwnerClaimNames.Subject);
             var resourceOwner = _authenticateResourceOwnerService.AuthenticateResourceOwner(subject);
             if (resourceOwner != null)
             {
@@ -96,6 +97,15 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
             }
 
             _resourceOwnerRepository.Insert(resourceOwner);
+        }
+
+        private static void RemoveClaim(IList<Claim> claims, string type)
+        {
+            Claim claim;
+            if (((claim = claims.FirstOrDefault(c => c.Type == type)) != null))
+            {
+                claims.Remove(claim);
+            }
         }
     }
 }

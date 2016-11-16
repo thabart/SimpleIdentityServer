@@ -131,6 +131,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                 return new List<Domains.ResourceOwner>();
             }
 
+            var resourceOwners = _context.ResourceOwners
+                .Include(r => r.Claims);
             return _context.ResourceOwners
                 .Include(r => r.Claims)
                 .Where(r => claims.All(c => r.Claims.Any(sc => sc.Value == c.Value && sc.ClaimCode == c.Type)))

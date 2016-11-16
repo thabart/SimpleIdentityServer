@@ -22,5 +22,10 @@ namespace SimpleIdentityServer.Rfid.Website
         {
             public const string CardNumber = "card_number";
         }
+
+        public static class RfidScopes
+        {
+            public const string Card = "card";
+        }
     }
 }

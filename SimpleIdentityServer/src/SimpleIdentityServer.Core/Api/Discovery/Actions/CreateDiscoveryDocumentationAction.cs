@@ -32,10 +32,14 @@ namespace SimpleIdentityServer.Core.Api.Discovery.Actions
     public class CreateDiscoveryDocumentationAction : ICreateDiscoveryDocumentationAction
     {
         private readonly IScopeRepository _scopeRepository;
+        private readonly IClaimRepository _claimRepository;
 
-        public CreateDiscoveryDocumentationAction(IScopeRepository scopeRepository)
+        public CreateDiscoveryDocumentationAction(
+            IScopeRepository scopeRepository,
+            IClaimRepository claimRepository)
         {
             _scopeRepository = scopeRepository;
+            _claimRepository = claimRepository;
         }
 
         public DiscoveryInformation Execute()
@@ -60,7 +64,7 @@ namespace SimpleIdentityServer.Core.Api.Discovery.Actions
             result.RequestParameterSupported = true;
             result.RequestUriParameterSupported = true;
             result.RequireRequestUriRegistration = true;
-            result.ClaimsSupported = Constants.Supported.SupportedClaims.ToArray();
+            result.ClaimsSupported = _claimRepository.GetAll().ToArray();
             result.ScopesSupported = scopeSupportedNames;
             result.ResponseTypesSupported = responseTypesSupported;
             result.ResponseModesSupported = Constants.Supported.SupportedResponseModes.ToArray();
