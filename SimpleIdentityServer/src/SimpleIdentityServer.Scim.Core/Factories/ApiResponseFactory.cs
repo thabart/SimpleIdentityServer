@@ -34,6 +34,12 @@ namespace SimpleIdentityServer.Scim.Core.Factories
             object content,
             string location);
 
+        ApiActionResult CreateResultWithContent(
+            HttpStatusCode status,
+            object content,
+            string location,
+            string version);
+
         ApiActionResult CreateError(
             HttpStatusCode statusCode,
             string content);
@@ -79,6 +85,17 @@ namespace SimpleIdentityServer.Scim.Core.Factories
         {
             var result = CreateResultWithContent(status, content);
             result.Location = location;
+            return result;
+        }
+
+        public ApiActionResult CreateResultWithContent(
+            HttpStatusCode status,
+            object content,
+            string location,
+            string version)
+        {
+            var result = CreateResultWithContent(status, content, location);
+            result.Version = version;
             return result;
         }
 

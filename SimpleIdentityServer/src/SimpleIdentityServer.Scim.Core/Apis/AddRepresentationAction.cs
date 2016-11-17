@@ -61,18 +61,28 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                 throw new ArgumentNullException(nameof(jObj));
             }
 
+            _parametersValidator.ValidateLocationPattern(locationPattern);
+            if (string.IsNullOrWhiteSpace(schemaId))
+            {
+                throw new ArgumentNullException(nameof(schemaId));
+            }
+
+            if (string.IsNullOrWhiteSpace(resourceType))
+            {
+                throw new ArgumentNullException(nameof(resourceType));
+            }
+
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
             // 1. Check resource exists.
             if (_representationStore.GetRepresentation(id) != null)
             {
                 return _apiResponseFactory.CreateError(
                     HttpStatusCode.InternalServerError,
                     string.Format(ErrorMessages.TheResourceAlreadyExist, id));
-            }
-
-            _parametersValidator.ValidateLocationPattern(locationPattern);
-            if (string.IsNullOrWhiteSpace(schemaId))
-            {
-                throw new ArgumentNullException(nameof(schemaId));
             }
 
             // 2. Parse the request
@@ -89,13 +99,14 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             result.Created = DateTime.UtcNow;
             result.LastModified = DateTime.UtcNow;
             result.ResourceType = resourceType;
+            result.Version = Guid.NewGuid().ToString();
 
             // 4. Save the request
             _representationStore.AddRepresentation(result);
 
             // 5. Transform and returns the representation.
             var response = _responseParser.Parse(result, locationPattern.Replace("{id}", result.Id), schemaId, OperationTypes.Modification);
-            return _apiResponseFactory.CreateResultWithContent(HttpStatusCode.Created, response.Object, response.Location);
+            return _apiResponseFactory.CreateResultWithContent(HttpStatusCode.Created, response.Object, response.Location, result.Version);
         }
 
         public ApiActionResult Execute(JObject jObj, string locationPattern, string schemaId, string resourceType)

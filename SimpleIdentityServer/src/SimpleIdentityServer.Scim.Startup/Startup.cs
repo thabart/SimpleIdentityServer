@@ -21,6 +21,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SimpleIdentityServer.Scim.Core;
 using SimpleIdentityServer.Scim.Db.InMemory;
+using WebApiContrib.Core.Concurrency;
+using WebApiContrib.Core.Storage.InMemory;
 
 namespace SimpleIdentityServer.Scim.Startup
 {
@@ -41,6 +43,7 @@ namespace SimpleIdentityServer.Scim.Startup
         
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddConcurrency(opt => opt.UseInMemory());
             services.AddInMemoryDb();
             services.AddScim();
             services.AddMvc();

@@ -16,25 +16,31 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Scim.Core;
 using SimpleIdentityServer.Scim.Core.Apis;
 using SimpleIdentityServer.Scim.Startup.Extensions;
 using System;
+using System.Threading.Tasks;
+using WebApiContrib.Core.Concurrency;
 
 namespace SimpleIdentityServer.Scim.Startup.Controllers
 {
-    [Route(Constants.RoutePaths.GroupsController)]
+    [Route(Core.Constants.RoutePaths.GroupsController)]
     public class GroupsController : Controller
     {
         private readonly IGroupsAction _groupsAction;
+        private readonly IRepresentationManager _representationManager;
+        private readonly string GroupsName = "Groups_{0}";
 
-        public GroupsController(IGroupsAction groupsAction)
+        public GroupsController(
+            IGroupsAction groupsAction,
+            IRepresentationManager representationManager)
         {
             _groupsAction = groupsAction;
+            _representationManager = representationManager;
         }
 
         [HttpPost]
-        public ActionResult AddGroup([FromBody] JObject jObj)
+        public async Task<ActionResult> AddGroup([FromBody] JObject jObj)
         {
             if (jObj == null)
             {
@@ -42,6 +48,7 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
             }
 
             var result = _groupsAction.AddGroup(jObj, GetLocationPattern());
+            await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(GroupsName, result.Version), true);
             return this.GetActionResult(result);
         }
 
@@ -114,7 +121,7 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
 
         private string GetLocationPattern()
         {
-            return new Uri(new Uri(Request.GetAbsoluteUriWithVirtualPath()), Constants.RoutePaths.GroupsController).AbsoluteUri + "/{id}";
+            return new Uri(new Uri(Request.GetAbsoluteUriWithVirtualPath()), Core.Constants.RoutePaths.GroupsController).AbsoluteUri + "/{id}";
         }
     }
 }

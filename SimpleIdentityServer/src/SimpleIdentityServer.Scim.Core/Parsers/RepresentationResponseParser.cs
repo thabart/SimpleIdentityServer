@@ -142,7 +142,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 }
             }
             
-            SetCommonAttributes(result, location, representation);
+            SetCommonAttributes(result, location, representation, schema.Id);
             return new Response
             {
                 Location = location,
@@ -277,10 +277,13 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             return filterResult;
         }
 
-        private void SetCommonAttributes(JObject jObj, string location, Representation representation)
+        private void SetCommonAttributes(JObject jObj, string location, Representation representation, string schema)
         {
             jObj.Add(_commonAttributesFactory.CreateIdJson(representation));
             jObj[Constants.ScimResourceNames.Meta] = new JObject(_commonAttributesFactory.CreateMetaDataAttributeJson(representation, location));
+            var arr = new JArray();
+            arr.Add(schema);
+            jObj[Constants.ScimResourceNames.Schemas] = arr;
         }
 
         private static JToken GetToken(RepresentationAttribute attr, SchemaAttributeResponse attribute)
