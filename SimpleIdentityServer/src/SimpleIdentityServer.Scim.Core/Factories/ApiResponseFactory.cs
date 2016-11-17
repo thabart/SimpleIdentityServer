@@ -38,7 +38,8 @@ namespace SimpleIdentityServer.Scim.Core.Factories
             HttpStatusCode status,
             object content,
             string location,
-            string version);
+            string version,
+            string id);
 
         ApiActionResult CreateError(
             HttpStatusCode statusCode,
@@ -92,10 +93,12 @@ namespace SimpleIdentityServer.Scim.Core.Factories
             HttpStatusCode status,
             object content,
             string location,
-            string version)
+            string version,
+            string id)
         {
             var result = CreateResultWithContent(status, content, location);
             result.Version = version;
+            result.Id = id;
             return result;
         }
 

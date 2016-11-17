@@ -49,7 +49,7 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
             }
 
             var result = _usersAction.AddUser(jObj, GetLocationPattern());
-            await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(UsersName, result.Version), true);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(UsersName, result.Id), result.Version, true);
             return this.GetActionResult(result);
         }
 
@@ -100,14 +100,23 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult GetUser(string id)
+        public async Task<ActionResult> GetUser(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
                 throw new ArgumentNullException(nameof(id));
             }
 
+            if (!await _representationManager.CheckRepresentationExistsAsync(this, string.Format(UsersName, id)))
+            {
+                return new ContentResult
+                {
+                    StatusCode = 412
+                };
+            }
+
             var result = _usersAction.GetUser(id, GetLocationPattern());
+            await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(UsersName, result.Version));
             return this.GetActionResult(result);
         }
 

@@ -8,23 +8,15 @@ namespace WebApiContrib.Core.Concurrency
     public interface IConcurrencyManager
     {
         ConcurrentObject TryUpdateRepresentation(string representationId);
-
         Task<ConcurrentObject> TryUpdateRepresentationAsync(string representationId);
-
+        Task<ConcurrentObject> TryUpdateRepresentationAsync(string representationId, string etag);
         Task<bool> IsRepresentationDifferentAsync(string representationId, string etag);
-
         ConcurrentObject TryGetRepresentation(string representationId);
-
         Task<ConcurrentObject> TryGetRepresentationAsync(string representationId);
-
         void Remove(string representationId);
-
         Task RemoveAsync(string representationId);
-
         IEnumerable<Record> GetRepresentations();
-
         void RemoveAll();
-
         Task RemoveAllAsync();
     }
 
@@ -50,14 +42,24 @@ namespace WebApiContrib.Core.Concurrency
 
         public async Task<ConcurrentObject> TryUpdateRepresentationAsync(string representationId)
         {
+            return await TryUpdateRepresentationAsync(representationId, Guid.NewGuid().ToString());
+        }
+
+        public async Task<ConcurrentObject> TryUpdateRepresentationAsync(string representationId, string etag)
+        {
             if (string.IsNullOrWhiteSpace(representationId))
             {
                 throw new ArgumentNullException(nameof(representationId));
             }
 
+            if (string.IsNullOrWhiteSpace(etag))
+            {
+                throw new ArgumentNullException(nameof(etag));
+            }
+
             var concurrentObject = new ConcurrentObject
             {
-                Etag = "\""+ Guid.NewGuid().ToString() + "\"",
+                Etag = "\"" + etag + "\"",
                 DateTime = DateTime.UtcNow
             };
             await _options.Storage.SetAsync(representationId, concurrentObject);

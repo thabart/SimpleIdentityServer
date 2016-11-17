@@ -106,7 +106,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 
             // 5. Transform and returns the representation.
             var response = _responseParser.Parse(result, locationPattern.Replace("{id}", result.Id), schemaId, OperationTypes.Modification);
-            return _apiResponseFactory.CreateResultWithContent(HttpStatusCode.Created, response.Object, response.Location, result.Version);
+            return _apiResponseFactory.CreateResultWithContent(HttpStatusCode.Created, response.Object, response.Location, result.Version, result.Id);
         }
 
         public ApiActionResult Execute(JObject jObj, string locationPattern, string schemaId, string resourceType)

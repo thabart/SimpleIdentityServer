@@ -16,6 +16,12 @@ namespace WebApiContrib.Core.Concurrency
             string representationId,
             bool addHeader = true);
 
+        Task AddOrUpdateRepresentationAsync(
+            Controller controller,
+            string representationId,
+            string etag,
+            bool addHeader = true);
+
         Task UpdateHeader(
             Controller controller,
             string representationId);
@@ -47,6 +53,15 @@ namespace WebApiContrib.Core.Concurrency
             string representationId,
             bool addHeader = true)
         {
+            await AddOrUpdateRepresentationAsync(controller, representationId, Guid.NewGuid().ToString(), addHeader);
+        }
+
+        public async Task AddOrUpdateRepresentationAsync(
+            Controller controller,
+            string representationId,
+            string etag,
+            bool addHeader = true)
+        {
             if (controller == null)
             {
                 throw new ArgumentNullException(nameof(controller));
@@ -57,7 +72,12 @@ namespace WebApiContrib.Core.Concurrency
                 throw new ArgumentNullException(nameof(representationId));
             }
 
-            var concurrentObject = await _concurrencyManager.TryUpdateRepresentationAsync(representationId);
+            if (string.IsNullOrWhiteSpace(etag))
+            {
+                throw new ArgumentNullException(nameof(etag));
+            }
+
+            var concurrentObject = await _concurrencyManager.TryUpdateRepresentationAsync(representationId, etag);
             if (addHeader)
             {
                 SetHeaders(controller, concurrentObject);
