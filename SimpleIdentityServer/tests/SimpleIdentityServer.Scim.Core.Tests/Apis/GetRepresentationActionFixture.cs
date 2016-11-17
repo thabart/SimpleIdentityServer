@@ -97,7 +97,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
 
             // ASSERT
             _responseParserStub.Verify(r => r.Parse(representation, location.Replace("{id}", representation.Id), schemaId, OperationTypes.Query));
-            _apiResponseFactoryStub.Verify(a => a.CreateResultWithContent(HttpStatusCode.OK, It.IsAny<object>(), It.IsAny<string>()));
+            _apiResponseFactoryStub.Verify(a => a.CreateResultWithContent(HttpStatusCode.OK, It.IsAny<object>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()));
         }
 
         private void InitializeFakeObjects()

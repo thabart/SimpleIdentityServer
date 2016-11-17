@@ -113,6 +113,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 
             // 5. Store the new representation.
             record.LastModified = DateTime.UtcNow;
+            record.Version = Guid.NewGuid().ToString();
             if (!_representationStore.UpdateRepresentation(record))
             {
                 return _apiResponseFactory.CreateError(HttpStatusCode.InternalServerError,
@@ -123,7 +124,9 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             var response = _responseParser.Parse(record, locationPattern.Replace("{id}", id), schemaId, OperationTypes.Modification);
             return _apiResponseFactory.CreateResultWithContent(HttpStatusCode.OK,
                 response.Object,
-                response.Location);
+                response.Location,
+                record.Version,
+                record.Id);
         }
 
         private bool UpdateRepresentation(Representation source, Representation target, out ErrorResponse error)

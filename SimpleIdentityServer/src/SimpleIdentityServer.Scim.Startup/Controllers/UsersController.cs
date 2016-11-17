@@ -49,12 +49,16 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
             }
 
             var result = _usersAction.AddUser(jObj, GetLocationPattern());
-            await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(UsersName, result.Id), result.Version, true);
+            if (result.IsSucceed())
+            {
+                await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(UsersName, result.Id), result.Version, true);
+            }
+
             return this.GetActionResult(result);
         }
 
         [HttpPatch("{id}")]
-        public ActionResult PatchUser(string id, [FromBody] JObject jObj)
+        public async Task<ActionResult> PatchUser(string id, [FromBody] JObject jObj)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -67,11 +71,16 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
             }
 
             var result = _usersAction.PatchUser(id, jObj, GetLocationPattern());
+            if (result.IsSucceed())
+            {
+                await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(UsersName, result.Id), result.Version);
+            }
+            
             return this.GetActionResult(result);
         }
 
         [HttpPut("{id}")]
-        public ActionResult UpdateUser(string id, [FromBody] JObject jObj)
+        public async Task<ActionResult> UpdateUser(string id, [FromBody] JObject jObj)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -84,11 +93,16 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
             }
 
             var result = _usersAction.UpdateUser(id, jObj, GetLocationPattern());
+            if (result.IsSucceed())
+            {
+                await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(UsersName, result.Id), result.Version);
+            }
+
             return this.GetActionResult(result);
         }
 
         [HttpDelete("{id}")]
-        public ActionResult DeleteUser(string id)
+        public async Task<ActionResult> DeleteUser(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -96,6 +110,11 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
             }
 
             var result = _usersAction.RemoveUser(id);
+            if (result.IsSucceed())
+            {
+                await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(UsersName, result.Id), result.Version);
+            }
+            
             return this.GetActionResult(result);
         }
 
@@ -116,7 +135,11 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
             }
 
             var result = _usersAction.GetUser(id, GetLocationPattern());
-            await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(UsersName, result.Version));
+            if (result.IsSucceed())
+            {
+                await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(UsersName, result.Id), result.Version);
+            }
+
             return this.GetActionResult(result);
         }
 

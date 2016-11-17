@@ -327,13 +327,16 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             }
 
             // 5. Save the representation.
+            representation.Version = Guid.NewGuid().ToString();
             _representationStore.UpdateRepresentation(representation);
 
             // 6. Returns the JSON representation.
             var response = _responseParser.Parse(representation, locationPattern.Replace("{id}", id), schemaId, OperationTypes.Modification);
             return _apiResponseFactory.CreateResultWithContent(HttpStatusCode.OK,
                 response.Object,
-                response.Location);
+                response.Location,
+                representation.Version,
+                representation.Id);
         }
 
         private bool RemoveEnum(RepresentationAttribute attr, RepresentationAttribute attrToBeRemoved)

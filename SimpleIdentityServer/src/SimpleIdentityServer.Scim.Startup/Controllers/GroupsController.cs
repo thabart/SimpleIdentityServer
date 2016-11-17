@@ -48,19 +48,36 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
             }
 
             var result = _groupsAction.AddGroup(jObj, GetLocationPattern());
-            await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(GroupsName, result.Version), true);
+            if (result.IsSucceed())
+            {
+                await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(GroupsName, result.Id), result.Version, true);
+            }
+
             return this.GetActionResult(result);
         }
 
         [HttpGet("{id}")]
-        public ActionResult GetGroup(string id)
+        public async Task<ActionResult> GetGroup(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
                 throw new ArgumentNullException(nameof(id));
             }
+            
+            if (!await _representationManager.CheckRepresentationExistsAsync(this, string.Format(GroupsName, id)))
+            {
+                return new ContentResult
+                {
+                    StatusCode = 412
+                };
+            }
 
             var result = _groupsAction.GetGroup(id, GetLocationPattern(), Request.Query);
+            if (result.IsSucceed())
+            {
+                await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(GroupsName, result.Id), result.Version);
+            }
+
             return this.GetActionResult(result);
         }
 
@@ -79,7 +96,7 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
         }
 
         [HttpDelete("{id}")]
-        public ActionResult DeleteGroup(string id)
+        public async Task<ActionResult> DeleteGroup(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -87,11 +104,16 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
             }
 
             var result = _groupsAction.RemoveGroup(id);
+            if (result.IsSucceed())
+            {
+                await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(GroupsName, result.Id), false);
+            }
+
             return this.GetActionResult(result);
         }
 
         [HttpPut("{id}")]
-        public ActionResult UpdateGroup(string id, [FromBody] JObject jObj)
+        public async Task<ActionResult> UpdateGroup(string id, [FromBody] JObject jObj)
         {
             if (jObj == null)
             {
@@ -99,11 +121,16 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
             }
 
             var result = _groupsAction.UpdateGroup(id, jObj, GetLocationPattern());
+            if (result.IsSucceed())
+            {
+                await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(GroupsName, result.Id), result.Version);
+            }
+
             return this.GetActionResult(result);
         }
 
         [HttpPatch("{id}")]
-        public ActionResult PatchGroup(string id, [FromBody] JObject jObj)
+        public async Task<ActionResult> PatchGroup(string id, [FromBody] JObject jObj)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -116,6 +143,11 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
             }
 
             var result = _groupsAction.PatchGroup(id, jObj, GetLocationPattern());
+            if (result.IsSucceed())
+            {
+                await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(GroupsName, result.Id), result.Version);
+            }
+
             return this.GetActionResult(result);
         }
 
