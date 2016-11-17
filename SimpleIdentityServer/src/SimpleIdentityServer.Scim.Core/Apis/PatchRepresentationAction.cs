@@ -99,6 +99,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             }
 
             // 3. Get patch operations.
+            var allRepresentations = _representationStore.GetRepresentations(representation.ResourceType);
             ErrorResponse errorResponse;
             var operations = _patchRequestParser.Parse(jObj, out errorResponse);
             if (operations == null)
@@ -207,13 +208,32 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                         return _apiResponseFactory.CreateError(
                             HttpStatusCode.BadRequest,
                             _errorResponseFactory.CreateError(string.Format(ErrorMessages.TheImmutableAttributeCannotBeUpdated, filteredAttr.SchemaAttribute.Name), HttpStatusCode.BadRequest, Constants.ScimTypeValues.Mutability));
-                    }                
+                    }
+                    
+                    // 4.5.2 Check uniqueness
+                    if (filteredAttr.SchemaAttribute.Uniqueness == Constants.SchemaAttributeUniqueness.Server && allRepresentations != null && allRepresentations.Any())
+                    {
+                        var filter = _filterParser.Parse(filteredAttr.FullPath);
+                        var uniqueAttrs = new List<RepresentationAttribute>();
+                        foreach(var records in allRepresentations.Select(r => filter.Evaluate(r)))
+                        {
+                            uniqueAttrs.AddRange(records);
+                        }
 
-                    // TODO : Check uniqueness.
+                        if (uniqueAttrs.Any())
+                        {
+                            if (uniqueAttrs.Any(a => a.CompareTo(filteredAttr) == 0))
+                            {
+                                return _apiResponseFactory.CreateError(
+                                    HttpStatusCode.BadRequest,
+                                    _errorResponseFactory.CreateError(string.Format(ErrorMessages.TheAttributeMustBeUnique, filteredAttr.SchemaAttribute.Name), HttpStatusCode.BadRequest, Constants.ScimTypeValues.Uniqueness));
+                            }
+                        }
+                    }
 
                     switch (operation.Type)
                     {
-                        // 4.5.2.1 Remove attributes.
+                        // 4.5.3.1 Remove attributes.
                         case PatchOperations.remove:
                             if (attr == null)
                             {
@@ -225,7 +245,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 
                             if (filteredAttr.SchemaAttribute.MultiValued)
                             {
-                                // 4.5.2.1.1 Remove attribute from array
+                                // 4.5.3.1.1 Remove attribute from array
                                 if (!Remove(attr, filteredAttr))
                                 {
                                     return _apiResponseFactory.CreateError(
@@ -236,7 +256,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                             }
                             else
                             {
-                                // 4.5.2.1.2 Remove attribute from complex representation.
+                                // 4.5.3.1.2 Remove attribute from complex representation.
                                 if (attr.Parent != null)
                                 {
                                     var complexParent = attr.Parent as ComplexRepresentationAttribute;
@@ -253,7 +273,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                                 }
                             }
                             break;
-                        // 4.5.2.2 Add attribute.
+                        // 4.5.3.2 Add attribute.
                         case PatchOperations.add:
                             if (string.IsNullOrWhiteSpace(operation.Path) && attr == null)
                             {
@@ -291,7 +311,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 
                             }
                             break;
-                        // 4.5.2.3 Replace attribute
+                        // 4.5.3.3 Replace attribute
                         case PatchOperations.replace:
                             if (attr == null)
                             {

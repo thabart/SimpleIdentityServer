@@ -231,6 +231,75 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
             _errorResponseFactoryStub.Verify(a => a.CreateError(string.Format(ErrorMessages.TheImmutableAttributeCannotBeUpdated, "members"), HttpStatusCode.BadRequest, Constants.ScimTypeValues.Mutability));
         }
 
+        [Fact]
+        public void When_Trying_To_Set_A_Unique_Attribute_Then_BadRequest_Is_Returned()
+        {
+            // ARRANGE
+            const string id = "id";
+            ErrorResponse errorResponse = new ErrorResponse
+            {
+                Status = (int)HttpStatusCode.BadRequest
+            };
+            InitializeFakeObjects();
+            _representationStoreStub.Setup(r => r.GetRepresentation(It.IsAny<string>()))
+                .Returns(new Representation
+                {
+                    Attributes = new[]
+                    {
+                        new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "members", MultiValued = false, Type = Constants.SchemaAttributeTypes.Complex, Mutability = Constants.SchemaAttributeMutability.ReadWrite, Uniqueness = Constants.SchemaAttributeUniqueness.Server })
+                        {
+                            Values = new []
+                            {
+                                new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "thierry")
+                            }
+                        }
+                    }
+                });
+            _patchRequestParserStub.Setup(p => p.Parse(It.IsAny<JObject>(), out errorResponse))
+                .Returns(new[]
+                {
+                    new PatchOperation
+                    {
+                        Type = PatchOperations.remove,
+                        Path = "members"
+                    }
+                });
+            _filterParserStub.Setup(f => f.Parse(It.IsAny<string>()))
+                .Returns(new Filter
+                {
+                    Expression = new AttributeExpression
+                    {
+                        Path = new AttributePath
+                        {
+                            Name = "members"
+                        }
+                    }
+                });
+            _representationStoreStub.Setup(r => r.GetRepresentations(It.IsAny<string>()))
+                .Returns(new List<Representation>
+                {
+                    new Representation
+                    {
+                        Attributes = new[]
+                        {
+                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "members", MultiValued = false, Type = Constants.SchemaAttributeTypes.Complex, Mutability = Constants.SchemaAttributeMutability.ReadWrite, Uniqueness = Constants.SchemaAttributeUniqueness.Server })
+                            {
+                                Values = new []
+                                {
+                                    new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "thierry")
+                                }
+                            }
+                        }
+                    }
+                });
+
+            // ACT
+            _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
+
+            // ASSERT
+            _errorResponseFactoryStub.Verify(a => a.CreateError(string.Format(ErrorMessages.TheAttributeMustBeUnique, "members"), HttpStatusCode.BadRequest, Constants.ScimTypeValues.Uniqueness));
+        }
+
         #endregion
 
         #region Remove

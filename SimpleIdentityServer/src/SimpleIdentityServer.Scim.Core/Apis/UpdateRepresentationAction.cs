@@ -43,6 +43,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         private readonly IRepresentationResponseParser _responseParser;
         private readonly IParametersValidator _parametersValidator;
         private readonly IErrorResponseFactory _errorResponseFactory;
+        private readonly IFilterParser _filterParser;
 
         public UpdateRepresentationAction(
             IRepresentationRequestParser requestParser,
@@ -50,7 +51,8 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             IApiResponseFactory apiResponseFactory,
             IRepresentationResponseParser responseParser,
             IParametersValidator parametersValidator,
-            IErrorResponseFactory errorResponseFactory)
+            IErrorResponseFactory errorResponseFactory,
+            IFilterParser filterParser)
         {
             _requestParser = requestParser;
             _representationStore = representationStore;
@@ -58,6 +60,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             _responseParser = responseParser;
             _parametersValidator = parametersValidator;
             _errorResponseFactory = errorResponseFactory;
+            _filterParser = filterParser;
         }
 
         public ApiActionResult Execute(string id, JObject jObj, string schemaId, string locationPattern, string resourceType)
@@ -105,8 +108,9 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             }
 
             // 4. Update attributes.
+            var allRepresentations = _representationStore.GetRepresentations(record.ResourceType);
             ErrorResponse error;
-            if (!UpdateRepresentation(record, representation, out error))
+            if (!UpdateRepresentation(record, representation, allRepresentations, out error))
             {
                 return _apiResponseFactory.CreateError(HttpStatusCode.BadRequest, error);
             }
@@ -129,7 +133,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                 record.Id);
         }
 
-        private bool UpdateRepresentation(Representation source, Representation target, out ErrorResponse error)
+        private bool UpdateRepresentation(Representation source, Representation target, IEnumerable<Representation> allRepresentations, out ErrorResponse error)
         {
             error = null;
             if (source.Attributes == null)
@@ -148,7 +152,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                 }
 
                 // 2. Update the attribute
-                if (!UpdateAttribute(sourceAttribute, targetAttribute, out error))
+                if (!UpdateAttribute(sourceAttribute, targetAttribute, allRepresentations, out error))
                 {
                     return false;
                 }
@@ -157,7 +161,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             return true;
         }
 
-        private bool UpdateAttribute(RepresentationAttribute source, RepresentationAttribute target, out ErrorResponse error)
+        private bool UpdateAttribute(RepresentationAttribute source, RepresentationAttribute target, IEnumerable<Representation> allRepresentations, out ErrorResponse error)
         {
             error = null;
             var complexSource = source as ComplexRepresentationAttribute;
@@ -169,15 +173,38 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                 {
                     complexTarget = (complexTarget.Values.First() as ComplexRepresentationAttribute);
                     complexSource = (complexSource.Values.First() as ComplexRepresentationAttribute);
+                    // Check mutability
                     if (schemaAttribute.Mutability == Constants.SchemaAttributeMutability.Immutable)
                     {
-                        // TODO : check the content.
-                        if (complexTarget.Values.Count() != complexTarget.Values.Count())
+                        if (complexTarget.CompareTo(complexSource) != 0)
                         {
                             error = _errorResponseFactory.CreateError(string.Format(ErrorMessages.TheImmutableAttributeCannotBeUpdated, schemaAttribute.Name),
                                 HttpStatusCode.BadRequest,
                                 Constants.ScimTypeValues.Mutability);
                             return false;
+                        }
+                    }
+                    
+                    // Check uniqueness
+                    if (schemaAttribute.Uniqueness == Constants.SchemaAttributeUniqueness.Server && allRepresentations != null && allRepresentations.Any())
+                    {
+                        var filter = _filterParser.Parse(complexTarget.FullPath);
+                        var uniqueAttrs = new List<RepresentationAttribute>();
+                        foreach (var records in allRepresentations.Select(r => filter.Evaluate(r)))
+                        {
+                            uniqueAttrs.AddRange(records);
+                        }
+
+                        if (uniqueAttrs.Any())
+                        {
+                            if (uniqueAttrs.Any(a => a.CompareTo(complexTarget) == 0))
+                            {
+                                error = _errorResponseFactory.CreateError(
+                                    string.Format(ErrorMessages.TheAttributeMustBeUnique, complexTarget.SchemaAttribute.Name), 
+                                    HttpStatusCode.BadRequest, 
+                                    Constants.ScimTypeValues.Uniqueness);
+                                return false;
+                            }
                         }
                     }
 
@@ -194,7 +221,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                         continue;
                     }
 
-                   if (!UpdateAttribute(complexSourceAttr, complexTargetAttr, out error))
+                   if (!UpdateAttribute(complexSourceAttr, complexTargetAttr, allRepresentations, out error))
                    {
                        return false;
                    }
@@ -203,14 +230,38 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                 return true;
             }
             
+            // Check mutability
             if (target.SchemaAttribute.Mutability == Constants.SchemaAttributeMutability.Immutable)
             {
-                if (!Equals(source, target))
+                if (source.CompareTo(target) != 0)
                 {
                     error = _errorResponseFactory.CreateError(string.Format(ErrorMessages.TheImmutableAttributeCannotBeUpdated, target.SchemaAttribute.Name),
                         HttpStatusCode.BadRequest,
                         Constants.ScimTypeValues.Mutability);
                     return false;
+                }
+            }
+
+            // Check uniqueness
+            if (target.SchemaAttribute.Uniqueness == Constants.SchemaAttributeUniqueness.Server && allRepresentations != null && allRepresentations.Any())
+            {
+                var filter = _filterParser.Parse(target.FullPath);
+                var uniqueAttrs = new List<RepresentationAttribute>();
+                foreach (var records in allRepresentations.Select(r => filter.Evaluate(r)))
+                {
+                    uniqueAttrs.AddRange(records);
+                }
+
+                if (uniqueAttrs.Any())
+                {
+                    if (uniqueAttrs.Any(a => a.CompareTo(target) == 0))
+                    {
+                        error = _errorResponseFactory.CreateError(
+                            string.Format(ErrorMessages.TheAttributeMustBeUnique, target.SchemaAttribute.Name),
+                            HttpStatusCode.BadRequest,
+                            Constants.ScimTypeValues.Uniqueness);
+                        return false;
+                    }
                 }
             }
 

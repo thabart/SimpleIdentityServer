@@ -33,6 +33,7 @@ namespace SimpleIdentityServer.Scim.Core.Errors
         public const string TheRepresentationCannotBeSet = "something goes wrong when trying to replace the resource";
         public const string TheLocationPatternIsNotCorrect = "the location pattern {0} is not correct";
         public const string TheImmutableAttributeCannotBeUpdated = "the immutable attribute {0} cannot be updated";
+        public const string TheAttributeMustBeUnique = "the attribute {0} must be unique";
         public const string TheRepresentationCannotBeUpdated = "the representation cannot be updated";
         public const string TheRequestIsNotAPatchOperation = "the request is not a patch operation because the schema is not correct";
         public const string TheRequestIsNotABulkOperation = "the request is not a bulk operation because the schema is not correct";
