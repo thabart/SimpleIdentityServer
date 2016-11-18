@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -91,6 +92,16 @@ namespace SimpleIdentityServer.Scim.Core.Models
             return CompareTo(representation);
         }
 
+        public virtual string GetSerializedValue()
+        {
+            return string.Empty;
+        }
+
+        public virtual bool SetValue(RepresentationAttribute attr)
+        {
+            return false;
+        }
+
         protected virtual int CompareTo(RepresentationAttribute attr)
         {
             return 0;
@@ -127,6 +138,28 @@ namespace SimpleIdentityServer.Scim.Core.Models
             return Value.GetHashCode();
         }
 
+        public override string GetSerializedValue()
+        {
+            return JsonConvert.SerializeObject(Value);
+        }
+
+        public override bool SetValue(RepresentationAttribute attr)
+        {
+            if (attr == null || attr.SchemaAttribute == null || SchemaAttribute == null)
+            {
+                return false;
+            }
+
+            var target = attr as SingularRepresentationAttribute<T>;
+            if (target == null)
+            {
+                return false;
+            }
+            
+            Value = target.Value;
+            return true;
+        }
+
         protected override object CloneObj()
         {
             return new SingularRepresentationAttribute<T>(SchemaAttribute, Value);
@@ -145,6 +178,7 @@ namespace SimpleIdentityServer.Scim.Core.Models
 
         private int CompareTo(T target)
         {
+            // TODO : Compare the IEnumerable !!
             if (SchemaAttribute.MultiValued)
             {
                 return 0;
@@ -153,7 +187,6 @@ namespace SimpleIdentityServer.Scim.Core.Models
             switch (SchemaAttribute.Type)
             {
                 case Constants.SchemaAttributeTypes.String:
-
                     var ss = Value as string;
                     var ts = target as string;
                     return ss.CompareTo(ts);

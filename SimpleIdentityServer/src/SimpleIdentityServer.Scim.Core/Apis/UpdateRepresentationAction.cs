@@ -271,96 +271,12 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 
         private static bool AssignValues(RepresentationAttribute source, RepresentationAttribute target)
         {
-            var result = false;
-            switch (source.SchemaAttribute.Type)
-            {
-                case Constants.SchemaAttributeTypes.String:
-                    result = AssignValues<string>(source, target);
-                    break;
-                case Constants.SchemaAttributeTypes.Boolean:
-                    result = AssignValues<bool>(source, target);
-                    break;
-                case Constants.SchemaAttributeTypes.Decimal:
-                    result = AssignValues<decimal>(source, target);
-                    break;
-                case Constants.SchemaAttributeTypes.DateTime:
-                    result = AssignValues<DateTime>(source, target);
-                    break;
-                case Constants.SchemaAttributeTypes.Integer:
-                    result = AssignValues<int>(source, target);
-                    break;
-            }
-
-            return result;
-        }
-
-        private static bool AssignValues<T>(RepresentationAttribute source, RepresentationAttribute target)
-        {
-            if (source.SchemaAttribute.MultiValued)
-            {
-                var singularEnumSource = source as SingularRepresentationAttribute<IEnumerable<T>>;
-                var singularEnumTarget = target as SingularRepresentationAttribute<IEnumerable<T>>;
-                if (singularEnumSource == null || singularEnumTarget == null)
-                {
-                    return false;
-                }
-
-                singularEnumSource.Value = singularEnumTarget.Value;
-                return true;
-            }
-
-            var singularSource = source as SingularRepresentationAttribute<T>;
-            var singularTarget = target as SingularRepresentationAttribute<T>;
-            if (singularSource == null || singularTarget == null)
-            {
-                return false;
-            }
-
-            singularSource.Value = singularTarget.Value;
-            return true;
+            return source.SetValue(target);
         }
 
         private static bool Equals(RepresentationAttribute source, RepresentationAttribute target)
         {
-            switch (source.SchemaAttribute.Type)
-            {
-                case Constants.SchemaAttributeTypes.String:
-                    return Equals<string>(source, target);
-                case Constants.SchemaAttributeTypes.Boolean:
-                    return Equals<bool>(source, target);
-                case Constants.SchemaAttributeTypes.Decimal:
-                    return Equals<decimal>(source, target);
-                case Constants.SchemaAttributeTypes.DateTime:
-                    return Equals<DateTime>(source, target);
-                case Constants.SchemaAttributeTypes.Integer:
-                    return Equals<int>(source, target);
-                default:
-                    return false;
-            }
-        }
-
-        private static bool Equals<T>(RepresentationAttribute source, RepresentationAttribute target)
-        {
-            if (source.SchemaAttribute.MultiValued)
-            {
-                var singularEnumSource = source as SingularRepresentationAttribute<IEnumerable<T>>;
-                var singularEnumTarget = target as SingularRepresentationAttribute<IEnumerable<T>>;
-                if (singularEnumSource == null || singularEnumTarget == null)
-                {
-                    return false;
-                }
-
-                return singularEnumSource.Value.Equals(singularEnumTarget.Value);
-            }
-            
-            var singularSource = source as SingularRepresentationAttribute<T>;
-            var singularTarget = target as SingularRepresentationAttribute<T>;
-            if (singularSource == null || singularTarget == null)
-            {
-                return false;
-            }
-
-            return singularSource.Value.Equals(singularTarget.Value);
+            return source.CompareTo(target) == 0;
         }
     }
 }

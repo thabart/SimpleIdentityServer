@@ -14,7 +14,6 @@
 // limitations under the License.
 #endregion
 
-using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using static SimpleIdentityServer.Scim.Core.Constants;
@@ -24,6 +23,7 @@ namespace SimpleIdentityServer.Scim.Core.Models
     [DataContract]
     public class SchemaAttributeResponse
     {
+        public string Id { get; set; }
         /// <summary>
         /// Attribute's name
         /// </summary>

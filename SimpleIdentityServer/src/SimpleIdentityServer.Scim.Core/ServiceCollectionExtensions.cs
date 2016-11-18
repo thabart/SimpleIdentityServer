@@ -33,7 +33,6 @@ namespace SimpleIdentityServer.Scim.Core
                 throw new ArgumentNullException(nameof(services));
             }
 
-            services.AddTransient<ISchemaStore, SchemaStore>();
             services.AddTransient<IRepresentationRequestParser, RepresentationRequestParser>();
             services.AddTransient<IJsonParser, RepresentationRequestParser>();
             services.AddTransient<IRepresentationResponseParser, RepresentationResponseParser>();

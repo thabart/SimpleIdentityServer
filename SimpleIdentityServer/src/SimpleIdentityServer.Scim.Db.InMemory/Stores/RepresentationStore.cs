@@ -14,56 +14,300 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using SimpleIdentityServer.Scim.Core;
 using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Core.Stores;
-using System.Linq;
+using SimpleIdentityServer.Scim.Db.InMemory.Extensions;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using Model = SimpleIdentityServer.Scim.Db.InMemory.Models;
 
 namespace SimpleIdentityServer.Scim.Db.InMemory.Stores
 {
     public class RepresentationStore : IRepresentationStore
     {
+        private readonly ScimDbContext _context;
+
+        public RepresentationStore(ScimDbContext context)
+        {
+            _context = context;
+        }
+
         public bool AddRepresentation(Representation representation)
         {
-            Storage.Instance().Representations.Add(representation);
-            return true;
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                var result = true;
+                try
+                {
+                    var record = new Model.Representation
+                    {
+                        Id = representation.Id,
+                        Created = representation.Created,
+                        LastModified = representation.LastModified,
+                        ResourceType = representation.ResourceType,
+                        Version = representation.Version,
+                        Attributes = GetRepresentationAttributes(representation)
+                    };
+                    _context.Representations.Add(record);
+                    _context.SaveChanges();
+                    transaction.Commit();
+                }
+                catch
+                {
+                    result = false;
+                    transaction.Rollback();
+                }
+
+                return result;
+            }
         }
 
         public Representation GetRepresentation(string id)
         {
-            var representation = Storage.Instance().Representations.FirstOrDefault(r => r.Id == id);
-            if (representation == null)
+            try
+            {
+                var representation = _context.Representations.Include(r => r.Attributes).FirstOrDefault(r => r.Id == id);
+                if (representation == null)
+                {
+                    return null;
+                }
+
+                var record = representation.ToDomain();
+                record.Attributes = GetRepresentationAttributes(representation);
+                return record;
+            }
+            catch
             {
                 return null;
             }
-
-            return representation.Clone() as Representation;
         }
 
         public IEnumerable<Representation> GetRepresentations(string resourceType)
         {
-            return Storage.Instance().Representations.Where(r => r.ResourceType == resourceType).Select(r => r.Clone() as Representation);
+            try
+            {
+                var representations = _context.Representations.Include(r => r.Attributes).Where(r => r.ResourceType == resourceType);
+                var lst = new List<Representation>();
+                foreach(var representation in representations)
+                {
+                    var record = representation.ToDomain();
+                    record.Attributes = GetRepresentationAttributes(representation);
+                    lst.Add(record);
+                }
+
+                return lst;
+            }
+            catch
+            {
+                return new Representation[0];
+            }
         }
 
         public bool RemoveRepresentation(Representation representation)
         {
-            var representations = Storage.Instance().Representations;
-            var record = representations.FirstOrDefault(r => r.Id == representation.Id);
-            if (record == null)
+            using (var transaction = _context.Database.BeginTransaction())
             {
-                return false;
-            }
+                var result = true;
+                try
+                {
+                    var record = _context.Representations.FirstOrDefault(r => r.Id == representation.Id);
+                    if (record == null)
+                    {
+                        return false;
+                    }
 
-            representations.Remove(record);
-            return true;
+                    _context.Representations.Remove(record);
+                    transaction.Commit();
+                }
+                catch
+                {
+                    result = false;
+                    transaction.Rollback();
+                }
+
+                return result;
+            }
         }
 
         public bool UpdateRepresentation(Representation representation)
         {
-            var representations = Storage.Instance().Representations;
-            representations.Remove(representations.First(r => r.Id == representation.Id));
-            representations.Add(representation);
-            return true;
+            if (RemoveRepresentation(representation))
+            {
+                return AddRepresentation(representation);
+            }
+
+            return false;
+        }
+
+        private List<RepresentationAttribute> GetRepresentationAttributes(Model.Representation representation)
+        {
+            if (representation.Attributes == null)
+            {
+                return new List<RepresentationAttribute>();
+            }
+
+            var result = new List<RepresentationAttribute>();
+            foreach(var attribute in representation.Attributes)
+            {
+                var transformed = TransformRepresentationAttribute(attribute);
+                if (transformed == null)
+                {
+                    continue;
+                }
+
+                result.Add(transformed);
+            }
+
+            return result;
+        }
+
+        private List<Model.RepresentationAttribute> GetRepresentationAttributes(Representation representation)
+        {
+            if (representation.Attributes == null)
+            {
+                return new List<Model.RepresentationAttribute>();
+            }
+
+            var result = new List<Model.RepresentationAttribute>();
+            foreach (var attribute in representation.Attributes)
+            {
+                var transformed = TransformRepresentationAttribute(attribute);
+                if (transformed == null)
+                {
+                    continue;
+                }
+
+                result.Add(transformed);
+            }
+
+            return result;
+        }
+
+        private RepresentationAttribute TransformRepresentationAttribute(Model.RepresentationAttribute attr)
+        {
+            if (string.IsNullOrWhiteSpace(attr.SchemaAttributeId))
+            {
+                return null;
+            }
+
+            var reprAttr = _context.RepresentationAttributes.Include(r => r.Children).Include(r => r.SchemaAttribute).FirstOrDefault(s => attr.Id == s.Id);
+            if (reprAttr == null || reprAttr.SchemaAttribute == null || (reprAttr.Children == null && string.IsNullOrWhiteSpace(reprAttr.Value)))
+            {
+                return null;
+            }
+
+            var schemaAttr = reprAttr.SchemaAttribute.ToDomain();
+            if (reprAttr.Children != null)
+            {
+                ComplexRepresentationAttribute result = new ComplexRepresentationAttribute(schemaAttr);
+                result.Values = new List<RepresentationAttribute>();
+                foreach(var child in reprAttr.Children)
+                {
+                    var transformed = TransformRepresentationAttribute(child);
+                    if (transformed == null)
+                    {
+                        continue;
+                    }
+
+                    transformed.Parent = result;
+                    result.Values = result.Values.Concat(new[] { transformed });
+                }
+
+                return result;
+            }
+
+            var isArr = attr.SchemaAttribute.MultiValued;
+            switch(attr.SchemaAttribute.Type)
+            {
+                case Constants.SchemaAttributeTypes.String:
+                    if (isArr)
+                    {
+                        var record = JsonConvert.DeserializeObject<IEnumerable<string>>(attr.Value);
+                        return new SingularRepresentationAttribute<IEnumerable<string>>(schemaAttr, record);
+                    }
+
+                    var str = JsonConvert.DeserializeObject<string>(attr.Value);
+                    return new SingularRepresentationAttribute<string>(schemaAttr, str);
+                case Constants.SchemaAttributeTypes.Boolean:
+                    if (isArr)
+                    {
+                        var record = JsonConvert.DeserializeObject<IEnumerable<bool>>(attr.Value);
+                        return new SingularRepresentationAttribute<IEnumerable<bool>>(schemaAttr, record);
+                    }
+
+                    var b = JsonConvert.DeserializeObject<bool>(attr.Value);
+                    return new SingularRepresentationAttribute<bool>(schemaAttr, b);
+                case Constants.SchemaAttributeTypes.DateTime:
+                    if (isArr)
+                    {
+                        var record = JsonConvert.DeserializeObject<IEnumerable<DateTime>>(attr.Value);
+                        return new SingularRepresentationAttribute<IEnumerable<DateTime>>(schemaAttr, record);
+                    }
+
+                    var datetime = JsonConvert.DeserializeObject<DateTime>(attr.Value);
+                    return new SingularRepresentationAttribute<DateTime>(schemaAttr, datetime);
+                case Constants.SchemaAttributeTypes.Decimal:
+                    if (isArr)
+                    {
+                        var record = JsonConvert.DeserializeObject<IEnumerable<decimal>>(attr.Value);
+                        return new SingularRepresentationAttribute<IEnumerable<decimal>>(schemaAttr, record);
+                    }
+
+                    var dec = JsonConvert.DeserializeObject<decimal>(attr.Value);
+                    return new SingularRepresentationAttribute<decimal>(schemaAttr, dec);
+                case Constants.SchemaAttributeTypes.Integer:
+                    if (isArr)
+                    {
+                        var record = JsonConvert.DeserializeObject<IEnumerable<int>>(attr.Value);
+                        return new SingularRepresentationAttribute<IEnumerable<int>>(schemaAttr, record);
+                    }
+
+                    var i = JsonConvert.DeserializeObject<int>(attr.Value);
+                    return new SingularRepresentationAttribute<int>(schemaAttr, i);
+            }
+
+            return null;
+        }
+
+        private Model.RepresentationAttribute TransformRepresentationAttribute(RepresentationAttribute attr)
+        {
+            if (attr.SchemaAttribute == null)
+            {
+                return null;
+            }
+
+            var record = new Model.RepresentationAttribute
+            {
+                Id = Guid.NewGuid().ToString(),
+                SchemaAttributeId = attr.SchemaAttribute.Id,
+                Children = new List<Model.RepresentationAttribute>()
+            };
+            var complexAttr = attr as ComplexRepresentationAttribute;
+            if (complexAttr != null)
+            {
+                if (complexAttr.Values != null)
+                {
+                    foreach(var child in complexAttr.Values)
+                    {
+                        var transformed = TransformRepresentationAttribute(child);
+                        if (transformed == null)
+                        {
+                            continue;
+                        }
+
+                        transformed.Parent = record;
+                        record.Children.Add(transformed);
+                    }
+                }
+                return record;
+            }
+
+            record.Value = attr.GetSerializedValue();
+            return record;
         }
     }
 }

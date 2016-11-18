@@ -14,12 +14,16 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Scim.Core.Errors;
 using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Core.Parsers;
 using SimpleIdentityServer.Scim.Core.Stores;
+using SimpleIdentityServer.Scim.Db.InMemory;
+using SimpleIdentityServer.Scim.Db.InMemory.Extensions;
+using SimpleIdentityServer.Scim.Db.InMemory.Stores;
 using System;
 using System.Linq;
 using Xunit;
@@ -30,6 +34,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
     {
         private Mock<ISchemaStore> _schemaStoreStub;
         private IRepresentationRequestParser _requestParser;
+        private ISchemaStore _schemaStore;
         private IJsonParser _jsonParser;
 
         #region Parse
@@ -66,11 +71,10 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
         [Fact]
         public void When_Expecting_Array_But_Its_Singular_Then_Null_Is_Returned()
         {
-            var schemaStore = new SchemaStore();
             // ARRANGE
             InitializeFakeObjects();
             _schemaStoreStub.Setup(s => s.GetSchema(It.IsAny<string>()))
-                .Returns(schemaStore.GetSchema(Constants.SchemaUrns.Group));
+                .Returns(_schemaStore.GetSchema(Constants.SchemaUrns.Group));
             var jObj = JObject.Parse(@"{'schemas': ['urn:ietf:params:scim:schemas:core:2.0:Group']," +
             "'displayName': 'Group A'," +
             "'members': 'members'" +
@@ -89,10 +93,9 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
         public void When_Expecting_Boolean_But_Its_A_String_Then_Null_Is_Returned()
         {
             // ARRANGE
-            var schemaStore = new SchemaStore();
             InitializeFakeObjects();
             _schemaStoreStub.Setup(s => s.GetSchema(It.IsAny<string>()))
-                .Returns(schemaStore.GetSchema(Constants.SchemaUrns.User));
+                .Returns(_schemaStore.GetSchema(Constants.SchemaUrns.User));
             var jObj = JObject.Parse(@"{'schemas': ['urn:ietf:params:scim:schemas:core:2.0:User']," +
             "'externalId': 'bjensen'," +
             "'userName': 'bjensen'," +
@@ -114,11 +117,10 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
         [Fact]
         public void When_Simple_PostGroupRequest_Is_Parsed_Then_CorrectValues_Are_Returned()
         {
-            var schemaStore = new SchemaStore();
             // ARRANGE
             InitializeFakeObjects();
             _schemaStoreStub.Setup(s => s.GetSchema(It.IsAny<string>()))
-                .Returns(schemaStore.GetSchema(Constants.SchemaUrns.Group));
+                .Returns(_schemaStore.GetSchema(Constants.SchemaUrns.Group));
             var jObj = JObject.Parse(@"{'schemas': ['urn:ietf:params:scim:schemas:core:2.0:Group'],"+
             "'displayName': 'Group A',"+
             "'members': ["+
@@ -152,11 +154,10 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
         [Fact]
         public void When_Complex_PostGroupRequest_Is_Parsed_Then_CorrectValues_Are_Returned()
         {
-            var schemaStore = new SchemaStore();
             // ARRANGE
             InitializeFakeObjects();
             _schemaStoreStub.Setup(s => s.GetSchema(It.IsAny<string>()))
-                .Returns(schemaStore.GetSchema(Constants.SchemaUrns.Group));
+                .Returns(_schemaStore.GetSchema(Constants.SchemaUrns.Group));
             var jObj = JObject.Parse(@"{'schemas': ['urn:ietf:params:scim:schemas:core:2.0:Group']," +
             "'displayName': 'Group A'," +
             "'members': [" +
@@ -199,11 +200,10 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
         [Fact]
         public void When_Simple_PostUserRequest_Is_Parsed_Then_CorrectValues_Are_Returned()
         {
-            var schemaStore = new SchemaStore();
             // ARRANGE
             InitializeFakeObjects();
             _schemaStoreStub.Setup(s => s.GetSchema(It.IsAny<string>()))
-                .Returns(schemaStore.GetSchema(Constants.SchemaUrns.User));
+                .Returns(_schemaStore.GetSchema(Constants.SchemaUrns.User));
             var jObj = JObject.Parse(@"{'schemas': ['urn:ietf:params:scim:schemas:core:2.0:User']," +
             "'externalId': 'bjensen'," +
             "'userName': 'bjensen'," +
@@ -214,7 +214,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             string error;
 
             // ACT
-            var result = _requestParser.Parse(jObj, Constants.SchemaUrns.Group, CheckStrategies.Strong, out error);
+            var result = _requestParser.Parse(jObj, Constants.SchemaUrns.User, CheckStrategies.Strong, out error);
 
 
             // ASSERTS
@@ -230,6 +230,11 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             var parser = new RepresentationRequestParser(_schemaStoreStub.Object);
             _requestParser = parser;
             _jsonParser = parser;
+            var builder = new DbContextOptionsBuilder<ScimDbContext>();
+            builder.UseInMemoryDatabase();
+            var ctx = new ScimDbContext(builder.Options);
+            ctx.EnsureSeedData();
+            _schemaStore = new SchemaStore(ctx);
         }
     }
 }

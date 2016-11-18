@@ -9,9 +9,9 @@
   },
   "dependencies": {
     "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
-    "SimpleIdentityServer.Scim.Core": {
-      "target": "project"
-    }
+    "Microsoft.EntityFrameworkCore.InMemory": "1.0.0",
+    "Microsoft.EntityFrameworkCore.SqlServer": "1.0.0",
+    "SimpleIdentityServer.Scim.Core": { "target": "project" }
   },
   "frameworks": {
     "net46": { },

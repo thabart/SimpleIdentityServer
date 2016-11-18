@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Scim.Core.Errors;
@@ -21,6 +22,9 @@ using SimpleIdentityServer.Scim.Core.Factories;
 using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Core.Parsers;
 using SimpleIdentityServer.Scim.Core.Stores;
+using SimpleIdentityServer.Scim.Db.InMemory;
+using SimpleIdentityServer.Scim.Db.InMemory.Extensions;
+using SimpleIdentityServer.Scim.Db.InMemory.Stores;
 using System;
 using Xunit;
 
@@ -33,6 +37,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
         private IFilterParser _filterParser;
         private IRepresentationRequestParser _requestParser;
         private IRepresentationResponseParser _responseParser;
+        private ISchemaStore _schemaStore;
 
         #region Parse
 
@@ -67,11 +72,10 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
         [Fact]
         public void When_Parsing_GroupRepresentation_Then_Response_Is_Returned()
         {
-            var schemaStore = new SchemaStore();
             // ARRANGE
             InitializeFakeObjects();
             _schemaStoreStub.Setup(s => s.GetSchema(It.IsAny<string>()))
-                .Returns(schemaStore.GetSchema(Constants.SchemaUrns.Group));
+                .Returns(_schemaStore.GetSchema(Constants.SchemaUrns.Group));
             var jObj = JObject.Parse(@"{'schemas': ['urn:ietf:params:scim:schemas:core:2.0:Group']," +
             "'displayName': 'Group A'," +
             "'members': [" +
@@ -112,11 +116,10 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
         [Fact]
         public void When_Filtering_Groups_Then_Correct_Results_Are_Returned()
         {
-            var schemaStore = new SchemaStore();
             // ARRANGE
             InitializeFakeObjects();
             _schemaStoreStub.Setup(s => s.GetSchema(It.IsAny<string>()))
-                .Returns(schemaStore.GetSchema(Constants.SchemaUrns.Group));
+                .Returns(_schemaStore.GetSchema(Constants.SchemaUrns.Group));
             var firstObj = JObject.Parse(@"{'schemas': ['urn:ietf:params:scim:schemas:core:2.0:Group']," +
             "'displayName': 'Group A'," +
             "'members': [" +
@@ -199,6 +202,11 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             _filterParser = new FilterParser();
             _requestParser = new RepresentationRequestParser(_schemaStoreStub.Object);
             _responseParser = new RepresentationResponseParser(_schemaStoreStub.Object, _commonAttributesFactoryStub.Object);
+            var builder = new DbContextOptionsBuilder<ScimDbContext>();
+            builder.UseInMemoryDatabase();
+            var ctx = new ScimDbContext(builder.Options);
+            ctx.EnsureSeedData();
+            _schemaStore = new SchemaStore(ctx);
         }
     }
 }
