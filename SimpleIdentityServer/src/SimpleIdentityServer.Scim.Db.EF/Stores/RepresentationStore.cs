@@ -19,13 +19,13 @@ using Newtonsoft.Json;
 using SimpleIdentityServer.Scim.Core;
 using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Core.Stores;
-using SimpleIdentityServer.Scim.Db.InMemory.Extensions;
+using SimpleIdentityServer.Scim.Db.EF.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Model = SimpleIdentityServer.Scim.Db.InMemory.Models;
+using Model = SimpleIdentityServer.Scim.Db.EF.Models;
 
-namespace SimpleIdentityServer.Scim.Db.InMemory.Stores
+namespace SimpleIdentityServer.Scim.Db.EF.Stores
 {
     public class RepresentationStore : IRepresentationStore
     {

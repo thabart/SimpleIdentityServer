@@ -14,7 +14,6 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.EntityFrameworkCore;
 using Moq;
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Scim.Core.Errors;
@@ -22,15 +21,13 @@ using SimpleIdentityServer.Scim.Core.Factories;
 using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Core.Parsers;
 using SimpleIdentityServer.Scim.Core.Stores;
-using SimpleIdentityServer.Scim.Db.InMemory;
-using SimpleIdentityServer.Scim.Db.InMemory.Extensions;
-using SimpleIdentityServer.Scim.Db.InMemory.Stores;
+using SimpleIdentityServer.Scim.Core.Tests.Fixture;
 using System;
 using Xunit;
 
 namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
 {
-    public class RepresentationResponseParserFixture
+    public class RepresentationResponseParserFixture : IClassFixture<StoresFixture>
     {
         private Mock<ISchemaStore> _schemaStoreStub;
         private Mock<ICommonAttributesFactory> _commonAttributesFactoryStub;
@@ -38,6 +35,11 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
         private IRepresentationRequestParser _requestParser;
         private IRepresentationResponseParser _responseParser;
         private ISchemaStore _schemaStore;
+
+        public RepresentationResponseParserFixture(StoresFixture stores)
+        {
+            _schemaStore = stores.SchemaStore;
+        }
 
         #region Parse
 
@@ -202,11 +204,6 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             _filterParser = new FilterParser();
             _requestParser = new RepresentationRequestParser(_schemaStoreStub.Object);
             _responseParser = new RepresentationResponseParser(_schemaStoreStub.Object, _commonAttributesFactoryStub.Object);
-            var builder = new DbContextOptionsBuilder<ScimDbContext>();
-            builder.UseInMemoryDatabase();
-            var ctx = new ScimDbContext(builder.Options);
-            ctx.EnsureSeedData();
-            _schemaStore = new SchemaStore(ctx);
         }
     }
 }

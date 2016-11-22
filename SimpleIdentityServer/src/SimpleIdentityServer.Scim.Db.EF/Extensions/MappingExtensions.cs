@@ -14,12 +14,12 @@
 // limitations under the License.
 #endregion
 
-using Model = SimpleIdentityServer.Scim.Db.InMemory.Models;
+using Model = SimpleIdentityServer.Scim.Db.EF.Models;
 using Domain = SimpleIdentityServer.Scim.Core.Models;
 using System;
 using System.Collections.Generic;
 
-namespace SimpleIdentityServer.Scim.Db.InMemory.Extensions
+namespace SimpleIdentityServer.Scim.Db.EF.Extensions
 {
     internal static class MappingExtensions
     {

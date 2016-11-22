@@ -14,25 +14,18 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.EntityFrameworkCore;
-using SimpleIdentityServer.Scim.Db.InMemory.Models;
 using System;
+using System.Collections.Generic;
 
-namespace SimpleIdentityServer.Scim.Db.InMemory.Mappings
+namespace SimpleIdentityServer.Scim.Db.EF.Models
 {
-    internal static class MetaDataMappings
+    public class Representation
     {
-        public static ModelBuilder AddMetaDataMappings(this ModelBuilder builder)
-        {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
-
-            builder.Entity<MetaData>()
-                .ToTable("metaData")
-                .HasKey(a => a.Id);
-            return builder;
-        }
+        public string Id { get; set; }
+        public string ResourceType { get; set; }
+        public DateTime Created { get; set; }
+        public DateTime LastModified { get; set; }
+        public string Version { get; set; }
+        public virtual List<RepresentationAttribute> Attributes { get; set; }
     }
 }

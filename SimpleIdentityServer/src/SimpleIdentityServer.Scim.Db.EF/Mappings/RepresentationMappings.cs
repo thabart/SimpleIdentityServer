@@ -15,27 +15,27 @@
 #endregion
 
 using Microsoft.EntityFrameworkCore;
-using SimpleIdentityServer.Scim.Db.InMemory.Models;
+using SimpleIdentityServer.Scim.Db.EF.Models;
 using System;
 
-namespace SimpleIdentityServer.Scim.Db.InMemory.Mappings
+namespace SimpleIdentityServer.Scim.Db.EF.Mappings
 {
-    internal static class RepresentationAttributeMappings
+    internal static class RepresentationMappings
     {
-        public static ModelBuilder AddRepresentationAttributeMappings(this ModelBuilder builder)
+        public static ModelBuilder AddRepresentationMappings(this ModelBuilder builder)
         {
             if (builder == null)
             {
                 throw new ArgumentNullException(nameof(builder));
             }
             
-            builder.Entity<RepresentationAttribute>()
-                .ToTable("representationAttributes")
+            builder.Entity<Representation>()
+                .ToTable("representations")
                 .HasKey(a => a.Id);
-            builder.Entity<RepresentationAttribute>()
-                .HasMany(a => a.Children)
-                .WithOne(a => a.Parent)
-                .HasForeignKey(a => a.RepresentationAttributeIdParent);
+            builder.Entity<Representation>()
+                .HasMany(r => r.Attributes)
+                .WithOne(r => r.Representation)
+                .HasForeignKey(r => r.RepresentationId);
             return builder;
         }
     }

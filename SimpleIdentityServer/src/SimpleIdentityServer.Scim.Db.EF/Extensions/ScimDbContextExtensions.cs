@@ -14,12 +14,12 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Scim.Db.InMemory.Models;
+using SimpleIdentityServer.Scim.Db.EF.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SimpleIdentityServer.Scim.Db.InMemory.Extensions
+namespace SimpleIdentityServer.Scim.Db.EF.Extensions
 {
     public static class ScimDbContextExtensions
     {
@@ -31,7 +31,6 @@ namespace SimpleIdentityServer.Scim.Db.InMemory.Extensions
             }
 
             InsertSchemas(context);
-            context.SaveChanges();
         }
 
         private static void InsertSchemas(ScimDbContext context)
@@ -40,6 +39,7 @@ namespace SimpleIdentityServer.Scim.Db.InMemory.Extensions
             {
                 context.Schemas.Add(UserSchema);
                 context.Schemas.Add(GroupSchema);
+                context.SaveChanges();
             }
         }
 

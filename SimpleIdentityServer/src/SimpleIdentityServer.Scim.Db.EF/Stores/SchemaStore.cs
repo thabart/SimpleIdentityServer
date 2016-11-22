@@ -19,14 +19,15 @@ using System.Collections.Generic;
 using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Core.Stores;
 using System.Linq;
-using SimpleIdentityServer.Scim.Db.InMemory.Extensions;
+using SimpleIdentityServer.Scim.Db.EF.Extensions;
 using Microsoft.EntityFrameworkCore;
 
-namespace SimpleIdentityServer.Scim.Db.InMemory.Stores
+namespace SimpleIdentityServer.Scim.Db.EF.Stores
 {
     internal class SchemaStore : ISchemaStore
     {
         private readonly ScimDbContext _context;
+        private bool _dispose = false;
 
         public SchemaStore(ScimDbContext context)
         {
@@ -151,6 +152,15 @@ namespace SimpleIdentityServer.Scim.Db.InMemory.Stores
             }
 
             return record.ToDomain();
+        }
+
+        public void Dispose()
+        {
+            if (!_dispose)
+            {
+                _dispose = true;
+                _context.Dispose();
+            }
         }
     }
 }

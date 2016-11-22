@@ -15,11 +15,12 @@
 #endregion
 
 using SimpleIdentityServer.Scim.Core.Models;
+using System;
 using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Scim.Core.Stores
 {
-    public interface ISchemaStore
+    public interface ISchemaStore : IDisposable
     {
         IEnumerable<SchemaResponse> GetSchemas();
         SchemaResponse GetSchema(string id);

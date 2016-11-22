@@ -18,10 +18,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Scim.Core.Stores;
-using SimpleIdentityServer.Scim.Db.InMemory.Stores;
+using SimpleIdentityServer.Scim.Db.EF.Stores;
 using System;
 
-namespace SimpleIdentityServer.Scim.Db.InMemory
+namespace SimpleIdentityServer.Scim.Db.EF
 {
     public static class ServiceCollectionExtensions
     {
@@ -35,6 +35,29 @@ namespace SimpleIdentityServer.Scim.Db.InMemory
             RegisterServices(services);
             services.AddEntityFramework()
                  .AddDbContext<ScimDbContext>(options => options.UseInMemoryDatabase().ConfigureWarnings(warnings => warnings.Ignore(InMemoryEventId.TransactionIgnoredWarning)));
+            return services;
+        }
+
+        public static IServiceCollection AddSqlServerDb(this IServiceCollection services, string connectionString, string migrationAssembly)
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new ArgumentNullException(nameof(connectionString));
+            }
+
+            if (string.IsNullOrWhiteSpace(migrationAssembly))
+            {
+                throw new ArgumentNullException(nameof(migrationAssembly));
+            }
+
+            RegisterServices(services);
+            services.AddEntityFramework()
+                .AddDbContext<ScimDbContext>(options => options.UseSqlServer(connectionString, opts => opts.MigrationsAssembly(migrationAssembly)));
             return services;
         }
 

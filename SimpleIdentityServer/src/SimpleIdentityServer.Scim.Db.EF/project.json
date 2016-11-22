@@ -1,6 +1,6 @@
 {
   "version": "1.0.0-*",
-  "description": "SimpleIdentityServer.Scim.Db.InMemory Class Library",
+  "description": "SimpleIdentityServer.Scim.Db.EF Class Library",
   "authors": [ "thierry habart" ],
   "packOptions": {
     "tags": [ "" ],

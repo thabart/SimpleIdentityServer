@@ -20,7 +20,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SimpleIdentityServer.Scim.Core;
-using SimpleIdentityServer.Scim.Db.InMemory;
+using SimpleIdentityServer.Scim.Db.EF;
+using System;
+using System.Reflection;
 using WebApiContrib.Core.Concurrency;
 using WebApiContrib.Core.Storage.InMemory;
 
@@ -43,8 +45,19 @@ namespace SimpleIdentityServer.Scim.Startup
         
         public void ConfigureServices(IServiceCollection services)
         {
+            var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
+            var dbType = Configuration["Db:Type"];
+            switch (dbType)
+            {
+                case "SqlServer":
+                    services.AddSqlServerDb(Configuration["Data:DefaultConnection:ConnectionString"], migrationsAssembly);
+                    break;
+                default:
+                    services.AddInMemoryDb();
+                    break;
+            }
+
             services.AddConcurrency(opt => opt.UseInMemory());
-            services.AddInMemoryDb();
             services.AddScim();
             services.AddMvc();
         }

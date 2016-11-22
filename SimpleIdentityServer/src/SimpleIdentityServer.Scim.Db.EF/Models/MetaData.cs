@@ -14,20 +14,14 @@
 // limitations under the License.
 #endregion
 
-using System.Collections.Generic;
-
-namespace SimpleIdentityServer.Scim.Db.InMemory.Models
+namespace SimpleIdentityServer.Scim.Db.EF.Models
 {
-    public class RepresentationAttribute
+    public class MetaData
     {
         public string Id { get; set; }
-        public string Value { get; set; }
-        public string RepresentationAttributeIdParent { get; set; }
-        public string RepresentationId { get; set; }
-        public string SchemaAttributeId { get; set; }
-        public virtual RepresentationAttribute Parent { get; set; }
-        public virtual List<RepresentationAttribute> Children { get; set; }
-        public virtual SchemaAttribute SchemaAttribute { get; set; }
-        public virtual Representation Representation { get; set; }
+        public string ResourceType { get; set; }
+        public string Location { get; set; }
+        public string SchemaId { get; set; }
+        public virtual Schema Schema { get; set; }
     }
 }

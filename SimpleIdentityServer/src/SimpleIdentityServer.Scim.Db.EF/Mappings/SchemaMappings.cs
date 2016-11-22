@@ -15,31 +15,31 @@
 #endregion
 
 using Microsoft.EntityFrameworkCore;
-using SimpleIdentityServer.Scim.Db.InMemory.Models;
+using SimpleIdentityServer.Scim.Db.EF.Models;
 using System;
 
-namespace SimpleIdentityServer.Scim.Db.InMemory.Mappings
+namespace SimpleIdentityServer.Scim.Db.EF.Mappings
 {
-    internal static class SchemaAttributeMappings
+    internal static class SchemaMappings
     {
-        public static ModelBuilder AddSchemaAttributeMappings(this ModelBuilder builder)
+        public static ModelBuilder AddSchemaMappings(this ModelBuilder builder)
         {
             if (builder == null)
             {
                 throw new ArgumentNullException(nameof(builder));
             }
 
-            builder.Entity<SchemaAttribute>()
-                .ToTable("schemaAttributes")
-                .HasKey(a => a.Id);
-            builder.Entity<SchemaAttribute>()
-                .HasMany(a => a.Children)
-                .WithOne(a => a.Parent)
-                .HasForeignKey(a => a.SchemaAttributeIdParent);
-            builder.Entity<SchemaAttribute>()
-                .HasMany(a => a.RepresentationAttributes)
-                .WithOne(a => a.SchemaAttribute)
-                .HasForeignKey(a => a.SchemaAttributeId);
+            builder.Entity<Schema>()
+                .ToTable("schemas")
+                .HasKey(s => s.Id);
+            builder.Entity<Schema>()
+                .HasMany(s => s.Attributes)
+                .WithOne(s => s.Schema)
+                .HasForeignKey(s => s.SchemaId);
+            builder.Entity<Schema>()
+                .HasOne(s => s.Meta)
+                .WithOne(s => s.Schema)
+                .HasForeignKey<MetaData>(s => s.SchemaId);
             return builder;
         }
     }

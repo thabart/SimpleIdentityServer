@@ -16,7 +16,7 @@
 
 using System.Collections.Generic;
 
-namespace SimpleIdentityServer.Scim.Db.InMemory.Models
+namespace SimpleIdentityServer.Scim.Db.EF.Models
 {
     public class SchemaAttribute
     {
