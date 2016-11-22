@@ -20,6 +20,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Scim.Core.Stores;
 using SimpleIdentityServer.Scim.Db.EF;
 using SimpleIdentityServer.Scim.Db.EF.Extensions;
+using SimpleIdentityServer.Scim.Db.EF.Helpers;
 using SimpleIdentityServer.Scim.Db.EF.Stores;
 using System;
 
@@ -38,7 +39,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Fixture
                 .ConfigureWarnings(warnings => warnings.Ignore(InMemoryEventId.TransactionIgnoredWarning));
             var ctx = new ScimDbContext(builder.Options);
             ctx.EnsureSeedData();
-            SchemaStore = new SchemaStore(ctx);
+            SchemaStore = new SchemaStore(ctx, new Transformers(ctx));
         }
 
         public ISchemaStore SchemaStore { get; private set; }

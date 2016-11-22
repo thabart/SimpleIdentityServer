@@ -175,6 +175,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                     {
                         new SingularRepresentationAttribute<string>(new SchemaAttributeResponse
                         {
+                            Id = Guid.NewGuid().ToString(),
                             Name = "id",
                             Mutability = Constants.SchemaAttributeMutability.ReadWrite,
                             Uniqueness = Constants.SchemaAttributeUniqueness.Server,
@@ -190,13 +191,14 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                     {
                         new SingularRepresentationAttribute<string>(new SchemaAttributeResponse
                         {
+                            Id = Guid.NewGuid().ToString(),
                             Name = "id",
                             Mutability = Constants.SchemaAttributeMutability.ReadWrite,
                             Uniqueness = Constants.SchemaAttributeUniqueness.Server,
                             Type = Constants.SchemaAttributeTypes.String
                         }, "representation_id_2")
                     },
-                    Id = identifier
+                    Id = Guid.NewGuid().ToString()
                 } });
             _apiResponseFactoryStub.Setup(a => a.CreateError(HttpStatusCode.BadRequest,
                 It.IsAny<ErrorResponse>()))

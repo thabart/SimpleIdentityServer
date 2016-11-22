@@ -108,7 +108,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             }
 
             // 4. Update attributes.
-            var allRepresentations = _representationStore.GetRepresentations(record.ResourceType);
+            var allRepresentations = _representationStore.GetRepresentations(record.ResourceType).Where(r => r.Id != record.Id);
             ErrorResponse error;
             if (!UpdateRepresentation(record, representation, allRepresentations, out error))
             {
@@ -171,8 +171,6 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                 var schemaAttribute = complexTarget.SchemaAttribute;
                 if (schemaAttribute.MultiValued)
                 {
-                    complexTarget = (complexTarget.Values.First() as ComplexRepresentationAttribute);
-                    complexSource = (complexSource.Values.First() as ComplexRepresentationAttribute);
                     // Check mutability
                     if (schemaAttribute.Mutability == Constants.SchemaAttributeMutability.Immutable)
                     {
@@ -207,26 +205,9 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                             }
                         }
                     }
-
-                    complexSource.Values = complexTarget.Values;
-                    return true;
                 }
 
-                foreach (var complexTargetAttr in complexTarget.Values)
-                {
-                    var complexSourceAttr = complexSource.Values.FirstOrDefault(v => v.SchemaAttribute.Name == complexTargetAttr.SchemaAttribute.Name);
-                    if (complexSourceAttr != null)
-                    {
-                        complexSource.Values = complexSource.Values.Concat(new[] { complexTargetAttr });
-                        continue;
-                    }
-
-                   if (!UpdateAttribute(complexSourceAttr, complexTargetAttr, allRepresentations, out error))
-                   {
-                       return false;
-                   }
-                }
-
+                complexSource.Values = complexTarget.Values;
                 return true;
             }
             
