@@ -63,7 +63,7 @@ namespace SimpleIdentityServer.Scim.Db.EF.Stores
         {
             try
             {
-                var schemas = _context.Schemas.Include(s => s.Meta).Include(s => s.Attributes);
+                var schemas = _context.Schemas.Include(s => s.Meta).Include(s => s.Attributes).ToList();
                 var result = new List<SchemaResponse>();
                 foreach(var schema in schemas)
                 {

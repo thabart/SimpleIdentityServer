@@ -81,7 +81,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             }
 
             // 4. Returns the result.
-            return _apiResponseFactory.CreateEmptyResult(HttpStatusCode.NoContent);
+            return _apiResponseFactory.CreateEmptyResult(HttpStatusCode.NoContent, representation.Version, representation.Id);
         }
     }
 }

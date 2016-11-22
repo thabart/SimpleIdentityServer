@@ -73,7 +73,7 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
             var result = _usersAction.PatchUser(id, jObj, GetLocationPattern());
             if (result.IsSucceed())
             {
-                await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(UsersName, result.Id), result.Version);
+                await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(UsersName, result.Id), result.Version, true);
             }
             
             return this.GetActionResult(result);
@@ -95,7 +95,7 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
             var result = _usersAction.UpdateUser(id, jObj, GetLocationPattern());
             if (result.IsSucceed())
             {
-                await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(UsersName, result.Id), result.Version);
+                await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(UsersName, result.Id), result.Version, true);
             }
 
             return this.GetActionResult(result);
@@ -112,7 +112,7 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
             var result = _usersAction.RemoveUser(id);
             if (result.IsSucceed())
             {
-                await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(UsersName, result.Id), result.Version);
+                await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(UsersName, result.Id), result.Version, false);
             }
             
             return this.GetActionResult(result);
@@ -137,7 +137,7 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
             var result = _usersAction.GetUser(id, GetLocationPattern());
             if (result.IsSucceed())
             {
-                await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(UsersName, result.Id), result.Version);
+                await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(UsersName, result.Id), result.Version, true);
             }
 
             return this.GetActionResult(result);

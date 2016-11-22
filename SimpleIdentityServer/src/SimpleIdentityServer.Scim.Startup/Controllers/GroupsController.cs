@@ -75,7 +75,7 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
             var result = _groupsAction.GetGroup(id, GetLocationPattern(), Request.Query);
             if (result.IsSucceed())
             {
-                await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(GroupsName, result.Id), result.Version);
+                await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(GroupsName, result.Id), result.Version, true);
             }
 
             return this.GetActionResult(result);
@@ -123,7 +123,7 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
             var result = _groupsAction.UpdateGroup(id, jObj, GetLocationPattern());
             if (result.IsSucceed())
             {
-                await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(GroupsName, result.Id), result.Version);
+                await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(GroupsName, result.Id), result.Version, true);
             }
 
             return this.GetActionResult(result);
@@ -145,7 +145,7 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
             var result = _groupsAction.PatchGroup(id, jObj, GetLocationPattern());
             if (result.IsSucceed())
             {
-                await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(GroupsName, result.Id), result.Version);
+                await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(GroupsName, result.Id), result.Version, true);
             }
 
             return this.GetActionResult(result);

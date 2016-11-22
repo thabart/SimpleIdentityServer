@@ -121,6 +121,7 @@ namespace SimpleIdentityServer.Scim.Db.EF.Stores
                     }
 
                     _context.Representations.Remove(record);
+                    _context.SaveChanges();
                     transaction.Commit();
                 }
                 catch
@@ -201,7 +202,7 @@ namespace SimpleIdentityServer.Scim.Db.EF.Stores
             }
 
             var schemaAttr = reprAttr.SchemaAttribute.ToDomain();
-            if (reprAttr.Children != null)
+            if (attr.SchemaAttribute.Type == Constants.SchemaAttributeTypes.Complex)
             {
                 ComplexRepresentationAttribute result = new ComplexRepresentationAttribute(schemaAttr);
                 result.Values = new List<RepresentationAttribute>();

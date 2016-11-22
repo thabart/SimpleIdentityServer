@@ -16,11 +16,13 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SimpleIdentityServer.Scim.Core;
 using SimpleIdentityServer.Scim.Db.EF;
+using SimpleIdentityServer.Scim.Db.EF.Extensions;
 using System;
 using System.Reflection;
 using WebApiContrib.Core.Concurrency;
@@ -64,6 +66,7 @@ namespace SimpleIdentityServer.Scim.Startup
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            InitializeDatabase(app);
             loggerFactory.AddConsole();
             app.UseStatusCodePages();
             app.UseMvc(routes =>
@@ -72,6 +75,17 @@ namespace SimpleIdentityServer.Scim.Startup
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+        }
+
+        private void InitializeDatabase(IApplicationBuilder app)
+        {
+            using (var scope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+            {
+                scope.ServiceProvider.GetRequiredService<ScimDbContext>().Database.Migrate();
+                var context = scope.ServiceProvider.GetRequiredService<ScimDbContext>();
+                context.Database.Migrate();
+                context.EnsureSeedData();
+            }
         }
     }
 }
