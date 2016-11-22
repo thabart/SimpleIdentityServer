@@ -90,7 +90,7 @@ namespace SimpleIdentityServer.Scim.Db.EF.Stores
         {
             try
             {
-                var representations = _context.Representations.Include(r => r.Attributes).Where(r => r.ResourceType == resourceType);
+                var representations = _context.Representations.Include(r => r.Attributes).Where(r => r.ResourceType == resourceType).ToList();
                 var lst = new List<Representation>();
                 foreach(var representation in representations)
                 {
@@ -201,6 +201,7 @@ namespace SimpleIdentityServer.Scim.Db.EF.Stores
                 return null;
             }
 
+            // TODO : Set the schema attrs
             var schemaAttr = reprAttr.SchemaAttribute.ToDomain();
             if (attr.SchemaAttribute.Type == Constants.SchemaAttributeTypes.Complex)
             {

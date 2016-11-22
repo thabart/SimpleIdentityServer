@@ -21,6 +21,7 @@ using SimpleIdentityServer.Scim.Core.Stores;
 using System.Linq;
 using SimpleIdentityServer.Scim.Db.EF.Extensions;
 using Microsoft.EntityFrameworkCore;
+using SimpleIdentityServer.Scim.Core;
 
 namespace SimpleIdentityServer.Scim.Db.EF.Stores
 {
@@ -38,7 +39,14 @@ namespace SimpleIdentityServer.Scim.Db.EF.Stores
         {
             try
             {
-               return  _context.SchemaAttributes.Where(s => s.IsCommon == true).Select(a => a.ToDomain());
+                var attrs = _context.SchemaAttributes.Where(s => s.IsCommon == true).ToList();
+                var result = new List<SchemaAttributeResponse>();
+                foreach(var attr in attrs)
+                {
+                    result.Add(TransformAttribute(attr));
+                }
+
+                return result;
             }
             catch
             {
@@ -131,7 +139,7 @@ namespace SimpleIdentityServer.Scim.Db.EF.Stores
                 return null;
             }
             
-            if (record.Children != null && record.Children.Any())
+            if (record.Type == Constants.SchemaAttributeTypes.Complex)
             {
                 var comlexSchemaAttr = new ComplexSchemaAttributeResponse();
                 comlexSchemaAttr.SetData(record);
