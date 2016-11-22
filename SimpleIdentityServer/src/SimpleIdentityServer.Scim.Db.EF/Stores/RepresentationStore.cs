@@ -137,12 +137,35 @@ namespace SimpleIdentityServer.Scim.Db.EF.Stores
 
         public bool UpdateRepresentation(Representation representation)
         {
-            if (RemoveRepresentation(representation))
+            if (representation == null)
             {
-                return AddRepresentation(representation);
+                return false;
             }
 
-            return false;
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                var result = true;
+                try
+                {
+                    var record = _context.Representations.FirstOrDefault(r => r.Id == representation.Id);
+                    if (record == null)
+                    {
+                        return false;
+                    }
+
+                    record.SetData(representation);
+                    record.Attributes = GetRepresentationAttributes(representation);
+                    _context.SaveChanges();
+                    transaction.Commit();
+                }
+                catch
+                {
+                    result = false;
+                    transaction.Rollback();
+                }
+
+                return result;
+            }
         }
 
         private List<RepresentationAttribute> GetRepresentationAttributes(Model.Representation representation)

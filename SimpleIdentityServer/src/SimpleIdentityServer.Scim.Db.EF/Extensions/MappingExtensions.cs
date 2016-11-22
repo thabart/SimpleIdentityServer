@@ -42,6 +42,20 @@ namespace SimpleIdentityServer.Scim.Db.EF.Extensions
             };
         }
 
+        public static Model.Representation SetData(this Model.Representation representation, Domain.Representation repr)
+        {
+            if (repr == null)
+            {
+                throw new ArgumentNullException(nameof(repr));
+            }
+
+            representation.Created = repr.Created;
+            representation.LastModified = repr.LastModified;
+            representation.ResourceType = repr.ResourceType;
+            representation.Version = repr.Version;
+            return representation;
+        }
+
         public static Domain.SchemaAttributeResponse ToDomain(this Model.SchemaAttribute attr)
         {
             if (attr == null)
