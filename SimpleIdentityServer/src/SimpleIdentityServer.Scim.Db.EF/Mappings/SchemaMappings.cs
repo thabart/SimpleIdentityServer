@@ -15,6 +15,7 @@
 #endregion
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using SimpleIdentityServer.Scim.Db.EF.Models;
 using System;
 
@@ -35,11 +36,13 @@ namespace SimpleIdentityServer.Scim.Db.EF.Mappings
             builder.Entity<Schema>()
                 .HasMany(s => s.Attributes)
                 .WithOne(s => s.Schema)
-                .HasForeignKey(s => s.SchemaId);
+                .HasForeignKey(s => s.SchemaId)
+                .OnDelete(DeleteBehavior.Cascade);
             builder.Entity<Schema>()
                 .HasOne(s => s.Meta)
                 .WithOne(s => s.Schema)
-                .HasForeignKey<MetaData>(s => s.SchemaId);
+                .HasForeignKey<MetaData>(s => s.SchemaId)
+                .OnDelete(DeleteBehavior.Cascade);
             return builder;
         }
     }

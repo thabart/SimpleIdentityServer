@@ -59,7 +59,9 @@ namespace SimpleIdentityServer.Scim.Db.EF.Stores
         {
             try
             {
-                var schema = _context.Schemas.Include(s => s.Meta).Include(s => s.Attributes).FirstOrDefault(s => s.Id == id);
+                var schema = _context.Schemas.Include(s => s.Meta)
+                    .Include(s => s.Attributes).ThenInclude(a => a.Children)
+                    .FirstOrDefault(s => s.Id == id);
                 return GetSchemaResponse(schema);
             }
             catch
@@ -72,7 +74,10 @@ namespace SimpleIdentityServer.Scim.Db.EF.Stores
         {
             try
             {
-                var schemas = _context.Schemas.Include(s => s.Meta).Include(s => s.Attributes).ToList();
+                var schemas = _context.Schemas
+                    .Include(s => s.Meta)
+                    .Include(s => s.Attributes).ThenInclude(a => a.Children)
+                    .ToList();
                 var result = new List<SchemaResponse>();
                 foreach(var schema in schemas)
                 {

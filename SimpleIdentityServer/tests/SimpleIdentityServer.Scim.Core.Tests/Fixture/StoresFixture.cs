@@ -11,7 +11,7 @@
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
-// limitations under the License.
+// limitations under the License.   
 #endregion
 
 using Microsoft.EntityFrameworkCore;
@@ -39,7 +39,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Fixture
                 .ConfigureWarnings(warnings => warnings.Ignore(InMemoryEventId.TransactionIgnoredWarning));
             var ctx = new ScimDbContext(builder.Options);
             ctx.EnsureSeedData();
-            SchemaStore = new SchemaStore(ctx, new Transformers(ctx));
+            SchemaStore = new SchemaStore(ctx, new Transformers());
         }
 
         public ISchemaStore SchemaStore { get; private set; }

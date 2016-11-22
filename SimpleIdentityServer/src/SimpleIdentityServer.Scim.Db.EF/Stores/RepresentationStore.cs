@@ -19,7 +19,6 @@ using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Core.Stores;
 using SimpleIdentityServer.Scim.Db.EF.Extensions;
 using SimpleIdentityServer.Scim.Db.EF.Helpers;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Model = SimpleIdentityServer.Scim.Db.EF.Models;
@@ -71,7 +70,10 @@ namespace SimpleIdentityServer.Scim.Db.EF.Stores
         {
             try
             {
-                var representation = _context.Representations.Include(r => r.Attributes).FirstOrDefault(r => r.Id == id);
+                var representation = _context.Representations
+                    .Include(r => r.Attributes).ThenInclude(a => a.Children)
+                    .Include(r => r.Attributes).ThenInclude(a => a.SchemaAttribute)
+                    .FirstOrDefault(r => r.Id == id);
                 if (representation == null)
                 {
                     return null;
@@ -91,7 +93,10 @@ namespace SimpleIdentityServer.Scim.Db.EF.Stores
         {
             try
             {
-                var representations = _context.Representations.Include(r => r.Attributes).Where(r => r.ResourceType == resourceType).ToList();
+                var representations = _context.Representations
+                    .Include(r => r.Attributes).ThenInclude(a => a.Children)
+                    .Include(r => r.Attributes).ThenInclude(a => a.SchemaAttribute)
+                    .Where(r => r.ResourceType == resourceType).ToList();
                 var lst = new List<Representation>();
                 foreach(var representation in representations)
                 {

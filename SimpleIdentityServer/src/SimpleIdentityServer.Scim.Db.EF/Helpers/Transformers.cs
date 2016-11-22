@@ -35,16 +35,8 @@ namespace SimpleIdentityServer.Scim.Db.EF.Helpers
 
     internal class Transformers : ITransformers
     {
-        private readonly ScimDbContext _context;
-
-        public Transformers(ScimDbContext context)
+        public SchemaAttributeResponse Transform(Models.SchemaAttribute record)
         {
-            _context = context;
-        }
-
-        public SchemaAttributeResponse Transform(Models.SchemaAttribute attr)
-        {
-            var record = _context.SchemaAttributes.Include(s => s.Children).FirstOrDefault(s => s.Id == attr.Id);
             if (record == null)
             {
                 return null;
@@ -55,15 +47,18 @@ namespace SimpleIdentityServer.Scim.Db.EF.Helpers
                 var comlexSchemaAttr = new ComplexSchemaAttributeResponse();
                 comlexSchemaAttr.SetData(record);
                 var subAttrs = new List<SchemaAttributeResponse>();
-                foreach (var child in record.Children)
+                if (record.Children != null)
                 {
-                    var transformed = Transform(child);
-                    if (transformed == null)
+                    foreach (var child in record.Children)
                     {
-                        continue;
-                    }
+                        var transformed = Transform(child);
+                        if (transformed == null)
+                        {
+                            continue;
+                        }
 
-                    subAttrs.Add(transformed);
+                        subAttrs.Add(transformed);
+                    }
                 }
 
                 comlexSchemaAttr.SubAttributes = subAttrs;
@@ -79,19 +74,18 @@ namespace SimpleIdentityServer.Scim.Db.EF.Helpers
             {
                 return null;
             }
-
-            var reprAttr = _context.RepresentationAttributes.Include(r => r.Children).Include(r => r.SchemaAttribute).FirstOrDefault(s => attr.Id == s.Id);
-            if (reprAttr == null || reprAttr.SchemaAttribute == null || (reprAttr.Children == null && string.IsNullOrWhiteSpace(reprAttr.Value)))
+            
+            if (attr == null || attr.SchemaAttribute == null || (attr.Children == null && string.IsNullOrWhiteSpace(attr.Value)))
             {
                 return null;
             }
             
-            var schemaAttr = Transform(reprAttr.SchemaAttribute);
+            var schemaAttr = Transform(attr.SchemaAttribute);
             if (attr.SchemaAttribute.Type == Constants.SchemaAttributeTypes.Complex)
             {
                 ComplexRepresentationAttribute result = new ComplexRepresentationAttribute(schemaAttr);
                 result.Values = new List<RepresentationAttribute>();
-                foreach (var child in reprAttr.Children)
+                foreach (var child in attr.Children)
                 {
                     var transformed = Transform(child);
                     if (transformed == null)
