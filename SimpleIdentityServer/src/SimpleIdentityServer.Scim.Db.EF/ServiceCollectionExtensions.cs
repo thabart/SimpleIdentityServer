@@ -18,6 +18,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Scim.Core.Stores;
+using SimpleIdentityServer.Scim.Db.EF.Helpers;
 using SimpleIdentityServer.Scim.Db.EF.Stores;
 using System;
 
@@ -63,6 +64,7 @@ namespace SimpleIdentityServer.Scim.Db.EF
 
         private static void RegisterServices(IServiceCollection services)
         {
+            services.AddTransient<ITransformers, Transformers>();
             services.AddTransient<IRepresentationStore, RepresentationStore>();
             services.AddTransient<ISchemaStore, SchemaStore>();
         }

@@ -14,25 +14,26 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Core.Stores;
-using System.Linq;
 using SimpleIdentityServer.Scim.Db.EF.Extensions;
-using Microsoft.EntityFrameworkCore;
-using SimpleIdentityServer.Scim.Core;
+using SimpleIdentityServer.Scim.Db.EF.Helpers;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SimpleIdentityServer.Scim.Db.EF.Stores
 {
     internal class SchemaStore : ISchemaStore
     {
         private readonly ScimDbContext _context;
+        private readonly ITransformers _transformers;
         private bool _dispose = false;
 
-        public SchemaStore(ScimDbContext context)
+        public SchemaStore(ScimDbContext context, ITransformers transformers)
         {
             _context = context;
+            _transformers = transformers;
         }
 
         public IEnumerable<SchemaAttributeResponse> GetCommonAttributes()
@@ -43,7 +44,7 @@ namespace SimpleIdentityServer.Scim.Db.EF.Stores
                 var result = new List<SchemaAttributeResponse>();
                 foreach(var attr in attrs)
                 {
-                    result.Add(TransformAttribute(attr));
+                    result.Add(_transformers.Transform(attr));
                 }
 
                 return result;
@@ -119,7 +120,7 @@ namespace SimpleIdentityServer.Scim.Db.EF.Stores
             var result = new List<SchemaAttributeResponse>();
             foreach(var attr in schema.Attributes)
             {
-                var transformed = TransformAttribute(attr);
+                var transformed = _transformers.Transform(attr);
                 if (transformed == null)
                 {
                     continue;
@@ -129,37 +130,6 @@ namespace SimpleIdentityServer.Scim.Db.EF.Stores
             }
 
             return result;
-        }
-
-        private SchemaAttributeResponse TransformAttribute(Models.SchemaAttribute attr)
-        {
-            var record = _context.SchemaAttributes.Include(s => s.Children).FirstOrDefault(s => s.Id == attr.Id);
-            if (record == null)
-            {
-                return null;
-            }
-            
-            if (record.Type == Constants.SchemaAttributeTypes.Complex)
-            {
-                var comlexSchemaAttr = new ComplexSchemaAttributeResponse();
-                comlexSchemaAttr.SetData(record);
-                var subAttrs = new List<SchemaAttributeResponse>();
-                foreach (var child in record.Children)
-                {
-                    var transformed = TransformAttribute(child);
-                    if (transformed == null)
-                    {
-                        continue;
-                    }
-
-                    subAttrs.Add(transformed);
-                }
-
-                comlexSchemaAttr.SubAttributes = subAttrs;
-                return comlexSchemaAttr;
-            }
-
-            return record.ToDomain();
         }
 
         public void Dispose()
