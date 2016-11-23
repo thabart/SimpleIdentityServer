@@ -69,19 +69,20 @@ namespace SimpleIdentityServer.Scim.Db.EF.Helpers
         }
 
         public RepresentationAttribute Transform(Model.RepresentationAttribute attr)
-        {
-            if (string.IsNullOrWhiteSpace(attr.SchemaAttributeId))
+        {            
+            if (attr == null || (attr.Children == null && string.IsNullOrWhiteSpace(attr.Value)))
             {
                 return null;
             }
-            
-            if (attr == null || attr.SchemaAttribute == null || (attr.Children == null && string.IsNullOrWhiteSpace(attr.Value)))
+
+            SchemaAttributeResponse schemaAttr = null;
+            if (attr.SchemaAttribute != null)
             {
-                return null;
+                schemaAttr = Transform(attr.SchemaAttribute);
             }
-            
-            var schemaAttr = Transform(attr.SchemaAttribute);
-            if (attr.SchemaAttribute.Type == Constants.SchemaAttributeTypes.Complex)
+
+            if (attr.SchemaAttribute != null && attr.SchemaAttribute.Type == Constants.SchemaAttributeTypes.Complex ||
+                attr.SchemaAttribute == null && attr.Children != null && attr.Children.Any())
             {
                 ComplexRepresentationAttribute result = new ComplexRepresentationAttribute(schemaAttr);
                 result.Values = new List<RepresentationAttribute>();
@@ -155,17 +156,16 @@ namespace SimpleIdentityServer.Scim.Db.EF.Helpers
 
         public Model.RepresentationAttribute Transform(RepresentationAttribute attr)
         {
-            if (attr.SchemaAttribute == null)
-            {
-                return null;
-            }
-
             var record = new Model.RepresentationAttribute
             {
                 Id = Guid.NewGuid().ToString(),
-                SchemaAttributeId = attr.SchemaAttribute.Id,
                 Children = new List<Model.RepresentationAttribute>()
             };
+            if (attr.SchemaAttribute != null)
+            {
+                record.SchemaAttributeId = attr.SchemaAttribute.Id;
+            }
+
             var complexAttr = attr as ComplexRepresentationAttribute;
             if (complexAttr != null)
             {

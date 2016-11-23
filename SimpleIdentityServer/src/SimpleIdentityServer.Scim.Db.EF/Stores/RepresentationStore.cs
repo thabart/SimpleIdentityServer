@@ -71,8 +71,8 @@ namespace SimpleIdentityServer.Scim.Db.EF.Stores
             try
             {
                 var representation = _context.Representations
-                    .Include(r => r.Attributes).ThenInclude(a => a.Children)
-                    .Include(r => r.Attributes).ThenInclude(a => a.SchemaAttribute)
+                    .Include(r => r.Attributes).ThenInclude(a => a.Children).ThenInclude(a => a.Children)
+                    .Include(r => r.Attributes).ThenInclude(a => a.SchemaAttribute).ThenInclude(s => s.Children)
                     .FirstOrDefault(r => r.Id == id);
                 if (representation == null)
                 {
