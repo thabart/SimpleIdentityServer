@@ -18,6 +18,7 @@ using Microsoft.EntityFrameworkCore;
 using SimpleIdentityServer.Scim.Db.EF.Mappings;
 using SimpleIdentityServer.Scim.Db.EF.Models;
 using System;
+using System.Linq;
 
 namespace SimpleIdentityServer.Scim.Db.EF
 {
@@ -26,11 +27,8 @@ namespace SimpleIdentityServer.Scim.Db.EF
         public ScimDbContext(DbContextOptions options) : base(options) { }
     
         public virtual DbSet<Representation> Representations { get; set; }
-
         public virtual DbSet<Schema> Schemas { get; set; }
-
         public virtual DbSet<SchemaAttribute> SchemaAttributes { get; set; }
-
         public virtual DbSet<RepresentationAttribute> RepresentationAttributes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)

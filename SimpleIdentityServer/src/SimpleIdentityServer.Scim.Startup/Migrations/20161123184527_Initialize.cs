@@ -53,7 +53,7 @@ namespace SimpleIdentityServer.Scim.Startup.Migrations
                         column: x => x.SchemaId,
                         principalTable: "schemas",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -90,7 +90,7 @@ namespace SimpleIdentityServer.Scim.Startup.Migrations
                         column: x => x.SchemaId,
                         principalTable: "schemas",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -117,7 +117,7 @@ namespace SimpleIdentityServer.Scim.Startup.Migrations
                         column: x => x.RepresentationId,
                         principalTable: "representations",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_representationAttributes_schemaAttributes_SchemaAttributeId",
                         column: x => x.SchemaAttributeId,

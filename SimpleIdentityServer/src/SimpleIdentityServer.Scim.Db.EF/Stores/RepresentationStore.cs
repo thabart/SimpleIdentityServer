@@ -152,14 +152,22 @@ namespace SimpleIdentityServer.Scim.Db.EF.Stores
                 var result = true;
                 try
                 {
-                    var record = _context.Representations.FirstOrDefault(r => r.Id == representation.Id);
+                    var record = _context.Representations
+                        .Include(r => r.Attributes).ThenInclude(r => r.Children).ThenInclude(r => r.Children).ThenInclude(r => r.Children)
+                        .FirstOrDefault(r => r.Id == representation.Id);
                     if (record == null)
                     {
                         return false;
                     }
 
                     record.SetData(representation);
-                    record.Attributes = GetRepresentationAttributes(representation);
+                    if (record.Attributes != null)
+                    {
+                        RemoveAttributes(record.Attributes);
+                        record.Attributes.Clear();
+                    }
+
+                    record.Attributes.AddRange(GetRepresentationAttributes(representation));
                     _context.SaveChanges();
                     transaction.Commit();
                 }
@@ -215,6 +223,19 @@ namespace SimpleIdentityServer.Scim.Db.EF.Stores
             }
 
             return result;
+        }
+
+        private void RemoveAttributes(List<Model.RepresentationAttribute> attributes)
+        {
+            foreach(var attribute in attributes)
+            {
+                if (attribute.Children != null)
+                {
+                    RemoveAttributes(attribute.Children);
+                }
+            }
+
+            _context.RemoveRange(attributes);
         }
     }
 }

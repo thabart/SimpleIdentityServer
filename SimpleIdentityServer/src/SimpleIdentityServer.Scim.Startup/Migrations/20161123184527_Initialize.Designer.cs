@@ -8,7 +8,7 @@ using SimpleIdentityServer.Scim.Db.EF;
 namespace SimpleIdentityServer.Scim.Startup.Migrations
 {
     [DbContext(typeof(ScimDbContext))]
-    [Migration("20161122144425_Initialize")]
+    [Migration("20161123184527_Initialize")]
     partial class Initialize
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -133,7 +133,8 @@ namespace SimpleIdentityServer.Scim.Startup.Migrations
                 {
                     b.HasOne("SimpleIdentityServer.Scim.Db.EF.Models.Schema", "Schema")
                         .WithOne("Meta")
-                        .HasForeignKey("SimpleIdentityServer.Scim.Db.EF.Models.MetaData", "SchemaId");
+                        .HasForeignKey("SimpleIdentityServer.Scim.Db.EF.Models.MetaData", "SchemaId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("SimpleIdentityServer.Scim.Db.EF.Models.RepresentationAttribute", b =>
@@ -144,7 +145,8 @@ namespace SimpleIdentityServer.Scim.Startup.Migrations
 
                     b.HasOne("SimpleIdentityServer.Scim.Db.EF.Models.Representation", "Representation")
                         .WithMany("Attributes")
-                        .HasForeignKey("RepresentationId");
+                        .HasForeignKey("RepresentationId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("SimpleIdentityServer.Scim.Db.EF.Models.SchemaAttribute", "SchemaAttribute")
                         .WithMany("RepresentationAttributes")
@@ -159,7 +161,8 @@ namespace SimpleIdentityServer.Scim.Startup.Migrations
 
                     b.HasOne("SimpleIdentityServer.Scim.Db.EF.Models.Schema", "Schema")
                         .WithMany("Attributes")
-                        .HasForeignKey("SchemaId");
+                        .HasForeignKey("SchemaId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
         }
     }
