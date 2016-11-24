@@ -23,10 +23,10 @@ namespace SimpleIdentityServer.Scim.Client.Builders
 {
     public class AddRequestBuilder
     {
-        private readonly Func<JObject, Task<JObject>> _callback;
+        private readonly Func<JObject, Task<ScimResponse>> _callback;
         private JObject _obj;
 
-        public AddRequestBuilder(string schema, Func<JObject, Task<JObject>> callback)
+        public AddRequestBuilder(string schema, Func<JObject, Task<ScimResponse>> callback)
         {
             if (string.IsNullOrWhiteSpace(schema))
             {
@@ -42,7 +42,7 @@ namespace SimpleIdentityServer.Scim.Client.Builders
             Initialize(new string[] { schema });
         }
 
-        public AddRequestBuilder(IEnumerable<string> schemas, Func<JObject, Task<JObject>> callback)
+        public AddRequestBuilder(IEnumerable<string> schemas, Func<JObject, Task<ScimResponse>> callback)
         {
             if (schemas == null)
             {
@@ -80,7 +80,7 @@ namespace SimpleIdentityServer.Scim.Client.Builders
             return this;
         }
 
-        public async Task<JObject> Execute()
+        public async Task<ScimResponse> Execute()
         {
             return await _callback(_obj);
         }

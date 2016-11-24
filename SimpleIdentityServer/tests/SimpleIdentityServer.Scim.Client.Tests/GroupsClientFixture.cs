@@ -18,6 +18,7 @@ using Moq;
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Scim.Client.Factories;
 using SimpleIdentityServer.Scim.Client.Groups;
+using System.Net;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -35,33 +36,27 @@ namespace SimpleIdentityServer.Scim.Client.Tests
         }
 
         [Fact]
-        public async Task When_Adding_Group_Then_201_Is_Returned()
+        public async Task When_Executing_Operations_On_Groups_Then_No_Exceptions_Are_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_testScimServerFixture.Client);
 
             // ACT
-            var result = await _groupsClient.AddGroup("http://localhost:5555/Groups").SetCommonAttributes("external_id").Execute();
+            var firstResult = await _groupsClient.AddGroup("http://localhost:5555").SetCommonAttributes("external_id").Execute();
 
-            // ASSERT
-            Assert.NotNull(result);
-        }
-
-        [Fact]
-        public async Task When_Adding_User_And_UserName_Is_Not_Passed_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_testScimServerFixture.Client);
+            // ASSERTS
+            Assert.NotNull(firstResult);
+            Assert.True(firstResult.StatusCode == HttpStatusCode.Created);
+            var id = firstResult.Content["id"].ToString();
 
             // ACT
-            var result = await _groupsClient.AddGroup("http://localhost:5555/Users")
-                .SetCommonAttributes("external_id")
-                .Execute();
+            var secondResult = await _groupsClient.GetGroup("http://localhost:5555", id);
 
-            // ASSERT
-            Assert.NotNull(result);
+            // ASSERTS
+            Assert.NotNull(secondResult);
+            Assert.True(secondResult.StatusCode == HttpStatusCode.OK);
+            Assert.True(secondResult.Content["id"].ToString() == id);
         }
 
         private void InitializeFakeObjects()
