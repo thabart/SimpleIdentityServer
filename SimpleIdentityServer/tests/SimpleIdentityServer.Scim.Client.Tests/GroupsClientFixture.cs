@@ -57,6 +57,13 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             Assert.NotNull(secondResult);
             Assert.True(secondResult.StatusCode == HttpStatusCode.OK);
             Assert.True(secondResult.Content["id"].ToString() == id);
+
+            // ACT
+            var thirdResult = await _groupsClient.DeleteGroup("http://localhost:5555", id);
+
+            // ASSERTS
+            Assert.NotNull(thirdResult);
+            Assert.True(thirdResult.StatusCode == HttpStatusCode.NoContent);
         }
 
         private void InitializeFakeObjects()

@@ -30,6 +30,8 @@ namespace SimpleIdentityServer.Scim.Client.Groups
         AddRequestBuilder AddGroup(Uri baseUri);
         Task<ScimResponse> GetGroup(string baseUrl, string id);
         Task<ScimResponse> GetGroup(Uri baseUri, string id);
+        Task<ScimResponse> DeleteGroup(string baseUrl, string id);
+        Task<ScimResponse> DeleteGroup(Uri baseUri, string id);
     }
 
     internal class GroupsClient : IGroupsClient
@@ -105,6 +107,43 @@ namespace SimpleIdentityServer.Scim.Client.Groups
             return await ParseHttpResponse(await client.SendAsync(request).ConfigureAwait(false));
         }
 
+        public async Task<ScimResponse> DeleteGroup(string baseUrl, string id)
+        {
+            if (string.IsNullOrWhiteSpace(baseUrl))
+            {
+                throw new ArgumentNullException(nameof(baseUrl));
+            }
+
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            return await DeleteGroup(ParseUri(baseUrl), id);
+        }
+
+        public async Task<ScimResponse> DeleteGroup(Uri baseUri, string id)
+        {
+            if (baseUri == null)
+            {
+                throw new ArgumentNullException(nameof(baseUri));
+            }
+
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            var url = $"{FormatUrl(baseUri.AbsoluteUri)}/{id}";
+            var client = _httpClientFactory.GetHttpClient();
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Delete,
+                RequestUri = new Uri(url)
+            };
+            return await ParseHttpResponse(await client.SendAsync(request).ConfigureAwait(false));
+        }
+
         private async Task<ScimResponse> AddGroup(JObject jObj, Uri uri)
         {
             var request = new HttpRequestMessage
@@ -143,11 +182,16 @@ namespace SimpleIdentityServer.Scim.Client.Groups
         private static async Task<ScimResponse> ParseHttpResponse(HttpResponseMessage response)
         {
             var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            return new ScimResponse
+            var result = new ScimResponse
             {
-                StatusCode = response.StatusCode,
-                Content = JObject.Parse(json)
+                StatusCode = response.StatusCode
             };
+            if (!string.IsNullOrWhiteSpace(json))
+            {
+                result.Content = JObject.Parse(json);
+            }
+
+            return result;
         }
     }
 }
