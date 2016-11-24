@@ -15,6 +15,7 @@
 #endregion
 
 using Moq;
+using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Scim.Client.Factories;
 using SimpleIdentityServer.Scim.Client.Groups;
 using System.Threading.Tasks;
@@ -42,6 +43,22 @@ namespace SimpleIdentityServer.Scim.Client.Tests
 
             // ACT
             var result = await _groupsClient.AddGroup("http://localhost:5555/Groups").SetCommonAttributes("external_id").Execute();
+
+            // ASSERT
+            Assert.NotNull(result);
+        }
+
+        [Fact]
+        public async Task When_Adding_User_And_UserName_Is_Not_Passed_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_testScimServerFixture.Client);
+
+            // ACT
+            var result = await _groupsClient.AddGroup("http://localhost:5555/Users")
+                .SetCommonAttributes("external_id")
+                .Execute();
 
             // ASSERT
             Assert.NotNull(result);

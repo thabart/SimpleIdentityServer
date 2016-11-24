@@ -69,6 +69,17 @@ namespace SimpleIdentityServer.Scim.Client.Builders
             return this;
         }
 
+        public AddRequestBuilder AddAttribute(JProperty property)
+        {
+            if (property == null)
+            {
+                throw new ArgumentNullException(nameof(property));
+            }
+
+            _obj.Add(property);
+            return this;
+        }
+
         public async Task<JObject> Execute()
         {
             return await _callback(_obj);
