@@ -15,6 +15,7 @@
 #endregion
 
 using Newtonsoft.Json;
+using SimpleIdentityServer.Scim.Common.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -186,23 +187,23 @@ namespace SimpleIdentityServer.Scim.Core.Models
 
             switch (SchemaAttribute.Type)
             {
-                case Constants.SchemaAttributeTypes.String:
+                case Common.Constants.SchemaAttributeTypes.String:
                     var ss = Value as string;
                     var ts = target as string;
                     return ss.CompareTo(ts);
-                case Constants.SchemaAttributeTypes.Boolean:
+                case Common.Constants.SchemaAttributeTypes.Boolean:
                     var sb = bool.Parse(Value as string);
                     var tb = bool.Parse(target as string);
                     return sb.CompareTo(tb);
-                case Constants.SchemaAttributeTypes.Integer:
+                case Common.Constants.SchemaAttributeTypes.Integer:
                     var si = int.Parse(Value as string);
                     var ti = int.Parse(target as string);
                     return si.CompareTo(ti);
-                case Constants.SchemaAttributeTypes.Decimal:
+                case Common.Constants.SchemaAttributeTypes.Decimal:
                     var sd = decimal.Parse(Value as string);
                     var td = decimal.Parse(target as string);
                     return sd.CompareTo(td);
-                case Constants.SchemaAttributeTypes.DateTime:
+                case Common.Constants.SchemaAttributeTypes.DateTime:
                     var sdt = DateTime.Parse(Value as string);
                     var tdt = DateTime.Parse(target as string);
                     return sdt.CompareTo(tdt);
@@ -278,8 +279,8 @@ namespace SimpleIdentityServer.Scim.Core.Models
                 return -1;
             }
 
-            var sourcePrimary = Values.FirstOrDefault(p => p.SchemaAttribute != null && p.SchemaAttribute.Name == Constants.MultiValueAttributeNames.Primary);
-            var targetPrimary = complex.Values.FirstOrDefault(p => p.SchemaAttribute != null && p.SchemaAttribute.Name == Constants.MultiValueAttributeNames.Primary);
+            var sourcePrimary = Values.FirstOrDefault(p => p.SchemaAttribute != null && p.SchemaAttribute.Name == Common.Constants.MultiValueAttributeNames.Primary);
+            var targetPrimary = complex.Values.FirstOrDefault(p => p.SchemaAttribute != null && p.SchemaAttribute.Name == Common.Constants.MultiValueAttributeNames.Primary);
             if (sourcePrimary == null || targetPrimary == null)
             {
                 return 0;

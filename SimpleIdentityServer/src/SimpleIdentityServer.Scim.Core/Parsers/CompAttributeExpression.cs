@@ -70,9 +70,9 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         {
             switch (attr.SchemaAttribute.Type)
             {
-                case Constants.SchemaAttributeTypes.String:
+                case Common.Constants.SchemaAttributeTypes.String:
                     return Equals(attr, op, value);
-                case Constants.SchemaAttributeTypes.Boolean:
+                case Common.Constants.SchemaAttributeTypes.Boolean:
                     var b = false;
                     if (!bool.TryParse(value, out b))
                     {
@@ -80,7 +80,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                     }
 
                     return Equals(attr, op, b);
-                case Constants.SchemaAttributeTypes.DateTime:
+                case Common.Constants.SchemaAttributeTypes.DateTime:
                     DateTime d = default(DateTime);
                     if (!DateTime.TryParse(value, out d))
                     {
@@ -88,7 +88,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                     }
 
                     return Equals(attr, op, d);
-                case Constants.SchemaAttributeTypes.Decimal:
+                case Common.Constants.SchemaAttributeTypes.Decimal:
                     decimal dec;
                     if (!decimal.TryParse(value, out dec))
                     {
@@ -96,7 +96,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                     }
 
                     return Equals(attr, op, dec);
-                case Constants.SchemaAttributeTypes.Integer:
+                case Common.Constants.SchemaAttributeTypes.Integer:
                     int i;
                     if (!int.TryParse(value, out i))
                     {
@@ -104,7 +104,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                     }
 
                     return Equals(attr, op, i);
-                case Constants.SchemaAttributeTypes.Complex:
+                case Common.Constants.SchemaAttributeTypes.Complex:
                     var complexAttr = attr as ComplexRepresentationAttribute;
                     if (complexAttr == null)
                     {

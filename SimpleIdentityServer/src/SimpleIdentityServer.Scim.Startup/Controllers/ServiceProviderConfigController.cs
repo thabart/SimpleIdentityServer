@@ -15,9 +15,8 @@
 #endregion
 
 using Microsoft.AspNetCore.Mvc;
+using SimpleIdentityServer.Scim.Common.DTOs;
 using SimpleIdentityServer.Scim.Core;
-using SimpleIdentityServer.Scim.Core.DTOs;
-using SimpleIdentityServer.Scim.Core.Models;
 using System;
 
 namespace SimpleIdentityServer.Scim.Startup.Controllers
@@ -81,7 +80,7 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
                         Type = "httpbasic"
                     }
                 },
-                Meta = new MetaResponse
+                Meta = new Meta
                 {
                     Location = "https://example.com/v2/ServiceProviderConfig",
                     ResourceType = "ServiceProviderConfig",

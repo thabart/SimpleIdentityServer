@@ -15,7 +15,7 @@
 #endregion
 
 using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Scim.Core.DTOs;
+using SimpleIdentityServer.Scim.Common.DTOs;
 using SimpleIdentityServer.Scim.Core.Errors;
 using SimpleIdentityServer.Scim.Core.Factories;
 using SimpleIdentityServer.Scim.Core.Models;
@@ -118,7 +118,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                 {
                     return _apiResponseFactory.CreateError(
                         HttpStatusCode.BadRequest,
-                         _errorResponseFactory.CreateError(ErrorMessages.ThePathNeedsToBeSpecified, HttpStatusCode.BadRequest, Constants.ScimTypeValues.InvalidSyntax));
+                         _errorResponseFactory.CreateError(ErrorMessages.ThePathNeedsToBeSpecified, HttpStatusCode.BadRequest, Common.Constants.ScimTypeValues.InvalidSyntax));
                 }
 
                 // 4.2 Check value is filled-in.
@@ -127,7 +127,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                 {
                     return _apiResponseFactory.CreateError(
                         HttpStatusCode.BadRequest,
-                         _errorResponseFactory.CreateError(ErrorMessages.TheValueNeedsToBeSpecified, HttpStatusCode.BadRequest, Constants.ScimTypeValues.InvalidSyntax));
+                         _errorResponseFactory.CreateError(ErrorMessages.TheValueNeedsToBeSpecified, HttpStatusCode.BadRequest, Common.Constants.ScimTypeValues.InvalidSyntax));
                 }
 
                 // 4.3 Process filter & get values.
@@ -142,7 +142,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                     {
                         return _apiResponseFactory.CreateError(
                             HttpStatusCode.BadRequest,
-                            _errorResponseFactory.CreateError(ErrorMessages.TheFilterIsNotCorrect, HttpStatusCode.BadRequest, Constants.ScimTypeValues.InvalidFilter)
+                            _errorResponseFactory.CreateError(ErrorMessages.TheFilterIsNotCorrect, HttpStatusCode.BadRequest, Common.Constants.ScimTypeValues.InvalidFilter)
                         );
                     }
 
@@ -173,7 +173,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                         {
                             return _apiResponseFactory.CreateError(
                             HttpStatusCode.BadRequest,
-                            _errorResponseFactory.CreateError(error, HttpStatusCode.BadRequest, Constants.ScimTypeValues.InvalidSyntax));
+                            _errorResponseFactory.CreateError(error, HttpStatusCode.BadRequest, Common.Constants.ScimTypeValues.InvalidSyntax));
                         }
                         filteredAttrs = new[] { value };
                     }
@@ -190,7 +190,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                         {
                             return _apiResponseFactory.CreateError(
                                 HttpStatusCode.BadRequest,
-                                _errorResponseFactory.CreateError(error, HttpStatusCode.BadRequest, Constants.ScimTypeValues.InvalidSyntax));
+                                _errorResponseFactory.CreateError(error, HttpStatusCode.BadRequest, Common.Constants.ScimTypeValues.InvalidSyntax));
                         }
 
                         filteredAttrs = repr.Attributes;
@@ -202,16 +202,16 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                 {
                     var attr = attrs.FirstOrDefault(a => a.SchemaAttribute.Name == filteredAttr.SchemaAttribute.Name);
                     // 4.5.1 Check mutability.
-                    if (filteredAttr.SchemaAttribute.Mutability == Constants.SchemaAttributeMutability.Immutable ||
-                        filteredAttr.SchemaAttribute.Mutability == Constants.SchemaAttributeMutability.ReadOnly)
+                    if (filteredAttr.SchemaAttribute.Mutability == Common.Constants.SchemaAttributeMutability.Immutable ||
+                        filteredAttr.SchemaAttribute.Mutability == Common.Constants.SchemaAttributeMutability.ReadOnly)
                     {
                         return _apiResponseFactory.CreateError(
                             HttpStatusCode.BadRequest,
-                            _errorResponseFactory.CreateError(string.Format(ErrorMessages.TheImmutableAttributeCannotBeUpdated, filteredAttr.SchemaAttribute.Name), HttpStatusCode.BadRequest, Constants.ScimTypeValues.Mutability));
+                            _errorResponseFactory.CreateError(string.Format(ErrorMessages.TheImmutableAttributeCannotBeUpdated, filteredAttr.SchemaAttribute.Name), HttpStatusCode.BadRequest, Common.Constants.ScimTypeValues.Mutability));
                     }
                     
                     // 4.5.2 Check uniqueness
-                    if (filteredAttr.SchemaAttribute.Uniqueness == Constants.SchemaAttributeUniqueness.Server && allRepresentations != null && allRepresentations.Any())
+                    if (filteredAttr.SchemaAttribute.Uniqueness == Common.Constants.SchemaAttributeUniqueness.Server && allRepresentations != null && allRepresentations.Any())
                     {
                         var filter = _filterParser.Parse(filteredAttr.FullPath);
                         var uniqueAttrs = new List<RepresentationAttribute>();
@@ -226,7 +226,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                             {
                                 return _apiResponseFactory.CreateError(
                                     HttpStatusCode.BadRequest,
-                                    _errorResponseFactory.CreateError(string.Format(ErrorMessages.TheAttributeMustBeUnique, filteredAttr.SchemaAttribute.Name), HttpStatusCode.BadRequest, Constants.ScimTypeValues.Uniqueness));
+                                    _errorResponseFactory.CreateError(string.Format(ErrorMessages.TheAttributeMustBeUnique, filteredAttr.SchemaAttribute.Name), HttpStatusCode.BadRequest, Common.Constants.ScimTypeValues.Uniqueness));
                             }
                         }
                     }
@@ -363,7 +363,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         {
             switch (attr.SchemaAttribute.Type)
             {
-                case Constants.SchemaAttributeTypes.String:
+                case Common.Constants.SchemaAttributeTypes.String:
                     var strAttr = attr as SingularRepresentationAttribute<IEnumerable<string>>;
                     var strAttrToBeRemoved = attrToBeRemoved as SingularRepresentationAttribute<IEnumerable<string>>;
                     if (strAttr == null || strAttrToBeRemoved == null)
@@ -373,7 +373,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 
                     strAttr.Value = strAttr.Value.Except(strAttrToBeRemoved.Value);
                     break;
-                case Constants.SchemaAttributeTypes.Boolean:
+                case Common.Constants.SchemaAttributeTypes.Boolean:
                     var bAttr = attr as SingularRepresentationAttribute<IEnumerable<bool>>;
                     var bAttrToBeRemoved = attrToBeRemoved as SingularRepresentationAttribute<IEnumerable<bool>>;
                     if (bAttr == null || bAttrToBeRemoved == null)
@@ -383,7 +383,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 
                     bAttr.Value = bAttr.Value.Except(bAttrToBeRemoved.Value);
                     break;
-                case Constants.SchemaAttributeTypes.DateTime:
+                case Common.Constants.SchemaAttributeTypes.DateTime:
                     var dAttr = attr as SingularRepresentationAttribute<IEnumerable<DateTime>>;
                     var dAttrToBeRemoved = attrToBeRemoved as SingularRepresentationAttribute<IEnumerable<DateTime>>;
                     if (dAttr == null || dAttrToBeRemoved == null)
@@ -393,7 +393,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 
                     dAttr.Value = dAttr.Value.Except(dAttrToBeRemoved.Value);
                     break;
-                case Constants.SchemaAttributeTypes.Complex:
+                case Common.Constants.SchemaAttributeTypes.Complex:
                     var cAttr = attr as ComplexRepresentationAttribute;
                     var cAttrToBeRemoved = attrToBeRemoved as ComplexRepresentationAttribute;
                     if (cAttr == null || cAttrToBeRemoved == null)
@@ -426,7 +426,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         {
             switch (attr.SchemaAttribute.Type)
             {
-                case Constants.SchemaAttributeTypes.String:
+                case Common.Constants.SchemaAttributeTypes.String:
                     var strAttr = attr as SingularRepresentationAttribute<IEnumerable<string>>;
                     var strAttrToBeRemoved = attrToBeRemoved as SingularRepresentationAttribute<IEnumerable<string>>;
                     if (strAttr == null || strAttrToBeRemoved == null)
@@ -436,7 +436,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 
                     strAttr.Value = strAttr.Value.Except(strAttrToBeRemoved.Value);
                     break;
-                case Constants.SchemaAttributeTypes.Boolean:
+                case Common.Constants.SchemaAttributeTypes.Boolean:
                     var bAttr = attr as SingularRepresentationAttribute<IEnumerable<bool>>;
                     var bAttrToBeRemoved = attrToBeRemoved as SingularRepresentationAttribute<IEnumerable<bool>>;
                     if (bAttr == null || bAttrToBeRemoved == null)
@@ -446,7 +446,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 
                     bAttr.Value = bAttr.Value.Except(bAttrToBeRemoved.Value);
                     break;
-                case Constants.SchemaAttributeTypes.DateTime:
+                case Common.Constants.SchemaAttributeTypes.DateTime:
                     var dAttr = attr as SingularRepresentationAttribute<IEnumerable<DateTime>>;
                     var dAttrToBeRemoved = attrToBeRemoved as SingularRepresentationAttribute<IEnumerable<DateTime>>;
                     if (dAttr == null || dAttrToBeRemoved == null)
@@ -456,7 +456,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 
                     dAttr.Value = dAttr.Value.Except(dAttrToBeRemoved.Value);
                     break;
-                case Constants.SchemaAttributeTypes.Complex:
+                case Common.Constants.SchemaAttributeTypes.Complex:
                     var cAttr = attr as ComplexRepresentationAttribute;
                     var cAttrToBeRemoved = attrToBeRemoved as ComplexRepresentationAttribute;
                     if (cAttr == null || cAttrToBeRemoved == null)
@@ -489,7 +489,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         {
             switch (attr.SchemaAttribute.Type)
             {
-                case Constants.SchemaAttributeTypes.String:
+                case Common.Constants.SchemaAttributeTypes.String:
                     var strAttr = attr as SingularRepresentationAttribute<IEnumerable<string>>;
                     var strAttrToBeAdded = attrToBeAdded as SingularRepresentationAttribute<IEnumerable<string>>;
                     if (strAttr == null || strAttrToBeAdded == null)
@@ -499,7 +499,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 
                     strAttr.Value = strAttr.Value.Concat(strAttrToBeAdded.Value);
                     break;
-                case Constants.SchemaAttributeTypes.Boolean:
+                case Common.Constants.SchemaAttributeTypes.Boolean:
                     var bAttr = attr as SingularRepresentationAttribute<IEnumerable<bool>>;
                     var bAttrToBeAdded = attrToBeAdded as SingularRepresentationAttribute<IEnumerable<bool>>;
                     if (bAttr == null || bAttrToBeAdded == null)
@@ -509,7 +509,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 
                     bAttr.Value = bAttr.Value.Concat(bAttrToBeAdded.Value);
                     break;
-                case Constants.SchemaAttributeTypes.DateTime:
+                case Common.Constants.SchemaAttributeTypes.DateTime:
                     var dAttr = attr as SingularRepresentationAttribute<IEnumerable<DateTime>>;
                     var dAttrToBeAdded = attrToBeAdded as SingularRepresentationAttribute<IEnumerable<DateTime>>;
                     if (dAttr == null || dAttrToBeAdded == null)
@@ -519,7 +519,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 
                     dAttr.Value = dAttr.Value.Concat(dAttrToBeAdded.Value);
                     break;
-                case Constants.SchemaAttributeTypes.Complex:
+                case Common.Constants.SchemaAttributeTypes.Complex:
                     var cAttr = attr as ComplexRepresentationAttribute;
                     var cAttrToBeAdded = attrToBeAdded as ComplexRepresentationAttribute;
                     if (cAttr == null || cAttrToBeAdded == null)
@@ -540,7 +540,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         {
             switch (attr.SchemaAttribute.Type)
             {
-                case Constants.SchemaAttributeTypes.String:
+                case Common.Constants.SchemaAttributeTypes.String:
                     var strAttr = attr as SingularRepresentationAttribute<string>;
                     var strAttrToBeSet = attrToBeSet as SingularRepresentationAttribute<string>;
                     if (strAttr == null || strAttrToBeSet == null)
@@ -550,7 +550,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 
                     strAttr.Value = strAttrToBeSet.Value;
                     break;
-                case Constants.SchemaAttributeTypes.Boolean:
+                case Common.Constants.SchemaAttributeTypes.Boolean:
                     var bAttr = attr as SingularRepresentationAttribute<bool>;
                     var bAttrToBeSet = attrToBeSet as SingularRepresentationAttribute<bool>;
                     if (bAttr == null || bAttrToBeSet == null)
@@ -560,7 +560,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 
                     bAttr.Value = bAttrToBeSet.Value;
                     break;
-                case Constants.SchemaAttributeTypes.DateTime:
+                case Common.Constants.SchemaAttributeTypes.DateTime:
                     var dAttr = attr as SingularRepresentationAttribute<DateTime>;
                     var dAttrToBeSet = attrToBeSet as SingularRepresentationAttribute<DateTime>;
                     if (dAttr == null || dAttrToBeSet == null)
@@ -570,7 +570,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 
                     dAttr.Value = dAttrToBeSet.Value;
                     break;
-                case Constants.SchemaAttributeTypes.Complex:
+                case Common.Constants.SchemaAttributeTypes.Complex:
                     var cAttr = attr as ComplexRepresentationAttribute;
                     var cAttrToBSet = attrToBeSet as ComplexRepresentationAttribute;
                     if (cAttr == null || cAttrToBSet == null)
@@ -591,7 +591,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         {
             switch (attr.SchemaAttribute.Type)
             {
-                case Constants.SchemaAttributeTypes.String:
+                case Common.Constants.SchemaAttributeTypes.String:
                     var strAttr = attr as SingularRepresentationAttribute<IEnumerable<string>>;
                     var strAttrToBeSet = attrToBeSet as SingularRepresentationAttribute<IEnumerable<string>>;
                     if (strAttr == null || strAttrToBeSet == null)
@@ -601,7 +601,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 
                     strAttr.Value = strAttrToBeSet.Value;
                     break;
-                case Constants.SchemaAttributeTypes.Boolean:
+                case Common.Constants.SchemaAttributeTypes.Boolean:
                     var bAttr = attr as SingularRepresentationAttribute<IEnumerable<bool>>;
                     var bAttrToBeSet = attrToBeSet as SingularRepresentationAttribute<IEnumerable<bool>>;
                     if (bAttr == null || bAttrToBeSet == null)
@@ -611,7 +611,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 
                     bAttr.Value = bAttrToBeSet.Value;
                     break;
-                case Constants.SchemaAttributeTypes.DateTime:
+                case Common.Constants.SchemaAttributeTypes.DateTime:
                     var dAttr = attr as SingularRepresentationAttribute<IEnumerable<DateTime>>;
                     var dAttrToBeSet = attrToBeSet as SingularRepresentationAttribute<IEnumerable<DateTime>>;
                     if (dAttr == null || dAttrToBeSet == null)
@@ -621,7 +621,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 
                     dAttr.Value = dAttrToBeSet.Value;
                     break;
-                case Constants.SchemaAttributeTypes.Complex:
+                case Common.Constants.SchemaAttributeTypes.Complex:
                     var cAttr = attr as ComplexRepresentationAttribute;
                     var cAttrToBSet = attrToBeSet as ComplexRepresentationAttribute;
                     if (cAttr == null || cAttrToBSet == null)

@@ -118,13 +118,13 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
             foreach(var key in query.Keys)
             {
-                TrySetEnum((r) => result.Attributes = r.Select(a => GetFilter(a)), key, Constants.SearchParameterNames.Attributes, query);
-                TrySetEnum((r) => result.ExcludedAttributes = r.Select(a => GetFilter(a)), key, Constants.SearchParameterNames.ExcludedAttributes, query);
-                TrySetStr((r) => result.Filter = GetFilter(r), key, Constants.SearchParameterNames.Filter, query);
-                TrySetStr((r) => result.SortBy = GetFilter(r), key, Constants.SearchParameterNames.SortBy, query);
-                TrySetStr((r) => result.SortOrder = GetSortOrder(r), key, Constants.SearchParameterNames.SortOrder, query);
-                TrySetInt((r) => result.StartIndex = r <= 0 ? result.StartIndex : r, key, Constants.SearchParameterNames.StartIndex, query);
-                TrySetInt((r) => result.Count = r <= 0 ? result.Count : r, key, Constants.SearchParameterNames.Count, query);
+                TrySetEnum((r) => result.Attributes = r.Select(a => GetFilter(a)), key, Common.Constants.SearchParameterNames.Attributes, query);
+                TrySetEnum((r) => result.ExcludedAttributes = r.Select(a => GetFilter(a)), key, Common.Constants.SearchParameterNames.ExcludedAttributes, query);
+                TrySetStr((r) => result.Filter = GetFilter(r), key, Common.Constants.SearchParameterNames.Filter, query);
+                TrySetStr((r) => result.SortBy = GetFilter(r), key, Common.Constants.SearchParameterNames.SortBy, query);
+                TrySetStr((r) => result.SortOrder = GetSortOrder(r), key, Common.Constants.SearchParameterNames.SortOrder, query);
+                TrySetInt((r) => result.StartIndex = r <= 0 ? result.StartIndex : r, key, Common.Constants.SearchParameterNames.StartIndex, query);
+                TrySetInt((r) => result.Count = r <= 0 ? result.Count : r, key, Common.Constants.SearchParameterNames.Count, query);
             }
 
             return result;
@@ -146,40 +146,40 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
             JArray jArr;
             JValue jVal;
-            if (TryGetToken(json, Constants.SearchParameterNames.Attributes, out jArr))
+            if (TryGetToken(json, Common.Constants.SearchParameterNames.Attributes, out jArr))
             {
                 result.Attributes = (jArr.Values<string>()).Select(a => GetFilter(a));
             }
 
-            if (TryGetToken(json, Constants.SearchParameterNames.ExcludedAttributes, out jArr))
+            if (TryGetToken(json, Common.Constants.SearchParameterNames.ExcludedAttributes, out jArr))
             {
                 result.ExcludedAttributes = (jArr.Values<string>()).Select(a => GetFilter(a));
             }
 
-            if (TryGetToken(json, Constants.SearchParameterNames.Filter, out jVal))
+            if (TryGetToken(json, Common.Constants.SearchParameterNames.Filter, out jVal))
             {
                 result.Filter = GetFilter(jVal.Value<string>());
             }
 
-            if (TryGetToken(json, Constants.SearchParameterNames.SortBy, out jVal))
+            if (TryGetToken(json, Common.Constants.SearchParameterNames.SortBy, out jVal))
             {
                 result.SortBy = GetFilter(jVal.Value<string>());
             }
 
-            if (TryGetToken(json, Constants.SearchParameterNames.SortOrder, out jVal))
+            if (TryGetToken(json, Common.Constants.SearchParameterNames.SortOrder, out jVal))
             {
                 result.SortOrder = GetSortOrder(jVal.Value<string>());
             }
 
-            if (TryGetToken(json, Constants.SearchParameterNames.StartIndex, out jVal))
+            if (TryGetToken(json, Common.Constants.SearchParameterNames.StartIndex, out jVal))
             {
-                var i = GetInt(jVal.Value<string>(), Constants.SearchParameterNames.StartIndex);
+                var i = GetInt(jVal.Value<string>(), Common.Constants.SearchParameterNames.StartIndex);
                 result.StartIndex = i <= 0 ? result.StartIndex : i;
             }
 
-            if (TryGetToken(json, Constants.SearchParameterNames.Count, out jVal))
+            if (TryGetToken(json, Common.Constants.SearchParameterNames.Count, out jVal))
             {
-                var i = GetInt(jVal.Value<string>(), Constants.SearchParameterNames.Count);
+                var i = GetInt(jVal.Value<string>(), Common.Constants.SearchParameterNames.Count);
                 result.Count = i <= 0 ? result.Count : i;
             }
 
@@ -191,7 +191,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             var filter = _filterParser.Parse(value);
             if (filter == null)
             {
-                throw new InvalidOperationException(string.Format(ErrorMessages.TheParameterIsNotValid, Constants.SearchParameterNames.Filter));
+                throw new InvalidOperationException(string.Format(ErrorMessages.TheParameterIsNotValid, Common.Constants.SearchParameterNames.Filter));
             }
 
             return filter;
@@ -248,7 +248,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             }
             else
             {
-                throw new InvalidOperationException(string.Format(ErrorMessages.TheParameterIsNotValid, Constants.SearchParameterNames.SortOrder));
+                throw new InvalidOperationException(string.Format(ErrorMessages.TheParameterIsNotValid, Common.Constants.SearchParameterNames.SortOrder));
             }
 
             return sortOrder;

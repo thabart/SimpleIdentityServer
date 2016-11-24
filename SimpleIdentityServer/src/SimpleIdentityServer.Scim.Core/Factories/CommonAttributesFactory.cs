@@ -15,6 +15,7 @@
 #endregion
 
 using Newtonsoft.Json.Linq;
+using SimpleIdentityServer.Scim.Common.DTOs;
 using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Core.Stores;
 using System;
@@ -38,31 +39,31 @@ namespace SimpleIdentityServer.Scim.Core.Factories
         private readonly Dictionary<string, string> _mappingCommonAttrsKeysWithFullPath = new Dictionary<string, string>
         {
             {
-                Constants.MetaResponseNames.ResourceType, Constants.ScimResourceNames.Meta + "." +Constants.MetaResponseNames.ResourceType
+                Common.Constants.MetaResponseNames.ResourceType, Common.Constants.ScimResourceNames.Meta + "." +Common.Constants.MetaResponseNames.ResourceType
             },
             {
-                Constants.MetaResponseNames.Version, Constants.ScimResourceNames.Meta + "." +Constants.MetaResponseNames.Version
+                Common.Constants.MetaResponseNames.Version, Common.Constants.ScimResourceNames.Meta + "." +Common.Constants.MetaResponseNames.Version
             },
             {
-                Constants.MetaResponseNames.Created, Constants.ScimResourceNames.Meta + "." +Constants.MetaResponseNames.Created
+                Common.Constants.MetaResponseNames.Created, Common.Constants.ScimResourceNames.Meta + "." +Common.Constants.MetaResponseNames.Created
             },
             {
-                Constants.MetaResponseNames.LastModified, Constants.ScimResourceNames.Meta + "." +Constants.MetaResponseNames.LastModified
+                Common.Constants.MetaResponseNames.LastModified, Common.Constants.ScimResourceNames.Meta + "." +Common.Constants.MetaResponseNames.LastModified
             },
             {
-                Constants.MetaResponseNames.Location, Constants.ScimResourceNames.Meta + "." +Constants.MetaResponseNames.Location
+                Common.Constants.MetaResponseNames.Location, Common.Constants.ScimResourceNames.Meta + "." +Common.Constants.MetaResponseNames.Location
             },
             {
-                Constants.ScimResourceNames.Meta, Constants.ScimResourceNames.Meta
+                Common.Constants.ScimResourceNames.Meta, Common.Constants.ScimResourceNames.Meta
             },
             {
-                Constants.ScimResourceNames.Schemas, Constants.ScimResourceNames.Schemas
+                Common.Constants.ScimResourceNames.Schemas, Common.Constants.ScimResourceNames.Schemas
             },
             {
-                Constants.IdentifiedScimResourceNames.ExternalId, Constants.IdentifiedScimResourceNames.ExternalId
+                Common.Constants.IdentifiedScimResourceNames.ExternalId, Common.Constants.IdentifiedScimResourceNames.ExternalId
             },
             {
-                Constants.IdentifiedScimResourceNames.Id, Constants.IdentifiedScimResourceNames.Id
+                Common.Constants.IdentifiedScimResourceNames.Id, Common.Constants.IdentifiedScimResourceNames.Id
             }
         };
         private readonly ISchemaStore _schemaStore;
@@ -89,7 +90,7 @@ namespace SimpleIdentityServer.Scim.Core.Factories
                 throw new ArgumentNullException(nameof(id));
             }
 
-            return new JProperty(Constants.IdentifiedScimResourceNames.Id, id);
+            return new JProperty(Common.Constants.IdentifiedScimResourceNames.Id, id);
         }
 
         public RepresentationAttribute CreateId(Representation representation)
@@ -100,7 +101,7 @@ namespace SimpleIdentityServer.Scim.Core.Factories
             }
 
             var commonAttrs = _schemaStore.GetCommonAttributes();
-            var idAttr = commonAttrs.First(n => n.Name == Constants.IdentifiedScimResourceNames.Id);
+            var idAttr = commonAttrs.First(n => n.Name == Common.Constants.IdentifiedScimResourceNames.Id);
             return new SingularRepresentationAttribute<string>(idAttr, representation.Id);
         }
 
@@ -117,16 +118,16 @@ namespace SimpleIdentityServer.Scim.Core.Factories
             }
 
             var commonAttrs = _schemaStore.GetCommonAttributes();
-            var metaAttr = commonAttrs.First(m => m.Name == Constants.ScimResourceNames.Meta) as ComplexSchemaAttributeResponse;
+            var metaAttr = commonAttrs.First(m => m.Name == Common.Constants.ScimResourceNames.Meta) as ComplexSchemaAttributeResponse;
             return new ComplexRepresentationAttribute(metaAttr)
             {
                 Values = new RepresentationAttribute[]
                 {
-                    new SingularRepresentationAttribute<string>(metaAttr.SubAttributes.First(a => a.Name == Constants.MetaResponseNames.ResourceType), representation.ResourceType),
-                    new SingularRepresentationAttribute<DateTime>(metaAttr.SubAttributes.First(a => a.Name == Constants.MetaResponseNames.Created), representation.Created),
-                    new SingularRepresentationAttribute<DateTime>(metaAttr.SubAttributes.First(a => a.Name == Constants.MetaResponseNames.LastModified), representation.LastModified),
-                    new SingularRepresentationAttribute<string>(metaAttr.SubAttributes.First(a => a.Name == Constants.MetaResponseNames.Version), representation.Version),
-                    new SingularRepresentationAttribute<string>(metaAttr.SubAttributes.First(a => a.Name == Constants.MetaResponseNames.Location), location)
+                    new SingularRepresentationAttribute<string>(metaAttr.SubAttributes.First(a => a.Name == Common.Constants.MetaResponseNames.ResourceType), representation.ResourceType),
+                    new SingularRepresentationAttribute<DateTime>(metaAttr.SubAttributes.First(a => a.Name == Common.Constants.MetaResponseNames.Created), representation.Created),
+                    new SingularRepresentationAttribute<DateTime>(metaAttr.SubAttributes.First(a => a.Name == Common.Constants.MetaResponseNames.LastModified), representation.LastModified),
+                    new SingularRepresentationAttribute<string>(metaAttr.SubAttributes.First(a => a.Name == Common.Constants.MetaResponseNames.Version), representation.Version),
+                    new SingularRepresentationAttribute<string>(metaAttr.SubAttributes.First(a => a.Name == Common.Constants.MetaResponseNames.Location), location)
                 }
             };
         }
@@ -145,11 +146,11 @@ namespace SimpleIdentityServer.Scim.Core.Factories
 
             return new JProperty[]
             {
-                new JProperty(Constants.MetaResponseNames.ResourceType, representation.ResourceType),
-                new JProperty(Constants.MetaResponseNames.Created, representation.Created),
-                new JProperty(Constants.MetaResponseNames.LastModified, representation.LastModified),
-                new JProperty(Constants.MetaResponseNames.Version, representation.Version),
-                new JProperty(Constants.MetaResponseNames.Location, location)
+                new JProperty(Common.Constants.MetaResponseNames.ResourceType, representation.ResourceType),
+                new JProperty(Common.Constants.MetaResponseNames.Created, representation.Created),
+                new JProperty(Common.Constants.MetaResponseNames.LastModified, representation.LastModified),
+                new JProperty(Common.Constants.MetaResponseNames.Version, representation.Version),
+                new JProperty(Common.Constants.MetaResponseNames.Location, location)
             };
         }
 

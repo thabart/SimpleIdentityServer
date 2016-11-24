@@ -16,8 +16,8 @@
 
 using Moq;
 using Newtonsoft.Json.Linq;
+using SimpleIdentityServer.Scim.Common.DTOs;
 using SimpleIdentityServer.Scim.Core.Apis;
-using SimpleIdentityServer.Scim.Core.DTOs;
 using SimpleIdentityServer.Scim.Core.Errors;
 using SimpleIdentityServer.Scim.Core.Factories;
 using SimpleIdentityServer.Scim.Core.Models;
@@ -124,7 +124,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
             _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
 
             // ASSERT
-            _errorResponseFactoryStub.Verify(a => a.CreateError(ErrorMessages.ThePathNeedsToBeSpecified, HttpStatusCode.BadRequest, Constants.ScimTypeValues.InvalidSyntax));
+            _errorResponseFactoryStub.Verify(a => a.CreateError(ErrorMessages.ThePathNeedsToBeSpecified, HttpStatusCode.BadRequest, Common.Constants.ScimTypeValues.InvalidSyntax));
         }
 
         [Fact]
@@ -142,11 +142,11 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                 {
                     Attributes = new []
                     {
-                        new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "members", MultiValued = true, Type = Constants.SchemaAttributeTypes.Complex })
+                        new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "members", MultiValued = true, Type = Common.Constants.SchemaAttributeTypes.Complex })
                         {
                             Values = new []
                             {
-                                new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "thierry")
+                                new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Common.Constants.SchemaAttributeTypes.String }, "thierry")
                             }
                         }
                     }
@@ -176,7 +176,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
             _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
 
             // ASSERT
-            _errorResponseFactoryStub.Verify(a => a.CreateError(ErrorMessages.TheFilterIsNotCorrect, HttpStatusCode.BadRequest, Constants.ScimTypeValues.InvalidFilter));
+            _errorResponseFactoryStub.Verify(a => a.CreateError(ErrorMessages.TheFilterIsNotCorrect, HttpStatusCode.BadRequest, Common.Constants.ScimTypeValues.InvalidFilter));
         }
 
         [Fact]
@@ -194,11 +194,11 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                 {
                     Attributes = new[]
                     {
-                        new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "members", MultiValued = false, Type = Constants.SchemaAttributeTypes.Complex, Mutability = Constants.SchemaAttributeMutability.Immutable })
+                        new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "members", MultiValued = false, Type = Common.Constants.SchemaAttributeTypes.Complex, Mutability = Common.Constants.SchemaAttributeMutability.Immutable })
                         {
                             Values = new []
                             {
-                                new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "thierry")
+                                new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Common.Constants.SchemaAttributeTypes.String }, "thierry")
                             }
                         }
                     }
@@ -228,7 +228,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
             _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
 
             // ASSERT
-            _errorResponseFactoryStub.Verify(a => a.CreateError(string.Format(ErrorMessages.TheImmutableAttributeCannotBeUpdated, "members"), HttpStatusCode.BadRequest, Constants.ScimTypeValues.Mutability));
+            _errorResponseFactoryStub.Verify(a => a.CreateError(string.Format(ErrorMessages.TheImmutableAttributeCannotBeUpdated, "members"), HttpStatusCode.BadRequest, Common.Constants.ScimTypeValues.Mutability));
         }
 
         [Fact]
@@ -246,11 +246,11 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                 {
                     Attributes = new[]
                     {
-                        new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "members", MultiValued = false, Type = Constants.SchemaAttributeTypes.Complex, Mutability = Constants.SchemaAttributeMutability.ReadWrite, Uniqueness = Constants.SchemaAttributeUniqueness.Server })
+                        new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "members", MultiValued = false, Type = Common.Constants.SchemaAttributeTypes.Complex, Mutability = Common.Constants.SchemaAttributeMutability.ReadWrite, Uniqueness = Common.Constants.SchemaAttributeUniqueness.Server })
                         {
                             Values = new []
                             {
-                                new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "thierry")
+                                new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Common.Constants.SchemaAttributeTypes.String }, "thierry")
                             }
                         }
                     }
@@ -282,11 +282,11 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                     {
                         Attributes = new[]
                         {
-                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "members", MultiValued = false, Type = Constants.SchemaAttributeTypes.Complex, Mutability = Constants.SchemaAttributeMutability.ReadWrite, Uniqueness = Constants.SchemaAttributeUniqueness.Server })
+                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "members", MultiValued = false, Type = Common.Constants.SchemaAttributeTypes.Complex, Mutability = Common.Constants.SchemaAttributeMutability.ReadWrite, Uniqueness = Common.Constants.SchemaAttributeUniqueness.Server })
                             {
                                 Values = new []
                                 {
-                                    new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "thierry")
+                                    new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Common.Constants.SchemaAttributeTypes.String }, "thierry")
                                 }
                             }
                         }
@@ -297,7 +297,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
             _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
 
             // ASSERT
-            _errorResponseFactoryStub.Verify(a => a.CreateError(string.Format(ErrorMessages.TheAttributeMustBeUnique, "members"), HttpStatusCode.BadRequest, Constants.ScimTypeValues.Uniqueness));
+            _errorResponseFactoryStub.Verify(a => a.CreateError(string.Format(ErrorMessages.TheAttributeMustBeUnique, "members"), HttpStatusCode.BadRequest, Common.Constants.ScimTypeValues.Uniqueness));
         }
 
         #endregion
@@ -318,7 +318,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
             var representation = new Representation();
             representation.Attributes = new[]
             {
-                new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "thierry")
+                new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Common.Constants.SchemaAttributeTypes.String }, "thierry")
             };
             _representationStoreStub.Setup(r => r.GetRepresentation(It.IsAny<string>()))
                 .Returns(representation);
@@ -373,10 +373,10 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
             InitializeFakeObjects();
             Representation result = null;
             var representation = new Representation();
-            var person = new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "person", Type = Constants.SchemaAttributeTypes.Complex });
+            var person = new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "person", Type = Common.Constants.SchemaAttributeTypes.Complex });
             person.Values = new[]
             {
-                new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "thierry")
+                new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Common.Constants.SchemaAttributeTypes.String }, "thierry")
                 {
                     Parent = person
                 }
@@ -449,7 +449,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                         {
                             Values = new []
                             {
-                                new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "thierry")
+                                new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Common.Constants.SchemaAttributeTypes.String }, "thierry")
                             }
                         }
                     }
@@ -499,11 +499,11 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                 {
                     Attributes = new[]
                     {
-                        new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "members", MultiValued = false, Type = Constants.SchemaAttributeTypes.Complex })
+                        new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "members", MultiValued = false, Type = Common.Constants.SchemaAttributeTypes.Complex })
                         {
                             Values = new []
                             {
-                                new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "thierry")
+                                new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Common.Constants.SchemaAttributeTypes.String }, "thierry")
                             }
                         }
                     }
@@ -536,7 +536,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
             _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
 
             // ASSERT
-            _errorResponseFactoryStub.Verify(a => a.CreateError(ErrorMessages.TheValueNeedsToBeSpecified, HttpStatusCode.BadRequest, Constants.ScimTypeValues.InvalidSyntax));
+            _errorResponseFactoryStub.Verify(a => a.CreateError(ErrorMessages.TheValueNeedsToBeSpecified, HttpStatusCode.BadRequest, Common.Constants.ScimTypeValues.InvalidSyntax));
         }
 
         [Fact]
@@ -559,11 +559,11 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                 {
                     Attributes = new[]
                     {
-                        new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "members", MultiValued = false, Type = Constants.SchemaAttributeTypes.Complex })
+                        new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "members", MultiValued = false, Type = Common.Constants.SchemaAttributeTypes.Complex })
                         {
                             Values = new []
                             {
-                                new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "firstName")
+                                new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Common.Constants.SchemaAttributeTypes.String }, "firstName")
                             }
                         }
                     }
@@ -648,11 +648,11 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                 {
                     Attributes = new[]
                     {
-                        new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "members", MultiValued = false, Type = Constants.SchemaAttributeTypes.Complex })
+                        new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "members", MultiValued = false, Type = Common.Constants.SchemaAttributeTypes.Complex })
                         {
                             Values = new []
                             {
-                                new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "thierry")
+                                new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Common.Constants.SchemaAttributeTypes.String }, "thierry")
                             }
                         }
                     }
@@ -685,7 +685,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
             _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
 
             // ASSERT
-            _errorResponseFactoryStub.Verify(a => a.CreateError(ErrorMessages.TheValueNeedsToBeSpecified, HttpStatusCode.BadRequest, Constants.ScimTypeValues.InvalidSyntax));
+            _errorResponseFactoryStub.Verify(a => a.CreateError(ErrorMessages.TheValueNeedsToBeSpecified, HttpStatusCode.BadRequest, Common.Constants.ScimTypeValues.InvalidSyntax));
         }
 
         [Fact]
@@ -705,7 +705,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                         {
                             Values = new []
                             {
-                                new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "thierry")
+                                new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Common.Constants.SchemaAttributeTypes.String }, "thierry")
                             }
                         }
                     }
@@ -736,7 +736,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                 {
                     Values = new[]
                     {
-                        new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "thierry2")
+                        new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Common.Constants.SchemaAttributeTypes.String }, "thierry2")
                     }
                 });
 

@@ -15,6 +15,7 @@
 #endregion
 
 using Newtonsoft.Json.Linq;
+using SimpleIdentityServer.Scim.Common.DTOs;
 using SimpleIdentityServer.Scim.Core.Errors;
 using SimpleIdentityServer.Scim.Core.Factories;
 using SimpleIdentityServer.Scim.Core.Models;
@@ -127,8 +128,8 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 foreach (var attribute in schema.Attributes)
                 {
                     // Ignore the attributes.
-                    if ((attribute.Returned ==  Constants.SchemaAttributeReturned.Never) ||
-                        (operationType == OperationTypes.Query && attribute.Returned == Constants.SchemaAttributeReturned.Request))
+                    if ((attribute.Returned == Common.Constants.SchemaAttributeReturned.Never) ||
+                        (operationType == OperationTypes.Query && attribute.Returned == Common.Constants.SchemaAttributeReturned.Request))
                     {
                         continue;
                     }
@@ -173,11 +174,11 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
             IEnumerable<string> commonAttrs = new[]
             {
-                Constants.MetaResponseNames.ResourceType,
-                Constants.MetaResponseNames.Created,
-                Constants.MetaResponseNames.LastModified,
-                Constants.MetaResponseNames.Version,
-                Constants.MetaResponseNames.Location
+                Common.Constants.MetaResponseNames.ResourceType,
+                Common.Constants.MetaResponseNames.Created,
+                Common.Constants.MetaResponseNames.LastModified,
+                Common.Constants.MetaResponseNames.Version,
+                Common.Constants.MetaResponseNames.Location
             };
                                    
             var result = new JArray();
@@ -280,10 +281,10 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         private void SetCommonAttributes(JObject jObj, string location, Representation representation, string schema)
         {
             jObj.Add(_commonAttributesFactory.CreateIdJson(representation));
-            jObj[Constants.ScimResourceNames.Meta] = new JObject(_commonAttributesFactory.CreateMetaDataAttributeJson(representation, location));
+            jObj[Common.Constants.ScimResourceNames.Meta] = new JObject(_commonAttributesFactory.CreateMetaDataAttributeJson(representation, location));
             var arr = new JArray();
             arr.Add(schema);
-            jObj[Constants.ScimResourceNames.Schemas] = arr;
+            jObj[Common.Constants.ScimResourceNames.Schemas] = arr;
         }
 
         private static JToken GetToken(RepresentationAttribute attr, SchemaAttributeResponse attribute)
@@ -362,15 +363,15 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             // 3. Create singular attribute
             switch(attribute.Type)
             {
-                case Constants.SchemaAttributeTypes.String:
+                case Common.Constants.SchemaAttributeTypes.String:
                     return GetSingularToken<string>(attribute, attr, attribute.MultiValued);
-                case Constants.SchemaAttributeTypes.Boolean:
+                case Common.Constants.SchemaAttributeTypes.Boolean:
                     return GetSingularToken<bool>(attribute, attr, attribute.MultiValued);
-                case Constants.SchemaAttributeTypes.Decimal:
+                case Common.Constants.SchemaAttributeTypes.Decimal:
                     return GetSingularToken<decimal>(attribute, attr, attribute.MultiValued);
-                case Constants.SchemaAttributeTypes.DateTime:
+                case Common.Constants.SchemaAttributeTypes.DateTime:
                     return GetSingularToken<DateTime>(attribute, attr, attribute.MultiValued);
-                case Constants.SchemaAttributeTypes.Integer:
+                case Common.Constants.SchemaAttributeTypes.Integer:
                     return GetSingularToken<int>(attribute, attr, attribute.MultiValued);
                 default:
                     throw new InvalidOperationException(string.Format(ErrorMessages.TheAttributeTypeIsNotSupported, attribute.Type));

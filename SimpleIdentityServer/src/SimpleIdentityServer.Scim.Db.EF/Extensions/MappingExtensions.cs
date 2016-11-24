@@ -18,6 +18,7 @@ using Model = SimpleIdentityServer.Scim.Db.EF.Models;
 using Domain = SimpleIdentityServer.Scim.Core.Models;
 using System;
 using System.Collections.Generic;
+using SimpleIdentityServer.Scim.Common.DTOs;
 
 namespace SimpleIdentityServer.Scim.Db.EF.Extensions
 {
@@ -56,19 +57,19 @@ namespace SimpleIdentityServer.Scim.Db.EF.Extensions
             return representation;
         }
 
-        public static Domain.SchemaAttributeResponse ToDomain(this Model.SchemaAttribute attr)
+        public static SchemaAttributeResponse ToDomain(this Model.SchemaAttribute attr)
         {
             if (attr == null)
             {
                 throw new ArgumentNullException(nameof(attr));
             }
 
-            var result = new Domain.SchemaAttributeResponse();
+            var result = new SchemaAttributeResponse();
             SetData(result, attr);
             return result;
         }
 
-        public static void SetData(this Domain.SchemaAttributeResponse resp, Model.SchemaAttribute attr)
+        public static void SetData(this SchemaAttributeResponse resp, Model.SchemaAttribute attr)
         {
             resp.Id = attr.Id;
             resp.CaseExact = attr.CaseExact;
@@ -84,14 +85,14 @@ namespace SimpleIdentityServer.Scim.Db.EF.Extensions
             resp.ReferenceTypes = SplitList(attr.ReferenceTypes);
         }
 
-        public static Domain.SchemaResponse ToDomain(this Model.Schema schema)
+        public static SchemaResponse ToDomain(this Model.Schema schema)
         {
             if (schema == null)
             {
                 throw new ArgumentNullException(nameof(schema));
             }
 
-            return new Domain.SchemaResponse
+            return new SchemaResponse
             {
                 Id = schema.Id,
                 Description = schema.Description,
@@ -99,21 +100,21 @@ namespace SimpleIdentityServer.Scim.Db.EF.Extensions
             };
         }
 
-        public static Domain.MetaResponse ToDomain(this Model.MetaData meta)
+        public static Meta ToDomain(this Model.MetaData meta)
         {
             if (meta == null)
             {
                 throw new ArgumentNullException(nameof(meta));
             }
 
-            return new Domain.MetaResponse
+            return new Meta
             {
                 ResourceType = meta.ResourceType,
                 Location = meta.Location 
             };
         }
 
-        public static Model.SchemaAttribute ToModel(this Domain.SchemaAttributeResponse attr)
+        public static Model.SchemaAttribute ToModel(this SchemaAttributeResponse attr)
         {
             if (attr == null)
             {

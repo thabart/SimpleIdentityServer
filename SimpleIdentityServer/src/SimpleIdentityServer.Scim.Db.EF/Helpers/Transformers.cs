@@ -14,8 +14,8 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using SimpleIdentityServer.Scim.Common.DTOs;
 using SimpleIdentityServer.Scim.Core;
 using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Db.EF.Extensions;
@@ -42,7 +42,7 @@ namespace SimpleIdentityServer.Scim.Db.EF.Helpers
                 return null;
             }
 
-            if (record.Type == Constants.SchemaAttributeTypes.Complex)
+            if (record.Type == Common.Constants.SchemaAttributeTypes.Complex)
             {
                 var comlexSchemaAttr = new ComplexSchemaAttributeResponse();
                 comlexSchemaAttr.SetData(record);
@@ -81,7 +81,7 @@ namespace SimpleIdentityServer.Scim.Db.EF.Helpers
                 schemaAttr = Transform(attr.SchemaAttribute);
             }
 
-            if (attr.SchemaAttribute != null && attr.SchemaAttribute.Type == Constants.SchemaAttributeTypes.Complex ||
+            if (attr.SchemaAttribute != null && attr.SchemaAttribute.Type == Common.Constants.SchemaAttributeTypes.Complex ||
                 attr.SchemaAttribute == null && attr.Children != null && attr.Children.Any())
             {
                 ComplexRepresentationAttribute result = new ComplexRepresentationAttribute(schemaAttr);
@@ -104,7 +104,7 @@ namespace SimpleIdentityServer.Scim.Db.EF.Helpers
             var isArr = attr.SchemaAttribute.MultiValued;
             switch (attr.SchemaAttribute.Type)
             {
-                case Constants.SchemaAttributeTypes.String:
+                case Common.Constants.SchemaAttributeTypes.String:
                     if (isArr)
                     {
                         var record = JsonConvert.DeserializeObject<IEnumerable<string>>(attr.Value);
@@ -113,7 +113,7 @@ namespace SimpleIdentityServer.Scim.Db.EF.Helpers
 
                     var str = JsonConvert.DeserializeObject<string>(attr.Value);
                     return new SingularRepresentationAttribute<string>(schemaAttr, str);
-                case Constants.SchemaAttributeTypes.Boolean:
+                case Common.Constants.SchemaAttributeTypes.Boolean:
                     if (isArr)
                     {
                         var record = JsonConvert.DeserializeObject<IEnumerable<bool>>(attr.Value);
@@ -122,7 +122,7 @@ namespace SimpleIdentityServer.Scim.Db.EF.Helpers
 
                     var b = JsonConvert.DeserializeObject<bool>(attr.Value);
                     return new SingularRepresentationAttribute<bool>(schemaAttr, b);
-                case Constants.SchemaAttributeTypes.DateTime:
+                case Common.Constants.SchemaAttributeTypes.DateTime:
                     if (isArr)
                     {
                         var record = JsonConvert.DeserializeObject<IEnumerable<DateTime>>(attr.Value);
@@ -131,7 +131,7 @@ namespace SimpleIdentityServer.Scim.Db.EF.Helpers
 
                     var datetime = JsonConvert.DeserializeObject<DateTime>(attr.Value);
                     return new SingularRepresentationAttribute<DateTime>(schemaAttr, datetime);
-                case Constants.SchemaAttributeTypes.Decimal:
+                case Common.Constants.SchemaAttributeTypes.Decimal:
                     if (isArr)
                     {
                         var record = JsonConvert.DeserializeObject<IEnumerable<decimal>>(attr.Value);
@@ -140,7 +140,7 @@ namespace SimpleIdentityServer.Scim.Db.EF.Helpers
 
                     var dec = JsonConvert.DeserializeObject<decimal>(attr.Value);
                     return new SingularRepresentationAttribute<decimal>(schemaAttr, dec);
-                case Constants.SchemaAttributeTypes.Integer:
+                case Common.Constants.SchemaAttributeTypes.Integer:
                     if (isArr)
                     {
                         var record = JsonConvert.DeserializeObject<IEnumerable<int>>(attr.Value);

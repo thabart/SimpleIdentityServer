@@ -17,7 +17,7 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.Scim.Core.DTOs
+namespace SimpleIdentityServer.Scim.Common.DTOs
 {
     [DataContract]
     public class ErrorResponse

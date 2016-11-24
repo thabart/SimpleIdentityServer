@@ -63,17 +63,17 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 
         public ApiActionResult AddUser(JObject jObj, string locationPattern)
         {
-            return _addRepresentationAction.Execute(jObj, locationPattern, Constants.SchemaUrns.User, Constants.ResourceTypes.User);
+            return _addRepresentationAction.Execute(jObj, locationPattern, Common.Constants.SchemaUrns.User, Common.Constants.ResourceTypes.User);
         }
 
         public ApiActionResult UpdateUser(string id, JObject jObj, string locationPattern)
         {
-            return _updateRepresentationAction.Execute(id, jObj, Constants.SchemaUrns.User, locationPattern, Constants.ResourceTypes.User);
+            return _updateRepresentationAction.Execute(id, jObj, Common.Constants.SchemaUrns.User, locationPattern, Common.Constants.ResourceTypes.User);
         }
 
         public ApiActionResult PatchUser(string id, JObject jObj, string locationPattern)
         {
-            return _patchRepresentationAction.Execute(id, jObj, Constants.SchemaUrns.User, locationPattern);
+            return _patchRepresentationAction.Execute(id, jObj, Common.Constants.SchemaUrns.User, locationPattern);
         }
 
         public ApiActionResult RemoveUser(string id)
@@ -83,19 +83,19 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 
         public ApiActionResult GetUser(string id, string locationPattern)
         {
-            return _getRepresentationAction.Execute(id, locationPattern, Constants.SchemaUrns.User);
+            return _getRepresentationAction.Execute(id, locationPattern, Common.Constants.SchemaUrns.User);
         }
 
         public ApiActionResult SearchUsers(JObject jObj, string locationPattern)
         {
             var searchParam = _searchParameterParser.ParseJson(jObj);
-            return _getRepresentationsAction.Execute(Constants.ResourceTypes.User, searchParam, locationPattern);
+            return _getRepresentationsAction.Execute(Common.Constants.ResourceTypes.User, searchParam, locationPattern);
         }
 
         public ApiActionResult SearchUsers(IQueryCollection query, string locationPattern)
         {
             var searchParam = _searchParameterParser.ParseQuery(query);
-            return _getRepresentationsAction.Execute(Constants.ResourceTypes.User, searchParam, locationPattern);
+            return _getRepresentationsAction.Execute(Common.Constants.ResourceTypes.User, searchParam, locationPattern);
         }
     }
 }

@@ -16,8 +16,8 @@
 
 using Moq;
 using Newtonsoft.Json.Linq;
+using SimpleIdentityServer.Scim.Common.DTOs;
 using SimpleIdentityServer.Scim.Core.Apis;
-using SimpleIdentityServer.Scim.Core.DTOs;
 using SimpleIdentityServer.Scim.Core.Errors;
 using SimpleIdentityServer.Scim.Core.Factories;
 using SimpleIdentityServer.Scim.Core.Models;
@@ -103,7 +103,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                         new SingularRepresentationAttribute<string>(new SchemaAttributeResponse
                         {
                             Name = "id",
-                            Mutability = Constants.SchemaAttributeMutability.Immutable
+                            Mutability = Common.Constants.SchemaAttributeMutability.Immutable
                         }, "representation_id")
                     },
                     Id = identifier
@@ -116,7 +116,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                         new SingularRepresentationAttribute<string>(new SchemaAttributeResponse
                         {
                             Name = "id",
-                            Mutability = Constants.SchemaAttributeMutability.Immutable
+                            Mutability = Common.Constants.SchemaAttributeMutability.Immutable
                         }, "representation_id_2")
                     },
                     Id = identifier
@@ -140,7 +140,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
             // ASSERT
             Assert.True(code == HttpStatusCode.BadRequest);
             Assert.True(message == string.Format(ErrorMessages.TheImmutableAttributeCannotBeUpdated, "id"));
-            Assert.True(mutability == Constants.ScimTypeValues.Mutability);
+            Assert.True(mutability == Common.Constants.ScimTypeValues.Mutability);
         }
 
         [Fact]
@@ -161,9 +161,9 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                         new SingularRepresentationAttribute<string>(new SchemaAttributeResponse
                         {
                             Name = "id",
-                            Mutability = Constants.SchemaAttributeMutability.ReadWrite,
-                            Uniqueness = Constants.SchemaAttributeUniqueness.Server,
-                            Type = Constants.SchemaAttributeTypes.String
+                            Mutability = Common.Constants.SchemaAttributeMutability.ReadWrite,
+                            Uniqueness = Common.Constants.SchemaAttributeUniqueness.Server,
+                            Type = Common.Constants.SchemaAttributeTypes.String
                         }, "representation_id_2")
                     },
                     Id = identifier
@@ -177,9 +177,9 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                         {
                             Id = Guid.NewGuid().ToString(),
                             Name = "id",
-                            Mutability = Constants.SchemaAttributeMutability.ReadWrite,
-                            Uniqueness = Constants.SchemaAttributeUniqueness.Server,
-                            Type = Constants.SchemaAttributeTypes.String
+                            Mutability = Common.Constants.SchemaAttributeMutability.ReadWrite,
+                            Uniqueness = Common.Constants.SchemaAttributeUniqueness.Server,
+                            Type = Common.Constants.SchemaAttributeTypes.String
                         }, "representation_id_2")
                     },
                     Id = identifier
@@ -193,9 +193,9 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                         {
                             Id = Guid.NewGuid().ToString(),
                             Name = "id",
-                            Mutability = Constants.SchemaAttributeMutability.ReadWrite,
-                            Uniqueness = Constants.SchemaAttributeUniqueness.Server,
-                            Type = Constants.SchemaAttributeTypes.String
+                            Mutability = Common.Constants.SchemaAttributeMutability.ReadWrite,
+                            Uniqueness = Common.Constants.SchemaAttributeUniqueness.Server,
+                            Type = Common.Constants.SchemaAttributeTypes.String
                         }, "representation_id_2")
                     },
                     Id = Guid.NewGuid().ToString()
@@ -219,7 +219,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
             // ASSERT
             Assert.True(code == HttpStatusCode.BadRequest);
             Assert.True(message == string.Format(ErrorMessages.TheAttributeMustBeUnique, "id"));
-            Assert.True(mutability == Constants.ScimTypeValues.Uniqueness);
+            Assert.True(mutability == Common.Constants.ScimTypeValues.Uniqueness);
         }
 
         [Fact]
@@ -239,8 +239,8 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                         new SingularRepresentationAttribute<string>(new SchemaAttributeResponse
                         {
                             Name = "id",
-                            Mutability = Constants.SchemaAttributeMutability.writeOnly,
-                            Type = Constants.SchemaAttributeTypes.String
+                            Mutability = Common.Constants.SchemaAttributeMutability.writeOnly,
+                            Type = Common.Constants.SchemaAttributeTypes.String
                         }, "representation_id")
                     },
                     Id = identifier
@@ -253,8 +253,8 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                         new SingularRepresentationAttribute<string>(new SchemaAttributeResponse
                         {
                             Name = "id",
-                            Mutability = Constants.SchemaAttributeMutability.writeOnly,
-                            Type = Constants.SchemaAttributeTypes.String
+                            Mutability = Common.Constants.SchemaAttributeMutability.writeOnly,
+                            Type = Common.Constants.SchemaAttributeTypes.String
                         }, "representation_id_2")
                     },
                     Id = identifier

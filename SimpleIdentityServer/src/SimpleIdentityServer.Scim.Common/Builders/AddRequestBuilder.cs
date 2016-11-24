@@ -14,16 +14,31 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Scim.Common.DTOs;
 using System;
 using System.Collections.Generic;
 
-namespace SimpleIdentityServer.Scim.Core.Stores
+namespace SimpleIdentityServer.Scim.Common.Builders
 {
-    public interface ISchemaStore : IDisposable
+    public class AddRequestBuilder
     {
-        IEnumerable<SchemaResponse> GetSchemas();
-        SchemaResponse GetSchema(string id);
-        IEnumerable<SchemaAttributeResponse> GetCommonAttributes();
+        public AddRequestBuilder(string schema)
+        {
+
+        }
+
+        public AddRequestBuilder(IEnumerable<string> schemas)
+        {
+
+        }
+
+        public AddRequestBuilder SetCommonAttributes(string externalId)
+        {
+            if (string.IsNullOrWhiteSpace(externalId))
+            {
+                throw new ArgumentNullException(nameof(externalId));
+            }
+
+            return this;
+        }
     }
 }

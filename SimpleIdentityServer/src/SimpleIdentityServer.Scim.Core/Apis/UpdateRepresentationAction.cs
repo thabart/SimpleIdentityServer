@@ -15,7 +15,7 @@
 #endregion
 
 using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Scim.Core.DTOs;
+using SimpleIdentityServer.Scim.Common.DTOs;
 using SimpleIdentityServer.Scim.Core.Errors;
 using SimpleIdentityServer.Scim.Core.Factories;
 using SimpleIdentityServer.Scim.Core.Models;
@@ -172,19 +172,19 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                 if (schemaAttribute.MultiValued)
                 {
                     // Check mutability
-                    if (schemaAttribute.Mutability == Constants.SchemaAttributeMutability.Immutable)
+                    if (schemaAttribute.Mutability == Common.Constants.SchemaAttributeMutability.Immutable)
                     {
                         if (complexTarget.CompareTo(complexSource) != 0)
                         {
                             error = _errorResponseFactory.CreateError(string.Format(ErrorMessages.TheImmutableAttributeCannotBeUpdated, schemaAttribute.Name),
                                 HttpStatusCode.BadRequest,
-                                Constants.ScimTypeValues.Mutability);
+                                Common.Constants.ScimTypeValues.Mutability);
                             return false;
                         }
                     }
                     
                     // Check uniqueness
-                    if (schemaAttribute.Uniqueness == Constants.SchemaAttributeUniqueness.Server && allRepresentations != null && allRepresentations.Any())
+                    if (schemaAttribute.Uniqueness == Common.Constants.SchemaAttributeUniqueness.Server && allRepresentations != null && allRepresentations.Any())
                     {
                         var filter = _filterParser.Parse(complexTarget.FullPath);
                         var uniqueAttrs = new List<RepresentationAttribute>();
@@ -199,8 +199,8 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                             {
                                 error = _errorResponseFactory.CreateError(
                                     string.Format(ErrorMessages.TheAttributeMustBeUnique, complexTarget.SchemaAttribute.Name), 
-                                    HttpStatusCode.BadRequest, 
-                                    Constants.ScimTypeValues.Uniqueness);
+                                    HttpStatusCode.BadRequest,
+                                    Common.Constants.ScimTypeValues.Uniqueness);
                                 return false;
                             }
                         }
@@ -212,19 +212,19 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             }
             
             // Check mutability
-            if (target.SchemaAttribute.Mutability == Constants.SchemaAttributeMutability.Immutable)
+            if (target.SchemaAttribute.Mutability == Common.Constants.SchemaAttributeMutability.Immutable)
             {
                 if (source.CompareTo(target) != 0)
                 {
                     error = _errorResponseFactory.CreateError(string.Format(ErrorMessages.TheImmutableAttributeCannotBeUpdated, target.SchemaAttribute.Name),
                         HttpStatusCode.BadRequest,
-                        Constants.ScimTypeValues.Mutability);
+                        Common.Constants.ScimTypeValues.Mutability);
                     return false;
                 }
             }
 
             // Check uniqueness
-            if (target.SchemaAttribute.Uniqueness == Constants.SchemaAttributeUniqueness.Server && allRepresentations != null && allRepresentations.Any())
+            if (target.SchemaAttribute.Uniqueness == Common.Constants.SchemaAttributeUniqueness.Server && allRepresentations != null && allRepresentations.Any())
             {
                 var filter = _filterParser.Parse(target.FullPath);
                 var uniqueAttrs = new List<RepresentationAttribute>();
@@ -240,7 +240,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                         error = _errorResponseFactory.CreateError(
                             string.Format(ErrorMessages.TheAttributeMustBeUnique, target.SchemaAttribute.Name),
                             HttpStatusCode.BadRequest,
-                            Constants.ScimTypeValues.Uniqueness);
+                            Common.Constants.ScimTypeValues.Uniqueness);
                         return false;
                     }
                 }

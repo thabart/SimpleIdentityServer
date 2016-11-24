@@ -15,7 +15,7 @@
 #endregion
 
 using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Scim.Core.DTOs;
+using SimpleIdentityServer.Scim.Common.DTOs;
 using SimpleIdentityServer.Scim.Core.Errors;
 using SimpleIdentityServer.Scim.Core.Factories;
 using SimpleIdentityServer.Scim.Core.Models;
@@ -65,12 +65,12 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
             // 2. Parse the request.
             var obj = jObj.ToObject<PatchOperationsRequest>();
-            if (!obj.Schemas.Contains(Constants.Messages.PatchOp))
+            if (!obj.Schemas.Contains(Common.Constants.Messages.PatchOp))
             {
                 errorResponse = _errorResponseFactory.CreateError(
                     ErrorMessages.TheRequestIsNotAPatchOperation,
                     HttpStatusCode.BadRequest,
-                    Constants.ScimTypeValues.InvalidSyntax);
+                    Common.Constants.ScimTypeValues.InvalidSyntax);
                 return null;
             }
 
@@ -79,7 +79,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 errorResponse = _errorResponseFactory.CreateError(
                     ErrorMessages.TheOperationsParameterMustBeSpecified,
                     HttpStatusCode.BadRequest,
-                    Constants.ScimTypeValues.InvalidSyntax);
+                    Common.Constants.ScimTypeValues.InvalidSyntax);
                 return null;
             }
 
@@ -92,7 +92,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                     errorResponse = _errorResponseFactory.CreateError(
                         string.Format(ErrorMessages.ThePatchOperationIsNotSupported, operation.Operation),
                         HttpStatusCode.BadRequest,
-                        Constants.ScimTypeValues.InvalidSyntax);
+                        Common.Constants.ScimTypeValues.InvalidSyntax);
                     return null;
                 }
 

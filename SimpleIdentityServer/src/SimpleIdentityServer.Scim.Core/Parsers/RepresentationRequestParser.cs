@@ -15,6 +15,7 @@
 #endregion
 
 using Newtonsoft.Json.Linq;
+using SimpleIdentityServer.Scim.Common.DTOs;
 using SimpleIdentityServer.Scim.Core.Errors;
 using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Core.Stores;
@@ -101,7 +102,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             foreach (var attribute in schema.Attributes)
             {
                 // 1. Ignore the attribute with readonly mutability
-                if (attribute.Mutability == Constants.SchemaAttributeMutability.ReadOnly)
+                if (attribute.Mutability == Common.Constants.SchemaAttributeMutability.ReadOnly)
                 {
                     continue;
                 }
@@ -225,19 +226,19 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             // Note : Don't cast to object to avoid unecessaries boxing operations ...
             switch (attribute.Type)
             {
-                case Constants.SchemaAttributeTypes.String:
+                case Common.Constants.SchemaAttributeTypes.String:
                     result = GetSingularToken<string>(jArr, attribute, token);
                     break;
-                case Constants.SchemaAttributeTypes.Boolean:
+                case Common.Constants.SchemaAttributeTypes.Boolean:
                     result = GetSingularToken<bool>(jArr, attribute, token);
                     break;
-                case Constants.SchemaAttributeTypes.Decimal:
+                case Common.Constants.SchemaAttributeTypes.Decimal:
                     result = GetSingularToken<decimal>(jArr, attribute, token);
                     break;
-                case Constants.SchemaAttributeTypes.DateTime:
+                case Common.Constants.SchemaAttributeTypes.DateTime:
                     result = GetSingularToken<DateTime>(jArr, attribute, token);
                     break;
-                case Constants.SchemaAttributeTypes.Integer:
+                case Common.Constants.SchemaAttributeTypes.Integer:
                     result = GetSingularToken<int>(jArr, attribute, token);
                     break;
                 default:

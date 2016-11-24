@@ -16,6 +16,7 @@
 
 using Moq;
 using Newtonsoft.Json.Linq;
+using SimpleIdentityServer.Scim.Common.DTOs;
 using SimpleIdentityServer.Scim.Core.Errors;
 using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Core.Parsers;
@@ -76,7 +77,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             // ARRANGE
             InitializeFakeObjects();
             _schemaStoreStub.Setup(s => s.GetSchema(It.IsAny<string>()))
-                .Returns(_schemaStore.GetSchema(Constants.SchemaUrns.Group));
+                .Returns(_schemaStore.GetSchema(Common.Constants.SchemaUrns.Group));
             var jObj = JObject.Parse(@"{'schemas': ['urn:ietf:params:scim:schemas:core:2.0:Group']," +
             "'displayName': 'Group A'," +
             "'members': 'members'" +
@@ -84,7 +85,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             var errorMessage = string.Empty;
 
             // ACT
-            var result =_requestParser.Parse(jObj, Constants.SchemaUrns.Group, CheckStrategies.Strong, out errorMessage);
+            var result =_requestParser.Parse(jObj, Common.Constants.SchemaUrns.Group, CheckStrategies.Strong, out errorMessage);
 
             // ASSERT
             Assert.Null(result);
@@ -97,7 +98,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             // ARRANGE
             InitializeFakeObjects();
             _schemaStoreStub.Setup(s => s.GetSchema(It.IsAny<string>()))
-                .Returns(_schemaStore.GetSchema(Constants.SchemaUrns.User));
+                .Returns(_schemaStore.GetSchema(Common.Constants.SchemaUrns.User));
             var jObj = JObject.Parse(@"{'schemas': ['urn:ietf:params:scim:schemas:core:2.0:User']," +
             "'externalId': 'bjensen'," +
             "'userName': 'bjensen'," +
@@ -109,11 +110,11 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             string error;
 
             // ACT
-            var result = _requestParser.Parse(jObj, Constants.SchemaUrns.User, CheckStrategies.Strong, out error);
+            var result = _requestParser.Parse(jObj, Common.Constants.SchemaUrns.User, CheckStrategies.Strong, out error);
 
             // ASSERTS
             Assert.Null(result);
-            Assert.True(error == string.Format(ErrorMessages.TheAttributeTypeIsNotCorrect, "active", Constants.SchemaAttributeTypes.Boolean));
+            Assert.True(error == string.Format(ErrorMessages.TheAttributeTypeIsNotCorrect, "active", Common.Constants.SchemaAttributeTypes.Boolean));
         }
 
         [Fact]
@@ -122,7 +123,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             // ARRANGE
             InitializeFakeObjects();
             _schemaStoreStub.Setup(s => s.GetSchema(It.IsAny<string>()))
-                .Returns(_schemaStore.GetSchema(Constants.SchemaUrns.Group));
+                .Returns(_schemaStore.GetSchema(Common.Constants.SchemaUrns.Group));
             var jObj = JObject.Parse(@"{'schemas': ['urn:ietf:params:scim:schemas:core:2.0:Group'],"+
             "'displayName': 'Group A',"+
             "'members': ["+
@@ -134,7 +135,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             string error;
 
             // ACT
-            var result = _requestParser.Parse(jObj, Constants.SchemaUrns.Group, CheckStrategies.Strong, out error);
+            var result = _requestParser.Parse(jObj, Common.Constants.SchemaUrns.Group, CheckStrategies.Strong, out error);
 
             // ASSERTS
             Assert.NotNull(result);
@@ -159,7 +160,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             // ARRANGE
             InitializeFakeObjects();
             _schemaStoreStub.Setup(s => s.GetSchema(It.IsAny<string>()))
-                .Returns(_schemaStore.GetSchema(Constants.SchemaUrns.Group));
+                .Returns(_schemaStore.GetSchema(Common.Constants.SchemaUrns.Group));
             var jObj = JObject.Parse(@"{'schemas': ['urn:ietf:params:scim:schemas:core:2.0:Group']," +
             "'displayName': 'Group A'," +
             "'members': [" +
@@ -179,7 +180,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             string error;
 
             // ACT
-            var result = _requestParser.Parse(jObj, Constants.SchemaUrns.Group, CheckStrategies.Strong, out error);
+            var result = _requestParser.Parse(jObj, Common.Constants.SchemaUrns.Group, CheckStrategies.Strong, out error);
 
 
             // ASSERTS
@@ -205,7 +206,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             // ARRANGE
             InitializeFakeObjects();
             _schemaStoreStub.Setup(s => s.GetSchema(It.IsAny<string>()))
-                .Returns(_schemaStore.GetSchema(Constants.SchemaUrns.User));
+                .Returns(_schemaStore.GetSchema(Common.Constants.SchemaUrns.User));
             var jObj = JObject.Parse(@"{'schemas': ['urn:ietf:params:scim:schemas:core:2.0:User']," +
             "'externalId': 'bjensen'," +
             "'userName': 'bjensen'," +
@@ -216,7 +217,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             string error;
 
             // ACT
-            var result = _requestParser.Parse(jObj, Constants.SchemaUrns.User, CheckStrategies.Strong, out error);
+            var result = _requestParser.Parse(jObj, Common.Constants.SchemaUrns.User, CheckStrategies.Strong, out error);
 
 
             // ASSERTS

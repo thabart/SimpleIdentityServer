@@ -14,18 +14,15 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Scim.Core.Models;
-using System.Runtime.Serialization;
-
-namespace SimpleIdentityServer.Scim.Core.DTOs
+namespace SimpleIdentityServer.Scim.Client.Groups
 {
-    [DataContract]
-    public class IdentifiedScimResourceResponse : ScimResourceResponse
+    public interface IGroupsClient
     {
-        [DataMember(Name = Constants.IdentifiedScimResourceNames.Id)]
-        public string Id { get; set; }
 
-        [DataMember(Name = Constants.IdentifiedScimResourceNames.ExternalId)]
-        public string ExternalId { get; set; }
+    }
+
+    internal class GroupsClient : IGroupsClient
+    {
+
     }
 }

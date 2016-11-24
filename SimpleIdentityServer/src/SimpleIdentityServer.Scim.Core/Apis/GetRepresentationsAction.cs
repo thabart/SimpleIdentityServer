@@ -94,20 +94,20 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             var schemas = new JArray();
             var content = new JArray();
             content.Add(filter.Values);
-            schemas.Add(Constants.Messages.ListResponse);
-            result.Add(Constants.ScimResourceNames.Schemas, schemas);
-            result[Constants.SearchParameterResponseNames.Resources] = content;
+            schemas.Add(Common.Constants.Messages.ListResponse);
+            result.Add(Common.Constants.ScimResourceNames.Schemas, schemas);
+            result[Common.Constants.SearchParameterResponseNames.Resources] = content;
             if (filter.ItemsPerPage.HasValue)
             {
-                result.Add(Constants.SearchParameterResponseNames.ItemsPerPage, filter.ItemsPerPage);
+                result.Add(Common.Constants.SearchParameterResponseNames.ItemsPerPage, filter.ItemsPerPage);
             }
 
             if (filter.StartIndex.HasValue)
             {
-                result.Add(Constants.SearchParameterResponseNames.StartIndex, filter.StartIndex);
+                result.Add(Common.Constants.SearchParameterResponseNames.StartIndex, filter.StartIndex);
             }
 
-            result.Add(Constants.SearchParameterResponseNames.TotalResults, filter.TotalNumbers);
+            result.Add(Common.Constants.SearchParameterResponseNames.TotalResults, filter.TotalNumbers);
             return result;
         }
     }

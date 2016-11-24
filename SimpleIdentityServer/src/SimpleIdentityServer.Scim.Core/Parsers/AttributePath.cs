@@ -70,7 +70,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
             // representations = representations.Select(r => (RepresentationAttribute)r.Clone()).ToList();
             if ((ValueFilter != null && representations.Any(r => !r.SchemaAttribute.MultiValued)) ||
-                (Next != null && representations.Any(r => r.SchemaAttribute.Type != Constants.SchemaAttributeTypes.Complex)))
+                (Next != null && representations.Any(r => r.SchemaAttribute.Type != Common.Constants.SchemaAttributeTypes.Complex)))
             {
                 return null;
             }

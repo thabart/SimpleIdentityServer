@@ -16,24 +16,15 @@
 
 using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.Scim.Core.DTOs
+namespace SimpleIdentityServer.Scim.Common.DTOs
 {
     [DataContract]
-    public class MultiValueAttrResponse
+    public class IdentifiedScimResource : ScimResource
     {
-        [DataMember(Name = Constants.MultiValueAttributeNames.Type)]
-        public string Type { get; set; }
+        [DataMember(Name = Constants.IdentifiedScimResourceNames.Id)]
+        public string Id { get; set; }
 
-        [DataMember(Name = Constants.MultiValueAttributeNames.Primary)]
-        public bool Primary { get; set; }
-
-        [DataMember(Name = Constants.MultiValueAttributeNames.Display)]
-        public string Display { get; set; }
-
-        [DataMember(Name = Constants.MultiValueAttributeNames.Value)]
-        public string Value { get; set; }
-
-        [DataMember(Name = Constants.MultiValueAttributeNames.Ref)]
-        public string Ref { get; set; }
+        [DataMember(Name = Constants.IdentifiedScimResourceNames.ExternalId)]
+        public string ExternalId { get; set; }
     }
 }

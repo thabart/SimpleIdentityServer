@@ -14,16 +14,16 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Scim.Common.DTOs;
-using System;
+using SimpleIdentityServer.Scim.Core;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.Scim.Core.Stores
+namespace SimpleIdentityServer.Scim.Client.DTOs
 {
-    public interface ISchemaStore : IDisposable
+    [DataContract]
+    public class BaseScimResource
     {
-        IEnumerable<SchemaResponse> GetSchemas();
-        SchemaResponse GetSchema(string id);
-        IEnumerable<SchemaAttributeResponse> GetCommonAttributes();
+        [DataMember(Name = Constants.ScimResourceNames.Schemas)]
+        public IEnumerable<string> Schemas { get; set; }
     }
 }

@@ -15,7 +15,7 @@
 #endregion
 
 using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Scim.Core.DTOs;
+using SimpleIdentityServer.Scim.Common.DTOs;
 using SimpleIdentityServer.Scim.Core.Errors;
 using SimpleIdentityServer.Scim.Core.Factories;
 using SimpleIdentityServer.Scim.Core.Models;
@@ -111,7 +111,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                             _errorResponseFactory.CreateError(
                                 string.Format(ErrorMessages.TheMaximumNumberOfErrorHasBeenReached, bulk.FailOnErrors),
                                 HttpStatusCode.InternalServerError,
-                                Constants.ScimTypeValues.TooMany));
+                                Common.Constants.ScimTypeValues.TooMany));
                     }
                 }
 
@@ -126,40 +126,40 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         {
             var result = new JObject();
             var schemas = new JArray();
-            schemas.Add(Constants.Messages.BulkResponse);
-            result.Add(Constants.ScimResourceNames.Schemas, schemas);
-            result.Add(Constants.PatchOperationsRequestNames.Operations, operationsResult);
+            schemas.Add(Common.Constants.Messages.BulkResponse);
+            result.Add(Common.Constants.ScimResourceNames.Schemas, schemas);
+            result.Add(Common.Constants.PatchOperationsRequestNames.Operations, operationsResult);
             return result;
         }
 
         private JObject CreateOperationResponse(ApiActionResult apiActionResult, BulkOperationResult bulkOperation)
         {
             var result = new JObject();
-            result[Constants.BulkOperationRequestNames.Method] = bulkOperation.Method.Method;
-            result[Constants.BulkOperationResponseNames.Status] = apiActionResult.StatusCode;
+            result[Common.Constants.BulkOperationRequestNames.Method] = bulkOperation.Method.Method;
+            result[Common.Constants.BulkOperationResponseNames.Status] = apiActionResult.StatusCode;
             if (!string.IsNullOrWhiteSpace(bulkOperation.BulkId))
             {
-                result[Constants.BulkOperationRequestNames.BulkId] = bulkOperation.BulkId;
+                result[Common.Constants.BulkOperationRequestNames.BulkId] = bulkOperation.BulkId;
             }
 
             if (!string.IsNullOrWhiteSpace(bulkOperation.Version))
             {
-                result[Constants.BulkOperationRequestNames.Version] = bulkOperation.Version;
+                result[Common.Constants.BulkOperationRequestNames.Version] = bulkOperation.Version;
             }
 
             if (!string.IsNullOrWhiteSpace(bulkOperation.Path))
             {
-                result[Constants.BulkOperationRequestNames.Path] = bulkOperation.Path;
+                result[Common.Constants.BulkOperationRequestNames.Path] = bulkOperation.Path;
             }
 
             if (!string.IsNullOrWhiteSpace(apiActionResult.Location))
             {
-                result[Constants.BulkOperationResponseNames.Location] = apiActionResult.Location;
+                result[Common.Constants.BulkOperationResponseNames.Location] = apiActionResult.Location;
             }
             
             if (apiActionResult.Content != null)
             {
-                result.Add(new JProperty(Constants.BulkOperationResponseNames.Response, JObject.FromObject(apiActionResult.Content)));
+                result.Add(new JProperty(Common.Constants.BulkOperationResponseNames.Response, JObject.FromObject(apiActionResult.Content)));
             }
 
             return result;

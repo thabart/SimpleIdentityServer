@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Scim.Common.DTOs;
 using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Core.Parsers;
 using System;
@@ -154,7 +155,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             {
                 Attributes = new[]
                 {
-                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "name", Type = Constants.SchemaAttributeTypes.Complex })
+                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "name", Type = Common.Constants.SchemaAttributeTypes.Complex })
                     {
                         Values = new [] {
                             new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName" }, "thierry")
@@ -182,11 +183,11 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             {
                 Attributes = new[]
                 {
-                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "names", Type = Constants.SchemaAttributeTypes.Complex, MultiValued = true })
+                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "names", Type = Common.Constants.SchemaAttributeTypes.Complex, MultiValued = true })
                     {
                         Values = new [] {
-                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "thierry"),
-                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "laetitia")
+                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Common.Constants.SchemaAttributeTypes.String }, "thierry"),
+                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Common.Constants.SchemaAttributeTypes.String }, "laetitia")
                         }
                     }
                 }
@@ -214,13 +215,13 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             {
                 Attributes = new[]
                 {
-                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "names", Type = Constants.SchemaAttributeTypes.Complex, MultiValued = true })
+                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "names", Type = Common.Constants.SchemaAttributeTypes.Complex, MultiValued = true })
                     {
                         Values = new [] {
-                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "thierry"),
-                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "thierry"),
-                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "laetitia"),
-                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "loki")
+                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Common.Constants.SchemaAttributeTypes.String }, "thierry"),
+                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Common.Constants.SchemaAttributeTypes.String }, "thierry"),
+                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Common.Constants.SchemaAttributeTypes.String }, "laetitia"),
+                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Common.Constants.SchemaAttributeTypes.String }, "loki")
                         }
                     }
                 }
@@ -247,7 +248,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             {
                 Attributes = new[]
                 {
-                    new SingularRepresentationAttribute<IEnumerable<string>>(new SchemaAttributeResponse { Name = "names", Type = Constants.SchemaAttributeTypes.String, MultiValued = true }, new []
+                    new SingularRepresentationAttribute<IEnumerable<string>>(new SchemaAttributeResponse { Name = "names", Type = Common.Constants.SchemaAttributeTypes.String, MultiValued = true }, new []
                     {
                         "loki",
                         "loki",
@@ -275,12 +276,12 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             {
                 Attributes = new[]
                 {
-                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "names", Type = Constants.SchemaAttributeTypes.Complex, MultiValued = true })
+                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "names", Type = Common.Constants.SchemaAttributeTypes.Complex, MultiValued = true })
                     {
                         Values = new [] {
-                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "thierry"),
-                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "thRRR"),
-                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "laetitia")
+                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Common.Constants.SchemaAttributeTypes.String }, "thierry"),
+                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Common.Constants.SchemaAttributeTypes.String }, "thRRR"),
+                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Common.Constants.SchemaAttributeTypes.String }, "laetitia")
                         }
                     }
                 }
@@ -306,26 +307,26 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             {
                 Attributes = new[]
                 {
-                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "persons", Type = Constants.SchemaAttributeTypes.Complex, MultiValued = true })
+                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "persons", Type = Common.Constants.SchemaAttributeTypes.Complex, MultiValued = true })
                     {
                         Values = new []
                         {
                             // 23 YO
-                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Type = Constants.SchemaAttributeTypes.Complex })
+                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Type = Common.Constants.SchemaAttributeTypes.Complex })
                             {
                                 Values = new RepresentationAttribute[]
                                 {
-                                    new SingularRepresentationAttribute<int>(new SchemaAttributeResponse { Name = "age", Type = Constants.SchemaAttributeTypes.Integer }, 23),
-                                    new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "firstName")
+                                    new SingularRepresentationAttribute<int>(new SchemaAttributeResponse { Name = "age", Type = Common.Constants.SchemaAttributeTypes.Integer }, 23),
+                                    new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Common.Constants.SchemaAttributeTypes.String }, "firstName")
                                 }
                             },
                             // 24 YO
-                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Type = Constants.SchemaAttributeTypes.Complex })
+                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Type = Common.Constants.SchemaAttributeTypes.Complex })
                             {
                                 Values = new RepresentationAttribute[]
                                 {
-                                    new SingularRepresentationAttribute<int>(new SchemaAttributeResponse { Name = "age", Type = Constants.SchemaAttributeTypes.Integer }, 24),
-                                    new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "firstName")
+                                    new SingularRepresentationAttribute<int>(new SchemaAttributeResponse { Name = "age", Type = Common.Constants.SchemaAttributeTypes.Integer }, 24),
+                                    new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Common.Constants.SchemaAttributeTypes.String }, "firstName")
                                 }
                             }
                         }
@@ -360,29 +361,29 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             {
                 Attributes = new[]
                 {
-                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "persons", Type = Constants.SchemaAttributeTypes.Complex, MultiValued = true })
+                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "persons", Type = Common.Constants.SchemaAttributeTypes.Complex, MultiValued = true })
                     {
                         Values = new []
                         {
-                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "person", Type = Constants.SchemaAttributeTypes.Complex })
+                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "person", Type = Common.Constants.SchemaAttributeTypes.Complex })
                             {
                                 Values = new []
                                 {
-                                    new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "adr", Type = Constants.SchemaAttributeTypes.String }, "adr1")
+                                    new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "adr", Type = Common.Constants.SchemaAttributeTypes.String }, "adr1")
                                 }
                             },
-                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "person", Type = Constants.SchemaAttributeTypes.Complex })
+                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "person", Type = Common.Constants.SchemaAttributeTypes.Complex })
                             {
                                 Values = new []
                                 {
-                                    new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "adr", Type = Constants.SchemaAttributeTypes.String }, "adr2")
+                                    new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "adr", Type = Common.Constants.SchemaAttributeTypes.String }, "adr2")
                                 }
                             },
-                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "person", Type = Constants.SchemaAttributeTypes.Complex })
+                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "person", Type = Common.Constants.SchemaAttributeTypes.Complex })
                             {
                                 Values = null
                             },
-                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "person", Type = Constants.SchemaAttributeTypes.Complex })
+                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "person", Type = Common.Constants.SchemaAttributeTypes.Complex })
                             {
                                 Values = null
                             }
@@ -412,29 +413,29 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             {
                 Attributes = new[]
                 {
-                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "persons", Type = Constants.SchemaAttributeTypes.Complex, MultiValued = true })
+                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "persons", Type = Common.Constants.SchemaAttributeTypes.Complex, MultiValued = true })
                     {
                         Values = new []
                         {
-                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "person", Type = Constants.SchemaAttributeTypes.Complex })
+                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "person", Type = Common.Constants.SchemaAttributeTypes.Complex })
                             {
                                 Values = new []
                                 {
-                                    new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "adr", Type = Constants.SchemaAttributeTypes.String }, "adr1")
+                                    new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "adr", Type = Common.Constants.SchemaAttributeTypes.String }, "adr1")
                                 }
                             },
-                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "person", Type = Constants.SchemaAttributeTypes.Complex })
+                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "person", Type = Common.Constants.SchemaAttributeTypes.Complex })
                             {
                                 Values = new []
                                 {
-                                    new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "adr", Type = Constants.SchemaAttributeTypes.String }, "adr2")
+                                    new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "adr", Type = Common.Constants.SchemaAttributeTypes.String }, "adr2")
                                 }
                             },
-                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "person", Type = Constants.SchemaAttributeTypes.Complex })
+                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "person", Type = Common.Constants.SchemaAttributeTypes.Complex })
                             {
                                 Values = null
                             },
-                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "person", Type = Constants.SchemaAttributeTypes.Complex })
+                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "person", Type = Common.Constants.SchemaAttributeTypes.Complex })
                             {
                                 Values = null
                             }
@@ -465,11 +466,11 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             {
                 Attributes = new[]
                 {
-                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "name", Type = Constants.SchemaAttributeTypes.Complex })
+                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "name", Type = Common.Constants.SchemaAttributeTypes.Complex })
                     {
                         Values = new [] {
-                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "thierry"),
-                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "lastName", Type = Constants.SchemaAttributeTypes.String }, "loki")
+                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Common.Constants.SchemaAttributeTypes.String }, "thierry"),
+                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "lastName", Type = Common.Constants.SchemaAttributeTypes.String }, "loki")
                         }
                     }
                 }
@@ -493,11 +494,11 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             {
                 Attributes = new[]
                 {
-                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "name", Type = Constants.SchemaAttributeTypes.Complex })
+                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "name", Type = Common.Constants.SchemaAttributeTypes.Complex })
                     {
                         Values = new [] {
-                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "thierry"),
-                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "lastName", Type = Constants.SchemaAttributeTypes.String }, "loki")
+                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Common.Constants.SchemaAttributeTypes.String }, "thierry"),
+                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "lastName", Type = Common.Constants.SchemaAttributeTypes.String }, "loki")
                         }
                     }
                 }
@@ -520,11 +521,11 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             {
                 Attributes = new[]
                 {
-                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "name", Type = Constants.SchemaAttributeTypes.Complex })
+                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "name", Type = Common.Constants.SchemaAttributeTypes.Complex })
                     {
                         Values = new [] {
-                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "laetitia"),
-                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "lastName", Type = Constants.SchemaAttributeTypes.String }, "loki")
+                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Common.Constants.SchemaAttributeTypes.String }, "laetitia"),
+                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "lastName", Type = Common.Constants.SchemaAttributeTypes.String }, "loki")
                         }
                     }
                 }
@@ -548,38 +549,38 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             {
                 Attributes = new[]
                 {
-                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "persons", Type = Constants.SchemaAttributeTypes.Complex, MultiValued = true })
+                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "persons", Type = Common.Constants.SchemaAttributeTypes.Complex, MultiValued = true })
                     {
                         Values = new []
                         {
-                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "person", Type = Constants.SchemaAttributeTypes.Complex })
+                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "person", Type = Common.Constants.SchemaAttributeTypes.Complex })
                             {
                                 Values = new RepresentationAttribute[]
                                 {
-                                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "name", Type = Constants.SchemaAttributeTypes.Complex })
+                                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "name", Type = Common.Constants.SchemaAttributeTypes.Complex })
                                     {
                                         Values = new []
                                         {
-                                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "laetitia"),
-                                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "lastName", Type = Constants.SchemaAttributeTypes.String }, "loki")
+                                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Common.Constants.SchemaAttributeTypes.String }, "laetitia"),
+                                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "lastName", Type = Common.Constants.SchemaAttributeTypes.String }, "loki")
                                         }
                                     },
-                                    new SingularRepresentationAttribute<DateTime>(new SchemaAttributeResponse { Name = "birthDate", Type = Constants.SchemaAttributeTypes.DateTime }, DateTime.Parse("2011-05-13T04:42:34Z"))
+                                    new SingularRepresentationAttribute<DateTime>(new SchemaAttributeResponse { Name = "birthDate", Type = Common.Constants.SchemaAttributeTypes.DateTime }, DateTime.Parse("2011-05-13T04:42:34Z"))
                                 }
                             },
-                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "person", Type = Constants.SchemaAttributeTypes.Complex })
+                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "person", Type = Common.Constants.SchemaAttributeTypes.Complex })
                             {
                                 Values = new RepresentationAttribute[]
                                 {
-                                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "name", Type = Constants.SchemaAttributeTypes.Complex })
+                                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "name", Type = Common.Constants.SchemaAttributeTypes.Complex })
                                     {
                                         Values = new []
                                         {
-                                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "thierry"),
-                                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "lastName", Type = Constants.SchemaAttributeTypes.String }, "loki")
+                                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Common.Constants.SchemaAttributeTypes.String }, "thierry"),
+                                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "lastName", Type = Common.Constants.SchemaAttributeTypes.String }, "loki")
                                         }
                                     },
-                                    new SingularRepresentationAttribute<DateTime>(new SchemaAttributeResponse { Name = "birthDate", Type = Constants.SchemaAttributeTypes.DateTime }, DateTime.Parse("2011-06-13T04:42:34Z"))
+                                    new SingularRepresentationAttribute<DateTime>(new SchemaAttributeResponse { Name = "birthDate", Type = Common.Constants.SchemaAttributeTypes.DateTime }, DateTime.Parse("2011-06-13T04:42:34Z"))
                                 }
                             }
                         }
@@ -608,13 +609,13 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             {
                 Attributes = new RepresentationAttribute[]
                 {
-                    new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "userName", Type = Constants.SchemaAttributeTypes.String }, "laetitia"),
-                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "name", Type = Constants.SchemaAttributeTypes.Complex })
+                    new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "userName", Type = Common.Constants.SchemaAttributeTypes.String }, "laetitia"),
+                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "name", Type = Common.Constants.SchemaAttributeTypes.Complex })
                     {
                         Values = new RepresentationAttribute[]
                         {
-                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Constants.SchemaAttributeTypes.String }, "thierry"),
-                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "lastName", Type = Constants.SchemaAttributeTypes.String }, "loki")
+                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Common.Constants.SchemaAttributeTypes.String }, "thierry"),
+                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "lastName", Type = Common.Constants.SchemaAttributeTypes.String }, "loki")
                         }
                     }
                 }

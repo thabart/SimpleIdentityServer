@@ -18,13 +18,13 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.Scim.Core.Models
+namespace SimpleIdentityServer.Scim.Common.DTOs
 {
     /// <summary>
     /// Parameters are listed here : https://tools.ietf.org/html/rfc7643#section-3.1
     /// </summary>
     [DataContract]
-    public class MetaResponse
+    public class Meta
     {
         [DataMember(Name = Constants.MetaResponseNames.ResourceType)]
         public string ResourceType { get; set; }
@@ -46,12 +46,12 @@ namespace SimpleIdentityServer.Scim.Core.Models
     /// Parameters are listed here : https://tools.ietf.org/html/rfc7643#section-3
     /// </summary>
     [DataContract]
-    public class ScimResourceResponse
+    public class ScimResource
     {
         [DataMember(Name = Constants.ScimResourceNames.Schemas)]
         public IEnumerable<string> Schemas { get; set; }
 
         [DataMember(Name = Constants.ScimResourceNames.Meta)]
-        public MetaResponse Meta { get; set; }
+        public Meta Meta { get; set; }
     }
 }

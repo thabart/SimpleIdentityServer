@@ -16,6 +16,7 @@
 
 using Moq;
 using Newtonsoft.Json.Linq;
+using SimpleIdentityServer.Scim.Common.DTOs;
 using SimpleIdentityServer.Scim.Core.Errors;
 using SimpleIdentityServer.Scim.Core.Factories;
 using SimpleIdentityServer.Scim.Core.Models;
@@ -77,7 +78,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             // ARRANGE
             InitializeFakeObjects();
             _schemaStoreStub.Setup(s => s.GetSchema(It.IsAny<string>()))
-                .Returns(_schemaStore.GetSchema(Constants.SchemaUrns.Group));
+                .Returns(_schemaStore.GetSchema(Common.Constants.SchemaUrns.Group));
             var jObj = JObject.Parse(@"{'schemas': ['urn:ietf:params:scim:schemas:core:2.0:Group']," +
             "'displayName': 'Group A'," +
             "'members': [" +
@@ -87,14 +88,14 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
              "}" +
            "]}");
             string error;
-            var result = _requestParser.Parse(jObj, Constants.SchemaUrns.Group, CheckStrategies.Strong, out error);
+            var result = _requestParser.Parse(jObj, Common.Constants.SchemaUrns.Group, CheckStrategies.Strong, out error);
             _commonAttributesFactoryStub.Setup(c => c.CreateIdJson(It.IsAny<Representation>()))
-                .Returns(new JProperty(Constants.IdentifiedScimResourceNames.Id, "id"));
+                .Returns(new JProperty(Common.Constants.IdentifiedScimResourceNames.Id, "id"));
             _commonAttributesFactoryStub.Setup(c => c.CreateMetaDataAttributeJson(It.IsAny<Representation>(), It.IsAny<string>()))
-                .Returns(new[] { new JProperty(Constants.ScimResourceNames.Meta, "meta") });
+                .Returns(new[] { new JProperty(Common.Constants.ScimResourceNames.Meta, "meta") });
 
             // ACT
-            var response = _responseParser.Parse(result, "http://localhost/{id}", Constants.SchemaUrns.Group, OperationTypes.Modification);
+            var response = _responseParser.Parse(result, "http://localhost/{id}", Common.Constants.SchemaUrns.Group, OperationTypes.Modification);
 
             // ASSERT
             Assert.NotNull(response);
@@ -121,7 +122,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             // ARRANGE
             InitializeFakeObjects();
             _schemaStoreStub.Setup(s => s.GetSchema(It.IsAny<string>()))
-                .Returns(_schemaStore.GetSchema(Constants.SchemaUrns.Group));
+                .Returns(_schemaStore.GetSchema(Common.Constants.SchemaUrns.Group));
             var firstObj = JObject.Parse(@"{'schemas': ['urn:ietf:params:scim:schemas:core:2.0:Group']," +
             "'displayName': 'Group A'," +
             "'members': [" +
@@ -147,9 +148,9 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
              "}" +
            "]}");
             string error;
-            var firstGroup = _requestParser.Parse(firstObj, Constants.SchemaUrns.Group, CheckStrategies.Strong, out error);
-            var secondGroup = _requestParser.Parse(secondObj, Constants.SchemaUrns.Group, CheckStrategies.Strong, out error);
-            var thirdGroup = _requestParser.Parse(thirdObj, Constants.SchemaUrns.Group, CheckStrategies.Strong, out error);
+            var firstGroup = _requestParser.Parse(firstObj, Common.Constants.SchemaUrns.Group, CheckStrategies.Strong, out error);
+            var secondGroup = _requestParser.Parse(secondObj, Common.Constants.SchemaUrns.Group, CheckStrategies.Strong, out error);
+            var thirdGroup = _requestParser.Parse(thirdObj, Common.Constants.SchemaUrns.Group, CheckStrategies.Strong, out error);
             var groups = new[] { firstGroup, secondGroup, thirdGroup };
             var searchOrderAscending = new SearchParameter
             {

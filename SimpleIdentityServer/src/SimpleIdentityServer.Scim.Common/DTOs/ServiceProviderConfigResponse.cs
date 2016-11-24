@@ -14,11 +14,10 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Scim.Core.Models;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.Scim.Core.DTOs
+namespace SimpleIdentityServer.Scim.Common.DTOs
 {
     [DataContract]
     public sealed class BulkResponse
@@ -72,7 +71,7 @@ namespace SimpleIdentityServer.Scim.Core.DTOs
     }
 
     [DataContract]
-    public sealed class AuthenticationSchemeResponse : MultiValueAttrResponse
+    public sealed class AuthenticationSchemeResponse : MultiValueAttr
     {
         [DataMember(Name = Constants.AuthenticationSchemeResponseNames.Name)]
         public string Name { get; set; }
@@ -88,7 +87,7 @@ namespace SimpleIdentityServer.Scim.Core.DTOs
     }
 
     [DataContract]
-    public sealed class ServiceProviderConfigResponse : ScimResourceResponse
+    public sealed class ServiceProviderConfigResponse : ScimResource
     {
         [DataMember(Name = Constants.ServiceProviderConfigResponseNames.DocumentationUri)]
         public string DocumentationUri { get; set; }

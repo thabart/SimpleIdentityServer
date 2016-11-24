@@ -14,13 +14,12 @@
 // limitations under the License.
 #endregion
 
-using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.Scim.Core.DTOs
+namespace SimpleIdentityServer.Scim.Common.DTOs
 {
     [DataContract]
-    public class NameResponse
+    public class Name
     {
         [DataMember(Name = Constants.NameResponseNames.Formatted)]
         public string Formatted { get; set; }
@@ -36,8 +35,9 @@ namespace SimpleIdentityServer.Scim.Core.DTOs
         public string HonorificSuffix { get; set; }
     }
 
+    /*
     [DataContract]
-    public class AddressResponse : MultiValueAttrResponse
+    public class Address : MultiValueAttrResponse
     {
         [DataMember(Name = Constants.AddressResponseNames.Formatted)]
         public string Formatted { get; set; }
@@ -52,14 +52,15 @@ namespace SimpleIdentityServer.Scim.Core.DTOs
         [DataMember(Name = Constants.AddressResponseNames.Country)]
         public string Country { get; set; }
     }
+    */
 
     [DataContract]
-    public class UserResourceResponse : IdentifiedScimResourceResponse
+    public class UserResourceResponse : IdentifiedScimResource
     {
         [DataMember(Name = Constants.UserResourceResponseNames.UserName)]
         public string UserName { get; set; }
         [DataMember(Name = Constants.UserResourceResponseNames.Name)]
-        public NameResponse Name { get; set; }
+        public Name Name { get; set; }
         [DataMember(Name = Constants.UserResourceResponseNames.DisplayName)]
         public string DisplayName { get; set; }
         [DataMember(Name = Constants.UserResourceResponseNames.NickName)]
@@ -86,6 +87,7 @@ namespace SimpleIdentityServer.Scim.Core.DTOs
         public bool Active { get; set; }
         [DataMember(Name = Constants.UserResourceResponseNames.Password)]
         public string Password { get; set; }
+        /*
         [DataMember(Name = Constants.UserResourceResponseNames.Emails)]
         public IEnumerable<MultiValueAttrResponse> Emails { get; set; }
         [DataMember(Name = Constants.UserResourceResponseNames.Phones)]
@@ -93,7 +95,7 @@ namespace SimpleIdentityServer.Scim.Core.DTOs
         [DataMember(Name = Constants.UserResourceResponseNames.Ims)]
         public IEnumerable<MultiValueAttrResponse> Ims { get; set; }
         [DataMember(Name = Constants.UserResourceResponseNames.Photos)]
-        public IEnumerable<MultiValueAttrResponse>  Photos { get; set; }
+        public IEnumerable<MultiValueAttrResponse> Photos { get; set; }
         [DataMember(Name = Constants.UserResourceResponseNames.Addresses)]
         public IEnumerable<AddressResponse> Addresses { get; set; }
         [DataMember(Name = Constants.UserResourceResponseNames.Groups)]
@@ -104,5 +106,6 @@ namespace SimpleIdentityServer.Scim.Core.DTOs
         public IEnumerable<MultiValueAttrResponse> Roles { get; set; }
         [DataMember(Name = Constants.UserResourceResponseNames.X509Certificates)]
         public IEnumerable<MultiValueAttrResponse> X509Certificates { get; set; }
+        */
     }
 }
