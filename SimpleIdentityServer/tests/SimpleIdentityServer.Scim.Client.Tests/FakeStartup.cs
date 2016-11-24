@@ -1,4 +1,4 @@
-#region copyright
+﻿#region copyright
 // Copyright 2015 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,57 +16,28 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using SimpleIdentityServer.Scim.Core;
 using SimpleIdentityServer.Scim.Db.EF;
 using SimpleIdentityServer.Scim.Db.EF.Extensions;
-using System.Reflection;
 using WebApiContrib.Core.Concurrency;
 using WebApiContrib.Core.Storage.InMemory;
 
-namespace SimpleIdentityServer.Scim.Startup
+namespace SimpleIdentityServer.Scim.Client.Tests
 {
-
-    public class Startup
+    public class FakeStartup
     {
-        public Startup(IHostingEnvironment env)
-        {
-            var builder = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json")
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
-
-            builder.AddEnvironmentVariables();
-            Configuration = builder.Build();
-        }
-
-        public IConfigurationRoot Configuration { get; set; }
-        
         public void ConfigureServices(IServiceCollection services)
         {
-            var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
-            var dbType = Configuration["Db:Type"];
-            switch (dbType)
-            {
-                case "SqlServer":
-                    services.AddSqlServerDb(Configuration["Data:DefaultConnection:ConnectionString"], migrationsAssembly);
-                    break;
-                default:
-                    services.AddInMemoryDb();
-                    break;
-            }
-
+            services.AddInMemoryDb();
             services.AddConcurrency(opt => opt.UseInMemory());
             services.AddScim();
             services.AddMvc();
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             InitializeDatabase(app);
-            loggerFactory.AddConsole();
             app.UseStatusCodePages();
             app.UseMvc(routes =>
             {
@@ -78,15 +49,11 @@ namespace SimpleIdentityServer.Scim.Startup
 
         private void InitializeDatabase(IApplicationBuilder app)
         {
-            var dbType = Configuration["Db:Type"];
             using (var scope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
             {
+                // scope.ServiceProvider.GetRequiredService<ScimDbContext>().Database.Migrate();
                 var context = scope.ServiceProvider.GetRequiredService<ScimDbContext>();
-                if (dbType != "InMemory")
-                {
-                    context.Database.Migrate();
-                }
-
+                // context.Database.Migrate();
                 context.EnsureSeedData();
             }
         }

@@ -1,5 +1,5 @@
 ﻿#region copyright
-// Copyright 2015 Habart Thierry
+// Copyright 2016 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,30 +15,27 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
+using Microsoft.AspNetCore.TestHost;
+using System.Net.Http;
+using Microsoft.AspNetCore.Hosting;
 
-namespace SimpleIdentityServer.Scim.Common.Builders
+namespace SimpleIdentityServer.Scim.Client.Tests
 {
-    public class AddRequestBuilder
+    public class TestScimServerFixture : IDisposable
     {
-        public AddRequestBuilder(string schema)
-        {
+        public TestServer Server { get; }
+        public HttpClient Client { get; }
 
+        public TestScimServerFixture()
+        {
+            Server = new TestServer(new WebHostBuilder().UseUrls("http://localhost:5555").UseStartup<Startup.Startup>());
+            Client = Server.CreateClient();
         }
 
-        public AddRequestBuilder(IEnumerable<string> schemas)
+        public void Dispose()
         {
-
-        }
-
-        public AddRequestBuilder SetCommonAttributes(string externalId)
-        {
-            if (string.IsNullOrWhiteSpace(externalId))
-            {
-                throw new ArgumentNullException(nameof(externalId));
-            }
-
-            return this;
+            Server.Dispose();
+            Client.Dispose();
         }
     }
 }

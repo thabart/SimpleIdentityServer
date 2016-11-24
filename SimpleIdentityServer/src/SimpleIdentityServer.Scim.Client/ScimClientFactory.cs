@@ -15,6 +15,7 @@
 #endregion
 
 using Microsoft.Extensions.DependencyInjection;
+using SimpleIdentityServer.Scim.Client.Factories;
 using SimpleIdentityServer.Scim.Client.Groups;
 using System;
 
@@ -45,6 +46,7 @@ namespace SimpleIdentityServer.Scim.Client
         private static void RegisterDependencies(IServiceCollection services)
         {
             services.AddTransient<IGroupsClient, GroupsClient>();
+            services.AddTransient<IHttpClientFactory, HttpClientFactory>();
         }
     }
 }

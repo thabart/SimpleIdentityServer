@@ -1,0 +1,37 @@
+{
+  "version": "1.0.0-*",
+  "description": "SimpleIdentityServer.Scim.Client.Tests Unit test project",
+  "authors": [ "thierry habart" ],
+  "packOptions": {
+    "tags": [ "" ],
+    "licenseUrl": "",
+    "projectUrl": ""
+  },
+  "tooling": {
+    "defaultNamespace": "SimpleIdentityServer.Scim.Client.Tests"
+  },
+  "testRunner": "xunit",
+  "dependencies": {
+    "xunit": "2.1.0",
+    "dotnet-test-xunit": "1.0.0-*",
+    "Microsoft.AspNetCore.WebUtilities": "1.0.0",
+    "Microsoft.AspNetCore.Http": "1.0.0",
+    "Microsoft.AspNetCore.TestHost": "1.0.0",
+    "SimpleIdentityServer.Scim.Client": { "target": "project" },
+    "SimpleIdentityServer.Scim.Startup": { "target": "project" }
+  },
+  "frameworks": {
+    "net46": {
+      "frameworkAssemblies": { },
+      "dependencies": {
+        "Moq": "4.5.9-*",
+        "Microsoft.NETCore.Platforms": "1.0.1-*"
+      }
+    }
+  },
+  "buildOptions": {
+    "copyToOutput": [
+      "appsettings.json"
+    ]
+  }
+}
