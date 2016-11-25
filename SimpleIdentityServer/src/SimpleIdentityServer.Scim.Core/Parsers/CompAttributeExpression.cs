@@ -18,6 +18,7 @@ using System.Linq;
 using SimpleIdentityServer.Scim.Core.Models;
 using System;
 using System.Collections.Generic;
+using SimpleIdentityServer.Scim.Common.DTOs;
 
 namespace SimpleIdentityServer.Scim.Core.Parsers
 {
@@ -64,6 +65,12 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             }
 
             return result;
+        }
+
+        protected override IEnumerable<SchemaAttributeResponse> EvaluateSchema(IEnumerable<SchemaAttributeResponse> schemaAttrs)
+        {
+            // The schema cannot be evaluated.
+            return null;
         }
 
         private static bool Compare(RepresentationAttribute attr, ComparisonOperators op, string value)

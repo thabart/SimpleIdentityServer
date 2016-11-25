@@ -15,6 +15,7 @@
 #endregion
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 
 namespace SimpleIdentityServer.Scim.Common.DTOs
@@ -22,7 +23,42 @@ namespace SimpleIdentityServer.Scim.Common.DTOs
     [DataContract]
     public class SchemaAttributeResponse
     {
+        public string FullPath
+        {
+            get
+            {
+                return GetFullPath();
+            }
+        }
+
+        private string GetFullPath()
+        {
+            var parents = new List<SchemaAttributeResponse>();
+            var names = new List<string>
+            {
+                Name
+            };
+
+            GetParents(this, parents);
+            parents.Reverse();
+            var parentNames = names.Concat(parents.Select(p => p.Name));
+            return string.Join(".", parentNames);
+        }
+
+        private IEnumerable<SchemaAttributeResponse> GetParents(SchemaAttributeResponse representation, IEnumerable<SchemaAttributeResponse> parents)
+        {
+            if (representation.Parent == null)
+            {
+                return parents;
+            }
+
+            parents = parents.Concat(new[] { representation });
+            return GetParents(representation.Parent, parents);
+        }
+
         public string Id { get; set; }
+        public SchemaAttributeResponse Parent { get; set; }
+
         /// <summary>
         /// Attribute's name
         /// </summary>

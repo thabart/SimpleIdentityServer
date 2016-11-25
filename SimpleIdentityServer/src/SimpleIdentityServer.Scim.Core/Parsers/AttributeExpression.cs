@@ -16,6 +16,8 @@
 
 using SimpleIdentityServer.Scim.Core.Models;
 using System.Collections.Generic;
+using SimpleIdentityServer.Scim.Common.DTOs;
+using System;
 
 namespace SimpleIdentityServer.Scim.Core.Parsers
 {
@@ -26,6 +28,11 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         protected override IEnumerable<RepresentationAttribute> EvaluateRepresentation(IEnumerable<RepresentationAttribute> representationAttrs)
         {
             return Path.Evaluate(representationAttrs);
+        }
+
+        protected override IEnumerable<SchemaAttributeResponse> EvaluateSchema(IEnumerable<SchemaAttributeResponse> schemaAttrs)
+        {
+            return Path.Evaluate(schemaAttrs);
         }
     }
 }

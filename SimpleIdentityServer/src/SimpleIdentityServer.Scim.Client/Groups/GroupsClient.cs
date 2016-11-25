@@ -34,6 +34,8 @@ namespace SimpleIdentityServer.Scim.Client.Groups
         Task<ScimResponse> DeleteGroup(Uri baseUri, string id);
         RequestBuilder UpdateGroup(string baseUrl, string id);
         RequestBuilder UpdateGroup(Uri baseUri, string id);
+        PatchRequestBuilder PartialUpdateGroup(string baseUrl, string id);
+        PatchRequestBuilder PartialUpdateGroup(Uri baseUri, string id);
     }
 
     internal class GroupsClient : IGroupsClient
@@ -177,24 +179,57 @@ namespace SimpleIdentityServer.Scim.Client.Groups
             return new RequestBuilder(_schema, (obj) => UpdateGroup(obj, new Uri(url)));
         }
 
+        public PatchRequestBuilder PartialUpdateGroup(string baseUrl, string id)
+        {
+            if (string.IsNullOrWhiteSpace(baseUrl))
+            {
+                throw new ArgumentNullException(nameof(baseUrl));
+            }
+
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            return PartialUpdateGroup(ParseUri(baseUrl), id);
+        }
+
+        public PatchRequestBuilder PartialUpdateGroup(Uri baseUri, string id)
+        {
+            if (baseUri == null)
+            {
+                throw new ArgumentNullException(nameof(baseUri));
+            }
+
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            var url = $"{FormatUrl(baseUri.AbsoluteUri)}/{id}";
+            return new PatchRequestBuilder((obj) => PartialUpdateGroup(obj, new Uri(url)));
+        }
+
         private async Task<ScimResponse> AddGroup(JObject jObj, Uri uri)
         {
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Post,
-                RequestUri = uri,
-                Content = new StringContent(jObj.ToString())
-            };
-            request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            var client = _httpClientFactory.GetHttpClient();
-            return await ParseHttpResponse(await client.SendAsync(request).ConfigureAwait(false));
+            return await ExecuteRequest(jObj, uri, HttpMethod.Post);
         }
 
         private async Task<ScimResponse> UpdateGroup(JObject jObj, Uri uri)
         {
+            return await ExecuteRequest(jObj, uri, HttpMethod.Put);
+        }
+
+        private async Task<ScimResponse> PartialUpdateGroup(JObject jObj, Uri uri)
+        {
+            return await ExecuteRequest(jObj, uri, new HttpMethod("PATCH"));
+        }
+
+        private async Task<ScimResponse> ExecuteRequest(JObject jObj, Uri uri, HttpMethod method)
+        {
             var request = new HttpRequestMessage
             {
-                Method = HttpMethod.Put,
+                Method = method,
                 RequestUri = uri,
                 Content = new StringContent(jObj.ToString())
             };

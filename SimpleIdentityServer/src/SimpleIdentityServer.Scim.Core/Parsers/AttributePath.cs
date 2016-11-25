@@ -15,6 +15,7 @@
 #endregion
 
 using Newtonsoft.Json.Linq;
+using SimpleIdentityServer.Scim.Common.DTOs;
 using SimpleIdentityServer.Scim.Core.Models;
 using System.Collections.Generic;
 using System.Linq;
@@ -96,6 +97,74 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                         if (Next != null && complexAttr.Values != null && complexAttr.Values.Any())
                         {
                             subAttrs.AddRange(Next.Evaluate(((ComplexRepresentationAttribute)record).Values));
+                        }
+                    }
+
+                    lst.Add(record);
+                }
+
+                representations = lst;
+                if (subAttrs.Any())
+                {
+                    return subAttrs;
+                }
+            }
+
+            return representations;
+        }
+
+        public IEnumerable<SchemaAttributeResponse> Evaluate(IEnumerable<SchemaAttributeResponse> schemaAttrs)
+        {
+            var representations = schemaAttrs.Where(r => r.Name == Name);
+            if (!representations.Any())
+            {
+                var lst = new List<SchemaAttributeResponse>();
+                foreach (var schemaAttr in schemaAttrs)
+                {
+                    var c = schemaAttr as ComplexSchemaAttributeResponse;
+                    if (c == null || !c.SubAttributes.Any(val => val.Name == Name))
+                    {
+                        continue;
+                    }
+
+                    lst.AddRange(c.SubAttributes.Where(val => val.Name == Name));
+                }
+
+                if (!lst.Any())
+                {
+                    return new SchemaAttributeResponse[0];
+                }
+
+                representations = lst;
+            }
+            
+            if ((ValueFilter != null && representations.Any(r => !r.MultiValued)) ||
+                (Next != null && representations.Any(r => r.Type != Common.Constants.SchemaAttributeTypes.Complex)))
+            {
+                return null;
+            }
+
+            if (ValueFilter != null || Next != null)
+            {
+                var subAttrs = new List<SchemaAttributeResponse>();
+                var lst = new List<SchemaAttributeResponse>();
+                foreach (var representation in representations)
+                {
+                    var record = representation;
+                    var complexAttr = representation as ComplexSchemaAttributeResponse;
+                    if (complexAttr != null && complexAttr.SubAttributes != null)
+                    {
+                        if (ValueFilter != null)
+                        {
+                            record = new ComplexSchemaAttributeResponse()
+                            {
+                                SubAttributes = ValueFilter.Evaluate(complexAttr.SubAttributes)
+                            };
+                        }
+
+                        if (Next != null && complexAttr.SubAttributes != null && complexAttr.SubAttributes.Any())
+                        {
+                            subAttrs.AddRange(Next.Evaluate(((ComplexSchemaAttributeResponse)record).SubAttributes));
                         }
                     }
 

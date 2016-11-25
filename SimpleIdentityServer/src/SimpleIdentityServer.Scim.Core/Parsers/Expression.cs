@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Scim.Common.DTOs;
 using SimpleIdentityServer.Scim.Core.Models;
 using System;
 using System.Collections.Generic;
@@ -43,6 +44,27 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             return EvaluateRepresentation(representationAttrs);
         }
 
+        public IEnumerable<SchemaAttributeResponse> Evaluate(SchemaResponse schema)
+        {
+            if (schema == null)
+            {
+                throw new ArgumentNullException(nameof(schema));
+            }
+
+            return Evaluate(schema.Attributes);
+        }
+
+        public IEnumerable<SchemaAttributeResponse> Evaluate(IEnumerable<SchemaAttributeResponse> schemaAttrs)
+        {
+            if (schemaAttrs == null)
+            {
+                throw new ArgumentNullException(nameof(schemaAttrs));
+            }
+
+            return EvaluateSchema(schemaAttrs);
+        }
+
         protected abstract IEnumerable<RepresentationAttribute> EvaluateRepresentation(IEnumerable<RepresentationAttribute> representationAttrs);
+        protected abstract IEnumerable<SchemaAttributeResponse> EvaluateSchema(IEnumerable<SchemaAttributeResponse> schemaAttrs);
     }
 }

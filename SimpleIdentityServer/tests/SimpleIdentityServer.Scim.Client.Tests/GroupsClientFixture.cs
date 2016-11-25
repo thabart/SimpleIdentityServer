@@ -16,6 +16,7 @@
 
 using Moq;
 using Newtonsoft.Json.Linq;
+using SimpleIdentityServer.Scim.Client.Builders;
 using SimpleIdentityServer.Scim.Client.Factories;
 using SimpleIdentityServer.Scim.Client.Groups;
 using System.Net;
@@ -42,6 +43,12 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             // ARRANGE
             InitializeFakeObjects();
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_testScimServerFixture.Client);
+            // var arr = JArray.Parse("[{'" + Common.Constants.MultiValueAttributeNames.Display + "' : 'display'}]");
+            var arr = JArray.Parse("[{'test' : 'display'}]");
+            var patchOperation = new PatchOperationBuilder().SetType(PatchOperations.replace)
+                .SetPath(Common.Constants.GroupResourceResponseNames.Members)
+                .SetContent(arr)
+                .Build();
 
             // ACT : Create group
             var firstResult = await _groupsClient.AddGroup(baseUrl).SetCommonAttributes("external_id").Execute();
@@ -72,12 +79,20 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             Assert.True(thirdResult.Content[Common.Constants.GroupResourceResponseNames.DisplayName].ToString() == "display_name");
             Assert.True(thirdResult.Content[Common.Constants.IdentifiedScimResourceNames.ExternalId].ToString() == "other_id");
 
-            // ACT : Remove group
-            var fourthResult = await _groupsClient.DeleteGroup(baseUrl, id);
+            // ACT : Partial update group
+            var fourthResult = await _groupsClient.PartialUpdateGroup(baseUrl, id)
+                .AddOperation(patchOperation)
+                .Execute();
 
             // ASSERTS
             Assert.NotNull(fourthResult);
-            Assert.True(fourthResult.StatusCode == HttpStatusCode.NoContent);
+
+            // ACT : Remove group
+            var fifthResult = await _groupsClient.DeleteGroup(baseUrl, id);
+
+            // ASSERTS
+            Assert.NotNull(fifthResult);
+            Assert.True(fifthResult.StatusCode == HttpStatusCode.NoContent);
         }
 
         private void InitializeFakeObjects()
