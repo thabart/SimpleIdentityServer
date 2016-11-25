@@ -21,12 +21,12 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Client.Builders
 {
-    public class AddRequestBuilder
+    public class RequestBuilder
     {
         private readonly Func<JObject, Task<ScimResponse>> _callback;
         private JObject _obj;
 
-        public AddRequestBuilder(string schema, Func<JObject, Task<ScimResponse>> callback)
+        public RequestBuilder(string schema, Func<JObject, Task<ScimResponse>> callback)
         {
             if (string.IsNullOrWhiteSpace(schema))
             {
@@ -42,7 +42,7 @@ namespace SimpleIdentityServer.Scim.Client.Builders
             Initialize(new string[] { schema });
         }
 
-        public AddRequestBuilder(IEnumerable<string> schemas, Func<JObject, Task<ScimResponse>> callback)
+        public RequestBuilder(IEnumerable<string> schemas, Func<JObject, Task<ScimResponse>> callback)
         {
             if (schemas == null)
             {
@@ -58,7 +58,7 @@ namespace SimpleIdentityServer.Scim.Client.Builders
             Initialize(schemas);
         }
 
-        public AddRequestBuilder SetCommonAttributes(string externalId)
+        public RequestBuilder SetCommonAttributes(string externalId)
         {
             if (string.IsNullOrWhiteSpace(externalId))
             {
@@ -69,7 +69,7 @@ namespace SimpleIdentityServer.Scim.Client.Builders
             return this;
         }
 
-        public AddRequestBuilder AddAttribute(JProperty property)
+        public RequestBuilder AddAttribute(JProperty property)
         {
             if (property == null)
             {

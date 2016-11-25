@@ -38,32 +38,46 @@ namespace SimpleIdentityServer.Scim.Client.Tests
         [Fact]
         public async Task When_Executing_Operations_On_Groups_Then_No_Exceptions_Are_Thrown()
         {
+            const string baseUrl = "http://localhost:5555";
             // ARRANGE
             InitializeFakeObjects();
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_testScimServerFixture.Client);
 
-            // ACT
-            var firstResult = await _groupsClient.AddGroup("http://localhost:5555").SetCommonAttributes("external_id").Execute();
+            // ACT : Create group
+            var firstResult = await _groupsClient.AddGroup(baseUrl).SetCommonAttributes("external_id").Execute();
 
             // ASSERTS
             Assert.NotNull(firstResult);
             Assert.True(firstResult.StatusCode == HttpStatusCode.Created);
             var id = firstResult.Content["id"].ToString();
 
-            // ACT
-            var secondResult = await _groupsClient.GetGroup("http://localhost:5555", id);
+            // ACT : Get group
+            var secondResult = await _groupsClient.GetGroup(baseUrl, id);
 
             // ASSERTS
             Assert.NotNull(secondResult);
             Assert.True(secondResult.StatusCode == HttpStatusCode.OK);
             Assert.True(secondResult.Content["id"].ToString() == id);
 
-            // ACT
-            var thirdResult = await _groupsClient.DeleteGroup("http://localhost:5555", id);
+            // ACT : Update group
+            var thirdResult = await _groupsClient.UpdateGroup(baseUrl, id)
+                .SetCommonAttributes("other_id")
+                .AddAttribute(new JProperty(Common.Constants.GroupResourceResponseNames.DisplayName, "display_name"))
+                .Execute();
 
             // ASSERTS
             Assert.NotNull(thirdResult);
-            Assert.True(thirdResult.StatusCode == HttpStatusCode.NoContent);
+            Assert.True(thirdResult.StatusCode == HttpStatusCode.OK);
+            Assert.True(thirdResult.Content["id"].ToString() == id);
+            Assert.True(thirdResult.Content[Common.Constants.GroupResourceResponseNames.DisplayName].ToString() == "display_name");
+            Assert.True(thirdResult.Content[Common.Constants.IdentifiedScimResourceNames.ExternalId].ToString() == "other_id");
+
+            // ACT : Remove group
+            var fourthResult = await _groupsClient.DeleteGroup(baseUrl, id);
+
+            // ASSERTS
+            Assert.NotNull(fourthResult);
+            Assert.True(fourthResult.StatusCode == HttpStatusCode.NoContent);
         }
 
         private void InitializeFakeObjects()

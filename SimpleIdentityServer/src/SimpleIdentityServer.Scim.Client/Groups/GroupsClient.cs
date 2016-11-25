@@ -26,12 +26,14 @@ namespace SimpleIdentityServer.Scim.Client.Groups
 {
     public interface IGroupsClient
     {
-        AddRequestBuilder AddGroup(string baseUrl);
-        AddRequestBuilder AddGroup(Uri baseUri);
+        RequestBuilder AddGroup(string baseUrl);
+        RequestBuilder AddGroup(Uri baseUri);
         Task<ScimResponse> GetGroup(string baseUrl, string id);
         Task<ScimResponse> GetGroup(Uri baseUri, string id);
         Task<ScimResponse> DeleteGroup(string baseUrl, string id);
         Task<ScimResponse> DeleteGroup(Uri baseUri, string id);
+        RequestBuilder UpdateGroup(string baseUrl, string id);
+        RequestBuilder UpdateGroup(Uri baseUri, string id);
     }
 
     internal class GroupsClient : IGroupsClient
@@ -44,7 +46,7 @@ namespace SimpleIdentityServer.Scim.Client.Groups
             _httpClientFactory = httpClientFactory;
         }
 
-        public AddRequestBuilder AddGroup(string baseUrl)
+        public RequestBuilder AddGroup(string baseUrl)
         {
             if (string.IsNullOrWhiteSpace(baseUrl))
             {
@@ -54,7 +56,7 @@ namespace SimpleIdentityServer.Scim.Client.Groups
             return AddGroup(ParseUri(baseUrl));
         }
 
-        public AddRequestBuilder AddGroup(Uri baseUri)
+        public RequestBuilder AddGroup(Uri baseUri)
         {
             if (baseUri == null)
             {
@@ -67,7 +69,7 @@ namespace SimpleIdentityServer.Scim.Client.Groups
                 throw new ArgumentException($"{baseUri} is not a valid uri");
             }
 
-            return new AddRequestBuilder(_schema, (obj) => AddGroup(obj, new Uri(url)));
+            return new RequestBuilder(_schema, (obj) => AddGroup(obj, new Uri(url)));
         }
 
         public async Task<ScimResponse> GetGroup(string baseUrl, string id)
@@ -144,11 +146,55 @@ namespace SimpleIdentityServer.Scim.Client.Groups
             return await ParseHttpResponse(await client.SendAsync(request).ConfigureAwait(false));
         }
 
+        public RequestBuilder UpdateGroup(string baseUrl, string id)
+        {
+            if (string.IsNullOrWhiteSpace(baseUrl))
+            {
+                throw new ArgumentNullException(nameof(baseUrl));
+            }
+
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            return UpdateGroup(ParseUri(baseUrl), id);
+        }
+
+        public RequestBuilder UpdateGroup(Uri baseUri, string id)
+        {
+            if (baseUri == null)
+            {
+                throw new ArgumentNullException(nameof(baseUri));
+            }
+
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            var url = $"{FormatUrl(baseUri.AbsoluteUri)}/{id}";
+            return new RequestBuilder(_schema, (obj) => UpdateGroup(obj, new Uri(url)));
+        }
+
         private async Task<ScimResponse> AddGroup(JObject jObj, Uri uri)
         {
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
+                RequestUri = uri,
+                Content = new StringContent(jObj.ToString())
+            };
+            request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            var client = _httpClientFactory.GetHttpClient();
+            return await ParseHttpResponse(await client.SendAsync(request).ConfigureAwait(false));
+        }
+
+        private async Task<ScimResponse> UpdateGroup(JObject jObj, Uri uri)
+        {
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Put,
                 RequestUri = uri,
                 Content = new StringContent(jObj.ToString())
             };
