@@ -361,15 +361,18 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
                 var properties = new List<JToken>();
                 // 2.2 Complex attribute
-                foreach(var subRepresentation in complexRepresentation.Values)
+                if (complexRepresentation.Values != null)
                 {
-                    var subAttribute = complexAttribute.SubAttributes.FirstOrDefault(a => a.Name == subRepresentation.SchemaAttribute.Name);
-                    if (subAttribute == null)
+                    foreach (var subRepresentation in complexRepresentation.Values)
                     {
-                        continue;
-                    }
+                        var subAttribute = complexAttribute.SubAttributes.FirstOrDefault(a => a.Name == subRepresentation.SchemaAttribute.Name);
+                        if (subAttribute == null)
+                        {
+                            continue;
+                        }
 
-                    properties.Add(GetToken(subRepresentation, subAttribute));
+                        properties.Add(GetToken(subRepresentation, subAttribute));
+                    }
                 }
 
                 var props = new JObject(properties);

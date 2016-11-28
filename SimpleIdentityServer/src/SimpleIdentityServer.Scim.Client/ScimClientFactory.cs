@@ -16,7 +16,6 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Scim.Client.Factories;
-using SimpleIdentityServer.Scim.Client.Groups;
 using System;
 
 namespace SimpleIdentityServer.Scim.Client
@@ -24,6 +23,7 @@ namespace SimpleIdentityServer.Scim.Client
     public interface IScimClientFactory
     {
         IGroupsClient GetGroupClient();
+        IUsersClient GetUserClient();
     }
 
     internal class ScimClientFactory : IScimClientFactory
@@ -43,9 +43,16 @@ namespace SimpleIdentityServer.Scim.Client
             return groupsClient;
         }
 
+        public IUsersClient GetUserClient()
+        {
+            var userClient = (IUsersClient)_serviceProvider.GetService(typeof(IUsersClient));
+            return userClient;
+        }
+
         private static void RegisterDependencies(IServiceCollection services)
         {
             services.AddTransient<IGroupsClient, GroupsClient>();
+            services.AddTransient<IUsersClient, UsersClient>();
             services.AddTransient<IHttpClientFactory, HttpClientFactory>();
         }
     }

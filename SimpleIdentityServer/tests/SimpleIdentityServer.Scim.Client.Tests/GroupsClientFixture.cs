@@ -18,7 +18,6 @@ using Moq;
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Scim.Client.Builders;
 using SimpleIdentityServer.Scim.Client.Factories;
-using SimpleIdentityServer.Scim.Client.Groups;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;

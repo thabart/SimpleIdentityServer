@@ -16,6 +16,7 @@
 
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Scim.Client.Builders;
+using SimpleIdentityServer.Scim.Client.Extensions;
 using SimpleIdentityServer.Scim.Client.Factories;
 using System;
 using System.Collections.Generic;
@@ -24,7 +25,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
-namespace SimpleIdentityServer.Scim.Client.Groups
+namespace SimpleIdentityServer.Scim.Client
 {
     public enum SortOrders
     {
@@ -118,7 +119,7 @@ namespace SimpleIdentityServer.Scim.Client.Groups
                 throw new ArgumentNullException(nameof(baseUrl));
             }
 
-            return AddGroup(ParseUri(baseUrl));
+            return AddGroup(baseUrl.ParseUri());
         }
 
         public RequestBuilder AddGroup(Uri baseUri)
@@ -149,7 +150,7 @@ namespace SimpleIdentityServer.Scim.Client.Groups
                 throw new ArgumentNullException(nameof(id));
             }
 
-            return await GetGroup(ParseUri(baseUrl), id);
+            return await GetGroup(baseUrl.ParseUri(), id);
         }
 
         public async Task<ScimResponse> GetGroup(Uri baseUri, string id)
@@ -186,7 +187,7 @@ namespace SimpleIdentityServer.Scim.Client.Groups
                 throw new ArgumentNullException(nameof(id));
             }
 
-            return await DeleteGroup(ParseUri(baseUrl), id);
+            return await DeleteGroup(baseUrl.ParseUri(), id);
         }
 
         public async Task<ScimResponse> DeleteGroup(Uri baseUri, string id)
@@ -223,7 +224,7 @@ namespace SimpleIdentityServer.Scim.Client.Groups
                 throw new ArgumentNullException(nameof(id));
             }
 
-            return UpdateGroup(ParseUri(baseUrl), id);
+            return UpdateGroup(baseUrl.ParseUri(), id);
         }
 
         public RequestBuilder UpdateGroup(Uri baseUri, string id)
@@ -254,7 +255,7 @@ namespace SimpleIdentityServer.Scim.Client.Groups
                 throw new ArgumentNullException(nameof(id));
             }
 
-            return PartialUpdateGroup(ParseUri(baseUrl), id);
+            return PartialUpdateGroup(baseUrl.ParseUri(), id);
         }
 
         public PatchRequestBuilder PartialUpdateGroup(Uri baseUri, string id)
@@ -280,7 +281,7 @@ namespace SimpleIdentityServer.Scim.Client.Groups
                 throw new ArgumentNullException(nameof(baseUrl));
             }
 
-            return await SearchGroups(ParseUri(baseUrl), parameter);
+            return await SearchGroups(baseUrl.ParseUri(), parameter);
         }
 
         public async Task<ScimResponse> SearchGroups(Uri baseUri, SearchGroupParameter parameter)
@@ -337,24 +338,13 @@ namespace SimpleIdentityServer.Scim.Client.Groups
         
         private static string FormatUrl(string baseUrl)
         {
-            var result = ParseUri(baseUrl);
+            var result = baseUrl.ParseUri();
             if (result == null)
             {
                 return null;
             }
             
             return baseUrl.TrimEnd('/', '\\') + "/Groups";
-        }
-
-        private static Uri ParseUri(string baseUrl)
-        {
-            Uri result;
-            if (!Uri.TryCreate(baseUrl, UriKind.Absolute, out result))
-            {
-                return null;
-            }
-
-            return result;
         }
 
         private static async Task<ScimResponse> ParseHttpResponse(HttpResponseMessage response)
