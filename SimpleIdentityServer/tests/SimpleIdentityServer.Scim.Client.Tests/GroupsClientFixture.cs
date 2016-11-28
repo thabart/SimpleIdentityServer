@@ -19,6 +19,7 @@ using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Scim.Client.Builders;
 using SimpleIdentityServer.Scim.Client.Factories;
 using SimpleIdentityServer.Scim.Client.Groups;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Xunit;
@@ -43,10 +44,21 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             // ARRANGE
             InitializeFakeObjects();
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_testScimServerFixture.Client);
-            var arr = JArray.Parse("[{'" + Common.Constants.MultiValueAttributeNames.Type + "' : 'group','" + Common.Constants.MultiValueAttributeNames.Value + "' : 'value'}]");
+            var arr = JArray.Parse("[{'" + Common.Constants.MultiValueAttributeNames.Type + "' : 'group','" + Common.Constants.MultiValueAttributeNames.Value + "' : 'value'},{'" + Common.Constants.MultiValueAttributeNames.Type + "' : 'group2','" + Common.Constants.MultiValueAttributeNames.Value + "' : 'value2'}]");
             var patchOperation = new PatchOperationBuilder().SetType(PatchOperations.replace)
                 .SetPath(Common.Constants.GroupResourceResponseNames.Members)
                 .SetContent(arr)
+                .Build();
+            var removeGroupOperation = new PatchOperationBuilder().SetType(PatchOperations.remove)
+                .SetPath("members[type eq group2]")
+                .Build();
+            var addGroupOperation = new PatchOperationBuilder().SetType(PatchOperations.add)
+                .SetPath("members")
+                .SetContent(JArray.Parse("[{'" + Common.Constants.MultiValueAttributeNames.Type + "' : 'group3','" + Common.Constants.MultiValueAttributeNames.Value + "' : 'value3'}]"))
+                .Build();
+            var updateGroupOperation = new PatchOperationBuilder().SetType(PatchOperations.replace)
+                .SetPath("members[type eq group3].value")
+                .SetContent("new_value")
                 .Build();
 
             // ACT : Create group
@@ -90,12 +102,37 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             Assert.True(fourthResult.Content[Common.Constants.GroupResourceResponseNames.Members][0][Common.Constants.MultiValueAttributeNames.Type].ToString() == "group");
             Assert.True(fourthResult.Content[Common.Constants.GroupResourceResponseNames.Members][0][Common.Constants.MultiValueAttributeNames.Value].ToString() == "value");
 
-            // ACT : Remove group
-            var fifthResult = await _groupsClient.DeleteGroup(baseUrl, id);
+            // ACT : Remove group2
+            var fifthResult = await _groupsClient.PartialUpdateGroup(baseUrl, id)
+                .AddOperation(removeGroupOperation)
+                .Execute();
+
+            Assert.NotNull(fifthResult != null);
+            Assert.True(fifthResult.Content[Common.Constants.GroupResourceResponseNames.Members].Count() == 1);
+
+            // ACT : Add group3
+            var sixResult = await _groupsClient.PartialUpdateGroup(baseUrl, id)
+                .AddOperation(addGroupOperation)
+                .Execute();
+
+            Assert.NotNull(sixResult);
+            Assert.True(sixResult.Content[Common.Constants.GroupResourceResponseNames.Members].Count() == 2);
+
+            // ACT : Update the group3 type (immutable property)
+            var sevenResult = await _groupsClient.PartialUpdateGroup(baseUrl, id)
+                .AddOperation(updateGroupOperation)
+                .Execute();
 
             // ASSERTS
-            Assert.NotNull(fifthResult);
-            Assert.True(fifthResult.StatusCode == HttpStatusCode.NoContent);
+            Assert.NotNull(sevenResult);
+            Assert.True(fourthResult.StatusCode == HttpStatusCode.BadRequest);
+
+            // ACT : Remove group
+            var eightResult = await _groupsClient.DeleteGroup(baseUrl, id);
+
+            // ASSERTS
+            Assert.NotNull(eightResult);
+            Assert.True(eightResult.StatusCode == HttpStatusCode.NoContent);
         }
 
         private void InitializeFakeObjects()
