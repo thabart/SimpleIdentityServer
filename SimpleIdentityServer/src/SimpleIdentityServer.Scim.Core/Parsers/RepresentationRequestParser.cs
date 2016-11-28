@@ -165,9 +165,11 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 if (attribute.Required && checkStrategy == CheckStrategies.Strong)
                 {
                     errorMessage = string.Format(ErrorMessages.TheAttributeIsRequired, attribute.Name);
+                    return null;
                 }
 
-                return null;
+                // Add empty attribute.
+                return GetEmptyToken(attribute, out errorMessage);
             }
 
             // 2. Check is an array
@@ -267,6 +269,56 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 return new SingularRepresentationAttribute<T>(attribute, token.Value<T>());
             }
             catch (FormatException)
+            {
+                return null;
+            }
+        }
+
+        private static RepresentationAttribute GetEmptyToken(SchemaAttributeResponse attr, out string errorMessage)
+        {
+            errorMessage = string.Empty;
+            RepresentationAttribute result = null;
+            switch (attr.Type)
+            {
+                case Common.Constants.SchemaAttributeTypes.String:
+                case Common.Constants.SchemaAttributeTypes.Reference:
+                    result = GetEmptyToken(attr, string.Empty);
+                    break;
+                case Common.Constants.SchemaAttributeTypes.Boolean:
+                    result = GetEmptyToken(attr, default(bool));
+                    break;
+                case Common.Constants.SchemaAttributeTypes.Decimal:
+                    result = GetEmptyToken(attr, default(decimal));
+                    break;
+                case Common.Constants.SchemaAttributeTypes.DateTime:
+                    result = GetEmptyToken(attr, default(DateTime));
+                    break;
+                case Common.Constants.SchemaAttributeTypes.Integer:
+                    result = GetEmptyToken(attr, default(int));
+                    break;
+                case Common.Constants.SchemaAttributeTypes.Complex:
+                    result = new ComplexRepresentationAttribute(attr);
+                    break;
+                default:
+                    errorMessage = string.Format(ErrorMessages.TheAttributeTypeIsNotSupported, attr.Type);
+                    break;
+            }
+
+            return result;
+        }
+
+        private static RepresentationAttribute GetEmptyToken<T>(SchemaAttributeResponse attr, T defaultValue)
+        {
+            try
+            {
+                if (attr.MultiValued)
+                {
+                    return new SingularRepresentationAttribute<IEnumerable<T>>(attr, new T[0]);
+                }
+
+                return new SingularRepresentationAttribute<T>(attr, defaultValue);
+            }
+            catch
             {
                 return null;
             }

@@ -43,8 +43,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             // ARRANGE
             InitializeFakeObjects();
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_testScimServerFixture.Client);
-            // var arr = JArray.Parse("[{'" + Common.Constants.MultiValueAttributeNames.Display + "' : 'display'}]");
-            var arr = JArray.Parse("[{'test' : 'display'}]");
+            var arr = JArray.Parse("[{'" + Common.Constants.MultiValueAttributeNames.Type + "' : 'group','" + Common.Constants.MultiValueAttributeNames.Value + "' : 'value'}]");
             var patchOperation = new PatchOperationBuilder().SetType(PatchOperations.replace)
                 .SetPath(Common.Constants.GroupResourceResponseNames.Members)
                 .SetContent(arr)
@@ -86,6 +85,10 @@ namespace SimpleIdentityServer.Scim.Client.Tests
 
             // ASSERTS
             Assert.NotNull(fourthResult);
+            Assert.True(fourthResult.StatusCode == HttpStatusCode.OK);
+            Assert.True(fourthResult.Content["id"].ToString() == id);
+            Assert.True(fourthResult.Content[Common.Constants.GroupResourceResponseNames.Members][0][Common.Constants.MultiValueAttributeNames.Type].ToString() == "group");
+            Assert.True(fourthResult.Content[Common.Constants.GroupResourceResponseNames.Members][0][Common.Constants.MultiValueAttributeNames.Value].ToString() == "value");
 
             // ACT : Remove group
             var fifthResult = await _groupsClient.DeleteGroup(baseUrl, id);

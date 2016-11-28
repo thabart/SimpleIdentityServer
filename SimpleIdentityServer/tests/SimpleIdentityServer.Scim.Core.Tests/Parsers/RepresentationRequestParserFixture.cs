@@ -139,19 +139,22 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
 
             // ASSERTS
             Assert.NotNull(result);
-            Assert.True(result.Attributes.Count() == 2);
-            Assert.True(result.Attributes.First().SchemaAttribute.Name == "displayName");
-            var members = result.Attributes.ElementAt(1) as ComplexRepresentationAttribute;
+            Assert.True(result.Attributes.Any(s => s.SchemaAttribute.Name == "displayName"));
+            var members = result.Attributes.First(s => s.SchemaAttribute.Name == "members") as ComplexRepresentationAttribute;
             Assert.NotNull(members);
             Assert.True(members.SchemaAttribute.Name == "members");
             Assert.True(members.Values.Count() == 1);
             var value = members.Values.First() as ComplexRepresentationAttribute;
-            foreach (var subValue in value.Values)
+            Assert.True(value.Values.Any(v =>
             {
-                var singularAttribute = subValue as SingularRepresentationAttribute<string>;
-                Assert.True(new[] { "type", "value" }.Contains(singularAttribute.SchemaAttribute.Name));
-                Assert.True(new[] { "Group", "bulkId:ytrewq" }.Contains(singularAttribute.Value));
-            } 
+                var singularAttribute = v as SingularRepresentationAttribute<string>;
+                if (singularAttribute == null)
+                {
+                    return false;
+                }
+
+                return new[] { "type", "value" }.Contains(singularAttribute.SchemaAttribute.Name) && new[] { "Group", "bulkId:ytrewq" }.Contains(singularAttribute.Value);
+            }));
         }
 
         [Fact]
@@ -185,9 +188,8 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
 
             // ASSERTS
             Assert.NotNull(result);
-            Assert.True(result.Attributes.Count() == 2);
-            Assert.True(result.Attributes.First().SchemaAttribute.Name == "displayName");
-            var members = result.Attributes.ElementAt(1) as ComplexRepresentationAttribute;
+            Assert.True(result.Attributes.Any(s => s.SchemaAttribute.Name == "displayName"));
+            var members = result.Attributes.First(s => s.SchemaAttribute.Name == "members") as ComplexRepresentationAttribute;
             Assert.NotNull(members);
             Assert.True(members.SchemaAttribute.Name == "members");
             Assert.True(members.Values.Count() == 3);
@@ -222,7 +224,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
 
             // ASSERTS
             Assert.NotNull(result);
-            Assert.True(result.Attributes.Count() == 3);
+            Assert.True(result.Attributes.Any());
         }
 
         #endregion

@@ -364,6 +364,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             switch(attribute.Type)
             {
                 case Common.Constants.SchemaAttributeTypes.String:
+                case Common.Constants.SchemaAttributeTypes.Reference:
                     return GetSingularToken<string>(attribute, attr, attribute.MultiValued);
                 case Common.Constants.SchemaAttributeTypes.Boolean:
                     return GetSingularToken<bool>(attribute, attr, attribute.MultiValued);
