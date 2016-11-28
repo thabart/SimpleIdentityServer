@@ -253,9 +253,25 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
                 // 3. Add all attributes
                 var obj = new JObject();
-                foreach (var token in attributes.Select(a => GetToken(a, a.SchemaAttribute)))
+                foreach (JProperty token in attributes.Select(a => (JProperty)GetToken(a, a.SchemaAttribute)))
                 {
-                    obj.Add(token);
+                    var value = obj[token.Name];
+                    if (value != null)
+                    {
+                        var arr = value as JArray;
+                        if (arr != null)
+                        {
+                            arr.Add(token.Value);
+                        }
+                        else
+                        {
+                            obj[token.Name] = new JArray(value, token.Value);
+                        }
+                    }
+                    else
+                    {
+                        obj.Add(token);
+                    }
                 }
 
                 result.Add(obj);

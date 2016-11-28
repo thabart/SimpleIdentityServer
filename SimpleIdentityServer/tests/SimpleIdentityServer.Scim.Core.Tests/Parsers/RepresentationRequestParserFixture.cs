@@ -194,12 +194,16 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             Assert.True(members.SchemaAttribute.Name == "members");
             Assert.True(members.Values.Count() == 3);
             var value = members.Values.First() as ComplexRepresentationAttribute;
-            foreach (var subValue in value.Values)
+            Assert.True(value.Values.Any(v =>
             {
-                var singularAttribute = subValue as SingularRepresentationAttribute<string>;
-                Assert.True(new[] { "type", "value" }.Contains(singularAttribute.SchemaAttribute.Name));
-                Assert.True(new[] { "Group", "bulkId:ytrewq" }.Contains(singularAttribute.Value));
-            }
+                var singularAttribute = v as SingularRepresentationAttribute<string>;
+                if (singularAttribute == null)
+                {
+                    return false;
+                }
+
+                return new[] { "type", "value" }.Contains(singularAttribute.SchemaAttribute.Name) && new[] { "Group", "bulkId:ytrewq" }.Contains(singularAttribute.Value);
+            }));
         }
 
         [Fact]

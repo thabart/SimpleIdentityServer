@@ -352,5 +352,11 @@ namespace SimpleIdentityServer.Scim.Common
             public const string Group = "Group";
             public const string User = "User";
         }
+
+        public static class SortOrderNames
+        {
+            public static string Ascending = "ascending";
+            public static string Descending = "descending";
+        }
     }
 }

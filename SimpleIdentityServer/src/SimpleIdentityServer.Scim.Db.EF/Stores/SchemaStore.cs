@@ -40,7 +40,7 @@ namespace SimpleIdentityServer.Scim.Db.EF.Stores
         {
             try
             {
-                var attrs = _context.SchemaAttributes.Where(s => s.IsCommon == true).ToList();
+                var attrs = _context.SchemaAttributes.Include(s => s.Children).Where(s => s.IsCommon == true).ToList();
                 var result = new List<SchemaAttributeResponse>();
                 foreach(var attr in attrs)
                 {

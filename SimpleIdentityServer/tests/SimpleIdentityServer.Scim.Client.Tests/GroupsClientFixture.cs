@@ -125,14 +125,42 @@ namespace SimpleIdentityServer.Scim.Client.Tests
 
             // ASSERTS
             Assert.NotNull(sevenResult);
-            Assert.True(fourthResult.StatusCode == HttpStatusCode.BadRequest);
+            Assert.True(sevenResult.StatusCode == HttpStatusCode.BadRequest);
 
-            // ACT : Remove group
-            var eightResult = await _groupsClient.DeleteGroup(baseUrl, id);
+            // ACT : Add ten groups
+            for(var i = 0; i < 10; i++)
+            {
+                await _groupsClient.AddGroup(baseUrl).SetCommonAttributes("external_id").Execute();
+            }
+
+            // ACT : Get all groups
+            var eightResult = await _groupsClient.SearchGroups(baseUrl, new SearchGroupParameter
+            {
+                StartIndex = 1,
+                Count = 10
+            });
 
             // ASSERTS
             Assert.NotNull(eightResult);
-            Assert.True(eightResult.StatusCode == HttpStatusCode.NoContent);
+            Assert.True(eightResult.Content["Resources"].Count() == 10);
+
+
+            // ACT : Get only members
+            var nineResult = await _groupsClient.SearchGroups(baseUrl, new SearchGroupParameter
+            {
+                Filter = "members[type pr]",
+                Attributes = new[] { "members.type" }
+            });
+
+            // ASSERTS
+            Assert.NotNull(nineResult);
+
+            // ACT : Remove group
+            var thenResult = await _groupsClient.DeleteGroup(baseUrl, id);
+
+            // ASSERTS
+            Assert.NotNull(thenResult);
+            Assert.True(thenResult.StatusCode == HttpStatusCode.NoContent);
         }
 
         private void InitializeFakeObjects()

@@ -84,23 +84,30 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 {
                     var record = representation;
                     var complexAttr = representation as ComplexRepresentationAttribute;
-                    if (complexAttr != null && complexAttr.Values != null)
+                    if (complexAttr != null && complexAttr.Values != null && complexAttr.Values.Any())
                     {
                         if (ValueFilter != null)
                         {
-                            record = new ComplexRepresentationAttribute(complexAttr.SchemaAttribute)
+                            var val = ValueFilter.Evaluate(complexAttr.Values);
+                            if (val != null && val.Any())
                             {
-                                Values = ValueFilter.Evaluate(complexAttr.Values)
-                            };
+                                record = new ComplexRepresentationAttribute(complexAttr.SchemaAttribute)
+                                {
+                                    Values = val
+                                };
+                                lst.Add(record);
+                            }
                         }
 
-                        if (Next != null && complexAttr.Values != null && complexAttr.Values.Any())
+                        if (Next != null)
                         {
-                            subAttrs.AddRange(Next.Evaluate(((ComplexRepresentationAttribute)record).Values));
+                            var values = Next.Evaluate(((ComplexRepresentationAttribute)record).Values);
+                            if (values != null && values.Any())
+                            {
+                                subAttrs.AddRange(values);
+                            }
                         }
                     }
-
-                    lst.Add(record);
                 }
 
                 representations = lst;

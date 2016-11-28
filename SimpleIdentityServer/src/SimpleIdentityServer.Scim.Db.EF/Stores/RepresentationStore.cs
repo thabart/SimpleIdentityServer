@@ -94,8 +94,8 @@ namespace SimpleIdentityServer.Scim.Db.EF.Stores
             try
             {
                 var representations = _context.Representations
-                    .Include(r => r.Attributes).ThenInclude(a => a.Children)
-                    .Include(r => r.Attributes).ThenInclude(a => a.SchemaAttribute)
+                    .Include(r => r.Attributes).ThenInclude(a => a.Children).ThenInclude(a => a.Children)
+                    .Include(r => r.Attributes).ThenInclude(a => a.SchemaAttribute).ThenInclude(s => s.Children)
                     .Where(r => r.ResourceType == resourceType).ToList();
                 var lst = new List<Representation>();
                 foreach(var representation in representations)

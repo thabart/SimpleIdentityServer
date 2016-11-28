@@ -88,13 +88,6 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
     internal class SearchParameterParser : ISearchParameterParser
     {
-
-        private static class SortOrderNames
-        {
-            public static string Ascending = "ascending";
-            public static string Descending = "descending";
-        }
-
         private readonly IFilterParser _filterParser;
 
         public SearchParameterParser(IFilterParser filterParser)
@@ -238,11 +231,11 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         private static SortOrders GetSortOrder(string value)
         {
             SortOrders sortOrder;
-            if (value.Equals(SortOrderNames.Ascending, StringComparison.CurrentCultureIgnoreCase))
+            if (value.Equals(Common.Constants.SortOrderNames.Ascending, StringComparison.CurrentCultureIgnoreCase))
             {
                 sortOrder = SortOrders.Ascending;
             }
-            else if (value.Equals(SortOrderNames.Descending, StringComparison.CurrentCultureIgnoreCase))
+            else if (value.Equals(Common.Constants.SortOrderNames.Descending, StringComparison.CurrentCultureIgnoreCase))
             {
                 sortOrder = SortOrders.Descending;
             }
