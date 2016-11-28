@@ -16,6 +16,7 @@
 
 using Moq;
 using Newtonsoft.Json.Linq;
+using SimpleIdentityServer.Scim.Client.Builders;
 using SimpleIdentityServer.Scim.Client.Factories;
 using System.Net;
 using System.Threading.Tasks;
@@ -41,6 +42,10 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             // ARRANGE
             InitializeFakeObjects();
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_testScimServerFixture.Client);
+            var patchOperation = new PatchOperationBuilder().SetType(PatchOperations.replace)
+                .SetPath(Common.Constants.UserResourceResponseNames.UserName)
+                .SetContent("new_username")
+                .Build();
 
             // ACT : Create user
             var firstResult = await _usersClient.AddUser(baseUrl)
@@ -52,6 +57,15 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             Assert.NotNull(firstResult);
             Assert.True(firstResult.StatusCode == HttpStatusCode.Created);
             var id = firstResult.Content["id"].ToString();
+
+            // ACT : Partial update user
+            var secondResult = await _usersClient.PartialUpdateUser(baseUrl, id)
+                .AddOperation(patchOperation)
+                .Execute();
+
+            // ASSERTS
+            Assert.NotNull(secondResult);
+            Assert.True(secondResult.Content[Common.Constants.UserResourceResponseNames.UserName].ToString() == "new_username");
         }
 
         private void InitializeFakeObjects()

@@ -29,7 +29,8 @@ namespace SimpleIdentityServer.Scim.Client
     {
         RequestBuilder AddUser(string baseUrl);
         RequestBuilder AddUser(Uri baseUri);
-
+        PatchRequestBuilder PartialUpdateUser(string baseUrl, string id);
+        PatchRequestBuilder PartialUpdateUser(Uri baseUri, string id);
     }
 
     internal class UsersClient : IUsersClient
@@ -68,6 +69,32 @@ namespace SimpleIdentityServer.Scim.Client
             return new RequestBuilder(_schema, (obj) => AddUser(obj, new Uri(url)));
         }
 
+        public PatchRequestBuilder PartialUpdateUser(string baseUrl, string id)
+        {
+            if (string.IsNullOrWhiteSpace(baseUrl))
+            {
+                throw new ArgumentNullException(nameof(baseUrl));
+            }
+
+            return PartialUpdateUser(baseUrl.ParseUri(), id);
+        }
+
+        public PatchRequestBuilder PartialUpdateUser(Uri baseUri, string id)
+        {
+            if (baseUri == null)
+            {
+                throw new ArgumentNullException(nameof(baseUri));
+            }
+            
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+            
+            var url = $"{FormatUrl(baseUri.AbsoluteUri)}/{id}";
+            return new PatchRequestBuilder((obj) => UpdateUser(obj, new Uri(url)));
+        }
+
         private static string FormatUrl(string baseUrl)
         {
             var result = baseUrl.ParseUri();
@@ -82,6 +109,11 @@ namespace SimpleIdentityServer.Scim.Client
         private async Task<ScimResponse> AddUser(JObject jObj, Uri uri)
         {
             return await ExecuteRequest(jObj, uri, HttpMethod.Post);
+        }
+
+        private async Task<ScimResponse> UpdateUser(JObject jObj, Uri uri)
+        {
+            return await ExecuteRequest(jObj, uri, new HttpMethod("PATCH"));
         }
 
         private async Task<ScimResponse> ExecuteRequest(JObject jObj, Uri uri, HttpMethod method)
