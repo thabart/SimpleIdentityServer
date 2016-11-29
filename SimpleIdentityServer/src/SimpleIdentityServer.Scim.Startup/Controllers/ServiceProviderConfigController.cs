@@ -17,6 +17,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Scim.Common.DTOs;
 using SimpleIdentityServer.Scim.Core;
+using SimpleIdentityServer.Scim.Startup.Extensions;
 using System;
 
 namespace SimpleIdentityServer.Scim.Startup.Controllers
@@ -24,15 +25,13 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
     [Route(Constants.RoutePaths.ServiceProviderConfigController)]
     public class ServiceProviderConfigController : Controller
     {
-        #region Public methods
-
         [HttpGet]
         public ActionResult Get()
         {
             var result = new ServiceProviderConfigResponse
             {
-                Schemas = new[] { "urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig" },
-                DocumentationUri = "http://example.com/help/scim.html",
+                Schemas = new[] { Common.Constants.SchemaUrns.ServiceProvider },
+                DocumentationUri = "http://www.simplecloud.info/",
                 Patch = new PatchResponse
                 {
                     Supported = true,
@@ -40,13 +39,13 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
                 Bulk = new BulkResponse
                 {
                     Supported = true,
-                    MaxOperations = 1000,
-                    MaxPayloadSize = 1048576
+                    MaxOperations = int.MaxValue,
+                    MaxPayloadSize = int.MaxValue
                 },
                 Filter = new FilterResponse
                 {
                     Supported = true,
-                    MaxResults = 200
+                    MaxResults = int.MaxValue
                 },
                 ChangePassword = new ChangePasswordResponse
                 {
@@ -82,7 +81,7 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
                 },
                 Meta = new Meta
                 {
-                    Location = "https://example.com/v2/ServiceProviderConfig",
+                    Location = GetLocationPattern(),
                     ResourceType = "ServiceProviderConfig",
                     Created = DateTime.Now,
                     LastModified = DateTime.Now,
@@ -93,6 +92,9 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
             return new OkObjectResult(result);
         }
 
-        #endregion
+        private string GetLocationPattern()
+        {
+            return new Uri(new Uri(Request.GetAbsoluteUriWithVirtualPath()), Core.Constants.RoutePaths.ServiceProviderConfigController).AbsoluteUri;
+        }
     }
 }

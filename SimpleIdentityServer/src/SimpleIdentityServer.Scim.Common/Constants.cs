@@ -336,6 +336,7 @@ namespace SimpleIdentityServer.Scim.Common
         {
             public const string Group = "urn:ietf:params:scim:schemas:core:2.0:Group";
             public const string User = "urn:ietf:params:scim:schemas:core:2.0:User";
+            public const string ServiceProvider = "urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig";
         }
 
         public static class Messages
