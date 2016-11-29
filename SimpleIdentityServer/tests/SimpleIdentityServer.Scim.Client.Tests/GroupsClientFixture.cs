@@ -132,8 +132,8 @@ namespace SimpleIdentityServer.Scim.Client.Tests
                 await _groupsClient.AddGroup(baseUrl).SetCommonAttributes("external_id").Execute();
             }
 
-            // ACT : Get all groups
-            var eightResult = await _groupsClient.SearchGroups(baseUrl, new SearchGroupParameter
+            // ACT : Get 10 groups
+            var eightResult = await _groupsClient.SearchGroups(baseUrl, new SearchParameter
             {
                 StartIndex = 1,
                 Count = 10
@@ -145,7 +145,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
 
 
             // ACT : Get only members
-            var nineResult = await _groupsClient.SearchGroups(baseUrl, new SearchGroupParameter
+            var nineResult = await _groupsClient.SearchGroups(baseUrl, new SearchParameter
             {
                 Filter = "members[type pr]",
                 Attributes = new[] { "members.type" }

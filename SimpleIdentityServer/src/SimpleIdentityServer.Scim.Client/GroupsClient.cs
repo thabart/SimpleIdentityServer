@@ -19,72 +19,12 @@ using SimpleIdentityServer.Scim.Client.Builders;
 using SimpleIdentityServer.Scim.Client.Extensions;
 using SimpleIdentityServer.Scim.Client.Factories;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Client
 {
-    public enum SortOrders
-    {
-        Ascending,
-        Descending
-    }
-
-    public class SearchGroupParameter
-    {
-        public IEnumerable<string> Attributes { get; set; }
-        public IEnumerable<string> ExcludedAttributes { get; set; }
-        public string Filter { get; set; }
-        public string SortBy { get; set; }
-        public SortOrders? SortOrder { get; set; }
-        public int? StartIndex { get; set; }
-        public int? Count { get; set; }
-        public string ToJson()
-        {
-            var obj = new JObject();
-            if (Attributes != null && Attributes.Any())
-            {
-                obj[Common.Constants.SearchParameterNames.Attributes] = new JArray(Attributes);
-            }
-
-            if (ExcludedAttributes != null && ExcludedAttributes.Any())
-            {
-                obj[Common.Constants.SearchParameterNames.ExcludedAttributes] = new JArray(ExcludedAttributes);
-            }
-
-            if (!string.IsNullOrEmpty(Filter))
-            {
-                obj[Common.Constants.SearchParameterNames.Filter] = Filter;
-            }
-
-            if (!string.IsNullOrEmpty(SortBy))
-            {
-                obj[Common.Constants.SearchParameterNames.SortBy] = SortBy;
-            }
-
-            if (SortOrder != null)
-            {
-                obj[Common.Constants.SearchParameterNames.SortOrder] = SortOrder == SortOrders.Ascending 
-                    ? Common.Constants.SortOrderNames.Ascending 
-                    : Common.Constants.SortOrderNames.Descending;
-            }
-
-            if (StartIndex != null)
-            {
-                obj[Common.Constants.SearchParameterNames.StartIndex] = StartIndex;
-            }
-
-            if (Count != null)
-            {
-                obj[Common.Constants.SearchParameterNames.Count] = Count;
-            }
-
-            return obj.ToString();
-        }
-    }
 
     public interface IGroupsClient
     {
@@ -98,8 +38,8 @@ namespace SimpleIdentityServer.Scim.Client
         RequestBuilder UpdateGroup(Uri baseUri, string id);
         PatchRequestBuilder PartialUpdateGroup(string baseUrl, string id);
         PatchRequestBuilder PartialUpdateGroup(Uri baseUri, string id);
-        Task<ScimResponse> SearchGroups(string baseUrl, SearchGroupParameter parameter);
-        Task<ScimResponse> SearchGroups(Uri baseUri, SearchGroupParameter parameter);
+        Task<ScimResponse> SearchGroups(string baseUrl, SearchParameter parameter);
+        Task<ScimResponse> SearchGroups(Uri baseUri, SearchParameter parameter);
     }
 
     internal class GroupsClient : IGroupsClient
@@ -274,7 +214,7 @@ namespace SimpleIdentityServer.Scim.Client
             return new PatchRequestBuilder((obj) => PartialUpdateGroup(obj, new Uri(url)));
         }
 
-        public async Task<ScimResponse> SearchGroups(string baseUrl, SearchGroupParameter parameter)
+        public async Task<ScimResponse> SearchGroups(string baseUrl, SearchParameter parameter)
         {
             if (string.IsNullOrWhiteSpace(baseUrl))
             {
@@ -284,7 +224,7 @@ namespace SimpleIdentityServer.Scim.Client
             return await SearchGroups(baseUrl.ParseUri(), parameter);
         }
 
-        public async Task<ScimResponse> SearchGroups(Uri baseUri, SearchGroupParameter parameter)
+        public async Task<ScimResponse> SearchGroups(Uri baseUri, SearchParameter parameter)
         {
             if (baseUri == null)
             {

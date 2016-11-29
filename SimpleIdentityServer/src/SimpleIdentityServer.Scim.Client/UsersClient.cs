@@ -33,6 +33,12 @@ namespace SimpleIdentityServer.Scim.Client
         PatchRequestBuilder PartialUpdateUser(Uri baseUri, string id);
         RequestBuilder UpdateUser(string baseUrl, string id);
         RequestBuilder UpdateUser(Uri baseUri, string id);
+        Task<ScimResponse> DeleteUser(string baseUrl, string id);
+        Task<ScimResponse> DeleteUser(Uri baseUri, string id);
+        Task<ScimResponse> GetUser(string baseUrl, string id);
+        Task<ScimResponse> GetUser(Uri baseUri, string id);
+        Task<ScimResponse> SearchUsers(string baseUrl, SearchParameter parameter);
+        Task<ScimResponse> SearchUsers(Uri baseUri, SearchParameter parameter);
     }
 
     internal class UsersClient : IUsersClient
@@ -121,6 +127,104 @@ namespace SimpleIdentityServer.Scim.Client
 
             var url = $"{FormatUrl(baseUri.AbsoluteUri)}/{id}";
             return new RequestBuilder(_schema, (obj) => UpdateUser(obj, new Uri(url)));
+        }
+
+        public async Task<ScimResponse> DeleteUser(string baseUrl, string id)
+        {
+            if (string.IsNullOrWhiteSpace(baseUrl))
+            {
+                throw new ArgumentNullException(nameof(baseUrl));
+            }
+
+            return await DeleteUser(baseUrl.ParseUri(), id);
+        }
+
+        public async Task<ScimResponse> DeleteUser(Uri baseUri, string id)
+        {
+            if (baseUri == null)
+            {
+                throw new ArgumentNullException(nameof(baseUri));
+            }
+
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            var url = $"{FormatUrl(baseUri.AbsoluteUri)}/{id}";
+            var client = _httpClientFactory.GetHttpClient();
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Delete,
+                RequestUri = new Uri(url)
+            };
+            return await ParseHttpResponse(await client.SendAsync(request).ConfigureAwait(false));
+        }
+
+        public async Task<ScimResponse> GetUser(string baseUrl, string id)
+        {
+            if (string.IsNullOrWhiteSpace(baseUrl))
+            {
+                throw new ArgumentNullException(nameof(baseUrl));
+            }
+
+            return await GetUser(FormatUrl(baseUrl), id);
+        }
+
+        public async Task<ScimResponse> GetUser(Uri baseUri, string id)
+        {
+            if (baseUri == null)
+            {
+                throw new ArgumentNullException(nameof(baseUri));
+            }
+
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            var url = $"{FormatUrl(baseUri.AbsoluteUri)}/{id}";
+            var client = _httpClientFactory.GetHttpClient();
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Get,
+                RequestUri = new Uri(url)
+            };
+            return await ParseHttpResponse(await client.SendAsync(request).ConfigureAwait(false));
+        }
+
+        public async Task<ScimResponse> SearchUsers(string baseUrl, SearchParameter parameter)
+        {
+            if (string.IsNullOrWhiteSpace(baseUrl))
+            {
+                throw new ArgumentNullException(nameof(baseUrl));
+            }
+
+            return await SearchUsers(baseUrl.ParseUri(), parameter);
+        }
+
+        public async Task<ScimResponse> SearchUsers(Uri baseUri, SearchParameter parameter)
+        {
+            if (baseUri == null)
+            {
+                throw new ArgumentNullException(nameof(baseUri));
+            }
+
+            if (parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter));
+            }
+            
+            var url = $"{FormatUrl(baseUri.AbsoluteUri)}/.search";
+            var client = _httpClientFactory.GetHttpClient();
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                RequestUri = new Uri(url),
+                Content = new StringContent(parameter.ToJson())
+            };
+            request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            return await ParseHttpResponse(await client.SendAsync(request).ConfigureAwait(false));
         }
 
         private static string FormatUrl(string baseUrl)
