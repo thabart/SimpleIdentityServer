@@ -66,6 +66,21 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             // ASSERTS
             Assert.NotNull(secondResult);
             Assert.True(secondResult.Content[Common.Constants.UserResourceResponseNames.UserName].ToString() == "new_username");
+
+            // ACT : Update user
+            var thirdResult = await _usersClient.UpdateUser(baseUrl, id)
+                .SetCommonAttributes("new_external_id")
+                .AddAttribute(new JProperty(Common.Constants.UserResourceResponseNames.UserName, "other_username"))
+                .AddAttribute(new JProperty(Common.Constants.UserResourceResponseNames.Active, "false"))
+                .Execute();
+
+            // ASSERTS
+            Assert.NotNull(thirdResult);
+            Assert.True(thirdResult.StatusCode == HttpStatusCode.OK);
+            Assert.True(thirdResult.Content[Common.Constants.UserResourceResponseNames.UserName].ToString() == "other_username");
+            var active = thirdResult.Content[Common.Constants.UserResourceResponseNames.Active].ToString();
+            Assert.False(bool.Parse(active));
+            Assert.True(thirdResult.Content[Common.Constants.IdentifiedScimResourceNames.ExternalId].ToString() == "new_external_id");
         }
 
         private void InitializeFakeObjects()

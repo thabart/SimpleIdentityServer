@@ -31,6 +31,8 @@ namespace SimpleIdentityServer.Scim.Client
         RequestBuilder AddUser(Uri baseUri);
         PatchRequestBuilder PartialUpdateUser(string baseUrl, string id);
         PatchRequestBuilder PartialUpdateUser(Uri baseUri, string id);
+        RequestBuilder UpdateUser(string baseUrl, string id);
+        RequestBuilder UpdateUser(Uri baseUri, string id);
     }
 
     internal class UsersClient : IUsersClient
@@ -92,7 +94,33 @@ namespace SimpleIdentityServer.Scim.Client
             }
             
             var url = $"{FormatUrl(baseUri.AbsoluteUri)}/{id}";
-            return new PatchRequestBuilder((obj) => UpdateUser(obj, new Uri(url)));
+            return new PatchRequestBuilder((obj) => PartialUpdateUser(obj, new Uri(url)));
+        }
+
+        public RequestBuilder UpdateUser(string baseUrl, string id)
+        {
+            if (string.IsNullOrWhiteSpace(baseUrl))
+            {
+                throw new ArgumentNullException(nameof(baseUrl));
+            }
+
+            return UpdateUser(baseUrl.ParseUri(), id);
+        }
+
+        public RequestBuilder UpdateUser(Uri baseUri, string id)
+        {
+            if (baseUri == null)
+            {
+                throw new ArgumentNullException(nameof(baseUri));
+            }
+
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            var url = $"{FormatUrl(baseUri.AbsoluteUri)}/{id}";
+            return new RequestBuilder(_schema, (obj) => UpdateUser(obj, new Uri(url)));
         }
 
         private static string FormatUrl(string baseUrl)
@@ -111,9 +139,14 @@ namespace SimpleIdentityServer.Scim.Client
             return await ExecuteRequest(jObj, uri, HttpMethod.Post);
         }
 
-        private async Task<ScimResponse> UpdateUser(JObject jObj, Uri uri)
+        private async Task<ScimResponse> PartialUpdateUser(JObject jObj, Uri uri)
         {
             return await ExecuteRequest(jObj, uri, new HttpMethod("PATCH"));
+        }
+
+        private async Task<ScimResponse> UpdateUser(JObject jObj, Uri uri)
+        {
+            return await ExecuteRequest(jObj, uri, HttpMethod.Put);
         }
 
         private async Task<ScimResponse> ExecuteRequest(JObject jObj, Uri uri, HttpMethod method)
