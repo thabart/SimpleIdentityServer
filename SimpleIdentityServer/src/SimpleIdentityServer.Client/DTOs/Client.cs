@@ -1,5 +1,5 @@
 ﻿#region copyright
-// Copyright 2015 Habart Thierry
+// Copyright 2016 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,27 +15,32 @@
 #endregion
 
 using SimpleIdentityServer.Core.Jwt.Signature;
-using SimpleIdentityServer.Core.Models;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.Core.Parameters
+namespace SimpleIdentityServer.Client.DTOs
 {
-    public class RegistrationParameter
+    [DataContract]
+    public class Client
     {
-        public List<string> RedirectUris { get; set; }
-        public List<ResponseType> ResponseTypes { get; set; }
-        public List<GrantType> GrantTypes { get; set; }
-        public ApplicationTypes? ApplicationType { get; set; }
-        public List<string> Contacts { get; set; }
+        [DataMember(Name = Constants.ClientNames.RedirectUris)]
+        public IEnumerable<string> RedirectUris { get; set; }
+        [DataMember(Name = Constants.ClientNames.ResponseTypes)]
+        public IEnumerable<string> ResponseTypes { get; set; }
+        [DataMember(Name = Constants.ClientNames.GrantTypes)]
+        public IEnumerable<string> GrantTypes { get; set; }
+        [DataMember(Name = Constants.ClientNames.ApplicationType)]
+        public string ApplicationType { get; set; }
+        [DataMember(Name = Constants.ClientNames.Contacts)]
+        public IEnumerable<string> Contacts { get; set; }
+        [DataMember(Name = Constants.ClientNames.ClientName)]
         public string ClientName { get; set; }
+        [DataMember(Name = Constants.ClientNames.LogoUri)]
         public string LogoUri { get; set; }
         public string ClientUri { get; set; }
         public string PolicyUri { get; set; }
         public string TosUri { get; set; }
         public string JwksUri { get; set; }
-        /// <summary>
-        /// The Client Json Web Key set are passed by value
-        /// </summary>
         public JsonWebKeySet Jwks { get; set; }
         public string SectorIdentifierUri { get; set; }
         public string SubjectType { get; set; }
@@ -48,13 +53,13 @@ namespace SimpleIdentityServer.Core.Parameters
         public string RequestObjectSigningAlg { get; set; }
         public string RequestObjectEncryptionAlg { get; set; }
         public string RequestObjectEncryptionEnc { get; set; }
-        public string TokenEndPointAuthMethod { get; set; }
-        public string TokenEndPointAuthSigningAlg { get; set; }
-        public double DefaultMaxAge { get; set; }
+        public string TokenEndpointAuthMethod { get; set; }
+        public string TokenEndpointAuthSigningAlg { get; set; }
+        public int DefaultMaxAge { get; set; }
         public bool RequireAuthTime { get; set; }
         public string DefaultAcrValues { get; set; }
         public string InitiateLoginUri { get; set; }
-        public List<string> RequestUris { get; set; }
+        public IEnumerable<string> RequestUris { get; set; }
         public bool ScimProfile { get; set; }
     }
 }

@@ -218,5 +218,10 @@ namespace SimpleIdentityServer.Core.Models
         /// Gets or sets the list of request uris
         /// </summary>
         public List<string> RequestUris { get; set; } 
+
+        /// <summary>
+        /// Gets or sets use SCIM protocol to access user information.
+        /// </summary>
+        public bool ScimProfile { get; set; }
     }
 }

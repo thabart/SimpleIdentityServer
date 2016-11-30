@@ -332,7 +332,8 @@ namespace SimpleIdentityServer.Host.Extensions
                 TosUri = clientResponse.tos_uri,
                 UserInfoEncryptedResponseAlg = clientResponse.userinfo_encrypted_response_alg,
                 UserInfoEncryptedResponseEnc = clientResponse.userinfo_encrypted_response_enc,
-                UserInfoSignedResponseAlg = clientResponse.userinfo_signed_response_alg
+                UserInfoSignedResponseAlg = clientResponse.userinfo_signed_response_alg,
+                ScimProfile = clientResponse.scim_profile
             };
         }
 

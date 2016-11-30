@@ -32,10 +32,7 @@ namespace SimpleIdentityServer.Core.Common
     public class GenerateClientFromRegistrationRequest : IGenerateClientFromRegistrationRequest
     {
         private readonly IRegistrationParameterValidator _registrationParameterValidator;
-
         private readonly IJsonWebKeyConverter _jsonWebKeyConverter;
-
-        #region Constructor
 
         public GenerateClientFromRegistrationRequest(
             IRegistrationParameterValidator registrationParameterValidator,
@@ -44,10 +41,7 @@ namespace SimpleIdentityServer.Core.Common
             _registrationParameterValidator = registrationParameterValidator;
             _jsonWebKeyConverter = jsonWebKeyConverter;
         }
-
-        #endregion
-
-        #region Public methods
+        
 
         public Models.Client Execute(RegistrationParameter registrationParameter)
         {
@@ -77,7 +71,8 @@ namespace SimpleIdentityServer.Core.Common
                 RequireAuthTime = registrationParameter.RequireAuthTime,
                 InitiateLoginUri = registrationParameter.InitiateLoginUri,
                 RequestUris = registrationParameter.RequestUris,
-                LogoUri = registrationParameter.LogoUri
+                LogoUri = registrationParameter.LogoUri,
+                ScimProfile = registrationParameter.ScimProfile
             };
 
             // If omitted then the default value is authorization code response type
@@ -241,7 +236,5 @@ namespace SimpleIdentityServer.Core.Common
 
             return client;
         }
-
-        #endregion
     }
 }

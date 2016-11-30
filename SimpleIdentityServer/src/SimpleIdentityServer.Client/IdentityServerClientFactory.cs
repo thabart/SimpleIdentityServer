@@ -98,6 +98,7 @@ namespace SimpleIdentityServer.Client
             serviceCollection.AddTransient<IDiscoveryClient, DiscoveryClient>();
             serviceCollection.AddTransient<IJwksClient, JwksClient>();
             serviceCollection.AddTransient<IUserInfoClient, UserInfoClient>();
+            serviceCollection.AddTransient<IRegistrationClient, RegistrationClient>();
 
             // Register operations
             serviceCollection.AddTransient<IGetDiscoveryOperation, GetDiscoveryOperation>();

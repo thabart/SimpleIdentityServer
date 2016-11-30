@@ -14,19 +14,18 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Globalization;
+using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Results;
-using SimpleIdentityServer.Logging;
-using System.Linq;
-using System.Collections.Generic;
-using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Services;
+using SimpleIdentityServer.Logging;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 
 namespace SimpleIdentityServer.Core.Api.Registration.Actions
 {
@@ -38,11 +37,8 @@ namespace SimpleIdentityServer.Core.Api.Registration.Actions
     public class RegisterClientAction : IRegisterClientAction
     {
         private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
-
         private readonly IClientRepository _clientRepository;
-
         private readonly IGenerateClientFromRegistrationRequest _generateClientFromRegistrationRequest;
-
         private readonly IPasswordService _encryptedPasswordFactory;
 
         public RegisterClientAction(
@@ -117,7 +113,8 @@ namespace SimpleIdentityServer.Core.Api.Registration.Actions
                 RequestUris = GetDefaultValues(client.RequestUris).ToList(),
                 RedirectUris = GetDefaultValues(client.RedirectionUrls).ToArray(),
                 TokenEndPointAuthSigningAlg = GetDefaultValue(client.TokenEndPointAuthSigningAlg),
-                TokenEndPointAuthMethod = Enum.GetName(typeof(TokenEndPointAuthenticationMethods), client.TokenEndPointAuthMethod)
+                TokenEndPointAuthMethod = Enum.GetName(typeof(TokenEndPointAuthenticationMethods), client.TokenEndPointAuthMethod),
+                ScimProfile = client.ScimProfile
             };
 
             if (client.TokenEndPointAuthMethod != TokenEndPointAuthenticationMethods.private_key_jwt)

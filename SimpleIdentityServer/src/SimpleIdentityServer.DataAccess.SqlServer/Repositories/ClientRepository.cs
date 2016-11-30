@@ -139,7 +139,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                         ClientScopes = scopes,
                         JsonWebKeys = jsonWebKeys,
                         GrantTypes = grantTypes,
-                        ResponseTypes = responseTypes
+                        ResponseTypes = responseTypes,
+                        ScimProfile = client.ScimProfile
                     };
 
                     _context.Clients.Add(newClient);
@@ -246,6 +247,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                     connectedClient.UserInfoEncryptedResponseAlg = client.UserInfoEncryptedResponseAlg;
                     connectedClient.UserInfoEncryptedResponseEnc = client.UserInfoEncryptedResponseEnc;
                     connectedClient.UserInfoSignedResponseAlg = client.UserInfoSignedResponseAlg;
+                    connectedClient.ScimProfile = client.ScimProfile;
                     var scopesNotToBeDeleted = new List<string>();
                     if (client.AllowedScopes != null)
                     {

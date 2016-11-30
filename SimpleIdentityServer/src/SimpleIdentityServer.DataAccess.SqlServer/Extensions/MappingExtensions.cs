@@ -203,7 +203,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                 AllowedScopes = scopes,
                 JsonWebKeys = jsonWebKeys,
                 GrantTypes = grantTypes,
-                ResponseTypes = responseTypes
+                ResponseTypes = responseTypes,
+                ScimProfile = client.ScimProfile
             };
         }
 

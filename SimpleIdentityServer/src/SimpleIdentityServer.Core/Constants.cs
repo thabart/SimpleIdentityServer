@@ -279,6 +279,7 @@ namespace SimpleIdentityServer.Core
             public const string DefaultAcrValues = "default_acr_values";
             public const string InitiateLoginUri = "initiate_login_uri";
             public const string RequestUris = "request_uris";
+            public const string ScimProfile = "scim_profile";
         }
 
         public static class RevokeTokenParameterNames

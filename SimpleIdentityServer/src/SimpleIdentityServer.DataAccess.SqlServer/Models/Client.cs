@@ -206,5 +206,10 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Models
         /// Gets or sets the list of consents
         /// </summary>
         public List<Consent> Consents { get; set; } 
+
+        /// <summary>
+        /// Gets or sets if the client will use SCIM protocol to access user information.
+        /// </summary>
+        public bool ScimProfile { get; set; }
     }
 }
