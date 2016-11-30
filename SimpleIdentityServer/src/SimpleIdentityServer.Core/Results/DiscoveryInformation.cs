@@ -153,6 +153,12 @@ namespace SimpleIdentityServer.Core.Results
         public string RegistrationEndPoint { get; set; }
 
         /// <summary>
+        /// Gets or sets the base URI of the OP's designated SCIM service provider.
+        /// </summary>
+        [DataMember(Name = "scim_endpoint")]
+        public string ScimEndpoint { get; set; }
+
+        /// <summary>
         /// Gets or sets the acr values supported.
         /// </summary>
         public string[] AcrValuesSupported { get; set; }

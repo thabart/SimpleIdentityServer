@@ -94,11 +94,18 @@ namespace SimpleIdentityServer.Host
         public string CookieName = CookieAuthenticationDefaults.AuthenticationScheme;
     }
 
+    public class ScimOptions
+    {
+        public string EndPoint { get; set; }
+        public bool IsEnabled { get; set; }
+    }
+
     public class IdentityServerOptions
     {
         public IdentityServerOptions()
         {
             Authenticate = new AuthenticateOptions();
+            Scim = new ScimOptions();
         }
         /// <summary>
         /// Enable or disable the developer mode
@@ -116,6 +123,10 @@ namespace SimpleIdentityServer.Host
         /// Configure authentication.
         /// </summary>
         public AuthenticateOptions Authenticate { get; set; }
+        /// <summary>
+        /// Scim options.
+        /// </summary>
+        public ScimOptions Scim { get; set; }
         /// <summary>
         /// Service used to authenticate the resource owner.
         /// </summary>

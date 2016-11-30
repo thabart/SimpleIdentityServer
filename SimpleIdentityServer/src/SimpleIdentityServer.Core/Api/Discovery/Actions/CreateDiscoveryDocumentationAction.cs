@@ -34,9 +34,7 @@ namespace SimpleIdentityServer.Core.Api.Discovery.Actions
         private readonly IScopeRepository _scopeRepository;
         private readonly IClaimRepository _claimRepository;
 
-        public CreateDiscoveryDocumentationAction(
-            IScopeRepository scopeRepository,
-            IClaimRepository claimRepository)
+        public CreateDiscoveryDocumentationAction(IScopeRepository scopeRepository, IClaimRepository claimRepository)
         {
             _scopeRepository = scopeRepository;
             _claimRepository = claimRepository;

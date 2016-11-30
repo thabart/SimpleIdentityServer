@@ -91,6 +91,11 @@ namespace SimpleIdentityServer.Startup
                 Authenticate = new AuthenticateOptions
                 {
                     CookieName = Constants.CookieName
+                },
+                Scim = new ScimOptions
+                {
+                    IsEnabled = true,
+                    EndPoint = "http://localhost:5555/"
                 }
             };
         }
@@ -201,7 +206,7 @@ namespace SimpleIdentityServer.Startup
                 CookieName = Constants.CookieName
             });
             // 5. Enable multi parties authentication.
-            app.UseAuthentication(_authenticationOptions);
+            // app.UseAuthentication(_authenticationOptions);
             // 6. Enable SimpleIdentityServer
             app.UseSimpleIdentityServer(_options, loggerFactory);
             // 7. Configure ASP.NET MVC

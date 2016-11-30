@@ -143,5 +143,11 @@ namespace SimpleIdentityServer.Client.DTOs.Response
         /// </summary>
         [DataMember(Name = Constants.DiscoveryInformationNames.RegistrationEndPoint)]
         public string RegistrationEndPoint { get; set; }
+
+        /// <summary>
+        /// Gets or sets the base URI of the OP's designated SCIM service provider.
+        /// </summary>
+        [DataMember(Name = Constants.DiscoveryInformationNames.ScimEndPoint)]
+        public string ScimEndPoint { get; set; }
     }
 }

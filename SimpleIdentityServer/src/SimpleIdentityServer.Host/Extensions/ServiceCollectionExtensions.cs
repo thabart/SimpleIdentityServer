@@ -23,7 +23,6 @@ using Serilog.Sinks.Elasticsearch;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Configuration.Client;
 using SimpleIdentityServer.Core;
-using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Services;
@@ -146,6 +145,7 @@ namespace SimpleIdentityServer.Host
             }
 
             services.AddSingleton(options.Authenticate);
+            services.AddSingleton(options.Scim);
             services.AddTransient<ICertificateStore, CertificateStore>();
             services.AddTransient<IRedirectInstructionParser, RedirectInstructionParser>();
             services.AddTransient<IActionResultParser, ActionResultParser>();
@@ -191,13 +191,6 @@ namespace SimpleIdentityServer.Host
             services.AddTransient<ISimpleIdentityServerEventSource, SimpleIdentityServerEventSource>();
             services.AddTransient<IManagerEventSource, ManagerEventSource>();
             services.AddSingleton<ILogger>(log);
-            /*
-            var twoFactorServiceStore = new TwoFactorServiceStore();
-            var factory = new SimpleIdServerConfigurationClientFactory();
-            twoFactorServiceStore.Add(new TwilioSmsService(factory, configurationUrl));
-            twoFactorServiceStore.Add(new EmailService(factory, configurationUrl));
-            services.AddSingleton<ITwoFactorServiceStore>(twoFactorServiceStore);
-            */
         }
     }
 }

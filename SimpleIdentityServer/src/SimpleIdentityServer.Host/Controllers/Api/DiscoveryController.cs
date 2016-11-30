@@ -26,10 +26,12 @@ namespace SimpleIdentityServer.Api.Controllers.Api
     public class DiscoveryController : Controller
     {
         private readonly IDiscoveryActions _discoveryActions;
+        private readonly ScimOptions _scim;
 
-        public DiscoveryController(IDiscoveryActions discoveryActions)
+        public DiscoveryController(IDiscoveryActions discoveryActions, ScimOptions scim)
         {
             _discoveryActions = discoveryActions;
+            _scim = scim;
         }
 
         [HttpGet]
@@ -62,9 +64,12 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             result.RevocationEndPoint = revocationEndPoint;
             result.IntrospectionEndPoint = introspectionEndPoint;
             result.Version = "1.0";
-
             result.CheckSessionEndPoint = checkSessionIframe;
             result.EndSessionEndPoint = endSessionEndPoint;
+            if (_scim.IsEnabled)
+            {
+                result.ScimEndpoint = _scim.EndPoint;
+            }
 
             return result;
         }
