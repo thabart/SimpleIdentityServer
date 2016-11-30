@@ -24,6 +24,7 @@ using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Core.Jwt.Serializer;
 using System.Xml.Serialization;
 using System.IO;
+using SimpleIdentityServer.Core.Common.DTOs;
 
 namespace SimpleIdentityServer.Core.Jwt.Converter
 {
@@ -38,7 +39,7 @@ namespace SimpleIdentityServer.Core.Jwt.Converter
         {
             if (jsonWebKeySet == null)
             {
-                throw new ArgumentNullException("jsonWebKeySet");
+                throw new ArgumentNullException(nameof(jsonWebKeySet));
             }
             
             if (jsonWebKeySet.Keys == null ||

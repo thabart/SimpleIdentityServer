@@ -14,11 +14,11 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Core.Common.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
-using SimpleIdentityServer.Core.Common.Extensions;
 
 namespace SimpleIdentityServer.Core.Jwt.Signature
 {

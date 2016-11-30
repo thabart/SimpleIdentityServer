@@ -7,12 +7,12 @@ using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Factories;
-using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.UnitTests.Fake;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Core.Models;
 using Xunit;
+using SimpleIdentityServer.Core.Common.DTOs;
 
 namespace SimpleIdentityServer.Core.UnitTests.Validators
 {

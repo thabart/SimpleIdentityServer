@@ -16,7 +16,7 @@
 
 using SimpleIdentityServer.Client.Errors;
 using SimpleIdentityServer.Client.Operations;
-using SimpleIdentityServer.Core.Jwt.Signature;
+using SimpleIdentityServer.Core.Common.DTOs;
 using System;
 using System.Threading.Tasks;
 

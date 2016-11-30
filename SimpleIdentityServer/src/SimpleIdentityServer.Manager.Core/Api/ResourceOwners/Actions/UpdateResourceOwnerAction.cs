@@ -51,7 +51,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners.Actions
                 throw new ArgumentNullException(nameof(parameter.Id));
             }
 
-            if (_resourceOwnerRepository.Get(parameter.Id) == null)
+            if (_resourceOwnerRepository.GetByUniqueClaim(parameter.Id) == null)
             {
                 throw new IdentityServerManagerException(
                     ErrorCodes.InvalidParameterCode,

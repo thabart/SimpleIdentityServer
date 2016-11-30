@@ -17,7 +17,7 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.Core.Jwt.Signature
+namespace SimpleIdentityServer.Core.Common.DTOs
 {
     [DataContract]
     public class JsonWebKeySet

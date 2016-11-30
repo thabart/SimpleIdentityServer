@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Net.Http;
-using Moq;
-
+﻿using Moq;
+using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Factories;
@@ -12,10 +8,13 @@ using SimpleIdentityServer.Core.Jwt.Converter;
 using SimpleIdentityServer.Core.Jwt.Encrypt;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.UnitTests.Fake;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.Core.Repositories;
+using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.JwtToken

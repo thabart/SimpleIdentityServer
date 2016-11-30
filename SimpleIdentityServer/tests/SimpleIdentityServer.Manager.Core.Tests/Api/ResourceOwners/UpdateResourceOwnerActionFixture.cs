@@ -55,7 +55,7 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.ResourceOwners
                 Id = subject
             };
             InitializeFakeObjects();
-            _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>()))
+            _resourceOwnerRepositoryStub.Setup(r => r.GetByUniqueClaim(It.IsAny<string>()))
                 .Returns((ResourceOwner)null);
 
             // ACT
@@ -80,7 +80,7 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.ResourceOwners
                 Id = "subject"
             };
             InitializeFakeObjects();
-            _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>()))
+            _resourceOwnerRepositoryStub.Setup(r => r.GetByUniqueClaim(It.IsAny<string>()))
                 .Returns(new ResourceOwner
                 {
                     IsLocalAccount = true

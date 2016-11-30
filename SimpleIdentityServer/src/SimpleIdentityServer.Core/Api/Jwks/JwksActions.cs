@@ -14,10 +14,9 @@
 // limitations under the License.
 #endregion
 
-using System;
 using System.Collections.Generic;
 using SimpleIdentityServer.Core.Api.Jwks.Actions;
-using SimpleIdentityServer.Core.Jwt.Signature;
+using SimpleIdentityServer.Core.Common.DTOs;
 
 namespace SimpleIdentityServer.Core.Api.Jwks
 {

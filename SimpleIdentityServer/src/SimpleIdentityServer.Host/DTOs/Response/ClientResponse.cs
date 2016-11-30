@@ -14,8 +14,8 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Common.DTOs;
 using System.Collections.Generic;
-using SimpleIdentityServer.Core.Jwt.Signature;
 
 namespace SimpleIdentityServer.Host.DTOs.Response
 {
@@ -49,7 +49,7 @@ namespace SimpleIdentityServer.Host.DTOs.Response
         public string request_object_encryption_enc { get; set; }        
         public string token_endpoint_auth_method { get; set; }        
         public string token_endpoint_auth_signing_alg { get; set; }        
-        public int default_max_age { get; set; }        
+        public double default_max_age { get; set; }        
         public bool require_auth_time { get; set; }        
         public string default_acr_values { get; set; }        
         public string initiate_login_uri { get; set; }        

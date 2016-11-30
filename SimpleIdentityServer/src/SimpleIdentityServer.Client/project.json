@@ -13,8 +13,7 @@
   "dependencies": {
     "Microsoft.Extensions.DependencyInjection": "1.0.0",
     "Newtonsoft.Json": "9.0.1",
-    "SimpleIdentityServer.Core.Common": "*",
-    "SimpleIdentityServer.Core.Jwt": "*"
+    "SimpleIdentityServer.Core.Jwt": { "target": "project" }
   },
 
   "frameworks": {

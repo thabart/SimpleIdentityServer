@@ -39,7 +39,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
         {
             if (client == null)
             {
-                throw new ArgumentNullException("client");
+                throw new ArgumentNullException(nameof(client));
             }
             
             return _registerActions.PostRegistration(client.ToParameter());

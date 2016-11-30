@@ -16,17 +16,17 @@
 
 using Moq;
 using SimpleIdentityServer.Core.Api.Registration.Actions;
+using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Jwt;
-using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Logging;
 using System;
 using System.Collections.Generic;
 using Xunit;
-using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Services;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
 {

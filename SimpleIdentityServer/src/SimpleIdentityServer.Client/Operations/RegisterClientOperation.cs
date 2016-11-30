@@ -18,13 +18,14 @@ using Newtonsoft.Json;
 using SimpleIdentityServer.Client.Factories;
 using System;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Client.Operations
 {
     public interface IRegisterClientOperation
     {
-
+        Task<Core.Common.DTOs.Client> ExecuteAsync(Core.Common.DTOs.Client client, Uri requestUri, string authorizationValue);
     }
 
     internal class RegisterClientOperation : IRegisterClientOperation
@@ -36,7 +37,7 @@ namespace SimpleIdentityServer.Client.Operations
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<DTOs.Client> ExecuteAsync(DTOs.Client client, Uri requestUri, string authorizationValue)
+        public async Task<Core.Common.DTOs.Client> ExecuteAsync(Core.Common.DTOs.Client client, Uri requestUri, string authorizationValue)
         {
             if (client == null)
             {
@@ -55,12 +56,12 @@ namespace SimpleIdentityServer.Client.Operations
                 Content = new StringContent(JsonConvert.SerializeObject(client)),
                 RequestUri = requestUri
             };
-            request.Headers.Add("Content-Type", "application/json");
+            request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             request.Headers.Add("Authorization", "Basic " + authorizationValue);
             var result = await httpClient.SendAsync(request);
             result.EnsureSuccessStatusCode();
             var content = await result.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<DTOs.Client>(content);
+            return JsonConvert.DeserializeObject<Core.Common.DTOs.Client>(content);
         }
     }
 }

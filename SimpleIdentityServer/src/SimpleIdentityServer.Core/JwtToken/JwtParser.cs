@@ -14,8 +14,7 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Linq;
+using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Factories;
@@ -23,9 +22,10 @@ using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Converter;
 using SimpleIdentityServer.Core.Jwt.Encrypt;
 using SimpleIdentityServer.Core.Jwt.Signature;
-using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Validators;
+using System;
+using System.Linq;
 
 namespace SimpleIdentityServer.Core.JwtToken
 {

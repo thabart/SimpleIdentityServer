@@ -16,6 +16,7 @@
 
 using System;
 using SimpleIdentityServer.Core.Common.Extensions;
+using SimpleIdentityServer.Core.Common.DTOs;
 
 namespace SimpleIdentityServer.Core.Jwt.Signature
 {
@@ -30,7 +31,6 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
     public class JwsGenerator : IJwsGenerator
     {
         private const string JwsType = "JWT";
-
         private readonly ICreateJwsSignature _createJwsSignature;
 
         public JwsGenerator(

@@ -14,11 +14,11 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Jwt.Converter;
 using SimpleIdentityServer.Core.Jwt.Exceptions;
 using SimpleIdentityServer.Core.Jwt.Serializer;
-using SimpleIdentityServer.Core.Jwt.Signature;
 using System;
 using System.Collections.Generic;
 using System.IO;

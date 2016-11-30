@@ -87,6 +87,16 @@ namespace SimpleIdentityServer.Client
             return result;
         }
 
+        /// <summary>
+        /// Creates a registration client.
+        /// </summary>
+        /// <returns></returns>
+        public IRegistrationClient CreateRegistrationClient()
+        {
+            var result = (IRegistrationClient)_serviceProvider.GetService(typeof(IRegistrationClient));
+            return result;
+        }
+
         #region Private static methods
 
         private static void RegisterDependencies(IServiceCollection serviceCollection)
@@ -104,6 +114,7 @@ namespace SimpleIdentityServer.Client
             serviceCollection.AddTransient<IGetDiscoveryOperation, GetDiscoveryOperation>();
             serviceCollection.AddTransient<IPostTokenOperation, PostTokenOperation>();
             serviceCollection.AddTransient<IGetJsonWebKeysOperation, GetJsonWebKeysOperation>();
+            serviceCollection.AddTransient<IRegisterClientOperation, RegisterClientOperation>();
 
             // Register request builders
             serviceCollection.AddScoped<ITokenRequestBuilder, TokenRequestBuilder>();

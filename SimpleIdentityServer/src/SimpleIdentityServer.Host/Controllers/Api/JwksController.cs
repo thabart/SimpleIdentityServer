@@ -16,7 +16,7 @@
 
 using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Core.Api.Jwks;
-using SimpleIdentityServer.Core.Jwt.Signature;
+using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Host;
 
 namespace SimpleIdentityServer.Api.Controllers.Api

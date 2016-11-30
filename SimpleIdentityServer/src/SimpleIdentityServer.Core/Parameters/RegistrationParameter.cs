@@ -14,7 +14,7 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Jwt.Signature;
+using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Models;
 using System.Collections.Generic;
 

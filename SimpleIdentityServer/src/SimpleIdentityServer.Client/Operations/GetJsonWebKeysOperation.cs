@@ -16,7 +16,7 @@
 
 using Newtonsoft.Json;
 using SimpleIdentityServer.Client.Factories;
-using SimpleIdentityServer.Core.Jwt.Signature;
+using SimpleIdentityServer.Core.Common.DTOs;
 using System;
 using System.Threading.Tasks;
 

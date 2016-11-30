@@ -49,7 +49,7 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.ResourceOwners
             // ARRANGE
             const string subject = "invalid_subject";
             InitializeFakeObjects();
-            _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>()))
+            _resourceOwnerRepositoryStub.Setup(r => r.GetByUniqueClaim(It.IsAny<string>()))
                 .Returns((ResourceOwner)null);
 
             // ACT
@@ -71,7 +71,7 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.ResourceOwners
             // ARRANGE
             const string subject = "subject";
             InitializeFakeObjects();
-            _resourceOwnerRepositoryStub.Setup(r => r.Get(It.IsAny<string>()))
+            _resourceOwnerRepositoryStub.Setup(r => r.GetByUniqueClaim(It.IsAny<string>()))
                 .Returns(new ResourceOwner());
 
             // ACT

@@ -14,52 +14,75 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Jwt.Signature;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.Client.DTOs
+namespace SimpleIdentityServer.Core.Common.DTOs
 {
     [DataContract]
     public class Client
     {
-        [DataMember(Name = Constants.ClientNames.RedirectUris)]
+        [DataMember(Name = ClientNames.RedirectUris)]
         public IEnumerable<string> RedirectUris { get; set; }
-        [DataMember(Name = Constants.ClientNames.ResponseTypes)]
+        [DataMember(Name = ClientNames.ResponseTypes)]
         public IEnumerable<string> ResponseTypes { get; set; }
-        [DataMember(Name = Constants.ClientNames.GrantTypes)]
+        [DataMember(Name = ClientNames.GrantTypes)]
         public IEnumerable<string> GrantTypes { get; set; }
-        [DataMember(Name = Constants.ClientNames.ApplicationType)]
+        [DataMember(Name = ClientNames.ApplicationType)]
         public string ApplicationType { get; set; }
-        [DataMember(Name = Constants.ClientNames.Contacts)]
+        [DataMember(Name = ClientNames.Contacts)]
         public IEnumerable<string> Contacts { get; set; }
-        [DataMember(Name = Constants.ClientNames.ClientName)]
+        [DataMember(Name = ClientNames.ClientName)]
         public string ClientName { get; set; }
-        [DataMember(Name = Constants.ClientNames.LogoUri)]
+        [DataMember(Name = ClientNames.LogoUri)]
         public string LogoUri { get; set; }
+        [DataMember(Name = ClientNames.ClientUri)]
         public string ClientUri { get; set; }
+        [DataMember(Name = ClientNames.PolicyUri)]
         public string PolicyUri { get; set; }
+        [DataMember(Name = ClientNames.TosUri)]
         public string TosUri { get; set; }
+        [DataMember(Name = ClientNames.JwksUri)]
         public string JwksUri { get; set; }
+        [DataMember(Name = ClientNames.Jwks)]
         public JsonWebKeySet Jwks { get; set; }
+        [DataMember(Name = ClientNames.SectorIdentifierUri)]
         public string SectorIdentifierUri { get; set; }
+        [DataMember(Name = ClientNames.SubjectType)]
         public string SubjectType { get; set; }
+        [DataMember(Name = ClientNames.IdTokenSignedResponseAlg)]
         public string IdTokenSignedResponseAlg { get; set; }
+        [DataMember(Name = ClientNames.IdTokenEncryptedResponseAlg)]
         public string IdTokenEncryptedResponseAlg { get; set; }
+        [DataMember(Name = ClientNames.IdTokenEncryptedResponseEnc)]
         public string IdTokenEncryptedResponseEnc { get; set; }
+        [DataMember(Name = ClientNames.UserInfoSignedResponseAlg)]
         public string UserInfoSignedResponseAlg { get; set; }
+        [DataMember(Name = ClientNames.UserInfoEncryptedResponseAlg)]
         public string UserInfoEncryptedResponseAlg { get; set; }
+        [DataMember(Name = ClientNames.UserInfoEncryptedResponseEnc)]
         public string UserInfoEncryptedResponseEnc { get; set; }
+        [DataMember(Name = ClientNames.RequestObjectSigningAlg)]
         public string RequestObjectSigningAlg { get; set; }
+        [DataMember(Name = ClientNames.RequestObjectEncryptionAlg)]
         public string RequestObjectEncryptionAlg { get; set; }
+        [DataMember(Name = ClientNames.RequestObjectEncryptionEnc)]
         public string RequestObjectEncryptionEnc { get; set; }
+        [DataMember(Name = ClientNames.TokenEndpointAuthMethod)]
         public string TokenEndpointAuthMethod { get; set; }
+        [DataMember(Name = ClientNames.TokenEndpointAuthSigningAlg)]
         public string TokenEndpointAuthSigningAlg { get; set; }
-        public int DefaultMaxAge { get; set; }
+        [DataMember(Name = ClientNames.DefaultMaxAge)]
+        public double DefaultMaxAge { get; set; }
+        [DataMember(Name = ClientNames.RequireAuthTime)]
         public bool RequireAuthTime { get; set; }
+        [DataMember(Name = ClientNames.DefaultAcrValues)]
         public string DefaultAcrValues { get; set; }
+        [DataMember(Name = ClientNames.InitiateLoginUri)]
         public string InitiateLoginUri { get; set; }
+        [DataMember(Name = ClientNames.RequestUris)]
         public IEnumerable<string> RequestUris { get; set; }
+        [DataMember(Name = ClientNames.ScimProfile)]
         public bool ScimProfile { get; set; }
     }
 }
