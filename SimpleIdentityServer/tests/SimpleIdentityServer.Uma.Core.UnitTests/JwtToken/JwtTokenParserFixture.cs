@@ -16,6 +16,7 @@
 
 using Moq;
 using SimpleIdentityServer.Client;
+using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Converter;
 using SimpleIdentityServer.Core.Jwt.Signature;
