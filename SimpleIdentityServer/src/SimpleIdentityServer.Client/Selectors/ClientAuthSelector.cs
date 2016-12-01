@@ -17,34 +17,24 @@
 using SimpleIdentityServer.Client.Builders;
 using SimpleIdentityServer.Core.Common.Extensions;
 using System;
-using System.Text;
 
 namespace SimpleIdentityServer.Client.Selectors
 {
     public interface IClientAuthSelector
     {
         ITokenGrantTypeSelector UseClientSecretBasicAuth(string clientId, string clientSecret);
-
         ITokenGrantTypeSelector UseClientSecretPostAuth(string clientId, string clientSecret);
+        ITokenGrantTypeSelector UseClientSecretJwtAuth(string jwt, string clientId);
     }
 
     internal class ClientAuthSelector : IClientAuthSelector
     {
-        private readonly ITokenRequestBuilder _tokenRequestBuilder;
+        private readonly ITokenClientFactory _factory;
 
-        private readonly ITokenGrantTypeSelector _tokenGrantTypeSelector;
-
-        #region Constructor
-
-        public ClientAuthSelector(
-            ITokenRequestBuilder tokenRequestBuilder,
-            ITokenGrantTypeSelector tokenGrantTypeSelector)
+        public ClientAuthSelector(ITokenClientFactory factory)
         {
-            _tokenRequestBuilder = tokenRequestBuilder;
-            _tokenGrantTypeSelector = tokenGrantTypeSelector;
+            _factory = factory;
         }
-
-        #endregion
 
         #region Public methods
 
@@ -60,9 +50,12 @@ namespace SimpleIdentityServer.Client.Selectors
                 throw new ArgumentNullException(nameof(clientSecret));
             }
 
+            var tokenRequestBuilder = new TokenRequestBuilder();
+            var tokenClient = _factory.CreateClient(tokenRequestBuilder);
+            var tokenGrantTypeSelector = new TokenGrantTypeSelector(tokenRequestBuilder, tokenClient);
             var authorizationValue = GetAuthorizationValue(clientId, clientSecret);
-            _tokenRequestBuilder.AuthorizationHeaderValue = authorizationValue;
-            return _tokenGrantTypeSelector;
+            tokenRequestBuilder.AuthorizationHeaderValue = authorizationValue;
+            return tokenGrantTypeSelector;
         }
 
         public ITokenGrantTypeSelector UseClientSecretPostAuth(string clientId, string clientSecret)
@@ -77,14 +70,33 @@ namespace SimpleIdentityServer.Client.Selectors
                 throw new ArgumentNullException(nameof(clientSecret));
             }
 
-            _tokenRequestBuilder.TokenRequest.ClientId = clientId;
-            _tokenRequestBuilder.TokenRequest.ClientSecret = clientSecret;
-            return _tokenGrantTypeSelector;
+            var tokenRequestBuilder = new TokenRequestBuilder();
+            var tokenClient = _factory.CreateClient(tokenRequestBuilder);
+            var tokenGrantTypeSelector = new TokenGrantTypeSelector(tokenRequestBuilder, tokenClient);
+            tokenRequestBuilder.TokenRequest.ClientId = clientId;
+            tokenRequestBuilder.TokenRequest.ClientSecret = clientSecret;
+            return tokenGrantTypeSelector;
         }
 
-        public ITokenGrantTypeSelector UseClientSecretJwtAuth(string token)
+        public ITokenGrantTypeSelector UseClientSecretJwtAuth(string jwt, string clientId)
         {
-            return null;
+            if (string.IsNullOrWhiteSpace(clientId))
+            {
+                throw new ArgumentNullException(nameof(clientId));
+            }
+
+            if (string.IsNullOrWhiteSpace(clientId))
+            {
+                throw new ArgumentNullException(nameof(clientId));
+            }
+
+            var tokenRequestBuilder = new TokenRequestBuilder();
+            var tokenClient = _factory.CreateClient(tokenRequestBuilder);
+            var tokenGrantTypeSelector = new TokenGrantTypeSelector(tokenRequestBuilder, tokenClient);
+            tokenRequestBuilder.TokenRequest.ClientAssertion = jwt;
+            tokenRequestBuilder.TokenRequest.ClientAssertionType = Core.Common.ClientAssertionTypes.JwtBearer;
+            tokenRequestBuilder.TokenRequest.ClientId = clientId;
+            return tokenGrantTypeSelector;
         }
 
         public ITokenGrantTypeSelector UseClientPrivateKeyAuth(string token)

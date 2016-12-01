@@ -25,11 +25,8 @@ namespace SimpleIdentityServer.Client.Selectors
     public interface ITokenGrantTypeSelector
     {
         ITokenClient UseClientCredentials(params string[] scopes);
-
         ITokenClient UseClientCredentials(List<string> scopes);
-
         ITokenClient UsePassword(string userName, string password, params string[] scopes);
-
         ITokenClient UsePassword(string userName, string password, List<string> scopes);
     }
 

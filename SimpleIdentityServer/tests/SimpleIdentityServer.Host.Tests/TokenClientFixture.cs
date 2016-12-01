@@ -14,12 +14,19 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Client.Builders;
 using SimpleIdentityServer.Client.Factories;
 using SimpleIdentityServer.Client.Operations;
 using SimpleIdentityServer.Client.Selectors;
+using SimpleIdentityServer.Core.Extensions;
+using SimpleIdentityServer.Core.Jwt;
+using SimpleIdentityServer.Core.Jwt.Encrypt;
+using SimpleIdentityServer.Core.Jwt.Signature;
+using System;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -31,6 +38,8 @@ namespace SimpleIdentityServer.Host.Tests
         private Mock<IHttpClientFactory> _httpClientFactoryStub;
         private IClientAuthSelector _clientAuthSelector;
         private IUserInfoClient _userInfoClient;
+        private IJwsGenerator _jwsGenerator;
+        private IJweGenerator _jweGenerator;
 
         public TokenClientFixture(TestScimServerFixture server)
         {
@@ -45,7 +54,7 @@ namespace SimpleIdentityServer.Host.Tests
             InitializeFakeObjects();
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
 
-            // ACT : Get access token via password grant-type.
+            // ACT : Get access token via password grant-type & user post authentication.
             var result = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
                 .UsePassword("administrator", "password", "scim")
                 .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
@@ -62,17 +71,59 @@ namespace SimpleIdentityServer.Host.Tests
             Assert.True(claims[Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject].ToString() == "administrator");
             Assert.True(claims[Core.Jwt.Constants.StandardResourceOwnerClaimNames.ScimId].ToString() == "id");
             Assert.True(claims[Core.Jwt.Constants.StandardResourceOwnerClaimNames.ScimLocation].ToString() == "http://localhost:5555/Users/id");
+
+            // ACT : Get access token valid for the scope "api1" & use basic authentication.
+            var firstToken = await _clientAuthSelector.UseClientSecretBasicAuth("api_client", "api_client")
+                .UseClientCredentials("api1")
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+
+            // ASSERTS
+            Assert.NotNull(firstToken);
+            Assert.NotEmpty(firstToken.AccessToken);
+
+            // ACT : Get access token valid for the scope "api1" & use client_secret_jwt authentication.
+            var clientPayLoad = new JwsPayload
+            {
+                {
+                    Core.Jwt.Constants.StandardClaimNames.Issuer, "jwt_client"
+                },
+                {
+                    Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, "jwt_client"
+                },
+                {
+                    Core.Jwt.Constants.StandardClaimNames.Audiences, new []
+                    {
+                        "http://localhost:5000"
+                    }
+                },
+                {
+                    Core.Jwt.Constants.StandardClaimNames.ExpirationTime, DateTime.UtcNow.AddHours(1).ConvertToUnixTimestamp()
+                }
+            };
+            var jws = _jwsGenerator.Generate(clientPayLoad, JwsAlg.RS256, SharedContext.Instance().SignatureKey);
+            var jwe = _jweGenerator.GenerateJweByUsingSymmetricPassword(jws, JweAlg.RSA1_5, JweEnc.A128CBC_HS256, SharedContext.Instance().EncryptionKey, "jwt_client");
+            var secondToken = await _clientAuthSelector.UseClientSecretJwtAuth(jwe, "jwt_client")
+                .UseClientCredentials("api1")
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+
+            // ASSERTS
+            Assert.NotNull(secondToken);
         }
 
         private void InitializeFakeObjects()
         {
+            var services = new ServiceCollection();
+            services.AddSimpleIdentityServerJwt();
+            var provider = services.BuildServiceProvider();
+            _jwsGenerator = (IJwsGenerator)provider.GetService(typeof(IJwsGenerator));
+            _jweGenerator = (IJweGenerator)provider.GetService(typeof(IJweGenerator));
             _httpClientFactoryStub = new Mock<IHttpClientFactory>();
             var tokenRequestBuilder = new TokenRequestBuilder();
             var postTokenOperation = new PostTokenOperation(_httpClientFactoryStub.Object);
             var getDiscoveryOperation = new GetDiscoveryOperation(_httpClientFactoryStub.Object);
             var tokenClient = new TokenClient(tokenRequestBuilder, postTokenOperation, getDiscoveryOperation);
             var tokenGrantTypeSelector = new TokenGrantTypeSelector(tokenRequestBuilder, tokenClient);
-            _clientAuthSelector = new ClientAuthSelector(tokenRequestBuilder, tokenGrantTypeSelector);
+            _clientAuthSelector = new ClientAuthSelector(new TokenClientFactory(postTokenOperation, getDiscoveryOperation));
             var getUserInfoOperation = new GetUserInfoOperation(_httpClientFactoryStub.Object);
             _userInfoClient = new UserInfoClient(getUserInfoOperation, getDiscoveryOperation);
         }

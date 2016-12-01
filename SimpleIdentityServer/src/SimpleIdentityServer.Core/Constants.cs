@@ -56,11 +56,6 @@ namespace SimpleIdentityServer.Core
             public static string StateName = "state";
         }
 
-        public static class StandardClientAssertionTypes
-        {
-            public static string JwtBearer = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer";
-        }
-
         // Standard authentication policies.
         // They are coming from the RFC : http://openid.net/specs/openid-provider-authentication-policy-extension-1_0.html
         public static class StandardAuthenticationPolicies

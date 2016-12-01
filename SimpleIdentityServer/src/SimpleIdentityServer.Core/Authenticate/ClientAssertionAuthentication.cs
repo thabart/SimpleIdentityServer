@@ -176,7 +176,7 @@ namespace SimpleIdentityServer.Core.Authenticate
         /// <returns></returns>
         public string GetClientId(AuthenticateInstruction instruction)
         {
-            if (instruction.ClientAssertionType != Constants.StandardClientAssertionTypes.JwtBearer || string.IsNullOrWhiteSpace(instruction.ClientAssertion))
+            if (instruction.ClientAssertionType != Common.ClientAssertionTypes.JwtBearer || string.IsNullOrWhiteSpace(instruction.ClientAssertion))
             {
                 return string.Empty;
             }

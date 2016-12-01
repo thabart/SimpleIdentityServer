@@ -117,12 +117,12 @@ namespace SimpleIdentityServer.Client
             serviceCollection.AddTransient<IRegisterClientOperation, RegisterClientOperation>();
             serviceCollection.AddTransient<IGetUserInfoOperation, GetUserInfoOperation>();
 
-            // Register request builders
-            serviceCollection.AddScoped<ITokenRequestBuilder, TokenRequestBuilder>();
-
             // Register selectors
             serviceCollection.AddTransient<IClientAuthSelector, ClientAuthSelector>();
             serviceCollection.AddTransient<ITokenGrantTypeSelector, TokenGrantTypeSelector>();
+
+            // Register factories
+            serviceCollection.AddTransient<ITokenClientFactory, TokenClientFactory>();
         }
 
         #endregion

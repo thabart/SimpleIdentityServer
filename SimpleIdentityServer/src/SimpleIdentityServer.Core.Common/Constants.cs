@@ -57,4 +57,9 @@ namespace SimpleIdentityServer.Core.Common
         public const string Alg = "alg";
         public const string Kid = "kid";
     }
+
+    public static class ClientAssertionTypes
+    {
+        public static string JwtBearer = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer";
+    }
 }

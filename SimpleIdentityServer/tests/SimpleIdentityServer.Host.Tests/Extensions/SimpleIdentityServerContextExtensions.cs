@@ -175,6 +175,15 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                             new ScopeClaim { ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Role }
                         },
                         Type = ScopeType.ResourceOwner
+                    },
+                    new Scope
+                    {
+                        Name = "api1",
+                        IsExposed = false,
+                        IsOpenIdScope = false,
+                        IsDisplayedInConsent = true,
+                        Description = "Access to your api1",
+                        Type = ScopeType.ProtectedApi
                     }
                 });
             }
@@ -378,7 +387,6 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
             {
                 context.Clients.AddRange(new[]
                 {
-                    // Anonymous client
                     new DataAccess.SqlServer.Models.Client
                     {
                         ClientId = "client",
@@ -412,6 +420,55 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                         IdTokenSignedResponseAlg = "RS256",
                         ApplicationType = ApplicationTypes.web,
                         RedirectionUrls = "https://localhost:4200/callback"
+                    },
+                    new DataAccess.SqlServer.Models.Client
+                    {
+                        ClientId = "api_client",
+                        ClientName = "api_client",
+                        ClientSecret = "api_client",
+                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_basic,
+                        LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
+                        PolicyUri = "http://openid.net",
+                        TosUri = "http://openid.net",
+                        ClientScopes = new List<ClientScope>
+                        {
+                            new ClientScope
+                            {
+                                ScopeName = "api1"
+                            }
+                        },
+                        GrantTypes = "3",
+                        ResponseTypes = "1",
+                        IdTokenSignedResponseAlg = "RS256",
+                        ApplicationType = ApplicationTypes.web,
+                        RedirectionUrls = "https://localhost:4200/callback"
+                    },
+                    new DataAccess.SqlServer.Models.Client
+                    {
+                        ClientId = "jwt_client",
+                        ClientName = "jwt_client",
+                        ClientSecret = "jwt_client",
+                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_jwt,
+                        LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
+                        PolicyUri = "http://openid.net",
+                        TosUri = "http://openid.net",
+                        ClientScopes = new List<ClientScope>
+                        {
+                            new ClientScope
+                            {
+                                ScopeName = "api1"
+                            }
+                        },
+                        GrantTypes = "3",
+                        ResponseTypes = "1",
+                        IdTokenSignedResponseAlg = "RS256",
+                        ApplicationType = ApplicationTypes.web,
+                        RedirectionUrls = "https://localhost:4200/callback",
+                        JsonWebKeys = new List<JsonWebKey>
+                        {
+                            SharedContext.Instance().ModelSignatureKey,
+                            SharedContext.Instance().ModelEncryptionKey
+                        }
                     }
                 });
             }

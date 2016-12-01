@@ -159,7 +159,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
             }
 
             var parts = jws.Split('.');
-            return parts.Length < 3 ? new List<string>() : parts.ToList();
+            return parts.Length != 3 ? new List<string>() : parts.ToList();
         }
     }
 }

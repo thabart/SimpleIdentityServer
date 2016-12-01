@@ -121,7 +121,7 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt
         {
             var jweSplitted = jwe.Split('.');
             if (!jweSplitted.Any() ||
-                jweSplitted.Length < 5)
+                jweSplitted.Length != 5)
             {
                 return null;
             }

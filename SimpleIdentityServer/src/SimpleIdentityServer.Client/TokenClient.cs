@@ -26,9 +26,7 @@ namespace SimpleIdentityServer.Client
     public interface ITokenClient
     {
         Task<GrantedToken> ExecuteAsync(string tokenUrl);
-
         Task<GrantedToken> ExecuteAsync(Uri tokenUri);
-
         Task<GrantedToken> ResolveAsync(string discoveryDocumentationUrl);
     }
 
