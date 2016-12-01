@@ -19,11 +19,19 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using SimpleIdentityServer.Api.Controllers.Api;
+using SimpleIdentityServer.Core.Api.Jwks.Actions;
+using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Core.Exceptions;
+using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.DataAccess.SqlServer;
 using SimpleIdentityServer.Host.Tests.Extensions;
 using SimpleIdentityServer.Host.Tests.Services;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using System.Text;
 using WebApiContrib.Core.Storage;
 using WebApiContrib.Core.Storage.InMemory;
 
@@ -33,6 +41,7 @@ namespace SimpleIdentityServer.Host.Tests
     {
         public const string ScimEndPoint = "http://localhost:5555/";
         private IdentityServerOptions _options;
+        private IJsonWebKeyEnricher _jsonWebKeyEnricher;
 
         public FakeStartup()
         {
@@ -67,6 +76,7 @@ namespace SimpleIdentityServer.Host.Tests
                 },
                 AuthenticateResourceOwner = typeof(CustomAuthenticateResourceOwnerService)
             };
+            _jsonWebKeyEnricher = new JsonWebKeyEnricher();
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -105,8 +115,66 @@ namespace SimpleIdentityServer.Host.Tests
             app.UseStaticFiles();
             // 3. Use simple identity server.
             app.UseSimpleIdentityServer(_options, loggerFactory);
-            // 4. Use MVC.
+            // 4. Client JWKS endpoint
+            app.Map("/jwks_client", a =>
+            {
+                a.Run(async ctx =>
+                {
+                    var jwks = new[]
+                    {
+                        SharedContext.Instance().EncryptionKey,
+                        SharedContext.Instance().SignatureKey
+                    };
+                    var jsonWebKeySet = new JsonWebKeySet();
+                    var publicKeysUsedToValidateSignature = ExtractPublicKeysForSignature(jwks);
+                    var publicKeysUsedForClientEncryption = ExtractPrivateKeysForSignature(jwks);
+                    var result = new JsonWebKeySet
+                    {
+                        Keys = new List<Dictionary<string, object>>()
+                    };
+
+                    result.Keys.AddRange(publicKeysUsedToValidateSignature);
+                    result.Keys.AddRange(publicKeysUsedForClientEncryption);
+                    string json = JsonConvert.SerializeObject(result);
+                    var data = Encoding.UTF8.GetBytes(json);
+                    ctx.Response.ContentType = "application/json";
+                    await ctx.Response.Body.WriteAsync(data, 0, data.Length);
+                });
+            });
+            // 5. Use MVC.
             app.UseMvc();
+        }
+
+        private List<Dictionary<string, object>> ExtractPublicKeysForSignature(IEnumerable<Core.Jwt.JsonWebKey> jsonWebKeys)
+        {
+            var result = new List<Dictionary<string, object>>();
+            var jsonWebKeysUsedForSignature = jsonWebKeys.Where(jwk => jwk.Use == Use.Sig && jwk.KeyOps.Contains(KeyOperations.Verify));
+            foreach (var jsonWebKey in jsonWebKeysUsedForSignature)
+            {
+                var publicKeyInformation = _jsonWebKeyEnricher.GetPublicKeyInformation(jsonWebKey);
+                var jsonWebKeyInformation = _jsonWebKeyEnricher.GetJsonWebKeyInformation(jsonWebKey);
+                publicKeyInformation.AddRange(jsonWebKeyInformation);
+                result.Add(publicKeyInformation);
+            }
+
+            return result;
+        }
+
+        private List<Dictionary<string, object>> ExtractPrivateKeysForSignature(IEnumerable<Core.Jwt.JsonWebKey> jsonWebKeys)
+        {
+            var result = new List<Dictionary<string, object>>();
+            // Retrieve all the JWK used by the client to encrypt the JWS
+            var jsonWebKeysUsedForEncryption =
+                jsonWebKeys.Where(jwk => jwk.Use == Use.Enc && jwk.KeyOps.Contains(KeyOperations.Encrypt));
+            foreach (var jsonWebKey in jsonWebKeysUsedForEncryption)
+            {
+                var publicKeyInformation = _jsonWebKeyEnricher.GetPublicKeyInformation(jsonWebKey);
+                var jsonWebKeyInformation = _jsonWebKeyEnricher.GetJsonWebKeyInformation(jsonWebKey);
+                publicKeyInformation.AddRange(jsonWebKeyInformation);
+                result.Add(publicKeyInformation);
+            }
+
+            return result;
         }
     }
 }

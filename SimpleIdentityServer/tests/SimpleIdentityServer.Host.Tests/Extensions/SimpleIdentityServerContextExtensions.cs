@@ -469,6 +469,29 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                             SharedContext.Instance().ModelSignatureKey,
                             SharedContext.Instance().ModelEncryptionKey
                         }
+                    },
+                    new DataAccess.SqlServer.Models.Client
+                    {
+                        ClientId = "private_key_client",
+                        ClientName = "private_key_client",
+                        ClientSecret = "private_key_client",
+                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.private_key_jwt,
+                        LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
+                        PolicyUri = "http://openid.net",
+                        TosUri = "http://openid.net",
+                        ClientScopes = new List<ClientScope>
+                        {
+                            new ClientScope
+                            {
+                                ScopeName = "api1"
+                            }
+                        },
+                        GrantTypes = "3",
+                        ResponseTypes = "1",
+                        IdTokenSignedResponseAlg = "RS256",
+                        ApplicationType = ApplicationTypes.web,
+                        RedirectionUrls = "https://localhost:4200/callback",
+                        JwksUri = "http://localhost:5000/jwks_client"
                     }
                 });
             }

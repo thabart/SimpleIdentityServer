@@ -117,6 +117,33 @@ namespace SimpleIdentityServer.Host.Tests
 
             // ASSERTS
             Assert.NotNull(thirdToken);
+
+            // ACT : Test private key jwt
+            var secondClientPayLoad = new JwsPayload
+            {
+                {
+                    Core.Jwt.Constants.StandardClaimNames.Issuer, "private_key_client"
+                },
+                {
+                    Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, "private_key_client"
+                },
+                {
+                    Core.Jwt.Constants.StandardClaimNames.Audiences, new []
+                    {
+                        "http://localhost:5000"
+                    }
+                },
+                {
+                    Core.Jwt.Constants.StandardClaimNames.ExpirationTime, DateTime.UtcNow.AddHours(1).ConvertToUnixTimestamp()
+                }
+            };
+            var secondJws = _jwsGenerator.Generate(secondClientPayLoad, JwsAlg.RS256, SharedContext.Instance().SignatureKey);
+            var fourthToken = await _clientAuthSelector.UseClientPrivateKeyAuth(secondJws, "private_key_client")
+                .UseClientCredentials("api1")
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+
+            // ASSERTS
+            Assert.NotNull(fourthToken);
         }
 
         private void InitializeFakeObjects()

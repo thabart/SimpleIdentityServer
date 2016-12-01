@@ -25,6 +25,7 @@ namespace SimpleIdentityServer.Client.Selectors
         ITokenGrantTypeSelector UseClientSecretBasicAuth(string clientId, string clientSecret);
         ITokenGrantTypeSelector UseClientSecretPostAuth(string clientId, string clientSecret);
         ITokenGrantTypeSelector UseClientSecretJwtAuth(string jwt, string clientId);
+        ITokenGrantTypeSelector UseClientPrivateKeyAuth(string jwt, string clientId);
         ITokenGrantTypeSelector UseNoAuthentication();
     }
 
@@ -100,9 +101,25 @@ namespace SimpleIdentityServer.Client.Selectors
             return tokenGrantTypeSelector;
         }
 
-        public ITokenGrantTypeSelector UseClientPrivateKeyAuth(string token)
+        public ITokenGrantTypeSelector UseClientPrivateKeyAuth(string jwt, string clientId)
         {
-            return null;
+            if (string.IsNullOrWhiteSpace(clientId))
+            {
+                throw new ArgumentNullException(nameof(clientId));
+            }
+
+            if (string.IsNullOrWhiteSpace(clientId))
+            {
+                throw new ArgumentNullException(nameof(clientId));
+            }
+
+            var tokenRequestBuilder = new TokenRequestBuilder();
+            var tokenClient = _factory.CreateClient(tokenRequestBuilder);
+            var tokenGrantTypeSelector = new TokenGrantTypeSelector(tokenRequestBuilder, tokenClient);
+            tokenRequestBuilder.TokenRequest.ClientAssertion = jwt;
+            tokenRequestBuilder.TokenRequest.ClientAssertionType = Core.Common.ClientAssertionTypes.JwtBearer;
+            tokenRequestBuilder.TokenRequest.ClientId = clientId;
+            return tokenGrantTypeSelector;
         }
 
         public ITokenGrantTypeSelector UseNoAuthentication()
