@@ -14,14 +14,50 @@
 // limitations under the License.
 #endregion
 
+using Newtonsoft.Json.Linq;
+using SimpleIdentityServer.Client.Factories;
+using System;
+using System.Net.Http;
+using System.Threading.Tasks;
+
 namespace SimpleIdentityServer.Client.Operations
 {
     public interface IGetUserInfoOperation
     {
-
+        Task<JObject> ExecuteAsync(Uri userInfoUri, string accessToken);
     }
 
-    internal class GetUserInfoOperation
+    internal class GetUserInfoOperation : IGetUserInfoOperation
     {
+        private readonly IHttpClientFactory _httpClientFactory;
+
+        public GetUserInfoOperation(IHttpClientFactory httpClientFactory)
+        {
+            _httpClientFactory = httpClientFactory;
+        }
+
+        public async Task<JObject> ExecuteAsync(Uri userInfoUri, string accessToken)
+        {
+            if (userInfoUri == null)
+            {
+                throw new ArgumentNullException(nameof(userInfoUri));
+            }
+
+            if (string.IsNullOrWhiteSpace(accessToken))
+            {
+                throw new ArgumentNullException(nameof(accessToken));
+            }
+
+            var httpClient = _httpClientFactory.GetHttpClient();
+            var request = new HttpRequestMessage
+            {
+                RequestUri = userInfoUri
+            };
+            request.Headers.Add("Authorization", $"Bearer {accessToken}");
+            request.Headers.Add("Accept", "application/json");
+            var serializedContent = await httpClient.SendAsync(request).ConfigureAwait(false);
+            var json = await serializedContent.Content.ReadAsStringAsync();
+            return JObject.Parse(json);
+        }
     }
 }

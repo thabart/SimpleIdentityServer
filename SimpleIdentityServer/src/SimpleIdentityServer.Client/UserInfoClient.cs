@@ -14,15 +14,111 @@
 // limitations under the License.
 #endregion
 
+using Newtonsoft.Json.Linq;
+using SimpleIdentityServer.Client.Errors;
+using SimpleIdentityServer.Client.Operations;
+using System;
+using System.Threading.Tasks;
+
 namespace SimpleIdentityServer.Client
 {
     public interface IUserInfoClient
     {
-
+        JObject GetUserInfo(string userInfoUrl, string accessToken);
+        JObject GetUserInfo(Uri userInfoUri, string accessToken);
+        Task<JObject> GetUserInfoAsync(string userInfoUrl, string accessToken);
+        Task<JObject> GetUserInfoAsync(Uri userInfoUri, string accessToken);
+        Task<JObject> Resolve(string configurationUrl, string accessToken);
     }
 
     internal class UserInfoClient : IUserInfoClient
     {
+        private readonly IGetUserInfoOperation _getUserInfoOperation;
+        private readonly IGetDiscoveryOperation _getDiscoveryOperation;
 
+        public UserInfoClient(IGetUserInfoOperation getUserInfoOperation,
+            IGetDiscoveryOperation getDiscoveryOperation)
+        {
+            if (getUserInfoOperation == null)
+            {
+                throw new ArgumentNullException(nameof(getUserInfoOperation));
+            }
+
+            if (getDiscoveryOperation == null)
+            {
+                throw new ArgumentNullException(nameof(getDiscoveryOperation));
+            }
+
+            _getUserInfoOperation = getUserInfoOperation;
+            _getDiscoveryOperation = getDiscoveryOperation;
+        }
+
+        public JObject GetUserInfo(Uri userInfoUri, string authorizationHeader)
+        {
+            return GetUserInfoAsync(userInfoUri, authorizationHeader).Result;
+        }
+
+        public JObject GetUserInfo(string userInfoUrl, string accessToken)
+        {
+            return GetUserInfoAsync(userInfoUrl, accessToken).Result;
+        }
+
+        public async Task<JObject> GetUserInfoAsync(string userInfoUrl, string accessToken)
+        {
+            if (string.IsNullOrWhiteSpace(userInfoUrl))
+            {
+                throw new ArgumentNullException(nameof(userInfoUrl));
+            }
+
+            if (string.IsNullOrWhiteSpace(accessToken))
+            {
+                throw new ArgumentNullException(nameof(accessToken));
+            }
+
+            Uri uri = null;
+            if (!Uri.TryCreate(userInfoUrl, UriKind.Absolute, out uri))
+            {
+                throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, userInfoUrl));
+            }
+
+            return await GetUserInfoAsync(uri, accessToken);
+        }
+
+        public async Task<JObject> GetUserInfoAsync(Uri userInfoUri, string accessToken)
+        {
+            if (userInfoUri == null)
+            {
+                throw new ArgumentNullException(nameof(userInfoUri));
+            }
+
+            if (string.IsNullOrWhiteSpace(accessToken))
+            {
+                throw new ArgumentNullException(nameof(accessToken));
+            }
+            
+            return await _getUserInfoOperation.ExecuteAsync(userInfoUri, accessToken);
+        }
+
+        public async Task<JObject> Resolve(string configurationUrl, string accessToken)
+        {
+            if (string.IsNullOrWhiteSpace(configurationUrl))
+            {
+                throw new ArgumentNullException(nameof(configurationUrl));
+            }
+
+            if (string.IsNullOrWhiteSpace(accessToken))
+            {
+                throw new ArgumentNullException(nameof(accessToken));
+            }
+
+            Uri uri = null;
+            if (!Uri.TryCreate(configurationUrl, UriKind.Absolute, out uri))
+            {
+                throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, configurationUrl));
+            }
+
+            var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri);
+            return await GetUserInfoAsync(discoveryDocument.UserInfoEndPoint, accessToken);
+        }
     }
 }

@@ -20,6 +20,9 @@ using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SimpleIdentityServer.Api.Controllers.Api;
+using SimpleIdentityServer.DataAccess.SqlServer;
+using SimpleIdentityServer.Host.Tests.Extensions;
+using SimpleIdentityServer.Host.Tests.Services;
 using System.Reflection;
 using WebApiContrib.Core.Storage;
 using WebApiContrib.Core.Storage.InMemory;
@@ -40,7 +43,7 @@ namespace SimpleIdentityServer.Host.Tests
                 DataSource = new DataSourceOptions
                 {
                     DataSourceType = DataSourceTypes.InMemory,
-                    IsDataMigrated = true
+                    IsDataMigrated = false
                 },
                 Logging = new LoggingOptions
                 {
@@ -61,7 +64,8 @@ namespace SimpleIdentityServer.Host.Tests
                 {
                     IsEnabled = true,
                     EndPoint = ScimEndPoint
-                }
+                },
+                AuthenticateResourceOwner = typeof(CustomAuthenticateResourceOwnerService)
             };
         }
 
@@ -88,6 +92,13 @@ namespace SimpleIdentityServer.Host.Tests
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                var simpleIdentityServerContext = serviceScope.ServiceProvider.GetService<SimpleIdentityServerContext>();
+                simpleIdentityServerContext.Database.EnsureCreated();
+                simpleIdentityServerContext.EnsureSeedData();
+            }
+
             //1 . Enable CORS.
             app.UseCors("AllowAll");
             // 2. Use static files.

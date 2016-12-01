@@ -51,9 +51,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
     public class LocalOpenIdUserAuthenticationAction : ILocalOpenIdUserAuthenticationAction
     {
         private readonly IAuthenticateResourceOwnerService _authenticateResourceOwnerService;
-
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
-
         private readonly IAuthenticateHelper _authenticateHelper;
 
         public LocalOpenIdUserAuthenticationAction(
@@ -86,12 +84,12 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
         {
             if (localAuthenticationParameter == null)
             {
-                throw new ArgumentNullException("localAuthenticationParameter");
+                throw new ArgumentNullException(nameof(localAuthenticationParameter));
             }
 
             if (authorizationParameter == null)
             {
-                throw new ArgumentNullException("authorizationParameter");
+                throw new ArgumentNullException(nameof(authorizationParameter));
             }
 
             var resourceOwner = _authenticateResourceOwnerService.AuthenticateResourceOwner(localAuthenticationParameter.UserName,
@@ -101,11 +99,11 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                 claims = new List<Claim>();
                 throw new IdentityServerAuthenticationException("the resource owner credentials are not correct");
             }
+
             claims = resourceOwner.Claims == null ? new List<Claim>() : resourceOwner.Claims.ToList();
             claims.Add(new Claim(ClaimTypes.AuthenticationInstant,
                 DateTimeOffset.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture),
                 ClaimValueTypes.Integer));
-
             return _authenticateHelper.ProcessRedirection(authorizationParameter,
                 code,
                 resourceOwner.Id,

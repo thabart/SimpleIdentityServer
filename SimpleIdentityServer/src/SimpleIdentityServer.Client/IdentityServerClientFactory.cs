@@ -115,6 +115,7 @@ namespace SimpleIdentityServer.Client
             serviceCollection.AddTransient<IPostTokenOperation, PostTokenOperation>();
             serviceCollection.AddTransient<IGetJsonWebKeysOperation, GetJsonWebKeysOperation>();
             serviceCollection.AddTransient<IRegisterClientOperation, RegisterClientOperation>();
+            serviceCollection.AddTransient<IGetUserInfoOperation, GetUserInfoOperation>();
 
             // Register request builders
             serviceCollection.AddScoped<ITokenRequestBuilder, TokenRequestBuilder>();

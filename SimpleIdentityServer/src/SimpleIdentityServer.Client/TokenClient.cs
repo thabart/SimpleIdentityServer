@@ -35,13 +35,9 @@ namespace SimpleIdentityServer.Client
     internal class TokenClient : ITokenClient
     {
         private readonly IPostTokenOperation _postTokenOperation;
-
         private readonly IGetDiscoveryOperation _getDiscoveryOperation;
-
         private readonly ITokenRequestBuilder _tokenRequestBuilder;
-
-        #region Constructor
-
+        
         public TokenClient(
             ITokenRequestBuilder tokenRequestBuilder,
             IPostTokenOperation postTokenOperation,
@@ -51,10 +47,6 @@ namespace SimpleIdentityServer.Client
             _postTokenOperation = postTokenOperation;
             _getDiscoveryOperation = getDiscoveryOperation;
         }
-
-        #endregion
-
-        #region Public methods
         
         public async Task<GrantedToken> ExecuteAsync(string tokenUrl)
         {
@@ -102,7 +94,5 @@ namespace SimpleIdentityServer.Client
             var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri);
             return await ExecuteAsync(discoveryDocument.TokenEndPoint);
         }
-
-        #endregion
     }
 }
