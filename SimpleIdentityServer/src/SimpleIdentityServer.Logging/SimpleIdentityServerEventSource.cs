@@ -119,9 +119,7 @@ namespace SimpleIdentityServer.Logging
             string clientId,
             string authenticateType);
 
-        void StartGetTokenByRefreshToken(
-            string clientId,
-            string refreshToken);
+        void StartGetTokenByRefreshToken(string refreshToken);
 
         void EndGetTokenByRefreshToken(
             string accessToken,
@@ -478,15 +476,13 @@ namespace SimpleIdentityServer.Logging
             LogInformation(evt);
         }
 
-        public void StartGetTokenByRefreshToken(
-            string clientId, 
-            string refreshToken)
+        public void StartGetTokenByRefreshToken(string refreshToken)
         {
             var evt = new Event
             {
                 Id = 20,
                 Task = Tasks.Token,
-                Message = $"Start refresh token grant-type, client : {clientId}, refresh token : {refreshToken}",
+                Message = $"Start refresh token grant-type, refresh token : {refreshToken}",
                 Operation = "refresh token"
             };
 

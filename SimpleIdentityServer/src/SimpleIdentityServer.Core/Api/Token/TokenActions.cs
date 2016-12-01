@@ -34,9 +34,7 @@ namespace SimpleIdentityServer.Core.Api.Token
             AuthorizationCodeGrantTypeParameter parameter,
             AuthenticationHeaderValue authenticationHeaderValue);
 
-        GrantedToken GetTokenByRefreshTokenGrantType(
-            RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter,
-            AuthenticationHeaderValue authenticationHeaderValue);
+        GrantedToken GetTokenByRefreshTokenGrantType(RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter);
 
         GrantedToken GetTokenByClientCredentialsGrantType(
             ClientCredentialsGrantTypeParameter clientCredentialsGrantTypeParameter,
@@ -134,23 +132,17 @@ namespace SimpleIdentityServer.Core.Api.Token
             return result;
         }
 
-        public GrantedToken GetTokenByRefreshTokenGrantType(
-            RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter, 
-            AuthenticationHeaderValue authenticationHeaderValue)
+        public GrantedToken GetTokenByRefreshTokenGrantType(RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter)
         {
             if (refreshTokenGrantTypeParameter == null)
             {
                 throw new ArgumentNullException(nameof(refreshTokenGrantTypeParameter));
             }
 
-            _simpleIdentityServerEventSource.StartGetTokenByRefreshToken(
-                refreshTokenGrantTypeParameter.ClientId,
-                refreshTokenGrantTypeParameter.RefreshToken);
+            _simpleIdentityServerEventSource.StartGetTokenByRefreshToken(refreshTokenGrantTypeParameter.RefreshToken);
             _refreshTokenGrantTypeParameterValidator.Validate(refreshTokenGrantTypeParameter);
             var result = _getTokenByRefreshTokenGrantTypeAction.Execute(refreshTokenGrantTypeParameter);
-            _simpleIdentityServerEventSource.EndGetTokenByRefreshToken(
-                result.AccessToken,
-                result.IdToken);
+            _simpleIdentityServerEventSource.EndGetTokenByRefreshToken(result.AccessToken, result.IdToken);
             return result;
         }
 

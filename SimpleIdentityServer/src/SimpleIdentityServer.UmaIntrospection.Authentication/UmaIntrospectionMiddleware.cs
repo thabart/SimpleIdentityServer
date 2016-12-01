@@ -35,17 +35,11 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
     internal class UmaIntrospectionMiddleware<TOptions> where TOptions : UmaIntrospectionOptions, new()
     {
         private const string AuthorizationName = "Authorization";
-
         private const string BearerName = "Bearer";
-
         private readonly RequestDelegate _next;
-
         private readonly IApplicationBuilder _app;
-
         private readonly UmaIntrospectionOptions _options;
-
         private readonly IServiceProvider _serviceProvider;
-
         private readonly RequestDelegate _nullAuthenticationNext;
 
         #region Constructor

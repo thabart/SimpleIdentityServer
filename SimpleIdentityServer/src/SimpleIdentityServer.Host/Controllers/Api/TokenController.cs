@@ -74,8 +74,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
                     break;
                 case GrantTypeRequest.refresh_token:
                     var refreshTokenParameter = tokenRequest.ToRefreshTokenGrantTypeParameter();
-                    result = _tokenActions.GetTokenByRefreshTokenGrantType(refreshTokenParameter,
-                        authenticationHeaderValue);
+                    result = _tokenActions.GetTokenByRefreshTokenGrantType(refreshTokenParameter);
                     break;
                 case GrantTypeRequest.client_credentials:
                     var clientCredentialsParameter = tokenRequest.ToClientCredentialsGrantTypeParameter();

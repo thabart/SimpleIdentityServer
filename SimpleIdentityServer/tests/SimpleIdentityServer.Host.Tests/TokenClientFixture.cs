@@ -108,6 +108,15 @@ namespace SimpleIdentityServer.Host.Tests
 
             // ASSERTS
             Assert.NotNull(secondToken);
+            Assert.NotEmpty(secondToken.AccessToken);
+
+            // ACT : Test refresh token.
+            var thirdToken = await _clientAuthSelector.UseNoAuthentication()
+                .UseRefreshToken(secondToken.RefreshToken)
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+
+            // ASSERTS
+            Assert.NotNull(thirdToken);
         }
 
         private void InitializeFakeObjects()

@@ -181,6 +181,7 @@ namespace SimpleIdentityServer.UserInformation.Authentication.Tests
                 .UseStartup(typeof(FakeStartup));
             return new TestServer(builder);
         }
+
         private static void InitializeServices(IServiceCollection services, UserInformationOptions options)
         {
             services.AddSingleton(options);

@@ -25,6 +25,7 @@ namespace SimpleIdentityServer.Client.Selectors
         ITokenGrantTypeSelector UseClientSecretBasicAuth(string clientId, string clientSecret);
         ITokenGrantTypeSelector UseClientSecretPostAuth(string clientId, string clientSecret);
         ITokenGrantTypeSelector UseClientSecretJwtAuth(string jwt, string clientId);
+        ITokenGrantTypeSelector UseNoAuthentication();
     }
 
     internal class ClientAuthSelector : IClientAuthSelector
@@ -102,6 +103,13 @@ namespace SimpleIdentityServer.Client.Selectors
         public ITokenGrantTypeSelector UseClientPrivateKeyAuth(string token)
         {
             return null;
+        }
+
+        public ITokenGrantTypeSelector UseNoAuthentication()
+        {
+            var tokenRequestBuilder = new TokenRequestBuilder();
+            var tokenClient = _factory.CreateClient(tokenRequestBuilder);
+            return new TokenGrantTypeSelector(tokenRequestBuilder, tokenClient);
         }
 
         #endregion

@@ -128,7 +128,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _tokenActions.GetTokenByRefreshTokenGrantType(null, null));
+            Assert.Throws<ArgumentNullException>(() => _tokenActions.GetTokenByRefreshTokenGrantType(null));
         }
 
         [Fact]
@@ -136,13 +136,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
         {            
             // ARRANGE
             InitializeFakeObjects();
-            const string clientId = "clientId";
             const string refreshToken = "refresh_token";
             const string accessToken = "accessToken";
             const string identityToken = "identityToken";
             var parameter = new RefreshTokenGrantTypeParameter
             {
-                ClientId = clientId,
                 RefreshToken = refreshToken
             };
             var grantedToken = new GrantedToken
@@ -155,10 +153,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(grantedToken);
 
             // ACT
-            _tokenActions.GetTokenByRefreshTokenGrantType(parameter, null);
+            _tokenActions.GetTokenByRefreshTokenGrantType(parameter);
 
             // ASSERTS
-            _simpleIdentityServerEventSourceFake.Verify(s => s.StartGetTokenByRefreshToken(clientId, refreshToken));
+            _simpleIdentityServerEventSourceFake.Verify(s => s.StartGetTokenByRefreshToken(refreshToken));
             _simpleIdentityServerEventSourceFake.Verify(s => s.EndGetTokenByRefreshToken(accessToken, identityToken));
         }
 

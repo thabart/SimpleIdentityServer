@@ -15,10 +15,7 @@
 #endregion
 
 using Moq;
-using SimpleIdentityServer.Client.Builders;
-using SimpleIdentityServer.Client.DTOs.Request;
 using SimpleIdentityServer.Client.Selectors;
-using SimpleIdentityServer.Core.Common.Extensions;
 using System;
 using Xunit;
 
@@ -26,13 +23,8 @@ namespace SimpleIdentityServer.Client.Unit.Tests.Selectors
 {
     public class ClientAuthSelectorFixture
     {
-        private Mock<ITokenRequestBuilder> _tokenRequestBuilderStub;
-
-        private Mock<ITokenGrantTypeSelector> _tokenGrantTypeSelectorStub;
-
+        private Mock<ITokenClientFactory> _tokenClientFactoryStub;
         private IClientAuthSelector _clientAuthSelector;
-
-        #region Exceptions
 
         [Fact]
         public void When_Passing_Null_Parameters_To_ClientSecretBasic_Then_Exceptions_Are_Thrown()
@@ -56,54 +48,21 @@ namespace SimpleIdentityServer.Client.Unit.Tests.Selectors
             Assert.Throws<ArgumentNullException>(() => _clientAuthSelector.UseClientSecretPostAuth("client_id", null));
         }
 
-        #endregion
-
-        #region Happy paths
-
         [Fact]
-        public void When_Using_ClientSecretAuth_Then_Selector_Is_Returned()
+        public void When_Passing_Null_Parameters_To_ClientSecretJwtAuth_Then_Exceptions_Are_Thrown()
         {
             // ARRANGE
-            const string clientId = "client_id";
-            const string clientSecret = "client_secret";
-            var token = (clientId + ":" + clientSecret).Base64Encode();
             InitializeFakeObjects();
-            _tokenRequestBuilderStub.Setup(s => s.AuthorizationHeaderValue).Returns(string.Empty);
 
-            // ACT
-            var result = _clientAuthSelector.UseClientSecretBasicAuth(clientId, clientSecret);
-
-            // ASSERT
-            Assert.NotNull(result);
-            _tokenRequestBuilderStub.VerifySet(t => t.AuthorizationHeaderValue = token);
+            // ACT & ASSERT
+            Assert.Throws<ArgumentNullException>(() => _clientAuthSelector.UseClientSecretJwtAuth(null, null));
+            Assert.Throws<ArgumentNullException>(() => _clientAuthSelector.UseClientSecretJwtAuth("client_id", null));
         }
-
-        [Fact]
-        public void When_Using_ClientSecretPost_Then_Selector_Is_Returned()
-        {
-            // ARRANGE
-            const string clientId = "client_id";
-            const string clientSecret = "client_secret";
-            var tokenRequest = new TokenRequest();
-            InitializeFakeObjects();
-            _tokenRequestBuilderStub.Setup(s => s.TokenRequest).Returns(tokenRequest);
-
-            // ACT
-            var result = _clientAuthSelector.UseClientSecretPostAuth(clientId, clientSecret);
-
-            // ASSERT
-            Assert.NotNull(result);
-            Assert.True(tokenRequest.ClientId == clientId);
-            Assert.True(tokenRequest.ClientSecret == clientSecret);
-        }
-
-        #endregion
 
         private void InitializeFakeObjects()
         {
-            _tokenRequestBuilderStub = new Mock<ITokenRequestBuilder>();
-            _tokenGrantTypeSelectorStub = new Mock<ITokenGrantTypeSelector>();
-            _clientAuthSelector = new ClientAuthSelector(_tokenRequestBuilderStub.Object, _tokenGrantTypeSelectorStub.Object);
+            _tokenClientFactoryStub = new Mock<ITokenClientFactory>();
+            _clientAuthSelector = new ClientAuthSelector(_tokenClientFactoryStub.Object);
         }
     }
 }

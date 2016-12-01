@@ -28,6 +28,7 @@ namespace SimpleIdentityServer.Client.Selectors
         ITokenClient UseClientCredentials(List<string> scopes);
         ITokenClient UsePassword(string userName, string password, params string[] scopes);
         ITokenClient UsePassword(string userName, string password, List<string> scopes);
+        ITokenClient UseRefreshToken(string refreshToken);
     }
 
     internal class TokenGrantTypeSelector : ITokenGrantTypeSelector
@@ -103,6 +104,18 @@ namespace SimpleIdentityServer.Client.Selectors
             _tokenRequestBuilder.TokenRequest.Password = password;
             _tokenRequestBuilder.TokenRequest.Scope = ConcatScopes(scopes);
             _tokenRequestBuilder.TokenRequest.GrantType = GrantTypeRequest.password;
+            return _tokenClient;
+        }
+
+        public ITokenClient UseRefreshToken(string refreshToken)
+        {
+            if (string.IsNullOrWhiteSpace(refreshToken))
+            {
+                throw new ArgumentNullException(nameof(refreshToken));
+            }
+
+            _tokenRequestBuilder.TokenRequest.RefreshToken = refreshToken;
+            _tokenRequestBuilder.TokenRequest.GrantType = GrantTypeRequest.refresh_token;
             return _tokenClient;
         }
 

@@ -67,8 +67,6 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication.Tests
             }
         }
 
-        #region Exceptions
-
         [Fact]
         public async Task When_Passing_NotWellFormed_TokenIntrospectionEndPoint_Then_Exception_Is_Thrown()
         {
@@ -98,13 +96,16 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication.Tests
             httpRequestMessage.Method = HttpMethod.Get;
             httpRequestMessage.RequestUri = new Uri("http://localhost/protectedoperation");
 
-            // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<ArgumentException>(async () => await client.SendAsync(httpRequestMessage)).ConfigureAwait(false);
-            Assert.True(exception.Message == ErrorDescriptions.TheIntrospectionEndPointIsNotAWellFormedUrl);
+            // ACT
+            var result = await client.SendAsync(httpRequestMessage).ConfigureAwait(false);
+
+            // ASSERTS
+            Assert.NotNull(result);
+            Assert.True(result.StatusCode == HttpStatusCode.Unauthorized);
         }
 
         [Fact]
-        public async Task When_No_Client_Id_Is_Passed_Then_Exception_Is_Thrown()
+        public async Task When_No_Client_Id_Is_Passed_Then_Not_Authorized_Is_Returned()
         {
             // ARRANGE
             var introspectionResponse = new IntrospectionResponse
@@ -129,13 +130,16 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication.Tests
             httpRequestMessage.Method = HttpMethod.Get;
             httpRequestMessage.RequestUri = new Uri("http://localhost/protectedoperation");
 
-            // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<ArgumentException>(async () => await client.SendAsync(httpRequestMessage)).ConfigureAwait(false);
-            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterCannotBeEmpty, nameof(options.ClientId)));
+            // ACT
+            var result = await client.SendAsync(httpRequestMessage).ConfigureAwait(false);
+
+            // ASSERTS
+            Assert.NotNull(result);
+            Assert.True(result.StatusCode == HttpStatusCode.Unauthorized);
         }
 
         [Fact]
-        public async Task When_No_Client_Secret_Is_Passed_Then_Exception_Is_Thrown()
+        public async Task When_No_Client_Secret_Is_Passed_Then_Not_Authorized_Is_Returned()
         {
             // ARRANGE
             var introspectionResponse = new IntrospectionResponse
@@ -143,12 +147,6 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication.Tests
                 Active = true,
                 Scope = new List<string> { "GetMethod" }
             };
-            var json = JsonConvert.SerializeObject(introspectionResponse);
-            var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new StringContent(json)
-            };
-            var fakeHttpHandler = new FakeHttpMessageHandler(httpResponseMessage);
             var options = new Oauth2IntrospectionOptions
             {
                 InstrospectionEndPoint = "http://localhost:5000/introspect",
@@ -161,14 +159,13 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication.Tests
             httpRequestMessage.Method = HttpMethod.Get;
             httpRequestMessage.RequestUri = new Uri("http://localhost/protectedoperation");
 
-            // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<ArgumentException>(async () => await client.SendAsync(httpRequestMessage)).ConfigureAwait(false);
-            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterCannotBeEmpty, nameof(options.ClientSecret)));
+            // ACT
+            var result = await client.SendAsync(httpRequestMessage).ConfigureAwait(false);
+
+            // ASSERT
+            Assert.NotNull(result);
+            Assert.True(result.StatusCode == HttpStatusCode.Unauthorized);
         }
-
-        #endregion
-
-        #region Happy paths
 
         [Fact]
         public async Task When_Passing_An_Access_Token_Valid_For_The_Scope_ValuesGet_Then_Request_Is_Authorized()
@@ -242,10 +239,6 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication.Tests
             Assert.True(result.StatusCode == HttpStatusCode.Unauthorized);
         }
 
-        #endregion
-
-        #region Private methods
-
         private static TestServer CreateServer(Oauth2IntrospectionOptions options)
         {
             var builder = new WebHostBuilder()
@@ -261,7 +254,5 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication.Tests
         {
             services.AddSingleton(options);
         }
-
-        #endregion
     }
 }

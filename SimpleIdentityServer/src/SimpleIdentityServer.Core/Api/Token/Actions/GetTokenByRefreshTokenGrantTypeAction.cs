@@ -34,11 +34,8 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
     public sealed class GetTokenByRefreshTokenGrantTypeAction : IGetTokenByRefreshTokenGrantTypeAction
     {
         private readonly IGrantedTokenRepository _grantedTokenRepository;
-
         private readonly IClientHelper _clientHelper;
-
         private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
-
         private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
 
         public GetTokenByRefreshTokenGrantTypeAction(
@@ -57,7 +54,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
         {
             if (refreshTokenGrantTypeParameter == null)
             {
-                throw new ArgumentNullException("refreshTokenGrantTypeParameter");
+                throw new ArgumentNullException(nameof(refreshTokenGrantTypeParameter));
             }
 
             // 1. Validate parameters
