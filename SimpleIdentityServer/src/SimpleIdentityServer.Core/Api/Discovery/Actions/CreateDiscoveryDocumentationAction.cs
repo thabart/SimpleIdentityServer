@@ -14,13 +14,13 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Api.Authorization;
+using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SimpleIdentityServer.Core.Api.Authorization;
-using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Repositories;
-using SimpleIdentityServer.Core.Results;
 
 namespace SimpleIdentityServer.Core.Api.Discovery.Actions
 {

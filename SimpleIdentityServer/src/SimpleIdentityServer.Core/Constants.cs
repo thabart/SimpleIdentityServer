@@ -188,7 +188,6 @@ namespace SimpleIdentityServer.Core
         public static class StandardTokenTypeHintNames
         {
             public const string AccessToken = "access_token";
-
             public const string RefreshToken = "refresh_token";
         }
 
@@ -291,22 +290,6 @@ namespace SimpleIdentityServer.Core
             public const string ClientSecret = "client_secret";
             public const string ClientAssertion = "client_assertion";
             public const string ClientAssertionType = "client_assertion_type";
-        }
-
-        public static class IntrospectionResponseNames
-        {
-            public const string Active = "active";
-            public const string Scope = "scope";
-            public const string ClientId = "client_id";
-            public const string UserName = "username";
-            public const string TokenType = "token_type";
-            public const string Expiration = "exp";
-            public const string IssuedAt = "iat";
-            public const string Nbf = "nbf";
-            public const string Subject = "sub";
-            public const string Audience = "aud";
-            public const string Issuer = "iss";
-            public const string Jti = "jti";
         }
 
         /// <summary>

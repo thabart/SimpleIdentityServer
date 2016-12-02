@@ -14,9 +14,9 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Client.DTOs.Response;
 using SimpleIdentityServer.Client.Errors;
 using SimpleIdentityServer.Client.Operations;
+using SimpleIdentityServer.Core.Common.DTOs;
 using System;
 using System.Threading.Tasks;
 

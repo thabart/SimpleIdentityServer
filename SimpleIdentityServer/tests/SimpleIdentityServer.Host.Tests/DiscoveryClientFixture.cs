@@ -47,7 +47,7 @@ namespace SimpleIdentityServer.Host.Tests
 
             // ASSERT
             Assert.NotNull(discovery);
-            Assert.True(discovery.ScimEndPoint == FakeStartup.ScimEndPoint);
+            Assert.True(discovery.ScimEndpoint == FakeStartup.ScimEndPoint);
         }
 
         private void InitializeFakeObjects()

@@ -17,8 +17,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using SimpleIdentityServer.Core.Api.Introspection;
-using SimpleIdentityServer.Host.DTOs.Request;
-using SimpleIdentityServer.Host.DTOs.Response;
+using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Host.Extensions;
 using System;
 using System.Linq;
@@ -43,7 +42,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
         #region Public methods
 
         [HttpPost]
-        public IntrospectionResponse Post([FromForm] IntrospectionRequest introspectionRequest)
+        public Introspection Post([FromForm] IntrospectionRequest introspectionRequest)
         {
             if (introspectionRequest == null)
             {

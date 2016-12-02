@@ -15,13 +15,11 @@
 #endregion
 
 using Newtonsoft.Json;
-using SimpleIdentityServer.Client.DTOs.Request;
 using SimpleIdentityServer.Client.DTOs.Response;
 using SimpleIdentityServer.Client.Factories;
 using System;
-using System.Net;
+using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Client.Operations
@@ -29,7 +27,7 @@ namespace SimpleIdentityServer.Client.Operations
     public interface IPostTokenOperation
     {
         Task<GrantedToken> ExecuteAsync(
-            TokenRequest tokenRequest,
+            Dictionary<string, string> tokenRequest,
             Uri requestUri,
             string authorizationValue);
     }
@@ -50,7 +48,7 @@ namespace SimpleIdentityServer.Client.Operations
         #region Public methods
 
         public async Task<GrantedToken> ExecuteAsync(
-            TokenRequest tokenRequest,
+            Dictionary<string, string> tokenRequest,
             Uri requestUri,
             string authorizationValue)
         {
@@ -65,7 +63,7 @@ namespace SimpleIdentityServer.Client.Operations
             }
 
             var httpClient = _httpClientFactory.GetHttpClient();
-			var body = new FormUrlEncodedContent(tokenRequest.GetDic());
+			var body = new FormUrlEncodedContent(tokenRequest);
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,

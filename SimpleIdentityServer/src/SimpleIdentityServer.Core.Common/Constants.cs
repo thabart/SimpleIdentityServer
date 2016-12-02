@@ -62,4 +62,86 @@ namespace SimpleIdentityServer.Core.Common
     {
         public static string JwtBearer = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer";
     }
+    
+    public static class IntrospectionNames
+    {
+        public const string Active = "active";
+        public const string Scope = "scope";
+        public const string ClientId = "client_id";
+        public const string UserName = "username";
+        public const string TokenType = "token_type";
+        public const string Expiration = "exp";
+        public const string IssuedAt = "iat";
+        public const string Nbf = "nbf";
+        public const string Subject = "sub";
+        public const string Audience = "aud";
+        public const string Issuer = "iss";
+        public const string Jti = "jti";
+    }
+
+    public static class IntrospectionRequestNames
+    {
+        public const string Token = "token";
+        public const string TokenTypeHint = "token_type_hint";        
+    }
+
+    public static class ClientAuthNames
+    {
+        public const string ClientId = "client_id";
+        public const string ClientSecret = "client_secret";
+        public const string ClientAssertion = "client_assertion";
+        public const string ClientAssertionType = "client_assertion_type";
+    }
+
+    public static class DiscoveryInformationNames
+    {
+        public const string AuthorizationEndPoint = "authorization_endpoint";
+        public const string CheckSessionEndPoint = "check_session_iframe";
+        public const string ClaimsParameterSupported = "claims_parameter_supported";
+        public const string ClaimsSupported = "claims_supported";
+        public const string EndSessionEndPoint = "end_session_endpoint";
+        public const string GrantTypesSupported = "grant_types_supported";
+        public const string IdTokenSigningAlgValuesSupported = "id_token_signing_alg_values_supported";
+        public const string Issuer = "issuer";
+        public const string JwksUri = "jwks_uri";
+        public const string RequestParameterSupported = "request_parameter_supported";
+        public const string RequestUriParameterSupported = "request_uri_parameter_supported";
+        public const string RequireRequestUriRegistration = "require_request_uri_registration";
+        public const string ResponseModesSupported = "response_modes_supported";
+        public const string ResponseTypesSupported = "response_types_supported";
+        public const string RevocationEndPoint = "revocation_endpoint";
+        public const string IntrospectionEndPoint = "introspection_endpoint";
+        public const string ScopesSupported = "scopes_supported";
+        public const string SubjectTypesSupported = "subject_types_supported";
+        public const string TokenEndPoint = "token_endpoint";
+        public const string TokenEndpointAuthMethodSupported = "token_endpoint_auth_methods_supported";
+        public const string UserInfoEndPoint = "userinfo_endpoint";
+        public const string Version = "version";
+        public const string RegistrationEndPoint = "registration_endpoint";
+        public const string ScimEndpoint = "scim_endpoint";
+    }
+
+    public static class RequestTokenNames
+    {
+        public const string GrantType = "grant_type";
+        public const string Username = "username";
+        public const string Password = "password";
+        public const string Scope = "scope";
+        public const string Code = "code";
+        public const string RedirectUri = "redirect_uri";
+        public const string RefreshToken = "refresh_token";
+    }
+
+    public static class GrantTypes
+    {
+        public const string ClientCredentials = "client_credentials";
+        public const string Password = "password";
+        public const string RefreshToken = "refresh_token";
+    }
+
+    public static class TokenTypes
+    {
+        public const string AccessToken = "access_token";
+        public const string RefreshToken = "refresh_token";
+    }
 }

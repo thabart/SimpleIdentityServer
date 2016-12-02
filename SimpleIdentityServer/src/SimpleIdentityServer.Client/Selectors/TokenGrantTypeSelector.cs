@@ -15,7 +15,7 @@
 #endregion
 
 using SimpleIdentityServer.Client.Builders;
-using SimpleIdentityServer.Client.DTOs.Request;
+using SimpleIdentityServer.Core.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,28 +29,22 @@ namespace SimpleIdentityServer.Client.Selectors
         ITokenClient UsePassword(string userName, string password, params string[] scopes);
         ITokenClient UsePassword(string userName, string password, List<string> scopes);
         ITokenClient UseRefreshToken(string refreshToken);
+        IIntrospectClient Introspect(string token, TokenType tokenType);
     }
 
     internal class TokenGrantTypeSelector : ITokenGrantTypeSelector
     {
-        private readonly ITokenRequestBuilder _tokenRequestBuilder;
-
+        private readonly RequestBuilder _requestBuilder;
         private readonly ITokenClient _tokenClient;
-
-        #region Constructor
-
-        public TokenGrantTypeSelector(
-            ITokenRequestBuilder tokenRequestBuilder,
-            ITokenClient tokenClient)
+        private readonly IIntrospectClient _introspectClient;
+        
+        public TokenGrantTypeSelector(RequestBuilder requestBuilder, ITokenClient tokenClient, IIntrospectClient introspectClient)
         {
-            _tokenRequestBuilder = tokenRequestBuilder;
+            _requestBuilder = requestBuilder;
             _tokenClient = tokenClient;
+            _introspectClient = introspectClient;
         }
-
-        #endregion
-
-        #region Public methods
-
+        
         public ITokenClient UseClientCredentials(params string[] scopes)
         {
             if (scopes == null || !scopes.Any())
@@ -67,9 +61,9 @@ namespace SimpleIdentityServer.Client.Selectors
             {
                 throw new ArgumentNullException(nameof(scopes));
             }
-            
-            _tokenRequestBuilder.TokenRequest.Scope = ConcatScopes(scopes);
-            _tokenRequestBuilder.TokenRequest.GrantType = GrantTypeRequest.client_credentials;
+
+            _requestBuilder.Content.Add(RequestTokenNames.Scope, ConcatScopes(scopes));
+            _requestBuilder.Content.Add(RequestTokenNames.GrantType, GrantTypes.ClientCredentials);
             return _tokenClient;
         }
 
@@ -100,10 +94,10 @@ namespace SimpleIdentityServer.Client.Selectors
                 throw new ArgumentNullException(nameof(scopes));
             }
 
-            _tokenRequestBuilder.TokenRequest.Username = userName;
-            _tokenRequestBuilder.TokenRequest.Password = password;
-            _tokenRequestBuilder.TokenRequest.Scope = ConcatScopes(scopes);
-            _tokenRequestBuilder.TokenRequest.GrantType = GrantTypeRequest.password;
+            _requestBuilder.Content.Add(RequestTokenNames.Username, userName);
+            _requestBuilder.Content.Add(RequestTokenNames.Password, password);
+            _requestBuilder.Content.Add(RequestTokenNames.Scope, ConcatScopes(scopes));
+            _requestBuilder.Content.Add(RequestTokenNames.GrantType, GrantTypes.Password);
             return _tokenClient;
         }
 
@@ -114,20 +108,26 @@ namespace SimpleIdentityServer.Client.Selectors
                 throw new ArgumentNullException(nameof(refreshToken));
             }
 
-            _tokenRequestBuilder.TokenRequest.RefreshToken = refreshToken;
-            _tokenRequestBuilder.TokenRequest.GrantType = GrantTypeRequest.refresh_token;
+            _requestBuilder.Content.Add(RequestTokenNames.GrantType, GrantTypes.RefreshToken);
+            _requestBuilder.Content.Add(RequestTokenNames.RefreshToken, refreshToken);
             return _tokenClient;
         }
 
-        #endregion
+        public IIntrospectClient Introspect(string token, TokenType tokenType)
+        {
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                throw new ArgumentNullException(nameof(token));
+            }
 
-        #region Private static methods
+            _requestBuilder.Content.Add(IntrospectionRequestNames.Token, token);
+            _requestBuilder.Content.Add(IntrospectionRequestNames.TokenTypeHint, tokenType == TokenType.RefreshToken ? TokenTypes.RefreshToken : TokenTypes.AccessToken);
+            return _introspectClient;
+        }
 
         private static string ConcatScopes(List<string> scopes)
         {
             return string.Join(" ", scopes);
         }
-
-        #endregion
     }
 }

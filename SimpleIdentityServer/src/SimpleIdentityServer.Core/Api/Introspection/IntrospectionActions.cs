@@ -33,16 +33,10 @@ namespace SimpleIdentityServer.Core.Api.Introspection
     {
         private readonly IPostIntrospectionAction _postIntrospectionAction;
 
-        #region Constructor
-
         public IntrospectionActions(IPostIntrospectionAction postIntrospectionAction)
         {
             _postIntrospectionAction = postIntrospectionAction;
         }
-
-        #endregion
-
-        #region Public methods
 
         public IntrospectionResult PostIntrospection(
             IntrospectionParameter introspectionParameter,
@@ -55,7 +49,5 @@ namespace SimpleIdentityServer.Core.Api.Introspection
 
             return _postIntrospectionAction.Execute(introspectionParameter, authenticationHeaderValue);
         }
-
-        #endregion
     }
 }

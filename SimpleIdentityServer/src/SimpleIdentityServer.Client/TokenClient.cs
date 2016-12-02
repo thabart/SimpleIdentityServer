@@ -34,14 +34,14 @@ namespace SimpleIdentityServer.Client
     {
         private readonly IPostTokenOperation _postTokenOperation;
         private readonly IGetDiscoveryOperation _getDiscoveryOperation;
-        private readonly ITokenRequestBuilder _tokenRequestBuilder;
+        private readonly RequestBuilder _requestBuilder;
         
         public TokenClient(
-            ITokenRequestBuilder tokenRequestBuilder,
+            RequestBuilder requestBuilder,
             IPostTokenOperation postTokenOperation,
             IGetDiscoveryOperation getDiscoveryOperation)
         {
-            _tokenRequestBuilder = tokenRequestBuilder;
+            _requestBuilder = requestBuilder;
             _postTokenOperation = postTokenOperation;
             _getDiscoveryOperation = getDiscoveryOperation;
         }
@@ -68,12 +68,10 @@ namespace SimpleIdentityServer.Client
             {
                 throw new ArgumentNullException(nameof(tokenUri));
             }
-
-            var tokenRequest = _tokenRequestBuilder.TokenRequest;
-            var authorizationHeaderValue = _tokenRequestBuilder.AuthorizationHeaderValue;
-            return await _postTokenOperation.ExecuteAsync(tokenRequest,
+            
+            return await _postTokenOperation.ExecuteAsync(_requestBuilder.Content,
                 tokenUri,
-                authorizationHeaderValue);
+                _requestBuilder.AuthorizationHeaderValue);
         }
 
         public async Task<GrantedToken> ResolveAsync(string discoveryDocumentationUrl)

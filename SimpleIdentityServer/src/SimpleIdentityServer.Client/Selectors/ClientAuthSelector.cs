@@ -31,14 +31,14 @@ namespace SimpleIdentityServer.Client.Selectors
 
     internal class ClientAuthSelector : IClientAuthSelector
     {
-        private readonly ITokenClientFactory _factory;
+        private readonly ITokenClientFactory _tokenClientFactory;
+        private readonly IIntrospectClientFactory _introspectClientFactory;
 
-        public ClientAuthSelector(ITokenClientFactory factory)
+        public ClientAuthSelector(ITokenClientFactory tokenClientFactory, IIntrospectClientFactory introspectClientFactory)
         {
-            _factory = factory;
+            _tokenClientFactory = tokenClientFactory;
+            _introspectClientFactory = introspectClientFactory;
         }
-
-        #region Public methods
 
         public ITokenGrantTypeSelector UseClientSecretBasicAuth(string clientId, string clientSecret)
         {
@@ -52,11 +52,12 @@ namespace SimpleIdentityServer.Client.Selectors
                 throw new ArgumentNullException(nameof(clientSecret));
             }
 
-            var tokenRequestBuilder = new TokenRequestBuilder();
-            var tokenClient = _factory.CreateClient(tokenRequestBuilder);
-            var tokenGrantTypeSelector = new TokenGrantTypeSelector(tokenRequestBuilder, tokenClient);
+            var requestBuilder = new RequestBuilder();
+            var tokenClient = _tokenClientFactory.CreateClient(requestBuilder);
+            var introspectClient = _introspectClientFactory.CreateClient(requestBuilder);
+            var tokenGrantTypeSelector = new TokenGrantTypeSelector(requestBuilder, tokenClient, introspectClient);
             var authorizationValue = GetAuthorizationValue(clientId, clientSecret);
-            tokenRequestBuilder.AuthorizationHeaderValue = authorizationValue;
+            requestBuilder.AuthorizationHeaderValue = authorizationValue;
             return tokenGrantTypeSelector;
         }
 
@@ -72,11 +73,11 @@ namespace SimpleIdentityServer.Client.Selectors
                 throw new ArgumentNullException(nameof(clientSecret));
             }
 
-            var tokenRequestBuilder = new TokenRequestBuilder();
-            var tokenClient = _factory.CreateClient(tokenRequestBuilder);
-            var tokenGrantTypeSelector = new TokenGrantTypeSelector(tokenRequestBuilder, tokenClient);
-            tokenRequestBuilder.TokenRequest.ClientId = clientId;
-            tokenRequestBuilder.TokenRequest.ClientSecret = clientSecret;
+            var requestBuilder = new RequestBuilder();
+            var tokenClient = _tokenClientFactory.CreateClient(requestBuilder);
+            var introspectClient = _introspectClientFactory.CreateClient(requestBuilder);
+            var tokenGrantTypeSelector = new TokenGrantTypeSelector(requestBuilder, tokenClient, introspectClient);
+            requestBuilder.SetClientCredentials(clientId, clientSecret);
             return tokenGrantTypeSelector;
         }
 
@@ -92,12 +93,11 @@ namespace SimpleIdentityServer.Client.Selectors
                 throw new ArgumentNullException(nameof(clientId));
             }
 
-            var tokenRequestBuilder = new TokenRequestBuilder();
-            var tokenClient = _factory.CreateClient(tokenRequestBuilder);
-            var tokenGrantTypeSelector = new TokenGrantTypeSelector(tokenRequestBuilder, tokenClient);
-            tokenRequestBuilder.TokenRequest.ClientAssertion = jwt;
-            tokenRequestBuilder.TokenRequest.ClientAssertionType = Core.Common.ClientAssertionTypes.JwtBearer;
-            tokenRequestBuilder.TokenRequest.ClientId = clientId;
+            var requestBuilder = new RequestBuilder();
+            var tokenClient = _tokenClientFactory.CreateClient(requestBuilder);
+            var introspectClient = _introspectClientFactory.CreateClient(requestBuilder);
+            var tokenGrantTypeSelector = new TokenGrantTypeSelector(requestBuilder, tokenClient, introspectClient);
+            requestBuilder.SetClientAssertion(clientId, jwt, Core.Common.ClientAssertionTypes.JwtBearer);
             return tokenGrantTypeSelector;
         }
 
@@ -113,32 +113,26 @@ namespace SimpleIdentityServer.Client.Selectors
                 throw new ArgumentNullException(nameof(clientId));
             }
 
-            var tokenRequestBuilder = new TokenRequestBuilder();
-            var tokenClient = _factory.CreateClient(tokenRequestBuilder);
-            var tokenGrantTypeSelector = new TokenGrantTypeSelector(tokenRequestBuilder, tokenClient);
-            tokenRequestBuilder.TokenRequest.ClientAssertion = jwt;
-            tokenRequestBuilder.TokenRequest.ClientAssertionType = Core.Common.ClientAssertionTypes.JwtBearer;
-            tokenRequestBuilder.TokenRequest.ClientId = clientId;
+            var requestBuilder = new RequestBuilder();
+            var tokenClient = _tokenClientFactory.CreateClient(requestBuilder);
+            var introspectClient = _introspectClientFactory.CreateClient(requestBuilder);
+            var tokenGrantTypeSelector = new TokenGrantTypeSelector(requestBuilder, tokenClient, introspectClient);
+            requestBuilder.SetClientAssertion(clientId, jwt, Core.Common.ClientAssertionTypes.JwtBearer);
             return tokenGrantTypeSelector;
         }
 
         public ITokenGrantTypeSelector UseNoAuthentication()
         {
-            var tokenRequestBuilder = new TokenRequestBuilder();
-            var tokenClient = _factory.CreateClient(tokenRequestBuilder);
-            return new TokenGrantTypeSelector(tokenRequestBuilder, tokenClient);
+            var requestBuilder = new RequestBuilder();
+            var tokenClient = _tokenClientFactory.CreateClient(requestBuilder);
+            var introspectClient = _introspectClientFactory.CreateClient(requestBuilder);
+            return new TokenGrantTypeSelector(requestBuilder, tokenClient, introspectClient);
         }
-
-        #endregion
-
-        #region Private static methods
 
         private static string GetAuthorizationValue(string clientId, string clientSecret)
         {
             var concat = clientId + ":" + clientSecret;
             return concat.Base64Encode();
         }
-
-        #endregion
     }
 }

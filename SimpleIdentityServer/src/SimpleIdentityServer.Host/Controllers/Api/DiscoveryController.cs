@@ -16,9 +16,9 @@
 
 using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.Core.Api.Discovery;
-using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Host;
 using Microsoft.AspNetCore.Mvc;
+using SimpleIdentityServer.Core.Common.DTOs;
 
 namespace SimpleIdentityServer.Api.Controllers.Api
 {

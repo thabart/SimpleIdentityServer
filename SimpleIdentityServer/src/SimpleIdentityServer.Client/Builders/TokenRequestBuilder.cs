@@ -14,34 +14,35 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Client.DTOs.Request;
+using Newtonsoft.Json.Linq;
+using SimpleIdentityServer.Core.Common;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Client.Builders
 {
-    public interface ITokenRequestBuilder
+    public class RequestBuilder
     {
-        string AuthorizationHeaderValue { get; set; }
-
-        TokenRequest TokenRequest { get; }
-    }
-
-    internal class TokenRequestBuilder : ITokenRequestBuilder
-    {
-        #region Constructor
-
-        public TokenRequestBuilder()
+        public RequestBuilder()
         {
-            TokenRequest = new TokenRequest();
+            Content = new Dictionary<string, string>();
         }
 
-        #endregion
-
-        #region Properties
-
         public string AuthorizationHeaderValue { get; set; }
+        public Dictionary<string, string> Content { get; private set; }
 
-        public TokenRequest TokenRequest { get; private set; }
+        public RequestBuilder SetClientCredentials(string clientId, string clientSecret)
+        {
+            Content.Add(ClientAuthNames.ClientId, clientId);
+            Content.Add(ClientAuthNames.ClientSecret, clientId);
+            return this;
+        }
 
-        #endregion
+        public RequestBuilder SetClientAssertion(string clientId, string clientAssertion, string clientAssertionType)
+        {
+            Content.Add(ClientAuthNames.ClientId, clientId);
+            Content.Add(ClientAuthNames.ClientAssertion, clientAssertion);
+            Content.Add(ClientAuthNames.ClientAssertionType, clientAssertionType);
+            return this;
+        }
     }
 }

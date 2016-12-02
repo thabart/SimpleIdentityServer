@@ -216,12 +216,14 @@ namespace SimpleIdentityServer.Host.Tests
             _jwsGenerator = (IJwsGenerator)provider.GetService(typeof(IJwsGenerator));
             _jweGenerator = (IJweGenerator)provider.GetService(typeof(IJweGenerator));
             _httpClientFactoryStub = new Mock<IHttpClientFactory>();
-            var tokenRequestBuilder = new TokenRequestBuilder();
+            var requestBuilder = new RequestBuilder();
             var postTokenOperation = new PostTokenOperation(_httpClientFactoryStub.Object);
             var getDiscoveryOperation = new GetDiscoveryOperation(_httpClientFactoryStub.Object);
-            var tokenClient = new TokenClient(tokenRequestBuilder, postTokenOperation, getDiscoveryOperation);
-            var tokenGrantTypeSelector = new TokenGrantTypeSelector(tokenRequestBuilder, tokenClient);
-            _clientAuthSelector = new ClientAuthSelector(new TokenClientFactory(postTokenOperation, getDiscoveryOperation));
+            var introspectionOperation = new IntrospectOperation(_httpClientFactoryStub.Object);
+            var tokenClient = new TokenClient(requestBuilder, postTokenOperation, getDiscoveryOperation);
+            var introspectClient = new IntrospectClient(requestBuilder, introspectionOperation, getDiscoveryOperation);
+            var tokenGrantTypeSelector = new TokenGrantTypeSelector(requestBuilder, tokenClient, introspectClient);
+            _clientAuthSelector = new ClientAuthSelector(new TokenClientFactory(postTokenOperation, getDiscoveryOperation), new IntrospectClientFactory(introspectionOperation, getDiscoveryOperation));
             var getUserInfoOperation = new GetUserInfoOperation(_httpClientFactoryStub.Object);
             _userInfoClient = new UserInfoClient(getUserInfoOperation, getDiscoveryOperation);
         }

@@ -15,7 +15,6 @@
 #endregion
 
 using Microsoft.Extensions.DependencyInjection;
-using SimpleIdentityServer.Client.Builders;
 using SimpleIdentityServer.Client.Factories;
 using SimpleIdentityServer.Client.Operations;
 using SimpleIdentityServer.Client.Selectors;
@@ -26,10 +25,9 @@ namespace SimpleIdentityServer.Client
     public interface IIdentityServerClientFactory
     {
         IDiscoveryClient CreateDiscoveryClient();
-
         IClientAuthSelector CreateTokenClient();
-
         IJwksClient CreateJwksClient();
+        IClientAuthSelector CreateIntrospectionClient();
     }
 
     public class IdentityServerClientFactory : IIdentityServerClientFactory
@@ -97,6 +95,16 @@ namespace SimpleIdentityServer.Client
             return result;
         }
 
+        /// <summary>
+        /// Creates an introspection client.
+        /// </summary>
+        /// <returns></returns>
+        public IClientAuthSelector CreateIntrospectionClient()
+        {
+            var result = (IClientAuthSelector)_serviceProvider.GetService(typeof(IClientAuthSelector));
+            return result;
+        }
+
         #region Private static methods
 
         private static void RegisterDependencies(IServiceCollection serviceCollection)
@@ -109,6 +117,7 @@ namespace SimpleIdentityServer.Client
             serviceCollection.AddTransient<IJwksClient, JwksClient>();
             serviceCollection.AddTransient<IUserInfoClient, UserInfoClient>();
             serviceCollection.AddTransient<IRegistrationClient, RegistrationClient>();
+            serviceCollection.AddTransient<IIntrospectClient, IntrospectClient>();
 
             // Register operations
             serviceCollection.AddTransient<IGetDiscoveryOperation, GetDiscoveryOperation>();
@@ -116,6 +125,7 @@ namespace SimpleIdentityServer.Client
             serviceCollection.AddTransient<IGetJsonWebKeysOperation, GetJsonWebKeysOperation>();
             serviceCollection.AddTransient<IRegisterClientOperation, RegisterClientOperation>();
             serviceCollection.AddTransient<IGetUserInfoOperation, GetUserInfoOperation>();
+            serviceCollection.AddTransient<IIntrospectOperation, IntrospectOperation>();
 
             // Register selectors
             serviceCollection.AddTransient<IClientAuthSelector, ClientAuthSelector>();
@@ -123,6 +133,7 @@ namespace SimpleIdentityServer.Client
 
             // Register factories
             serviceCollection.AddTransient<ITokenClientFactory, TokenClientFactory>();
+            serviceCollection.AddTransient<IIntrospectClientFactory, IntrospectClientFactory>();
         }
 
         #endregion

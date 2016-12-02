@@ -40,11 +40,8 @@ namespace SimpleIdentityServer.Core.Api.Introspection.Actions
     public class PostIntrospectionAction : IPostIntrospectionAction
     {
         private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
-
         private readonly IAuthenticateClient _authenticateClient;
-
         private readonly IIntrospectionParameterValidator _introspectionParameterValidator;
-
         private readonly IGrantedTokenRepository _grantedTokenRepository;
 
         #region Constructor

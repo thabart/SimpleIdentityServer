@@ -13,9 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.Core.Results
+namespace SimpleIdentityServer.Core.Common.DTOs
 {
     [DataContract]
     public class DiscoveryInformation
@@ -23,10 +24,9 @@ namespace SimpleIdentityServer.Core.Results
         /// <summary>
         /// Gets or sets the authorization end point.
         /// </summary>
-        [DataMember(Name = "authorization_endpoint")]
+        [DataMember(Name = DiscoveryInformationNames.AuthorizationEndPoint)]
         public string AuthorizationEndPoint { get; set; }
-
-        [DataMember(Name = "check_session_iframe")]
+        [DataMember(Name = DiscoveryInformationNames.CheckSessionEndPoint)]
         public string CheckSessionEndPoint { get; set; }
 
         /// <summary>
@@ -34,130 +34,107 @@ namespace SimpleIdentityServer.Core.Results
         /// </summary>
         //  [DataMember(Name = "claim_types_supported")]
         public string[] ClaimTypesSupported { get; set; }
-
         /// <summary>
         /// Gets or sets boolean specifying whether the OP supports use of the claims parameter.
         /// </summary>
-        [DataMember(Name = "claims_parameter_supported")]
+        [DataMember(Name = DiscoveryInformationNames.ClaimsParameterSupported)]
         public bool ClaimsParameterSupported { get; set; }
-
         /// <summary>
         /// Gets or sets a list of the Claim Names of the Claims.
         /// </summary>
-        [DataMember(Name = "claims_supported")]
+        [DataMember(Name = DiscoveryInformationNames.ClaimsSupported)]
         public string[] ClaimsSupported { get; set; }
-        
-        [DataMember(Name = "end_session_endpoint")]
+        [DataMember(Name = DiscoveryInformationNames.EndSessionEndPoint)]
         public string EndSessionEndPoint { get; set; }
-
         /// <summary>
         /// Gets or sets the grant-types supported : authorization_code, implicit
         /// </summary>
-        [DataMember(Name = "grant_types_supported")]
+        [DataMember(Name = DiscoveryInformationNames.GrantTypesSupported)]
         public string[] GrantTypesSupported { get; set; }
-
         /// <summary>
         /// Gets or sets the list of the JWS signing algorithms (alg values) supported.
         /// </summary>
-        [DataMember(Name = "id_token_signing_alg_values_supported")]
+        [DataMember(Name = DiscoveryInformationNames.IdTokenSigningAlgValuesSupported)]
         public string[] IdTokenSigningAlgValuesSupported { get; set; }
-
         /// <summary>
         /// Gets or sets the issuer. 
         /// </summary>
-        [DataMember(Name = "issuer")]
+        [DataMember(Name = DiscoveryInformationNames.Issuer)]
         public string Issuer { get; set; }
-
         /// <summary>
         /// Gets or sets the JSON Web Key Set document.
         /// </summary>
-        [DataMember(Name = "jwks_uri")]
+        [DataMember(Name = DiscoveryInformationNames.JwksUri)]
         public string JwksUri { get; set; }
-
         /// <summary>
         /// Gets or sets boolean specifying whether the OP supports use of the request parameter.
         /// </summary>
-        [DataMember(Name = "request_parameter_supported")]
+        [DataMember(Name = DiscoveryInformationNames.RequestParameterSupported)]
         public bool RequestParameterSupported { get; set; }
-
         /// <summary>
         /// Gets or sets boolean specifying whether the OP supports use of the request request_uri
         /// </summary>
-        [DataMember(Name = "request_uri_parameter_supported")]
+        [DataMember(Name = DiscoveryInformationNames.RequestUriParameterSupported)]
         public bool RequestUriParameterSupported { get; set; }
-
         /// <summary>
         /// Gets or sets boolean specifying whether the OP requires any request_uri values.
         /// </summary>
-        [DataMember(Name = "require_request_uri_registration")]
+        [DataMember(Name = DiscoveryInformationNames.RequireRequestUriRegistration)]
         public bool RequireRequestUriRegistration { get; set; }
-
         /// <summary>
         /// Gets or sets the response modes supported : query, fragment
         /// </summary>
-        [DataMember(Name = "response_modes_supported")]
+        [DataMember(Name = DiscoveryInformationNames.ResponseModesSupported)]
         public string[] ResponseModesSupported { get; set; }
-
         /// <summary>
         /// Gets or sets the response types supported : code, id_token & token id_token
         /// </summary>
-        [DataMember(Name = "response_types_supported")]
+        [DataMember(Name = DiscoveryInformationNames.ResponseTypesSupported)]
         public string[] ResponseTypesSupported { get; set; }
-
-        [DataMember(Name = "revocation_endpoint")]
+        [DataMember(Name = DiscoveryInformationNames.RevocationEndPoint)]
         public string RevocationEndPoint { get; set; }
-
-        [DataMember(Name = "introspection_endpoint")]
+        [DataMember(Name = DiscoveryInformationNames.IntrospectionEndPoint)]
         public string IntrospectionEndPoint { get; set; }
-
         /// <summary>
         /// Gets or sets the list of scupported scopes.
         /// </summary>
-        [DataMember(Name = "scopes_supported")]
+        [DataMember(Name = DiscoveryInformationNames.ScopesSupported)]
         public string[] ScopesSupported { get; set; }
-
         /// <summary>
         /// Gets or sets the subject types supported : pairwise & public.
         /// </summary>
-        [DataMember(Name = "subject_types_supported")]
+        [DataMember(Name = DiscoveryInformationNames.SubjectTypesSupported)]
         public string[] SubjectTypesSupported { get; set; }
-
         /// <summary>
         /// Gets or sets the token endpoint.
         /// </summary>
-        [DataMember(Name = "token_endpoint")]
+        [DataMember(Name = DiscoveryInformationNames.TokenEndPoint)]
         public string TokenEndPoint { get; set; }
-
         /// <summary>
         /// Gets or sets the list of Client Authentication methods supported by the TokenEndpoint : client_secret_post, client_secret_basic etc ...
         /// </summary>
-        [DataMember(Name = "token_endpoint_auth_methods_supported")]
+        [DataMember(Name = DiscoveryInformationNames.TokenEndpointAuthMethodSupported)]
         public string[] TokenEndpointAuthMethodSupported { get; set; }
-
         /// <summary>
         /// Gets or sets the user-info endpoint.
         /// </summary>
-        [DataMember(Name = "userinfo_endpoint")]
+        [DataMember(Name = DiscoveryInformationNames.UserInfoEndPoint)]
         public string UserInfoEndPoint { get; set; }
-
         /// <summary>
         /// Gets or sets the version of the discovery document
         /// </summary>
-        [DataMember(Name = "version")]
+        [DataMember(Name = DiscoveryInformationNames.Version)]
         public string Version { get; set; }
-
         /// <summary>
         /// Gets or sets the Registration End Point.
         /// </summary>
-        [DataMember(Name = "registration_endpoint")]
+        [DataMember(Name = DiscoveryInformationNames.RegistrationEndPoint)]
         public string RegistrationEndPoint { get; set; }
-
         /// <summary>
         /// Gets or sets the base URI of the OP's designated SCIM service provider.
         /// </summary>
-        [DataMember(Name = "scim_endpoint")]
+        [DataMember(Name = DiscoveryInformationNames.ScimEndpoint)]
         public string ScimEndpoint { get; set; }
-
         /// <summary>
         /// Gets or sets the acr values supported.
         /// </summary>

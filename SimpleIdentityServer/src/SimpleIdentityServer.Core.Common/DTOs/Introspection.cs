@@ -17,82 +17,71 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.Host.DTOs.Response
+namespace SimpleIdentityServer.Core.Common.DTOs
 {
     [DataContract]
-    public class IntrospectionResponse
+    public class Introspection
     {
         /// <summary>
         /// Gets or sets a boolean indicator of whether or not the presented token is currently active
         /// </summary>
-        [DataMember(Name = Core.Constants.IntrospectionResponseNames.Active)]
+        [DataMember(Name = IntrospectionNames.Active)]
         public bool Active { get; set; }
-
         /// <summary>
         /// Gets or sets a list of scopes
         /// </summary>
-        [DataMember(Name = Core.Constants.IntrospectionResponseNames.Scope)]
-        public List<string> Scope { get; set; }
-
+        [DataMember(Name = IntrospectionNames.Scope)]
+        public IEnumerable<string> Scope { get; set; }
         /// <summary>
         /// Gets or sets the client id
         /// </summary>
-        [DataMember(Name = Core.Constants.IntrospectionResponseNames.ClientId)]
+        [DataMember(Name = IntrospectionNames.ClientId)]
         public string ClientId { get; set; }
-        
         /// <summary>
         /// Gets or sets identifier for the resource owner who authorized this token
         /// </summary>
-        [DataMember(Name = Core.Constants.IntrospectionResponseNames.UserName)]
+        [DataMember(Name = IntrospectionNames.UserName)]
         public string UserName { get; set; }
-        
         /// <summary>
         /// Gets or sets the token type
         /// </summary>
-        [DataMember(Name = Core.Constants.IntrospectionResponseNames.TokenType)]
+        [DataMember(Name = IntrospectionNames.TokenType)]
         public string TokenType { get; set; }
-
         /// <summary>
         /// Gets or sets the expiration in seconds
         /// </summary>
-        [DataMember(Name = Core.Constants.IntrospectionResponseNames.Expiration)]
+        [DataMember(Name = IntrospectionNames.Expiration)]
         public int Expiration { get; set; }
-
 
         /// <summary>
         /// Gets or sets the issue date
         /// </summary>
-        [DataMember(Name = Core.Constants.IntrospectionResponseNames.IssuedAt)]
+        [DataMember(Name = IntrospectionNames.IssuedAt)]
         public double IssuedAt { get; set; }
-
         /// <summary>
         /// Gets or sets the NBF
         /// </summary>
-        [DataMember(Name = Core.Constants.IntrospectionResponseNames.Nbf)]
+        [DataMember(Name = IntrospectionNames.Nbf)]
         public int Nbf { get; set; }
-
         /// <summary>
         /// Gets or sets the subject
         /// </summary>
-        [DataMember(Name = Core.Constants.IntrospectionResponseNames.Subject)]
+        [DataMember(Name = IntrospectionNames.Subject)]
         public string Subject { get; set; }
-
         /// <summary>
         /// Gets or sets the audience
         /// </summary>
-        [DataMember(Name = Core.Constants.IntrospectionResponseNames.Audience)]
+        [DataMember(Name = IntrospectionNames.Audience)]
         public string Audience { get; set; }
-
         /// <summary>
         /// Gets or sets the issuer of this token
         /// </summary>
-        [DataMember(Name = Core.Constants.IntrospectionResponseNames.Issuer)]
+        [DataMember(Name = IntrospectionNames.Issuer)]
         public string Issuer { get; set; }
-
         /// <summary>
         /// Gets or sets the string representing the issuer of the token
         /// </summary>
-        [DataMember(Name = Core.Constants.IntrospectionResponseNames.Jti)]
+        [DataMember(Name = IntrospectionNames.Jti)]
         public string Jti { get; set; }
     }
 }

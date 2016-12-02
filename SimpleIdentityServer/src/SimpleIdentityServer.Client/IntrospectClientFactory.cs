@@ -19,25 +19,25 @@ using SimpleIdentityServer.Client.Operations;
 
 namespace SimpleIdentityServer.Client
 {
-    public interface ITokenClientFactory
+    public interface IIntrospectClientFactory
     {
-        ITokenClient CreateClient(RequestBuilder builder);
+        IIntrospectClient CreateClient(RequestBuilder requestBuilder);
     }
 
-    internal class TokenClientFactory : ITokenClientFactory
+    internal class IntrospectClientFactory : IIntrospectClientFactory
     {
-        private readonly IPostTokenOperation _postTokenOperation;
+        private readonly IIntrospectOperation _introspectOperation;
         private readonly IGetDiscoveryOperation _getDiscoveryOperation;
 
-        public TokenClientFactory(IPostTokenOperation postTokenOperation, IGetDiscoveryOperation getDiscoveryOperation)
+        public IntrospectClientFactory(IIntrospectOperation introspectOperation, IGetDiscoveryOperation getDiscoveryOperation)
         {
-            _postTokenOperation = postTokenOperation;
+            _introspectOperation = introspectOperation;
             _getDiscoveryOperation = getDiscoveryOperation;
         }
 
-        public ITokenClient CreateClient(RequestBuilder builder)
+        public IIntrospectClient CreateClient(RequestBuilder requestBuilder)
         {
-            return new TokenClient(builder, _postTokenOperation, _getDiscoveryOperation);
+            return new IntrospectClient(requestBuilder, _introspectOperation, _getDiscoveryOperation);
         }
     }
 }
