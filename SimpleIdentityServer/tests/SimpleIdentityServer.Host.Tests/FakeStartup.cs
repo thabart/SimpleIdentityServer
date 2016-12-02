@@ -105,9 +105,8 @@ namespace SimpleIdentityServer.Host.Tests
         {
             using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
-                var simpleIdentityServerContext = serviceScope.ServiceProvider.GetService<SimpleIdentityServerContext>();
-                simpleIdentityServerContext.Database.EnsureCreated();
-                simpleIdentityServerContext.EnsureSeedData(_context);
+                var context = serviceScope.ServiceProvider.GetService<SimpleIdentityServerContext>();
+                context.EnsureSeedData(_context);
             }
 
             //1 . Enable CORS.

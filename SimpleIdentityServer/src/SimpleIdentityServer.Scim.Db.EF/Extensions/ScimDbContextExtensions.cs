@@ -17,6 +17,7 @@
 using SimpleIdentityServer.Scim.Db.EF.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace SimpleIdentityServer.Scim.Db.EF.Extensions
@@ -39,7 +40,14 @@ namespace SimpleIdentityServer.Scim.Db.EF.Extensions
             {
                 context.Schemas.Add(UserSchema);
                 context.Schemas.Add(GroupSchema);
-                context.SaveChanges();
+                try
+                {
+                    context.SaveChanges();
+                }
+                catch
+                {
+                    // Trace.WriteLine("duplicated keys");
+                }
             }
         }
 

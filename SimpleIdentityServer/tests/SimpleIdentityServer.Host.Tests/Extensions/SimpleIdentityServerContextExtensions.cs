@@ -19,6 +19,7 @@ using SimpleIdentityServer.DataAccess.SqlServer;
 using SimpleIdentityServer.DataAccess.SqlServer.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography;
 
@@ -33,7 +34,14 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
             InsertResourceOwners(context);
             InsertJsonWebKeys(context);
             InsertClients(context, sharedCtx);
-            context.SaveChanges();
+            try
+            {
+                context.SaveChanges();
+            }
+            catch
+            {
+                Trace.WriteLine("items already exists");
+            }
         }
 
         private static void InsertClaims(SimpleIdentityServerContext context)
@@ -423,10 +431,32 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                     },
                     new DataAccess.SqlServer.Models.Client
                     {
-                        ClientId = "api_client",
-                        ClientName = "api_client",
-                        ClientSecret = "api_client",
+                        ClientId = "basic_client",
+                        ClientName = "basic_client",
+                        ClientSecret = "basic_client",
                         TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_basic,
+                        LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
+                        PolicyUri = "http://openid.net",
+                        TosUri = "http://openid.net",
+                        ClientScopes = new List<ClientScope>
+                        {
+                            new ClientScope
+                            {
+                                ScopeName = "api1"
+                            }
+                        },
+                        GrantTypes = "3",
+                        ResponseTypes = "1",
+                        IdTokenSignedResponseAlg = "RS256",
+                        ApplicationType = ApplicationTypes.web,
+                        RedirectionUrls = "https://localhost:4200/callback"
+                    },
+                    new DataAccess.SqlServer.Models.Client
+                    {
+                        ClientId = "post_client",
+                        ClientName = "post_client",
+                        ClientSecret = "post_client",
+                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
                         LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
                         PolicyUri = "http://openid.net",
                         TosUri = "http://openid.net",
