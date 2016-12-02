@@ -55,7 +55,7 @@ namespace SimpleIdentityServer.Core
 {
     public static class SimpleIdentityServerCoreExtensions
     {
-        public static IServiceCollection AddSimpleIdentityServerCore(this IServiceCollection serviceCollection)
+        public static IServiceCollection AddSimpleIdentityServerCore(this IServiceCollection serviceCollection, IHttpClientFactory factory = null)
         {
             if (serviceCollection == null)
             {
@@ -117,7 +117,15 @@ namespace SimpleIdentityServer.Core
             serviceCollection.AddTransient<IGetTokenByRefreshTokenGrantTypeAction, GetTokenByRefreshTokenGrantTypeAction>();
             serviceCollection.AddTransient<IRefreshTokenGrantTypeParameterValidator, RefreshTokenGrantTypeParameterValidator>();
             serviceCollection.AddTransient<ITranslationManager, TranslationManager>();
-            serviceCollection.AddTransient<IHttpClientFactory, HttpClientFactory>();
+            if (factory != null)
+            {
+                serviceCollection.AddSingleton(factory);
+            }
+            else
+            {
+                serviceCollection.AddTransient<IHttpClientFactory, HttpClientFactory>();
+            }
+
             serviceCollection.AddTransient<IIntrospectionActions, IntrospectionActions>();
             serviceCollection.AddTransient<IPostIntrospectionAction, PostIntrospectionAction>();
             serviceCollection.AddTransient<IIntrospectionParameterValidator, IntrospectionParameterValidator>();

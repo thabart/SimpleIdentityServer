@@ -21,9 +21,7 @@ namespace SimpleIdentityServer.Host.Tests
 {
     public class SharedContext
     {
-        private static SharedContext _instance;
-
-        private SharedContext()
+        public SharedContext()
         {
             var serializedRsa = string.Empty;
             using (var provider = new RSACryptoServiceProvider())
@@ -75,21 +73,13 @@ namespace SimpleIdentityServer.Host.Tests
                 Use = DataAccess.SqlServer.Models.Use.Enc,
                 SerializedKey = serializedRsa,
             };
-        }
-
-        public static SharedContext Instance()
-        {
-            if (_instance == null)
-            {
-                _instance = new SharedContext();
-            }
-
-            return _instance;
+            HttpClientFactory = new FakeHttpClientFactory();
         }
 
         public JsonWebKey EncryptionKey { get; }
         public DataAccess.SqlServer.Models.JsonWebKey ModelEncryptionKey { get; }
         public JsonWebKey SignatureKey { get; }
         public DataAccess.SqlServer.Models.JsonWebKey ModelSignatureKey { get; }
+        public FakeHttpClientFactory HttpClientFactory { get; }
     }
 }

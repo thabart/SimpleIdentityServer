@@ -31,17 +31,22 @@ using SimpleIdentityServer.Host.Configuration;
 using SimpleIdentityServer.Host.Parsers;
 using SimpleIdentityServer.Host.Services;
 using SimpleIdentityServer.Logging;
-using SimpleIdentityServer.RateLimitation;
 using System;
 
 namespace SimpleIdentityServer.Host
 {
     public static class ServiceCollectionExtensions 
-    {        
-        public static void AddSimpleIdentityServer(
+    {       
+         
+        public static IServiceCollection AddSimpleIdentityServer(
             this IServiceCollection serviceCollection,
-            Action<IdentityServerOptions> optionsCallback) 
+            Action<IdentityServerOptions> optionsCallback)
         {
+            if (serviceCollection == null)
+            {
+                throw new ArgumentNullException(nameof(serviceCollection));
+            }
+
             if (optionsCallback == null)
             {
                 throw new ArgumentNullException(nameof(optionsCallback));
@@ -51,12 +56,18 @@ namespace SimpleIdentityServer.Host
             optionsCallback(options);
             serviceCollection.AddSimpleIdentityServer(
                 options);
+            return serviceCollection;
         }
         
-        public static void AddSimpleIdentityServer(
+        public static IServiceCollection AddSimpleIdentityServer(
             this IServiceCollection serviceCollection,
-            IdentityServerOptions options) 
+            IdentityServerOptions options)
         {
+            if (serviceCollection == null)
+            {
+                throw new ArgumentNullException(nameof(serviceCollection));
+            }
+
             if (options == null) {
                 throw new ArgumentNullException(nameof(options));
             }           
@@ -92,6 +103,68 @@ namespace SimpleIdentityServer.Host
             ConfigureSimpleIdentityServer(
                 serviceCollection, 
                 options);
+            return serviceCollection;
+        }
+
+        public static IServiceCollection AddHostIdentityServer(this IServiceCollection serviceCollection, IdentityServerOptions options)
+        {
+            if (serviceCollection == null)
+            {
+                throw new ArgumentNullException(nameof(serviceCollection));
+            }
+
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            if (options.AuthenticateResourceOwner == null)
+            {
+                serviceCollection.AddTransient<IAuthenticateResourceOwnerService, DefaultAuthenticateResourceOwerService>();
+            }
+            else
+            {
+                serviceCollection.AddTransient(typeof(IAuthenticateResourceOwnerService), options.AuthenticateResourceOwner);
+            }
+
+            if (options.TwoFactorServiceStore == null)
+            {
+                serviceCollection.AddTransient<ITwoFactorServiceStore, TwoFactorServiceStore>();
+            }
+            else
+            {
+                serviceCollection.AddTransient(typeof(IConfigurationService), options.TwoFactorServiceStore);
+            }
+
+            if (options.ConfigurationService == null)
+            {
+                serviceCollection.AddTransient<IConfigurationService, DefaultConfigurationService>();
+            }
+            else
+            {
+                serviceCollection.AddTransient(typeof(IConfigurationService), options.ConfigurationService);
+            }
+
+            if (options.PasswordService == null)
+            {
+                serviceCollection.AddTransient<IPasswordService, DefaultPasswordService>();
+            }
+            else
+            {
+                serviceCollection.AddTransient(typeof(IPasswordService), options.PasswordService);
+            }
+
+            serviceCollection
+                .AddSingleton(options.Authenticate)
+                .AddSingleton(options.Scim)
+                .AddTransient<ICertificateStore, CertificateStore>()
+                .AddTransient<IRedirectInstructionParser, RedirectInstructionParser>()
+                .AddTransient<IActionResultParser, ActionResultParser>()
+                .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
+                .AddSingleton<IActionContextAccessor, ActionContextAccessor>()
+                .AddDataProtection();
+
+            return serviceCollection;
         }
                 
         /// <summary>
@@ -102,55 +175,13 @@ namespace SimpleIdentityServer.Host
             IServiceCollection services,
             IdentityServerOptions options)
         {
-            services.AddSimpleIdentityServerCore();
-            services.AddSimpleIdentityServerJwt();
-            services.AddRateLimitation();
-            services.AddIdServerClient();
-            services.AddConfigurationClient();
-            services.AddDataProtection();
-            if (options.AuthenticateResourceOwner == null)
-            {
-                services.AddTransient<IAuthenticateResourceOwnerService, DefaultAuthenticateResourceOwerService>();
-            }
-            else
-            {
-                services.AddTransient(typeof(IAuthenticateResourceOwnerService), options.AuthenticateResourceOwner);
-            }
-
-            if (options.TwoFactorServiceStore == null)
-            {
-                services.AddTransient<ITwoFactorServiceStore, TwoFactorServiceStore>();
-            }
-            else
-            {
-                services.AddTransient(typeof(IConfigurationService), options.TwoFactorServiceStore);
-            }
-
-            if (options.ConfigurationService == null)
-            {
-                services.AddTransient<IConfigurationService, DefaultConfigurationService>();
-            }
-            else
-            {
-                services.AddTransient(typeof(IConfigurationService), options.ConfigurationService);
-            }
-
-            if (options.PasswordService == null)
-            {
-                services.AddTransient<IPasswordService, DefaultPasswordService>();
-            }
-            else
-            {
-                services.AddTransient(typeof(IPasswordService), options.PasswordService);
-            }
-
-            services.AddSingleton(options.Authenticate);
-            services.AddSingleton(options.Scim);
-            services.AddTransient<ICertificateStore, CertificateStore>();
-            services.AddTransient<IRedirectInstructionParser, RedirectInstructionParser>();
-            services.AddTransient<IActionResultParser, ActionResultParser>();
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+            services.AddSimpleIdentityServerCore()
+                .AddSimpleIdentityServerJwt()
+                .AddHostIdentityServer(options)
+                .AddIdServerClient()
+                .AddConfigurationClient()
+                .AddIdServerLogging()
+                .AddDataProtection();
 
             // Configure SeriLog pipeline
             Func<LogEvent, bool> serilogFilter = (e) =>
@@ -188,8 +219,6 @@ namespace SimpleIdentityServer.Host
                 .CreateLogger();
             Log.Logger = log;
             services.AddLogging();
-            services.AddTransient<ISimpleIdentityServerEventSource, SimpleIdentityServerEventSource>();
-            services.AddTransient<IManagerEventSource, ManagerEventSource>();
             services.AddSingleton<ILogger>(log);
         }
     }

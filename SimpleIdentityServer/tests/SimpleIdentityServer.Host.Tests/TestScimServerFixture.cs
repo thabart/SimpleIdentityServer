@@ -14,10 +14,11 @@
 // limitations under the License.
 #endregion
 
-using System;
-using Microsoft.AspNetCore.TestHost;
-using System.Net.Http;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Net.Http;
 
 namespace SimpleIdentityServer.Host.Tests
 {
@@ -25,13 +26,20 @@ namespace SimpleIdentityServer.Host.Tests
     {
         public TestServer Server { get; }
         public HttpClient Client { get; }
+        public SharedContext SharedCtx { get; }
 
         public TestScimServerFixture()
         {
+            SharedCtx = new SharedContext();
+            var startup = new FakeStartup(SharedCtx);
             Server = new TestServer(new WebHostBuilder()
                 .UseUrls("http://localhost:5000")
-                .UseStartup<FakeStartup>());
+                .ConfigureServices(services =>
+                {
+                    services.AddSingleton<IStartup>(startup);
+                }));
             Client = Server.CreateClient();
+            SharedCtx.HttpClientFactory.Set(Server);
         }
 
         public void Dispose()

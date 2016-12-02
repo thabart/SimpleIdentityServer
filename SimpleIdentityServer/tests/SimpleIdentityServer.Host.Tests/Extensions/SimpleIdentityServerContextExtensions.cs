@@ -26,13 +26,13 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
 {
     public static class SimpleIdentityServerContextExtensions
     {
-        public static void EnsureSeedData(this SimpleIdentityServerContext context)
+        public static void EnsureSeedData(this SimpleIdentityServerContext context, SharedContext sharedCtx)
         {
             InsertClaims(context);
             InsertScopes(context);
             InsertResourceOwners(context);
             InsertJsonWebKeys(context);
-            InsertClients(context);
+            InsertClients(context, sharedCtx);
             context.SaveChanges();
         }
 
@@ -381,7 +381,7 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
             }
         }
 
-        private static void InsertClients(SimpleIdentityServerContext context)
+        private static void InsertClients(SimpleIdentityServerContext context, SharedContext sharedCtx)
         {
             if (!context.Clients.Any())
             {
@@ -466,8 +466,8 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                         RedirectionUrls = "https://localhost:4200/callback",
                         JsonWebKeys = new List<JsonWebKey>
                         {
-                            SharedContext.Instance().ModelSignatureKey,
-                            SharedContext.Instance().ModelEncryptionKey
+                            sharedCtx.ModelSignatureKey,
+                            sharedCtx.ModelEncryptionKey
                         }
                     },
                     new DataAccess.SqlServer.Models.Client

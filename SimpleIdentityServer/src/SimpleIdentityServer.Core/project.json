@@ -11,8 +11,7 @@
     "Microsoft.AspNetCore.Mvc": "1.0.0",
     "MailKit": "1.4.2.1",
     "SimpleIdentityServer.Core.Jwt": { "target": "project" },
-    "SimpleIdentityServer.Logging": { "target": "project" },
-    "SimpleIdentityServer.Configuration.Client": { "target": "project" }
+    "SimpleIdentityServer.Logging": { "target": "project" }
   },
   "tooling": {
     "defaultNamespace": "SimpleIdentityServer.Core"

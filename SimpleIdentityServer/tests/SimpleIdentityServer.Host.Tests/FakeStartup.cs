@@ -18,9 +18,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SimpleIdentityServer.Api.Controllers.Api;
+using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Api.Jwks.Actions;
 using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Exceptions;
@@ -28,6 +28,8 @@ using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.DataAccess.SqlServer;
 using SimpleIdentityServer.Host.Tests.Extensions;
 using SimpleIdentityServer.Host.Tests.Services;
+using SimpleIdentityServer.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -37,13 +39,14 @@ using WebApiContrib.Core.Storage.InMemory;
 
 namespace SimpleIdentityServer.Host.Tests
 {
-    public class FakeStartup
+    public class FakeStartup : IStartup
     {
         public const string ScimEndPoint = "http://localhost:5555/";
         private IdentityServerOptions _options;
         private IJsonWebKeyEnricher _jsonWebKeyEnricher;
+        private SharedContext _context;
 
-        public FakeStartup()
+        public FakeStartup(SharedContext context)
         {
             _options = new IdentityServerOptions
             {
@@ -77,36 +80,34 @@ namespace SimpleIdentityServer.Host.Tests
                 AuthenticateResourceOwner = typeof(CustomAuthenticateResourceOwnerService)
             };
             _jsonWebKeyEnricher = new JsonWebKeyEnricher();
+            _context = context;
         }
 
-        public void ConfigureServices(IServiceCollection services)
+        public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             // 1. Configure the caching
             services.AddStorage(opt => opt.UseInMemory());
-
             // 2. Add the dependencies needed to enable CORS
             services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader()));
-
             // 3. Configure Simple identity server
-            services.AddSimpleIdentityServer(_options);
-            // 4. Enable logging
-            services.AddLogging();
-            // 5. Configure MVC
+            ConfigureIdServer(services);
+            // 4. Configure MVC
             var mvc = services.AddMvc();
             var parts = mvc.PartManager.ApplicationParts;
             parts.Clear();
             parts.Add(new AssemblyPart(typeof(DiscoveryController).GetTypeInfo().Assembly));
+            return services.BuildServiceProvider();
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app)
         {
             using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 var simpleIdentityServerContext = serviceScope.ServiceProvider.GetService<SimpleIdentityServerContext>();
                 simpleIdentityServerContext.Database.EnsureCreated();
-                simpleIdentityServerContext.EnsureSeedData();
+                simpleIdentityServerContext.EnsureSeedData(_context);
             }
 
             //1 . Enable CORS.
@@ -114,7 +115,7 @@ namespace SimpleIdentityServer.Host.Tests
             // 2. Use static files.
             app.UseStaticFiles();
             // 3. Use simple identity server.
-            app.UseSimpleIdentityServer(_options, loggerFactory);
+            app.UseSimpleIdentityServer(_options);
             // 4. Client JWKS endpoint
             app.Map("/jwks_client", a =>
             {
@@ -122,8 +123,8 @@ namespace SimpleIdentityServer.Host.Tests
                 {
                     var jwks = new[]
                     {
-                        SharedContext.Instance().EncryptionKey,
-                        SharedContext.Instance().SignatureKey
+                        _context.EncryptionKey,
+                        _context.SignatureKey
                     };
                     var jsonWebKeySet = new JsonWebKeySet();
                     var publicKeysUsedToValidateSignature = ExtractPublicKeysForSignature(jwks);
@@ -145,7 +146,17 @@ namespace SimpleIdentityServer.Host.Tests
             app.UseMvc();
         }
 
-        private List<Dictionary<string, object>> ExtractPublicKeysForSignature(IEnumerable<Core.Jwt.JsonWebKey> jsonWebKeys)
+        private void ConfigureIdServer(IServiceCollection services)
+        {
+            services.AddHostIdentityServer(_options)
+                .AddSimpleIdentityServerCore(_context.HttpClientFactory)
+                .AddSimpleIdentityServerJwt()
+                .AddIdServerLogging()
+                .AddLogging()
+                .AddSimpleIdentityServerInMemory();
+        }
+
+        private List<Dictionary<string, object>> ExtractPublicKeysForSignature(IEnumerable<JsonWebKey> jsonWebKeys)
         {
             var result = new List<Dictionary<string, object>>();
             var jsonWebKeysUsedForSignature = jsonWebKeys.Where(jwk => jwk.Use == Use.Sig && jwk.KeyOps.Contains(KeyOperations.Verify));
@@ -160,7 +171,7 @@ namespace SimpleIdentityServer.Host.Tests
             return result;
         }
 
-        private List<Dictionary<string, object>> ExtractPrivateKeysForSignature(IEnumerable<Core.Jwt.JsonWebKey> jsonWebKeys)
+        private List<Dictionary<string, object>> ExtractPrivateKeysForSignature(IEnumerable<JsonWebKey> jsonWebKeys)
         {
             var result = new List<Dictionary<string, object>>();
             // Retrieve all the JWK used by the client to encrypt the JWS

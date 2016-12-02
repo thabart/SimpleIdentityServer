@@ -100,8 +100,8 @@ namespace SimpleIdentityServer.Host.Tests
                     Core.Jwt.Constants.StandardClaimNames.ExpirationTime, DateTime.UtcNow.AddHours(1).ConvertToUnixTimestamp()
                 }
             };
-            var jws = _jwsGenerator.Generate(clientPayLoad, JwsAlg.RS256, SharedContext.Instance().SignatureKey);
-            var jwe = _jweGenerator.GenerateJweByUsingSymmetricPassword(jws, JweAlg.RSA1_5, JweEnc.A128CBC_HS256, SharedContext.Instance().EncryptionKey, "jwt_client");
+            var jws = _jwsGenerator.Generate(clientPayLoad, JwsAlg.RS256, _server.SharedCtx.SignatureKey);
+            var jwe = _jweGenerator.GenerateJweByUsingSymmetricPassword(jws, JweAlg.RSA1_5, JweEnc.A128CBC_HS256, _server.SharedCtx.EncryptionKey, "jwt_client");
             var secondToken = await _clientAuthSelector.UseClientSecretJwtAuth(jwe, "jwt_client")
                 .UseClientCredentials("api1")
                 .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
@@ -137,7 +137,7 @@ namespace SimpleIdentityServer.Host.Tests
                     Core.Jwt.Constants.StandardClaimNames.ExpirationTime, DateTime.UtcNow.AddHours(1).ConvertToUnixTimestamp()
                 }
             };
-            var secondJws = _jwsGenerator.Generate(secondClientPayLoad, JwsAlg.RS256, SharedContext.Instance().SignatureKey);
+            var secondJws = _jwsGenerator.Generate(secondClientPayLoad, JwsAlg.RS256, _server.SharedCtx.SignatureKey);
             var fourthToken = await _clientAuthSelector.UseClientPrivateKeyAuth(secondJws, "private_key_client")
                 .UseClientCredentials("api1")
                 .ResolveAsync(baseUrl + "/.well-known/openid-configuration");

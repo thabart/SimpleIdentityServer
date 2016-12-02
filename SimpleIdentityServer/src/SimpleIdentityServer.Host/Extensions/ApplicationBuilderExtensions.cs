@@ -24,6 +24,7 @@ using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
 using SimpleIdentityServer.Host.MiddleWare;
 using SimpleIdentityServer.Logging;
 using System;
+
 namespace SimpleIdentityServer.Host
 {
     public static class ApplicationBuilderExtensions 
@@ -42,11 +43,19 @@ namespace SimpleIdentityServer.Host
             app.UseSimpleIdentityServer(hostingOptions,
                 loggerFactory);
         }
-        
+
         public static void UseSimpleIdentityServer(
             this IApplicationBuilder app,
             IdentityServerOptions options,
             ILoggerFactory loggerFactory) 
+        {
+            UseSimpleIdentityServer(app, options);
+            loggerFactory.AddSerilog();
+        }
+
+        public static void UseSimpleIdentityServer(
+            this IApplicationBuilder app,
+            IdentityServerOptions options)
         {
             if (options == null)
             {
@@ -72,7 +81,7 @@ namespace SimpleIdentityServer.Host
 
             // 1. Configure the IUrlHelper extension
             var httpContextAccessor = app.ApplicationServices.GetRequiredService<IHttpContextAccessor>();
-            Extensions.UriHelperExtensions.Configure(httpContextAccessor); 
+            Extensions.UriHelperExtensions.Configure(httpContextAccessor);
 
             // 2. Protect against IFRAME attack
             app.UseXFrame();
@@ -87,9 +96,6 @@ namespace SimpleIdentityServer.Host
                     simpleIdentityServerContext.EnsureSeedData();
                 }
             }
-
-            // 4. Add logging
-            loggerFactory.AddSerilog();
         }
     }
 }
