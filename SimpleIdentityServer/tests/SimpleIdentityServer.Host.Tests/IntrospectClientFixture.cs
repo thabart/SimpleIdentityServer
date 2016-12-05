@@ -1,5 +1,5 @@
 ﻿#region copyright
-// Copyright 2015 Habart Thierry
+// Copyright 2016 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ using SimpleIdentityServer.Client.Builders;
 using SimpleIdentityServer.Client.Factories;
 using SimpleIdentityServer.Client.Operations;
 using SimpleIdentityServer.Client.Selectors;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -54,6 +55,8 @@ namespace SimpleIdentityServer.Host.Tests
 
             // ASSERT
             Assert.NotNull(introspection);
+            Assert.NotNull(introspection.Scope);
+            Assert.True(introspection.Scope.Count() == 1 && introspection.Scope.First() == "scim");
         }
 
         private void InitializeFakeObjects()

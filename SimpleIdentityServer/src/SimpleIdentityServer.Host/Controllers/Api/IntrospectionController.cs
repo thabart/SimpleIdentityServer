@@ -19,6 +19,7 @@ using Microsoft.Extensions.Primitives;
 using SimpleIdentityServer.Core.Api.Introspection;
 using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Host.Extensions;
+using SimpleIdentityServer.Host.Serializers;
 using System;
 using System.Linq;
 using System.Net.Http.Headers;
@@ -42,13 +43,15 @@ namespace SimpleIdentityServer.Host.Controllers.Api
         #region Public methods
 
         [HttpPost]
-        public Introspection Post([FromForm] IntrospectionRequest introspectionRequest)
+        public Introspection Post()
         {
-            if (introspectionRequest == null)
+            if (Request.Form == null)
             {
-                throw new ArgumentNullException(nameof(introspectionRequest));
+                throw new ArgumentNullException(nameof(Request.Form));
             }
 
+            var serializer = new ParamSerializer();
+            var introspectionRequest = serializer.Deserialize<IntrospectionRequest>(Request.Form);
             StringValues authorizationHeader;
             AuthenticationHeaderValue authenticationHeaderValue = null;
             if (Request.Headers.TryGetValue("Authorization", out authorizationHeader))
