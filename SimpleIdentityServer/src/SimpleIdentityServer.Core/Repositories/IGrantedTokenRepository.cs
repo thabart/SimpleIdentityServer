@@ -13,30 +13,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Repositories
 {
     public interface IGrantedTokenRepository
     {
         bool Insert(GrantedToken grantedToken);
-
         bool Delete(GrantedToken grantedToken);
-
         bool Update(GrantedToken grantedToken);
-
-        GrantedToken GetToken(string accessToken);
-
         GrantedToken GetToken(
             string scopes,
             string clientId,
             JwsPayload idTokenJwsPayload,
             JwsPayload userInfoJwsPayload);
-
-        GrantedToken GetTokenByRefreshToken(string refreshToken);
-
         List<GrantedToken> GetGrantedTokenChildren(string refreshToken);
+        Task<GrantedToken> GetTokenByRefreshTokenAsync(string refreshToken);
+        GrantedToken GetTokenByRefreshToken(string refreshToken);
+        Task<GrantedToken> GetTokenAsync(string accessToken);
+        GrantedToken GetToken(string accessToken);
     }
 }

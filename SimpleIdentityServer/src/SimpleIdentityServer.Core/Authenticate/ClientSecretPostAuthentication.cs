@@ -15,7 +15,6 @@
 #endregion
 
 using System;
-using SimpleIdentityServer.Core.Models;
 
 namespace SimpleIdentityServer.Core.Authenticate
 {

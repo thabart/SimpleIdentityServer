@@ -23,6 +23,8 @@ using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
 using System.Collections.Generic;
 using SimpleIdentityServer.Logging;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 {
@@ -39,11 +41,35 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             _managerEventSource = managerEventSource;
         }
 
-        #region Public methods
-
         public GrantedToken GetToken(string accessToken)
         {
-            var grantedToken = _context.GrantedTokens.FirstOrDefault(g => g.AccessToken == accessToken);
+            return GetTokenAsync(accessToken).Result;
+        }
+
+        public async Task<GrantedToken> GetTokenAsync(string accessToken)
+        {
+            if (string.IsNullOrWhiteSpace(accessToken))
+            {
+                throw new ArgumentNullException(nameof(accessToken));
+            }
+
+            var grantedToken = await _context.GrantedTokens.FirstOrDefaultAsync(g => g.AccessToken == accessToken).ConfigureAwait(false);
+            if (grantedToken == null)
+            {
+                return null;
+            }
+
+            return grantedToken.ToDomain();
+        }
+
+        public async Task<GrantedToken> GetTokenByRefreshTokenAsync(string refreshToken)
+        {
+            if (string.IsNullOrWhiteSpace(refreshToken))
+            {
+                throw new ArgumentNullException(nameof(refreshToken));
+            }
+
+            var grantedToken = await _context.GrantedTokens.FirstOrDefaultAsync(g => g.RefreshToken == refreshToken).ConfigureAwait(false);
             if (grantedToken == null)
             {
                 return null;
@@ -54,13 +80,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 
         public GrantedToken GetTokenByRefreshToken(string refreshToken)
         {
-            var grantedToken = _context.GrantedTokens.FirstOrDefault(g => g.RefreshToken == refreshToken);
-            if (grantedToken == null)
-            {
-                return null;
-            }
-
-            return grantedToken.ToDomain();
+            return GetTokenByRefreshTokenAsync(refreshToken).Result;
         }
 
         public GrantedToken GetToken(
@@ -205,10 +225,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             return result;
         }
 
-        #endregion
-
-        #region Private methods
-
         private void AddGrantedTokenChildren(List<GrantedToken> result, string refreshToken)
         {
             var grantedTokens = _context.GrantedTokens.Where(g => g.ParentRefreshToken == refreshToken).ToList();
@@ -218,10 +234,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                 AddGrantedTokenChildren(result, grantedToken.RefreshToken);
             }
         }
-
-        #endregion
-
-        #region Private static methods
 
         private static bool CompareJwsPayload(JwsPayload firstJwsPayload, JwsPayload secondJwsPayload)
         {
@@ -248,7 +260,5 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 
             return true;
         }
-
-        #endregion
     }
 }

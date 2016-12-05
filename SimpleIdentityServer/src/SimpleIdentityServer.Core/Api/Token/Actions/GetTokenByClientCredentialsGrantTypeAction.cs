@@ -102,14 +102,13 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             _clientCredentialsGrantTypeParameterValidator.Validate(clientCredentialsGrantTypeParameter);
 
             // Authenticate the client
-            var errorMessage = string.Empty;
             var instruction = CreateAuthenticateInstruction(clientCredentialsGrantTypeParameter,
                 authenticationHeaderValue);
-            var client = _authenticateClient.Authenticate(instruction, out errorMessage);
+            var authResult = _authenticateClient.Authenticate(instruction);
+            var client = authResult.Client;
             if (client == null)
             {
-                throw new IdentityServerException(ErrorCodes.InvalidClient,
-                    errorMessage);
+                throw new IdentityServerException(ErrorCodes.InvalidClient, authResult.ErrorMessage);
             }
 
             // Check client

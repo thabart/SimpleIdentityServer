@@ -14,43 +14,39 @@
 // limitations under the License.
 #endregion
 
-using System.Linq;
 using Moq;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Helpers;
+using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Encrypt;
 using SimpleIdentityServer.Core.Jwt.Encrypt.Encryption;
 using SimpleIdentityServer.Core.Jwt.Mapping;
+using SimpleIdentityServer.Core.Jwt.Serializer;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Parameters;
+using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.UnitTests.Fake;
 using SimpleIdentityServer.Core.Validators;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
-using SimpleIdentityServer.Core.Jwt.Serializer;
-using SimpleIdentityServer.Core.Jwt;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 using Xunit;
-using SimpleIdentityServer.Core.Repositories;
-using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Services;
 
 namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 {
     public class JwtGeneratorFixture
     {
         private IJwtGenerator _jwtGenerator;
-
         private Mock<IConfigurationService> _simpleIdentityServerConfigurator;
-
-        private Mock<IClientRepository> _clientRepositoryStub;
-                
+        private Mock<IClientRepository> _clientRepositoryStub;                
         private Mock<IJsonWebKeyRepository> _jsonWebKeyRepositoryStub;
-
         private Mock<IScopeRepository> _scopeRepositoryStub;
                         
         #region GeneratedIdTokenPayloadForScopes
@@ -887,7 +883,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             {
                 ClientId = client.ClientId
             };
-            _clientRepositoryStub.Setup(c => c.GetClientById(It.IsAny<string>())).Returns(FakeOpenIdAssets.GetClients().First());
+            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>())).Returns(Task.FromResult(FakeOpenIdAssets.GetClients().First()));
 
             // ACT & ASSERT
             _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(jwsPayload,
@@ -910,7 +906,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             {
                 ClientId = client.ClientId
             };
-            _clientRepositoryStub.Setup(c => c.GetClientById(It.IsAny<string>())).Returns(client);
+            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>())).Returns(Task.FromResult(client));
 
             // ACT & ASSERT
             _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(jwsPayload,
@@ -933,7 +929,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             {
                 ClientId = client.ClientId
             };
-            _clientRepositoryStub.Setup(c => c.GetClientById(It.IsAny<string>())).Returns(client);
+            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>())).Returns(Task.FromResult(client));
 
             // ACT & ASSERT
             _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(jwsPayload,
@@ -956,7 +952,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             {
                 ClientId = client.ClientId
             };
-            _clientRepositoryStub.Setup(c => c.GetClientById(It.IsAny<string>())).Returns(client);
+            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>())).Returns(Task.FromResult(client));
 
             // ACT & ASSERT
             _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(jwsPayload,
@@ -1000,7 +996,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             var jws = "jws";
             _jsonWebKeyRepositoryStub.Setup(j => j.GetByAlgorithm(It.IsAny<Use>(), It.IsAny<AllAlg>(), It.IsAny<KeyOperations[]>()))
                 .Returns(new List<JsonWebKey> { jsonWebKey });
-            _clientRepositoryStub.Setup(c => c.GetClientById(It.IsAny<string>())).Returns(client);
+            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>())).Returns(Task.FromResult(client));
 
             // ACT
             var jwe = _jwtGenerator.Encrypt(jws,
@@ -1042,7 +1038,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             };
             _jsonWebKeyRepositoryStub.Setup(j => j.GetByAlgorithm(It.IsAny<Use>(), It.IsAny<AllAlg>(), It.IsAny<KeyOperations[]>()))
                 .Returns(new List<JsonWebKey> { jsonWebKey });
-            _clientRepositoryStub.Setup(c => c.GetClientById(It.IsAny<string>())).Returns(client);
+            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>())).Returns(Task.FromResult(client));
             var jwsPayload = new JwsPayload();
 
             // ACT

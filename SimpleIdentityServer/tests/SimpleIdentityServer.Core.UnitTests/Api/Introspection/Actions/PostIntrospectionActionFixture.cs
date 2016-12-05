@@ -27,6 +27,7 @@ using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
 using System;
 using System.Net.Http.Headers;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
@@ -34,44 +35,39 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
     public class PostIntrospectionActionFixture
     {
         private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSourceStub;
-
         private Mock<IAuthenticateClient> _authenticateClientStub;
-
         private Mock<IIntrospectionParameterValidator> _introspectionParameterValidatorStub;
-
         private Mock<IGrantedTokenRepository> _grantedTokenRepositoryStub;
-
         private IPostIntrospectionAction _postIntrospectionAction;
 
         #region Exceptions
 
         [Fact]
-        public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _postIntrospectionAction.Execute(null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _postIntrospectionAction.Execute(null, null));
         }
 
         [Fact]
-        public void When_Client_Cannot_Be_Authenticated_Then_Exception_Is_Thrown()
+        public async Task When_Client_Cannot_Be_Authenticated_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
             var parameter = new IntrospectionParameter();
-            string errorMessage;
-            _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), out errorMessage))
-                .Returns(() => null);
+            _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
+               .Returns(Task.FromResult(new AuthenticationResult(null, null)));
 
             // ACT & ASSERT
-            var exception = Assert.Throws<IdentityServerException>(() => _postIntrospectionAction.Execute(parameter, null));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _postIntrospectionAction.Execute(parameter, null));
             Assert.True(exception.Code == ErrorCodes.InvalidClient);
         }
         
         [Fact]
-        public void When_AccessToken_Cannot_Be_Extracted_Then_Exception_Is_Thrown()
+        public async Task When_AccessToken_Cannot_Be_Extracted_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -80,17 +76,16 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
                 TokenTypeHint = Constants.StandardTokenTypeHintNames.AccessToken,
                 Token = "token"
             };
-            string errorMessage;
-            var client = new Models.Client();
-            _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), out errorMessage))
-                .Returns(client);
-            _grantedTokenRepositoryStub.Setup(a => a.GetToken(It.IsAny<string>()))
-                .Returns(() => null);
-            _grantedTokenRepositoryStub.Setup(a => a.GetTokenByRefreshToken(It.IsAny<string>()))
-                .Returns(() => null);
+            var client = new AuthenticationResult(new Models.Client(), null);
+            _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
+                .Returns(Task.FromResult(client));
+            _grantedTokenRepositoryStub.Setup(a => a.GetTokenAsync(It.IsAny<string>()))
+                .Returns(() => Task.FromResult((GrantedToken)null));
+            _grantedTokenRepositoryStub.Setup(a => a.GetTokenByRefreshTokenAsync(It.IsAny<string>()))
+                .Returns(() => Task.FromResult((GrantedToken)null));
 
             // ACT & ASSERTS
-            var exception = Assert.Throws<IdentityServerException>(() => _postIntrospectionAction.Execute(parameter, null));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _postIntrospectionAction.Execute(parameter, null));
             Assert.True(exception.Code == ErrorCodes.InvalidToken);
             Assert.True(exception.Message == ErrorDescriptions.TheTokenIsNotValid);
         }
@@ -100,7 +95,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
         #region Happy paths
 
         [Fact]
-        public void When_Passing_Expired_AccessToken_Then_Result_Should_Be_Returned()
+        public async Task When_Passing_Expired_AccessToken_Then_Result_Should_Be_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -117,11 +112,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
                 TokenTypeHint = Constants.StandardTokenTypeHintNames.RefreshToken,
                 Token = "token"
             };
-            string errorMessage;
-            var client = new Models.Client
+            var client = new AuthenticationResult(new Models.Client
             {
                 ClientId = clientId
-            };
+            }, null);
             var grantedToken = new GrantedToken
             {
                 ClientId = clientId,
@@ -139,15 +133,15 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
                 CreateDateTime = DateTime.UtcNow.AddDays(-2),
                 ExpiresIn = 2
             };
-            _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), out errorMessage))
-                .Returns(client);
-            _grantedTokenRepositoryStub.Setup(a => a.GetTokenByRefreshToken(It.IsAny<string>()))
-                .Returns(() => null);
-            _grantedTokenRepositoryStub.Setup(a => a.GetToken(It.IsAny<string>()))
-                .Returns(grantedToken);
+            _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
+                .Returns(() => Task.FromResult(client));
+            _grantedTokenRepositoryStub.Setup(a => a.GetTokenByRefreshTokenAsync(It.IsAny<string>()))
+                .Returns(() => Task.FromResult((GrantedToken)null));
+            _grantedTokenRepositoryStub.Setup(a => a.GetTokenAsync(It.IsAny<string>()))
+                .Returns(() => Task.FromResult(grantedToken));
 
             // ACT
-            var result = _postIntrospectionAction.Execute(parameter, authenticationHeaderValue);
+            var result = await _postIntrospectionAction.Execute(parameter, authenticationHeaderValue);
 
             // ASSERTS
             Assert.NotNull(result);
@@ -157,7 +151,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
         }
 
         [Fact]
-        public void When_Passing_Active_AccessToken_Then_Result_Should_Be_Returned()
+        public async Task When_Passing_Active_AccessToken_Then_Result_Should_Be_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -174,11 +168,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
                 TokenTypeHint = Constants.StandardTokenTypeHintNames.RefreshToken,
                 Token = "token"
             };
-            string errorMessage;
-            var client = new Models.Client
+            var client = new AuthenticationResult(new Models.Client
             {
                 ClientId = clientId
-            };
+            }, null);
             var grantedToken = new GrantedToken
             {
                 ClientId = clientId,
@@ -196,15 +189,15 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
                 CreateDateTime = DateTime.UtcNow,
                 ExpiresIn = 20000
             };
-            _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), out errorMessage))
-                .Returns(client);
-            _grantedTokenRepositoryStub.Setup(a => a.GetTokenByRefreshToken(It.IsAny<string>()))
-                .Returns(() => null);
-            _grantedTokenRepositoryStub.Setup(a => a.GetToken(It.IsAny<string>()))
-                .Returns(grantedToken);
+            _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
+                .Returns(Task.FromResult(client));
+            _grantedTokenRepositoryStub.Setup(a => a.GetTokenByRefreshTokenAsync(It.IsAny<string>()))
+                .Returns(() => Task.FromResult((GrantedToken)null));
+            _grantedTokenRepositoryStub.Setup(a => a.GetTokenAsync(It.IsAny<string>()))
+                .Returns(() => Task.FromResult(grantedToken));
 
             // ACT
-            var result = _postIntrospectionAction.Execute(parameter, authenticationHeaderValue);
+            var result = await _postIntrospectionAction.Execute(parameter, authenticationHeaderValue);
 
             // ASSERTS
             Assert.NotNull(result);

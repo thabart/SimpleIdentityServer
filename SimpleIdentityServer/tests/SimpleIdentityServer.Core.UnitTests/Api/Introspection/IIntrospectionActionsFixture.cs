@@ -20,6 +20,7 @@ using SimpleIdentityServer.Core.Api.Introspection.Actions;
 using SimpleIdentityServer.Core.Parameters;
 using System;
 using System.Net.Http.Headers;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection
@@ -33,13 +34,13 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection
         #region Exceptions
 
         [Fact]
-        public void When_Passing_Null_Parameter_To_PostIntrospection_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_Parameter_To_PostIntrospection_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _introspectionActions.PostIntrospection(null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _introspectionActions.PostIntrospection(null, null));
         }
 
         #endregion

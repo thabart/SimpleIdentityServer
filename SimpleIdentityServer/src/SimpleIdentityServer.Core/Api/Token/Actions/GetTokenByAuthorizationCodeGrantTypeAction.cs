@@ -139,14 +139,14 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             AuthenticationHeaderValue authenticationHeaderValue)
         {
             // Authenticate the client
-            var errorMessage = string.Empty;
             var instruction = CreateAuthenticateInstruction(authorizationCodeGrantTypeParameter,
                 authenticationHeaderValue);
-            var client = _authenticateClient.Authenticate(instruction, out errorMessage);
+            var authResult = _authenticateClient.Authenticate(instruction);
+            var client = authResult.Client;
             if (client == null)
             {
                 throw new IdentityServerException(ErrorCodes.InvalidClient,
-                    errorMessage);
+                    authResult.ErrorMessage);
             }
 
             var authorizationCode = _authorizationCodeRepository.GetAuthorizationCode(authorizationCodeGrantTypeParameter.Code);

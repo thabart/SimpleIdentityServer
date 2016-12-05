@@ -23,6 +23,8 @@ using SimpleIdentityServer.Host.Serializers;
 using System;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Host.Controllers.Api
 {
@@ -43,13 +45,14 @@ namespace SimpleIdentityServer.Host.Controllers.Api
         #region Public methods
 
         [HttpPost]
-        public Introspection Post()
+        public async Task<Introspection> Post()
         {
             if (Request.Form == null)
             {
                 throw new ArgumentNullException(nameof(Request.Form));
             }
 
+            var s = Thread.CurrentThread.ManagedThreadId;
             var serializer = new ParamSerializer();
             var introspectionRequest = serializer.Deserialize<IntrospectionRequest>(Request.Form);
             StringValues authorizationHeader;
@@ -66,9 +69,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
                 }
             }
 
-            var result = _introspectionActions.PostIntrospection(
-                introspectionRequest.ToParameter(), 
-                authenticationHeaderValue);
+            var result = await _introspectionActions.PostIntrospection(introspectionRequest.ToParameter(), authenticationHeaderValue);
             return result.ToDto();
         }
 

@@ -18,21 +18,18 @@ using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Validators
 {
     public interface IClientValidator
     {
         Models.Client ValidateClientExist(string clientId);
-
+        Task<Models.Client> ValidateClientExistAsync(string clientId);
         string ValidateRedirectionUrl(string url, Models.Client client);
-
         bool ValidateGrantType(GrantType grantType, Models.Client client);
-
         bool ValidateGrantTypes(Models.Client client, params GrantType[] grantTypes);
-
         bool ValidateResponseType(ResponseType responseType, Models.Client client);
-
         bool ValidateResponseTypes(IList<ResponseType> responseType, Models.Client client);
     }
 
@@ -54,9 +51,15 @@ namespace SimpleIdentityServer.Core.Validators
 
         public Models.Client ValidateClientExist(string clientId)
         {
-            return _clientRepository.GetClientById(clientId);
+            return ValidateClientExistAsync(clientId).Result;
         }
-        
+
+        public async Task<Models.Client> ValidateClientExistAsync(string clientId)
+        {
+            return await _clientRepository.GetClientByIdAsync(clientId);
+        }
+
+
         public string ValidateRedirectionUrl(string url, Models.Client client)
         {
             if (string.IsNullOrWhiteSpace(url) ||

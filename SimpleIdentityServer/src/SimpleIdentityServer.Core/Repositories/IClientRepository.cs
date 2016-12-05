@@ -15,22 +15,18 @@
 #endregion
 
 using System.Collections.Generic;
-using SimpleIdentityServer.Core.Models;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Repositories
 {
     public interface IClientRepository
     {
         Models.Client GetClientById(string clientId);
-
+        Task<Models.Client> GetClientByIdAsync(string clientId);
         bool InsertClient(Models.Client client);
-
         bool DeleteClient(Models.Client client);
-
         IList<Models.Client> GetAll();
-
         bool UpdateClient(Models.Client client);
-
         bool RemoveAll();
     }
 }

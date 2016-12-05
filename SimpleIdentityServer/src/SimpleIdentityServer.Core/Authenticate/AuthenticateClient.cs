@@ -14,31 +14,27 @@
 // limitations under the License.
 #endregion
 
-using System;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
+using System;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Authenticate
 {
     public interface IAuthenticateClient
     {
-        Models.Client Authenticate(
-            AuthenticateInstruction instruction,
-            out string errorMessage);
+        AuthenticationResult Authenticate(AuthenticateInstruction instruction);
+        Task<AuthenticationResult> AuthenticateAsync(AuthenticateInstruction instruction);
     }
 
     public class AuthenticateClient : IAuthenticateClient
     {
         private readonly IClientSecretBasicAuthentication _clientSecretBasicAuthentication;
-
         private readonly IClientSecretPostAuthentication _clientSecretPostAuthentication;
-
         private readonly IClientAssertionAuthentication _clientAssertionAuthentication;
-
         private readonly IClientValidator _clientValidator;
-
         private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
 
         public AuthenticateClient(
@@ -55,37 +51,38 @@ namespace SimpleIdentityServer.Core.Authenticate
             _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
         }
 
-        public Models.Client Authenticate(
-            AuthenticateInstruction instruction,
-            out string errorMessage)
+        public AuthenticationResult Authenticate(AuthenticateInstruction instruction)
+        {
+            return AuthenticateAsync(instruction).Result;
+        }
+
+        public async Task<AuthenticationResult> AuthenticateAsync(AuthenticateInstruction instruction)
         {
             if (instruction == null)
             {
-                throw new ArgumentNullException("the authentication instruction cannot be null");    
+                throw new ArgumentNullException(nameof(instruction));
             }
-
-            errorMessage = string.Empty;
+            
             Models.Client client = null;
-
             // First we try to fetch the client_id
             // The different client authentication mechanisms are described here : http://openid.net/specs/openid-connect-core-1_0.html#ClientAuthentication
             var clientId = TryGettingClientId(instruction);
             if (!string.IsNullOrWhiteSpace(clientId))
             {
-                client = _clientValidator.ValidateClientExist(clientId);
+                client = await _clientValidator.ValidateClientExistAsync(clientId);
             }
 
             if (client == null)
             {
-                errorMessage = ErrorDescriptions.TheClientCannotBeAuthenticated;
-                return null;
+                return new AuthenticationResult(null, ErrorDescriptions.TheClientCannotBeAuthenticated);
             }
-            
+
             var tokenEndPointAuthMethod = client.TokenEndPointAuthMethod;
-            var authenticationType = Enum.GetName(typeof (TokenEndPointAuthenticationMethods),
+            var authenticationType = Enum.GetName(typeof(TokenEndPointAuthenticationMethods),
                 tokenEndPointAuthMethod);
             _simpleIdentityServerEventSource.StartToAuthenticateTheClient(client.ClientId,
                 authenticationType);
+            var errorMessage = string.Empty;
             switch (tokenEndPointAuthMethod)
             {
                 case TokenEndPointAuthenticationMethods.client_secret_basic:
@@ -103,13 +100,9 @@ namespace SimpleIdentityServer.Core.Authenticate
                     }
                     break;
                 case TokenEndPointAuthenticationMethods.client_secret_jwt:
-                    client = _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwt(instruction,
-                        client.ClientSecret, out errorMessage);
-                    break;
+                    return await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, client.ClientSecret);
                 case TokenEndPointAuthenticationMethods.private_key_jwt:
-                    client = _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwt(instruction,
-                        out errorMessage);
-                    break;
+                   return await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction);
             }
 
             if (client != null)
@@ -118,7 +111,7 @@ namespace SimpleIdentityServer.Core.Authenticate
                     authenticationType);
             }
 
-            return client;
+            return new AuthenticationResult(client, errorMessage);
         }
 
         /// <summary>

@@ -8,6 +8,7 @@ using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.Validators;
 using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Authenticate
@@ -31,11 +32,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
         {
             // ARRANGE
             InitializeFakeObjects();
-            string errorMessage;
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(
-                () => _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwt(null, out errorMessage));
+            Assert.Throws<AggregateException>(
+                () => _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwt(null));
         }
 
         [Fact]
@@ -43,7 +43,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
         {            
             // ARRANGE
             InitializeFakeObjects();
-            string errorMessage;
             var instruction = new AuthenticateInstruction
             {
                 ClientAssertion = "invalid_header.invalid_payload"
@@ -52,11 +51,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 .Returns(false);
 
             // ACT
-            var result = _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwt(instruction, out errorMessage);
+            var result = _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwt(instruction);
 
             // ASSERT
-            Assert.Null(result);
-            Assert.True(errorMessage == ErrorDescriptions.TheClientAssertionIsNotAJwsToken);
+            Assert.Null(result.Client);
+            Assert.True(result.ErrorMessage == ErrorDescriptions.TheClientAssertionIsNotAJwsToken);
         }
 
         [Fact]
@@ -64,7 +63,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
         {            
             // ARRANGE
             InitializeFakeObjects();
-            string errorMessage;
             var instruction = new AuthenticateInstruction
             {
                 ClientAssertion = "invalid_header.invalid_payload"
@@ -75,11 +73,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 .Returns(() => null);
 
             // ACT
-            var result = _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwt(instruction, out errorMessage);
+            var result = _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwt(instruction);
 
             // ASSERT
-            Assert.Null(result);
-            Assert.True(errorMessage == ErrorDescriptions.TheJwsPayloadCannotBeExtracted);
+            Assert.Null(result.Client);
+            Assert.True(result.ErrorMessage == ErrorDescriptions.TheJwsPayloadCannotBeExtracted);
         }
 
         [Fact]
@@ -87,7 +85,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
         {
             // ARRANGE
             InitializeFakeObjects();
-            string errorMessage;
             var instruction = new AuthenticateInstruction
             {
                 ClientAssertion = "invalid_header.invalid_payload"
@@ -97,16 +94,16 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 .Returns(true);
             _jwsParserFake.Setup(j => j.GetPayload(It.IsAny<string>()))
                 .Returns(jwsPayload);
-            _jwtParserFake.Setup(j => j.UnSign(It.IsAny<string>(),
+            _jwtParserFake.Setup(j => j.UnSignAsync(It.IsAny<string>(),
                 It.IsAny<string>()))
-                .Returns(() => null);
+                .Returns(() => Task.FromResult((JwsPayload)null));
 
             // ACT
-            var result = _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwt(instruction, out errorMessage);
+            var result = _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwt(instruction);
 
             // ASSERT
-            Assert.Null(result);
-            Assert.True(errorMessage == ErrorDescriptions.TheSignatureIsNotCorrect);
+            Assert.Null(result.Client);
+            Assert.True(result.ErrorMessage == ErrorDescriptions.TheSignatureIsNotCorrect);
         }
 
         [Fact]
@@ -114,7 +111,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
         {
             // ARRANGE
             InitializeFakeObjects();
-            string errorMessage;
             var instruction = new AuthenticateInstruction
             {
                 ClientAssertion = "invalid_header.invalid_payload"
@@ -129,18 +125,18 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 .Returns(true);
             _jwsParserFake.Setup(j => j.GetPayload(It.IsAny<string>()))
                 .Returns(jwsPayload);
-            _jwtParserFake.Setup(j => j.UnSign(It.IsAny<string>(),
+            _jwtParserFake.Setup(j => j.UnSignAsync(It.IsAny<string>(),
                 It.IsAny<string>()))
-                .Returns(jwsPayload);
-            _clientValidatorFake.Setup(c => c.ValidateClientExist(It.IsAny<string>()))
-                .Returns(() => null);
+                .Returns(Task.FromResult(jwsPayload));
+            _clientValidatorFake.Setup(c => c.ValidateClientExistAsync(It.IsAny<string>()))
+                .Returns(() => Task.FromResult((Models.Client)null));
 
             // ACT
-            var result = _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwt(instruction, out errorMessage);
+            var result = _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwt(instruction);
 
             // ASSERT
-            Assert.Null(result);
-            Assert.True(errorMessage == ErrorDescriptions.TheClientIdPassedInJwtIsNotCorrect);
+            Assert.Null(result.Client);
+            Assert.True(result.ErrorMessage == ErrorDescriptions.TheClientIdPassedInJwtIsNotCorrect);
         }
 
         [Fact]
@@ -148,7 +144,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
         {
             // ARRANGE
             InitializeFakeObjects();
-            string errorMessage;
             var instruction = new AuthenticateInstruction
             {
                 ClientAssertion = "invalid_header.invalid_payload"
@@ -173,20 +168,20 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 .Returns(true);
             _jwsParserFake.Setup(j => j.GetPayload(It.IsAny<string>()))
                 .Returns(jwsPayload);
-            _jwtParserFake.Setup(j => j.UnSign(It.IsAny<string>(),
+            _jwtParserFake.Setup(j => j.UnSignAsync(It.IsAny<string>(),
                 It.IsAny<string>()))
-                .Returns(jwsPayload);
-            _clientValidatorFake.Setup(c => c.ValidateClientExist(It.IsAny<string>()))
-                .Returns(client);
+                .Returns(Task.FromResult(jwsPayload));
+            _clientValidatorFake.Setup(c => c.ValidateClientExistAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(client));
             _simpleIdentityServerConfiguratorFake.Setup(s => s.GetIssuerName())
                 .Returns("invalid_issuer");
 
             // ACT
-            var result = _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwt(instruction, out errorMessage);
+            var result = _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwt(instruction);
 
             // ASSERT
-            Assert.Null(result);
-            Assert.True(errorMessage == ErrorDescriptions.TheAudiencePassedInJwtIsNotCorrect);
+            Assert.Null(result.Client);
+            Assert.True(result.ErrorMessage == ErrorDescriptions.TheAudiencePassedInJwtIsNotCorrect);
         }
 
         [Fact]
@@ -194,7 +189,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
         {
             // ARRANGE
             InitializeFakeObjects();
-            string errorMessage;
             var instruction = new AuthenticateInstruction
             {
                 ClientAssertion = "invalid_header.invalid_payload"
@@ -222,20 +216,20 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 .Returns(true);
             _jwsParserFake.Setup(j => j.GetPayload(It.IsAny<string>()))
                 .Returns(jwsPayload);
-            _jwtParserFake.Setup(j => j.UnSign(It.IsAny<string>(),
+            _jwtParserFake.Setup(j => j.UnSignAsync(It.IsAny<string>(),
                 It.IsAny<string>()))
-                .Returns(jwsPayload);
-            _clientValidatorFake.Setup(c => c.ValidateClientExist(It.IsAny<string>()))
-                .Returns(client);
+                .Returns(Task.FromResult(jwsPayload));
+            _clientValidatorFake.Setup(c => c.ValidateClientExistAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(client));
             _simpleIdentityServerConfiguratorFake.Setup(s => s.GetIssuerName())
                 .Returns("audience");
 
             // ACT
-            var result = _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwt(instruction, out errorMessage);
+            var result = _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwt(instruction);
 
             // ASSERT
-            Assert.Null(result);
-            Assert.True(errorMessage == ErrorDescriptions.TheReceivedJwtHasExpired);
+            Assert.Null(result.Client);
+            Assert.True(result.ErrorMessage == ErrorDescriptions.TheReceivedJwtHasExpired);
         }
 
         [Fact]
@@ -243,7 +237,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
         {
             // ARRANGE
             InitializeFakeObjects();
-            string errorMessage;
             var instruction = new AuthenticateInstruction
             {
                 ClientAssertion = "invalid_header.invalid_payload"
@@ -271,19 +264,19 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 .Returns(true);
             _jwsParserFake.Setup(j => j.GetPayload(It.IsAny<string>()))
                 .Returns(jwsPayload);
-            _jwtParserFake.Setup(j => j.UnSign(It.IsAny<string>(),
+            _jwtParserFake.Setup(j => j.UnSignAsync(It.IsAny<string>(),
                 It.IsAny<string>()))
-                .Returns(jwsPayload);
-            _clientValidatorFake.Setup(c => c.ValidateClientExist(It.IsAny<string>()))
-                .Returns(client);
+                .Returns(Task.FromResult(jwsPayload));
+            _clientValidatorFake.Setup(c => c.ValidateClientExistAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(client));
             _simpleIdentityServerConfiguratorFake.Setup(s => s.GetIssuerName())
                 .Returns("audience");
 
             // ACT
-            var result = _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwt(instruction, out errorMessage);
+            var result = _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwt(instruction);
 
             // ASSERT
-            Assert.NotNull(result);
+            Assert.NotNull(result.Client);
         }
 
         #endregion
@@ -295,10 +288,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
         {
             // ARRANGE
             InitializeFakeObjects();
-            string messageError;
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwt(null, string.Empty, out messageError));
+            Assert.Throws<AggregateException>(() => _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwt(null, string.Empty));
         }
 
         [Fact]
@@ -306,7 +298,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
         {
             // ARRANGE
             InitializeFakeObjects();
-            string errorMessage;
             var instruction = new AuthenticateInstruction
             {
                 ClientAssertion = "valid_header.valid.valid.valid.valid"
@@ -315,13 +306,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 .Returns(false);
             
             // ACT
-            var client = _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwt(instruction,
-                string.Empty,
-                out errorMessage);
+            var result = _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwt(instruction, string.Empty);
 
             // ASSERT
-            Assert.Null(client);
-            Assert.True(errorMessage == ErrorDescriptions.TheClientAssertionIsNotAJweToken);
+            Assert.Null(result.Client);
+            Assert.True(result.ErrorMessage == ErrorDescriptions.TheClientAssertionIsNotAJweToken);
         }
 
         [Fact]
@@ -329,26 +318,23 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
         {
             // ARRANGE
             InitializeFakeObjects();
-            string errorMessage;
             var instruction = new AuthenticateInstruction
             {
                 ClientAssertion = "valid_header.valid.valid.valid.valid"
             };
             _jwtParserFake.Setup(j => j.IsJweToken(It.IsAny<string>()))
                 .Returns(true);
-            _jwtParserFake.Setup(j => j.DecryptWithPassword(It.IsAny<string>(),
+            _jwtParserFake.Setup(j => j.DecryptWithPasswordAsync(It.IsAny<string>(),
                 It.IsAny<string>(),
                 It.IsAny<string>()))
-                .Returns(string.Empty);
+                .Returns(Task.FromResult(string.Empty));
 
             // ACT
-            var client = _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwt(instruction,
-                string.Empty,
-                out errorMessage);
+            var result = _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwt(instruction, string.Empty);
 
             // ASSERT
-            Assert.Null(client);
-            Assert.True(errorMessage == ErrorDescriptions.TheJweTokenCannotBeDecrypted);
+            Assert.Null(result.Client);
+            Assert.True(result.ErrorMessage == ErrorDescriptions.TheJweTokenCannotBeDecrypted);
         }
 
         [Fact]
@@ -356,28 +342,25 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
         {
             // ARRANGE
             InitializeFakeObjects();
-            string errorMessage;
             var instruction = new AuthenticateInstruction
             {
                 ClientAssertion = "valid_header.valid.valid.valid.valid"
             };
             _jwtParserFake.Setup(j => j.IsJweToken(It.IsAny<string>()))
                 .Returns(true);
-            _jwtParserFake.Setup(j => j.DecryptWithPassword(It.IsAny<string>(),
+            _jwtParserFake.Setup(j => j.DecryptWithPasswordAsync(It.IsAny<string>(),
                 It.IsAny<string>(),
                 It.IsAny<string>()))
-                .Returns("jws");
+                .Returns(Task.FromResult("jws"));
             _jwtParserFake.Setup(j => j.IsJwsToken(It.IsAny<string>()))
                 .Returns(false);
 
             // ACT
-            var client = _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwt(instruction,
-                string.Empty,
-                out errorMessage);
+            var result = _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwt(instruction, string.Empty);
 
             // ASSERT
-            Assert.Null(client);
-            Assert.True(errorMessage == ErrorDescriptions.TheClientAssertionIsNotAJwsToken);
+            Assert.Null(result.Client);
+            Assert.True(result.ErrorMessage == ErrorDescriptions.TheClientAssertionIsNotAJwsToken);
         }
 
         [Fact]
@@ -385,30 +368,27 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
         {
             // ARRANGE
             InitializeFakeObjects();
-            string errorMessage;
             var instruction = new AuthenticateInstruction
             {
                 ClientAssertion = "valid_header.valid.valid.valid.valid"
             };
             _jwtParserFake.Setup(j => j.IsJweToken(It.IsAny<string>()))
                 .Returns(true);
-            _jwtParserFake.Setup(j => j.DecryptWithPassword(It.IsAny<string>(),
+            _jwtParserFake.Setup(j => j.DecryptWithPasswordAsync(It.IsAny<string>(),
                 It.IsAny<string>(),
                 It.IsAny<string>()))
-                .Returns("jws");
+                .Returns(Task.FromResult("jws"));
             _jwtParserFake.Setup(j => j.IsJwsToken(It.IsAny<string>()))
                 .Returns(true);
-            _jwtParserFake.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(() => null);
+            _jwtParserFake.Setup(j => j.UnSignAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(() => Task.FromResult((JwsPayload)null));
 
             // ACT
-            var client = _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwt(instruction,
-                string.Empty,
-                out errorMessage);
+            var result = _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwt(instruction, string.Empty);
 
             // ASSERT
-            Assert.Null(client);
-            Assert.True(errorMessage == ErrorDescriptions.TheJwsPayloadCannotBeExtracted);
+            Assert.Null(result.Client);
+            Assert.True(result.ErrorMessage == ErrorDescriptions.TheJwsPayloadCannotBeExtracted);
         }
         
         [Fact]
@@ -416,7 +396,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
         {
             // ARRANGE
             InitializeFakeObjects();
-            string errorMessage;
             var instruction = new AuthenticateInstruction
             {
                 ClientAssertion = "valid_header.valid.valid.valid.valid"
@@ -456,9 +435,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 .Returns("audience");
 
             // ACT
-            var result = _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwt(instruction,
-                string.Empty,
-                out errorMessage);
+            var result = _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwt(instruction, string.Empty);
 
             // ASSERT
             Assert.NotNull(result);

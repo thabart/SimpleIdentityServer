@@ -91,18 +91,17 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             }
 
             // Try to authenticate the client
-            string errorMessage;
             var instruction = CreateAuthenticateInstruction(resourceOwnerGrantTypeParameter,
                 authenticationHeaderValue);
-            var client = _authenticateClient.Authenticate(instruction, out errorMessage);
-            if (client == null)
+            var authResult = _authenticateClient.Authenticate(instruction);
+            var client = authResult.Client;
+            if (authResult.Client == null)
             {
                 _simpleIdentityServerEventSource.Info(ErrorDescriptions.TheClientCannotBeAuthenticated);
                 client = _clientRepository.GetClientById(Constants.AnonymousClientId);
                 if (client == null)
                 {
-                    throw new IdentityServerException(ErrorCodes.InternalError,
-                        string.Format(ErrorDescriptions.ClientIsNotValid, Constants.AnonymousClientId));
+                    throw new IdentityServerException(ErrorCodes.InternalError, string.Format(ErrorDescriptions.ClientIsNotValid, Constants.AnonymousClientId));
                 }
             }
 

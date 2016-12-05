@@ -36,25 +36,15 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
     public class GetTokenByClientCredentialsGrantTypeActionFixture
     {
         private Mock<IAuthenticateInstructionGenerator> _authenticateInstructionGeneratorStub;
-
         private Mock<IAuthenticateClient> _authenticateClientStub;
-
         private Mock<IClientValidator> _clientValidatorStub;
-
         private Mock<IGrantedTokenGeneratorHelper> _grantedTokenGeneratorHelperStub;
-
         private Mock<IScopeValidator> _scopeValidatorStub;
-
         private Mock<IGrantedTokenRepository> _grantedTokenRepositoryStub;
-
         private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSourceStub;
-
         private Mock<IClientCredentialsGrantTypeParameterValidator> _clientCredentialsGrantTypeParameterValidatorStub;
-
         private Mock<IClientHelper> _clientHelperStub;
-
         private Mock<IGrantedTokenHelper> _grantedTokenHelperStub;
-
         private IGetTokenByClientCredentialsGrantTypeAction _getTokenByClientCredentialsGrantTypeAction;
 
         #region Exceptions
@@ -73,7 +63,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
         public void When_Client_Cannot_Be_Authenticated_Then_Exception_Is_Thrown()
         {
             // ARRANGE
-            var message = "message";
             InitializeFakeObjects();
             var clientCredentialsGrantTypeParameter = new ClientCredentialsGrantTypeParameter
             {
@@ -82,44 +71,42 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             var authenticateInstruction = new AuthenticateInstruction();
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(authenticateInstruction);
-            _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), out message))
-                .Returns(() => null);
+            _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>()))
+                .Returns(() => new AuthenticationResult(null, null));
 
             // ACT & ASSERT
             var exception = Assert.Throws<IdentityServerException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null));
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidClient);
-            Assert.True(exception.Message == message);
         }
 
         [Fact]
         public void When_ClientCredentialGrantType_Is_Not_Supported_Then_Exception_Is_Thrown()
         {
             // ARRANGE
-            var message = "message";
             InitializeFakeObjects();
             var clientCredentialsGrantTypeParameter = new ClientCredentialsGrantTypeParameter
             {
                 Scope = "scope"
             };
-            var client = new Models.Client
+            var client = new AuthenticationResult(new Models.Client
             {
                 GrantTypes = new List<GrantType>
                 {
                     GrantType.password
                 }
-            };
+            }, null);
             var authenticateInstruction = new AuthenticateInstruction();
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(authenticateInstruction);
-            _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), out message))
+            _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>()))
                 .Returns(client);
 
             // ACT & ASSERT
             var exception = Assert.Throws<IdentityServerException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null));
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidGrant);
-            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, client.ClientId, GrantType.client_credentials));
+            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, client.Client.ClientId, GrantType.client_credentials));
         }
 
         [Fact]
@@ -132,7 +119,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             {
                 Scope = "scope"
             };
-            var client = new Models.Client
+            var client = new AuthenticationResult(new Models.Client
             {
                 GrantTypes = new List<GrantType>
                 {
@@ -142,32 +129,31 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 {
                     ResponseType.code
                 }
-            };
+            }, null);
             var authenticateInstruction = new AuthenticateInstruction();
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(authenticateInstruction);
-            _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), out message))
+            _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>()))
                 .Returns(client);
 
             // ACT & ASSERT
             var exception = Assert.Throws<IdentityServerException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null));
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidClient);
-            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType, client.ClientId, ResponseType.token));
+            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType, client.Client.ClientId, ResponseType.token));
         }
 
         [Fact]
         public void When_Scope_Is_Not_Valid_Then_Exception_Is_Thrown()
         {
             // ARRANGE
-            var message = "message";
             var messageDescription = "message_description";
             InitializeFakeObjects();
             var clientCredentialsGrantTypeParameter = new ClientCredentialsGrantTypeParameter
             {
                 Scope = "scope"
             };
-            var client = new Models.Client
+            var client = new AuthenticationResult(new Models.Client
             {
                 GrantTypes = new List<GrantType>
                 {
@@ -177,11 +163,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 {
                     ResponseType.token
                 }
-            };
+            }, null);
             var authenticateInstruction = new AuthenticateInstruction();
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(authenticateInstruction);
-            _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), out message))
+            _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>()))
                 .Returns(client);
             _scopeValidatorStub.Setup(s => s.IsScopesValid(It.IsAny<string>(), It.IsAny<Models.Client>(), out messageDescription))
                 .Returns(() => null);
@@ -204,7 +190,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             const string scope = "valid_scope";
             const string clientId = "client_id";
             const string accessToken = "access_token";
-            var message = "message";
             var messageDescription = "message_description";
             var scopes = new List<string> { scope };
             InitializeFakeObjects();
@@ -212,7 +197,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             {
                 Scope = scope
             };
-            var client = new Models.Client
+            var client = new AuthenticationResult(new Models.Client
             {
                 GrantTypes = new List<GrantType>
                 {
@@ -223,7 +208,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                     ResponseType.token
                 },
                 ClientId = clientId
-            };
+            }, null);
             var grantedToken = new GrantedToken
             {
                 ClientId = clientId,
@@ -233,7 +218,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             var authenticateInstruction = new AuthenticateInstruction();
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(authenticateInstruction);
-            _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), out message))
+            _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>()))
                 .Returns(client);
             _scopeValidatorStub.Setup(s => s.IsScopesValid(It.IsAny<string>(), It.IsAny<Models.Client>(), out messageDescription))
                 .Returns(scopes);

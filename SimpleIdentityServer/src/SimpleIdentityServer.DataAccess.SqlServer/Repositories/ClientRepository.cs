@@ -22,6 +22,7 @@ using SimpleIdentityServer.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 {
@@ -47,18 +48,26 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 
         public Core.Models.Client GetClientById(string clientId)
         {
-            var client = _context.Clients
+            return GetClientByIdAsync(clientId).Result;
+        }
+
+        public async Task<Core.Models.Client> GetClientByIdAsync(string clientId)
+        {
+            if (string.IsNullOrWhiteSpace(clientId))
+            {
+                throw new ArgumentNullException(nameof(clientId));
+            }
+
+            var client = await _context.Clients
+                .Include(c => c.ClientScopes).ThenInclude(s => s.Scope)
                 .Include(c => c.JsonWebKeys)
-                .FirstOrDefault(c => c.ClientId == clientId);            
+                .FirstOrDefaultAsync(c => c.ClientId == clientId)
+                .ConfigureAwait(false);
             if (client == null)
             {
                 return null;
             }
-
-            client.ClientScopes = _context.ClientScopes
-                    .Include(c => c.Scope)
-                    .Where(c => c.ClientId == clientId)
-                    .ToList();
+            
             return client.ToDomain();
         }
 

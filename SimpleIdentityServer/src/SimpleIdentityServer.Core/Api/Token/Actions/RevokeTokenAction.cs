@@ -36,11 +36,8 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
     internal class RevokeTokenAction : IRevokeTokenAction
     {
         private readonly IAuthenticateInstructionGenerator _authenticateInstructionGenerator;
-
         private readonly IAuthenticateClient _authenticateClient;
-
         private readonly IGrantedTokenRepository _grantedTokenRepository;
-
         private readonly IClientRepository _clientRepository;
 
         #region Constructor
@@ -61,9 +58,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
         #region Public methods
 
-        public bool Execute(
-            RevokeTokenParameter revokeTokenParameter,
-            AuthenticationHeaderValue authenticationHeaderValue)
+        public bool Execute(RevokeTokenParameter revokeTokenParameter, AuthenticationHeaderValue authenticationHeaderValue)
         {
             if (revokeTokenParameter == null)
             {
@@ -79,7 +74,8 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             var errorMessage = string.Empty;
             var instruction = CreateAuthenticateInstruction(revokeTokenParameter,
                 authenticationHeaderValue);
-            var client = _authenticateClient.Authenticate(instruction, out errorMessage);
+            var authResult = _authenticateClient.Authenticate(instruction);
+            var client = authResult.Client;
             if (client == null)
             {
                 client = _clientRepository.GetClientById(Constants.AnonymousClientId);

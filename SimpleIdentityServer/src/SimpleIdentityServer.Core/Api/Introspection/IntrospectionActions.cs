@@ -19,12 +19,13 @@ using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using System;
 using System.Net.Http.Headers;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Introspection
 {
     public interface IIntrospectionActions
     {
-        IntrospectionResult PostIntrospection(
+        Task<IntrospectionResult> PostIntrospection(
             IntrospectionParameter introspectionParameter,
             AuthenticationHeaderValue authenticationHeaderValue);
     }
@@ -38,9 +39,7 @@ namespace SimpleIdentityServer.Core.Api.Introspection
             _postIntrospectionAction = postIntrospectionAction;
         }
 
-        public IntrospectionResult PostIntrospection(
-            IntrospectionParameter introspectionParameter,
-            AuthenticationHeaderValue authenticationHeaderValue)
+        public Task<IntrospectionResult> PostIntrospection(IntrospectionParameter introspectionParameter, AuthenticationHeaderValue authenticationHeaderValue)
         {
             if (introspectionParameter == null)
             {

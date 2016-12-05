@@ -39,27 +39,16 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
     public sealed class GetTokenByResourceOwnerCredentialsGrantTypeActionFixture
     {
         private Mock<IGrantedTokenRepository> _grantedTokenRepositoryFake;
-
         private Mock<IGrantedTokenGeneratorHelper> _grantedTokenGeneratorHelperFake;
-
         private Mock<IScopeValidator> _scopeValidatorFake;
-
         private Mock<IAuthenticateResourceOwnerService> _resourceOwnerValidatorFake;
-
         private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSourceFake;
-
         private Mock<IAuthenticateClient> _authenticateClientFake;
-
         private Mock<IJwtGenerator> _jwtGeneratorFake;
-
         private Mock<IAuthenticateInstructionGenerator> _authenticateInstructionGeneratorStub;
-
         private Mock<IClientRepository> _clientRepositoryStub;
-
         private Mock<IClientHelper> _clientHelperStub;
-
         private Mock<IGrantedTokenHelper> _grantedTokenHelperStub;
-
         private IGetTokenByResourceOwnerCredentialsGrantTypeAction _getTokenByResourceOwnerCredentialsGrantTypeAction;
 
         #region Exceptions
@@ -90,12 +79,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 ClientId = clientId,
                 ClientSecret = clientSecret
             };
-
-            string message;
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
-            _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), out message))
-                .Returns(() => null);
+            _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>()))
+                .Returns(() => new AuthenticationResult(null, null));
             _clientRepositoryStub.Setup(c => c.GetClientById(It.IsAny<string>()))
                 .Returns(() => null);
 
@@ -122,12 +109,12 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 ClientId = clientId,
                 ClientSecret = clientSecret
             };
-            var client = new Models.Client();
+            var client = new AuthenticationResult(new Models.Client(), null);
 
             string message;
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
-            _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), out message))
+            _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>()))
                 .Returns(() => client);
             _resourceOwnerValidatorFake.Setup(
                 r => r.AuthenticateResourceOwner(It.IsAny<string>(), It.IsAny<string>()))
@@ -157,13 +144,13 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 ClientSecret = clientSecret,
                 Scope = invalidScope
             };
-            var client = new Models.Client();
+            var client = new AuthenticationResult(new Models.Client(), null);
             var resourceOwner = new ResourceOwner();
 
             string message;
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
-            _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), out message))
+            _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>()))
                 .Returns(() => client);
             _resourceOwnerValidatorFake.Setup(
                 r => r.AuthenticateResourceOwner(It.IsAny<string>(), It.IsAny<string>()))
@@ -199,10 +186,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 ClientSecret = clientSecret,
                 Scope = invalidScope
             };
-            var client = new Models.Client
+            var client = new AuthenticationResult(new Models.Client
             {
                 ClientId = clientId
-            };
+            }, null);
             var resourceOwner = new ResourceOwner();
             var userInformationJwsPayload = new JwsPayload();
             var grantedToken = new GrantedToken
@@ -214,7 +201,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             string message;
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
-            _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), out message))
+            _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>()))
                 .Returns(() => client);
             _resourceOwnerValidatorFake.Setup(
                 r => r.AuthenticateResourceOwner(It.IsAny<string>(), It.IsAny<string>()))

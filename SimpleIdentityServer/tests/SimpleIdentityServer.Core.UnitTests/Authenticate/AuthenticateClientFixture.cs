@@ -5,6 +5,7 @@ using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
 using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Authenticate
@@ -12,15 +13,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
     public sealed class AuthenticateClientFixture
     {
         private Mock<IClientSecretBasicAuthentication> _clientSecretBasicAuthenticationFake;
-
         private Mock<IClientSecretPostAuthentication> _clientSecretPostAuthenticationFake;
-
         private Mock<IClientAssertionAuthentication> _clientAssertionAuthenticationFake;
-
         private Mock<IClientValidator> _clientValidatorFake;
-
         private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSourceFake;
-
         private IAuthenticateClient _authenticateClient;
 
         [Fact]
@@ -28,10 +24,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
         {
             // ARRANGE
             InitializeFakeObjects();
-            string errorMessage;
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _authenticateClient.Authenticate(null, out errorMessage));
+            Assert.Throws<AggregateException>(() => _authenticateClient.Authenticate(null));
         }
 
         [Fact]
@@ -40,16 +35,15 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             // ARRANGE
             InitializeFakeObjects();
             var authenticationInstruction = new AuthenticateInstruction();
-            string errorMessage;
             _clientAssertionAuthenticationFake.Setup(c => c.GetClientId(It.IsAny<AuthenticateInstruction>()))
                 .Returns(string.Empty);
 
             // ACT
-            var client = _authenticateClient.Authenticate(authenticationInstruction, out errorMessage);
+            var result = _authenticateClient.Authenticate(authenticationInstruction);
 
             // ASSERTS
-            Assert.Null(client);
-            Assert.True(errorMessage == ErrorDescriptions.TheClientCannotBeAuthenticated);
+            Assert.Null(result.Client);
+            Assert.True(result.ErrorMessage == ErrorDescriptions.TheClientCannotBeAuthenticated);
         }
 
         [Fact]
@@ -58,18 +52,17 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             // ARRANGE
             InitializeFakeObjects();
             var authenticationInstruction = new AuthenticateInstruction();
-            string errorMessage;
             _clientAssertionAuthenticationFake.Setup(c => c.GetClientId(It.IsAny<AuthenticateInstruction>()))
                 .Returns("clientId");
             _clientValidatorFake.Setup(c => c.ValidateClientExist(It.IsAny<string>()))
                 .Returns(() => null);
 
             // ACT
-            var client = _authenticateClient.Authenticate(authenticationInstruction, out errorMessage);
+            var result = _authenticateClient.Authenticate(authenticationInstruction);
 
             // ASSERTS
-            Assert.Null(client);
-            Assert.True(errorMessage == ErrorDescriptions.TheClientCannotBeAuthenticated);
+            Assert.Null(result.Client);
+            Assert.True(result.ErrorMessage == ErrorDescriptions.TheClientCannotBeAuthenticated);
         }
 
         [Fact]
@@ -85,20 +78,19 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 ClientId = clientId
             };
 
-            string errorMessage;
             _clientAssertionAuthenticationFake.Setup(c => c.GetClientId(It.IsAny<AuthenticateInstruction>()))
                 .Returns(clientId);
-            _clientValidatorFake.Setup(c => c.ValidateClientExist(It.IsAny<string>()))
-                .Returns(client);
+            _clientValidatorFake.Setup(c => c.ValidateClientExistAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(client));
             _clientSecretBasicAuthenticationFake.Setup(
                 c => c.AuthenticateClient(It.IsAny<AuthenticateInstruction>(), It.IsAny<Models.Client>()))
                 .Returns(client);
 
             // ACT
-            client = _authenticateClient.Authenticate(authenticationInstruction, out errorMessage);
+            var result = _authenticateClient.Authenticate(authenticationInstruction);
 
             // ASSERTS
-            Assert.NotNull(client);
+            Assert.NotNull(result.Client);
             _simpleIdentityServerEventSourceFake.Verify(s => s.StartToAuthenticateTheClient(clientId, "client_secret_basic"));
             _simpleIdentityServerEventSourceFake.Verify(s => s.FinishToAuthenticateTheClient(clientId, "client_secret_basic"));
         }
@@ -116,20 +108,19 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 ClientId = clientId
             };
 
-            string errorMessage;
             _clientAssertionAuthenticationFake.Setup(c => c.GetClientId(It.IsAny<AuthenticateInstruction>()))
                 .Returns(clientId);
-            _clientValidatorFake.Setup(c => c.ValidateClientExist(It.IsAny<string>()))
-                .Returns(client);
+            _clientValidatorFake.Setup(c => c.ValidateClientExistAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(client));
             _clientSecretBasicAuthenticationFake.Setup(
                 c => c.AuthenticateClient(It.IsAny<AuthenticateInstruction>(), It.IsAny<Models.Client>()))
                 .Returns(() => null);
 
             // ACT
-            client = _authenticateClient.Authenticate(authenticationInstruction, out errorMessage);
+            var result = _authenticateClient.Authenticate(authenticationInstruction);
 
             // ASSERTS
-            Assert.Null(client);
+            Assert.Null(result.Client);
             _simpleIdentityServerEventSourceFake.Verify(s => s.StartToAuthenticateTheClient(clientId, "client_secret_basic"));
             _simpleIdentityServerEventSourceFake.Verify(s => s.FinishToAuthenticateTheClient(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
         }

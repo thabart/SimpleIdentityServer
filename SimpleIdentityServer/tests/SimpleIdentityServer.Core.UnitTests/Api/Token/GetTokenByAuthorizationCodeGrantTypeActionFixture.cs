@@ -36,25 +36,15 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
     public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
     {
         private Mock<IClientValidator> _clientValidatorFake;
-
         private Mock<IAuthorizationCodeRepository> _authorizationCodeRepositoryFake;
-
         private Mock<IConfigurationService> _simpleIdentityServerConfiguratorFake;
-
         private Mock<IGrantedTokenGeneratorHelper> _grantedTokenGeneratorHelperFake;
-
         private Mock<IGrantedTokenRepository> _grantedTokenRepositoryFake;
-
         private Mock<IAuthenticateClient> _authenticateClientFake;
-
         private Mock<IClientHelper> _clientHelper;
-
         private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSourceFake;
-
         private Mock<IAuthenticateInstructionGenerator> _authenticateInstructionGeneratorStub;
-
         private Mock<IGrantedTokenHelper> _grantedTokenHelperStub;
-
         private IGetTokenByAuthorizationCodeGrantTypeAction _getTokenByAuthorizationCodeGrantTypeAction;
 
         #region Exceptions
@@ -82,13 +72,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 ClientId = "clientId",
                 ClientSecret = "clientSecret"
             };
-
-            string errorMessage;
+            
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
-            _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(),
-                out errorMessage))
-                .Returns(() => null);
+            _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>()))
+                .Returns(() => new AuthenticationResult(null, null));
 
             // ACT & ASSERTS
             var exception = Assert.Throws<IdentityServerException>(() => 
@@ -108,13 +96,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 ClientId = "clientId",
                 ClientSecret = "clientSecret"
             };
-            var client = new Models.Client();
+            var client = new AuthenticationResult(new Client(), null);
 
-            string errorMessage;
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
-            _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(),
-                out errorMessage))
+            _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>()))
                 .Returns(() => client);
             _authorizationCodeRepositoryFake.Setup(a => a.GetAuthorizationCode(It.IsAny<string>()))
                 .Returns(() => null);
@@ -138,21 +124,17 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 ClientId = "notCorrectClientId",
                 ClientSecret = "clientSecret"
             };
-            var client = new Models.Client
-            {
-                ClientId = "notCorrectClientId"
-            };
+
+            var result = new AuthenticationResult(new Models.Client { ClientId = "notCorrectClientId" } , null);
             var authorizationCode = new AuthorizationCode
             {
                 ClientId = "clientId"
             };
-
-            string errorMessage;
+            
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
-            _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(),
-                out errorMessage))
-                .Returns(() => client);
+            _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>()))
+                .Returns(() => result);
             _authorizationCodeRepositoryFake.Setup(a => a.GetAuthorizationCode(It.IsAny<string>()))
                 .Returns(() => authorizationCode);
 
@@ -178,22 +160,18 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 ClientSecret = "clientSecret",
                 RedirectUri = "notCorrectRedirectUri"
             };
-            var client = new Models.Client
-            {
-                ClientId = "clientId"
-            };
+
+            var result = new AuthenticationResult(new Models.Client { ClientId = "clientId" }, null);
             var authorizationCode = new AuthorizationCode
             {
                 ClientId = "clientId",
                 RedirectUri = "redirectUri"
             };
 
-            string errorMessage;
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
-            _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(),
-                out errorMessage))
-                .Returns(client);
+            _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>()))
+                .Returns(result);
             _authorizationCodeRepositoryFake.Setup(a => a.GetAuthorizationCode(It.IsAny<string>()))
                 .Returns(authorizationCode);
 
@@ -217,10 +195,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 RedirectUri = "redirectUri",
                 ClientId = "clientId",
             };
-            var client = new Models.Client
-            {
-                ClientId = "clientId"
-            };
+            var result = new AuthenticationResult(new Models.Client { ClientId = "clientId" }, null);
             var authorizationCode = new AuthorizationCode
             {
                 ClientId = "clientId",
@@ -228,12 +203,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 CreateDateTime = DateTime.UtcNow.AddSeconds(-30)
             };
 
-            string errorMessage;
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
-            _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(),
-                out errorMessage))
-                .Returns(client);
+            _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>()))
+                .Returns(result);
             _authorizationCodeRepositoryFake.Setup(a => a.GetAuthorizationCode(It.IsAny<string>()))
                 .Returns(authorizationCode);
             _simpleIdentityServerConfiguratorFake.Setup(s => s.GetAuthorizationCodeValidityPeriodInSeconds())
@@ -259,10 +232,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 RedirectUri = "redirectUri",
                 ClientId = "clientId",
             };
-            var client = new Models.Client
-            {
-                ClientId = "clientId"
-            };
+            var result = new AuthenticationResult(new Models.Client { ClientId = "clientId" }, null);
             var authorizationCode = new AuthorizationCode
             {
                 ClientId = "clientId",
@@ -270,12 +240,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 CreateDateTime = DateTime.UtcNow
             };
 
-            string errorMessage;
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
-            _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(),
-                out errorMessage))
-                .Returns(client);
+            _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>()))
+                .Returns(result);
             _authorizationCodeRepositoryFake.Setup(a => a.GetAuthorizationCode(It.IsAny<string>()))
                 .Returns(authorizationCode);
             _simpleIdentityServerConfiguratorFake.Setup(s => s.GetAuthorizationCodeValidityPeriodInSeconds())
@@ -310,13 +278,13 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 RedirectUri = "redirectUri",
                 ClientId = clientId
             };
-            var client = new Models.Client
-            {
-                ClientId = clientId,
+
+            var result = new AuthenticationResult(new Models.Client {
+                ClientId = "clientId",
                 IdTokenSignedResponseAlg = Jwt.Constants.JwsAlgNames.RS256,
                 IdTokenEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5,
                 IdTokenEncryptedResponseEnc = Jwt.Constants.JweEncNames.A128CBC_HS256
-            };
+            }, null);
             var authorizationCode = new AuthorizationCode
             {
                 ClientId = clientId,
@@ -331,12 +299,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 IdTokenPayLoad = new JwsPayload()
             };
 
-            string errorMessage;
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
-            _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(),
-                out errorMessage))
-                .Returns(client);
+            _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>()))
+                .Returns(result);
             _authorizationCodeRepositoryFake.Setup(a => a.GetAuthorizationCode(It.IsAny<string>()))
                 .Returns(authorizationCode);
             _simpleIdentityServerConfiguratorFake.Setup(s => s.GetAuthorizationCodeValidityPeriodInSeconds())
@@ -344,7 +310,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _clientValidatorFake.Setup(c => c.ValidateRedirectionUrl(It.IsAny<string>(), It.IsAny<Models.Client>()))
                 .Returns("redirectUri");
             _clientValidatorFake.Setup(c => c.ValidateClientExist(It.IsAny<string>()))
-                .Returns(client);
+                .Returns(result.Client);
             _grantedTokenHelperStub.Setup(g => g.GetValidGrantedToken(It.IsAny<string>(),
                 It.IsAny<string>(),
                 It.IsAny<JwsPayload>(),
@@ -374,10 +340,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 RedirectUri = "redirectUri",
                 ClientId = clientId
             };
-            var client = new Models.Client
+            var authResult = new AuthenticationResult(new Models.Client
             {
                 ClientId = clientId
-            };
+            }, null);
             var authorizationCode = new AuthorizationCode
             {
                 ClientId = clientId,
@@ -390,12 +356,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 IdToken = identityToken
             };
 
-            string errorMessage;
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
-            _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(),
-                out errorMessage))
-                .Returns(client);
+            _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>()))
+                .Returns(authResult);
             _authorizationCodeRepositoryFake.Setup(a => a.GetAuthorizationCode(It.IsAny<string>()))
                 .Returns(authorizationCode);
             _simpleIdentityServerConfiguratorFake.Setup(s => s.GetAuthorizationCodeValidityPeriodInSeconds())

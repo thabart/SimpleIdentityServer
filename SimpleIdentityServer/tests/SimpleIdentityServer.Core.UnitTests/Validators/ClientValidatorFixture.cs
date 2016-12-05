@@ -42,7 +42,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             _clientValidator.ValidateClientExist(clientId);
 
             // ASSERT
-            _clientRepositoryStub.Verify(c => c.GetClientById(clientId));
+            _clientRepositoryStub.Verify(c => c.GetClientByIdAsync(clientId));
         }
 
         #endregion

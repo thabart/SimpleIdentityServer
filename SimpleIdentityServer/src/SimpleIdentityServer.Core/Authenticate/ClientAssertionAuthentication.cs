@@ -23,34 +23,17 @@ using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Core.Services;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Authenticate
 {
     public interface IClientAssertionAuthentication
     {
         string GetClientId(AuthenticateInstruction instruction);
-
-        /// <summary>
-        /// Perform private_key_jwt client authentication.
-        /// </summary>
-        /// <param name="instruction"></param>
-        /// <param name="messageError"></param>
-        /// <returns></returns>
-        Models.Client AuthenticateClientWithPrivateKeyJwt(
-            AuthenticateInstruction instruction,
-            out string messageError);
-
-        /// <summary>
-        /// Perform client_secret_jwt client authentication.
-        /// </summary>
-        /// <param name="instruction"></param>
-        /// <param name="clientSecret"></param>
-        /// <param name="messageError"></param>
-        /// <returns></returns>
-        Models.Client AuthenticateClientWithClientSecretJwt(
-            AuthenticateInstruction instruction,
-            string clientSecret,
-            out string messageError);
+        AuthenticationResult AuthenticateClientWithPrivateKeyJwt(AuthenticateInstruction instruction);
+        Task<AuthenticationResult> AuthenticateClientWithPrivateKeyJwtAsync(AuthenticateInstruction instruction);
+        AuthenticationResult AuthenticateClientWithClientSecretJwt(AuthenticateInstruction instruction, string clientSecret);
+        Task<AuthenticationResult> AuthenticateClientWithClientSecretJwtAsync(AuthenticateInstruction instruction, string clientSecret);
     }
 
     public class ClientAssertionAuthentication : IClientAssertionAuthentication
@@ -72,101 +55,82 @@ namespace SimpleIdentityServer.Core.Authenticate
             _jwtParser = jwtParser;
         }
 
-        /// <summary>
-        /// Perform private_key_jwt client authentication.
-        /// </summary>
-        /// <param name="instruction"></param>
-        /// <param name="messageError"></param>
-        /// <returns></returns>
-        public Models.Client AuthenticateClientWithPrivateKeyJwt(
-            AuthenticateInstruction instruction,
-            out string messageError)
+        public AuthenticationResult AuthenticateClientWithPrivateKeyJwt(AuthenticateInstruction instruction)
+        {
+            return AuthenticateClientWithPrivateKeyJwtAsync(instruction).Result;
+        }
+
+        public async Task<AuthenticationResult> AuthenticateClientWithPrivateKeyJwtAsync(AuthenticateInstruction instruction)
         {
             if (instruction == null)
             {
                 throw new ArgumentNullException("instruction");
             }
-            
+
             var clientAssertion = instruction.ClientAssertion;
             var isJwsToken = _jwtParser.IsJwsToken(clientAssertion);
             if (!isJwsToken)
             {
-                messageError = ErrorDescriptions.TheClientAssertionIsNotAJwsToken;
-                return null;
+                return new AuthenticationResult(null, ErrorDescriptions.TheClientAssertionIsNotAJwsToken);
             }
 
             var jws = instruction.ClientAssertion;
             var jwsPayload = _jwsParser.GetPayload(jws);
             if (jwsPayload == null)
             {
-                messageError = ErrorDescriptions.TheJwsPayloadCannotBeExtracted;
-                return null;
+                return new AuthenticationResult(null, ErrorDescriptions.TheJwsPayloadCannotBeExtracted);
             }
 
             var clientId = jwsPayload.Issuer;
-            var payload = _jwtParser.UnSign(jws,
-                clientId);
+            var payload = await _jwtParser.UnSignAsync(jws, clientId);
             if (payload == null)
             {
-                messageError = ErrorDescriptions.TheSignatureIsNotCorrect;
-                return null;
+                return new AuthenticationResult(null, ErrorDescriptions.TheSignatureIsNotCorrect);
             }
 
-            return ValidateJwsPayLoad(payload, out messageError);
+            return await ValidateJwsPayLoad(payload);
         }
 
-        /// <summary>
-        /// Perform client_secret_jwt client authentication.
-        /// </summary>
-        /// <param name="instruction"></param>
-        /// <param name="clientSecret"></param>
-        /// <param name="messageError"></param>
-        /// <returns></returns>
-        public Models.Client AuthenticateClientWithClientSecretJwt(
-            AuthenticateInstruction instruction,
-            string clientSecret,
-            out string messageError)
+        public AuthenticationResult AuthenticateClientWithClientSecretJwt(AuthenticateInstruction instruction, string clientSecret)
+        {
+            return AuthenticateClientWithClientSecretJwtAsync(instruction, clientSecret).Result;
+        }
+
+        public async Task<AuthenticationResult> AuthenticateClientWithClientSecretJwtAsync(AuthenticateInstruction instruction, string clientSecret)
         {
             if (instruction == null)
             {
-                throw new ArgumentNullException("instruction");
+                throw new ArgumentNullException(nameof(instruction));
             }
 
             var clientAssertion = instruction.ClientAssertion;
             var isJweToken = _jwtParser.IsJweToken(clientAssertion);
             if (!isJweToken)
             {
-                messageError = ErrorDescriptions.TheClientAssertionIsNotAJweToken;
-                return null;
+                return new AuthenticationResult(null, ErrorDescriptions.TheClientAssertionIsNotAJweToken);
             }
 
             var jwe = instruction.ClientAssertion;
             var clientId = instruction.ClientIdFromHttpRequestBody;
-            var jws = _jwtParser.DecryptWithPassword(jwe,
-                clientId,
-                clientSecret);
+            var jws = await _jwtParser.DecryptWithPasswordAsync(jwe, clientId, clientSecret);
             if (string.IsNullOrWhiteSpace(jws))
             {
-                messageError = ErrorDescriptions.TheJweTokenCannotBeDecrypted;
-                return null;
+                return new AuthenticationResult(null, ErrorDescriptions.TheJweTokenCannotBeDecrypted);
             }
 
             var isJwsToken = _jwtParser.IsJwsToken(jws);
             if (!isJwsToken)
             {
-                messageError = ErrorDescriptions.TheClientAssertionIsNotAJwsToken;
-                return null;
+                return new AuthenticationResult(null, ErrorDescriptions.TheClientAssertionIsNotAJwsToken);
             }
 
-            var jwsPayload = _jwtParser.UnSign(jws,
-                clientId);
+            var jwsPayload = await _jwtParser.UnSignAsync(jws, clientId);
             if (jwsPayload == null)
             {
-                messageError = ErrorDescriptions.TheJwsPayloadCannotBeExtracted;
-                return null;
+                return new AuthenticationResult(null, ErrorDescriptions.TheJwsPayloadCannotBeExtracted);
             }
 
-            return ValidateJwsPayLoad(jwsPayload, out messageError);
+            return await ValidateJwsPayLoad(jwsPayload);
         }
 
         /// <summary>
@@ -205,30 +169,25 @@ namespace SimpleIdentityServer.Core.Authenticate
             return payload.Issuer;
         }
 
-        private Models.Client ValidateJwsPayLoad(
-            JwsPayload jwsPayload,
-            out string messageError)
+        private async Task<AuthenticationResult> ValidateJwsPayLoad(JwsPayload jwsPayload)
         {
             // The checks are coming from this url : http://openid.net/specs/openid-connect-core-1_0.html#ClientAuthentication
-            messageError = string.Empty;
             var expectedIssuer = _configurationService.GetIssuerName();
             var jwsIssuer = jwsPayload.Issuer;
             var jwsSubject = jwsPayload.GetClaimValue(Jwt.Constants.StandardResourceOwnerClaimNames.Subject);
             var jwsAudiences = jwsPayload.Audiences;
             var expirationDateTime = jwsPayload.ExpirationTime.ConvertFromUnixTimestamp();
-
             Models.Client client = null;
             // 1. Check the issuer is correct.
             if (!string.IsNullOrWhiteSpace(jwsIssuer))
             {
-                client = _clientValidator.ValidateClientExist(jwsIssuer);
+                client = await _clientValidator.ValidateClientExistAsync(jwsIssuer);
             }
 
             // 2. Check the client is correct.
             if (client == null || jwsSubject != jwsIssuer)
             {
-                messageError = ErrorDescriptions.TheClientIdPassedInJwtIsNotCorrect;
-                return null;
+                return new AuthenticationResult(null, ErrorDescriptions.TheClientIdPassedInJwtIsNotCorrect);
             }
 
             // 3. Check if the audience is correct
@@ -236,18 +195,16 @@ namespace SimpleIdentityServer.Core.Authenticate
                 !jwsAudiences.Any() || 
                 !jwsAudiences.Any(j => j.Contains(expectedIssuer)))
             {
-                messageError = ErrorDescriptions.TheAudiencePassedInJwtIsNotCorrect;
-                return null;
+                return new AuthenticationResult(null, ErrorDescriptions.TheAudiencePassedInJwtIsNotCorrect);
             }
 
             // 4. Check the expiration time
             if (DateTime.UtcNow > expirationDateTime)
             {
-                messageError = ErrorDescriptions.TheReceivedJwtHasExpired;
-                return null;
+                return new AuthenticationResult(null, ErrorDescriptions.TheReceivedJwtHasExpired);
             }
 
-            return client;
+            return new AuthenticationResult(client, null);
         }
     }
 }

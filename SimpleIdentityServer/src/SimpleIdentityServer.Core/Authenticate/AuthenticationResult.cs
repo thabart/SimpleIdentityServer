@@ -14,13 +14,17 @@
 // limitations under the License.
 #endregion
 
-namespace SimpleIdentityServer.DataAccess.SqlServer.Models
+namespace SimpleIdentityServer.Core.Authenticate
 {
-    public class ClientScope
+    public class AuthenticationResult
     {
-        public string ClientId { get; set; }
-        public string ScopeName { get; set; }
-        public Scope Scope { get; set; }
-        public Client Client { get; set; }
+        public AuthenticationResult(Models.Client client, string errorMessage)
+        {
+            Client = client;
+            ErrorMessage = errorMessage;
+        }
+
+        public Models.Client Client { get; set; }
+        public string ErrorMessage { get; set; }
     }
 }

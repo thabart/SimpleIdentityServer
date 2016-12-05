@@ -27,12 +27,13 @@ using SimpleIdentityServer.Logging;
 using System;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Introspection.Actions
 {
     public interface IPostIntrospectionAction
     {
-        IntrospectionResult Execute(
+        Task<IntrospectionResult> Execute(
             IntrospectionParameter introspectionParameter,
             AuthenticationHeaderValue authenticationHeaderValue);
     }
@@ -43,8 +44,6 @@ namespace SimpleIdentityServer.Core.Api.Introspection.Actions
         private readonly IAuthenticateClient _authenticateClient;
         private readonly IIntrospectionParameterValidator _introspectionParameterValidator;
         private readonly IGrantedTokenRepository _grantedTokenRepository;
-
-        #region Constructor
 
         public PostIntrospectionAction(
             ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
@@ -58,11 +57,7 @@ namespace SimpleIdentityServer.Core.Api.Introspection.Actions
             _grantedTokenRepository = grantedTokenRepository;
         }
 
-        #endregion
-
-        #region Public methods
-
-        public IntrospectionResult Execute(
+        public async Task<IntrospectionResult> Execute(
             IntrospectionParameter introspectionParameter,
             AuthenticationHeaderValue authenticationHeaderValue)
         {            
@@ -75,15 +70,11 @@ namespace SimpleIdentityServer.Core.Api.Introspection.Actions
             _introspectionParameterValidator.Validate(introspectionParameter);
 
             // 2. Authenticate the client
-            var errorMessage = string.Empty;
-            var instruction = CreateAuthenticateInstruction(introspectionParameter,
-                authenticationHeaderValue);
-            var client = _authenticateClient.Authenticate(instruction, out errorMessage);
-            if (client == null)
+            var instruction = CreateAuthenticateInstruction(introspectionParameter, authenticationHeaderValue);
+            var authResult = await _authenticateClient.AuthenticateAsync(instruction);
+            if (authResult.Client == null)
             {
-                throw new IdentityServerException(
-                    ErrorCodes.InvalidClient,
-                    errorMessage);
+                throw new IdentityServerException(ErrorCodes.InvalidClient, authResult.ErrorMessage);
             }
 
             // 3. Retrieve the token type hint
@@ -100,15 +91,15 @@ namespace SimpleIdentityServer.Core.Api.Introspection.Actions
                 grantedToken = _grantedTokenRepository.GetToken(introspectionParameter.Token);
                 if (grantedToken == null)
                 {
-                    grantedToken = _grantedTokenRepository.GetTokenByRefreshToken(introspectionParameter.Token);
+                    grantedToken = await _grantedTokenRepository.GetTokenByRefreshTokenAsync(introspectionParameter.Token);
                 }
             }
             else
             {
-                grantedToken = _grantedTokenRepository.GetTokenByRefreshToken(introspectionParameter.Token);
+                grantedToken = await _grantedTokenRepository.GetTokenByRefreshTokenAsync(introspectionParameter.Token);
                 if (grantedToken == null)
                 {
-                    grantedToken = _grantedTokenRepository.GetToken(introspectionParameter.Token);
+                    grantedToken = await _grantedTokenRepository.GetTokenAsync(introspectionParameter.Token);
                 }
             }
 
@@ -166,10 +157,6 @@ namespace SimpleIdentityServer.Core.Api.Introspection.Actions
             return result;
         }
 
-        #endregion
-
-        #region Private methods
-
         private AuthenticateInstruction CreateAuthenticateInstruction(
             IntrospectionParameter introspectionParameter,
             AuthenticationHeaderValue authenticationHeaderValue)
@@ -196,16 +183,10 @@ namespace SimpleIdentityServer.Core.Api.Introspection.Actions
             return result;
         }
 
-        #endregion
-
-        #region Private static methods
-
         private static string[] GetParameters(string authorizationHeaderValue)
         {
             var decodedParameter = authorizationHeaderValue.Base64Decode();
             return decodedParameter.Split(':');
         }
-
-        #endregion
     }
 }

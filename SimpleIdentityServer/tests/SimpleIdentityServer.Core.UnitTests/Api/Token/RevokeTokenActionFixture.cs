@@ -32,13 +32,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
     public class RevokeTokenActionFixture
     {
         private Mock<IAuthenticateInstructionGenerator> _authenticateInstructionGeneratorStub;
-
         private Mock<IAuthenticateClient> _authenticateClientStub;
-
         private Mock<IGrantedTokenRepository> _grantedTokenRepositoryStub;
-
         private Mock<IClientRepository> _clientRepositoryStub;
-
         private IRevokeTokenAction _revokeTokenAction;
 
         #region Exceptions
@@ -63,11 +59,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             {
                 Token = "access_token"
             };
-            string errorMessage;
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
-            _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), out errorMessage))
-                .Returns(() => null);
+            _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>()))
+                .Returns(() => new AuthenticationResult(null, null));
             _clientRepositoryStub.Setup(c => c.GetClientById(It.IsAny<string>()))
                 .Returns(() => null);
 
@@ -91,11 +86,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             {
                 Token = "access_token"
             };
-            string errorMessage;
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
-            _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), out errorMessage))
-                .Returns(() => new Models.Client());
+            _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>()))
+                .Returns(() => new AuthenticationResult(new Models.Client(), null));
             _grantedTokenRepositoryStub.Setup(g => g.GetToken(It.IsAny<string>()))
                 .Returns(() => null);
             _grantedTokenRepositoryStub.Setup(g => g.GetTokenByRefreshToken(It.IsAny<string>()))
@@ -126,11 +120,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             {
                 Token = "refresh_token"
             };
-            string errorMessage;
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
-            _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), out errorMessage))
-                .Returns(() => new Models.Client());
+            _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>()))
+                .Returns(() => new AuthenticationResult(new Models.Client(), null));
             _grantedTokenRepositoryStub.Setup(g => g.GetToken(It.IsAny<string>()))
                 .Returns(() => null);
             _grantedTokenRepositoryStub.Setup(g => g.GetTokenByRefreshToken(It.IsAny<string>()))
@@ -164,11 +157,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             {
                 Token = "access_token"
             };
-            string errorMessage;
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
-            _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>(), out errorMessage))
-                .Returns(() => new Models.Client());
+            _authenticateClientStub.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>()))
+                .Returns(() => new AuthenticationResult(new Models.Client(), null));
             _grantedTokenRepositoryStub.Setup(g => g.GetToken(It.IsAny<string>()))
                 .Returns(grantedToken);
             _grantedTokenRepositoryStub.Setup(g => g.GetTokenByRefreshToken(It.IsAny<string>()))
