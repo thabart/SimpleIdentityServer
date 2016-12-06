@@ -102,9 +102,9 @@ namespace SimpleIdentityServer.Rfid
         /// and let the user to select the card and write data to the memory blocks by a single command.
         /// </summary>
         /// <param name="mode">Mode control</param>
-        /// <param name="blk_add">Number of blocks to be write.</param>
-        /// <param name="num_blk">The start address of blocks to be write.</param>
-        /// <param name="snr">6 bytes block key.</param>
+        /// <param name="blk_add">The start address of blocks to be write.</param>
+        /// <param name="num_blk">Number of blocks to be write.</param>
+        /// <param name="snr">16 bytes block key.</param>
         /// <param name="buffer">Data.</param>
         /// <returns></returns>
         [DllImport("function.dll")]
