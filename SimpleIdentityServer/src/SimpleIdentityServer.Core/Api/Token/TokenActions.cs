@@ -21,6 +21,7 @@ using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Token
 {
@@ -40,7 +41,7 @@ namespace SimpleIdentityServer.Core.Api.Token
             ClientCredentialsGrantTypeParameter clientCredentialsGrantTypeParameter,
             AuthenticationHeaderValue authenticationHeaderValue);
 
-        bool RevokeToken(
+        Task<bool> RevokeToken(
             RevokeTokenParameter revokeTokenParameter,
             AuthenticationHeaderValue authenticationHeaderValue);
     }
@@ -164,7 +165,7 @@ namespace SimpleIdentityServer.Core.Api.Token
             return result;
         }
 
-        public bool RevokeToken(
+        public Task<bool> RevokeToken(
             RevokeTokenParameter revokeTokenParameter, 
             AuthenticationHeaderValue authenticationHeaderValue)
         {

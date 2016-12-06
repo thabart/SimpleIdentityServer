@@ -8,6 +8,7 @@ using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
 using Xunit;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 {
@@ -199,13 +200,13 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
         }
 
         [Fact]
-        public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _tokenActions.RevokeToken(null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenActions.RevokeToken(null, null));
         }
 
         [Fact]

@@ -15,6 +15,7 @@
 #endregion
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using SimpleIdentityServer.DataAccess.SqlServer.Models;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
@@ -26,6 +27,11 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
             modelBuilder.Entity<GrantedToken>()
                 .ToTable("grantedTokens")
                 .HasKey(c => c.Id);
+            modelBuilder.Entity<GrantedToken>()
+                .HasMany(g => g.Children)
+                .WithOne(g => g.Parent)
+                .HasForeignKey(g => g.ParentRefreshToken)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

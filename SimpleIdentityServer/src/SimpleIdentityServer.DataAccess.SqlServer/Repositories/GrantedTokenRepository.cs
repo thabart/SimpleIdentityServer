@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using SimpleIdentityServer.Logging;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using IsolationLevel = System.Data.IsolationLevel;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 {
@@ -195,6 +196,33 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             return true;
         }
 
+        public async Task<bool> DeleteAsync(GrantedToken grantedToken)
+        {
+            if (grantedToken == null)
+            {
+                throw new ArgumentNullException(nameof(grantedToken));
+            }
+
+            using (var transaction = await _context.Database.BeginTransactionAsync(IsolationLevel.RepeatableRead))
+            {
+                try
+                {
+                    var token = _context.GrantedTokens.FirstOrDefault(g => g.AccessToken == grantedToken.AccessToken);
+                    _context.GrantedTokens.Remove(token);
+                    await _context.SaveChangesAsync();
+                    transaction.Commit();
+                }
+                catch (Exception ex)
+                {
+                    _managerEventSource.Failure(ex);
+                    transaction.Rollback();
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         public bool Update(GrantedToken grantedToken)
         {
             using (var transaction = _context.Database.BeginTransaction())
@@ -216,13 +244,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             }
 
             return true;
-        }
-
-        public List<GrantedToken> GetGrantedTokenChildren(string refreshToken)
-        {
-            var result = new List<GrantedToken>();
-            AddGrantedTokenChildren(result, refreshToken);
-            return result;
         }
 
         private void AddGrantedTokenChildren(List<GrantedToken> result, string refreshToken)

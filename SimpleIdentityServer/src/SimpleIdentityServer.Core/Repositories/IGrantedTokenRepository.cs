@@ -16,7 +16,6 @@
 
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Models;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Repositories
@@ -25,13 +24,9 @@ namespace SimpleIdentityServer.Core.Repositories
     {
         bool Insert(GrantedToken grantedToken);
         bool Delete(GrantedToken grantedToken);
+        Task<bool> DeleteAsync(GrantedToken grantedToken);
         bool Update(GrantedToken grantedToken);
-        GrantedToken GetToken(
-            string scopes,
-            string clientId,
-            JwsPayload idTokenJwsPayload,
-            JwsPayload userInfoJwsPayload);
-        List<GrantedToken> GetGrantedTokenChildren(string refreshToken);
+        GrantedToken GetToken(string scopes, string clientId, JwsPayload idTokenJwsPayload, JwsPayload userInfoJwsPayload);
         Task<GrantedToken> GetTokenByRefreshTokenAsync(string refreshToken);
         GrantedToken GetTokenByRefreshToken(string refreshToken);
         Task<GrantedToken> GetTokenAsync(string accessToken);

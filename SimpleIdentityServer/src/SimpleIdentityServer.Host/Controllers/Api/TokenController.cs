@@ -17,14 +17,17 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using SimpleIdentityServer.Core.Api.Token;
+using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Host.DTOs.Request;
 using SimpleIdentityServer.Host.DTOs.Response;
 using SimpleIdentityServer.Host.Extensions;
+using SimpleIdentityServer.Host.Serializers;
 using System;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Api.Controllers.Api
 {
@@ -87,14 +90,16 @@ namespace SimpleIdentityServer.Api.Controllers.Api
         }
 
         [HttpPost("revoke")]
-        public ActionResult Post([FromForm] RevocationRequest revocationRequest)
+        public async Task<ActionResult> Post()
         {
-            if (revocationRequest == null)
+            if (Request.Form == null)
             {
-                throw new ArgumentNullException(nameof(revocationRequest));
+                throw new ArgumentNullException(nameof(Request.Form));
             }
 
-            // Fetch the authorization header
+            var serializer = new ParamSerializer();
+            var revocationRequest = serializer.Deserialize<RevocationRequest>(Request.Form);
+            // 1. Fetch the authorization header
             StringValues authorizationHeader;
             AuthenticationHeaderValue authenticationHeaderValue = null;
             if (Request.Headers.TryGetValue("Authorization", out authorizationHeader))
@@ -109,8 +114,8 @@ namespace SimpleIdentityServer.Api.Controllers.Api
                 }
             }
 
-            // Revoke the token
-            _tokenActions.RevokeToken(revocationRequest.ToParameter(), authenticationHeaderValue);
+            // 2. Revoke the token
+            await _tokenActions.RevokeToken(revocationRequest.ToParameter(), authenticationHeaderValue);
             return new OkResult();
         }
 

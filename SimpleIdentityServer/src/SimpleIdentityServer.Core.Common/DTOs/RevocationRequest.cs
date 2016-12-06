@@ -16,27 +16,22 @@
 
 using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.Host.DTOs.Request
+namespace SimpleIdentityServer.Core.Common.DTOs
 {
     [DataContract]
     public class RevocationRequest
     {
-        [DataMember(Name = Constants.RevocationRequestNames.Token)]
+        [DataMember(Name = RevocationRequestNames.Token)]
         public string Token { get; set; }
-
-        [DataMember(Name = Constants.RevocationRequestNames.TokenTypeHint)]
+        [DataMember(Name = RevocationRequestNames.TokenTypeHint)]
         public string TokenTypeHint { get; set; }
-
-        [DataMember(Name = Constants.RevocationRequestNames.ClientId)]
+        [DataMember(Name = RevocationRequestNames.ClientId)]
         public string ClientId { get; set; }
-
-        [DataMember(Name = Constants.RevocationRequestNames.ClientSecret)]
+        [DataMember(Name = RevocationRequestNames.ClientSecret)]
         public string ClientSecret { get; set; }
-
-        [DataMember(Name = Constants.RevocationRequestNames.ClientAssertionType)]
+        [DataMember(Name = RevocationRequestNames.ClientAssertionType)]
         public string ClientAssertionType { get; set; }
-
-        [DataMember(Name = Constants.RevocationRequestNames.ClientAssertion)]
+        [DataMember(Name = RevocationRequestNames.ClientAssertion)]
         public string ClientAssertion { get; set; }
     }
 }

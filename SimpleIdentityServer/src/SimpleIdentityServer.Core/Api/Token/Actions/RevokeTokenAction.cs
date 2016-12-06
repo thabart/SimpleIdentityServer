@@ -23,14 +23,13 @@ using SimpleIdentityServer.Core.Repositories;
 using System;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Token.Actions
 {
     public interface IRevokeTokenAction
     {
-        bool Execute(
-               RevokeTokenParameter revokeTokenParameter,
-               AuthenticationHeaderValue authenticationHeaderValue);
+        Task<bool> Execute(RevokeTokenParameter revokeTokenParameter, AuthenticationHeaderValue authenticationHeaderValue);
     }
 
     internal class RevokeTokenAction : IRevokeTokenAction
@@ -58,7 +57,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
         #region Public methods
 
-        public bool Execute(RevokeTokenParameter revokeTokenParameter, AuthenticationHeaderValue authenticationHeaderValue)
+        public async Task<bool> Execute(RevokeTokenParameter revokeTokenParameter, AuthenticationHeaderValue authenticationHeaderValue)
         {
             if (revokeTokenParameter == null)
             {
@@ -70,15 +69,15 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                 throw new ArgumentNullException(nameof(revokeTokenParameter.Token));
             }
             
-            // Check the client credentials
+            // 1. Check the client credentials
             var errorMessage = string.Empty;
             var instruction = CreateAuthenticateInstruction(revokeTokenParameter,
                 authenticationHeaderValue);
-            var authResult = _authenticateClient.Authenticate(instruction);
+            var authResult = await _authenticateClient.AuthenticateAsync(instruction);
             var client = authResult.Client;
             if (client == null)
             {
-                client = _clientRepository.GetClientById(Constants.AnonymousClientId);
+                client = await _clientRepository.GetClientByIdAsync(Constants.AnonymousClientId);
                 if (client == null)
                 {
                     throw new IdentityServerException(ErrorCodes.InternalError,
@@ -86,13 +85,11 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                 }
             }
 
-            // Retrieve the granted token & check if it exists
-            var isAccessToken = true;
-            GrantedToken grantedToken = _grantedTokenRepository.GetToken(revokeTokenParameter.Token);
+            // 2. Retrieve the granted token & check if it exists
+            GrantedToken grantedToken = await _grantedTokenRepository.GetTokenAsync(revokeTokenParameter.Token);
             if (grantedToken == null)
             {
-                isAccessToken = false;
-                grantedToken = _grantedTokenRepository.GetTokenByRefreshToken(revokeTokenParameter.Token);
+                grantedToken = await _grantedTokenRepository.GetTokenByRefreshTokenAsync(revokeTokenParameter.Token);
             }
 
             if (grantedToken == null)
@@ -100,34 +97,14 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                 return false;
             }
 
-            // Verifies whether the token was issued to the client making the revocation request
+            // 3. Verifies whether the token was issued to the client making the revocation request
             if (grantedToken.ClientId != client.ClientId)
             {
-                throw new IdentityServerException(ErrorCodes.InvalidToken,
-                    string.Format(ErrorDescriptions.TheTokenHasNotBeenIssuedForTheGivenClientId, client.ClientId));
+                throw new IdentityServerException(ErrorCodes.InvalidToken, string.Format(ErrorDescriptions.TheTokenHasNotBeenIssuedForTheGivenClientId, client.ClientId));
             }
 
-            // Invalid the granted token
-            if (!isAccessToken)
-            {
-                var children = _grantedTokenRepository.GetGrantedTokenChildren(grantedToken.RefreshToken);
-                if (children != null && children.Any())
-                {
-                    foreach (var child in children)
-                    {
-                        if (!_grantedTokenRepository.Delete(child))
-                        {
-                            return false;
-                        }
-                    }
-                }
-
-                grantedToken.RefreshToken = string.Empty;
-                return _grantedTokenRepository.Update(grantedToken);
-            }
-
-            // Revoke the access token & its refresh token.
-            return _grantedTokenRepository.Delete(grantedToken);
+            // 4. Invalid the granted token
+            return await _grantedTokenRepository.DeleteAsync(grantedToken);
         }
 
         #endregion

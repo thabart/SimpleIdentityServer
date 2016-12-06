@@ -55,15 +55,5 @@ namespace SimpleIdentityServer.Host
             public const string Get404 = "Error/404";
             public const string Get500 = "Error/500";
         }
-
-        public static class RevocationRequestNames
-        {
-            public const string Token = "token";
-            public const string TokenTypeHint = "token_type_hint";
-            public const string ClientId = "client_id";
-            public const string ClientSecret = "client_secret";
-            public const string ClientAssertionType = "client_assertion_type";
-            public const string ClientAssertion = "client_assertion";
-        }
     }
 }
