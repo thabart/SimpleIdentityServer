@@ -18,20 +18,24 @@ using System;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Models;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Validators
 {
     public interface IGrantedTokenValidator
     {
-        bool CheckAccessToken(
-            string accessToken, 
-            out string messageErrorCode,
-            out string messageErrorDescription);
+        GrantedTokenValidationResult CheckAccessToken(string accessToken);
+        Task<GrantedTokenValidationResult> CheckAccessTokenAsync(string accessToken);
+        GrantedTokenValidationResult CheckRefreshToken(string accessToken);
+        Task<GrantedTokenValidationResult> CheckRefreshTokenAsync(string refreshToken);
+        GrantedTokenValidationResult CheckGrantedToken(GrantedToken token);
+    }
 
-        bool CheckRefreshToken(
-            string refreshToken,
-            out string messageErrorCode,
-            out string messageErrorDescription);
+    public class GrantedTokenValidationResult
+    {
+        public bool IsValid { get; set; }
+        public string MessageErrorCode { get; set; }
+        public string MessageErrorDescription { get; set; }
     }
 
     public class GrantedTokenValidator : IGrantedTokenValidator
@@ -43,70 +47,66 @@ namespace SimpleIdentityServer.Core.Validators
             _grantedTokenRepository = grantedTokenRepository;
         }
 
-        #region Public methods
+        public GrantedTokenValidationResult CheckAccessToken(string accessToken)
+        {
+            return CheckAccessTokenAsync(accessToken).Result;
+        }
 
-        public bool CheckAccessToken(
-            string accessToken,
-            out string messageErrorCode,
-            out string messageErrorDescription)
+        public async Task<GrantedTokenValidationResult> CheckAccessTokenAsync(string accessToken)
         {
             if (string.IsNullOrWhiteSpace(accessToken))
             {
                 throw new ArgumentNullException(nameof(accessToken));
             }
 
-            messageErrorCode = string.Empty;
-            messageErrorDescription = string.Empty;
-            var grantedToken = _grantedTokenRepository.GetToken(accessToken);
-            return CheckGrantedToken(grantedToken, out messageErrorCode, out messageErrorDescription);
+            var grantedToken = await _grantedTokenRepository.GetTokenAsync(accessToken);
+            return CheckGrantedToken(grantedToken);
         }
 
-        public bool CheckRefreshToken(
-            string refreshToken,
-            out string messageErrorCode,
-            out string messageErrorDescription)
+        public GrantedTokenValidationResult CheckRefreshToken(string refreshToken)
+        {
+            return CheckRefreshTokenAsync(refreshToken).Result;
+        }
+
+        public async Task<GrantedTokenValidationResult> CheckRefreshTokenAsync(string refreshToken)
         {
             if (string.IsNullOrWhiteSpace(refreshToken))
             {
                 throw new ArgumentNullException(nameof(refreshToken));
             }
 
-            messageErrorCode = string.Empty;
-            messageErrorDescription = string.Empty;
-            var grantedToken = _grantedTokenRepository.GetTokenByRefreshToken(refreshToken);
-            return CheckGrantedToken(grantedToken, out messageErrorCode, out messageErrorDescription);
+            var grantedToken = await _grantedTokenRepository.GetTokenByRefreshTokenAsync(refreshToken);
+            return CheckGrantedToken(grantedToken);
         }
 
-        #endregion
-
-        #region Private methods
-
-        private bool CheckGrantedToken(
-            GrantedToken grantedToken,
-            out string messageErrorCode,
-            out string messageErrorDescription)
+        public GrantedTokenValidationResult CheckGrantedToken(GrantedToken grantedToken)
         {
-            messageErrorCode = string.Empty;
-            messageErrorDescription = string.Empty;
             if (grantedToken == null)
             {
-                messageErrorCode = ErrorCodes.InvalidToken;
-                messageErrorDescription = ErrorDescriptions.TheTokenIsNotValid;
-                return false;
+                return new GrantedTokenValidationResult
+                {
+                    MessageErrorCode = ErrorCodes.InvalidToken,
+                    MessageErrorDescription = ErrorDescriptions.TheTokenIsNotValid,
+                    IsValid = false
+                };
             }
 
             var expirationDateTime = grantedToken.CreateDateTime.AddSeconds(grantedToken.ExpiresIn);
             var tokenIsExpired = DateTime.UtcNow > expirationDateTime;
             if (tokenIsExpired)
             {
-                messageErrorCode = ErrorCodes.InvalidToken;
-                messageErrorDescription = ErrorDescriptions.TheTokenIsExpired;
-                return false;
+                return new GrantedTokenValidationResult
+                {
+                    MessageErrorCode = ErrorCodes.InvalidToken,
+                    MessageErrorDescription = ErrorDescriptions.TheTokenIsExpired,
+                    IsValid = false
+                };
             }
 
-            return true;
+            return new GrantedTokenValidationResult
+            {
+                IsValid = true
+            };
         }
-
-        #endregion
     }
 }

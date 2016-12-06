@@ -31,16 +31,13 @@ namespace SimpleIdentityServer.Core.Helpers
         /// <param name="parameter">List of prompts separated by whitespace</param>
         /// <returns>List of prompts.</returns>
         List<PromptParameter> ParsePromptParameters(string parameter);
-
         /// <summary>
         /// Parse the parameter and returns a list of response types
         /// </summary>
         /// <param name="parameter">List of response types separated by whitespace</param>
         /// <returns>List of response types</returns>
         List<ResponseType> ParseResponseType(string parameter);
-
         List<string> ParseScopeParameters(string scope);
-
         List<string> ParseScopeParametersAndGetAllScopes(string concatenateListOfScopes);
     }
 

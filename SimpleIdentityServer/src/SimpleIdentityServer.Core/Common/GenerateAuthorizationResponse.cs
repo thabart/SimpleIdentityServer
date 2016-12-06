@@ -42,23 +42,14 @@ namespace SimpleIdentityServer.Core.Common
     public class GenerateAuthorizationResponse : IGenerateAuthorizationResponse
     {
         private readonly IAuthorizationCodeRepository _authorizationCodeRepository;
-
         private readonly IParameterParserHelper _parameterParserHelper;
-
         private readonly IJwtGenerator _jwtGenerator;
-
         private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
-
         private readonly IGrantedTokenRepository _grantedTokenRepository;
-
         private readonly IConsentHelper _consentHelper;
-
         private readonly IAuthorizationFlowHelper _authorizationFlowHelper;
-
         private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
-
         private readonly IClientHelper _clientHelper;
-
         private readonly IGrantedTokenHelper _grantedTokenHelper;
 
         public GenerateAuthorizationResponse(

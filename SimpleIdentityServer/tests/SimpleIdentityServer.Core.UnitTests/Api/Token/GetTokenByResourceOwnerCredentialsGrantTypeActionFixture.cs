@@ -33,6 +33,7 @@ using SimpleIdentityServer.Logging;
 using Xunit;
 using System.Net.Http.Headers;
 using SimpleIdentityServer.Core.Services;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 {
@@ -54,17 +55,17 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
         #region Exceptions
 
         [Fact]
-        public void When_Passing_No_Request_Then_Exception_Is_Thrown()
+        public async Task When_Passing_No_Request_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(null, null));
         }
 
         [Fact]
-        public void When_AnonymousClient_Doesnt_Exist_Then_Exception_Is_Thrown()
+        public async Task When_AnonymousClient_Doesnt_Exist_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -81,20 +82,20 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             };
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
-            _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>()))
-                .Returns(() => new AuthenticationResult(null, null));
-            _clientRepositoryStub.Setup(c => c.GetClientById(It.IsAny<string>()))
-                .Returns(() => null);
+            _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
+                .Returns(() => Task.FromResult(new AuthenticationResult(null, null)));
+            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+                .Returns(() => Task.FromResult((Client)null));
 
             // ACT & ASSERTS
-            var exception = Assert.Throws<IdentityServerException>(() => _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(resourceOwnerGrantTypeParameter, null));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(resourceOwnerGrantTypeParameter, null));
             _simpleIdentityServerEventSourceFake.Verify(s => s.Info(ErrorDescriptions.TheClientCannotBeAuthenticated));
             Assert.True(exception.Code == ErrorCodes.InternalError);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.ClientIsNotValid, Constants.AnonymousClientId));
         }
         
         [Fact]
-        public void When_The_Resource_Owner_Is_Not_Valid_Then_Exception_Is_Thrown()
+        public async Task When_The_Resource_Owner_Is_Not_Valid_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -109,25 +110,23 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 ClientId = clientId,
                 ClientSecret = clientSecret
             };
-            var client = new AuthenticationResult(new Models.Client(), null);
-
-            string message;
+            var client = new AuthenticationResult(new Models.Client(), null);            
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
-            _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>()))
-                .Returns(() => client);
+            _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
+                .Returns(() => Task.FromResult(client));
             _resourceOwnerValidatorFake.Setup(
-                r => r.AuthenticateResourceOwner(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(() => null);
+                r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(() => Task.FromResult((ResourceOwner)null));
 
             // ACT & ASSERTS
-            var exception = Assert.Throws<IdentityServerException>(() => _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(resourceOwnerGrantTypeParameter, null));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(resourceOwnerGrantTypeParameter, null));
             Assert.True(exception.Code == ErrorCodes.InvalidGrant);
             Assert.True(exception.Message == ErrorDescriptions.ResourceOwnerCredentialsAreNotValid);
         }
 
         [Fact]
-        public void When_Passing_A_Not_Allowed_Scopes_Then_Exception_Is_Throw()
+        public async Task When_Passing_A_Not_Allowed_Scopes_Then_Exception_Is_Throw()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -150,16 +149,16 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             string message;
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
-            _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>()))
-                .Returns(() => client);
+            _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
+                .Returns(() => Task.FromResult(client));
             _resourceOwnerValidatorFake.Setup(
-                r => r.AuthenticateResourceOwner(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(() => resourceOwner);
+                r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(() => Task.FromResult(resourceOwner));
             _scopeValidatorFake.Setup(s => s.IsScopesValid(It.IsAny<string>(), It.IsAny<Models.Client>(), out message))
                 .Returns(() => new List<string>());
 
             // ACT & ASSERTS
-            var exception = Assert.Throws<IdentityServerException>(() => _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(resourceOwnerGrantTypeParameter, null));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(resourceOwnerGrantTypeParameter, null));
             Assert.True(exception.Code == ErrorCodes.InvalidScope);
         }
 
@@ -168,7 +167,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
         #region Happy path
 
         [Fact]
-        public void When_Requesting_An_AccessToken_For_An_Authenticated_User_Then_AccessToken_Is_Granted()
+        public async Task When_Requesting_An_AccessToken_For_An_Authenticated_User_Then_AccessToken_Is_Granted()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -201,21 +200,21 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             string message;
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
-            _authenticateClientFake.Setup(a => a.Authenticate(It.IsAny<AuthenticateInstruction>()))
-                .Returns(() => client);
+            _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
+                .Returns(() => Task.FromResult(client));
             _resourceOwnerValidatorFake.Setup(
-                r => r.AuthenticateResourceOwner(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(() => resourceOwner);
+                r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(() => Task.FromResult(resourceOwner));
             _scopeValidatorFake.Setup(s => s.IsScopesValid(It.IsAny<string>(), It.IsAny<Models.Client>(), out message))
                 .Returns(() => new List<string> { invalidScope });
             _jwtGeneratorFake.Setup(
                 j => j.GenerateUserInfoPayloadForScope(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
                 .Returns(() => userInformationJwsPayload);
-            _grantedTokenHelperStub.Setup(g => g.GetValidGrantedToken(It.IsAny<string>(),
+            _grantedTokenHelperStub.Setup(g => g.GetValidGrantedTokenAsync(It.IsAny<string>(),
                 It.IsAny<string>(),
                 It.IsAny<JwsPayload>(),
                 It.IsAny<JwsPayload>()))
-                .Returns((GrantedToken)null);
+                .Returns(Task.FromResult((GrantedToken)null));
             _grantedTokenGeneratorHelperFake.Setup(g => g.GenerateToken(It.IsAny<string>(),
                 It.IsAny<string>(),
                 It.IsAny<JwsPayload>(),
@@ -223,12 +222,12 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(() => grantedToken);
 
             // ACT
-            _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(resourceOwnerGrantTypeParameter, null);
+            await _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(resourceOwnerGrantTypeParameter, null);
 
             // ASSERT
-            _grantedTokenRepositoryFake.Verify(g => g.Insert(grantedToken));
+            _grantedTokenRepositoryFake.Verify(g => g.InsertAsync(grantedToken));
             _simpleIdentityServerEventSourceFake.Verify(s => s.GrantAccessToClient(clientId, accessToken, invalidScope));
-            _clientHelperStub.Verify(c => c.GenerateIdToken(It.IsAny<string>(), It.IsAny<JwsPayload>()));
+            _clientHelperStub.Verify(c => c.GenerateIdToken(It.IsAny<Client>(), It.IsAny<JwsPayload>()));
         }
 
         #endregion

@@ -1,11 +1,27 @@
-﻿using System;
+﻿#region copyright
+// Copyright 2015 Habart Thierry
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
+using System;
 using Moq;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Validators;
 using Xunit;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.UnitTests.Helpers
 {
@@ -18,34 +34,34 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
         private IClientHelper _clientHelper;
 
         [Fact]
-        public void When_Passing_Null_Parameters_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_Parameters_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERTS
-            Assert.Throws<ArgumentNullException>(() => _clientHelper.GenerateIdToken(string.Empty, null));
-            Assert.Throws<ArgumentNullException>(() => _clientHelper.GenerateIdToken("client_id", null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _clientHelper.GenerateIdTokenAsync(string.Empty, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _clientHelper.GenerateIdTokenAsync("client_id", null));
         }
 
         [Fact]
-        public void When_Signed_Response_Alg_Is_Not_Passed_Then_RS256_Is_Used()
+        public async Task When_Signed_Response_Alg_Is_Not_Passed_Then_RS256_Is_Used()
         {
             // ARRANGE
             InitializeFakeObjects();
             var client = new Models.Client();
-            _clientValidatorFake.Setup(c => c.ValidateClientExist(It.IsAny<string>()))
-                .Returns(client);
+            _clientValidatorFake.Setup(c => c.ValidateClientExistAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(client));
 
             // ACT
-            _clientHelper.GenerateIdToken("client_id", new JwsPayload());
+            await _clientHelper.GenerateIdTokenAsync("client_id", new JwsPayload());
 
             // ASSERT
             _jwtGeneratorFake.Verify(j => j.Sign(It.IsAny<JwsPayload>(), JwsAlg.RS256));
         }
 
         [Fact]
-        public void When_Signed_Response_And_EncryptResponseAlg_Are_Passed_Then_EncryptResponseEnc_A128CBC_HS256_Is_Used()
+        public async Task When_Signed_Response_And_EncryptResponseAlg_Are_Passed_Then_EncryptResponseEnc_A128CBC_HS256_Is_Used()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -54,11 +70,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
                 IdTokenSignedResponseAlg = Jwt.Constants.JwsAlgNames.RS256,
                 IdTokenEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5
             };
-            _clientValidatorFake.Setup(c => c.ValidateClientExist(It.IsAny<string>()))
-                .Returns(client);
+            _clientValidatorFake.Setup(c => c.ValidateClientExistAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(client));
 
             // ACT
-            _clientHelper.GenerateIdToken("client_id", new JwsPayload());
+            await _clientHelper.GenerateIdTokenAsync("client_id", new JwsPayload());
 
             // ASSERT
             _jwtGeneratorFake.Verify(j => j.Sign(It.IsAny<JwsPayload>(), JwsAlg.RS256));
@@ -66,7 +82,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
         }
         
         [Fact]
-        public void When_Sign_And_Encrypt_JwsPayload_Then_Functions_Are_Called()
+        public async Task When_Sign_And_Encrypt_JwsPayload_Then_Functions_Are_Called()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -76,11 +92,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
                 IdTokenEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5,
                 IdTokenEncryptedResponseEnc = Jwt.Constants.JweEncNames.A128CBC_HS256
             };
-            _clientValidatorFake.Setup(c => c.ValidateClientExist(It.IsAny<string>()))
-                .Returns(client);
+            _clientValidatorFake.Setup(c => c.ValidateClientExistAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(client));
 
             // ACT
-            _clientHelper.GenerateIdToken("client_id", new JwsPayload());
+            await _clientHelper.GenerateIdTokenAsync("client_id", new JwsPayload());
 
             // ASSERT
             _jwtGeneratorFake.Verify(j => j.Sign(It.IsAny<JwsPayload>(), JwsAlg.RS256));

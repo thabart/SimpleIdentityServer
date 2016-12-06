@@ -18,6 +18,7 @@ using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Services;
 using System;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Host.Tests.Services
 {
@@ -42,6 +43,11 @@ namespace SimpleIdentityServer.Host.Tests.Services
 
         public ResourceOwner AuthenticateResourceOwner(string login, string password)
         {
+            return AuthenticateResourceOwnerAsync(login, password).Result;
+        }
+
+        public async Task<ResourceOwner> AuthenticateResourceOwnerAsync(string login, string password)
+        {
             if (string.IsNullOrWhiteSpace(login))
             {
                 throw new ArgumentNullException(nameof(login));
@@ -52,7 +58,7 @@ namespace SimpleIdentityServer.Host.Tests.Services
                 throw new ArgumentNullException(nameof(password));
             }
 
-            return _resourceOwnerRepository.GetByUniqueClaim(login, GetHashedPassword(password));
+            return await _resourceOwnerRepository.GetByUniqueClaimAsync(login, GetHashedPassword(password));
         }
 
         public string GetHashedPassword(string password)

@@ -56,10 +56,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
         {
             // ARRANGE
             InitializeFakeObjects();
-            string errorMessageCode,
-                errorMessageDescription;
-            _grantedTokenValidatorFake.Setup(g => g.CheckAccessToken(It.IsAny<string>(), out errorMessageCode, out errorMessageDescription))
-                .Returns(false);
+            _grantedTokenValidatorFake.Setup(g => g.CheckAccessToken(It.IsAny<string>()))
+                .Returns(new GrantedTokenValidationResult { IsValid = false });
 
             // ACT & ASSERT
             Assert.Throws<AuthorizationException>(() => _getJwsPayload.Execute("access_token"));
@@ -70,10 +68,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
         {
             // ARRANGE
             InitializeFakeObjects();
-            string errorMessageCode,
-                errorMessageDescription;
-            _grantedTokenValidatorFake.Setup(g => g.CheckAccessToken(It.IsAny<string>(), out errorMessageCode, out errorMessageDescription))
-                .Returns(true);
+            _grantedTokenValidatorFake.Setup(g => g.CheckAccessToken(It.IsAny<string>()))
+                .Returns(new GrantedTokenValidationResult { IsValid = true });
             _grantedTokenRepositoryFake.Setup(g => g.GetToken(It.IsAny<string>()))
                 .Returns(new GrantedToken());
             _clientRepositoryFake.Setup(c => c.GetClientById(It.IsAny<string>()))
@@ -91,8 +87,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
         {
             // ARRANGE
             InitializeFakeObjects();
-            string errorMessageCode,
-                errorMessageDescription;
             var grantedToken = new GrantedToken
             {
                 UserInfoPayLoad = new Jwt.JwsPayload()
@@ -101,8 +95,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
             {
                 UserInfoSignedResponseAlg = Jwt.Constants.JwsAlgNames.NONE
             };
-            _grantedTokenValidatorFake.Setup(g => g.CheckAccessToken(It.IsAny<string>(), out errorMessageCode, out errorMessageDescription))
-                .Returns(true);
+            _grantedTokenValidatorFake.Setup(g => g.CheckAccessToken(It.IsAny<string>()))
+                .Returns(new GrantedTokenValidationResult { IsValid = true });
             _grantedTokenRepositoryFake.Setup(g => g.GetToken(It.IsAny<string>()))
                 .Returns(grantedToken);
             _clientRepositoryFake.Setup(c => c.GetClientById(It.IsAny<string>()))
@@ -120,8 +114,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
         {
             // ARRANGE
             InitializeFakeObjects();
-            string errorMessageCode,
-                errorMessageDescription;
             var grantedToken = new GrantedToken
             {
                 UserInfoPayLoad = new Jwt.JwsPayload()
@@ -130,8 +122,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
             {
                 UserInfoSignedResponseAlg = string.Empty
             };
-            _grantedTokenValidatorFake.Setup(g => g.CheckAccessToken(It.IsAny<string>(), out errorMessageCode, out errorMessageDescription))
-                .Returns(true);
+            _grantedTokenValidatorFake.Setup(g => g.CheckAccessToken(It.IsAny<string>()))
+                .Returns(new GrantedTokenValidationResult { IsValid = true });
             _grantedTokenRepositoryFake.Setup(g => g.GetToken(It.IsAny<string>()))
                 .Returns(grantedToken);
             _clientRepositoryFake.Setup(c => c.GetClientById(It.IsAny<string>()))
@@ -150,8 +142,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
             // ARRANGE
             InitializeFakeObjects();
             const string jwt = "jwt";
-            string errorMessageCode,
-                errorMessageDescription;
             var grantedToken = new GrantedToken
             {
                 UserInfoPayLoad = new Jwt.JwsPayload()
@@ -161,8 +151,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
                 UserInfoSignedResponseAlg = Jwt.Constants.JwsAlgNames.RS256,
                 UserInfoEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5
             };
-            _grantedTokenValidatorFake.Setup(g => g.CheckAccessToken(It.IsAny<string>(), out errorMessageCode, out errorMessageDescription))
-                .Returns(true);
+            _grantedTokenValidatorFake.Setup(g => g.CheckAccessToken(It.IsAny<string>()))
+                .Returns(new GrantedTokenValidationResult { IsValid = true });
             _grantedTokenRepositoryFake.Setup(g => g.GetToken(It.IsAny<string>()))
                 .Returns(grantedToken);
             _clientRepositoryFake.Setup(c => c.GetClientById(It.IsAny<string>()))

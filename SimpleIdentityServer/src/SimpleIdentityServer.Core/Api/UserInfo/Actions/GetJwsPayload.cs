@@ -40,11 +40,8 @@ namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
     public class GetJwsPayload : IGetJwsPayload
     {
         private readonly IGrantedTokenValidator _grantedTokenValidator;
-
         private readonly IGrantedTokenRepository _grantedTokenRepository;
-
         private readonly IJwtGenerator _jwtGenerator;
-
         private readonly IClientRepository _clientRepository;
 
         public GetJwsPayload(
@@ -66,15 +63,11 @@ namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
                 throw new ArgumentNullException("accessToken");
             }
 
-            string messageErrorCode;
-            string messageErrorDescription;
             // Check if the access token is still valid otherwise raise an authorization exception.
-            if (!_grantedTokenValidator.CheckAccessToken(
-                accessToken, 
-                out messageErrorCode, 
-                out messageErrorDescription))
+            GrantedTokenValidationResult valResult;
+            if (!((valResult = _grantedTokenValidator.CheckAccessToken(accessToken)).IsValid))
             {
-                throw new AuthorizationException(messageErrorCode, messageErrorDescription);
+                throw new AuthorizationException(valResult.MessageErrorCode, valResult.MessageErrorDescription);
             }
 
             var grantedToken = _grantedTokenRepository.GetToken(accessToken);

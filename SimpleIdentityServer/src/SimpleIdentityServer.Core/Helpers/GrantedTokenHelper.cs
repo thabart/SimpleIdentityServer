@@ -19,22 +19,19 @@ using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Validators;
 using System;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Helpers
 {
     public interface IGrantedTokenHelper 
     {
-        GrantedToken GetValidGrantedToken(
-            string scopes,
-            string clientId,
-            JwsPayload idTokenJwsPayload = null,
-            JwsPayload userInfoJwsPayload = null);
+        GrantedToken GetValidGrantedToken(string scopes, string clientId, JwsPayload idTokenJwsPayload = null, JwsPayload userInfoJwsPayload = null);
+        Task<GrantedToken> GetValidGrantedTokenAsync(string scopes, string clientId, JwsPayload idTokenJwsPayload = null, JwsPayload userInfoJwsPayload = null);
     }
 
     internal class GrantedTokenHelper : IGrantedTokenHelper
     {
         private readonly IGrantedTokenRepository _grantedTokenRepository;
-
         private readonly IGrantedTokenValidator _grantedTokenValidator;
 
         #region Constructor
@@ -51,11 +48,12 @@ namespace SimpleIdentityServer.Core.Helpers
 
         #region Public methods
 
-        public GrantedToken GetValidGrantedToken(
-            string scopes,
-            string clientId,
-            JwsPayload idTokenJwsPayload = null,
-            JwsPayload userInfoJwsPayload = null)
+        public GrantedToken GetValidGrantedToken(string scopes, string clientId, JwsPayload idTokenJwsPayload = null, JwsPayload userInfoJwsPayload = null)
+        {
+            return GetValidGrantedTokenAsync(scopes, clientId, idTokenJwsPayload, userInfoJwsPayload).Result;
+        }
+
+        public async Task<GrantedToken> GetValidGrantedTokenAsync(string scopes, string clientId, JwsPayload idTokenJwsPayload = null, JwsPayload userInfoJwsPayload = null)
         {
             if (string.IsNullOrWhiteSpace(scopes))
             {
@@ -67,19 +65,13 @@ namespace SimpleIdentityServer.Core.Helpers
                 throw new ArgumentNullException(nameof(clientId));
             }
 
-            var token = _grantedTokenRepository.GetToken(
-                scopes,
-                clientId,
-                idTokenJwsPayload,
-                userInfoJwsPayload);
+            var token = await _grantedTokenRepository.GetTokenAsync(scopes, clientId, idTokenJwsPayload, userInfoJwsPayload);
             if (token == null)
             {
                 return null;
             }
 
-            string messageErrorCode;
-            string messageErrorDescription;
-            if (!_grantedTokenValidator.CheckAccessToken(token.AccessToken, out messageErrorCode, out messageErrorDescription))
+            if (!_grantedTokenValidator.CheckGrantedToken(token).IsValid)
             {
                 return null;
             }

@@ -13,22 +13,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Models;
-
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace SimpleIdentityServer.Core.Validators
 {
     public interface IScopeValidator
     {
-        List<string> IsScopesValid(
-            string scope,
-            Models.Client client,
-            out string messageDescription);
+        List<string> IsScopesValid(string scope, Models.Client client, out string messageDescription);
     }
 
     public class ScopeValidator : IScopeValidator
@@ -40,10 +35,7 @@ namespace SimpleIdentityServer.Core.Validators
             _parameterParserHelper = parameterParserHelper;
         }
 
-        public List<string> IsScopesValid(
-            string scope,
-            Models.Client client,
-            out string messageDescription)
+        public List<string> IsScopesValid(string scope, Models.Client client, out string messageDescription)
         {
             var emptyList = new List<string>();
             var result = new List<string>();
@@ -57,8 +49,7 @@ namespace SimpleIdentityServer.Core.Validators
                     .ToList();
                 if (duplicates.Any())
                 {
-                    messageDescription = string.Format(ErrorDescriptions.DuplicateScopeValues,
-                        string.Join(",", duplicates));
+                    messageDescription = string.Format(ErrorDescriptions.DuplicateScopeValues, string.Join(",", duplicates));
                     return emptyList;
                 }
 
@@ -68,8 +59,7 @@ namespace SimpleIdentityServer.Core.Validators
                     .ToList();
                 if (scopesNotAllowedOrInvalid.Any())
                 {
-                    messageDescription = string.Format(ErrorDescriptions.ScopesAreNotAllowedOrInvalid,
-                        string.Join(",", scopesNotAllowedOrInvalid));
+                    messageDescription = string.Format(ErrorDescriptions.ScopesAreNotAllowedOrInvalid, string.Join(",", scopesNotAllowedOrInvalid));
                     return emptyList;
                 }
 

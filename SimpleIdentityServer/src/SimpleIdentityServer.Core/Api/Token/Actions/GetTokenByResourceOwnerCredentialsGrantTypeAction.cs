@@ -14,31 +14,28 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Security.Claims;
 using SimpleIdentityServer.Core.Authenticate;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
-using System.Collections.Generic;
-using SimpleIdentityServer.Core.Services;
+using System;
+using System.Linq;
+using System.Net.Http.Headers;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Token.Actions
 {
     public interface IGetTokenByResourceOwnerCredentialsGrantTypeAction
     {
-        GrantedToken Execute(
-            ResourceOwnerGrantTypeParameter resourceOwnerGrantTypeParameter,
-            AuthenticationHeaderValue authenticationHeaderValue);
+        Task<GrantedToken> Execute(ResourceOwnerGrantTypeParameter resourceOwnerGrantTypeParameter, AuthenticationHeaderValue authenticationHeaderValue);
     }
 
     public class GetTokenByResourceOwnerCredentialsGrantTypeAction : IGetTokenByResourceOwnerCredentialsGrantTypeAction
@@ -81,40 +78,35 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             _grantedTokenHelper = grantedTokenHelper;
         }
 
-        public GrantedToken Execute(
-            ResourceOwnerGrantTypeParameter resourceOwnerGrantTypeParameter,
-            AuthenticationHeaderValue authenticationHeaderValue)
+        public async Task<GrantedToken> Execute(ResourceOwnerGrantTypeParameter resourceOwnerGrantTypeParameter, AuthenticationHeaderValue authenticationHeaderValue)
         {
             if (resourceOwnerGrantTypeParameter == null)
             {
-                throw new ArgumentNullException("the parameter cannot be null");
+                throw new ArgumentNullException(nameof(resourceOwnerGrantTypeParameter));
             }
 
-            // Try to authenticate the client
-            var instruction = CreateAuthenticateInstruction(resourceOwnerGrantTypeParameter,
-                authenticationHeaderValue);
-            var authResult = _authenticateClient.Authenticate(instruction);
+            // 1. Try to authenticate the client
+            var instruction = CreateAuthenticateInstruction(resourceOwnerGrantTypeParameter, authenticationHeaderValue);
+            var authResult = await _authenticateClient.AuthenticateAsync(instruction);
             var client = authResult.Client;
             if (authResult.Client == null)
             {
                 _simpleIdentityServerEventSource.Info(ErrorDescriptions.TheClientCannotBeAuthenticated);
-                client = _clientRepository.GetClientById(Constants.AnonymousClientId);
+                client = await _clientRepository.GetClientByIdAsync(Constants.AnonymousClientId);
                 if (client == null)
                 {
                     throw new IdentityServerException(ErrorCodes.InternalError, string.Format(ErrorDescriptions.ClientIsNotValid, Constants.AnonymousClientId));
                 }
             }
 
-            // Try to authenticate a resource owner
-            var resourceOwner = _authenticateResourceOwnerService.AuthenticateResourceOwner(resourceOwnerGrantTypeParameter.UserName, resourceOwnerGrantTypeParameter.Password);
+            // 2. Try to authenticate a resource owner
+            var resourceOwner = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(resourceOwnerGrantTypeParameter.UserName, resourceOwnerGrantTypeParameter.Password);
             if (resourceOwner == null)
             {
-                throw new IdentityServerException(
-                    ErrorCodes.InvalidGrant,
-                    ErrorDescriptions.ResourceOwnerCredentialsAreNotValid);
+                throw new IdentityServerException(ErrorCodes.InvalidGrant, ErrorDescriptions.ResourceOwnerCredentialsAreNotValid);
             }
 
-            // Check if the requested scopes are valid
+            // 3. Check if the requested scopes are valid
             var allowedTokenScopes = string.Empty;
             if (!string.IsNullOrWhiteSpace(resourceOwnerGrantTypeParameter.Scope))
             {
@@ -122,15 +114,13 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                 var scopes = _scopeValidator.IsScopesValid(resourceOwnerGrantTypeParameter.Scope, client, out messageErrorDescription);
                 if (!scopes.Any())
                 {
-                    throw new IdentityServerException(
-                        ErrorCodes.InvalidScope,
-                        messageErrorDescription);
+                    throw new IdentityServerException(ErrorCodes.InvalidScope, messageErrorDescription);
                 }
 
                 allowedTokenScopes = string.Join(" ", scopes);
             }
 
-            // Generate the user information payload and store it.
+            // 4. Generate the user information payload and store it.
             var claims = resourceOwner.Claims;
             var claimsIdentity = new ClaimsIdentity(claims, "simpleIdentityServer");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
@@ -139,31 +129,18 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                 Scope = resourceOwnerGrantTypeParameter.Scope
             };
             var payload = _jwtGenerator.GenerateUserInfoPayloadForScope(claimsPrincipal, authorizationParameter);
-
-            var generatedToken = _grantedTokenHelper.GetValidGrantedToken(
-                client.ClientId,
-                allowedTokenScopes,
-                payload,
-                payload);
+            var generatedToken = await _grantedTokenHelper.GetValidGrantedTokenAsync(client.ClientId, allowedTokenScopes, payload, payload);
             if (generatedToken == null)
             {
-                generatedToken = _grantedTokenGeneratorHelper.GenerateToken(
-                    client.ClientId,
-                    allowedTokenScopes,
-                    payload,
-                    payload);
-                _grantedTokenRepository.Insert(generatedToken);
+                generatedToken = _grantedTokenGeneratorHelper.GenerateToken(client.ClientId, allowedTokenScopes, payload, payload);
+                await _grantedTokenRepository.InsertAsync(generatedToken);
                 // Fill-in the id-token
                 if (generatedToken.IdTokenPayLoad != null)
                 {
-                    generatedToken.IdToken = _clientHelper.GenerateIdToken(
-                        generatedToken.ClientId,
-                        generatedToken.IdTokenPayLoad);
+                    generatedToken.IdToken = _clientHelper.GenerateIdToken(client, generatedToken.IdTokenPayLoad);
                 }
 
-                _simpleIdentityServerEventSource.GrantAccessToClient(client.ClientId,
-                    generatedToken.AccessToken,
-                    allowedTokenScopes);
+                _simpleIdentityServerEventSource.GrantAccessToClient(client.ClientId, generatedToken.AccessToken, allowedTokenScopes);
             }
 
             return generatedToken;

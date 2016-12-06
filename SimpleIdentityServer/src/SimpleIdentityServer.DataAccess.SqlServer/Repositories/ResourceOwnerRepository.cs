@@ -23,6 +23,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Domains = SimpleIdentityServer.Core.Models;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 {
@@ -193,17 +194,23 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 
         public Domains.ResourceOwner GetByUniqueClaim(string id, string password)
         {
+            return GetByUniqueClaimAsync(id, password).Result;
+        }
+
+        public async Task<Domains.ResourceOwner> GetByUniqueClaimAsync(string id, string password)
+        {
             try
             {
-                var claimIdentifier = _context.Claims.FirstOrDefault(c => c.IsIdentifier);
+                var claimIdentifier = await _context.Claims.FirstOrDefaultAsync(c => c.IsIdentifier).ConfigureAwait(false);
                 if (claimIdentifier == null)
                 {
                     throw new InvalidOperationException("no claim can be used to uniquely identified the resource owner");
                 }
 
-                var result = _context.ResourceOwners
+                var result = await _context.ResourceOwners
                     .Include(r => r.Claims)
-                    .FirstOrDefault(r => r.Claims.Any(c => c.ClaimCode == claimIdentifier.Code && c.Value == id) && r.Password == password);
+                    .FirstOrDefaultAsync(r => r.Claims.Any(c => c.ClaimCode == claimIdentifier.Code && c.Value == id) && r.Password == password)
+                    .ConfigureAwait(false);
                 if (result == null)
                 {
                     return null;

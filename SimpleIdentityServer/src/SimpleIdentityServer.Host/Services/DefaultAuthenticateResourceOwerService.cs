@@ -20,6 +20,7 @@ using SimpleIdentityServer.Core.Services;
 using System;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Host.Services
 {
@@ -45,17 +46,22 @@ namespace SimpleIdentityServer.Host.Services
 
         public ResourceOwner AuthenticateResourceOwner(string login, string password)
         {
+            return AuthenticateResourceOwnerAsync(login, password).Result;
+        }
+
+        public async Task<ResourceOwner> AuthenticateResourceOwnerAsync(string login, string password)
+        {
             if (string.IsNullOrWhiteSpace(login))
             {
                 throw new ArgumentNullException(nameof(login));
             }
-              
+
             if (string.IsNullOrWhiteSpace(password))
             {
                 throw new ArgumentNullException(nameof(password));
             }
 
-            return _resourceOwnerRepository.GetByUniqueClaim(login, GetHashedPassword(password));
+            return await _resourceOwnerRepository.GetByUniqueClaimAsync(login, GetHashedPassword(password));
         }
 
         public string GetHashedPassword(string password)

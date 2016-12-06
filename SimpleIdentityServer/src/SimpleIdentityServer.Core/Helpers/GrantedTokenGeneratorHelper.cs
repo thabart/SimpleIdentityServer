@@ -24,11 +24,7 @@ namespace SimpleIdentityServer.Core.Helpers
 {
     public interface IGrantedTokenGeneratorHelper
     {
-        GrantedToken GenerateToken(
-            string clientId,
-            string scope,
-            JwsPayload userInformationPayload = null,
-            JwsPayload idTokenPayload = null);
+        GrantedToken GenerateToken(string clientId, string scope, JwsPayload userInformationPayload = null, JwsPayload idTokenPayload = null);
     }
 
     public class GrantedTokenGeneratorHelper : IGrantedTokenGeneratorHelper
@@ -46,11 +42,7 @@ namespace SimpleIdentityServer.Core.Helpers
 
         #region Public methods
 
-        public GrantedToken GenerateToken(
-            string clientId,
-            string scope,
-            JwsPayload userInformationPayload = null,
-            JwsPayload idTokenPayload = null)
+        public GrantedToken GenerateToken(string clientId, string scope, JwsPayload userInformationPayload = null, JwsPayload idTokenPayload = null)
         {
             if (string.IsNullOrWhiteSpace(clientId))
             {

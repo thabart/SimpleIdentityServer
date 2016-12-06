@@ -21,6 +21,7 @@ using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Validators;
 using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Helpers
@@ -40,14 +41,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
         #region Exceptions
 
         [Fact]
-        public void When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
+        public async Task When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            Assert.Throws<ArgumentNullException>(() => _grantedTokenHelper.GetValidGrantedToken(null, null, null, null));
-            Assert.Throws<ArgumentNullException>(() => _grantedTokenHelper.GetValidGrantedToken("scopes", null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenHelper.GetValidGrantedTokenAsync(null, null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenHelper.GetValidGrantedTokenAsync("scopes", null, null, null));
         }
 
         #endregion
@@ -55,55 +56,56 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
         #region Happy path
 
         [Fact]
-        public void When_Valid_Token_Doesnt_Exist_Then_Null_Is_Returned()
+        public async Task When_Valid_Token_Doesnt_Exist_Then_Null_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
-            _grantedTokenRepositoryStub.Setup(g => g.GetToken(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JwsPayload>(), It.IsAny<JwsPayload>()))
-                .Returns((GrantedToken)null);
+            _grantedTokenRepositoryStub.Setup(g => g.GetTokenAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JwsPayload>(), It.IsAny<JwsPayload>()))
+                .Returns(Task.FromResult((GrantedToken)null));
 
             // ACT
-            var result = _grantedTokenHelper.GetValidGrantedToken("scopes", "client_id", null, null);
+            var result = await _grantedTokenHelper.GetValidGrantedTokenAsync("scopes", "client_id", null, null);
 
             // ASSERT
             Assert.Null(result);
         }
 
         [Fact]
-        public void When_GrantedToken_Is_Expired_Then_Null_Is_Returned()
+        public async Task When_GrantedToken_Is_Expired_Then_Null_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
-            string messageErrorCode;
-            string messageErrorDescription;
-            _grantedTokenRepositoryStub.Setup(g => g.GetToken(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JwsPayload>(), It.IsAny<JwsPayload>()))
-                .Returns(new GrantedToken());
+            _grantedTokenRepositoryStub.Setup(g => g.GetTokenAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JwsPayload>(), It.IsAny<JwsPayload>()))
+                .Returns(Task.FromResult(new GrantedToken()));
 
-            _grantedTokenValidatorStub.Setup(g => g.CheckAccessToken(It.IsAny<string>(), out messageErrorCode, out messageErrorDescription))
-                .Returns(false);
+            _grantedTokenValidatorStub.Setup(g => g.CheckGrantedToken(It.IsAny<GrantedToken>()))
+                .Returns(new GrantedTokenValidationResult
+                {
+                    IsValid = false
+                });
 
             // ACT
-            var result = _grantedTokenHelper.GetValidGrantedToken("scopes", "client_id", null, null);
+            var result = await _grantedTokenHelper.GetValidGrantedTokenAsync("scopes", "client_id", null, null);
 
             // ASSERT
             Assert.Null(result);
         }
 
         [Fact]
-        public void When_Token_Exists_Then_GrantedToken_Is_Returned()
+        public async Task When_Token_Exists_Then_GrantedToken_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
-            string messageErrorCode;
-            string messageErrorDescription;
-            _grantedTokenRepositoryStub.Setup(g => g.GetToken(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JwsPayload>(), It.IsAny<JwsPayload>()))
-                .Returns(new GrantedToken());
-
-            _grantedTokenValidatorStub.Setup(g => g.CheckAccessToken(It.IsAny<string>(), out messageErrorCode, out messageErrorDescription))
-                .Returns(true);
+            _grantedTokenRepositoryStub.Setup(g => g.GetTokenAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JwsPayload>(), It.IsAny<JwsPayload>()))
+                .Returns(Task.FromResult(new GrantedToken()));
+            _grantedTokenValidatorStub.Setup(g => g.CheckGrantedToken(It.IsAny<GrantedToken>()))
+                .Returns(new GrantedTokenValidationResult
+                {
+                    IsValid = true
+                });
 
             // ACT
-            var result = _grantedTokenHelper.GetValidGrantedToken("scopes", "client_id", null, null);
+            var result = await _grantedTokenHelper.GetValidGrantedTokenAsync("scopes", "client_id", null, null);
 
             // ASSERT
             Assert.NotNull(result);

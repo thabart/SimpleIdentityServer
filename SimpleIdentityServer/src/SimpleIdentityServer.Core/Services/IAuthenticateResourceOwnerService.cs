@@ -15,6 +15,7 @@
 #endregion
 
 using SimpleIdentityServer.Core.Models;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Services
 {
@@ -23,5 +24,6 @@ namespace SimpleIdentityServer.Core.Services
         string GetHashedPassword(string password);
         ResourceOwner AuthenticateResourceOwner(string login);
         ResourceOwner AuthenticateResourceOwner(string login, string password);
+        Task<ResourceOwner> AuthenticateResourceOwnerAsync(string login, string password);
     }
 }

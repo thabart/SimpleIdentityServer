@@ -16,36 +16,26 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
     {
         private Mock<IGetTokenByResourceOwnerCredentialsGrantTypeAction>
             _getTokenByResourceOwnerCredentialsGrantTypeActionFake;
-
         private Mock<IGetTokenByAuthorizationCodeGrantTypeAction> _getTokenByAuthorizationCodeGrantTypeActionFake;
-
         private Mock<IResourceOwnerGrantTypeParameterValidator> _resourceOwnerGrantTypeParameterValidatorFake;
-
         private Mock<IAuthorizationCodeGrantTypeParameterTokenEdpValidator>
             _authorizationCodeGrantTypeParameterTokenEdptValidatorFake;
-
         private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSourceFake;
-
         private Mock<IGetTokenByRefreshTokenGrantTypeAction> _getTokenByRefreshTokenGrantTypeActionFake;
-
         private Mock<IRefreshTokenGrantTypeParameterValidator> _refreshTokenGrantTypeParameterValidatorFake;
-
         private Mock<IClientCredentialsGrantTypeParameterValidator> _clientCredentialsGrantTypeParameterValidatorStub;
-
         private Mock<IGetTokenByClientCredentialsGrantTypeAction> _getTokenByClientCredentialsGrantTypeActionStub;
-
         private Mock<IRevokeTokenAction> _revokeTokenActionStub;
-
         private ITokenActions _tokenActions;
 
         [Fact]
-        public void When_Passing_No_Request_To_ResourceOwner_Grant_Type_Then_Exception_Is_Thrown()
+        public async Task When_Passing_No_Request_To_ResourceOwner_Grant_Type_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(null, null));
         }
 
         [Fact]
@@ -71,7 +61,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             };
             _getTokenByResourceOwnerCredentialsGrantTypeActionFake.Setup(
                 g => g.Execute(It.IsAny<ResourceOwnerGrantTypeParameter>(), It.IsAny<AuthenticationHeaderValue>()))
-                .Returns(grantedToken);
+                .Returns(Task.FromResult(grantedToken));
 
             // ACT
             _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(parameter, null);

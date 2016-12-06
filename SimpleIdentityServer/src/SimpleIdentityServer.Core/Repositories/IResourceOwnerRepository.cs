@@ -16,6 +16,7 @@
 
 using SimpleIdentityServer.Core.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Repositories
 {
@@ -23,6 +24,7 @@ namespace SimpleIdentityServer.Core.Repositories
     {
         ResourceOwner GetByUniqueClaim(string id);
         ResourceOwner GetByUniqueClaim(string id, string password);
+        Task<ResourceOwner> GetByUniqueClaimAsync(string id, string password);
         bool Insert(ResourceOwner resourceOwner);
         bool Update(ResourceOwner resourceOwner);
         List<ResourceOwner> GetAll();

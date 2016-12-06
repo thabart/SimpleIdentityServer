@@ -109,13 +109,13 @@ namespace SimpleIdentityServer.Host.Extensions
         {
             return new ResourceOwnerGrantTypeParameter
             {
-                UserName = request.username,
-                Password = request.password,
-                Scope = request.scope,
-                ClientId = request.client_id,
-                ClientAssertion = request.client_assertion,
-                ClientAssertionType = request.client_assertion_type,
-                ClientSecret = request.client_secret
+                UserName = request.Username,
+                Password = request.Password,
+                Scope = request.Scope,
+                ClientId = request.ClientId,
+                ClientAssertion = request.ClientAssertion,
+                ClientAssertionType = request.ClientAssertionType,
+                ClientSecret = request.ClientSecret
             };
         }
 
@@ -123,12 +123,12 @@ namespace SimpleIdentityServer.Host.Extensions
         {
             return new AuthorizationCodeGrantTypeParameter
             {
-                ClientId = request.client_id,
-                ClientSecret = request.client_secret,
-                Code = request.code,
-                RedirectUri = request.redirect_uri,
-                ClientAssertion = request.client_assertion,
-                ClientAssertionType = request.client_assertion_type
+                ClientId = request.ClientId,
+                ClientSecret = request.ClientSecret,
+                Code = request.Code,
+                RedirectUri = request.RedirectUri,
+                ClientAssertion = request.ClientAssertion,
+                ClientAssertionType = request.ClientAssertionType
             };
         }
 
@@ -136,7 +136,7 @@ namespace SimpleIdentityServer.Host.Extensions
         {
             return new RefreshTokenGrantTypeParameter
             {
-                RefreshToken = request.refresh_token
+                RefreshToken = request.RefreshToken
             };
         }
 
@@ -144,11 +144,11 @@ namespace SimpleIdentityServer.Host.Extensions
         {
             return new ClientCredentialsGrantTypeParameter
             {
-                ClientAssertion = request.client_assertion,
-                ClientAssertionType = request.client_assertion_type,
-                ClientId = request.client_id,
-                ClientSecret = request.client_secret,
-                Scope = request.scope
+                ClientAssertion = request.ClientAssertion,
+                ClientAssertionType = request.ClientAssertionType,
+                ClientId = request.ClientId,
+                ClientSecret = request.ClientSecret,
+                Scope = request.Scope
             };
         }
 

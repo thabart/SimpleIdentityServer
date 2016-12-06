@@ -14,17 +14,16 @@
 // limitations under the License.
 #endregion
 
-using System;
+using Microsoft.EntityFrameworkCore;
+using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
-using System.Linq;
-using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
-using System.Collections.Generic;
 using SimpleIdentityServer.Logging;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using IsolationLevel = System.Data.IsolationLevel;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
@@ -86,15 +85,21 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 
         public GrantedToken GetToken(string scopes, string clientId, JwsPayload idTokenJwsPayload, JwsPayload userInfoJwsPayload)
         {
-            var grantedTokens = _context.GrantedTokens.Where(g => g.Scope == scopes && g.ClientId == clientId)
-                .ToList();
+            return GetTokenAsync(scopes, clientId, idTokenJwsPayload, userInfoJwsPayload).Result;
+        }
+
+        public async Task<GrantedToken> GetTokenAsync(string scopes, string clientId, JwsPayload idTokenJwsPayload, JwsPayload userInfoJwsPayload)
+        {
+            var grantedTokens = await _context.GrantedTokens
+                .Where(g => g.Scope == scopes && g.ClientId == clientId)
+                .OrderByDescending(g => g.CreateDateTime)
+                .ToListAsync()
+                .ConfigureAwait(false);
             if (grantedTokens == null || !grantedTokens.Any())
             {
                 return null;
             }
 
-            grantedTokens = grantedTokens.OrderByDescending(g => g.CreateDateTime)
-                .ToList();
             foreach (var grantedToken in grantedTokens)
             {
                 if (!string.IsNullOrWhiteSpace(grantedToken.IdTokenPayLoad) ||
@@ -134,10 +139,15 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 
             return null;
         }
-
+        
         public bool Insert(GrantedToken grantedToken)
         {
-            using (var transaction = _context.Database.BeginTransaction())
+            return InsertAsync(grantedToken).Result;
+        }
+
+        public async Task<bool> InsertAsync(GrantedToken grantedToken)
+        {
+            using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
                 try
                 {
@@ -149,14 +159,14 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                         CreateDateTime = grantedToken.CreateDateTime,
                         ExpiresIn = grantedToken.ExpiresIn,
                         RefreshToken = grantedToken.RefreshToken,
-                        Scope = string.Join(" ",grantedToken.Scope),
+                        Scope = string.Join(" ", grantedToken.Scope),
                         ParentTokenId = grantedToken.ParentTokenId,
                         IdTokenPayLoad = grantedToken.IdTokenPayLoad == null ? string.Empty : grantedToken.IdTokenPayLoad.SerializeWithJavascript(),
                         UserInfoPayLoad = grantedToken.UserInfoPayLoad == null ? string.Empty : grantedToken.UserInfoPayLoad.SerializeWithJavascript()
                     };
 
                     _context.GrantedTokens.Add(record);
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
                     transaction.Commit();
                 }
                 catch (Exception ex)

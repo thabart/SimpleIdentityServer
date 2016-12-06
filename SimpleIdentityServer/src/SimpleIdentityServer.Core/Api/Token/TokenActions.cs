@@ -27,20 +27,16 @@ namespace SimpleIdentityServer.Core.Api.Token
 {
     public interface ITokenActions
     {
-        GrantedToken GetTokenByResourceOwnerCredentialsGrantType(
+        Task<GrantedToken> GetTokenByResourceOwnerCredentialsGrantType(
             ResourceOwnerGrantTypeParameter parameter,
             AuthenticationHeaderValue authenticationHeaderValue);
-
         GrantedToken GetTokenByAuthorizationCodeGrantType(
             AuthorizationCodeGrantTypeParameter parameter,
             AuthenticationHeaderValue authenticationHeaderValue);
-
         GrantedToken GetTokenByRefreshTokenGrantType(RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter);
-
         GrantedToken GetTokenByClientCredentialsGrantType(
             ClientCredentialsGrantTypeParameter clientCredentialsGrantTypeParameter,
             AuthenticationHeaderValue authenticationHeaderValue);
-
         Task<bool> RevokeToken(
             RevokeTokenParameter revokeTokenParameter,
             AuthenticationHeaderValue authenticationHeaderValue);
@@ -92,7 +88,7 @@ namespace SimpleIdentityServer.Core.Api.Token
             _revokeTokenAction = revokeTokenAction;
         }
 
-        public GrantedToken GetTokenByResourceOwnerCredentialsGrantType(
+        public async Task<GrantedToken> GetTokenByResourceOwnerCredentialsGrantType(
             ResourceOwnerGrantTypeParameter resourceOwnerGrantTypeParameter,
             AuthenticationHeaderValue authenticationHeaderValue)
         {
@@ -105,7 +101,7 @@ namespace SimpleIdentityServer.Core.Api.Token
                 resourceOwnerGrantTypeParameter.UserName,
                 resourceOwnerGrantTypeParameter.Password);
             _resourceOwnerGrantTypeParameterValidator.Validate(resourceOwnerGrantTypeParameter);
-            var result = _getTokenByResourceOwnerCredentialsGrantType.Execute(resourceOwnerGrantTypeParameter,
+            var result = await _getTokenByResourceOwnerCredentialsGrantType.Execute(resourceOwnerGrantTypeParameter,
                 authenticationHeaderValue);
             var accessToken = result != null ? result.AccessToken : string.Empty;
             var identityToken = result != null ? result.IdToken : string.Empty;

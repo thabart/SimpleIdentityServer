@@ -46,8 +46,15 @@ namespace SimpleIdentityServer.Api.Controllers.Api
 
         // [SimpleTypeFilterAttribute(typeof(RateLimitationFilterAttribute), Arguments = new object[] { "PostToken" })]
         [HttpPost]
-        public TokenResponse Post([FromForm] TokenRequest tokenRequest)
+        public async Task<TokenResponse> PostToken()
         {
+            if (Request.Form == null)
+            {
+                throw new ArgumentNullException(nameof(Request.Form));
+            }
+
+            var serializer = new ParamSerializer();
+            var tokenRequest = serializer.Deserialize<TokenRequest>(Request.Form);
             GrantedToken result = null;
             StringValues authorizationHeader;
             AuthenticationHeaderValue authenticationHeaderValue = null;
@@ -63,23 +70,23 @@ namespace SimpleIdentityServer.Api.Controllers.Api
                 }
             }
             
-            switch (tokenRequest.grant_type)
+            switch (tokenRequest.GrantType)
             {
-                case GrantTypeRequest.password:
+                case GrantTypes.password:
                     var resourceOwnerParameter = tokenRequest.ToResourceOwnerGrantTypeParameter();
-                    result = _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(resourceOwnerParameter, authenticationHeaderValue);
+                    result = await _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(resourceOwnerParameter, authenticationHeaderValue);
                     break;
-                case GrantTypeRequest.authorization_code:
+                case GrantTypes.authorization_code:
                     var authCodeParameter = tokenRequest.ToAuthorizationCodeGrantTypeParameter();
                     result = _tokenActions.GetTokenByAuthorizationCodeGrantType(
                         authCodeParameter,
                         authenticationHeaderValue);
                     break;
-                case GrantTypeRequest.refresh_token:
+                case GrantTypes.refresh_token:
                     var refreshTokenParameter = tokenRequest.ToRefreshTokenGrantTypeParameter();
                     result = _tokenActions.GetTokenByRefreshTokenGrantType(refreshTokenParameter);
                     break;
-                case GrantTypeRequest.client_credentials:
+                case GrantTypes.client_credentials:
                     var clientCredentialsParameter = tokenRequest.ToClientCredentialsGrantTypeParameter();
                     result = _tokenActions.GetTokenByClientCredentialsGrantType(clientCredentialsParameter,
                         authenticationHeaderValue);
@@ -90,7 +97,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
         }
 
         [HttpPost("revoke")]
-        public async Task<ActionResult> Post()
+        public async Task<ActionResult> PostRevoke()
         {
             if (Request.Form == null)
             {
