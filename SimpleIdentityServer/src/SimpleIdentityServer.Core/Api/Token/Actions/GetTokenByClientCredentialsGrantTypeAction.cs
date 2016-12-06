@@ -17,7 +17,6 @@
 using SimpleIdentityServer.Core.Authenticate;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
@@ -25,15 +24,15 @@ using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Token.Actions
 {
     public interface IGetTokenByClientCredentialsGrantTypeAction
     {
-        GrantedToken Execute(
+        Task<GrantedToken> Execute(
                ClientCredentialsGrantTypeParameter clientCredentialsGrantTypeParameter,
                AuthenticationHeaderValue authenticationHeaderValue);
     }
@@ -90,7 +89,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
         #region Public methods
 
-        public GrantedToken Execute(
+        public async Task<GrantedToken> Execute(
             ClientCredentialsGrantTypeParameter clientCredentialsGrantTypeParameter,
             AuthenticationHeaderValue authenticationHeaderValue)
         {
@@ -101,17 +100,17 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
             _clientCredentialsGrantTypeParameterValidator.Validate(clientCredentialsGrantTypeParameter);
 
-            // Authenticate the client
+            // 1. Authenticate the client
             var instruction = CreateAuthenticateInstruction(clientCredentialsGrantTypeParameter,
                 authenticationHeaderValue);
-            var authResult = _authenticateClient.Authenticate(instruction);
+            var authResult = await _authenticateClient.AuthenticateAsync(instruction);
             var client = authResult.Client;
             if (client == null)
             {
                 throw new IdentityServerException(ErrorCodes.InvalidClient, authResult.ErrorMessage);
             }
 
-            // Check client
+            // 2. Check client
             if (client.GrantTypes == null ||
                 !client.GrantTypes.Contains(GrantType.client_credentials))
             {
@@ -126,7 +125,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                     string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType, client.ClientId, ResponseType.token));
             }
 
-            // Check scopes
+            // 3. Check scopes
             string allowedTokenScopes = string.Empty;
             if (!string.IsNullOrWhiteSpace(clientCredentialsGrantTypeParameter.Scope))
             {
@@ -143,22 +142,13 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                 allowedTokenScopes = string.Join(" ", scopes);
             }
 
-            // Generate token
-            var grantedToken = _grantedTokenHelper.GetValidGrantedToken(
-                allowedTokenScopes,
-                client.ClientId,
-                null,
-                null);
+            // 4. Generate token
+            var grantedToken = await _grantedTokenHelper.GetValidGrantedTokenAsync(allowedTokenScopes, client.ClientId);
             if (grantedToken == null)
             {
-                grantedToken = _grantedTokenGeneratorHelper.GenerateToken(
-                    client.ClientId,
-                    allowedTokenScopes);
-                _grantedTokenRepository.Insert(grantedToken);
-
-                _simpleIdentityServerEventSource.GrantAccessToClient(client.ClientId,
-                    grantedToken.AccessToken,
-                    allowedTokenScopes);
+                grantedToken = _grantedTokenGeneratorHelper.GenerateToken(client.ClientId, allowedTokenScopes);
+                await _grantedTokenRepository.InsertAsync(grantedToken);
+                _simpleIdentityServerEventSource.GrantAccessToClient(client.ClientId, grantedToken.AccessToken, allowedTokenScopes);
             }
 
             return grantedToken;

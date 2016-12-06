@@ -88,8 +88,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
                     break;
                 case GrantTypes.client_credentials:
                     var clientCredentialsParameter = tokenRequest.ToClientCredentialsGrantTypeParameter();
-                    result = _tokenActions.GetTokenByClientCredentialsGrantType(clientCredentialsParameter,
-                        authenticationHeaderValue);
+                    result = await _tokenActions.GetTokenByClientCredentialsGrantType(clientCredentialsParameter, authenticationHeaderValue);
                     break;
             }
 

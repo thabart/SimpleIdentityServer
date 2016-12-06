@@ -152,17 +152,17 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
         }
 
         [Fact]
-        public void When_Passing_Null_Parameter_To_ClientCredentials_GrantType_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_Parameter_To_ClientCredentials_GrantType_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _tokenActions.GetTokenByClientCredentialsGrantType(null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenActions.GetTokenByClientCredentialsGrantType(null, null));
         }
 
         [Fact]
-        public void When_Getting_Token_Via_ClientCredentials_GrantType_Then_GrantedToken_Is_Returned()
+        public async Task When_Getting_Token_Via_ClientCredentials_GrantType_Then_GrantedToken_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -177,10 +177,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 ClientId = clientId
             };
             _getTokenByClientCredentialsGrantTypeActionStub.Setup(g => g.Execute(It.IsAny<ClientCredentialsGrantTypeParameter>(), It.IsAny<AuthenticationHeaderValue>()))
-                .Returns(grantedToken);
+                .Returns(Task.FromResult(grantedToken));
 
             // ACT
-            var result = _tokenActions.GetTokenByClientCredentialsGrantType(parameter, null);
+            var result = await _tokenActions.GetTokenByClientCredentialsGrantType(parameter, null);
 
             // ASSERTS
             _simpleIdentityServerEventSourceFake.Verify(s => s.StartGetTokenByClientCredentials(scope));

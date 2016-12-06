@@ -34,7 +34,7 @@ namespace SimpleIdentityServer.Core.Api.Token
             AuthorizationCodeGrantTypeParameter parameter,
             AuthenticationHeaderValue authenticationHeaderValue);
         GrantedToken GetTokenByRefreshTokenGrantType(RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter);
-        GrantedToken GetTokenByClientCredentialsGrantType(
+        Task<GrantedToken> GetTokenByClientCredentialsGrantType(
             ClientCredentialsGrantTypeParameter clientCredentialsGrantTypeParameter,
             AuthenticationHeaderValue authenticationHeaderValue);
         Task<bool> RevokeToken(
@@ -143,7 +143,7 @@ namespace SimpleIdentityServer.Core.Api.Token
             return result;
         }
 
-        public GrantedToken GetTokenByClientCredentialsGrantType(
+        public async Task<GrantedToken> GetTokenByClientCredentialsGrantType(
             ClientCredentialsGrantTypeParameter clientCredentialsGrantTypeParameter,
             AuthenticationHeaderValue authenticationHeaderValue)
         {
@@ -154,7 +154,7 @@ namespace SimpleIdentityServer.Core.Api.Token
 
             _simpleIdentityServerEventSource.StartGetTokenByClientCredentials(clientCredentialsGrantTypeParameter.Scope);
             _clientCredentialsGrantTypeParameterValidator.Validate(clientCredentialsGrantTypeParameter);
-            var result = _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, authenticationHeaderValue);
+            var result = await _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, authenticationHeaderValue);
             _simpleIdentityServerEventSource.EndGetTokenByClientCredentials(
                 result.ClientId,
                 clientCredentialsGrantTypeParameter.Scope);
