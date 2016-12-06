@@ -27,17 +27,24 @@ using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Services;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Token.Actions
 {
     public interface IGetTokenByAuthorizationCodeGrantTypeAction
     {
-        GrantedToken Execute(AuthorizationCodeGrantTypeParameter parameter,
+        Task<GrantedToken> Execute(AuthorizationCodeGrantTypeParameter parameter,
             AuthenticationHeaderValue authenticationHeaderValue);
     }
 
     public class GetTokenByAuthorizationCodeGrantTypeAction : IGetTokenByAuthorizationCodeGrantTypeAction
     {
+        private class ValidationResult
+        {
+            public AuthorizationCode Code { get; set; }
+            public Client Client { get; set; }
+        }
+
         private readonly IAuthenticateInstructionGenerator _authenticateInstructionGenerator;
         private readonly IClientValidator _clientValidator;
         private readonly IAuthorizationCodeRepository _authorizationCodeRepository;
@@ -79,7 +86,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
         #region Public methods
 
-        public GrantedToken Execute(
+        public async Task<GrantedToken> Execute(
             AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter, 
             AuthenticationHeaderValue authenticationHeaderValue)
         {
@@ -88,27 +95,27 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                 throw new ArgumentNullException(nameof(authorizationCodeGrantTypeParameter));
             }
 
-            var authorizationCode = ValidateParameter(
+            var result = await ValidateParameter(
                 authorizationCodeGrantTypeParameter, 
                 authenticationHeaderValue);
 
-            // Invalide the authorization code by removing it !
-            _authorizationCodeRepository.RemoveAuthorizationCode(authorizationCode.Code);
-            var grantedToken = _grantedTokenHelper.GetValidGrantedToken(
-                authorizationCode.Scopes,
-                authorizationCode.ClientId,
-                authorizationCode.IdTokenPayload,
-                authorizationCode.UserInfoPayLoad);
+            // Invalidate the authorization code by removing it !
+            await _authorizationCodeRepository.RemoveAuthorizationCodeAsync(result.Code.Code);
+            var grantedToken = await _grantedTokenHelper.GetValidGrantedTokenAsync(
+                result.Code.Scopes,
+                result.Code.ClientId,
+                result.Code.IdTokenPayload,
+                result.Code.UserInfoPayLoad);
             if (grantedToken == null)
             {
                 grantedToken = _grantedTokenGeneratorHelper.GenerateToken(
-                    authorizationCode.ClientId,
-                    authorizationCode.Scopes,
-                    authorizationCode.UserInfoPayLoad,
-                    authorizationCode.IdTokenPayload);
-                _grantedTokenRepository.Insert(grantedToken);
+                    result.Code.ClientId,
+                    result.Code.Scopes,
+                    result.Code.UserInfoPayLoad,
+                    result.Code.IdTokenPayload);
+                await _grantedTokenRepository.InsertAsync(grantedToken);
                 _simpleIdentityServerEventSource.GrantAccessToClient(
-                    authorizationCode.ClientId,
+                    result.Code.ClientId,
                     grantedToken.AccessToken,
                     grantedToken.IdToken);
             }
@@ -116,9 +123,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             // Fill-in the id-token
             if (grantedToken.IdTokenPayLoad != null)
             {
-                grantedToken.IdToken = _clientHelper.GenerateIdToken(
-                    grantedToken.ClientId,
-                    grantedToken.IdTokenPayLoad);
+                grantedToken.IdToken = _clientHelper.GenerateIdToken(result.Client, grantedToken.IdTokenPayLoad);
             }
 
             return grantedToken;
@@ -134,30 +139,28 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
         /// <param name="authorizationCodeGrantTypeParameter"></param>
         /// <param name="authenticationHeaderValue"></param>
         /// <returns></returns>
-        private AuthorizationCode ValidateParameter(
+        private async Task<ValidationResult> ValidateParameter(
             AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter,
             AuthenticationHeaderValue authenticationHeaderValue)
         {
-            // Authenticate the client
-            var instruction = CreateAuthenticateInstruction(authorizationCodeGrantTypeParameter,
-                authenticationHeaderValue);
-            var authResult = _authenticateClient.Authenticate(instruction);
+            // 1. Authenticate the client
+            var instruction = CreateAuthenticateInstruction(authorizationCodeGrantTypeParameter, authenticationHeaderValue);
+            var authResult = await _authenticateClient.AuthenticateAsync(instruction);
             var client = authResult.Client;
             if (client == null)
             {
-                throw new IdentityServerException(ErrorCodes.InvalidClient,
-                    authResult.ErrorMessage);
+                throw new IdentityServerException(ErrorCodes.InvalidClient, authResult.ErrorMessage);
             }
 
-            var authorizationCode = _authorizationCodeRepository.GetAuthorizationCode(authorizationCodeGrantTypeParameter.Code);
-            // Check if the authorization code is valid
+            var authorizationCode = await _authorizationCodeRepository.GetAuthorizationCodeAsync(authorizationCodeGrantTypeParameter.Code);
+            // 2. Check if the authorization code is valid
             if (authorizationCode == null)
             {
                 throw new IdentityServerException(ErrorCodes.InvalidGrant,
                     ErrorDescriptions.TheAuthorizationCodeIsNotCorrect);
             }
 
-            // Ensure the authorization code was issued to the authenticated client.
+            // 3. Ensure the authorization code was issued to the authenticated client.
             var authorizationClientId = authorizationCode.ClientId;
             if (authorizationClientId != client.ClientId)
             {
@@ -172,7 +175,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                     ErrorDescriptions.TheRedirectionUrlIsNotTheSame);
             }
 
-            // Ensure the authorization code is still valid.
+            // 4. Ensure the authorization code is still valid.
             var authCodeValidity = _configurationService.GetAuthorizationCodeValidityPeriodInSeconds();
             var expirationDateTime = authorizationCode.CreateDateTime.AddSeconds(authCodeValidity);
             var currentDateTime = DateTime.UtcNow;
@@ -191,7 +194,11 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                     string.Format(ErrorDescriptions.RedirectUrlIsNotValid, authorizationCodeGrantTypeParameter.RedirectUri));
             }
 
-            return authorizationCode;
+            return new ValidationResult
+            {
+                Client = client,
+                Code = authorizationCode
+            };
         }
 
         private AuthenticateInstruction CreateAuthenticateInstruction(

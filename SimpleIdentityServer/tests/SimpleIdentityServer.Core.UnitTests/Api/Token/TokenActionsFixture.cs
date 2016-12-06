@@ -39,7 +39,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
         }
 
         [Fact]
-        public void When_Requesting_Token_Via_Resource_Owner_Credentials_Grant_Type_Then_Events_Are_Logged()
+        public async Task When_Requesting_Token_Via_Resource_Owner_Credentials_Grant_Type_Then_Events_Are_Logged()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -64,7 +64,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(Task.FromResult(grantedToken));
 
             // ACT
-            _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(parameter, null);
+            await _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(parameter, null);
 
             // ASSERTS
             _simpleIdentityServerEventSourceFake.Verify(s => s.StartGetTokenByResourceOwnerCredentials(clientId, userName, password));
@@ -72,17 +72,17 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
         }
 
         [Fact]
-        public void When_Passing_No_Request_To_AuthorizationCode_Grant_Type_Then_Exception_Is_Thrown()
+        public async Task When_Passing_No_Request_To_AuthorizationCode_Grant_Type_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _tokenActions.GetTokenByAuthorizationCodeGrantType(null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenActions.GetTokenByAuthorizationCodeGrantType(null, null));
         }
 
         [Fact]
-        public void When_Requesting_Token_Via_AuthorizationCode_Grant_Type_Then_Events_Are_Logged()
+        public async Task When_Requesting_Token_Via_AuthorizationCode_Grant_Type_Then_Events_Are_Logged()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -102,10 +102,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             };
             _getTokenByAuthorizationCodeGrantTypeActionFake.Setup(
                 g => g.Execute(It.IsAny<AuthorizationCodeGrantTypeParameter>(), It.IsAny<AuthenticationHeaderValue>()))
-                .Returns(grantedToken);
+                .Returns(Task.FromResult(grantedToken));
 
             // ACT
-            _tokenActions.GetTokenByAuthorizationCodeGrantType(parameter, null);
+            await _tokenActions.GetTokenByAuthorizationCodeGrantType(parameter, null);
 
             // ASSERTS
             _simpleIdentityServerEventSourceFake.Verify(s => s.StartGetTokenByAuthorizationCode(clientId, code));

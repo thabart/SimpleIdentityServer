@@ -30,7 +30,7 @@ namespace SimpleIdentityServer.Core.Api.Token
         Task<GrantedToken> GetTokenByResourceOwnerCredentialsGrantType(
             ResourceOwnerGrantTypeParameter parameter,
             AuthenticationHeaderValue authenticationHeaderValue);
-        GrantedToken GetTokenByAuthorizationCodeGrantType(
+        Task<GrantedToken> GetTokenByAuthorizationCodeGrantType(
             AuthorizationCodeGrantTypeParameter parameter,
             AuthenticationHeaderValue authenticationHeaderValue);
         Task<GrantedToken> GetTokenByRefreshTokenGrantType(RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter);
@@ -109,7 +109,7 @@ namespace SimpleIdentityServer.Core.Api.Token
             return result;
         }
 
-        public GrantedToken GetTokenByAuthorizationCodeGrantType(
+        public async Task<GrantedToken> GetTokenByAuthorizationCodeGrantType(
             AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter,
             AuthenticationHeaderValue authenticationHeaderValue)
         {
@@ -122,7 +122,7 @@ namespace SimpleIdentityServer.Core.Api.Token
                 authorizationCodeGrantTypeParameter.ClientId,
                 authorizationCodeGrantTypeParameter.Code);
             _authorizationCodeGrantTypeParameterTokenEdpValidator.Validate(authorizationCodeGrantTypeParameter);
-            var result = _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, authenticationHeaderValue);
+            var result = await _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, authenticationHeaderValue);
             _simpleIdentityServerEventSource.EndGetTokenByAuthorizationCode(
                 result.AccessToken,
                 result.IdToken);

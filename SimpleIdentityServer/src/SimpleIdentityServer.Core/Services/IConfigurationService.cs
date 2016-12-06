@@ -21,11 +21,8 @@ namespace SimpleIdentityServer.Core.Services
     public interface IConfigurationService
     {
         string GetIssuerName();
-
         double GetTokenValidityPeriodInSeconds();
-
         double GetAuthorizationCodeValidityPeriodInSeconds();
-
         string DefaultLanguage();
     }
 }

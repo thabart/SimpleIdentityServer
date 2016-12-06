@@ -15,12 +15,12 @@
 #endregion
 
 using System;
-using System.Linq;
+using System.Threading.Tasks;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
-using SimpleIdentityServer.DataAccess.SqlServer.Models;
 using SimpleIdentityServer.Logging;
+using Microsoft.EntityFrameworkCore;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 {
@@ -45,59 +45,27 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
         
         public bool AddAuthorizationCode(Core.Models.AuthorizationCode authorizationCode)
         {
-            using (var transaction = _context.Database.BeginTransaction())
+            return AddAuthorizationCodeAsync(authorizationCode).Result;
+        }
+
+        public async Task<bool> AddAuthorizationCodeAsync(Core.Models.AuthorizationCode authorizationCode)
+        {
+            using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
                 try
                 {
-                    var newAuthorizationCode = new AuthorizationCode
+                    var newAuthorizationCode = new Models.AuthorizationCode
                     {
                         Code = authorizationCode.Code,
                         ClientId = authorizationCode.ClientId,
                         CreateDateTime = authorizationCode.CreateDateTime,
                         Scopes = authorizationCode.Scopes,
                         RedirectUri = authorizationCode.RedirectUri,
-                        IdTokenPayload = authorizationCode.IdTokenPayload ==  null ? string.Empty : authorizationCode.IdTokenPayload.SerializeWithJavascript(),
+                        IdTokenPayload = authorizationCode.IdTokenPayload == null ? string.Empty : authorizationCode.IdTokenPayload.SerializeWithJavascript(),
                         UserInfoPayLoad = authorizationCode.UserInfoPayLoad == null ? string.Empty : authorizationCode.UserInfoPayLoad.SerializeWithJavascript()
                     };
                     _context.AuthorizationCodes.Add(newAuthorizationCode);
-                    _context.SaveChanges();
-                    transaction.Commit();
-                }
-                catch (Exception ex)
-                {
-                    _managerEventSource.Failure(ex);
-                    transaction.Rollback();
-                }
-            }
-
-        return true;
-        }
-
-        public Core.Models.AuthorizationCode GetAuthorizationCode(string code)
-        {
-            var authorizationCode = _context.AuthorizationCodes.FirstOrDefault(a => a.Code == code);
-            if (authorizationCode == null)
-            {
-                return null;
-            }
-
-            return authorizationCode.ToDomain();
-        }
-
-        public bool RemoveAuthorizationCode(string code)
-        {
-            using (var transaction = _context.Database.BeginTransaction())
-            {
-                try
-                {
-                    var authorizationCode = _context.AuthorizationCodes.FirstOrDefault(a => a.Code == code);
-                    if (authorizationCode == null)
-                    {
-                        return false;
-                    }
-
-                    _context.AuthorizationCodes.Remove(authorizationCode);
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync();
                     transaction.Commit();
                 }
                 catch (Exception ex)
@@ -109,7 +77,56 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 
             return true;
         }
-        
+
+        public Core.Models.AuthorizationCode GetAuthorizationCode(string code)
+        {
+            return GetAuthorizationCodeAsync(code).Result;
+        }
+
+        public async Task<Core.Models.AuthorizationCode> GetAuthorizationCodeAsync(string code)
+        {
+            var authorizationCode = await _context.AuthorizationCodes
+                .FirstOrDefaultAsync(a => a.Code == code)
+                .ConfigureAwait(false);
+            if (authorizationCode == null)
+            {
+                return null;
+            }
+
+            return authorizationCode.ToDomain();
+        }
+
+        public bool RemoveAuthorizationCode(string code)
+        {
+            return RemoveAuthorizationCodeAsync(code).Result;
+        }
+
+        public async Task<bool> RemoveAuthorizationCodeAsync(string code)
+        {
+            using (var transaction = await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.RepeatableRead).ConfigureAwait(false))
+            {
+                try
+                {
+                    var authorizationCode = await _context.AuthorizationCodes.FirstOrDefaultAsync(a => a.Code == code).ConfigureAwait(false);
+                    if (authorizationCode == null)
+                    {
+                        return false;
+                    }
+
+                    _context.AuthorizationCodes.Remove(authorizationCode);
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
+                    transaction.Commit();
+                }
+                catch (Exception ex)
+                {
+                    _managerEventSource.Failure(ex);
+                    transaction.Rollback();
+                }
+            }
+
+            return true;
+        }
+
         #endregion
     }
 }

@@ -77,7 +77,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
                     break;
                 case GrantTypes.authorization_code:
                     var authCodeParameter = tokenRequest.ToAuthorizationCodeGrantTypeParameter();
-                    result = _tokenActions.GetTokenByAuthorizationCodeGrantType(
+                    result = await _tokenActions.GetTokenByAuthorizationCodeGrantType(
                         authCodeParameter,
                         authenticationHeaderValue);
                     break;
