@@ -20,7 +20,6 @@ using SimpleIdentityServer.Core.Api.Token;
 using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Host;
-using SimpleIdentityServer.Host.DTOs.Request;
 using SimpleIdentityServer.Host.DTOs.Response;
 using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.Host.Serializers;
@@ -84,7 +83,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
                     break;
                 case GrantTypes.refresh_token:
                     var refreshTokenParameter = tokenRequest.ToRefreshTokenGrantTypeParameter();
-                    result = _tokenActions.GetTokenByRefreshTokenGrantType(refreshTokenParameter);
+                    result = await _tokenActions.GetTokenByRefreshTokenGrantType(refreshTokenParameter);
                     break;
                 case GrantTypes.client_credentials:
                     var clientCredentialsParameter = tokenRequest.ToClientCredentialsGrantTypeParameter();

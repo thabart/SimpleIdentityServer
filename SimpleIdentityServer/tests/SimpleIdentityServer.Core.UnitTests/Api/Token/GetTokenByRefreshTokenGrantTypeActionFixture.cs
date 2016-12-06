@@ -27,44 +27,41 @@ using SimpleIdentityServer.Core.Repositories;
 using Xunit;
 using SimpleIdentityServer.Logging;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 {
     public sealed class GetTokenByRefreshTokenGrantTypeActionFixture
     {
         private Mock<IGrantedTokenRepository> _grantedTokenRepositoryFake;
-
         private Mock<IClientHelper> _clientHelperFake;
-
         private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSourceStub;
-
         private Mock<IGrantedTokenGeneratorHelper> _grantedTokenGeneratorHelperStub;
-
         private IGetTokenByRefreshTokenGrantTypeAction _getTokenByRefreshTokenGrantTypeAction;
 
         #region Exceptions
 
         [Fact]
-        public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _getTokenByRefreshTokenGrantTypeAction.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getTokenByRefreshTokenGrantTypeAction.Execute(null));
         }
 
         [Fact]
-        public void When_Passing_Invalid_Refresh_Token_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Invalid_Refresh_Token_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
             var parameter = new RefreshTokenGrantTypeParameter();
-            _grantedTokenRepositoryFake.Setup(g => g.GetTokenByRefreshToken(It.IsAny<string>()))
-                .Returns(() => null);
+            _grantedTokenRepositoryFake.Setup(g => g.GetTokenByRefreshTokenAsync(It.IsAny<string>()))
+                .Returns(() => Task.FromResult((GrantedToken)null));
 
             // ACT & ASSERT
-            var ex = Assert.Throws<IdentityServerException>(() => _getTokenByRefreshTokenGrantTypeAction.Execute(parameter));
+            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByRefreshTokenGrantTypeAction.Execute(parameter));
             Assert.True(ex.Code == ErrorCodes.InvalidGrant);
             Assert.True(ex.Message == ErrorDescriptions.TheRefreshTokenIsNotValid);
         }
@@ -74,7 +71,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
         #region Happy path
 
         [Fact]
-        public void When_Requesting_Token_Then_New_One_Is_Generated()
+        public async Task When_Requesting_Token_Then_New_One_Is_Generated()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -83,8 +80,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             {
                 IdTokenPayLoad = new JwsPayload()
             };
-            _grantedTokenRepositoryFake.Setup(g => g.GetTokenByRefreshToken(It.IsAny<string>()))
-                .Returns(grantedToken);
+            _grantedTokenRepositoryFake.Setup(g => g.GetTokenByRefreshTokenAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(grantedToken));
             _grantedTokenGeneratorHelperStub.Setup(g => g.GenerateToken(
                 It.IsAny<string>(),
                 It.IsAny<string>(), 
@@ -92,10 +89,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 It.IsAny<JwsPayload>())).Returns(grantedToken);
 
             // ACT
-             _getTokenByRefreshTokenGrantTypeAction.Execute(parameter);
+             await _getTokenByRefreshTokenGrantTypeAction.Execute(parameter);
 
             // ASSERT
-            _grantedTokenRepositoryFake.Verify(g => g.Insert(It.IsAny<GrantedToken>()));
+            _grantedTokenRepositoryFake.Verify(g => g.InsertAsync(It.IsAny<GrantedToken>()));
         }
 
         #endregion

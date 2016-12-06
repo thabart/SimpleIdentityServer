@@ -113,17 +113,17 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
         }
 
         [Fact]
-        public void When_Passing_No_Request_To_Refresh_Token_Grant_Type_Then_Exception_Is_Thrown()
+        public async Task When_Passing_No_Request_To_Refresh_Token_Grant_Type_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _tokenActions.GetTokenByRefreshTokenGrantType(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenActions.GetTokenByRefreshTokenGrantType(null));
         }
 
         [Fact]
-        public void When_Passing_Request_To_Refresh_Token_Grant_Type_Then_Events_Are_Logged()
+        public async Task When_Passing_Request_To_Refresh_Token_Grant_Type_Then_Events_Are_Logged()
         {            
             // ARRANGE
             InitializeFakeObjects();
@@ -141,10 +141,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             };
             _getTokenByRefreshTokenGrantTypeActionFake.Setup(
                 g => g.Execute(It.IsAny<RefreshTokenGrantTypeParameter>()))
-                .Returns(grantedToken);
+                .Returns(Task.FromResult(grantedToken));
 
             // ACT
-            _tokenActions.GetTokenByRefreshTokenGrantType(parameter);
+            await _tokenActions.GetTokenByRefreshTokenGrantType(parameter);
 
             // ASSERTS
             _simpleIdentityServerEventSourceFake.Verify(s => s.StartGetTokenByRefreshToken(refreshToken));

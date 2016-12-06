@@ -33,7 +33,7 @@ namespace SimpleIdentityServer.Core.Api.Token
         GrantedToken GetTokenByAuthorizationCodeGrantType(
             AuthorizationCodeGrantTypeParameter parameter,
             AuthenticationHeaderValue authenticationHeaderValue);
-        GrantedToken GetTokenByRefreshTokenGrantType(RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter);
+        Task<GrantedToken> GetTokenByRefreshTokenGrantType(RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter);
         Task<GrantedToken> GetTokenByClientCredentialsGrantType(
             ClientCredentialsGrantTypeParameter clientCredentialsGrantTypeParameter,
             AuthenticationHeaderValue authenticationHeaderValue);
@@ -129,7 +129,7 @@ namespace SimpleIdentityServer.Core.Api.Token
             return result;
         }
 
-        public GrantedToken GetTokenByRefreshTokenGrantType(RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter)
+        public async Task<GrantedToken> GetTokenByRefreshTokenGrantType(RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter)
         {
             if (refreshTokenGrantTypeParameter == null)
             {
@@ -138,7 +138,7 @@ namespace SimpleIdentityServer.Core.Api.Token
 
             _simpleIdentityServerEventSource.StartGetTokenByRefreshToken(refreshTokenGrantTypeParameter.RefreshToken);
             _refreshTokenGrantTypeParameterValidator.Validate(refreshTokenGrantTypeParameter);
-            var result = _getTokenByRefreshTokenGrantTypeAction.Execute(refreshTokenGrantTypeParameter);
+            var result = await _getTokenByRefreshTokenGrantTypeAction.Execute(refreshTokenGrantTypeParameter);
             _simpleIdentityServerEventSource.EndGetTokenByRefreshToken(result.AccessToken, result.IdToken);
             return result;
         }

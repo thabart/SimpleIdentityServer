@@ -22,13 +22,13 @@ using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Logging;
-using SimpleIdentityServer.Core.Extensions;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Token.Actions
 {
     public interface IGetTokenByRefreshTokenGrantTypeAction
     {
-        GrantedToken Execute(RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter);
+        Task<GrantedToken> Execute(RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter);
     }
 
     public sealed class GetTokenByRefreshTokenGrantTypeAction : IGetTokenByRefreshTokenGrantTypeAction
@@ -50,7 +50,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
         }
 
-        public GrantedToken Execute(RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter)
+        public async Task<GrantedToken> Execute(RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter)
         {
             if (refreshTokenGrantTypeParameter == null)
             {
@@ -58,7 +58,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             }
 
             // 1. Validate parameters
-            var grantedToken = ValidateParameter(refreshTokenGrantTypeParameter);
+            var grantedToken = await ValidateParameter(refreshTokenGrantTypeParameter);
             // 2. Generate a new access token & insert it
             var generatedToken = _grantedTokenGeneratorHelper.GenerateToken(
                 grantedToken.ClientId,
@@ -66,13 +66,11 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                 grantedToken.UserInfoPayLoad,
                 grantedToken.IdTokenPayLoad);
             generatedToken.ParentTokenId = grantedToken.Id;
-            _grantedTokenRepository.Insert(generatedToken);
+            await _grantedTokenRepository.InsertAsync(generatedToken);
             // 3. Fill-in the idtoken
             if (generatedToken.IdTokenPayLoad != null)
             {
-                generatedToken.IdToken = _clientHelper.GenerateIdToken(
-                    generatedToken.ClientId,
-                    generatedToken.IdTokenPayLoad);
+                generatedToken.IdToken = await _clientHelper.GenerateIdTokenAsync(generatedToken.ClientId, generatedToken.IdTokenPayLoad);
             }
 
             _simpleIdentityServerEventSource.GrantAccessToClient(generatedToken.ClientId,
@@ -81,10 +79,10 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             return generatedToken;
         }
 
-        private GrantedToken ValidateParameter(RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter)
+        private async Task<GrantedToken> ValidateParameter(RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter)
         {
             // 1. Check refresh token exists
-            var grantedToken = _grantedTokenRepository.GetTokenByRefreshToken(refreshTokenGrantTypeParameter.RefreshToken);
+            var grantedToken = await _grantedTokenRepository.GetTokenByRefreshTokenAsync(refreshTokenGrantTypeParameter.RefreshToken);
             if (grantedToken == null)
             {
                 throw new IdentityServerException(
