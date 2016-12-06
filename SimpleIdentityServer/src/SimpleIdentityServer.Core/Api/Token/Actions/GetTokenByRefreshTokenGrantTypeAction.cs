@@ -65,7 +65,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                 grantedToken.Scope,
                 grantedToken.UserInfoPayLoad,
                 grantedToken.IdTokenPayLoad);
-            generatedToken.ParentRefreshToken = grantedToken.RefreshToken;
+            generatedToken.ParentTokenId = grantedToken.Id;
             _grantedTokenRepository.Insert(generatedToken);
             // 3. Fill-in the idtoken
             if (generatedToken.IdTokenPayLoad != null)

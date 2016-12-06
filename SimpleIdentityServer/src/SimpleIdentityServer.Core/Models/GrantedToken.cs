@@ -23,6 +23,8 @@ namespace SimpleIdentityServer.Core.Models
     [DataContract]
     public class GrantedToken
     {
+        public string Id { get; set; }
+
         [DataMember(Name = "access_token")]
         public string AccessToken { get; set; }
 
@@ -61,6 +63,6 @@ namespace SimpleIdentityServer.Core.Models
         /// </summary>
         public JwsPayload IdTokenPayLoad { get; set; }
 
-        public string ParentRefreshToken { get; set; }
+        public string ParentTokenId { get; set; }
     }
 }

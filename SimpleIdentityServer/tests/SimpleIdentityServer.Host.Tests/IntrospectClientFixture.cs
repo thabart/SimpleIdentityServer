@@ -66,10 +66,11 @@ namespace SimpleIdentityServer.Host.Tests
             var postTokenOperation = new PostTokenOperation(_httpClientFactoryStub.Object);
             var getDiscoveryOperation = new GetDiscoveryOperation(_httpClientFactoryStub.Object);
             var introspectionOperation = new IntrospectOperation(_httpClientFactoryStub.Object);
-            var tokenClient = new TokenClient(requestBuilder, postTokenOperation, getDiscoveryOperation);
-            var introspectClient = new IntrospectClient(requestBuilder, introspectionOperation, getDiscoveryOperation);
-            var tokenGrantTypeSelector = new TokenGrantTypeSelector(requestBuilder, tokenClient, introspectClient);
-            _clientAuthSelector = new ClientAuthSelector(new TokenClientFactory(postTokenOperation, getDiscoveryOperation), new IntrospectClientFactory(introspectionOperation, getDiscoveryOperation));
+            var revokeTokenOperation = new RevokeTokenOperation(_httpClientFactoryStub.Object);
+            _clientAuthSelector = new ClientAuthSelector(
+                new TokenClientFactory(postTokenOperation, getDiscoveryOperation), 
+                new IntrospectClientFactory(introspectionOperation, getDiscoveryOperation),
+                new RevokeTokenClientFactory(revokeTokenOperation, getDiscoveryOperation));
         }
     }
 }

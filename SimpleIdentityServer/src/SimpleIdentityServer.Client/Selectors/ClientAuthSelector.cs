@@ -33,11 +33,13 @@ namespace SimpleIdentityServer.Client.Selectors
     {
         private readonly ITokenClientFactory _tokenClientFactory;
         private readonly IIntrospectClientFactory _introspectClientFactory;
+        private readonly IRevokeTokenClientFactory _revokeTokenClientFactory;
 
-        public ClientAuthSelector(ITokenClientFactory tokenClientFactory, IIntrospectClientFactory introspectClientFactory)
+        public ClientAuthSelector(ITokenClientFactory tokenClientFactory, IIntrospectClientFactory introspectClientFactory, IRevokeTokenClientFactory revokeTokenClientFactory)
         {
             _tokenClientFactory = tokenClientFactory;
             _introspectClientFactory = introspectClientFactory;
+            _revokeTokenClientFactory = revokeTokenClientFactory;
         }
 
         public ITokenGrantTypeSelector UseClientSecretBasicAuth(string clientId, string clientSecret)
@@ -53,12 +55,8 @@ namespace SimpleIdentityServer.Client.Selectors
             }
 
             var requestBuilder = new RequestBuilder();
-            var tokenClient = _tokenClientFactory.CreateClient(requestBuilder);
-            var introspectClient = _introspectClientFactory.CreateClient(requestBuilder);
-            var tokenGrantTypeSelector = new TokenGrantTypeSelector(requestBuilder, tokenClient, introspectClient);
-            var authorizationValue = GetAuthorizationValue(clientId, clientSecret);
-            requestBuilder.AuthorizationHeaderValue = authorizationValue;
-            return tokenGrantTypeSelector;
+            requestBuilder.AuthorizationHeaderValue = GetAuthorizationValue(clientId, clientSecret);
+            return GetTokenGrantTypeSelector(requestBuilder);
         }
 
         public ITokenGrantTypeSelector UseClientSecretPostAuth(string clientId, string clientSecret)
@@ -74,11 +72,8 @@ namespace SimpleIdentityServer.Client.Selectors
             }
 
             var requestBuilder = new RequestBuilder();
-            var tokenClient = _tokenClientFactory.CreateClient(requestBuilder);
-            var introspectClient = _introspectClientFactory.CreateClient(requestBuilder);
-            var tokenGrantTypeSelector = new TokenGrantTypeSelector(requestBuilder, tokenClient, introspectClient);
             requestBuilder.SetClientCredentials(clientId, clientSecret);
-            return tokenGrantTypeSelector;
+            return GetTokenGrantTypeSelector(requestBuilder);
         }
 
         public ITokenGrantTypeSelector UseClientSecretJwtAuth(string jwt, string clientId)
@@ -94,11 +89,8 @@ namespace SimpleIdentityServer.Client.Selectors
             }
 
             var requestBuilder = new RequestBuilder();
-            var tokenClient = _tokenClientFactory.CreateClient(requestBuilder);
-            var introspectClient = _introspectClientFactory.CreateClient(requestBuilder);
-            var tokenGrantTypeSelector = new TokenGrantTypeSelector(requestBuilder, tokenClient, introspectClient);
             requestBuilder.SetClientAssertion(clientId, jwt, Core.Common.ClientAssertionTypes.JwtBearer);
-            return tokenGrantTypeSelector;
+            return GetTokenGrantTypeSelector(requestBuilder);
         }
 
         public ITokenGrantTypeSelector UseClientPrivateKeyAuth(string jwt, string clientId)
@@ -114,19 +106,21 @@ namespace SimpleIdentityServer.Client.Selectors
             }
 
             var requestBuilder = new RequestBuilder();
-            var tokenClient = _tokenClientFactory.CreateClient(requestBuilder);
-            var introspectClient = _introspectClientFactory.CreateClient(requestBuilder);
-            var tokenGrantTypeSelector = new TokenGrantTypeSelector(requestBuilder, tokenClient, introspectClient);
             requestBuilder.SetClientAssertion(clientId, jwt, Core.Common.ClientAssertionTypes.JwtBearer);
-            return tokenGrantTypeSelector;
+            return GetTokenGrantTypeSelector(requestBuilder);
         }
 
         public ITokenGrantTypeSelector UseNoAuthentication()
         {
-            var requestBuilder = new RequestBuilder();
+            return GetTokenGrantTypeSelector(new RequestBuilder());
+        }
+
+        private ITokenGrantTypeSelector GetTokenGrantTypeSelector(RequestBuilder requestBuilder)
+        {
             var tokenClient = _tokenClientFactory.CreateClient(requestBuilder);
             var introspectClient = _introspectClientFactory.CreateClient(requestBuilder);
-            return new TokenGrantTypeSelector(requestBuilder, tokenClient, introspectClient);
+            var revokeTokenClient = _revokeTokenClientFactory.CreateClient(requestBuilder);
+            return new TokenGrantTypeSelector(requestBuilder, tokenClient, introspectClient, revokeTokenClient);
         }
 
         private static string GetAuthorizationValue(string clientId, string clientSecret)

@@ -122,13 +122,14 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
         {
             return new Domain.GrantedToken
             {
+                Id = grantedToken.Id,
                 AccessToken = grantedToken.AccessToken,
                 ClientId = grantedToken.ClientId,
                 CreateDateTime = grantedToken.CreateDateTime,
                 ExpiresIn = grantedToken.ExpiresIn,
                 RefreshToken = grantedToken.RefreshToken,
                 Scope = grantedToken.Scope,
-                ParentRefreshToken = grantedToken.ParentRefreshToken,
+                ParentTokenId = grantedToken.ParentTokenId,
                 IdTokenPayLoad = string.IsNullOrWhiteSpace(grantedToken.IdTokenPayLoad) ? null : grantedToken.IdTokenPayLoad.DeserializeWithJavascript<JwsPayload>(),
                 UserInfoPayLoad = string.IsNullOrWhiteSpace(grantedToken.UserInfoPayLoad) ? null : grantedToken.UserInfoPayLoad.DeserializeWithJavascript<JwsPayload>()
             };

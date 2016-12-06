@@ -84,11 +84,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             return GetTokenByRefreshTokenAsync(refreshToken).Result;
         }
 
-        public GrantedToken GetToken(
-            string scopes,
-            string clientId,
-            JwsPayload idTokenJwsPayload,
-            JwsPayload userInfoJwsPayload)
+        public GrantedToken GetToken(string scopes, string clientId, JwsPayload idTokenJwsPayload, JwsPayload userInfoJwsPayload)
         {
             var grantedTokens = _context.GrantedTokens.Where(g => g.Scope == scopes && g.ClientId == clientId)
                 .ToList();
@@ -154,7 +150,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                         ExpiresIn = grantedToken.ExpiresIn,
                         RefreshToken = grantedToken.RefreshToken,
                         Scope = string.Join(" ",grantedToken.Scope),
-                        ParentRefreshToken = grantedToken.ParentRefreshToken,
+                        ParentTokenId = grantedToken.ParentTokenId,
                         IdTokenPayLoad = grantedToken.IdTokenPayLoad == null ? string.Empty : grantedToken.IdTokenPayLoad.SerializeWithJavascript(),
                         UserInfoPayLoad = grantedToken.UserInfoPayLoad == null ? string.Empty : grantedToken.UserInfoPayLoad.SerializeWithJavascript()
                     };
@@ -207,7 +203,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             {
                 try
                 {
-                    var token = _context.GrantedTokens.FirstOrDefault(g => g.AccessToken == grantedToken.AccessToken);
+                    var token = _context.GrantedTokens.Include(g => g.Children).FirstOrDefault(g => g.AccessToken == grantedToken.AccessToken);
                     _context.GrantedTokens.Remove(token);
                     await _context.SaveChangesAsync();
                     transaction.Commit();
@@ -244,16 +240,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             }
 
             return true;
-        }
-
-        private void AddGrantedTokenChildren(List<GrantedToken> result, string refreshToken)
-        {
-            var grantedTokens = _context.GrantedTokens.Where(g => g.ParentRefreshToken == refreshToken).ToList();
-            foreach (var grantedToken in grantedTokens)
-            {
-                result.Add(grantedToken.ToDomain());
-                AddGrantedTokenChildren(result, grantedToken.RefreshToken);
-            }
         }
 
         private static bool CompareJwsPayload(JwsPayload firstJwsPayload, JwsPayload secondJwsPayload)

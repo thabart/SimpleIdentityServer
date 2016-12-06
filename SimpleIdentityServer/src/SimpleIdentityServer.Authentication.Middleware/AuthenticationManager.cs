@@ -112,7 +112,7 @@ namespace SimpleIdentityServer.Authentication.Middleware
                 return _simpleIdServerConfigurationClientFactory.GetAuthProviderClient()
                     .GetAuthProvidersByResolving(authenticationOptions.ConfigurationEdp.ConfigurationUrl, t.AccessToken);
             };
-            Func<Task<GrantedToken>> getAccessTokenCb = () => _identityServerClientFactory.CreateTokenClient()
+            Func<Task<GrantedToken>> getAccessTokenCb = () => _identityServerClientFactory.CreateAuthSelector()
                     .UseClientSecretPostAuth(authenticationOptions.ConfigurationEdp.ClientId, authenticationOptions.ConfigurationEdp.ClientSecret)
                     .UseClientCredentials(authenticationOptions.ConfigurationEdp.Scopes.ToArray())
                     .ResolveAsync(url + "/.well-known/openid-configuration");

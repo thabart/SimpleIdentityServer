@@ -113,7 +113,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             };
             var child = new GrantedToken
             {
-                ParentRefreshToken = "refresh_token",
+                ParentTokenId = "refresh_token",
                 AccessToken = "access_token_child"
             };
             var parameter = new RevokeTokenParameter

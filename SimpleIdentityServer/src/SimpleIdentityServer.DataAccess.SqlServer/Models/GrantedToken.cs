@@ -39,7 +39,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Models
         /// Gets or sets the identity token payload
         /// </summary>
         public string IdTokenPayLoad { get; set; }
-        public string ParentRefreshToken { get; set; }
+        public string ParentTokenId { get; set; }
         public virtual GrantedToken Parent { get; set; }
         public virtual IList<GrantedToken> Children { get; set; }
     }

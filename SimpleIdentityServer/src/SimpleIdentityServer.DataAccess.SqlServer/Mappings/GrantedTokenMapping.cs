@@ -30,7 +30,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
             modelBuilder.Entity<GrantedToken>()
                 .HasMany(g => g.Children)
                 .WithOne(g => g.Parent)
-                .HasForeignKey(g => g.ParentRefreshToken)
+                .HasForeignKey(g => g.ParentTokenId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

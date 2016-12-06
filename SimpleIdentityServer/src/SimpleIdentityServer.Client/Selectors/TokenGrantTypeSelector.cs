@@ -30,6 +30,7 @@ namespace SimpleIdentityServer.Client.Selectors
         ITokenClient UsePassword(string userName, string password, List<string> scopes);
         ITokenClient UseRefreshToken(string refreshToken);
         IIntrospectClient Introspect(string token, TokenType tokenType);
+        IRevokeTokenClient RevokeToken(string token, TokenType tokenType);
     }
 
     internal class TokenGrantTypeSelector : ITokenGrantTypeSelector
@@ -37,12 +38,14 @@ namespace SimpleIdentityServer.Client.Selectors
         private readonly RequestBuilder _requestBuilder;
         private readonly ITokenClient _tokenClient;
         private readonly IIntrospectClient _introspectClient;
+        private readonly IRevokeTokenClient _revokeTokenClient;
         
-        public TokenGrantTypeSelector(RequestBuilder requestBuilder, ITokenClient tokenClient, IIntrospectClient introspectClient)
+        public TokenGrantTypeSelector(RequestBuilder requestBuilder, ITokenClient tokenClient, IIntrospectClient introspectClient, IRevokeTokenClient revokeTokenClient)
         {
             _requestBuilder = requestBuilder;
             _tokenClient = tokenClient;
             _introspectClient = introspectClient;
+            _revokeTokenClient = revokeTokenClient;
         }
         
         public ITokenClient UseClientCredentials(params string[] scopes)
@@ -123,6 +126,18 @@ namespace SimpleIdentityServer.Client.Selectors
             _requestBuilder.Content.Add(IntrospectionRequestNames.Token, token);
             _requestBuilder.Content.Add(IntrospectionRequestNames.TokenTypeHint, tokenType == TokenType.RefreshToken ? TokenTypes.RefreshToken : TokenTypes.AccessToken);
             return _introspectClient;
+        }
+
+        public IRevokeTokenClient RevokeToken(string token, TokenType tokenType)
+        {
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                throw new ArgumentNullException(nameof(token));
+            }
+
+            _requestBuilder.Content.Add(IntrospectionRequestNames.Token, token);
+            _requestBuilder.Content.Add(IntrospectionRequestNames.TokenTypeHint, tokenType == TokenType.RefreshToken ? TokenTypes.RefreshToken : TokenTypes.AccessToken);
+            return _revokeTokenClient;
         }
 
         private static string ConcatScopes(List<string> scopes)

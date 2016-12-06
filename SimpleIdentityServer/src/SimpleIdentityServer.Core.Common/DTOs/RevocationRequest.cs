@@ -25,13 +25,13 @@ namespace SimpleIdentityServer.Core.Common.DTOs
         public string Token { get; set; }
         [DataMember(Name = RevocationRequestNames.TokenTypeHint)]
         public string TokenTypeHint { get; set; }
-        [DataMember(Name = RevocationRequestNames.ClientId)]
+        [DataMember(Name = ClientAuthNames.ClientId)]
         public string ClientId { get; set; }
-        [DataMember(Name = RevocationRequestNames.ClientSecret)]
+        [DataMember(Name = ClientAuthNames.ClientSecret)]
         public string ClientSecret { get; set; }
-        [DataMember(Name = RevocationRequestNames.ClientAssertionType)]
+        [DataMember(Name = ClientAuthNames.ClientAssertionType)]
         public string ClientAssertionType { get; set; }
-        [DataMember(Name = RevocationRequestNames.ClientAssertion)]
+        [DataMember(Name = ClientAuthNames.ClientAssertion)]
         public string ClientAssertion { get; set; }
     }
 }
