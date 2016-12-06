@@ -199,13 +199,13 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                 throw new ArgumentNullException(nameof(grantedToken));
             }
 
-            using (var transaction = await _context.Database.BeginTransactionAsync(IsolationLevel.RepeatableRead))
+            using (var transaction = await _context.Database.BeginTransactionAsync(IsolationLevel.RepeatableRead).ConfigureAwait(false))
             {
                 try
                 {
                     var token = _context.GrantedTokens.Include(g => g.Children).FirstOrDefault(g => g.AccessToken == grantedToken.AccessToken);
                     _context.GrantedTokens.Remove(token);
-                    await _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
                     transaction.Commit();
                 }
                 catch (Exception ex)

@@ -25,20 +25,15 @@ namespace SimpleIdentityServer.Client
     public interface IJwksClient
     {
         JsonWebKeySet Execute(string jwksUrl);
-
         JsonWebKeySet Execute(Uri jwksUri);
-
         Task<JsonWebKeySet> ExecuteAsync(string jwksUrl);
-
         Task<JsonWebKeySet> ExecuteAsync(Uri jwksUri);
-
         Task<JsonWebKeySet> ResolveAsync(string configurationUrl);
     }
 
     internal class JwksClient : IJwksClient
     {
         private readonly IGetJsonWebKeysOperation _getJsonWebKeysOperation;
-
         private readonly IGetDiscoveryOperation _getDiscoveryOperation;
 
         #region Constructor

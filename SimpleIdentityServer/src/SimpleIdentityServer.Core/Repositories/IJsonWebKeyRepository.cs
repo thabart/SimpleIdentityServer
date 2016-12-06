@@ -16,24 +16,18 @@
 
 using System.Collections.Generic;
 using SimpleIdentityServer.Core.Jwt;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Repositories
 {
     public interface IJsonWebKeyRepository
     {
         IList<JsonWebKey> GetAll();
-
-        IList<JsonWebKey> GetByAlgorithm(
-            Use use, 
-            AllAlg algorithm, 
-            KeyOperations[] operations);
-
+        Task<IList<JsonWebKey>> GetAllAsync();
+        IList<JsonWebKey> GetByAlgorithm(Use use, AllAlg algorithm, KeyOperations[] operations);
         JsonWebKey GetByKid(string kid);
-
-        bool Delete(Jwt.JsonWebKey jsonWebKey);
-
-        bool Insert(Jwt.JsonWebKey jsonWebKey);
-
-        bool Update(Jwt.JsonWebKey jsonWebKey);
+        bool Delete(JsonWebKey jsonWebKey);
+        bool Insert(JsonWebKey jsonWebKey);
+        bool Update(JsonWebKey jsonWebKey);
     }
 }

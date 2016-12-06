@@ -20,12 +20,13 @@ using System.Linq;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Repositories;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Jwks.Actions
 {
     public interface IGetSetOfPublicKeysUsedToValidateJwsAction
     {
-        List<Dictionary<string, object>> Execute();
+        Task<List<Dictionary<string, object>>> Execute();
     }
 
     public class GetSetOfPublicKeysUsedToValidateJwsAction : IGetSetOfPublicKeysUsedToValidateJwsAction
@@ -40,10 +41,10 @@ namespace SimpleIdentityServer.Core.Api.Jwks.Actions
             _jsonWebKeyEnricher = jsonWebKeyEnricher;
         }
 
-        public List<Dictionary<string, object>> Execute()
+        public async Task<List<Dictionary<string, object>>> Execute()
         {
             var result = new List<Dictionary<string, object>>();
-            var jsonWebKeys = _jsonWebKeyRepository.GetAll();
+            var jsonWebKeys = await _jsonWebKeyRepository.GetAllAsync();
             // Retrieve all the JWK used by the client to check the signature.
             var jsonWebKeysUsedForSignature = jsonWebKeys.Where(jwk => jwk.Use == Use.Sig && jwk.KeyOps.Contains(KeyOperations.Verify));
             foreach (var jsonWebKey in jsonWebKeysUsedForSignature)

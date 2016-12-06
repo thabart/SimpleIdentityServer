@@ -2,6 +2,7 @@
 using SimpleIdentityServer.Core.Api.Jwks;
 using SimpleIdentityServer.Core.Api.Jwks.Actions;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Jwks
@@ -17,7 +18,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Jwks
         private IJwksActions _jwksActions;
 
         [Fact]
-        public void When_Retrieving_Jwks_Then_Set_Of_Private_And_Public_Keys_Are_Returned()
+        public async Task When_Retrieving_Jwks_Then_Set_Of_Private_And_Public_Keys_Are_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -25,12 +26,12 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Jwks
             var privateKeys = new List<Dictionary<string, object>>();
 
             _getSetOfPublicKeysUsedToValidateJwsActionStub.Setup(g => g.Execute())
-                .Returns(publicKeys);
+                .Returns(Task.FromResult(publicKeys));
             _getSetOfPublicKeysUsedByTheClientToEncryptJwsTokenActionStub.Setup(g => g.Execute())
-                .Returns(privateKeys);
+                .Returns(Task.FromResult(privateKeys));
 
             // ACT
-            var result = _jwksActions.GetJwks();
+            var result = await _jwksActions.GetJwks();
 
             // ASSERT
             Assert.NotNull(result);

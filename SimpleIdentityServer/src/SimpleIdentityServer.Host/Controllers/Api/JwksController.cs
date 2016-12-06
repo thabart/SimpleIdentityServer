@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Core.Api.Jwks;
 using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Host;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Api.Controllers.Api
 {
@@ -32,10 +33,9 @@ namespace SimpleIdentityServer.Api.Controllers.Api
         }
 
         [HttpGet]
-        public JsonWebKeySet Get()
+        public async Task<JsonWebKeySet> Get()
         {
-            var jsonWebKeySet = _jwksActions.GetJwks();
-            return jsonWebKeySet;
+            return await _jwksActions.GetJwks();
         }
 
         [HttpPut]

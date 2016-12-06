@@ -17,13 +17,13 @@
 using System.Collections.Generic;
 using SimpleIdentityServer.Core.Api.Jwks.Actions;
 using SimpleIdentityServer.Core.Common.DTOs;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Jwks
 {
     public interface IJwksActions
     {
-        JsonWebKeySet GetJwks();
-
+        Task<JsonWebKeySet> GetJwks();
         bool RotateJwks();
     }
 
@@ -47,10 +47,10 @@ namespace SimpleIdentityServer.Core.Api.Jwks
             _rotateJsonWebKeysOperation = rotateJsonWebKeysOperation;
         }
 
-        public JsonWebKeySet GetJwks()
+        public async Task<JsonWebKeySet> GetJwks()
         {
-            var publicKeysUsedToValidateSignature = _getSetOfPublicKeysUsedToValidateJwsAction.Execute();
-            var publicKeysUsedForClientEncryption = _getSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction.Execute();
+            var publicKeysUsedToValidateSignature = await _getSetOfPublicKeysUsedToValidateJwsAction.Execute();
+            var publicKeysUsedForClientEncryption = await _getSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction.Execute();
             var result = new JsonWebKeySet
             {
                 Keys = new List<Dictionary<string, object>>()

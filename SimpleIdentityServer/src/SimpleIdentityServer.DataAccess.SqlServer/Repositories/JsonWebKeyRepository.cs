@@ -22,6 +22,8 @@ using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
 
 using Jwt = SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Logging;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 {
@@ -41,8 +43,12 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
         
         public IList<Jwt.JsonWebKey> GetAll()
         {
-                var jsonWebKeys = _context.JsonWebKeys.ToList();
-                return jsonWebKeys.Select(j => j.ToDomain()).ToList();
+            return GetAllAsync().Result;
+        }
+
+        public async Task<IList<Jwt.JsonWebKey>> GetAllAsync()
+        {
+            return await _context.JsonWebKeys.Select(s => s.ToDomain()).ToListAsync().ConfigureAwait(false);
         }
 
         public IList<Jwt.JsonWebKey> GetByAlgorithm(
