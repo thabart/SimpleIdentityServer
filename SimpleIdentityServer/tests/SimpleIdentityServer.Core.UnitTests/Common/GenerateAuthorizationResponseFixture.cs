@@ -56,7 +56,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAuthorizationResponse.ExecuteAsync(null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAuthorizationResponse.ExecuteAsync(null, null, null, null));
         }
 
         [Fact]
@@ -70,11 +70,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             };
             
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAuthorizationResponse.ExecuteAsync(redirectInstruction, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAuthorizationResponse.ExecuteAsync(redirectInstruction, null, null, null));
         }
 
         [Fact]
-        public void When_There_Is_No_Logged_User_Then_Exception_Is_Throw()
+        public async Task When_There_Is_No_Logged_User_Then_Exception_Is_Throw()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -84,12 +84,26 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             };
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(
-                () => _generateAuthorizationResponse.Execute(redirectInstruction, new AuthorizationParameter(), null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAuthorizationResponse.ExecuteAsync(redirectInstruction, new AuthorizationParameter(), null, null));
         }
 
         [Fact]
-        public void When_Generating_AuthorizationResponse_With_IdToken_Then_IdToken_Is_Added_To_The_Parameters()
+        public async Task When_No_Client_Is_Passed_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var redirectInstruction = new ActionResult
+            {
+                RedirectInstruction = new RedirectInstruction()
+            };
+            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity("fake"));
+
+            // ACT & ASSERT
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAuthorizationResponse.ExecuteAsync(redirectInstruction, new AuthorizationParameter(), claimsPrincipal, null));
+        }
+
+        [Fact]
+        public async Task When_Generating_AuthorizationResponse_With_IdToken_Then_IdToken_Is_Added_To_The_Parameters()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -119,7 +133,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 .Returns(idToken);
 
             // ACT
-            _generateAuthorizationResponse.Execute(actionResult, authorizationParameter, claimsPrincipal);
+            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client());
 
             // ASSERT
             Assert.True(actionResult.RedirectInstruction.Parameters.Any(p => p.Name == Constants.StandardAuthorizationResponseNames.IdTokenName));
@@ -127,7 +141,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
         }
 
         [Fact]
-        public void When_Generating_AuthorizationResponse_With_AccessToken_And_ThereIs_No_Granted_Token_Then_Token_Is_Generated_And_Added_To_The_Parameters()
+        public async Task When_Generating_AuthorizationResponse_With_AccessToken_And_ThereIs_No_Granted_Token_Then_Token_Is_Generated_And_Added_To_The_Parameters()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -176,7 +190,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 .Returns(grantedToken);
 
             // ACT
-            _generateAuthorizationResponse.Execute(actionResult, authorizationParameter, claimsPrincipal);
+            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client());
 
             // ASSERTS
             Assert.True(actionResult.RedirectInstruction.Parameters.Any(p => p.Name == Core.Constants.StandardAuthorizationResponseNames.AccessTokenName));
@@ -186,7 +200,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
         }
 
         [Fact]
-        public void When_Generating_AuthorizationResponse_With_AccessToken_And_ThereIs_A_GrantedToken_Then_Token_Is_Added_To_The_Parameters()
+        public async Task When_Generating_AuthorizationResponse_With_AccessToken_And_ThereIs_A_GrantedToken_Then_Token_Is_Added_To_The_Parameters()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -230,7 +244,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 .Returns(() => grantedToken);
 
             // ACT
-            _generateAuthorizationResponse.Execute(actionResult, authorizationParameter, claimsPrincipal);
+            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client());
 
             // ASSERTS
             Assert.True(actionResult.RedirectInstruction.Parameters.Any(p => p.Name == Core.Constants.StandardAuthorizationResponseNames.AccessTokenName));
@@ -238,7 +252,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
         }
 
         [Fact]
-        public void When_Generating_AuthorizationResponse_With_AuthorizationCode_Then_Code_Is_Added_To_The_Parameters()
+        public async Task When_Generating_AuthorizationResponse_With_AuthorizationCode_Then_Code_Is_Added_To_The_Parameters()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -275,7 +289,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 .Returns(consent);
 
             // ACT
-            _generateAuthorizationResponse.Execute(actionResult, authorizationParameter, claimsPrincipal);
+            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client());
 
             // ASSERTS
             Assert.True(actionResult.RedirectInstruction.Parameters.Any(p => p.Name == Core.Constants.StandardAuthorizationResponseNames.AuthorizationCodeName));
@@ -284,7 +298,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
         }
 
         [Fact]
-        public void When_An_Authorization_Response_Is_Generated_Then_Events_Are_Logged()
+        public async Task When_An_Authorization_Response_Is_Generated_Then_Events_Are_Logged()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -325,7 +339,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 .Returns(idToken);
 
             // ACT
-            _generateAuthorizationResponse.Execute(actionResult, authorizationParameter, claimsPrincipal);
+            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client());
 
             // ASSERT
             _simpleIdentityServerEventSource.Verify(s => s.StartGeneratingAuthorizationResponseToClient(clientId, responseType));
@@ -333,7 +347,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
         }
 
         [Fact]
-        public void When_Redirecting_To_Callback_And_There_Is_No_Response_Mode_Specified_Then_The_Response_Mode_Is_Set()
+        public async Task When_Redirecting_To_Callback_And_There_Is_No_Response_Mode_Specified_Then_The_Response_Mode_Is_Set()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -379,7 +393,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 .Returns(AuthorizationFlow.ImplicitFlow);
 
             // ACT
-            _generateAuthorizationResponse.Execute(actionResult, authorizationParameter, claimsPrincipal);
+            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client());
 
             // ASSERT
             Assert.True(actionResult.RedirectInstruction.ResponseMode == ResponseMode.fragment);

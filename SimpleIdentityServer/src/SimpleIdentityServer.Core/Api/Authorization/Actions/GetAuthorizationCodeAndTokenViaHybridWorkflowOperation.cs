@@ -100,8 +100,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
                         authorizationParameter.State);
                 }
 
-                _generateAuthorizationResponse.Execute(result, authorizationParameter,
-                    claimsPrincipal, client);
+                _generateAuthorizationResponse.Execute(result, authorizationParameter, claimsPrincipal, client);
             }
 
             var actionTypeName = Enum.GetName(typeof(TypeActionResult), result.Type);

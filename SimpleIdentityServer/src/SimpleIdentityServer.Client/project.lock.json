@@ -72,9 +72,6 @@
           "lib/net45/_._": {}
         }
       },
-      "System.Collections.Specialized/4.0.1": {
-        "type": "package"
-      },
       "System.ComponentModel/4.0.1": {
         "type": "package",
         "frameworkAssemblies": [
@@ -191,8 +188,7 @@
         "type": "project",
         "framework": ".NETFramework,Version=v4.5",
         "dependencies": {
-          "Newtonsoft.Json": "9.0.1",
-          "System.Collections.Specialized": "4.0.1"
+          "Newtonsoft.Json": "9.0.1"
         },
         "frameworkAssemblies": [
           "System.Runtime.Serialization",
@@ -318,19 +314,6 @@
         },
         "runtime": {
           "lib/net45/_._": {}
-        }
-      },
-      "System.Collections.Specialized/4.0.1": {
-        "type": "package",
-        "frameworkAssemblies": [
-          "System",
-          "mscorlib"
-        ],
-        "compile": {
-          "ref/net46/System.Collections.Specialized.dll": {}
-        },
-        "runtime": {
-          "lib/net46/System.Collections.Specialized.dll": {}
         }
       },
       "System.ComponentModel/4.0.1": {
@@ -464,8 +447,7 @@
         "framework": ".NETFramework,Version=v4.6",
         "dependencies": {
           "Microsoft.AspNetCore.Http.Features": "1.0.0",
-          "Newtonsoft.Json": "9.0.1",
-          "System.Collections.Specialized": "4.0.1"
+          "Newtonsoft.Json": "9.0.1"
         },
         "frameworkAssemblies": [
           "System.Runtime",
@@ -2242,7 +2224,7 @@
       ]
     },
     "runtime.native.System.Net.Http/4.0.1": {
-      "sha512": "Nh0UPZx2Vifh8r+J+H2jxifZUD3sBrmolgiFWJd2yiNrxO0xTa6bAw3YwRn1VOiSen/tUXMS31ttNItCZ6lKuA==",
+      "sha512": "ca8oLM6d3QzlVwzoqm+4hhgFgosxhs8AZMZvPTUIfO4B2VK5N6fi6+QPNbWOPKHW8Ue5Bm7ePWnnBzgcIFVfPw==",
       "type": "package",
       "path": "runtime.native.System.Net.Http/4.0.1",
       "files": [
@@ -4864,7 +4846,7 @@
       ]
     },
     "System.Security.Cryptography.Cng/4.2.0": {
-      "sha512": "cUJ2h+ZvONDe28Szw3st5dOHdjndhJzQ2WObDEXAWRPEQBtVItVoxbXM/OEsTthl3cNn2dk2k0I3y45igCQcLw==",
+      "sha512": "MvosdrBaNilM9HAB5BM1THLYvr7+RXeq2zBqA3rlZFqv8nEmJJiBoS4zwuqg7LrYEDIcEVWuWUMpckqJSJWXmQ==",
       "type": "package",
       "path": "System.Security.Cryptography.Cng/4.2.0",
       "files": [

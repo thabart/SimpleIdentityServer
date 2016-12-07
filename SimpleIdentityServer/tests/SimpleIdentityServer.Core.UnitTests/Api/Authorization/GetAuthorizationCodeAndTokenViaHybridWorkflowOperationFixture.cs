@@ -142,7 +142,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             _simpleIdentityServerEventSourceFake.Verify(s => s.StartHybridFlow(authorizationParameter.ClientId,
                 authorizationParameter.Scope,
                 string.Empty));
-            _generateAuthorizationResponseFake.Verify(g => g.Execute(actionResult, authorizationParameter, claimsPrincipal));
+            _generateAuthorizationResponseFake.Verify(g => g.Execute(actionResult, authorizationParameter, claimsPrincipal, It.IsAny<Client>()));
             _simpleIdentityServerEventSourceFake.Verify(s => s.EndHybridFlow(authorizationParameter.ClientId,
                 Enum.GetName(typeof(TypeActionResult), actionResult.Type),
                 Enum.GetName(typeof(IdentityServerEndPoints), actionResult.RedirectInstruction.Action)));

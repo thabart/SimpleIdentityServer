@@ -26,6 +26,7 @@ using SimpleIdentityServer.Core.Jwt.Mapping;
 using SimpleIdentityServer.Core.Jwt.Serializer;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Core.JwtToken;
+using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Services;
@@ -840,35 +841,14 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
         #region FillInOtherClaimsIdentityTokenPayload
 
         [Fact]
-        public void When_Passing_No_Payload_To_Procedure_FillInOtherClaimsIdentityTokenPayload_Then_Exception_Is_Thrown()
+        public void When_Passing_Null_Parameters_To_FillInOtherClaimsIdentityTokenPayload_Then_Exceptions_Are_Thrown()
         {
             // ARRANGE
             InitializeMockObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(null,
-                null,
-                null,
-                null));
-        }
-
-        [Fact]
-        public void When_Client_Doesnt_Exist_And_Trying_To_FillIn_Other_Claims_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeMockObjects();
-            var jwsPayload = new JwsPayload();
-            var authorizationParameter = new AuthorizationParameter
-            {
-                ClientId = "client_doesnt_exist"
-            };
-            _clientRepositoryStub.Setup(c => c.GetAll()).Returns(FakeOpenIdAssets.GetClients());
-
-            // ACT & ASSERT
-            Assert.Throws<InvalidOperationException>(() => _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(jwsPayload,
-                null,
-                null,
-                authorizationParameter));
+            Assert.Throws<ArgumentNullException>(() => _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(null, null, null, null, null));
+            Assert.Throws<ArgumentNullException>(() => _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(new JwsPayload(), null, null, null, null));
         }
 
         [Fact]
@@ -883,13 +863,9 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             {
                 ClientId = client.ClientId
             };
-            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>())).Returns(Task.FromResult(FakeOpenIdAssets.GetClients().First()));
 
             // ACT & ASSERT
-            _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(jwsPayload,
-                null,
-                null,
-                authorizationParameter);
+            _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(jwsPayload, null, null, authorizationParameter, new Client());
             Assert.False(jwsPayload.ContainsKey(Jwt.Constants.StandardClaimNames.AtHash));
             Assert.False(jwsPayload.ContainsKey(Jwt.Constants.StandardClaimNames.CHash));
         }
@@ -906,13 +882,9 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             {
                 ClientId = client.ClientId
             };
-            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>())).Returns(Task.FromResult(client));
 
             // ACT & ASSERT
-            _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(jwsPayload,
-                "authorization_code",
-                "access_token",
-                authorizationParameter);
+            _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(jwsPayload, "authorization_code", "access_token", authorizationParameter, client);
             Assert.True(jwsPayload.ContainsKey(Jwt.Constants.StandardClaimNames.AtHash));
             Assert.True(jwsPayload.ContainsKey(Jwt.Constants.StandardClaimNames.CHash));
         }
@@ -929,13 +901,9 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             {
                 ClientId = client.ClientId
             };
-            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>())).Returns(Task.FromResult(client));
 
             // ACT & ASSERT
-            _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(jwsPayload,
-                "authorization_code",
-                "access_token",
-                authorizationParameter);
+            _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(jwsPayload, "authorization_code", "access_token", authorizationParameter, client);
             Assert.True(jwsPayload.ContainsKey(Jwt.Constants.StandardClaimNames.AtHash));
             Assert.True(jwsPayload.ContainsKey(Jwt.Constants.StandardClaimNames.CHash));
         }
@@ -952,13 +920,9 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             {
                 ClientId = client.ClientId
             };
-            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>())).Returns(Task.FromResult(client));
 
             // ACT & ASSERT
-            _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(jwsPayload,
-                "authorization_code",
-                "access_token",
-                authorizationParameter);
+            _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(jwsPayload, "authorization_code", "access_token", authorizationParameter, client);
             Assert.True(jwsPayload.ContainsKey(Jwt.Constants.StandardClaimNames.AtHash));
             Assert.True(jwsPayload.ContainsKey(Jwt.Constants.StandardClaimNames.CHash));
         }
@@ -1007,9 +971,9 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             Assert.NotEmpty(jwe);
         }
 
-#endregion
+        #endregion
 
-#region Sign
+        #region Sign
 
         [Fact]
         public void When_Sign_Payload_Then_Jws_Is_Returned()
@@ -1049,7 +1013,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             Assert.NotEmpty(jws);
         }
 
-#endregion
+        #endregion
 
         private void InitializeMockObjects()
         {
