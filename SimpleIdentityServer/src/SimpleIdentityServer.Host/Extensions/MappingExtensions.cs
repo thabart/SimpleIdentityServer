@@ -21,13 +21,10 @@ using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
-using SimpleIdentityServer.Host.DTOs.Request;
 using SimpleIdentityServer.Host.DTOs.Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Display = SimpleIdentityServer.Host.DTOs.Request.Display;
-using ResponseMode = SimpleIdentityServer.Host.DTOs.Request.ResponseMode;
 
 namespace SimpleIdentityServer.Host.Extensions
 {
@@ -37,28 +34,28 @@ namespace SimpleIdentityServer.Host.Extensions
         {
             var result = new AuthorizationParameter
             {
-                AcrValues = request.acr_values,
-                ClientId = request.client_id,
-                Display = (Core.Parameters.Display)request.display,
-                IdTokenHint = request.id_token_hint,
-                LoginHint = request.login_hint,
-                MaxAge = request.max_age,
-                Nonce = request.nonce,
-                Prompt = request.prompt,
-                RedirectUrl = request.redirect_uri,
-                ResponseMode  = (Core.Parameters.ResponseMode)request.response_mode,
-                ResponseType = request.response_type,
-                Scope = request.scope,
-                State = request.state,
-                UiLocales = request.ui_locales
+                AcrValues = request.AcrValues,
+                ClientId = request.ClientId,
+                Display = (Core.Parameters.Display)request.Display,
+                IdTokenHint = request.IdTokenHint,
+                LoginHint = request.LoginHint,
+                MaxAge = request.MaxAge,
+                Nonce = request.Nonce,
+                Prompt = request.Prompt,
+                RedirectUrl = request.RedirectUri,
+                ResponseMode  = (Core.Parameters.ResponseMode)request.ResponseMode,
+                ResponseType = request.ResponseType,
+                Scope = request.Scope,
+                State = request.State,
+                UiLocales = request.UiLocales
             };
 
-            if (!string.IsNullOrWhiteSpace(request.claims))
+            if (!string.IsNullOrWhiteSpace(request.Claims))
             {
                 var claimsParameter = new ClaimsParameter();
                 result.Claims = claimsParameter;
 
-                var obj = JObject.Parse(request.claims);
+                var obj = JObject.Parse(request.Claims);
                 var idToken = obj.GetValue(Core.Constants.StandardClaimParameterNames.IdTokenName);
                 var userInfo = obj.GetValue(Core.Constants.StandardClaimParameterNames.UserInfoName);
                 if (idToken != null)
@@ -154,41 +151,41 @@ namespace SimpleIdentityServer.Host.Extensions
 
         public static AuthorizationRequest ToAuthorizationRequest(this JwsPayload jwsPayload)
         {
-            Display displayEnum;
-            ResponseMode responseModeEnum;
+            DisplayModes displayEnum;
+            ResponseModes responseModeEnum;
             var displayVal =
                 jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.DisplayName);
             var responseMode =
                 jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.ResponseModeName);
             if (string.IsNullOrWhiteSpace(displayVal) || !Enum.TryParse(displayVal, out displayEnum))
             {
-                displayEnum = Display.page;
+                displayEnum = DisplayModes.Page;
             }
 
             if (string.IsNullOrWhiteSpace(responseMode) || !Enum.TryParse(responseMode, out responseModeEnum))
             {
-                responseModeEnum = ResponseMode.None;
+                responseModeEnum = ResponseModes.None;
             }
 
             var result = new AuthorizationRequest
             {
-                acr_values = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.AcrValuesName),
-                claims = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.ClaimsName),
-                client_id = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.ClientIdName),
-                display = displayEnum,
-                prompt = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.PromptName),
-                id_token_hint = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.IdTokenHintName),
-                max_age = jwsPayload.GetDoubleClaim(Core.Constants.StandardAuthorizationRequestParameterNames.MaxAgeName),
-                nonce = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.NonceName),
-                response_type = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.ResponseTypeName),
-                state = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.StateName),
-                login_hint = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.LoginHintName),
-                redirect_uri = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.RedirectUriName),
-                request = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.RequestName),
-                request_uri = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.RequestUriName),
-                scope = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.ScopeName),
-                response_mode = responseModeEnum,
-                ui_locales = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.UiLocalesName),
+                AcrValues = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.AcrValuesName),
+                Claims = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.ClaimsName),
+                ClientId = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.ClientIdName),
+                Display = displayEnum,
+                Prompt = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.PromptName),
+                IdTokenHint= jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.IdTokenHintName),
+                MaxAge = jwsPayload.GetDoubleClaim(Core.Constants.StandardAuthorizationRequestParameterNames.MaxAgeName),
+                Nonce = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.NonceName),
+                ResponseType = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.ResponseTypeName),
+                State = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.StateName),
+                LoginHint = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.LoginHintName),
+                RedirectUri = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.RedirectUriName),
+                Request = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.RequestName),
+                RequestUri = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.RequestUriName),
+                Scope = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.ScopeName),
+                ResponseMode = responseModeEnum,
+                UiLocales = jwsPayload.GetClaimValue(Core.Constants.StandardAuthorizationRequestParameterNames.UiLocalesName),
             };
 
             return result;
@@ -199,55 +196,55 @@ namespace SimpleIdentityServer.Host.Extensions
             return new JwsPayload
             {
                 {
-                    Core.Constants.StandardAuthorizationRequestParameterNames.AcrValuesName, request.acr_values
+                    Core.Constants.StandardAuthorizationRequestParameterNames.AcrValuesName, request.AcrValues
                 },
                 {
-                    Core.Constants.StandardAuthorizationRequestParameterNames.ClaimsName, request.claims
+                    Core.Constants.StandardAuthorizationRequestParameterNames.ClaimsName, request.Claims
                 },
                 {
-                    Core.Constants.StandardAuthorizationRequestParameterNames.ClientIdName, request.client_id
+                    Core.Constants.StandardAuthorizationRequestParameterNames.ClientIdName, request.ClientId
                 },
                 {
-                    Core.Constants.StandardAuthorizationRequestParameterNames.DisplayName, Enum.GetName(typeof(Display), request.display)
+                    Core.Constants.StandardAuthorizationRequestParameterNames.DisplayName, Enum.GetName(typeof(Display), request.Display)
                 },
                 {
-                    Core.Constants.StandardAuthorizationRequestParameterNames.PromptName, request.prompt
+                    Core.Constants.StandardAuthorizationRequestParameterNames.PromptName, request.Prompt
                 },
                 {
-                    Core.Constants.StandardAuthorizationRequestParameterNames.IdTokenHintName, request.id_token_hint
+                    Core.Constants.StandardAuthorizationRequestParameterNames.IdTokenHintName, request.IdTokenHint
                 },
                 {
-                    Core.Constants.StandardAuthorizationRequestParameterNames.MaxAgeName, request.max_age
+                    Core.Constants.StandardAuthorizationRequestParameterNames.MaxAgeName, request.MaxAge
                 },
                 {
-                    Core.Constants.StandardAuthorizationRequestParameterNames.NonceName, request.nonce
+                    Core.Constants.StandardAuthorizationRequestParameterNames.NonceName, request.Nonce
                 },
                 {
-                    Core.Constants.StandardAuthorizationRequestParameterNames.ResponseTypeName, request.response_type
+                    Core.Constants.StandardAuthorizationRequestParameterNames.ResponseTypeName, request.ResponseType
                 },
                 {
-                    Core.Constants.StandardAuthorizationRequestParameterNames.StateName, request.state
+                    Core.Constants.StandardAuthorizationRequestParameterNames.StateName, request.State
                 },
                 {
-                    Core.Constants.StandardAuthorizationRequestParameterNames.LoginHintName, request.login_hint
+                    Core.Constants.StandardAuthorizationRequestParameterNames.LoginHintName, request.LoginHint
                 },
                 {
-                    Core.Constants.StandardAuthorizationRequestParameterNames.RedirectUriName, request.redirect_uri
+                    Core.Constants.StandardAuthorizationRequestParameterNames.RedirectUriName, request.RedirectUri
                 },
                 {
-                    Core.Constants.StandardAuthorizationRequestParameterNames.RequestName, request.request
+                    Core.Constants.StandardAuthorizationRequestParameterNames.RequestName, request.Request
                 },
                 {
-                    Core.Constants.StandardAuthorizationRequestParameterNames.RequestUriName, request.request_uri
+                    Core.Constants.StandardAuthorizationRequestParameterNames.RequestUriName, request.RequestUri
                 },
                 {
-                    Core.Constants.StandardAuthorizationRequestParameterNames.ScopeName, request.scope
+                    Core.Constants.StandardAuthorizationRequestParameterNames.ScopeName, request.Scope
                 },
                 {
-                    Core.Constants.StandardAuthorizationRequestParameterNames.ResponseModeName, Enum.GetName(typeof(ResponseMode), request.response_mode)
+                    Core.Constants.StandardAuthorizationRequestParameterNames.ResponseModeName, Enum.GetName(typeof(ResponseModes), request.ResponseMode)
                 },
                 {
-                    Core.Constants.StandardAuthorizationRequestParameterNames.UiLocalesName, request.ui_locales
+                    Core.Constants.StandardAuthorizationRequestParameterNames.UiLocalesName, request.UiLocales
                 }
             };
         }

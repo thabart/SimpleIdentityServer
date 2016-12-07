@@ -24,19 +24,29 @@
           "type": "build",
           "version": ""
         }
+      },
+      "dependencies": {
+        "Microsoft.AspNetCore.Http.Features": "1.0.0"
       }
     },
     "net45": {
       "frameworkAssemblies": {
         "System.Runtime.Serialization": "4.0.0.0",
         "System.Xml": "4.0.0.0"
+      },
+      "buildOptions": {
+        "define": [
+          "NET45"
+        ]
       }
     },
     "netstandard1.6": {
       "dependencies": {
         "System.IO": "4.1.0",
         "System.Runtime.Serialization.Json": "4.0.2",
-        "System.Runtime.Extensions": "4.1.0"
+        "System.Runtime.Extensions": "4.1.0",
+        "Microsoft.AspNetCore.Http.Features": "1.0.0",
+        "System.Collections.Specialized": "4.0.1"
       }
     }
   }

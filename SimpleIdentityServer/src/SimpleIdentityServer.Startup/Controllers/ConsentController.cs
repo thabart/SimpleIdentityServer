@@ -17,11 +17,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
+using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.Consent;
-using SimpleIdentityServer.Host.DTOs.Request;
 using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.Startup.ViewModels;
 using System.Collections.Generic;
@@ -66,7 +65,7 @@ namespace SimpleIdentityServer.Startup.Controllers
                 return result;
             }
 
-            TranslateConsentScreen(request.ui_locales);
+            TranslateConsentScreen(request.UiLocales);
             var viewModel = new ConsentViewModel
             {
                 ClientDisplayName = client.ClientName,
@@ -101,7 +100,7 @@ namespace SimpleIdentityServer.Startup.Controllers
         public ActionResult Cancel(string code)
         {
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
-            return Redirect(request.redirect_uri);
+            return Redirect(request.RedirectUri);
         }
 
         private void TranslateConsentScreen(string uiLocales)

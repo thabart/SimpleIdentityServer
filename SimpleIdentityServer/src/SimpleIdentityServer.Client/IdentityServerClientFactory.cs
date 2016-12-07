@@ -110,6 +110,7 @@ namespace SimpleIdentityServer.Client
             serviceCollection.AddTransient<IRegistrationClient, RegistrationClient>();
             serviceCollection.AddTransient<IIntrospectClient, IntrospectClient>();
             serviceCollection.AddTransient<IRevokeTokenClient, RevokeTokenClient>();
+            serviceCollection.AddTransient<IAuthorizationClient, AuthorizationClient>();
 
             // Register operations
             serviceCollection.AddTransient<IGetDiscoveryOperation, GetDiscoveryOperation>();
@@ -119,6 +120,7 @@ namespace SimpleIdentityServer.Client
             serviceCollection.AddTransient<IGetUserInfoOperation, GetUserInfoOperation>();
             serviceCollection.AddTransient<IIntrospectOperation, IntrospectOperation>();
             serviceCollection.AddTransient<IRevokeTokenOperation, RevokeTokenOperation>();
+            serviceCollection.AddTransient<IGetAuthorizationOperation, GetAuthorizationOperation>();
 
             // Register selectors
             serviceCollection.AddTransient<IClientAuthSelector, ClientAuthSelector>();

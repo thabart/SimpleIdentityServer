@@ -17,6 +17,8 @@
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Core.Api.Authorization;
+using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Core.Common.Serializers;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.JwtToken;
@@ -24,7 +26,6 @@ using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Host;
-using SimpleIdentityServer.Host.DTOs.Request;
 using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.Host.Parsers;
 using System;
@@ -59,18 +60,19 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             _authenticateOptions = authenticateOptions;
         }
 
-        #region Public methods
-
         [HttpGet]
-        public async Task<Microsoft.AspNetCore.Mvc.ActionResult> Get([FromQuery]AuthorizationRequest authorizationRequest)
+        public async Task<Microsoft.AspNetCore.Mvc.ActionResult> Get()
         {
-            if (authorizationRequest == null)
+            var query = Request.Query;
+            if (query == null)
             {
                 throw new IdentityServerException(
                     ErrorCodes.InvalidRequestCode,
                     ErrorDescriptions.RequestIsNotValid);
             }
 
+            var serializer = new ParamSerializer();
+            var authorizationRequest = serializer.Deserialize<AuthorizationRequest>(query);
             authorizationRequest = await ResolveAuthorizationRequest(authorizationRequest);
             var authenticatedUser = await this.GetAuthenticatedUser(_authenticateOptions.CookieName);
             var parameter = authorizationRequest.ToParameter();
@@ -80,7 +82,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
 
             if (actionResult.Type == TypeActionResult.RedirectToCallBackUrl)
             {
-                var redirectUrl = new Uri(authorizationRequest.redirect_uri);
+                var redirectUrl = new Uri(authorizationRequest.RedirectUri);
                 return this.CreateRedirectHttpTokenResponse(redirectUrl,
                     _actionResultParser.GetRedirectionParameters(actionResult), 
                     actionResult.RedirectInstruction.ResponseMode);
@@ -94,7 +96,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
                     // Force the resource owner to be reauthenticated
                     if (actionResult.RedirectInstruction.Action == IdentityServerEndPoints.AuthenticateIndex)
                     {
-                        authorizationRequest.prompt = Enum.GetName(typeof(PromptParameter), PromptParameter.login);
+                        authorizationRequest.Prompt = Enum.GetName(typeof(PromptParameter), PromptParameter.login);
                     }
 
                     // Add the encoded request into the query string
@@ -112,26 +114,17 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             return null;
         }
         
-        #endregion
-        
-        #region Private methods
-        
-        private AuthorizationRequest GetAuthorizationRequestFromJwt(string token,
-            string clientId)
+        private async Task<AuthorizationRequest> GetAuthorizationRequestFromJwt(string token, string clientId)
         {
             var jwsToken = token;
             if (_jwtParser.IsJweToken(token))
             {
-                jwsToken = _jwtParser.Decrypt(token, clientId);
+                jwsToken = await _jwtParser.DecryptAsync(token, clientId);
             }
 
-            var jwsPayload = _jwtParser.UnSign(jwsToken, clientId);
+            var jwsPayload = await _jwtParser.UnSignAsync(jwsToken, clientId);
             return jwsPayload == null ? null : jwsPayload.ToAuthorizationRequest();
         }
-        
-        #endregion
-        
-        #region Private static methods
         
         private static string GetRedirectionUrl(
             Microsoft.AspNetCore.Http.HttpRequest request,
@@ -151,25 +144,21 @@ namespace SimpleIdentityServer.Api.Controllers.Api
         /// <returns></returns>
         private async Task<AuthorizationRequest> ResolveAuthorizationRequest(AuthorizationRequest authorizationRequest)
         {
-            if (!string.IsNullOrWhiteSpace(authorizationRequest.request))
+            if (!string.IsNullOrWhiteSpace(authorizationRequest.Request))
             {
-                var result = GetAuthorizationRequestFromJwt(authorizationRequest.request,
-                    authorizationRequest.client_id);
+                var result = await GetAuthorizationRequestFromJwt(authorizationRequest.Request, authorizationRequest.ClientId);
                 if (result == null)
                 {
-                    throw new IdentityServerExceptionWithState(
-                        ErrorCodes.InvalidRequestCode,
-                        ErrorDescriptions.TheRequestParameterIsNotCorrect,
-                        authorizationRequest.state);
+                    throw new IdentityServerExceptionWithState(ErrorCodes.InvalidRequestCode, ErrorDescriptions.TheRequestParameterIsNotCorrect, authorizationRequest.State);
                 }
 
                 return result;
             }
 
-            if (!string.IsNullOrWhiteSpace(authorizationRequest.request_uri))
+            if (!string.IsNullOrWhiteSpace(authorizationRequest.RequestUri))
             {
                 Uri uri;
-                if (Uri.TryCreate(authorizationRequest.request_uri, UriKind.Absolute, out uri))
+                if (Uri.TryCreate(authorizationRequest.RequestUri, UriKind.Absolute, out uri))
                 {
                     try
                     {
@@ -181,13 +170,13 @@ namespace SimpleIdentityServer.Api.Controllers.Api
                         var httpResult = await httpClient.GetAsync(uri.AbsoluteUri);
                         httpResult.EnsureSuccessStatusCode();
                         var request = await httpResult.Content.ReadAsStringAsync();
-                        var result = GetAuthorizationRequestFromJwt(request, authorizationRequest.client_id);
+                        var result = await GetAuthorizationRequestFromJwt(request, authorizationRequest.ClientId);
                         if (result == null)
                         {
                             throw new IdentityServerExceptionWithState(
                                 ErrorCodes.InvalidRequestCode,
                                 ErrorDescriptions.TheRequestDownloadedFromRequestUriIsNotValid,
-                                authorizationRequest.state);
+                                authorizationRequest.State);
                         }
 
                         return result;
@@ -197,19 +186,17 @@ namespace SimpleIdentityServer.Api.Controllers.Api
                         throw new IdentityServerExceptionWithState(
                             ErrorCodes.InvalidRequestCode,
                             ErrorDescriptions.TheRequestDownloadedFromRequestUriIsNotValid,
-                            authorizationRequest.state);
+                            authorizationRequest.State);
                     }
                 }
 
                 throw new IdentityServerExceptionWithState(
                     ErrorCodes.InvalidRequestUriCode,
                     ErrorDescriptions.TheRequestUriParameterIsNotWellFormed,
-                    authorizationRequest.state);
+                    authorizationRequest.State);
             }
 
             return authorizationRequest;
         }
-        
-        #endregion
     }
 }

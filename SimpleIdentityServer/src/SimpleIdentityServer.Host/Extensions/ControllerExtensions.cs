@@ -17,8 +17,8 @@
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Results;
-using SimpleIdentityServer.Host.DTOs.Request;
 using SimpleIdentityServer.Host.Parsers;
 using System;
 using System.Security.Claims;
@@ -71,7 +71,7 @@ namespace SimpleIdentityServer.Host.Extensions
             if (actionResult.Type == TypeActionResult.RedirectToCallBackUrl)
             {
                 var parameters = actionResultParser.GetRedirectionParameters(actionResult);
-                var uri = new Uri(authorizationRequest.redirect_uri);
+                var uri = new Uri(authorizationRequest.RedirectUri);
                 var redirectUrl = controller.CreateRedirectHttp(uri, parameters, actionResult.RedirectInstruction.ResponseMode);
                 return new RedirectResult(redirectUrl);
             }

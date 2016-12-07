@@ -14,7 +14,6 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Authentication;
@@ -26,7 +25,6 @@ using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.Authenticate;
-using SimpleIdentityServer.Host.DTOs.Request;
 using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.Startup.ViewModels;
 using SimpleIdentityServer.Logging;
@@ -37,6 +35,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using SimpleIdentityServer.Startup.Extensions;
+using SimpleIdentityServer.Core.Common.DTOs;
 
 namespace SimpleIdentityServer.Startup.Controllers
 {
@@ -297,7 +296,7 @@ namespace SimpleIdentityServer.Startup.Controllers
                 return result;
             }
 
-            TranslateView(request.ui_locales);
+            TranslateView(request.UiLocales);
             var viewModel = new AuthorizeOpenIdViewModel
             {
                 Code = code
@@ -326,7 +325,7 @@ namespace SimpleIdentityServer.Startup.Controllers
                 var request = _dataProtector.Unprotect<AuthorizationRequest>(authorizeOpenId.Code);
                 
                 // 2. Retrieve the default language
-                uiLocales = string.IsNullOrWhiteSpace(request.ui_locales) ? DefaultLanguage : request.ui_locales;
+                uiLocales = string.IsNullOrWhiteSpace(request.UiLocales) ? DefaultLanguage : request.UiLocales;
                 
                 // 3. Check the state of the view model
                 if (!ModelState.IsValid)

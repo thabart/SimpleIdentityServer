@@ -14,7 +14,10 @@
 // limitations under the License.
 #endregion
 
+#if NET45
+#else
 using Microsoft.AspNetCore.Http;
+#endif
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Specialized;
@@ -24,7 +27,7 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace SimpleIdentityServer.Host.Serializers
+namespace SimpleIdentityServer.Core.Common.Serializers
 {
     public interface IParamSerializer
     {
@@ -53,10 +56,21 @@ namespace SimpleIdentityServer.Host.Serializers
             return Deserialize<T>(this.ConvertNameValueCollection(input));
         }
 
+#if NET45
+
+#else
+
         public T Deserialize<T>(IFormCollection form)
         {
             return Deserialize<T>(ConvertNameValueCollection(form));
         }
+
+        public T Deserialize<T>(IQueryCollection query)
+        {
+            return Deserialize<T>(ConvertNameValueCollection(query));
+        }
+
+#endif
 
         public object Deserialize(string input)
         {
@@ -242,7 +256,9 @@ namespace SimpleIdentityServer.Host.Serializers
 
             return output.ToString().TrimEnd(new[] { '&' });
         }
+#if NET45
 
+#else
         private string ConvertNameValueCollection(IFormCollection form)
         {
             var output = new StringBuilder();
@@ -257,5 +273,21 @@ namespace SimpleIdentityServer.Host.Serializers
 
             return output.ToString().TrimEnd(new[] { '&' });
         }
+
+        private string ConvertNameValueCollection(IQueryCollection query)
+        {
+            var output = new StringBuilder();
+            foreach (var key in query.Keys)
+            {
+                var values = query[key];
+                foreach (var value in values)
+                {
+                    output.AppendFormat("{0}={1}&", WebUtility.UrlEncode(key), WebUtility.UrlEncode(value));
+                }
+            }
+
+            return output.ToString().TrimEnd(new[] { '&' });
+        }
+#endif
     }
 }

@@ -522,6 +522,28 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                         ApplicationType = ApplicationTypes.web,
                         RedirectionUrls = "https://localhost:4200/callback",
                         JwksUri = "http://localhost:5000/jwks_client"
+                    },
+                    new DataAccess.SqlServer.Models.Client
+                    {
+                        ClientId = "implicit_client",
+                        ClientName = "implicit_client",
+                        ClientSecret = "implicit_client",
+                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
+                        LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
+                        PolicyUri = "http://openid.net",
+                        TosUri = "http://openid.net",
+                        ClientScopes = new List<ClientScope>
+                        {
+                            new ClientScope
+                            {
+                                ScopeName = "api1"
+                            }
+                        },
+                        GrantTypes = "1",
+                        ResponseTypes = "0,1,2",
+                        IdTokenSignedResponseAlg = "RS256",
+                        ApplicationType = ApplicationTypes.web,
+                        RedirectionUrls = "http://localhost:5000/callback"
                     }
                 });
             }

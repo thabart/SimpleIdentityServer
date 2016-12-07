@@ -98,6 +98,8 @@ namespace SimpleIdentityServer.Host.Tests
             var parts = mvc.PartManager.ApplicationParts;
             parts.Clear();
             parts.Add(new AssemblyPart(typeof(DiscoveryController).GetTypeInfo().Assembly));
+            // 5. Configure authentication.
+            services.AddAuthentication(opts => opts.SignInScheme = "SimpleIdServer");
             return services.BuildServiceProvider();
         }
 
@@ -113,9 +115,14 @@ namespace SimpleIdentityServer.Host.Tests
             app.UseCors("AllowAll");
             // 2. Use static files.
             app.UseStaticFiles();
-            // 3. Use simple identity server.
+            // 3. Use cookie authentication
+            app.UseCookieAuthentication(new CookieAuthenticationOptions
+            {
+                AuthenticationScheme = "SimpleIdServer"
+            });
+            // 4. Use simple identity server.
             app.UseSimpleIdentityServer(_options);
-            // 4. Client JWKS endpoint
+            // 5. Client JWKS endpoint
             app.Map("/jwks_client", a =>
             {
                 a.Run(async ctx =>

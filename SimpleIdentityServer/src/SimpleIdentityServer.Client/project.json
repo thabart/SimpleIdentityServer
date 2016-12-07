@@ -32,7 +32,7 @@
         "System.Runtime.Serialization": ""
       },
       "buildOptions": {
-        "define": ["NET"]
+        "define": ["NET", "NET45"]
       }
     },
     "netstandard1.6": {

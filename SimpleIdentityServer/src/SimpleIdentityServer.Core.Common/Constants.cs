@@ -150,4 +150,47 @@ namespace SimpleIdentityServer.Core.Common
         public const string Token = "token";
         public const string TokenTypeHint = "token_type_hint";
     }
+
+    public static class RequestAuthorizationCodeNames
+    {
+        public const string Scope = "scope";
+        public const string ResponseType = "response_type";
+        public const string RedirectUri = "redirect_uri";
+        public const string State = "state";
+        public const string ResponseMode = "response_mode";
+        public const string Nonce = "nonce";
+        public const string Display = "display";
+        public const string Prompt = "prompt";
+        public const string MaxAge = "max_age";
+        public const string UiLocales = "ui_locales";
+        public const string IdTokenHint = "id_token_hint";
+        public const string LoginHint = "login_hint";
+        public const string Claims = "claims";
+        public const string AcrValues = "acr_values";
+        public const string Request = "request";
+        public const string RequestUri = "request_uri";
+    }
+
+    public static class ResponseModeNames
+    {
+        public const string None = "none";
+        public const string Query = "query";
+        public const string Fragment = "fragment";
+        public const string FormPost = "form_post";
+    }
+
+    public static class ResponseTypeNames
+    {
+        public const string Code = "code";
+        public const string Token = "token";
+        public const string IdToken = "id_token";
+    }
+
+    public static class PageNames
+    {
+        public const string Page = "page";
+        public const string Popup = "popup";
+        public const string Touch = "touch";
+        public const string Wap = "wap";
+    }
 }
