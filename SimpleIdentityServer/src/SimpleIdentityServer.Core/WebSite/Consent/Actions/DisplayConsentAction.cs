@@ -112,7 +112,13 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
             
             allowedClaims = new List<string>();
             allowedScopes = new List<Scope>();
-            client = null;
+            client = _clientRepository.GetClientById(authorizationParameter.ClientId);
+            if (client == null)
+            {
+                throw new IdentityServerExceptionWithState(ErrorCodes.InvalidRequestCode,
+                    string.Format(ErrorDescriptions.ClientIsNotValid, authorizationParameter.ClientId),
+                    authorizationParameter.State);
+            }
 
             ActionResult actionResult;
             var subject = claimsPrincipal.GetSubject();
@@ -121,7 +127,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
             if (assignedConsent != null)
             {
                 actionResult = _actionResultFactory.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
-                _generateAuthorizationResponse.Execute(actionResult, authorizationParameter, claimsPrincipal);
+                _generateAuthorizationResponse.Execute(actionResult, authorizationParameter, claimsPrincipal, client);
                 var responseMode = authorizationParameter.ResponseMode;
                 if (responseMode == ResponseMode.None)
                 {
@@ -132,15 +138,6 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
 
                 actionResult.RedirectInstruction.ResponseMode = responseMode;
                 return actionResult;
-            }
-
-            // Redirect to the consent screen
-            client = _clientRepository.GetClientById(authorizationParameter.ClientId);
-            if (client == null)
-            {
-                throw new IdentityServerExceptionWithState(ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.ClientIsNotValid, authorizationParameter.ClientId),
-                    authorizationParameter.State);
             }
 
             var claimsParameter = authorizationParameter.Claims;

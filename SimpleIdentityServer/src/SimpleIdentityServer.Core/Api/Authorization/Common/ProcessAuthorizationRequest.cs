@@ -14,31 +14,31 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Helpers;
+using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
-using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Core.Services;
+using SimpleIdentityServer.Core.Validators;
+using SimpleIdentityServer.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Authorization.Common
 {
     public interface IProcessAuthorizationRequest
     {
-        ActionResult Process(
-            AuthorizationParameter authorizationParameter,
-            ClaimsPrincipal claimsPrincipal);
+        ActionResult Process(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Client client);
+        Task<ActionResult> ProcessAsync(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Client client);
     }
 
     public class ProcessAuthorizationRequest : IProcessAuthorizationRequest
@@ -72,20 +72,33 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
             _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
         }
 
-        public ActionResult Process(
-            AuthorizationParameter authorizationParameter, 
-            ClaimsPrincipal claimsPrincipal)
+        public ActionResult Process(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Client client)
+        {
+            return ProcessAsync(authorizationParameter, claimsPrincipal, client).Result;
+        }
+
+        public async Task<ActionResult> ProcessAsync(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Client client)
         {
             if (authorizationParameter == null)
             {
-                throw new ArgumentNullException("authorizationParameter");
+                throw new ArgumentNullException(nameof(authorizationParameter));
+            }
+
+            if (client == null)
+            {
+                throw new ArgumentNullException(nameof(client));
+            }
+
+            var endUserIsAuthenticated = IsAuthenticated(claimsPrincipal);
+            Consent confirmedConsent = null;
+            if (endUserIsAuthenticated)
+            {
+                confirmedConsent = await GetResourceOwnerConsent(claimsPrincipal, authorizationParameter);
             }
 
             var serializedAuthorizationParameter = authorizationParameter.SerializeWithJavascript();
             _simpleIdentityServerEventSource.StartProcessingAuthorizationRequest(serializedAuthorizationParameter);
-
             ActionResult result = null;
-            var endUserIsAuthenticated = IsAuthenticated(claimsPrincipal);
             var prompts = _parameterParserHelper.ParsePromptParameters(authorizationParameter.Prompt);
             if (prompts == null || !prompts.Any())
             {
@@ -96,9 +109,6 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
                 }
                 else
                 {
-                    var confirmedConsent = GetResourceOwnerConsent(
-                        claimsPrincipal,
-                        authorizationParameter);
                     if (confirmedConsent == null)
                     {
                         prompts.Add(PromptParameter.consent);
@@ -108,15 +118,6 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
                         prompts.Add(PromptParameter.none);
                     }
                 }
-            }
-
-            var client = _clientValidator.ValidateClientExist(authorizationParameter.ClientId);
-            if (client == null)
-            {
-                throw new IdentityServerExceptionWithState(
-                    ErrorCodes.InvalidClient,
-                    string.Format(ErrorDescriptions.ClientIsNotValid, authorizationParameter.ClientId),
-                    authorizationParameter.State);
             }
 
             var redirectionUrl = _clientValidator.ValidateRedirectionUrl(authorizationParameter.RedirectUrl, client);
@@ -189,7 +190,8 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
                 result = ProcessPromptParameters(
                     prompts,
                     claimsPrincipal,
-                    authorizationParameter);
+                    authorizationParameter,
+                    confirmedConsent);
 
                 ProcessIdTokenHint(result,
                     authorizationParameter,
@@ -283,17 +285,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
             }
         }
 
-        /// <summary>
-        /// Process the prompt authorizationParameter.
-        /// </summary>
-        /// <param name="prompts">Prompt authorizationParameter values</param>
-        /// <param name="principal">User's claims</param>
-        /// <param name="authorizationParameter">Authorization code grant-type authorizationParameter</param>
-        /// <returns>The action result interpreted by the controller</returns>
-        private ActionResult ProcessPromptParameters(
-            ICollection<PromptParameter> prompts,
-            ClaimsPrincipal principal,
-            AuthorizationParameter authorizationParameter)
+        private ActionResult ProcessPromptParameters(ICollection<PromptParameter> prompts, ClaimsPrincipal principal, AuthorizationParameter authorizationParameter, Consent confirmedConsent)
         {
             if (prompts == null || !prompts.Any())
             {
@@ -316,8 +308,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
                         ErrorDescriptions.TheUserNeedsToBeAuthenticated,
                         authorizationParameter.State);
                 }
-
-                var confirmedConsent = GetResourceOwnerConsent(principal, authorizationParameter);
+                
                 if (confirmedConsent == null)
                 {
                     throw new IdentityServerExceptionWithState(
@@ -359,12 +350,10 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
                 authorizationParameter.State);
         }
 
-        private Consent GetResourceOwnerConsent(
-            ClaimsPrincipal claimsPrincipal,
-            AuthorizationParameter authorizationParameter)
+        private async Task<Consent> GetResourceOwnerConsent(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter)
         {
             var subject = claimsPrincipal.GetSubject();
-            return _consentHelper.GetConsentConfirmedByResourceOwner(subject, authorizationParameter);
+            return await _consentHelper.GetConsentConfirmedByResourceOwnerAsync(subject, authorizationParameter);
         }
 
         private static bool IsAuthenticated(ClaimsPrincipal principal)

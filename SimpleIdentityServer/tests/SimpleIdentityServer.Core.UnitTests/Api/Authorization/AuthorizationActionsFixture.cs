@@ -26,6 +26,7 @@ using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
 using System.Collections.Generic;
 using System.Security.Principal;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
@@ -33,20 +34,13 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
     public sealed class AuthorizationActionsFixture
     {
         private Mock<IGetAuthorizationCodeOperation> _getAuthorizationCodeOperationFake;
-
         private Mock<IGetTokenViaImplicitWorkflowOperation> _getTokenViaImplicitWorkflowOperationFake;
-
         private Mock<IGetAuthorizationCodeAndTokenViaHybridWorkflowOperation>
             _getAuthorizationCodeAndTokenViaHybridWorkflowOperationFake;
-
         private Mock<IAuthorizationCodeGrantTypeParameterAuthEdpValidator> _authorizationCodeGrantTypeParameterAuthEdpValidatorFake;
-
         private Mock<IParameterParserHelper> _parameterParserHelperFake;
-
         private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSourceFake;
-
         private Mock<IAuthorizationFlowHelper> _authorizationFlowHelperFake;
-
         private IAuthorizationActions _authorizationActions;
 
         [Fact]
@@ -69,7 +63,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                     ResponseType.id_token
                 });
             _getTokenViaImplicitWorkflowOperationFake.Setup(g => g.Execute(It.IsAny<AuthorizationParameter>(),
-                It.IsAny<IPrincipal>())).Returns(actionResult);
+                It.IsAny<IPrincipal>(), It.IsAny<Client>())).Returns(actionResult);
             _authorizationFlowHelperFake.Setup(a => a.GetAuthorizationFlow(It.IsAny<ICollection<ResponseType>>(),
                 It.IsAny<string>()))
                 .Returns(AuthorizationFlow.ImplicitFlow);
@@ -117,7 +111,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                     ResponseType.id_token
                 });
             _getAuthorizationCodeOperationFake.Setup(g => g.Execute(It.IsAny<AuthorizationParameter>(),
-                It.IsAny<IPrincipal>())).Returns(actionResult);
+                It.IsAny<IPrincipal>(), It.IsAny<Client>())).Returns(Task.FromResult(actionResult));
             _authorizationFlowHelperFake.Setup(a => a.GetAuthorizationFlow(It.IsAny<ICollection<ResponseType>>(),
                 It.IsAny<string>()))
                 .Returns(AuthorizationFlow.AuthorizationCodeFlow);
@@ -165,7 +159,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                     ResponseType.id_token
                 });
             _getAuthorizationCodeAndTokenViaHybridWorkflowOperationFake.Setup(g => g.Execute(It.IsAny<AuthorizationParameter>(),
-                It.IsAny<IPrincipal>())).Returns(actionResult);
+                It.IsAny<IPrincipal>(), It.IsAny<Client>())).Returns(actionResult);
             _authorizationFlowHelperFake.Setup(a => a.GetAuthorizationFlow(It.IsAny<ICollection<ResponseType>>(),
                 It.IsAny<string>()))
                 .Returns(AuthorizationFlow.HybridFlow);

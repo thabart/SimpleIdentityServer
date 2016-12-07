@@ -28,15 +28,14 @@ using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Logging;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Common
 {
     public interface IGenerateAuthorizationResponse
     {
-        void Execute(
-            ActionResult actionResult,
-            AuthorizationParameter authorizationParameter,
-            ClaimsPrincipal claimsPrincipal);
+        void Execute(ActionResult actionResult, AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Client client);
+        Task ExecuteAsync(ActionResult actionResult, AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Client client);
     }
 
     public class GenerateAuthorizationResponse : IGenerateAuthorizationResponse
@@ -78,25 +77,31 @@ namespace SimpleIdentityServer.Core.Common
 
         #region Public methods
 
-        public void Execute(
-            ActionResult actionResult, 
-            AuthorizationParameter authorizationParameter,
-            ClaimsPrincipal claimsPrincipal)
+        public void Execute(ActionResult actionResult, AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Client client)
+        {
+            ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, client).Wait();
+        }
+
+        public async Task ExecuteAsync(ActionResult actionResult, AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Client client)
         {
             if (actionResult == null || actionResult.RedirectInstruction == null)
             {
-                throw new ArgumentNullException("actionResult");
+                throw new ArgumentNullException(nameof(actionResult));
             }
-
-
+;
             if (authorizationParameter == null)
             {
-                throw new ArgumentNullException("authorizationParameter");    
+                throw new ArgumentNullException(nameof(authorizationParameter));
             }
 
             if (claimsPrincipal == null)
             {
-                throw new ArgumentNullException("claimsPrincipal");
+                throw new ArgumentNullException(nameof(claimsPrincipal));
+            }
+
+            if (client == null)
+            {
+                throw new ArgumentNullException(nameof(client));
             }
 
             var newAccessTokenGranted = false;
@@ -104,14 +109,11 @@ namespace SimpleIdentityServer.Core.Common
             GrantedToken grantedToken = null;
             var newAuthorizationCodeGranted = false;
             AuthorizationCode authorizationCode = null;
-
             _simpleIdentityServerEventSource.StartGeneratingAuthorizationResponseToClient(authorizationParameter.ClientId,
                 authorizationParameter.ResponseType);
-
             var responses = _parameterParserHelper.ParseResponseType(authorizationParameter.ResponseType);
-            var idTokenPayload = GenerateIdTokenPayload(claimsPrincipal, authorizationParameter);
-            var userInformationPayload = GenerateUserInformationPayload(claimsPrincipal, authorizationParameter);
-
+            var idTokenPayload = await GenerateIdTokenPayload(claimsPrincipal, authorizationParameter);
+            var userInformationPayload = await GenerateUserInformationPayload(claimsPrincipal, authorizationParameter);
             if (responses.Contains(ResponseType.token))
             {
                 if (!string.IsNullOrWhiteSpace(authorizationParameter.Scope))
@@ -137,8 +139,8 @@ namespace SimpleIdentityServer.Core.Common
 
                     newAccessTokenGranted = true;
                 }
-                
-                actionResult.RedirectInstruction.AddParameter(Constants.StandardAuthorizationResponseNames.AccessTokenName, 
+
+                actionResult.RedirectInstruction.AddParameter(Constants.StandardAuthorizationResponseNames.AccessTokenName,
                     grantedToken.AccessToken);
             }
 
@@ -160,7 +162,7 @@ namespace SimpleIdentityServer.Core.Common
                         IdTokenPayload = idTokenPayload,
                         UserInfoPayLoad = userInformationPayload
                     };
-                    
+
                     newAuthorizationCodeGranted = true;
                     actionResult.RedirectInstruction.AddParameter(Constants.StandardAuthorizationResponseNames.AuthorizationCodeName,
                         authorizationCode.Code);
@@ -170,7 +172,7 @@ namespace SimpleIdentityServer.Core.Common
             _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(idTokenPayload,
                 authorizationCode == null ? string.Empty : authorizationCode.Code,
                 grantedToken == null ? string.Empty : grantedToken.AccessToken,
-                authorizationParameter);
+                authorizationParameter, client);
 
             if (newAccessTokenGranted)
             {
@@ -245,22 +247,19 @@ namespace SimpleIdentityServer.Core.Common
                 jwsPayload);
         }
 
-        private JwsPayload GenerateIdTokenPayload(
+        private async Task<JwsPayload> GenerateIdTokenPayload(
             ClaimsPrincipal claimsPrincipal,
             AuthorizationParameter authorizationParameter)
         {
             JwsPayload jwsPayload;
-            if (authorizationParameter.Claims != null &&
+            if (authorizationParameter.Claims != null && 
                 authorizationParameter.Claims.IsAnyIdentityTokenClaimParameter())
             {
-                jwsPayload = _jwtGenerator.GenerateFilteredIdTokenPayload(
-                    claimsPrincipal,
-                    authorizationParameter,
-                    Clone(authorizationParameter.Claims.IdToken));
+                jwsPayload = await _jwtGenerator.GenerateFilteredIdTokenPayloadAsync(claimsPrincipal, authorizationParameter, Clone(authorizationParameter.Claims.IdToken));
             }
             else
             {
-                jwsPayload = _jwtGenerator.GenerateIdTokenPayloadForScopes(claimsPrincipal, authorizationParameter);
+                jwsPayload = await _jwtGenerator.GenerateIdTokenPayloadForScopesAsync(claimsPrincipal, authorizationParameter);
             }
 
             return jwsPayload;
@@ -274,9 +273,7 @@ namespace SimpleIdentityServer.Core.Common
         /// <param name="claimsPrincipal"></param>
         /// <param name="authorizationParameter"></param>
         /// <returns></returns>
-        private JwsPayload GenerateUserInformationPayload(
-            ClaimsPrincipal claimsPrincipal,
-            AuthorizationParameter authorizationParameter)
+        private async Task<JwsPayload> GenerateUserInformationPayload(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter)
         {
             JwsPayload jwsPayload;
             if (authorizationParameter.Claims != null &&
@@ -289,7 +286,7 @@ namespace SimpleIdentityServer.Core.Common
             }
             else
             {
-                jwsPayload = _jwtGenerator.GenerateUserInfoPayloadForScope(claimsPrincipal, authorizationParameter);
+                jwsPayload = await _jwtGenerator.GenerateUserInfoPayloadForScopeAsync(claimsPrincipal, authorizationParameter);
             }
 
             return jwsPayload;

@@ -24,7 +24,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
 {
     public interface IGetConsentsOperation
     {
-        List<Models.Consent> Execute(ClaimsPrincipal claimsPrincipal);
+        IEnumerable<Models.Consent> Execute(ClaimsPrincipal claimsPrincipal);
     }
 
     internal class GetConsentsOperation : IGetConsentsOperation
@@ -36,7 +36,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
             _consentRepository = consentRepository;
         }
         
-        public List<Models.Consent> Execute(ClaimsPrincipal claimsPrincipal)
+        public IEnumerable<Models.Consent> Execute(ClaimsPrincipal claimsPrincipal)
         {
             if (claimsPrincipal == null ||
                 claimsPrincipal.Identity == null)

@@ -22,6 +22,7 @@ using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
 using Domains = SimpleIdentityServer.Core.Models;
 using Microsoft.EntityFrameworkCore;
 using SimpleIdentityServer.Logging;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 {
@@ -101,6 +102,26 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                 .Where(c => c.ScopeName == name)
                 .ToList();
             return result.ToDomain();
+        }
+
+        public IEnumerable<Domains.Scope> SearchScopeByNames(IEnumerable<string> names)
+        {
+            return SearchScopeByNamesAsync(names).Result;
+        }
+
+        public async Task<IEnumerable<Domains.Scope>> SearchScopeByNamesAsync(IEnumerable<string> names)
+        {
+            if (names == null)
+            {
+                throw new ArgumentNullException(nameof(names));
+            }
+
+            return await _context.Scopes
+                .Include(s => s.ScopeClaims).ThenInclude(c => c.Claim)
+                .Where(s => names.Contains(s.Name))
+                .Select(s => s.ToDomain())
+                .ToListAsync()
+                .ConfigureAwait(false);
         }
 
         public IList<Domains.Scope> GetAllScopes()

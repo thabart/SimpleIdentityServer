@@ -71,9 +71,9 @@ namespace SimpleIdentityServer.Core.Common.DTOs
 
         public AuthorizationRequest() { }
 
-        public AuthorizationRequest(string scope, IEnumerable<ResponseTypes> responseTypes, string clientId, string redirectUri, string state)
+        public AuthorizationRequest(IEnumerable<string> scopes, IEnumerable<ResponseTypes> responseTypes, string clientId, string redirectUri, string state)
         {
-            Scope = scope;
+            Scope = string.Join(" ", scopes);
             ResponseType = string.Join(" ", responseTypes.Select(s => _mappingResponseTypesToNames[s]));
             ClientId = clientId;
             RedirectUri = redirectUri;

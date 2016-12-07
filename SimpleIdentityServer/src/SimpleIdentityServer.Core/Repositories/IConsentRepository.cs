@@ -16,15 +16,15 @@
 
 using SimpleIdentityServer.Core.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Repositories
 {
     public interface IConsentRepository
     {
-        List<Consent> GetConsentsForGivenUser(string subject);
-
+        IEnumerable<Consent> GetConsentsForGivenUser(string subject);
+        Task<IEnumerable<Consent>> GetConsentsForGivenUserAsync(string subject);
         Consent InsertConsent(Consent record);
-
         bool DeleteConsent(Consent record);
     }
 }

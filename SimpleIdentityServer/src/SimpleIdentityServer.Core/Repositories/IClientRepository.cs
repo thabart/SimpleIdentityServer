@@ -25,7 +25,8 @@ namespace SimpleIdentityServer.Core.Repositories
         Task<Models.Client> GetClientByIdAsync(string clientId);
         bool InsertClient(Models.Client client);
         bool DeleteClient(Models.Client client);
-        IList<Models.Client> GetAll();
+        IEnumerable<Models.Client> GetAll();
+        Task<IEnumerable<Models.Client>> GetAllAsync();
         bool UpdateClient(Models.Client client);
         bool RemoveAll();
     }

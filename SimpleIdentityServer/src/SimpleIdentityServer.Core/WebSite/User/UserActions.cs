@@ -23,14 +23,10 @@ namespace SimpleIdentityServer.Core.WebSite.User
 {
     public interface IUserActions
     {
-        List<Models.Consent> GetConsents(ClaimsPrincipal claimsPrincipal);
-
+        IEnumerable<Models.Consent> GetConsents(ClaimsPrincipal claimsPrincipal);
         bool DeleteConsent(string consentId);
-
         Models.ResourceOwner GetUser(ClaimsPrincipal claimsPrincipal);
-
         void UpdateUser(UpdateUserParameter updateUserParameter);
-
         void ConfirmUser(ClaimsPrincipal claimsPrincipal);
     }
 
@@ -62,7 +58,7 @@ namespace SimpleIdentityServer.Core.WebSite.User
 
         #region Public methods
 
-        public List<Models.Consent> GetConsents(ClaimsPrincipal claimsPrincipal)
+        public IEnumerable<Models.Consent> GetConsents(ClaimsPrincipal claimsPrincipal)
         {
             return _getConsentsOperation.Execute(claimsPrincipal);
         }

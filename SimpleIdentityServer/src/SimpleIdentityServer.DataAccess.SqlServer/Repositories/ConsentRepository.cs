@@ -22,54 +22,41 @@ using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
 using SimpleIdentityServer.DataAccess.SqlServer.Models;
 using Microsoft.EntityFrameworkCore;
 using SimpleIdentityServer.Logging;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 {
     public sealed class ConsentRepository : IConsentRepository
     {
         private readonly SimpleIdentityServerContext _context;
-        private readonly IResourceOwnerRepository _resourceOwnerRepository;
         private readonly IManagerEventSource _managerEventSource;
 
-        public ConsentRepository(
-            SimpleIdentityServerContext context,
-            IResourceOwnerRepository resourceOwnerRepository,
-            IManagerEventSource managerEventSource)
+        public ConsentRepository(SimpleIdentityServerContext context, IManagerEventSource managerEventSource)
         {
             _context = context;
-            _resourceOwnerRepository = resourceOwnerRepository;
             _managerEventSource = managerEventSource;
         }
 
-        public List<Core.Models.Consent> GetConsentsForGivenUser(string subject)
+        public IEnumerable<Core.Models.Consent> GetConsentsForGivenUser(string subject)
         {
-            var resourceOwner = _resourceOwnerRepository.GetByUniqueClaim(subject);
+            return GetConsentsForGivenUserAsync(subject).Result;
+        }
+
+        public async Task<IEnumerable<Core.Models.Consent>> GetConsentsForGivenUserAsync(string subject)
+        {
+            var resourceOwner = await _context.ResourceOwners
+                .Include(r => r.Claims).ThenInclude(c => c.Claim)
+                .Include(r => r.Consents).ThenInclude(c => c.ConsentScopes)
+                .Include(r => r.Consents).ThenInclude(c => c.ConsentClaims)
+                .Where(r => r.Claims.Any(c => c.Claim.IsIdentifier && c.Value == subject))
+                .FirstOrDefaultAsync()
+                .ConfigureAwait(false);
             if (resourceOwner == null)
             {
-                return new List<Core.Models.Consent>();
+                return null;
             }
 
-            var consents = _context.Consents
-                .Include(c => c.Client)
-                .Include(c => c.ResourceOwner)
-                .Where(c => c.ResourceOwner.Id == resourceOwner.Id)
-                .ToList();
-
-            foreach(var consent in consents)
-            {
-                var consentClaims = _context.ConsentClaims
-                   .Include(c => c.Claim)
-                   .Where(c => c.ConsentId == consent.Id)
-                   .ToList();
-                var consentScopes = _context.ConsentScopes
-                    .Include(c => c.Scope)
-                    .Where(c => c.ConsentId == consent.Id)
-                    .ToList();
-                consent.ConsentClaims = consentClaims;
-                consent.ConsentScopes = consentScopes;
-            }
-
-            return consents.Select(c => c.ToDomain()).ToList();
+            return resourceOwner.Consents.Select(c => c.ToDomain());;
         }
 
         public Core.Models.Consent InsertConsent(Core.Models.Consent record)

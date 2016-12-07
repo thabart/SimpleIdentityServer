@@ -20,40 +20,45 @@ using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Helpers
 {
     public interface IConsentHelper
     {
-        Consent GetConsentConfirmedByResourceOwner(
-            string subject,
-            AuthorizationParameter authorizationParameter);
+        Consent GetConsentConfirmedByResourceOwner(string subject, AuthorizationParameter authorizationParameter);
+        Task<Consent> GetConsentConfirmedByResourceOwnerAsync(string subject, AuthorizationParameter authorizationParameter);
     }
 
     public class ConsentHelper : IConsentHelper
     {
         private readonly IConsentRepository _consentRepository;
-
         private readonly IParameterParserHelper _parameterParserHelper;
 
-        public ConsentHelper(
-            IConsentRepository consentRepository,
-            IParameterParserHelper parameterParserHelper)
+        public ConsentHelper(IConsentRepository consentRepository, IParameterParserHelper parameterParserHelper)
         {
             _consentRepository = consentRepository;
             _parameterParserHelper = parameterParserHelper;
         }
 
-        public Consent GetConsentConfirmedByResourceOwner(
-            string subject,
-            AuthorizationParameter authorizationParameter)
+        public Consent GetConsentConfirmedByResourceOwner(string subject, AuthorizationParameter authorizationParameter)
         {
-            if (authorizationParameter == null)
+            return GetConsentConfirmedByResourceOwnerAsync(subject, authorizationParameter).Result;
+        }
+
+        public async Task<Consent> GetConsentConfirmedByResourceOwnerAsync(string subject, AuthorizationParameter authorizationParameter)
+        {
+            if (string.IsNullOrWhiteSpace(subject))
             {
-                throw new ArgumentNullException("authorizationParameter");
+                throw new ArgumentNullException(nameof(subject));
             }
 
-            var consents = _consentRepository.GetConsentsForGivenUser(subject);
+            if (authorizationParameter == null)
+            {
+                throw new ArgumentNullException(nameof(authorizationParameter));
+            }
+
+            var consents = await _consentRepository.GetConsentsForGivenUserAsync(subject);
             Consent confirmedConsent = null;
             if (consents != null && consents.Any())
             {

@@ -23,31 +23,24 @@ using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Authorization
 {
     public interface IAuthorizationActions
     {
-        ActionResult GetAuthorization(
-            AuthorizationParameter parameter,
-            IPrincipal claimsPrincipal);
+        Task<ActionResult> GetAuthorization(AuthorizationParameter parameter, IPrincipal claimsPrincipal);
     }
 
     public class AuthorizationActions : IAuthorizationActions
     {
         private readonly IGetAuthorizationCodeOperation _getAuthorizationCodeOperation;
-
         private readonly IGetTokenViaImplicitWorkflowOperation _getTokenViaImplicitWorkflowOperation;
-
         private readonly IGetAuthorizationCodeAndTokenViaHybridWorkflowOperation
             _getAuthorizationCodeAndTokenViaHybridWorkflowOperation;
-
         private readonly IAuthorizationCodeGrantTypeParameterAuthEdpValidator _authorizationCodeGrantTypeParameterValidator;
-
         private readonly IParameterParserHelper _parameterParserHelper;
-
         private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
-
         private readonly IAuthorizationFlowHelper _authorizationFlowHelper;
         
         public AuthorizationActions(
@@ -69,12 +62,9 @@ namespace SimpleIdentityServer.Core.Api.Authorization
             _authorizationFlowHelper = authorizationFlowHelper;
         }
 
-        public ActionResult GetAuthorization(
-            AuthorizationParameter parameter,
-            IPrincipal claimsPrincipal)
+        public async Task<ActionResult> GetAuthorization(AuthorizationParameter parameter, IPrincipal claimsPrincipal)
         {
-            _authorizationCodeGrantTypeParameterValidator.Validate(parameter);
-
+            var client = await _authorizationCodeGrantTypeParameterValidator.ValidateAsync(parameter);
             ActionResult actionResult = null;
             _simpleIdentityServerEventSource.StartAuthorization(parameter.ClientId,
                 parameter.ResponseType,
@@ -85,19 +75,13 @@ namespace SimpleIdentityServer.Core.Api.Authorization
             switch (authorizationFlow)
             {
                 case AuthorizationFlow.AuthorizationCodeFlow:
-                    actionResult = _getAuthorizationCodeOperation.Execute(
-                        parameter,
-                        claimsPrincipal);
+                    actionResult = await _getAuthorizationCodeOperation.Execute(parameter, claimsPrincipal, client);
                     break;
                 case AuthorizationFlow.ImplicitFlow:
-                    actionResult =  _getTokenViaImplicitWorkflowOperation.Execute(
-                        parameter,
-                        claimsPrincipal);
+                    actionResult =  _getTokenViaImplicitWorkflowOperation.Execute(parameter, claimsPrincipal, client);
                     break;
                 case AuthorizationFlow.HybridFlow:
-                    actionResult = _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(
-                        parameter,
-                        claimsPrincipal);
+                    actionResult = _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(parameter, claimsPrincipal, client);
                     break;
             }
 

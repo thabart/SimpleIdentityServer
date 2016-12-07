@@ -15,6 +15,7 @@
 #endregion
 
 using Newtonsoft.Json.Linq;
+using System;
 using System.Net;
 
 namespace SimpleIdentityServer.Client
@@ -23,5 +24,6 @@ namespace SimpleIdentityServer.Client
     {
         public JObject Content { get; set; }
         public HttpStatusCode StatusCode { get; set; }
+        public Uri Location { get; set; }
     }
 }

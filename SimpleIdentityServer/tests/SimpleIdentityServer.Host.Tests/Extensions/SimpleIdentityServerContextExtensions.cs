@@ -537,9 +537,13 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                             new ClientScope
                             {
                                 ScopeName = "api1"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "openid"
                             }
                         },
-                        GrantTypes = "1",
+                        GrantTypes = "0,1",
                         ResponseTypes = "0,1,2",
                         IdTokenSignedResponseAlg = "RS256",
                         ApplicationType = ApplicationTypes.web,

@@ -18,13 +18,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
     public class GetTokenViaImplicitWorkflowOperationFixture
     {
         private Mock<IProcessAuthorizationRequest> _processAuthorizationRequestFake;
-
         private Mock<IGenerateAuthorizationResponse> _generateAuthorizationResponseFake;
-
         private Mock<IClientValidator> _clientValidatorFake;
-
         private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSourceFake;
-
         private IGetTokenViaImplicitWorkflowOperation _getTokenViaImplicitWorkflowOperation;
 
         [Fact]
@@ -34,7 +30,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             InitializeFakeObjects();
             
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _getTokenViaImplicitWorkflowOperation.Execute(null, null));
+            Assert.Throws<ArgumentNullException>(() => _getTokenViaImplicitWorkflowOperation.Execute(null, null, null));
+            Assert.Throws<ArgumentNullException>(() => _getTokenViaImplicitWorkflowOperation.Execute(new AuthorizationParameter(), null, null));
         }
 
         [Fact]
@@ -48,7 +45,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             };
 
             // ACT & ASSERTS
-            var exception = Assert.Throws<IdentityServerExceptionWithState>(() => _getTokenViaImplicitWorkflowOperation.Execute(authorizationParameter, null));
+            var exception = Assert.Throws<IdentityServerExceptionWithState>(() => _getTokenViaImplicitWorkflowOperation.Execute(authorizationParameter, null, new Client()));
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.MissingParameter, Constants.StandardAuthorizationRequestParameterNames.NonceName));
             Assert.True(exception.State == authorizationParameter.State);
@@ -70,7 +67,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                 .Returns(false);
 
             // ACT & ASSERTS
-            var ex = Assert.Throws<IdentityServerExceptionWithState>(() => _getTokenViaImplicitWorkflowOperation.Execute(authorizationParameter, null));
+            var ex = Assert.Throws<IdentityServerExceptionWithState>(() => _getTokenViaImplicitWorkflowOperation.Execute(authorizationParameter, null, new Client()));
             Assert.True(ex.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(ex.Message == string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType,
                         authorizationParameter.ClientId,
@@ -103,13 +100,13 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             };
             var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity("fake"));
             _processAuthorizationRequestFake.Setup(p => p.Process(It.IsAny<AuthorizationParameter>(),
-                It.IsAny<ClaimsPrincipal>())).Returns(actionResult);
+                It.IsAny<ClaimsPrincipal>(), It.IsAny<Client>())).Returns(actionResult);
             _clientValidatorFake.Setup(c => c.ValidateGrantType(It.IsAny<GrantType>(),
                 It.IsAny<Models.Client>()))
                 .Returns(true);
 
             // ACT
-            _getTokenViaImplicitWorkflowOperation.Execute(authorizationParameter, claimsPrincipal);
+            _getTokenViaImplicitWorkflowOperation.Execute(authorizationParameter, claimsPrincipal, new Client());
 
             // ASSERTS
             _simpleIdentityServerEventSourceFake.Verify(s => s.StartImplicitFlow(clientId, scope, string.Empty));

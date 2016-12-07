@@ -6,6 +6,7 @@ using SimpleIdentityServer.Core.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Helpers
@@ -69,7 +70,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
                 },
                 ClientId = clientId
             };
-            var consents = new List<Consent>
+            IEnumerable<Consent> consents = new List<Consent>
             {
                 new Consent
                 {
@@ -84,8 +85,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
                 }
             };
 
-            _consentRepositoryFake.Setup(c => c.GetConsentsForGivenUser(It.IsAny<string>()))
-                .Returns(consents);
+            _consentRepositoryFake.Setup(c => c.GetConsentsForGivenUserAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(consents));
 
             // ACT
             var result = _consentHelper.GetConsentConfirmedByResourceOwner(subject,

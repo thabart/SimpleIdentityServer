@@ -31,45 +31,36 @@ using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Logging;
 using Xunit;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.UnitTests.Common
 {
     public sealed  class GenerateAuthorizationResponseFixture
     {
         private Mock<IAuthorizationCodeRepository> _authorizationCodeRepositoryFake;
-
         private Mock<IParameterParserHelper> _parameterParserHelperFake;
-
         private Mock<IJwtGenerator> _jwtGeneratorFake;
-
         private Mock<IGrantedTokenGeneratorHelper> _grantedTokenGeneratorHelperFake;
-
         private Mock<IGrantedTokenRepository> _grantedTokenRepositoryFake;
-
         private Mock<IConsentHelper> _consentHelperFake;
-
         private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSource;
-
-        private Mock<IAuthorizationFlowHelper> _authorizationFlowHelperFake;
-                
+        private Mock<IAuthorizationFlowHelper> _authorizationFlowHelperFake;                
         private Mock<IClientHelper> _clientHelperFake;
-
         private Mock<IGrantedTokenHelper> _grantedTokenHelperStub;
-
         private IGenerateAuthorizationResponse _generateAuthorizationResponse;
 
         [Fact]
-        public void When_Passing_No_Action_Result_Then_Exception_Is_Thrown()
+        public async Task When_Passing_No_Action_Result_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _generateAuthorizationResponse.Execute(null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAuthorizationResponse.ExecuteAsync(null, null, null));
         }
 
         [Fact]
-        public void When_Passing_No_Authorization_Request_Then_Exception_Is_Thrown()
+        public async Task When_Passing_No_Authorization_Request_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -79,7 +70,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             };
             
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _generateAuthorizationResponse.Execute(redirectInstruction, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAuthorizationResponse.ExecuteAsync(redirectInstruction, null, null));
         }
 
         [Fact]

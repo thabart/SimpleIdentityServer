@@ -76,7 +76,8 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Common
                 result = _actionResultFactory.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
                 var claimsIdentity = new ClaimsIdentity(claims, "simpleIdentityServer");
                 var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-                _generateAuthorizationResponse.Execute(result, authorizationParameter, claimsPrincipal);
+                //// TODO : Pass the client
+                _generateAuthorizationResponse.Execute(result, authorizationParameter, claimsPrincipal, null);
                 var responseMode = authorizationParameter.ResponseMode;
                 if (responseMode == ResponseMode.None)
                 {

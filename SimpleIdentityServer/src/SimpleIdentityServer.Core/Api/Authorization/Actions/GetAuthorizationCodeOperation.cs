@@ -26,24 +26,20 @@ using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Logging;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Authorization.Actions
 {
     public interface IGetAuthorizationCodeOperation
     {
-        ActionResult Execute(
-            AuthorizationParameter authorizationParameter, 
-            IPrincipal claimsPrincipal);
+        Task<ActionResult> Execute(AuthorizationParameter authorizationParameter, IPrincipal claimsPrincipal, Client client);
     }
 
     public class GetAuthorizationCodeOperation : IGetAuthorizationCodeOperation
     {
         private readonly IProcessAuthorizationRequest _processAuthorizationRequest;
-
-        private IClientValidator _clientValidator;
-
+        private readonly IClientValidator _clientValidator;
         private readonly IGenerateAuthorizationResponse _generateAuthorizationResponse;
-
         private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
 
         public GetAuthorizationCodeOperation(
@@ -58,24 +54,24 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
             _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
         }
 
-        public ActionResult Execute(
-            AuthorizationParameter authorizationParameter,
-            IPrincipal principal)
+        public async Task<ActionResult> Execute(AuthorizationParameter authorizationParameter, IPrincipal principal, Client client)
         {
             if (authorizationParameter == null)
             {
-                throw new ArgumentNullException("authorizationParameter");
+                throw new ArgumentNullException(nameof(authorizationParameter));
+            }
+
+            if (client == null)
+            {
+                throw new ArgumentNullException(nameof(client));
             }
 
             var claimsPrincipal = principal == null ? null : principal as ClaimsPrincipal;
-
             _simpleIdentityServerEventSource.StartAuthorizationCodeFlow(
                 authorizationParameter.ClientId,
                 authorizationParameter.Scope,
                 authorizationParameter.Claims == null ? string.Empty : authorizationParameter.Claims.ToString());
-            var result = _processAuthorizationRequest.Process(authorizationParameter,
-                claimsPrincipal);
-            var client = _clientValidator.ValidateClientExist(authorizationParameter.ClientId);
+            var result = await _processAuthorizationRequest.ProcessAsync(authorizationParameter, claimsPrincipal, client);
             if (!_clientValidator.ValidateGrantType(GrantType.authorization_code, client))
             {
                 throw new IdentityServerExceptionWithState(
@@ -96,8 +92,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
                         authorizationParameter.State);
                 }
 
-                _generateAuthorizationResponse.Execute(result, authorizationParameter,
-                    claimsPrincipal);
+                await _generateAuthorizationResponse.ExecuteAsync(result, authorizationParameter, claimsPrincipal, client);
             }
 
             var actionTypeName = Enum.GetName(typeof(TypeActionResult), result.Type);

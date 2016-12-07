@@ -44,12 +44,29 @@ namespace SimpleIdentityServer.Host.Tests
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
 
             // ACT
-            var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration", new AuthorizationRequest("api1", new[] { ResponseTypes.Code }, "implicit_client", "http://localhost:5000/invalid_callback", "state"));
+            var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration", new AuthorizationRequest(new[] { "openid", "api1" }, new[] { ResponseTypes.Code }, "implicit_client", "http://localhost:5000/invalid_callback", "state"));
 
             // ASSERTS
             Assert.NotNull(result);
             Assert.NotNull(result.Content);
             Assert.True(result.Content["error"].ToString() == "invalid_request");
+        }
+
+        [Fact]
+        public async Task When_Requesting_AuthorizationCode_Then_Code_Is_Returned()
+        {
+            const string baseUrl = "http://localhost:5000";
+            // ARRANGE
+            InitializeFakeObjects();
+            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
+            // ACT
+            var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration", 
+                new AuthorizationRequest(new [] { "openid", "api1" }, new[] { ResponseTypes.Code }, "implicit_client", "http://localhost:5000/callback", "state"));
+
+            // ASSERTS
+            Assert.NotNull(result);
+            Assert.NotNull(result.Location);
         }
 
         private void InitializeFakeObjects()

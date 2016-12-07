@@ -17,19 +17,18 @@
 using System.Collections.Generic;
 
 using SimpleIdentityServer.Core.Models;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Repositories
 {
     public interface IScopeRepository
     {
         bool InsertScope(Scope scope);
-
         Scope GetScopeByName(string name);
-
+        IEnumerable<Scope> SearchScopeByNames(IEnumerable<string> names);
+        Task<IEnumerable<Scope>> SearchScopeByNamesAsync(IEnumerable<string> names);
         IList<Scope> GetAllScopes();
-
         bool DeleteScope(Scope scope);
-
         bool UpdateScope(Scope scope);
     }
 }

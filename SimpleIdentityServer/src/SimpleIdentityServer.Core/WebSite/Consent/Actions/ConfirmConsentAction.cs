@@ -140,7 +140,8 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
             }
 
             var result = _actionResultFactory.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
-            _generateAuthorizationResponse.Execute(result, authorizationParameter, claimsPrincipal);
+            //// TODO : ADD CLIENT
+            _generateAuthorizationResponse.Execute(result, authorizationParameter, claimsPrincipal, null);
 
             // If redirect to the callback and the responde mode has not been set.
             if (result.Type == TypeActionResult.RedirectToCallBackUrl)

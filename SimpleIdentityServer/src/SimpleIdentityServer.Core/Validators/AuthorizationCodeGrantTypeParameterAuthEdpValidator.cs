@@ -21,29 +21,33 @@ using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Validators
 {
     public interface IAuthorizationCodeGrantTypeParameterAuthEdpValidator
     {
-        void Validate(AuthorizationParameter parameter);
+        Client Validate(AuthorizationParameter parameter);
+        Task<Client> ValidateAsync(AuthorizationParameter parameter);
     }
 
     public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidator : IAuthorizationCodeGrantTypeParameterAuthEdpValidator
     {
         private readonly IParameterParserHelper _parameterParserHelper;
-
         private readonly IClientValidator _clientValidator;
 
-        public AuthorizationCodeGrantTypeParameterAuthEdpValidator(
-            IParameterParserHelper parameterParserHelper,
-            IClientValidator clientValidator)
+        public AuthorizationCodeGrantTypeParameterAuthEdpValidator(IParameterParserHelper parameterParserHelper, IClientValidator clientValidator)
         {
             _parameterParserHelper = parameterParserHelper;
             _clientValidator = clientValidator;
         }
 
-        public void Validate(AuthorizationParameter parameter)
+        public Client Validate(AuthorizationParameter parameter)
+        {
+            return ValidateAsync(parameter).Result;
+        }
+
+        public async Task<Client> ValidateAsync(AuthorizationParameter parameter)
         {
             // Check the required parameters. Read this RFC : http://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
             if (string.IsNullOrWhiteSpace(parameter.Scope))
@@ -92,7 +96,7 @@ namespace SimpleIdentityServer.Core.Validators
                     parameter.State);
             }
 
-            var client = _clientValidator.ValidateClientExist(parameter.ClientId);
+            var client = await _clientValidator.ValidateClientExistAsync(parameter.ClientId);
             if (client == null)
             {
                 throw new IdentityServerExceptionWithState(
@@ -108,6 +112,8 @@ namespace SimpleIdentityServer.Core.Validators
                     string.Format(ErrorDescriptions.RedirectUrlIsNotValid, parameter.RedirectUrl),
                     parameter.State);
             }
+
+            return client;
         }
 
         /// <summary>

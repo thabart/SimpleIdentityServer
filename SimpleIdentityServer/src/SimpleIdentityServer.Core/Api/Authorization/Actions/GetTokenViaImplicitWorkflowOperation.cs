@@ -31,9 +31,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
 {
     public interface IGetTokenViaImplicitWorkflowOperation
     {
-        ActionResult Execute(
-            AuthorizationParameter authorizationParameter,
-            IPrincipal principal);
+        ActionResult Execute(AuthorizationParameter authorizationParameter, IPrincipal principal, Client client);
     }
 
     public class GetTokenViaImplicitWorkflowOperation : IGetTokenViaImplicitWorkflowOperation
@@ -58,13 +56,16 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
             _clientValidator = clientValidator;
         }
 
-        public ActionResult Execute(
-            AuthorizationParameter authorizationParameter,
-            IPrincipal principal)
+        public ActionResult Execute(AuthorizationParameter authorizationParameter, IPrincipal principal, Client client)
         {
             if (authorizationParameter == null)
             {
-                throw new ArgumentNullException("authorizationParameter");
+                throw new ArgumentNullException(nameof(authorizationParameter));
+            }
+
+            if (client == null)
+            {
+                throw new ArgumentNullException(nameof(client));
             }
 
             if (string.IsNullOrWhiteSpace(authorizationParameter.Nonce))
@@ -80,7 +81,6 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
                 authorizationParameter.Scope,
                 authorizationParameter.Claims == null ? string.Empty : authorizationParameter.Claims.ToString());
 
-            var client = _clientValidator.ValidateClientExist(authorizationParameter.ClientId);
             if (!_clientValidator.ValidateGrantType(GrantType.@implicit, client))
             {
                 throw new IdentityServerExceptionWithState(
@@ -91,14 +91,11 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
                     authorizationParameter.State);
             }
 
-            var result = _processAuthorizationRequest.Process(
-                authorizationParameter,
-                principal as ClaimsPrincipal);
-
+            var result = _processAuthorizationRequest.Process(authorizationParameter, principal as ClaimsPrincipal, client);
             if (result.Type == TypeActionResult.RedirectToCallBackUrl)
             {
                 var claimsPrincipal = principal as ClaimsPrincipal;
-                _generateAuthorizationResponse.Execute(result, authorizationParameter, claimsPrincipal);
+                _generateAuthorizationResponse.Execute(result, authorizationParameter, claimsPrincipal, client);
             }
             
             var actionTypeName = Enum.GetName(typeof(TypeActionResult), result.Type);

@@ -31,19 +31,14 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
 {
     public interface IGetAuthorizationCodeAndTokenViaHybridWorkflowOperation
     {
-        ActionResult Execute(
-            AuthorizationParameter authorizationParameter,
-            IPrincipal claimsPrincipal);
+        ActionResult Execute(AuthorizationParameter authorizationParameter, IPrincipal claimsPrincipal, Client client);
     }
 
     public sealed class GetAuthorizationCodeAndTokenViaHybridWorkflowOperation : IGetAuthorizationCodeAndTokenViaHybridWorkflowOperation
     {
         private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
-
         private readonly IProcessAuthorizationRequest _processAuthorizationRequest;
-
         private readonly IClientValidator _clientValidator;
-
         private readonly IGenerateAuthorizationResponse _generateAuthorizationResponse;
 
         public GetAuthorizationCodeAndTokenViaHybridWorkflowOperation(
@@ -58,13 +53,16 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
             _generateAuthorizationResponse = generateAuthorizationResponse;
         }
 
-        public ActionResult Execute(
-            AuthorizationParameter authorizationParameter,
-            IPrincipal principal)
+        public ActionResult Execute(AuthorizationParameter authorizationParameter, IPrincipal principal, Client client)
         {
             if (authorizationParameter == null)
             {
-                throw new ArgumentNullException("authorizationParameter");
+                throw new ArgumentNullException(nameof(authorizationParameter));
+            }
+
+            if (client == null)
+            {
+                throw new ArgumentNullException(nameof(client));
             }
 
             if (string.IsNullOrWhiteSpace(authorizationParameter.Nonce))
@@ -81,9 +79,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
                 authorizationParameter.ClientId,
                 authorizationParameter.Scope,
                 authorizationParameter.Claims == null ? string.Empty : authorizationParameter.Claims.ToString());
-            var result = _processAuthorizationRequest.Process(authorizationParameter,
-                claimsPrincipal);
-            var client = _clientValidator.ValidateClientExist(authorizationParameter.ClientId);
+            var result = _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal, client);
             if (!_clientValidator.ValidateGrantTypes(client, GrantType.@implicit, GrantType.authorization_code))
             {
                 throw new IdentityServerExceptionWithState(
@@ -105,7 +101,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
                 }
 
                 _generateAuthorizationResponse.Execute(result, authorizationParameter,
-                    claimsPrincipal);
+                    claimsPrincipal, client);
             }
 
             var actionTypeName = Enum.GetName(typeof(TypeActionResult), result.Type);

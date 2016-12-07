@@ -167,20 +167,19 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             return true;
         }
 
-        public IList<Core.Models.Client> GetAll()
+        public IEnumerable<Core.Models.Client> GetAll()
         {
-            var clients = _context.Clients
+            return GetAllAsync().Result;
+        }
+
+        public async Task<IEnumerable<Core.Models.Client>> GetAllAsync()
+        {
+            return await _context.Clients
                 .Include(c => c.JsonWebKeys)
-                .ToList();
-            foreach(var client in clients)
-            {
-                client.ClientScopes = _context.ClientScopes
-                    .Include(c => c.Scope)
-                    .Where(c => c.ClientId == client.ClientId)
-                    .ToList();
-            }
-            
-            return clients.Select(client => client.ToDomain()).ToList();
+                .Include(c => c.ClientScopes).ThenInclude(s => s.Scope)
+                .Select(c => c.ToDomain())
+                .ToListAsync()
+                .ConfigureAwait(false);
         }
 
         public bool DeleteClient(Core.Models.Client client)

@@ -63,6 +63,11 @@ namespace SimpleIdentityServer.Client.Operations
                 result.Content = JObject.Parse(json);
             }
 
+            if (response.Headers.Location != null)
+            {
+                result.Location = response.Headers.Location;
+            }
+
             return result;
         }
     }
