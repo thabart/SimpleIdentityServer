@@ -16,6 +16,7 @@ using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Errors;
 using System.Linq;
 using Xunit;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
 {
@@ -79,6 +80,8 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
                 ResponseMode = ResponseMode.fragment
             };
             var consent = new Core.Models.Consent();
+            _clientRepositoryFake.Setup(c => c.GetClientById(It.IsAny<string>()))
+                .Returns(new Client());
             _consentHelperFake.Setup(c => c.GetConsentConfirmedByResourceOwner(It.IsAny<string>(),
                 It.IsAny<AuthorizationParameter>()))
                 .Returns(consent);
@@ -117,6 +120,8 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
                 ResponseMode = ResponseMode.None // No response mode is defined
             };
             var consent = new Core.Models.Consent();
+            _clientRepositoryFake.Setup(c => c.GetClientById(It.IsAny<string>()))
+                .Returns(new Client());
             _consentHelperFake.Setup(c => c.GetConsentConfirmedByResourceOwner(It.IsAny<string>(),
                 It.IsAny<AuthorizationParameter>()))
                 .Returns(consent);

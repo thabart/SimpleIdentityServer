@@ -28,7 +28,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Fake
         /// Get a list of fake clients
         /// </summary>
         /// <returns></returns>
-        public static List<Models.Client> GetClients()
+        public static IEnumerable<Models.Client> GetClients()
         {
             return new List<Models.Client>
             {

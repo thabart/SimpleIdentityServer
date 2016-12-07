@@ -53,15 +53,15 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
         #region GeneratedIdTokenPayloadForScopes
 
         [Fact]
-        public void When_Passing_Null_Parameters_To_GenerateIdTokenPayloadForScopes_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_Parameters_To_GenerateIdTokenPayloadForScopes_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeMockObjects();
             var authorizationParameter = new AuthorizationParameter();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _jwtGenerator.GenerateIdTokenPayloadForScopes(null, null));
-            Assert.Throws<ArgumentNullException>(() => _jwtGenerator.GenerateIdTokenPayloadForScopes(null, authorizationParameter));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _jwtGenerator.GenerateIdTokenPayloadForScopesAsync(null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _jwtGenerator.GenerateIdTokenPayloadForScopesAsync(null, authorizationParameter));
         }
 
         [Fact]
@@ -98,7 +98,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
         }
 
         [Fact]
-        public void When_Requesting_IdentityToken_JwsPayload_And_NumberOfAudiencesIsMoreThanOne_Then_Azp_Should_Be_Returned()
+        public async Task When_Requesting_IdentityToken_JwsPayload_And_NumberOfAudiencesIsMoreThanOne_Then_Azp_Should_Be_Returned()
         {
             // ARRANGE
             InitializeMockObjects();
@@ -116,10 +116,10 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 ClientId = clientId
             };
             _simpleIdentityServerConfigurator.Setup(s => s.GetIssuerName()).Returns(issuerName);
-            _clientRepositoryStub.Setup(c => c.GetAll()).Returns(FakeOpenIdAssets.GetClients());
+            _clientRepositoryStub.Setup(c => c.GetAllAsync()).Returns(Task.FromResult(FakeOpenIdAssets.GetClients()));
 
             // ACT
-            var result = _jwtGenerator.GenerateIdTokenPayloadForScopes(
+            var result = await _jwtGenerator.GenerateIdTokenPayloadForScopesAsync(
                 claimsPrincipal,
                 authorizationParameter);
 
@@ -200,19 +200,19 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
         #region GenerateFilteredIdTokenPayload
 
         [Fact]
-        public void When_Passing_Null_Parameters_To_GenerateFilteredIdTokenPayload_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_Parameters_To_GenerateFilteredIdTokenPayload_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeMockObjects();
             var authorizationParameter = new AuthorizationParameter();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _jwtGenerator.GenerateFilteredIdTokenPayload(null, null, null));
-            Assert.Throws<ArgumentNullException>(() => _jwtGenerator.GenerateFilteredIdTokenPayload(null, authorizationParameter, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _jwtGenerator.GenerateFilteredIdTokenPayloadAsync(null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _jwtGenerator.GenerateFilteredIdTokenPayloadAsync(null, authorizationParameter, null));
         }
 
         [Fact]
-        public void When_Requesting_Identity_Token_And_Audiences_Is_Not_Correct_Then_Exception_Is_Thrown()
+        public async Task When_Requesting_Identity_Token_And_Audiences_Is_Not_Correct_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeMockObjects();
@@ -248,11 +248,10 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                     }
                 }
             };
-            _clientRepositoryStub.Setup(c => c.GetAll()).Returns(FakeOpenIdAssets.GetClients());
+            _clientRepositoryStub.Setup(c => c.GetAllAsync()).Returns(Task.FromResult(FakeOpenIdAssets.GetClients()));
 
             // ACT & ASSERT
-            var exception =
-                Assert.Throws<IdentityServerExceptionWithState>(() => _jwtGenerator.GenerateFilteredIdTokenPayload(
+            var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _jwtGenerator.GenerateFilteredIdTokenPayloadAsync(
                     claimsPrincipal,
                     authorizationParameter,
                     claimsParameter));
@@ -263,7 +262,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
         }
 
         [Fact]
-        public void When_Requesting_Identity_Token_And_Issuer_Claim_Is_Not_Correct_Then_Exception_Is_Thrown()
+        public async Task When_Requesting_Identity_Token_And_Issuer_Claim_Is_Not_Correct_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeMockObjects();
@@ -301,11 +300,10 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             };
             _simpleIdentityServerConfigurator.Setup(s => s.GetIssuerName())
                 .Returns("fake_issuer");
-            _clientRepositoryStub.Setup(c => c.GetAll()).Returns(FakeOpenIdAssets.GetClients());
+            _clientRepositoryStub.Setup(c => c.GetAllAsync()).Returns(Task.FromResult(FakeOpenIdAssets.GetClients()));
 
             // ACT & ASSERT
-            var exception =
-                Assert.Throws<IdentityServerExceptionWithState>(() => _jwtGenerator.GenerateFilteredIdTokenPayload(
+            var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _jwtGenerator.GenerateFilteredIdTokenPayloadAsync(
                     claimsPrincipal,
                     authorizationParameter,
                     claimsParameter));
@@ -316,7 +314,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
         }
 
         [Fact]
-        public void When_Requesting_Identity_Token_And_ExpirationTime_Is_Not_Correct_Then_Exception_Is_Thrown()
+        public async Task When_Requesting_Identity_Token_And_ExpirationTime_Is_Not_Correct_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeMockObjects();
@@ -352,11 +350,10 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                     }
                 }
             };
-            _clientRepositoryStub.Setup(c => c.GetAll()).Returns(FakeOpenIdAssets.GetClients());
+            _clientRepositoryStub.Setup(c => c.GetAllAsync()).Returns(Task.FromResult(FakeOpenIdAssets.GetClients()));
 
             // ACT & ASSERT
-            var exception =
-                Assert.Throws<IdentityServerExceptionWithState>(() => _jwtGenerator.GenerateFilteredIdTokenPayload(
+            var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _jwtGenerator.GenerateFilteredIdTokenPayloadAsync(
                     claimsPrincipal,
                     authorizationParameter,
                     claimsParameter));
@@ -367,7 +364,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
         }
 
         [Fact]
-        public void When_Requesting_IdentityToken_JwsPayload_And_PassingANotValidClaimValue_Then_An_Exception_Is_Thrown()
+        public async Task When_Requesting_IdentityToken_JwsPayload_And_PassingANotValidClaimValue_Then_An_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeMockObjects();
@@ -399,10 +396,10 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                     }
                 }
             };
-            _clientRepositoryStub.Setup(c => c.GetAll()).Returns(FakeOpenIdAssets.GetClients());
+            _clientRepositoryStub.Setup(c => c.GetAllAsync()).Returns(Task.FromResult(FakeOpenIdAssets.GetClients()));
 
             // ACT & ASSERTS
-            var result = Assert.Throws<IdentityServerExceptionWithState>(() => _jwtGenerator.GenerateFilteredIdTokenPayload(
+            var result = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _jwtGenerator.GenerateFilteredIdTokenPayloadAsync(
                 claimsPrincipal,
                 authorizationParameter,
                 claimsParameter));
@@ -412,7 +409,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
         }
 
         [Fact]
-        public void When_Requesting_IdentityToken_JwsPayload_And_Pass_AuthTime_As_ClaimEssential_Then_TheJwsPayload_Contains_AuthenticationTime()
+        public async Task When_Requesting_IdentityToken_JwsPayload_And_Pass_AuthTime_As_ClaimEssential_Then_TheJwsPayload_Contains_AuthenticationTime()
         {
             // ARRANGE
             InitializeMockObjects();
@@ -479,10 +476,10 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                     }
                 }
             };
-            _clientRepositoryStub.Setup(c => c.GetAll()).Returns(FakeOpenIdAssets.GetClients());
+            _clientRepositoryStub.Setup(c => c.GetAllAsync()).Returns(Task.FromResult(FakeOpenIdAssets.GetClients()));
 
             // ACT
-            var result = _jwtGenerator.GenerateFilteredIdTokenPayload(
+            var result = await _jwtGenerator.GenerateFilteredIdTokenPayloadAsync(
                 claimsPrincipal,
                 authorizationParameter,
                 claimsParameter);
@@ -503,19 +500,19 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
         #region GenerateUserInfoPayloadForScope
 
         [Fact]
-        public void When_Passing_Null_Parameters_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_Parameters_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeMockObjects();
             var authorizationParameter = new AuthorizationParameter();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _jwtGenerator.GenerateUserInfoPayloadForScope(null, null));
-            Assert.Throws<ArgumentNullException>(() => _jwtGenerator.GenerateUserInfoPayloadForScope(null, authorizationParameter));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _jwtGenerator.GenerateUserInfoPayloadForScopeAsync(null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _jwtGenerator.GenerateUserInfoPayloadForScopeAsync(null, authorizationParameter));
         }
 
         [Fact]
-        public void When_Requesting_UserInformation_JwsPayload_For_Scopes_Then_The_JwsPayload_Is_Correct()
+        public async Task When_Requesting_UserInformation_JwsPayload_For_Scopes_Then_The_JwsPayload_Is_Correct()
         {
             // ARRANGE
             InitializeMockObjects();
@@ -528,19 +525,16 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             };
             var claimIdentity = new ClaimsIdentity(claims, "fake");
             var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
-
             var authorizationParameter = new AuthorizationParameter
             {
                 Scope = "profile"
             };
-            _clientRepositoryStub.Setup(c => c.GetAll()).Returns(FakeOpenIdAssets.GetClients());
-            _scopeRepositoryStub.Setup(s => s.GetScopeByName(It.IsAny<string>()))
-                .Returns(FakeOpenIdAssets.GetScopes().FirstOrDefault(s => s.Name == "profile"));
+            _clientRepositoryStub.Setup(c => c.GetAllAsync()).Returns(Task.FromResult(FakeOpenIdAssets.GetClients()));
+            _scopeRepositoryStub.Setup(s => s.SearchScopeByNamesAsync(It.IsAny<IEnumerable<string>>()))
+                .Returns(Task.FromResult(FakeOpenIdAssets.GetScopes().Where(s => s.Name == "profile")));
 
             // ACT
-            var result = _jwtGenerator.GenerateUserInfoPayloadForScope(
-                claimsPrincipal,
-                authorizationParameter);
+            var result = await _jwtGenerator.GenerateUserInfoPayloadForScopeAsync(claimsPrincipal, authorizationParameter);
 
             // ASSERT
             Assert.NotNull(result);
@@ -600,8 +594,8 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 State = state
             };
             _clientRepositoryStub.Setup(c => c.GetAll()).Returns(FakeOpenIdAssets.GetClients());
-            _scopeRepositoryStub.Setup(s => s.GetScopeByName(It.IsAny<string>()))
-                .Returns(FakeOpenIdAssets.GetScopes().FirstOrDefault(s => s.Name == "profile"));
+            _scopeRepositoryStub.Setup(s => s.SearchScopeByNamesAsync(It.IsAny<IEnumerable<string>>()))
+                .Returns(Task.FromResult(FakeOpenIdAssets.GetScopes().Where(s => s.Name == "profile")));
 
             // ACT & ASSERT
             var exception = Assert.Throws<IdentityServerExceptionWithState>(() => _jwtGenerator.GenerateFilteredUserInfoPayload(
@@ -647,9 +641,9 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 Scope = "profile",
                 State = state
             };
-            _clientRepositoryStub.Setup(c => c.GetAll()).Returns(FakeOpenIdAssets.GetClients());
-            _scopeRepositoryStub.Setup(s => s.GetScopeByName(It.IsAny<string>()))
-                .Returns(FakeOpenIdAssets.GetScopes().FirstOrDefault(s => s.Name == "profile"));
+            _clientRepositoryStub.Setup(c => c.GetAllAsync()).Returns(Task.FromResult(FakeOpenIdAssets.GetClients()));
+            _scopeRepositoryStub.Setup(s => s.SearchScopeByNamesAsync(It.IsAny<IEnumerable<string>>()))
+                .Returns(Task.FromResult(FakeOpenIdAssets.GetScopes().Where(s => s.Name == "profile")));
 
             // ACT & ASSERT
             var exception = Assert.Throws<IdentityServerExceptionWithState>(() => _jwtGenerator.GenerateFilteredUserInfoPayload(

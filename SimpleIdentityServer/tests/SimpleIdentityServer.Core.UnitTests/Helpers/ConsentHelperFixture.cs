@@ -20,13 +20,13 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
         private IConsentHelper _consentHelper;
 
         [Fact]
-        public void When_Passing_Null_Parameters_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_Parameters_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERTS
-            Assert.Throws<ArgumentNullException>(() => _consentHelper.GetConsentConfirmedByResourceOwner("subject", null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _consentHelper.GetConsentConfirmedByResourceOwnerAsync("subject", null));
         }
 
         [Fact]
@@ -111,7 +111,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
                 ClientId = clientId,
                 Scope = scope
             };
-            var consents = new List<Consent>
+            IEnumerable<Consent> consents = new List<Consent>
             {
                 new Consent
                 {
@@ -132,11 +132,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
             {
                 scope
             };
-
-            _parameterParserHelperFake.Setup(p => p.ParseScopeParameters(It.IsAny<string>()))
-                .Returns(scopes);
-            _consentRepositoryFake.Setup(c => c.GetConsentsForGivenUser(It.IsAny<string>()))
-                .Returns(consents);
+            _parameterParserHelperFake.Setup(p => p.ParseScopeParameters(It.IsAny<string>())).Returns(scopes);
+            _consentRepositoryFake.Setup(c => c.GetConsentsForGivenUserAsync(It.IsAny<string>())).Returns(Task.FromResult(consents));
 
             // ACT
             var result = _consentHelper.GetConsentConfirmedByResourceOwner(subject,
