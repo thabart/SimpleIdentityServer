@@ -124,7 +124,7 @@ namespace SimpleIdentityServer.Core.Common
                 // Check if an access token has already been generated and can be reused for that :
                 // We assumed that an access token is unique for a specific client id, user information 
                 // & id token payload & for certain scopes
-                grantedToken = _grantedTokenHelper.GetValidGrantedToken(
+                grantedToken = await _grantedTokenHelper.GetValidGrantedTokenAsync(
                     allowedTokenScopes,
                     authorizationParameter.ClientId,
                     idTokenPayload,

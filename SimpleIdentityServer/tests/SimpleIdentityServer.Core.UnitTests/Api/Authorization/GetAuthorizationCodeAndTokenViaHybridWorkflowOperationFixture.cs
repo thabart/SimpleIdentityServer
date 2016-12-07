@@ -26,7 +26,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             _getAuthorizationCodeAndTokenViaHybridWorkflowOperation;
 
         [Fact]
-        public void When_Passing_No_Autorization_Parameter_Then_Exception_Is_Thrown()
+        public void When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -47,8 +47,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             };
 
             // ACT & ASSERT
-            var ex = Assert.Throws<IdentityServerExceptionWithState>(
-                () => _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(authorizationParameter, null, new Client()));
+            var ex = Assert.Throws<IdentityServerExceptionWithState>(() => _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(authorizationParameter, null, new Client()));
             Assert.True(ex.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(ex.Message == string.Format(ErrorDescriptions.MissingParameter, Constants.StandardAuthorizationRequestParameterNames.NonceName));
             Assert.True(ex.State == authorizationParameter.State);

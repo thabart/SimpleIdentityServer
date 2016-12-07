@@ -14,6 +14,8 @@
 // limitations under the License.
 #endregion
 
+using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using SimpleIdentityServer.Configuration.Client;
 using SimpleIdentityServer.Core.Services;
@@ -89,6 +91,26 @@ namespace SimpleIdentityServer.Startup.Configuration
         {
             var request = _httpContextAccessor.HttpContext.Request;
             return request.GetAbsoluteUriWithVirtualPath();
+        }
+
+        public Task<string> GetIssuerNameAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<double> GetTokenValidityPeriodInSecondsAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<double> GetAuthorizationCodeValidityPeriodInSecondsAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<string> DefaultLanguageAsync()
+        {
+            throw new NotImplementedException();
         }
     }
 }

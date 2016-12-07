@@ -26,7 +26,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
         private IGetAuthorizationCodeOperation _getAuthorizationCodeOperation;
 
         [Fact]
-        public async Task When_Passing_No_Authorization_Request_To_The_Operation_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -53,8 +53,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                 .Returns(false);
 
             // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(
-                () => _getAuthorizationCodeOperation.Execute(authorizationParameter, null, new Client()));
+            var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _getAuthorizationCodeOperation.Execute(authorizationParameter, null, new Client()));
 
             Assert.NotNull(exception);
             Assert.True(exception.Code.Equals(ErrorCodes.InvalidRequestCode));

@@ -237,11 +237,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 .Returns(idToken);
             _parameterParserHelperFake.Setup(p => p.ParseScopeParameters(It.IsAny<string>()))
                 .Returns(() => new List<string> { scope });
-            _grantedTokenHelperStub.Setup(r => r.GetValidGrantedToken(It.IsAny<string>(),
+            _grantedTokenHelperStub.Setup(r => r.GetValidGrantedTokenAsync(It.IsAny<string>(),
                 It.IsAny<string>(),
                 It.IsAny<JwsPayload>(),
                 It.IsAny<JwsPayload>()))
-                .Returns(() => grantedToken);
+                .Returns(() => Task.FromResult(grantedToken));
 
             // ACT
             await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client());

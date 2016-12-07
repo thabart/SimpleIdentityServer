@@ -15,14 +15,19 @@
 #endregion
 
 using System;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Services
 {
     public interface IConfigurationService
     {
         string GetIssuerName();
+        Task<string> GetIssuerNameAsync();
         double GetTokenValidityPeriodInSeconds();
+        Task<double> GetTokenValidityPeriodInSecondsAsync();
         double GetAuthorizationCodeValidityPeriodInSeconds();
+        Task<double> GetAuthorizationCodeValidityPeriodInSecondsAsync();
         string DefaultLanguage();
+        Task<string> DefaultLanguageAsync();
     }
 }

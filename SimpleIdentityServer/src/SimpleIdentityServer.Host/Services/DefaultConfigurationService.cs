@@ -14,6 +14,8 @@
 // limitations under the License.
 #endregion
 
+using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Host.Extensions;
@@ -34,9 +36,19 @@ namespace SimpleIdentityServer.Host.Services
             return "en";
         }
 
+        public Task<string> DefaultLanguageAsync()
+        {
+            throw new NotImplementedException();
+        }
+
         public double GetAuthorizationCodeValidityPeriodInSeconds()
         {
             return 3600;
+        }
+
+        public Task<double> GetAuthorizationCodeValidityPeriodInSecondsAsync()
+        {
+            throw new NotImplementedException();
         }
 
         public string GetIssuerName()
@@ -45,9 +57,19 @@ namespace SimpleIdentityServer.Host.Services
             return request.GetAbsoluteUriWithVirtualPath();
         }
 
+        public Task<string> GetIssuerNameAsync()
+        {
+            throw new NotImplementedException();
+        }
+
         public double GetTokenValidityPeriodInSeconds()
         {
             return 3600;
+        }
+
+        public Task<double> GetTokenValidityPeriodInSecondsAsync()
+        {
+            throw new NotImplementedException();
         }
     }
 }
