@@ -16,12 +16,13 @@
 
 using SimpleIdentityServer.Core.Api.UserInfo.Actions;
 using SimpleIdentityServer.Core.Results;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.UserInfo
 {
     public interface IUserInfoActions
     {
-        UserInfoResult GetUserInformation(string accessToken);
+        Task<UserInfoResult> GetUserInformation(string accessToken);
     }
 
     public class UserInfoActions : IUserInfoActions
@@ -33,9 +34,9 @@ namespace SimpleIdentityServer.Core.Api.UserInfo
             _getJwsPayload = getJwsPayload;
         }
 
-        public UserInfoResult GetUserInformation(string accessToken)
+        public async Task<UserInfoResult> GetUserInformation(string accessToken)
         {
-            return _getJwsPayload.Execute(accessToken);
+            return await _getJwsPayload.Execute(accessToken);
         }
     }
 }

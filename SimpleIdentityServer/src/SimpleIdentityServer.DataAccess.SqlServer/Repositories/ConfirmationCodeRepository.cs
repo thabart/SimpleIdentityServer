@@ -14,12 +14,13 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.EntityFrameworkCore;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
 using SimpleIdentityServer.Logging;
 using System;
-using System.Linq;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 {
@@ -35,9 +36,9 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             _managerEventSource = managerEventSource;
         }
 
-        public ConfirmationCode Get(string code)
+        public async Task<ConfirmationCode> GetAsync(string code)
         {
-            var confirmationCode = _context.ConfirmationCodes.FirstOrDefault(c => c.Code == code);
+            var confirmationCode = await _context.ConfirmationCodes.FirstOrDefaultAsync(c => c.Code == code).ConfigureAwait(false);
             if (confirmationCode == null)
             {
                 return null;
@@ -46,7 +47,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             return confirmationCode.ToDomain();
         }
 
-        public bool AddCode(ConfirmationCode code)
+        public async Task<bool> AddAsync(ConfirmationCode code)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
@@ -54,7 +55,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                 {
                     var record = code.ToModel();
                     _context.ConfirmationCodes.Add(record);
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync().ConfigureAwait(false); ;
                     transaction.Commit();
                     return true;
                 }
@@ -67,20 +68,20 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             }
         }
 
-        public bool Remove(string code)
+        public async Task<bool> RemoveAsync(string code)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
                 try
                 {
-                    var confirmationCode = _context.ConfirmationCodes.FirstOrDefault(c => c.Code == code);
+                    var confirmationCode = await _context.ConfirmationCodes.FirstOrDefaultAsync(c => c.Code == code).ConfigureAwait(false); ;
                     if (confirmationCode == null)
                     {
                         return false;
                     }
 
                     _context.ConfirmationCodes.Remove(confirmationCode);
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync().ConfigureAwait(false); ;
                     transaction.Commit();
                     return true;
                 }

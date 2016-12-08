@@ -33,9 +33,7 @@ namespace SimpleIdentityServer.Core.Api.Introspection.Actions
 {
     public interface IPostIntrospectionAction
     {
-        Task<IntrospectionResult> Execute(
-            IntrospectionParameter introspectionParameter,
-            AuthenticationHeaderValue authenticationHeaderValue);
+        Task<IntrospectionResult> Execute(IntrospectionParameter introspectionParameter, AuthenticationHeaderValue authenticationHeaderValue);
     }
 
     public class PostIntrospectionAction : IPostIntrospectionAction
@@ -88,7 +86,7 @@ namespace SimpleIdentityServer.Core.Api.Introspection.Actions
             GrantedToken grantedToken = null;
             if (tokenTypeHint == Constants.StandardTokenTypeHintNames.AccessToken)
             {
-                grantedToken = _grantedTokenRepository.GetToken(introspectionParameter.Token);
+                grantedToken = await _grantedTokenRepository.GetTokenAsync(introspectionParameter.Token);
                 if (grantedToken == null)
                 {
                     grantedToken = await _grantedTokenRepository.GetTokenByRefreshTokenAsync(introspectionParameter.Token);

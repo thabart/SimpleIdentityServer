@@ -10,11 +10,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Jwks
     public sealed class JwksActionsFixture
     {
         private Mock<IGetSetOfPublicKeysUsedToValidateJwsAction> _getSetOfPublicKeysUsedToValidateJwsActionStub;
-
         private Mock<IGetSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction> _getSetOfPublicKeysUsedByTheClientToEncryptJwsTokenActionStub;
-
         private Mock<IRotateJsonWebKeysOperation> _rotateJsonWebKeysOperationStub;
-
         private IJwksActions _jwksActions;
 
         [Fact]
@@ -38,16 +35,16 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Jwks
         }
 
         [Fact]
-        public void When_JsonWebKeys_Are_Rotated_Then_Operation_Should_Be_Called()
+        public async Task When_JsonWebKeys_Are_Rotated_Then_Operation_Should_Be_Called()
         {
             // ARRANGE
             InitializeFakeObjects();
             const bool rotateSuccess = true;
             _rotateJsonWebKeysOperationStub.Setup(r => r.Execute())
-                .Returns(rotateSuccess);
+                .Returns(Task.FromResult(rotateSuccess));
 
             // ACT
-            var result = _jwksActions.RotateJwks();
+            var result = await _jwksActions.RotateJwks();
 
             // ASSERT
             Assert.True(result == rotateSuccess);

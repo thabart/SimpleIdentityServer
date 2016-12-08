@@ -15,15 +15,14 @@
 #endregion
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Repositories
 {
     public interface ITranslationRepository
     {
-        Models.Translation GetTranslationByCode(string languageTag, string code);
-
-        List<Models.Translation> GetTranslations(string languageTag);
-
-        List<string> GetSupportedLanguageTag();
+        Task<Models.Translation> GetAsync(string languageTag, string code);
+        Task<ICollection<Models.Translation>> GetAsync(string languageTag);
+        Task<ICollection<List<string>>> GetLanguageTagsAsync();
     }
 }

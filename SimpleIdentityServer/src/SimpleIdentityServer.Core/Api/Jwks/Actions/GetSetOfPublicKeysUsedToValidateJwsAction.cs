@@ -32,7 +32,6 @@ namespace SimpleIdentityServer.Core.Api.Jwks.Actions
     public class GetSetOfPublicKeysUsedToValidateJwsAction : IGetSetOfPublicKeysUsedToValidateJwsAction
     {
         private readonly IJsonWebKeyRepository _jsonWebKeyRepository;
-
         private readonly IJsonWebKeyEnricher _jsonWebKeyEnricher;
 
         public GetSetOfPublicKeysUsedToValidateJwsAction(IJsonWebKeyRepository jsonWebKeyRepository, IJsonWebKeyEnricher jsonWebKeyEnricher)

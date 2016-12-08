@@ -55,12 +55,12 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
         {
             if (string.IsNullOrWhiteSpace(jws))
             {
-                throw new ArgumentNullException("jws");
+                throw new ArgumentNullException(nameof(jws));
             }
 
             if (jsonWebKey == null)
             {
-                throw new ArgumentNullException("jsonWebKey");
+                throw new ArgumentNullException(nameof(jsonWebKey));
             }
 
             var parts = GetParts(jws);
@@ -72,14 +72,11 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
             var base64EncodedProtectedHeader = parts[0];
             var base64EncodedSerialized = parts[1];
             var combinedProtectedHeaderAndPayLoad = string.Format("{0}.{1}", base64EncodedProtectedHeader,
-                base64EncodedSerialized);
-            
+                base64EncodedSerialized);            
             var serializedProtectedHeader = base64EncodedProtectedHeader.Base64Decode();
             var serializedPayload = base64EncodedSerialized.Base64Decode();
-            var signature = parts[2].Base64DecodeBytes();
-            
-            var protectedHeader = serializedProtectedHeader.DeserializeWithJavascript<JwsProtectedHeader>();
-            
+            var signature = parts[2].Base64DecodeBytes();            
+            var protectedHeader = serializedProtectedHeader.DeserializeWithJavascript<JwsProtectedHeader>();            
             JwsAlg jwsAlg;
             if (!Enum.TryParse(protectedHeader.Alg, out jwsAlg))
             {

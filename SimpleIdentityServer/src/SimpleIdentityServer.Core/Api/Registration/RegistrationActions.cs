@@ -14,16 +14,17 @@
 // limitations under the License.
 #endregion
 
-using System;
 using SimpleIdentityServer.Core.Api.Registration.Actions;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
+using System;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Registration
 {
     public interface IRegistrationActions
     {
-        RegistrationResponse PostRegistration(RegistrationParameter registrationParameter);
+        Task<RegistrationResponse> PostRegistration(RegistrationParameter registrationParameter);
     }
 
     public class RegistrationActions : IRegistrationActions
@@ -35,14 +36,14 @@ namespace SimpleIdentityServer.Core.Api.Registration
             _registerClientAction = registerClientAction;
         }
 
-        public RegistrationResponse PostRegistration(RegistrationParameter registrationParameter)
+        public async Task<RegistrationResponse> PostRegistration(RegistrationParameter registrationParameter)
         {
             if (registrationParameter == null)
             {
-                throw new ArgumentNullException("registrationParameter");
+                throw new ArgumentNullException(nameof(registrationParameter));
             }
 
-            return _registerClientAction.Execute(registrationParameter);
+            return await _registerClientAction.Execute(registrationParameter);
         }
     }
 }

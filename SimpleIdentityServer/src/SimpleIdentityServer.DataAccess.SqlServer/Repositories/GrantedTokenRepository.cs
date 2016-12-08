@@ -41,11 +41,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             _managerEventSource = managerEventSource;
         }
 
-        public GrantedToken GetToken(string accessToken)
-        {
-            return GetTokenAsync(accessToken).Result;
-        }
-
         public async Task<GrantedToken> GetTokenAsync(string accessToken)
         {
             if (string.IsNullOrWhiteSpace(accessToken))
@@ -76,16 +71,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             }
 
             return grantedToken.ToDomain();
-        }
-
-        public GrantedToken GetTokenByRefreshToken(string refreshToken)
-        {
-            return GetTokenByRefreshTokenAsync(refreshToken).Result;
-        }
-
-        public GrantedToken GetToken(string scopes, string clientId, JwsPayload idTokenJwsPayload, JwsPayload userInfoJwsPayload)
-        {
-            return GetTokenAsync(scopes, clientId, idTokenJwsPayload, userInfoJwsPayload).Result;
         }
 
         public async Task<GrantedToken> GetTokenAsync(string scopes, string clientId, JwsPayload idTokenJwsPayload, JwsPayload userInfoJwsPayload)
@@ -140,11 +125,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             return null;
         }
         
-        public bool Insert(GrantedToken grantedToken)
-        {
-            return InsertAsync(grantedToken).Result;
-        }
-
         public async Task<bool> InsertAsync(GrantedToken grantedToken)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
@@ -167,28 +147,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 
                     _context.GrantedTokens.Add(record);
                     await _context.SaveChangesAsync().ConfigureAwait(false);
-                    transaction.Commit();
-                }
-                catch (Exception ex)
-                {
-                    _managerEventSource.Failure(ex);
-                    transaction.Rollback();
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        public bool Delete(GrantedToken grantedToken)
-        {
-            using (var transaction = _context.Database.BeginTransaction())
-            {
-                try
-                {
-                    var token = _context.GrantedTokens.FirstOrDefault(g => g.AccessToken == grantedToken.AccessToken);
-                    _context.GrantedTokens.Remove(token);
-                    _context.SaveChanges();
                     transaction.Commit();
                 }
                 catch (Exception ex)
@@ -229,16 +187,16 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             return true;
         }
 
-        public bool Update(GrantedToken grantedToken)
+        public async Task<bool> UpdateAsync(GrantedToken grantedToken)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
                 try
                 {
-                    var token = _context.GrantedTokens.FirstOrDefault(g => g.AccessToken == grantedToken.AccessToken);
+                    var token = await _context.GrantedTokens.FirstOrDefaultAsync(g => g.AccessToken == grantedToken.AccessToken).ConfigureAwait(false);
                     token.RefreshToken = grantedToken.RefreshToken;
                     _context.GrantedTokens.Update(token);
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
                     transaction.Commit();
                 }
                 catch (Exception ex)

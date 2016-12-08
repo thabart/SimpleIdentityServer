@@ -22,9 +22,8 @@ namespace SimpleIdentityServer.Core.Repositories
 {
     public interface IConsentRepository
     {
-        IEnumerable<Consent> GetConsentsForGivenUser(string subject);
         Task<IEnumerable<Consent>> GetConsentsForGivenUserAsync(string subject);
-        Consent InsertConsent(Consent record);
-        bool DeleteConsent(Consent record);
+        Task<Consent> InsertAsync(Consent record);
+        Task<bool> DeleteAsync(Consent record);
     }
 }

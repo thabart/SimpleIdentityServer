@@ -72,7 +72,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
                 authorizationParameter.Scope,
                 authorizationParameter.Claims == null ? string.Empty : authorizationParameter.Claims.ToString());
             var result = await _processAuthorizationRequest.ProcessAsync(authorizationParameter, claimsPrincipal, client);
-            if (!_clientValidator.ValidateGrantType(GrantType.authorization_code, client))
+            if (!_clientValidator.CheckGrantTypes(client, GrantType.authorization_code))
             {
                 throw new IdentityServerExceptionWithState(
                     ErrorCodes.InvalidRequestCode,

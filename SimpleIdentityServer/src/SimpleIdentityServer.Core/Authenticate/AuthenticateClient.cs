@@ -16,6 +16,7 @@
 
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
 using System;
@@ -25,7 +26,6 @@ namespace SimpleIdentityServer.Core.Authenticate
 {
     public interface IAuthenticateClient
     {
-        AuthenticationResult Authenticate(AuthenticateInstruction instruction);
         Task<AuthenticationResult> AuthenticateAsync(AuthenticateInstruction instruction);
     }
 
@@ -34,26 +34,21 @@ namespace SimpleIdentityServer.Core.Authenticate
         private readonly IClientSecretBasicAuthentication _clientSecretBasicAuthentication;
         private readonly IClientSecretPostAuthentication _clientSecretPostAuthentication;
         private readonly IClientAssertionAuthentication _clientAssertionAuthentication;
-        private readonly IClientValidator _clientValidator;
+        private readonly IClientRepository _clientRepository;
         private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
 
         public AuthenticateClient(
             IClientSecretBasicAuthentication clientSecretBasicAuthentication,
             IClientSecretPostAuthentication clientSecretPostAuthentication,
             IClientAssertionAuthentication clientAssertionAuthentication,
-            IClientValidator clientValidator,
+            IClientRepository clientRepository,
             ISimpleIdentityServerEventSource simpleIdentityServerEventSource)
         {
             _clientSecretBasicAuthentication = clientSecretBasicAuthentication;
             _clientSecretPostAuthentication = clientSecretPostAuthentication;
             _clientAssertionAuthentication = clientAssertionAuthentication;
-            _clientValidator = clientValidator;
+            _clientRepository = clientRepository;
             _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
-        }
-
-        public AuthenticationResult Authenticate(AuthenticateInstruction instruction)
-        {
-            return AuthenticateAsync(instruction).Result;
         }
 
         public async Task<AuthenticationResult> AuthenticateAsync(AuthenticateInstruction instruction)
@@ -69,7 +64,7 @@ namespace SimpleIdentityServer.Core.Authenticate
             var clientId = TryGettingClientId(instruction);
             if (!string.IsNullOrWhiteSpace(clientId))
             {
-                client = await _clientValidator.ValidateClientExistAsync(clientId);
+                client = await _clientRepository.GetClientByIdAsync(clientId);
             }
 
             if (client == null)

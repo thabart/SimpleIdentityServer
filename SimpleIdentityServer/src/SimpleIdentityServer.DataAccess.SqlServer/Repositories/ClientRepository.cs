@@ -46,11 +46,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 
         #region Public methods
 
-        public Core.Models.Client GetClientById(string clientId)
-        {
-            return GetClientByIdAsync(clientId).Result;
-        }
-
         public async Task<Core.Models.Client> GetClientByIdAsync(string clientId)
         {
             if (string.IsNullOrWhiteSpace(clientId))
@@ -71,7 +66,122 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             return client.ToDomain();
         }
 
-        public bool InsertClient(Core.Models.Client client)
+        public async Task<IEnumerable<Core.Models.Client>> GetAllAsync()
+        {
+            return await _context.Clients
+                .Include(c => c.JsonWebKeys)
+                .Include(c => c.ClientScopes).ThenInclude(s => s.Scope)
+                .Select(c => c.ToDomain())
+                .ToListAsync()
+                .ConfigureAwait(false);
+        }
+
+        public async Task<bool> UpdateAsync(Core.Models.Client client)
+        {
+            using (var translation = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    var grantTypes = client.GrantTypes == null
+                        ? string.Empty
+                        : ConcatListOfIntegers(client.GrantTypes.Select(k => (int)k).ToList());
+                    var responseTypes = client.ResponseTypes == null
+                        ? string.Empty
+                        : ConcatListOfIntegers(client.ResponseTypes.Select(r => (int)r).ToList());
+                    var connectedClient = await _context.Clients
+                        .Include(c => c.ClientScopes)
+                        .FirstOrDefaultAsync(c => c.ClientId == client.ClientId)
+                        .ConfigureAwait(false);
+                    connectedClient.ClientName = client.ClientName;
+                    connectedClient.ClientUri = client.ClientUri;
+                    connectedClient.Contacts = ConcatListOfStrings(client.Contacts);
+                    connectedClient.DefaultAcrValues = client.DefaultAcrValues;
+                    connectedClient.DefaultMaxAge = client.DefaultMaxAge;
+                    connectedClient.GrantTypes = grantTypes;
+                    connectedClient.IdTokenEncryptedResponseAlg = client.IdTokenEncryptedResponseAlg;
+                    connectedClient.IdTokenEncryptedResponseEnc = client.IdTokenEncryptedResponseEnc;
+                    connectedClient.IdTokenSignedResponseAlg = client.IdTokenSignedResponseAlg;
+                    connectedClient.InitiateLoginUri = client.InitiateLoginUri;
+                    connectedClient.JwksUri = client.JwksUri;
+                    connectedClient.LogoUri = client.LogoUri;
+                    connectedClient.PolicyUri = client.PolicyUri;
+                    connectedClient.RedirectionUrls = ConcatListOfStrings(client.RedirectionUrls);
+                    connectedClient.RequestObjectEncryptionAlg = client.RequestObjectEncryptionAlg;
+                    connectedClient.RequestObjectEncryptionEnc = client.RequestObjectEncryptionEnc;
+                    connectedClient.RequestObjectSigningAlg = client.RequestObjectSigningAlg;
+                    connectedClient.RequestUris = ConcatListOfStrings(client.RequestUris);
+                    connectedClient.RequireAuthTime = client.RequireAuthTime;
+                    connectedClient.ResponseTypes = responseTypes;
+                    connectedClient.SectorIdentifierUri = client.SectorIdentifierUri;
+                    connectedClient.SubjectType = client.SubjectType;
+                    connectedClient.TokenEndPointAuthMethod = (TokenEndPointAuthenticationMethods)client.TokenEndPointAuthMethod;
+                    connectedClient.TokenEndPointAuthSigningAlg = client.TokenEndPointAuthSigningAlg;
+                    connectedClient.TosUri = client.TosUri;
+                    connectedClient.UserInfoEncryptedResponseAlg = client.UserInfoEncryptedResponseAlg;
+                    connectedClient.UserInfoEncryptedResponseEnc = client.UserInfoEncryptedResponseEnc;
+                    connectedClient.UserInfoSignedResponseAlg = client.UserInfoSignedResponseAlg;
+                    connectedClient.ScimProfile = client.ScimProfile;
+                    var scopesNotToBeDeleted = new List<string>();
+                    if (client.AllowedScopes != null)
+                    {
+                        foreach(var scope in client.AllowedScopes)
+                        {
+                            var record = connectedClient.ClientScopes.FirstOrDefault(c => c.ScopeName == scope.Name);
+                            if (record == null)
+                            {
+                                record = new ClientScope
+                                {
+                                    ClientId = connectedClient.ClientId,
+                                    ScopeName = scope.Name
+                                };
+                                connectedClient.ClientScopes.Add(record);
+                            }
+
+                            scopesNotToBeDeleted.Add(record.ScopeName);
+                        }
+                    }
+
+                    var scopeNames = connectedClient.ClientScopes.Select(o => o.ScopeName).ToList();
+                    foreach (var scopeName in scopeNames.Where(id => !scopesNotToBeDeleted.Contains(id)))
+                    {
+                        connectedClient.ClientScopes.Remove(connectedClient.ClientScopes.First(s => s.ScopeName == scopeName));
+                    }
+
+                    await _context.SaveChangesAsync();
+                    translation.Commit();
+                }
+                catch(Exception ex)
+                {
+                    _managerEventSource.Failure(ex);
+                    translation.Rollback();
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public async Task<bool> RemoveAllAsync()
+        {
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    _context.Clients.RemoveRange(_context.Clients);
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
+                    transaction.Commit();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    _managerEventSource.Failure(ex);
+                    transaction.Rollback();
+                    return false;
+                }
+            }
+        }
+
+        public async Task<bool> InsertAsync(Core.Models.Client client)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
@@ -153,7 +263,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                     };
 
                     _context.Clients.Add(newClient);
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
                     transaction.Commit();
                 }
                 catch (Exception ex)
@@ -167,38 +277,24 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             return true;
         }
 
-        public IEnumerable<Core.Models.Client> GetAll()
-        {
-            return GetAllAsync().Result;
-        }
-
-        public async Task<IEnumerable<Core.Models.Client>> GetAllAsync()
-        {
-            return await _context.Clients
-                .Include(c => c.JsonWebKeys)
-                .Include(c => c.ClientScopes).ThenInclude(s => s.Scope)
-                .Select(c => c.ToDomain())
-                .ToListAsync()
-                .ConfigureAwait(false);
-        }
-
-        public bool DeleteClient(Core.Models.Client client)
+        public async Task<bool> DeleteAsync(Core.Models.Client client)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
                 try
                 {
-                    var connectedClient = _context.Clients
+                    var connectedClient = await _context.Clients
                         .Include(c => c.ClientScopes)
                         .Include(c => c.JsonWebKeys)
-                        .FirstOrDefault(c => c.ClientId == client.ClientId);
+                        .FirstOrDefaultAsync(c => c.ClientId == client.ClientId)
+                        .ConfigureAwait(false);
                     if (connectedClient == null)
                     {
                         return false;
                     }
 
                     _context.Clients.Remove(connectedClient);
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
                     transaction.Commit();
                 }
                 catch (Exception ex)
@@ -210,110 +306,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             }
 
             return true;
-        }
-
-        public bool UpdateClient(Core.Models.Client client)
-        {
-            using (var translation = _context.Database.BeginTransaction())
-            {
-                try
-                {
-                    var grantTypes = client.GrantTypes == null
-                        ? string.Empty
-                        : ConcatListOfIntegers(client.GrantTypes.Select(k => (int)k).ToList());
-                    var responseTypes = client.ResponseTypes == null
-                        ? string.Empty
-                        : ConcatListOfIntegers(client.ResponseTypes.Select(r => (int)r).ToList());
-                    var connectedClient = _context.Clients
-                        .Include(c => c.ClientScopes)
-                        .FirstOrDefault(c => c.ClientId == client.ClientId);
-                    connectedClient.ClientName = client.ClientName;
-                    connectedClient.ClientUri = client.ClientUri;
-                    connectedClient.Contacts = ConcatListOfStrings(client.Contacts);
-                    connectedClient.DefaultAcrValues = client.DefaultAcrValues;
-                    connectedClient.DefaultMaxAge = client.DefaultMaxAge;
-                    connectedClient.GrantTypes = grantTypes;
-                    connectedClient.IdTokenEncryptedResponseAlg = client.IdTokenEncryptedResponseAlg;
-                    connectedClient.IdTokenEncryptedResponseEnc = client.IdTokenEncryptedResponseEnc;
-                    connectedClient.IdTokenSignedResponseAlg = client.IdTokenSignedResponseAlg;
-                    connectedClient.InitiateLoginUri = client.InitiateLoginUri;
-                    connectedClient.JwksUri = client.JwksUri;
-                    connectedClient.LogoUri = client.LogoUri;
-                    connectedClient.PolicyUri = client.PolicyUri;
-                    connectedClient.RedirectionUrls = ConcatListOfStrings(client.RedirectionUrls);
-                    connectedClient.RequestObjectEncryptionAlg = client.RequestObjectEncryptionAlg;
-                    connectedClient.RequestObjectEncryptionEnc = client.RequestObjectEncryptionEnc;
-                    connectedClient.RequestObjectSigningAlg = client.RequestObjectSigningAlg;
-                    connectedClient.RequestUris = ConcatListOfStrings(client.RequestUris);
-                    connectedClient.RequireAuthTime = client.RequireAuthTime;
-                    connectedClient.ResponseTypes = responseTypes;
-                    connectedClient.SectorIdentifierUri = client.SectorIdentifierUri;
-                    connectedClient.SubjectType = client.SubjectType;
-                    connectedClient.TokenEndPointAuthMethod = (TokenEndPointAuthenticationMethods)client.TokenEndPointAuthMethod;
-                    connectedClient.TokenEndPointAuthSigningAlg = client.TokenEndPointAuthSigningAlg;
-                    connectedClient.TosUri = client.TosUri;
-                    connectedClient.UserInfoEncryptedResponseAlg = client.UserInfoEncryptedResponseAlg;
-                    connectedClient.UserInfoEncryptedResponseEnc = client.UserInfoEncryptedResponseEnc;
-                    connectedClient.UserInfoSignedResponseAlg = client.UserInfoSignedResponseAlg;
-                    connectedClient.ScimProfile = client.ScimProfile;
-                    var scopesNotToBeDeleted = new List<string>();
-                    if (client.AllowedScopes != null)
-                    {
-                        foreach(var scope in client.AllowedScopes)
-                        {
-                            var record = connectedClient.ClientScopes.FirstOrDefault(c => c.ScopeName == scope.Name);
-                            if (record == null)
-                            {
-                                record = new ClientScope
-                                {
-                                    ClientId = connectedClient.ClientId,
-                                    ScopeName = scope.Name
-                                };
-                                connectedClient.ClientScopes.Add(record);
-                            }
-
-                            scopesNotToBeDeleted.Add(record.ScopeName);
-                        }
-                    }
-
-                    var scopeNames = connectedClient.ClientScopes.Select(o => o.ScopeName).ToList();
-                    foreach (var scopeName in scopeNames.Where(id => !scopesNotToBeDeleted.Contains(id)))
-                    {
-                        connectedClient.ClientScopes.Remove(connectedClient.ClientScopes.First(s => s.ScopeName == scopeName));
-                    }
-
-                    _context.SaveChanges();
-                    translation.Commit();
-                }
-                catch(Exception ex)
-                {
-                    _managerEventSource.Failure(ex);
-                    translation.Rollback();
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        public bool RemoveAll()
-        {
-            using (var transaction = _context.Database.BeginTransaction())
-            {
-                try
-                {
-                    _context.Clients.RemoveRange(_context.Clients);
-                    _context.SaveChanges();
-                    transaction.Commit();
-                    return true;
-                }
-                catch(Exception ex)
-                {
-                    _managerEventSource.Failure(ex);
-                    transaction.Rollback();
-                    return false;
-                }
-            }
         }
 
         #endregion

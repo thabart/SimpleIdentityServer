@@ -25,6 +25,7 @@ using SimpleIdentityServer.Host;
 using Microsoft.Extensions.Primitives;
 using SimpleIdentityServer.Host.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Api.Controllers.Api
 {
@@ -41,34 +42,34 @@ namespace SimpleIdentityServer.Api.Controllers.Api
         #region Public methods
 
         [HttpGet]
-        public ActionResult Get()
+        public async Task<ActionResult> Get()
         {
-            return ProcessRequest();
+            return await ProcessRequest();
         }
 
         [HttpPost]
-        public ActionResult Post()
+        public async Task<ActionResult> Post()
         {
-            return ProcessRequest();
+            return await ProcessRequest();
         }
         
         #endregion
         
         #region Private methods
 
-        private ActionResult ProcessRequest()
+        private async Task<ActionResult> ProcessRequest()
         {
-            var accessToken = TryToGetTheAccessToken();
+            var accessToken = await TryToGetTheAccessToken();
             if (string.IsNullOrWhiteSpace(accessToken))
             {
                 throw new AuthorizationException(ErrorCodes.InvalidToken, string.Empty);
             }
 
-            var result = _userInfoActions.GetUserInformation(accessToken);
+            var result = await _userInfoActions.GetUserInformation(accessToken);
             return result.Content;
         }
 
-        private string TryToGetTheAccessToken()
+        private async Task<string> TryToGetTheAccessToken()
         {
             var accessToken = GetAccessTokenFromAuthorizationHeader();
             if (!string.IsNullOrWhiteSpace(accessToken))
@@ -76,7 +77,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
                 return accessToken;
             }
 
-            accessToken = GetAccessTokenFromBodyParameter();
+            accessToken = await GetAccessTokenFromBodyParameter();
             if (!string.IsNullOrWhiteSpace(accessToken))
             {
                 return accessToken;
@@ -112,7 +113,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
         /// Get an access token from the body parameter.
         /// </summary>
         /// <returns></returns>
-        private string GetAccessTokenFromBodyParameter()
+        private async Task<string> GetAccessTokenFromBodyParameter()
         {
             const string contentTypeName = "Content-Type";
             const string contentTypeValue = "application/x-www-form-urlencoded";
@@ -131,7 +132,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
                 return emptyResult;
             }
 
-            var content = Request.ReadAsStringAsync().Result;
+            var content = await Request.ReadAsStringAsync();
             var queryString = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(content);
             if (!queryString.Keys.Contains(accessTokenName))
             {

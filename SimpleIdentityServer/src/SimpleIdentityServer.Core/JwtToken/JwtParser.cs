@@ -23,7 +23,6 @@ using SimpleIdentityServer.Core.Jwt.Converter;
 using SimpleIdentityServer.Core.Jwt.Encrypt;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Core.Repositories;
-using SimpleIdentityServer.Core.Validators;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -34,13 +33,10 @@ namespace SimpleIdentityServer.Core.JwtToken
     {
         bool IsJweToken(string jwe);
         bool IsJwsToken(string jws);
-        string Decrypt(string jwe);
-        string Decrypt(string jwe, string clientId);
+        Task<string> DecryptAsync(string jwe);
         Task<string> DecryptAsync(string jwe, string clientId);
-        string DecryptWithPassword(string jwe, string clientId, string password);
         Task<string> DecryptWithPasswordAsync(string jwe, string clientId, string password);
-        JwsPayload UnSign(string jws);
-        JwsPayload UnSign(string jws, string clientId);
+        Task<JwsPayload> UnSignAsync(string jws);
         Task<JwsPayload> UnSignAsync(string jws, string clientId);
     }
 
@@ -49,7 +45,7 @@ namespace SimpleIdentityServer.Core.JwtToken
         private readonly IJweParser _jweParser;
         private readonly IJwsParser _jwsParser;        
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly IClientValidator _clientValidator;
+        private readonly IClientRepository _clientRepository;
         private readonly IJsonWebKeyConverter _jsonWebKeyConverter;
         private readonly IJsonWebKeyRepository _jsonWebKeyRepository;
 
@@ -57,14 +53,14 @@ namespace SimpleIdentityServer.Core.JwtToken
             IJweParser jweParser,
             IJwsParser jwsParser,
             IHttpClientFactory httpClientFactory,
-            IClientValidator clientValidator,
+            IClientRepository clientRepository,
             IJsonWebKeyConverter jsonWebKeyConverter,
             IJsonWebKeyRepository jsonWebKeyRepository)
         {
             _jweParser = jweParser;
             _jwsParser = jwsParser;
             _httpClientFactory = httpClientFactory;
-            _clientValidator = clientValidator;
+            _clientRepository = clientRepository;
             _jsonWebKeyConverter = jsonWebKeyConverter;
             _jsonWebKeyRepository = jsonWebKeyRepository;
         }
@@ -79,7 +75,7 @@ namespace SimpleIdentityServer.Core.JwtToken
             return _jwsParser.GetHeader(jws) != null;
         }
 
-        public string Decrypt(string jwe)
+        public async Task<string> DecryptAsync(string jwe)
         {
             if (string.IsNullOrWhiteSpace(jwe))
             {
@@ -92,18 +88,13 @@ namespace SimpleIdentityServer.Core.JwtToken
                 return string.Empty;
             }
 
-            var jsonWebKey = _jsonWebKeyRepository.GetByKid(protectedHeader.Kid);
+            var jsonWebKey = await _jsonWebKeyRepository.GetByKidAsync(protectedHeader.Kid);
             if (jsonWebKey == null)
             {
                 return string.Empty;
             }
             
             return _jweParser.Parse(jwe, jsonWebKey);
-        }
-
-        public string Decrypt(string jwe, string clientId)
-        {
-            return DecryptAsync(jwe, clientId).Result;
         }
 
         public async Task<string> DecryptAsync(string jwe, string clientId)
@@ -117,11 +108,6 @@ namespace SimpleIdentityServer.Core.JwtToken
             return _jweParser.Parse(jwe, jsonWebKey);
         }
 
-        public string DecryptWithPassword(string jwe, string clientId, string password)
-        {
-            return DecryptWithPasswordAsync(jwe, clientId, password).Result;
-        }
-
         public async Task<string> DecryptWithPasswordAsync(string jwe, string clientId, string password)
         {
             var jsonWebKey = await GetJsonWebKeyToDecrypt(jwe, clientId);
@@ -133,11 +119,11 @@ namespace SimpleIdentityServer.Core.JwtToken
             return _jweParser.ParseByUsingSymmetricPassword(jwe, jsonWebKey, password);
         }
 
-        public JwsPayload UnSign(string jws)
+        public async Task<JwsPayload> UnSignAsync(string jws)
         {
             if (string.IsNullOrWhiteSpace(jws))
             {
-                throw new ArgumentNullException("jws");
+                throw new ArgumentNullException(nameof(jws));
             }
 
             var protectedHeader = _jwsParser.GetHeader(jws);
@@ -146,15 +132,8 @@ namespace SimpleIdentityServer.Core.JwtToken
                 return null;
             }
 
-            var jsonWebKey = _jsonWebKeyRepository.GetByKid(protectedHeader.Kid);
-            return UnSignWithJsonWebKey(jsonWebKey,
-                protectedHeader,
-                jws);
-        }
-
-        public JwsPayload UnSign(string jws, string clientId)
-        {
-            return UnSignAsync(jws, clientId).Result;
+            var jsonWebKey = await _jsonWebKeyRepository.GetByKidAsync(protectedHeader.Kid);
+            return UnSignWithJsonWebKey(jsonWebKey, protectedHeader, jws);
         }
 
         public async Task<JwsPayload> UnSignAsync(string jws, string clientId)
@@ -169,7 +148,7 @@ namespace SimpleIdentityServer.Core.JwtToken
                 throw new ArgumentNullException(nameof(clientId));
             }
 
-            var client = await _clientValidator.ValidateClientExistAsync(clientId);
+            var client = await _clientRepository.GetClientByIdAsync(clientId);
             if (client == null)
             {
                 throw new InvalidOperationException(string.Format(ErrorDescriptions.ClientIsNotValid, clientId));
@@ -187,10 +166,7 @@ namespace SimpleIdentityServer.Core.JwtToken
 
         #region Private methods
 
-        private JwsPayload UnSignWithJsonWebKey(
-            JsonWebKey jsonWebKey,
-            JwsProtectedHeader jwsProtectedHeader,
-            string jws)
+        private JwsPayload UnSignWithJsonWebKey(JsonWebKey jsonWebKey, JwsProtectedHeader jwsProtectedHeader, string jws)
         {
             if (jsonWebKey == null
                 && jwsProtectedHeader.Alg != Jwt.Constants.JwsAlgNames.NONE)
@@ -206,21 +182,19 @@ namespace SimpleIdentityServer.Core.JwtToken
             return _jwsParser.ValidateSignature(jws, jsonWebKey);
         }
 
-        private async Task<JsonWebKey> GetJsonWebKeyToDecrypt(
-            string jwe,
-            string clientId)
+        private async Task<JsonWebKey> GetJsonWebKeyToDecrypt(string jwe, string clientId)
         {
             if (string.IsNullOrWhiteSpace(jwe))
             {
-                throw new ArgumentNullException("jwe");
+                throw new ArgumentNullException(nameof(jwe));
             }
 
             if (string.IsNullOrWhiteSpace(clientId))
             {
-                throw new ArgumentNullException("clientId");
+                throw new ArgumentNullException(nameof(clientId));
             }
 
-            var client = await _clientValidator.ValidateClientExistAsync(clientId);
+            var client = await _clientRepository.GetClientByIdAsync(clientId);
             if (client == null)
             {
                 throw new InvalidOperationException(string.Format(ErrorDescriptions.ClientIsNotValid, clientId));

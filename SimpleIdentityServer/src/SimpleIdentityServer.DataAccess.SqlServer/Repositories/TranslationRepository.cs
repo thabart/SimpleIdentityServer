@@ -20,6 +20,8 @@ using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
 using SimpleIdentityServer.Logging;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 {
@@ -37,11 +39,9 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             _managerEventSource = managerEventSource;
         }
 
-        public Translation GetTranslationByCode(
-            string languageTag,
-            string code)
+        public async Task<Translation> GetAsync(string languageTag, string code)
         {
-            var result = _context.Translations.FirstOrDefault(t => t.Code == code && t.LanguageTag == languageTag);
+            var result = await _context.Translations.FirstOrDefaultAsync(t => t.Code == code && t.LanguageTag == languageTag).ConfigureAwait(false);
             if (result == null)
             {
                 return null;
@@ -50,16 +50,15 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             return result.ToDomain();
         }
 
-        public List<Translation> GetTranslations(string languageTag)
+        public async Task<ICollection<Translation>> GetAsync(string languageTag)
         {
-            var result = _context.Translations.Where(t => t.LanguageTag == languageTag).ToList();
-            return result.Select(r => r.ToDomain()).ToList();
+            return await _context.Translations.Where(t => t.LanguageTag == languageTag)
+                .Select(r => r.ToDomain()).ToListAsync().ConfigureAwait(false);
         }
 
-        public List<string> GetSupportedLanguageTag()
+        public async Task<ICollection<List<string>>> GetLanguageTagsAsync()
         {
-            var result = _context.Translations.Select(t => t.LanguageTag).Distinct();
-            return result.ToList();
+            return await _context.Translations.Select(t => t.LanguageTag).Distinct().ToListAsync().ConfigureAwait(false);
         }
     }
 }

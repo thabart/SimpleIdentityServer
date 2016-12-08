@@ -34,7 +34,6 @@ namespace SimpleIdentityServer.Core.Common
 {
     public interface IGenerateAuthorizationResponse
     {
-        void Execute(ActionResult actionResult, AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Client client);
         Task ExecuteAsync(ActionResult actionResult, AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Client client);
     }
 
@@ -111,14 +110,14 @@ namespace SimpleIdentityServer.Core.Common
             AuthorizationCode authorizationCode = null;
             _simpleIdentityServerEventSource.StartGeneratingAuthorizationResponseToClient(authorizationParameter.ClientId,
                 authorizationParameter.ResponseType);
-            var responses = _parameterParserHelper.ParseResponseType(authorizationParameter.ResponseType);
+            var responses = _parameterParserHelper.ParseResponseTypes(authorizationParameter.ResponseType);
             var idTokenPayload = await GenerateIdTokenPayload(claimsPrincipal, authorizationParameter);
             var userInformationPayload = await GenerateUserInformationPayload(claimsPrincipal, authorizationParameter);
             if (responses.Contains(ResponseType.token))
             {
                 if (!string.IsNullOrWhiteSpace(authorizationParameter.Scope))
                 {
-                    allowedTokenScopes = string.Join(" ", _parameterParserHelper.ParseScopeParameters(authorizationParameter.Scope));
+                    allowedTokenScopes = string.Join(" ", _parameterParserHelper.ParseScopes(authorizationParameter.Scope));
                 }
 
                 // Check if an access token has already been generated and can be reused for that :
@@ -176,7 +175,7 @@ namespace SimpleIdentityServer.Core.Common
 
             if (newAccessTokenGranted)
             {
-                _grantedTokenRepository.Insert(grantedToken);
+                await _grantedTokenRepository.InsertAsync(grantedToken);
                 _simpleIdentityServerEventSource.GrantAccessToClient(authorizationParameter.ClientId,
                     grantedToken.AccessToken,
                     allowedTokenScopes);
@@ -184,7 +183,7 @@ namespace SimpleIdentityServer.Core.Common
 
             if (newAuthorizationCodeGranted)
             {
-                _authorizationCodeRepository.AddAuthorizationCode(authorizationCode);
+                await _authorizationCodeRepository.AddAsync(authorizationCode);
                 _simpleIdentityServerEventSource.GrantAuthorizationCodeToClient(authorizationParameter.ClientId,
                     authorizationCode.Code,
                     authorizationParameter.Scope);
@@ -214,7 +213,7 @@ namespace SimpleIdentityServer.Core.Common
                 var responseMode = authorizationParameter.ResponseMode;
                 if (responseMode == ResponseMode.None)
                 {
-                    var responseTypes = _parameterParserHelper.ParseResponseType(authorizationParameter.ResponseType);
+                    var responseTypes = _parameterParserHelper.ParseResponseTypes(authorizationParameter.ResponseType);
                     var authorizationFlow = _authorizationFlowHelper.GetAuthorizationFlow(responseTypes,
                         authorizationParameter.State);
                     responseMode = GetResponseMode(authorizationFlow);

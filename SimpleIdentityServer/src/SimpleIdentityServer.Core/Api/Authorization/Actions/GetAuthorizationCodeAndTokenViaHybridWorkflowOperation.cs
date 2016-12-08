@@ -26,12 +26,13 @@ using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Authorization.Actions
 {
     public interface IGetAuthorizationCodeAndTokenViaHybridWorkflowOperation
     {
-        ActionResult Execute(AuthorizationParameter authorizationParameter, IPrincipal claimsPrincipal, Client client);
+        Task<ActionResult> Execute(AuthorizationParameter authorizationParameter, IPrincipal claimsPrincipal, Client client);
     }
 
     public sealed class GetAuthorizationCodeAndTokenViaHybridWorkflowOperation : IGetAuthorizationCodeAndTokenViaHybridWorkflowOperation
@@ -53,7 +54,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
             _generateAuthorizationResponse = generateAuthorizationResponse;
         }
 
-        public ActionResult Execute(AuthorizationParameter authorizationParameter, IPrincipal principal, Client client)
+        public async Task<ActionResult> Execute(AuthorizationParameter authorizationParameter, IPrincipal principal, Client client)
         {
             if (authorizationParameter == null)
             {
@@ -79,8 +80,8 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
                 authorizationParameter.ClientId,
                 authorizationParameter.Scope,
                 authorizationParameter.Claims == null ? string.Empty : authorizationParameter.Claims.ToString());
-            var result = _processAuthorizationRequest.Process(authorizationParameter, claimsPrincipal, client);
-            if (!_clientValidator.ValidateGrantTypes(client, GrantType.@implicit, GrantType.authorization_code))
+            var result = await _processAuthorizationRequest.ProcessAsync(authorizationParameter, claimsPrincipal, client);
+            if (!_clientValidator.CheckGrantTypes(client, GrantType.@implicit, GrantType.authorization_code))
             {
                 throw new IdentityServerExceptionWithState(
                     ErrorCodes.InvalidRequestCode,

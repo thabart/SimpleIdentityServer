@@ -14,20 +14,19 @@
 // limitations under the License.
 #endregion
 
-using System.Collections.Generic;
 using SimpleIdentityServer.Core.Jwt;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Repositories
 {
     public interface IJsonWebKeyRepository
     {
-        IList<JsonWebKey> GetAll();
-        Task<IList<JsonWebKey>> GetAllAsync();
-        IList<JsonWebKey> GetByAlgorithm(Use use, AllAlg algorithm, KeyOperations[] operations);
-        JsonWebKey GetByKid(string kid);
-        bool Delete(JsonWebKey jsonWebKey);
-        bool Insert(JsonWebKey jsonWebKey);
-        bool Update(JsonWebKey jsonWebKey);
+        Task<ICollection<JsonWebKey>> GetAllAsync();
+        Task<ICollection<JsonWebKey>> GetByAlgorithmAsync(Use use, AllAlg algorithm, KeyOperations[] operations);
+        Task<JsonWebKey> GetByKidAsync(string kid);
+        Task<bool> DeleteAsync(JsonWebKey jsonWebKey);
+        Task<bool> InsertAsync(JsonWebKey jsonWebKey);
+        Task<bool> UpdateAsync(JsonWebKey jsonWebKey);
     }
 }

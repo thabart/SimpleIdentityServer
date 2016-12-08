@@ -110,14 +110,13 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             var allowedTokenScopes = string.Empty;
             if (!string.IsNullOrWhiteSpace(resourceOwnerGrantTypeParameter.Scope))
             {
-                string messageErrorDescription;
-                var scopes = _scopeValidator.IsScopesValid(resourceOwnerGrantTypeParameter.Scope, client, out messageErrorDescription);
-                if (!scopes.Any())
+                var scopeValidation = _scopeValidator.Check(resourceOwnerGrantTypeParameter.Scope, client);
+                if (!scopeValidation.IsValid)
                 {
-                    throw new IdentityServerException(ErrorCodes.InvalidScope, messageErrorDescription);
+                    throw new IdentityServerException(ErrorCodes.InvalidScope, scopeValidation.ErrorMessage);
                 }
 
-                allowedTokenScopes = string.Join(" ", scopes);
+                allowedTokenScopes = string.Join(" ", scopeValidation.Scopes);
             }
 
             // 4. Generate the user information payload and store it.
@@ -128,7 +127,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             {
                 Scope = resourceOwnerGrantTypeParameter.Scope
             };
-            var payload = _jwtGenerator.GenerateUserInfoPayloadForScope(claimsPrincipal, authorizationParameter);
+            var payload = await _jwtGenerator.GenerateUserInfoPayloadForScopeAsync(claimsPrincipal, authorizationParameter);
             var generatedToken = await _grantedTokenHelper.GetValidGrantedTokenAsync(client.ClientId, allowedTokenScopes, payload, payload);
             if (generatedToken == null)
             {

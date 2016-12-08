@@ -15,12 +15,13 @@
 #endregion
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Repositories
 {
     public interface IClaimRepository
     {
-        IList<string> GetAll();
-        bool HasClaim(string name);
+        Task<ICollection<string>> GetAllAsync();
+        Task<string> GetAsync(string name);
     }
 }

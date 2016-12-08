@@ -16,12 +16,13 @@
 
 using SimpleIdentityServer.Core.Api.Discovery.Actions;
 using SimpleIdentityServer.Core.Common.DTOs;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Discovery
 {
     public interface IDiscoveryActions
     {
-        DiscoveryInformation CreateDiscoveryInformation();
+        Task<DiscoveryInformation> CreateDiscoveryInformation();
     }
 
     public class DiscoveryActions : IDiscoveryActions
@@ -33,9 +34,9 @@ namespace SimpleIdentityServer.Core.Api.Discovery
             _createDiscoveryDocumentationAction = createDiscoveryDocumentationAction;
         }
 
-        public DiscoveryInformation CreateDiscoveryInformation()
+        public async Task<DiscoveryInformation> CreateDiscoveryInformation()
         {
-            return _createDiscoveryDocumentationAction.Execute();
+            return await _createDiscoveryDocumentationAction.Execute();
         }
     }
 }

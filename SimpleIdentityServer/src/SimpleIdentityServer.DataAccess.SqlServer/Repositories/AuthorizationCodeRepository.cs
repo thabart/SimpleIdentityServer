@@ -14,13 +14,13 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
 using SimpleIdentityServer.Logging;
-using Microsoft.EntityFrameworkCore;
+using System;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 {
@@ -29,8 +29,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
         private readonly SimpleIdentityServerContext _context;
         private readonly IManagerEventSource _managerEventSource;
         
-        #region Constructor
-        
         public AuthorizationCodeRepository(
             SimpleIdentityServerContext context,
             IManagerEventSource managerEventSource) 
@@ -38,17 +36,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             _context = context;
             _managerEventSource = managerEventSource;
         }
-        
-        #endregion
-        
-        #region Public methods
-        
-        public bool AddAuthorizationCode(Core.Models.AuthorizationCode authorizationCode)
-        {
-            return AddAuthorizationCodeAsync(authorizationCode).Result;
-        }
 
-        public async Task<bool> AddAuthorizationCodeAsync(Core.Models.AuthorizationCode authorizationCode)
+        public async Task<bool> AddAsync(Core.Models.AuthorizationCode authorizationCode)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
@@ -77,13 +66,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 
             return true;
         }
-
-        public Core.Models.AuthorizationCode GetAuthorizationCode(string code)
-        {
-            return GetAuthorizationCodeAsync(code).Result;
-        }
-
-        public async Task<Core.Models.AuthorizationCode> GetAuthorizationCodeAsync(string code)
+        
+        public async Task<Core.Models.AuthorizationCode> GetAsync(string code)
         {
             var authorizationCode = await _context.AuthorizationCodes
                 .FirstOrDefaultAsync(a => a.Code == code)
@@ -96,12 +80,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             return authorizationCode.ToDomain();
         }
 
-        public bool RemoveAuthorizationCode(string code)
-        {
-            return RemoveAuthorizationCodeAsync(code).Result;
-        }
-
-        public async Task<bool> RemoveAuthorizationCodeAsync(string code)
+        public async Task<bool> RemoveAsync(string code)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.RepeatableRead).ConfigureAwait(false))
             {
@@ -126,7 +105,5 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 
             return true;
         }
-
-        #endregion
     }
 }

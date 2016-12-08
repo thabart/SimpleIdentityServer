@@ -30,15 +30,20 @@ namespace SimpleIdentityServer.Core.Helpers
         /// </summary>
         /// <param name="parameter">List of prompts separated by whitespace</param>
         /// <returns>List of prompts.</returns>
-        List<PromptParameter> ParsePromptParameters(string parameter);
+        ICollection<PromptParameter> ParsePrompts(string parameter);
         /// <summary>
         /// Parse the parameter and returns a list of response types
         /// </summary>
         /// <param name="parameter">List of response types separated by whitespace</param>
         /// <returns>List of response types</returns>
-        List<ResponseType> ParseResponseType(string parameter);
-        List<string> ParseScopeParameters(string scope);
-        List<string> ParseScopeParametersAndGetAllScopes(string concatenateListOfScopes);
+        ICollection<ResponseType> ParseResponseTypes(string parameter);
+        /// <summary>
+        /// Parse the parameter and returns a list of scopes.
+        /// </summary>
+        /// <param name="scope">Parameter to parse.</param>
+        /// <returns>list of scopes or null</returns>
+        ICollection<string> ParseScopes(string parameter);
+        // List<string> ParseScopeParametersAndGetAllScopes(string concatenateListOfScopes);
     }
 
     public class ParameterParserHelper : IParameterParserHelper
@@ -55,7 +60,7 @@ namespace SimpleIdentityServer.Core.Helpers
         /// </summary>
         /// <param name="parameter">List of prompts separated by whitespace</param>
         /// <returns>List of prompts.</returns>
-        public List<PromptParameter> ParsePromptParameters(string parameter)
+        public ICollection<PromptParameter> ParsePrompts(string parameter)
         {
             if (string.IsNullOrWhiteSpace(parameter))
             {
@@ -76,7 +81,7 @@ namespace SimpleIdentityServer.Core.Helpers
         /// </summary>
         /// <param name="parameter">List of response types separated by whitespace</param>
         /// <returns>List of response types</returns>
-        public List<ResponseType> ParseResponseType(string parameter)
+        public ICollection<ResponseType> ParseResponseTypes(string parameter)
         {
             var responseTypeNames = Enum.GetNames(typeof (ResponseType));
             if (string.IsNullOrWhiteSpace(parameter))
@@ -89,14 +94,19 @@ namespace SimpleIdentityServer.Core.Helpers
                 .Select(r => (ResponseType) Enum.Parse(typeof (ResponseType), r))
                 .ToList();
             return responses;
-        } 
-
-        public List<string> ParseScopeParameters(string scope)
-        {
-            return string.IsNullOrWhiteSpace(scope) ? new List<string>() :
-                scope.Split(' ').Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
         }
 
+        /// <summary>
+        /// Parse the parameter and returns a list of scopes.
+        /// </summary>
+        /// <param name="scope">Parameter to parse.</param>
+        /// <returns>list of scopes or null</returns>
+        public ICollection<string> ParseScopes(string parameter)
+        {
+            return string.IsNullOrWhiteSpace(parameter) ? new List<string>() : parameter.Split(' ').Where(s => !string.IsNullOrWhiteSpace(s));
+        }
+
+        /*
         public List<string> ParseScopeParametersAndGetAllScopes(string concatenateListOfScopes)
         {
             var result = new List<string>();
@@ -116,6 +126,6 @@ namespace SimpleIdentityServer.Core.Helpers
             }
 
             return result;
-        }
+        }*/
     }
 }

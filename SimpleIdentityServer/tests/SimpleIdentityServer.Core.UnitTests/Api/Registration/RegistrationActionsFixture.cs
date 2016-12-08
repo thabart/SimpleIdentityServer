@@ -4,6 +4,7 @@ using SimpleIdentityServer.Core.Api.Registration;
 using SimpleIdentityServer.Core.Api.Registration.Actions;
 using SimpleIdentityServer.Core.Parameters;
 using Xunit;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
 {
@@ -14,23 +15,23 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
         private IRegistrationActions _registrationActions;
 
         [Fact]
-        public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _registrationActions.PostRegistration(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _registrationActions.PostRegistration(null));
         }
 
         [Fact]
-        public void When_Passing_Valid_Parameter_Then_Action_Is_Called()
+        public async Task When_Passing_Valid_Parameter_Then_Action_Is_Called()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT
-            _registrationActions.PostRegistration(new RegistrationParameter());
+            await _registrationActions.PostRegistration(new RegistrationParameter());
 
             // ASSERT
             _registerClientActionFake.Verify(r => r.Execute(It.IsAny<RegistrationParameter>()));

@@ -37,7 +37,6 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
 {
     public interface IProcessAuthorizationRequest
     {
-        ActionResult Process(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Client client);
         Task<ActionResult> ProcessAsync(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Client client);
     }
 
@@ -72,11 +71,6 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
             _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
         }
 
-        public ActionResult Process(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Client client)
-        {
-            return ProcessAsync(authorizationParameter, claimsPrincipal, client).Result;
-        }
-
         public async Task<ActionResult> ProcessAsync(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Client client)
         {
             if (authorizationParameter == null)
@@ -99,7 +93,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
             var serializedAuthorizationParameter = authorizationParameter.SerializeWithJavascript();
             _simpleIdentityServerEventSource.StartProcessingAuthorizationRequest(serializedAuthorizationParameter);
             ActionResult result = null;
-            var prompts = _parameterParserHelper.ParsePromptParameters(authorizationParameter.Prompt);
+            var prompts = _parameterParserHelper.ParsePrompts(authorizationParameter.Prompt);
             if (prompts == null || !prompts.Any())
             {
                 prompts = new List<PromptParameter>();
@@ -120,8 +114,8 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
                 }
             }
 
-            var redirectionUrl = _clientValidator.ValidateRedirectionUrl(authorizationParameter.RedirectUrl, client);
-            if (string.IsNullOrWhiteSpace(redirectionUrl))
+            var redirectionUrls = _clientValidator.GetRedirectionUrls(client, authorizationParameter.RedirectUrl);
+            if (!redirectionUrls.Any())
             {
                 throw new IdentityServerExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
@@ -129,17 +123,16 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
                     authorizationParameter.State);
             }
 
-            string messageError;
-            var allowedScopes = _scopeValidator.IsScopesValid(authorizationParameter.Scope, client, out messageError);
-            if (!allowedScopes.Any())
+            var scopeValidationResult = _scopeValidator.Check(authorizationParameter.Scope, client);
+            if (!scopeValidationResult.IsValid)
             {
                 throw new IdentityServerExceptionWithState(
                     ErrorCodes.InvalidScope,
-                    messageError,
+                    scopeValidationResult.ErrorMessage,
                     authorizationParameter.State);
             }
 
-            if (!allowedScopes.Contains(Constants.StandardScopes.OpenId.Name))
+            if (!scopeValidationResult.Scopes.Contains(Constants.StandardScopes.OpenId.Name))
             {
                 throw new IdentityServerExceptionWithState(
                     ErrorCodes.InvalidScope,
@@ -147,7 +140,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
                     authorizationParameter.State);
             }
 
-            var responseTypes = _parameterParserHelper.ParseResponseType(authorizationParameter.ResponseType);
+            var responseTypes = _parameterParserHelper.ParseResponseTypes(authorizationParameter.ResponseType);
             if (!responseTypes.Any())
             {
                 throw new IdentityServerExceptionWithState(
@@ -156,7 +149,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
                     authorizationParameter.State);
             }
 
-            if (!_clientValidator.ValidateResponseTypes(responseTypes, client))
+            if (!_clientValidator.CheckResponseTypes(client, responseTypes.ToArray()))
             {
                 throw new IdentityServerExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
@@ -167,8 +160,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
             }
 
             // Check if the user connection is still valid.
-            if (endUserIsAuthenticated &&
-                !authorizationParameter.MaxAge.Equals(default(double)))
+            if (endUserIsAuthenticated && !authorizationParameter.MaxAge.Equals(default(double)))
             {
                 var authenticationDateTimeClaim =
                     claimsPrincipal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.AuthenticationInstant);
@@ -193,7 +185,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
                     authorizationParameter,
                     confirmedConsent);
 
-                ProcessIdTokenHint(result,
+                await ProcessIdTokenHint(result,
                     authorizationParameter,
                     prompts,
                     claimsPrincipal);
@@ -211,7 +203,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
             return result;
         }
 
-        private void ProcessIdTokenHint(
+        private async Task ProcessIdTokenHint(
             ActionResult actionResult,
             AuthorizationParameter authorizationParameter,
             ICollection<PromptParameter> prompts,
@@ -234,7 +226,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
                 string jwsToken;
                 if (_jwtParser.IsJweToken(token))
                 {
-                    jwsToken = _jwtParser.Decrypt(token);
+                    jwsToken = await _jwtParser.DecryptAsync(token);
                     if (string.IsNullOrWhiteSpace(jwsToken))
                     {
                         throw new IdentityServerExceptionWithState(
@@ -248,7 +240,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
                     jwsToken = token;
                 }
 
-                var jwsPayload = _jwtParser.UnSign(jwsToken);
+                var jwsPayload = await _jwtParser.UnSignAsync(jwsToken);
                 if (jwsPayload == null)
                 {
                     throw new IdentityServerExceptionWithState(
@@ -257,7 +249,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
                         authorizationParameter.State);
                 }
 
-                var issuerName = _configurationService.GetIssuerName();
+                var issuerName = await _configurationService.GetIssuerNameAsync();
                 if (jwsPayload.Audiences == null ||
                     !jwsPayload.Audiences.Any() ||
                     !jwsPayload.Audiences.Contains(issuerName))

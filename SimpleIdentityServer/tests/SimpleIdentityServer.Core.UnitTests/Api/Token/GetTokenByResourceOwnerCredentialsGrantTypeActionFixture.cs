@@ -145,8 +145,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             };
             var client = new AuthenticationResult(new Models.Client(), null);
             var resourceOwner = new ResourceOwner();
-
-            string message;
+            
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
@@ -154,8 +153,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _resourceOwnerValidatorFake.Setup(
                 r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(() => Task.FromResult(resourceOwner));
-            _scopeValidatorFake.Setup(s => s.IsScopesValid(It.IsAny<string>(), It.IsAny<Models.Client>(), out message))
-                .Returns(() => new List<string>());
+            _scopeValidatorFake.Setup(s => s.Check(It.IsAny<string>(), It.IsAny<Models.Client>()))
+                .Returns(() => new ScopeValidationResult(false));
 
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(resourceOwnerGrantTypeParameter, null));
@@ -197,7 +196,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 IdTokenPayLoad = new JwsPayload()
             };
 
-            string message;
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
@@ -205,11 +203,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _resourceOwnerValidatorFake.Setup(
                 r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(() => Task.FromResult(resourceOwner));
-            _scopeValidatorFake.Setup(s => s.IsScopesValid(It.IsAny<string>(), It.IsAny<Models.Client>(), out message))
-                .Returns(() => new List<string> { invalidScope });
+            _scopeValidatorFake.Setup(s => s.Check(It.IsAny<string>(), It.IsAny<Models.Client>()))
+                .Returns(() => new ScopeValidationResult(true)
+                {
+                    Scopes = new List<string> { invalidScope }
+                });
             _jwtGeneratorFake.Setup(
-                j => j.GenerateUserInfoPayloadForScope(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
-                .Returns(() => userInformationJwsPayload);
+                j => j.GenerateUserInfoPayloadForScopeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
+                .Returns(() => Task.FromResult(userInformationJwsPayload));
             _grantedTokenHelperStub.Setup(g => g.GetValidGrantedTokenAsync(It.IsAny<string>(),
                 It.IsAny<string>(),
                 It.IsAny<JwsPayload>(),

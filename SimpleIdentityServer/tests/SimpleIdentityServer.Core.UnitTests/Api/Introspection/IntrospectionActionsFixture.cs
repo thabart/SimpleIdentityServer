@@ -25,7 +25,7 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection
 {
-    public class IIntrospectionActionsFixture
+    public class IntrospectionActionsFixture
     {
         private Mock<IPostIntrospectionAction> _postIntrospectionActionStub;
 

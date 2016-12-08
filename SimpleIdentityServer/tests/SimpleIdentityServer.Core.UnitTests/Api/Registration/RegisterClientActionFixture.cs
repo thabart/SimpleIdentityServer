@@ -26,33 +26,29 @@ using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Logging;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
 {
     public sealed class RegisterClientActionFixture
     {
-
         private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSourceFake;
-
         private Mock<IClientRepository> _clientRepositoryFake;
-
         private Mock<IGenerateClientFromRegistrationRequest> _generateClientFromRegistrationRequest;
-
         private Mock<IPasswordService> _encryptedPasswordFactoryStub;
-
         private IRegisterClientAction _registerClientAction;
 
         #region Exceptions
 
         [Fact]
-        public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _registerClientAction.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _registerClientAction.Execute(null));
         }
 
         #endregion
@@ -60,7 +56,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
         #region Happy Path
         
         [Fact]
-        public void When_Passing_Registration_Parameter_With_Specific_Values_Then_Client_Is_Returned()
+        public async Task When_Passing_Registration_Parameter_With_Specific_Values_Then_Client_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -162,15 +158,15 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
             _generateClientFromRegistrationRequest.Setup(g => g.Execute(It.IsAny<RegistrationParameter>()))
                 .Returns(client);
                 
-            _clientRepositoryFake.Setup(c => c.InsertClient(It.IsAny<Models.Client>()))
+            _clientRepositoryFake.Setup(c => c.InsertAsync(It.IsAny<Models.Client>()))
                 .Callback<Models.Client>(c => client = c);
 
             // ACT
-            var result = _registerClientAction.Execute(registrationParameter);
+            var result = await _registerClientAction.Execute(registrationParameter);
 
             // ASSERT
             _simpleIdentityServerEventSourceFake.Verify(s => s.StartRegistration(clientName));
-            _clientRepositoryFake.Verify(c => c.InsertClient(It.IsAny<Models.Client>()));
+            _clientRepositoryFake.Verify(c => c.InsertAsync(It.IsAny<Models.Client>()));
             _simpleIdentityServerEventSourceFake.Verify(s => s.EndRegistration(It.IsAny<string>(), clientName));
             Assert.NotEmpty(result.ClientSecret);
             Assert.True(client.AllowedScopes.Contains(Constants.StandardScopes.OpenId));

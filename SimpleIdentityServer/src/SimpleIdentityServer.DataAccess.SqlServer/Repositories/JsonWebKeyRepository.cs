@@ -33,34 +33,25 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 
         private readonly IManagerEventSource _managerEventSource;
 
-        public JsonWebKeyRepository(
-            SimpleIdentityServerContext context,
-            IManagerEventSource managerEventSource)
+        public JsonWebKeyRepository(SimpleIdentityServerContext context, IManagerEventSource managerEventSource)
         {
             _context = context;
             _managerEventSource = managerEventSource;
         }
-        
-        public IList<Jwt.JsonWebKey> GetAll()
-        {
-            return GetAllAsync().Result;
-        }
 
-        public async Task<IList<Jwt.JsonWebKey>> GetAllAsync()
+        public async Task<ICollection<Jwt.JsonWebKey>> GetAllAsync()
         {
             return await _context.JsonWebKeys.Select(s => s.ToDomain()).ToListAsync().ConfigureAwait(false);
         }
 
-        public IList<Jwt.JsonWebKey> GetByAlgorithm(
-            Jwt.Use use,
-            Jwt.AllAlg algorithm,
-            Jwt.KeyOperations[] operations)
+        public async Task<ICollection<Jwt.JsonWebKey>> GetByAlgorithmAsync(Jwt.Use use, Jwt.AllAlg algorithm, Jwt.KeyOperations[] operations)
         {
             var algEnum = (Models.AllAlg)algorithm;
             var useEnum = (Models.Use)use;
-            var jsonWebKeys = _context.JsonWebKeys
+            var jsonWebKeys = await _context.JsonWebKeys
                 .Where(j => j.Use == useEnum && j.Alg == algEnum)
-                .ToList();
+                .ToListAsync()
+                .ConfigureAwait(false);
             jsonWebKeys = jsonWebKeys.Where(j =>
             {
                 if (string.IsNullOrWhiteSpace(j.KeyOps) || operations == null)
@@ -87,9 +78,9 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             return jsonWebKeys.Select(j => j.ToDomain()).ToList();
         }
 
-        public Jwt.JsonWebKey GetByKid(string kid)
+        public async Task<Jwt.JsonWebKey> GetByKidAsync(string kid)
         {
-            var jsonWebKey = _context.JsonWebKeys.FirstOrDefault(j => j.Kid == kid);
+            var jsonWebKey = await _context.JsonWebKeys.FirstOrDefaultAsync(j => j.Kid == kid).ConfigureAwait(false);
             if (jsonWebKey == null)
             {
                 return null;
@@ -98,20 +89,20 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             return jsonWebKey.ToDomain();
         }
 
-        public bool Delete(Jwt.JsonWebKey jsonWebKey)
+        public async Task<bool> DeleteAsync(Jwt.JsonWebKey jsonWebKey)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
                 try
                 {
-                    var jsonWebKeyToBeRemoved = _context.JsonWebKeys.FirstOrDefault(j => j.Kid == jsonWebKey.Kid);
+                    var jsonWebKeyToBeRemoved = await _context.JsonWebKeys.FirstOrDefaultAsync(j => j.Kid == jsonWebKey.Kid).ConfigureAwait(false);
                     if (jsonWebKeyToBeRemoved == null)
                     {
                         return false;
                     }
 
                     _context.JsonWebKeys.Remove(jsonWebKeyToBeRemoved);
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
                     transaction.Commit();
                 }
                 catch (Exception ex)
@@ -125,7 +116,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             return true;
         }
 
-        public bool Insert(Jwt.JsonWebKey jsonWebKey)
+        public async Task<bool> InsertAsync(Jwt.JsonWebKey jsonWebKey)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
@@ -158,7 +149,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                     };
 
                     _context.JsonWebKeys.Add(newJsonWebKeyRecord);
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
                     transaction.Commit();
                 }
                 catch (Exception ex)
@@ -172,20 +163,20 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             return true;
         }
 
-        public bool Update(Jwt.JsonWebKey jsonWebKey)
+        public async Task<bool> UpdateAsync(Jwt.JsonWebKey jsonWebKey)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
                 try
                 {
-                    var jsonWebKeyToBeUpdated = _context.JsonWebKeys.FirstOrDefault(j => j.Kid == jsonWebKey.Kid);
+                    var jsonWebKeyToBeUpdated = await _context.JsonWebKeys.FirstOrDefaultAsync(j => j.Kid == jsonWebKey.Kid).ConfigureAwait(false);
                     if (jsonWebKeyToBeUpdated == null)
                     {
                         return false;
                     }
 
                     jsonWebKeyToBeUpdated.SerializedKey = jsonWebKey.SerializedKey;
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
                     transaction.Commit();
                 }
                 catch (Exception ex)

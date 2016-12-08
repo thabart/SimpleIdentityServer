@@ -23,12 +23,11 @@ namespace SimpleIdentityServer.Core.Repositories
 {
     public interface IScopeRepository
     {
-        bool InsertScope(Scope scope);
-        Scope GetScopeByName(string name);
-        IEnumerable<Scope> SearchScopeByNames(IEnumerable<string> names);
-        Task<IEnumerable<Scope>> SearchScopeByNamesAsync(IEnumerable<string> names);
-        IList<Scope> GetAllScopes();
-        bool DeleteScope(Scope scope);
-        bool UpdateScope(Scope scope);
+        Task<Scope> GetAsync(string name);
+        Task<ICollection<Scope>> SearchByNamesAsync(IEnumerable<string> names);
+        Task<ICollection<Scope>> GetAllAsync();
+        Task<bool> InsertAsync(Scope scope);
+        Task<bool> DeleteAsync(Scope scope);
+        Task<bool> UpdateAsync(Scope scope);
     }
 }

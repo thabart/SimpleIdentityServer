@@ -26,12 +26,13 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Registration.Actions
 {
     public interface IRegisterClientAction
     {
-        RegistrationResponse Execute(RegistrationParameter registrationParameter);
+        Task<RegistrationResponse> Execute(RegistrationParameter registrationParameter);
     }
 
     public class RegisterClientAction : IRegisterClientAction
@@ -53,11 +54,11 @@ namespace SimpleIdentityServer.Core.Api.Registration.Actions
             _encryptedPasswordFactory = encryptedPasswordFactory;
         }
 
-        public RegistrationResponse Execute(RegistrationParameter registrationParameter)
+        public async Task<RegistrationResponse> Execute(RegistrationParameter registrationParameter)
         {
             if (registrationParameter == null)
             {
-                throw new ArgumentNullException("registrationParameter");
+                throw new ArgumentNullException(nameof(registrationParameter));
             }
 
             _simpleIdentityServerEventSource.StartRegistration(registrationParameter.ClientName);
@@ -124,7 +125,7 @@ namespace SimpleIdentityServer.Core.Api.Registration.Actions
             }
 
             client.ClientId = result.ClientId;
-            _clientRepository.InsertClient(client);
+            await _clientRepository.InsertAsync(client);
 
             _simpleIdentityServerEventSource.EndRegistration(result.ClientId, 
                 client.ClientName);

@@ -26,12 +26,13 @@ using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Authorization.Actions
 {
     public interface IGetTokenViaImplicitWorkflowOperation
     {
-        ActionResult Execute(AuthorizationParameter authorizationParameter, IPrincipal principal, Client client);
+        Task<ActionResult> Execute(AuthorizationParameter authorizationParameter, IPrincipal principal, Client client);
     }
 
     public class GetTokenViaImplicitWorkflowOperation : IGetTokenViaImplicitWorkflowOperation
@@ -56,7 +57,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
             _clientValidator = clientValidator;
         }
 
-        public ActionResult Execute(AuthorizationParameter authorizationParameter, IPrincipal principal, Client client)
+        public async Task<ActionResult> Execute(AuthorizationParameter authorizationParameter, IPrincipal principal, Client client)
         {
             if (authorizationParameter == null)
             {
@@ -81,7 +82,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
                 authorizationParameter.Scope,
                 authorizationParameter.Claims == null ? string.Empty : authorizationParameter.Claims.ToString());
 
-            if (!_clientValidator.ValidateGrantType(GrantType.@implicit, client))
+            if (!_clientValidator.CheckGrantTypes(client, GrantType.@implicit))
             {
                 throw new IdentityServerExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
@@ -91,7 +92,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
                     authorizationParameter.State);
             }
 
-            var result = _processAuthorizationRequest.Process(authorizationParameter, principal as ClaimsPrincipal, client);
+            var result = await _processAuthorizationRequest.ProcessAsync(authorizationParameter, principal as ClaimsPrincipal, client);
             if (result.Type == TypeActionResult.RedirectToCallBackUrl)
             {
                 var claimsPrincipal = principal as ClaimsPrincipal;

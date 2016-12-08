@@ -25,9 +25,9 @@ using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
-using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Services;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace SimpleIdentityServer.Core.Api.Token.Actions
 {
@@ -100,7 +100,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                 authenticationHeaderValue);
 
             // Invalidate the authorization code by removing it !
-            await _authorizationCodeRepository.RemoveAuthorizationCodeAsync(result.Code.Code);
+            await _authorizationCodeRepository.RemoveAsync(result.Code.Code);
             var grantedToken = await _grantedTokenHelper.GetValidGrantedTokenAsync(
                 result.Code.Scopes,
                 result.Code.ClientId,
@@ -152,7 +152,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                 throw new IdentityServerException(ErrorCodes.InvalidClient, authResult.ErrorMessage);
             }
 
-            var authorizationCode = await _authorizationCodeRepository.GetAuthorizationCodeAsync(authorizationCodeGrantTypeParameter.Code);
+            var authorizationCode = await _authorizationCodeRepository.GetAsync(authorizationCodeGrantTypeParameter.Code);
             // 2. Check if the authorization code is valid
             if (authorizationCode == null)
             {
@@ -176,7 +176,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             }
 
             // 4. Ensure the authorization code is still valid.
-            var authCodeValidity = _configurationService.GetAuthorizationCodeValidityPeriodInSeconds();
+            var authCodeValidity = await _configurationService.GetAuthorizationCodeValidityPeriodInSecondsAsync();
             var expirationDateTime = authorizationCode.CreateDateTime.AddSeconds(authCodeValidity);
             var currentDateTime = DateTime.UtcNow;
             if (currentDateTime > expirationDateTime)
@@ -186,8 +186,8 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             }
 
             // Ensure that the redirect_uri parameter value is identical to the redirect_uri parameter value.
-            var redirectionUrl = _clientValidator.ValidateRedirectionUrl(authorizationCodeGrantTypeParameter.RedirectUri, client);
-            if (redirectionUrl == null)
+            var redirectionUrl = _clientValidator.GetRedirectionUrls(client, authorizationCodeGrantTypeParameter.RedirectUri);
+            if (!redirectionUrl.Any())
             {
                 throw new IdentityServerException(
                     ErrorCodes.InvalidGrant,

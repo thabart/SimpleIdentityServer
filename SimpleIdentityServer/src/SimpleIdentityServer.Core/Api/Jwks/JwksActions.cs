@@ -24,7 +24,7 @@ namespace SimpleIdentityServer.Core.Api.Jwks
     public interface IJwksActions
     {
         Task<JsonWebKeySet> GetJwks();
-        bool RotateJwks();
+        Task<bool> RotateJwks();
     }
 
     public class JwksActions : IJwksActions
@@ -33,7 +33,6 @@ namespace SimpleIdentityServer.Core.Api.Jwks
 
         private readonly IGetSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction
             _getSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction;
-
         private readonly IRotateJsonWebKeysOperation _rotateJsonWebKeysOperation;
 
         public JwksActions(
@@ -61,9 +60,9 @@ namespace SimpleIdentityServer.Core.Api.Jwks
             return result;
         }
 
-        public bool RotateJwks()
+        public async Task<bool> RotateJwks()
         {
-            return _rotateJsonWebKeysOperation.Execute();
+            return await _rotateJsonWebKeysOperation.Execute();
         }
     }
 }

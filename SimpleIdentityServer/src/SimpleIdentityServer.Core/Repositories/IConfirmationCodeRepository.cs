@@ -15,15 +15,14 @@
 #endregion
 
 using SimpleIdentityServer.Core.Models;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Repositories
 {
     public interface IConfirmationCodeRepository
     {
-        ConfirmationCode Get(string code);
-
-        bool AddCode(ConfirmationCode code);
-
-        bool Remove(string code);
+        Task<ConfirmationCode> GetAsync(string code);
+        Task<bool> AddAsync(ConfirmationCode code);
+        Task<bool> RemoveAsync(string code);
     }
 }

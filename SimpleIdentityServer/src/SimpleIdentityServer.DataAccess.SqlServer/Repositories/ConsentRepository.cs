@@ -14,14 +14,14 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
 using SimpleIdentityServer.DataAccess.SqlServer.Models;
-using Microsoft.EntityFrameworkCore;
 using SimpleIdentityServer.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
@@ -36,12 +36,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             _context = context;
             _managerEventSource = managerEventSource;
         }
-
-        public IEnumerable<Core.Models.Consent> GetConsentsForGivenUser(string subject)
-        {
-            return GetConsentsForGivenUserAsync(subject).Result;
-        }
-
+        
         public async Task<IEnumerable<Core.Models.Consent>> GetConsentsForGivenUserAsync(string subject)
         {
             var resourceOwner = await _context.ResourceOwners
@@ -59,7 +54,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             return resourceOwner.Consents.Select(c => c.ToDomain());;
         }
 
-        public Core.Models.Consent InsertConsent(Core.Models.Consent record)
+        public async Task<Core.Models.Consent> InsertAsync(Core.Models.Consent record)
         {
             Core.Models.Consent result = null;
             using (var transaction = _context.Database.BeginTransaction())
@@ -68,14 +63,14 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                 {
                     var clientId = record.Client.ClientId;
                     var resourceOwnerId = record.ResourceOwner.Id;
-                    var client = _context.Clients.FirstOrDefault(c => c.ClientId == clientId);
-                    var resourceOwner = _context.ResourceOwners.FirstOrDefault(r => r.Id == resourceOwnerId);
+                    var client = await _context.Clients.FirstOrDefaultAsync(c => c.ClientId == clientId).ConfigureAwait(false);
+                    var resourceOwner = await _context.ResourceOwners.FirstOrDefaultAsync(r => r.Id == resourceOwnerId).ConfigureAwait(false);
                     var assignedClaims = new List<ConsentClaim>();
                     var assignedScopes = new List<ConsentScope>();
                     if (record.Claims != null)
                     {
                         var claimCodes = record.Claims;
-                        var codes = _context.Claims.Where(c => claimCodes.Contains(c.Code)).Select(c => c.Code).ToList();
+                        var codes = await _context.Claims.Where(c => claimCodes.Contains(c.Code)).Select(c => c.Code).ToListAsync().ConfigureAwait(false);
                         foreach (var code in codes)
                         {
                             assignedClaims.Add(new ConsentClaim
@@ -88,7 +83,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                     if (record.GrantedScopes != null)
                     {
                         var scopeNames = record.GrantedScopes.Select(g => g.Name);
-                        var names = _context.Scopes.Where(s => scopeNames.Contains(s.Name)).Select(s => s.Name).ToList();
+                        var names = await _context.Scopes.Where(s => scopeNames.Contains(s.Name)).Select(s => s.Name).ToListAsync().ConfigureAwait(false);
                         foreach (var name in names)
                         {
                             assignedScopes.Add(new ConsentScope
@@ -107,7 +102,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                     };
 
                     var insertedConsent = _context.Consents.Add(newConsent);
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
                     transaction.Commit();
                     result = insertedConsent.Entity.ToDomain();
                 }
@@ -121,21 +116,21 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             return result;
         }
 
-        public bool DeleteConsent(Core.Models.Consent record)
+        public async Task<bool> DeleteAsync(Core.Models.Consent record)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
                 try
                 {
                     var identifier = int.Parse(record.Id);
-                    var consent = _context.Consents.FirstOrDefault(c => c.Id == identifier);
+                    var consent = await _context.Consents.FirstOrDefaultAsync(c => c.Id == identifier).ConfigureAwait(false);
                     if (consent == null)
                     {
                         return false;
                     }
 
                     _context.Consents.Remove(consent);
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
                     transaction.Commit();
                 }
                 catch (Exception ex)

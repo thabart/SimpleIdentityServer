@@ -31,7 +31,6 @@ namespace SimpleIdentityServer.Core.Api.Jwks.Actions
     public class GetSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction : IGetSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction
     {
         private readonly IJsonWebKeyEnricher _jsonWebKeyEnricher;
-
         private readonly IJsonWebKeyRepository _jsonWebKeyRepository;
 
         public GetSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction(

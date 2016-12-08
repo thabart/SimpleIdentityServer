@@ -21,18 +21,16 @@ using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Core.Services;
 using System.Threading.Tasks;
+using SimpleIdentityServer.Core.Repositories;
 
 namespace SimpleIdentityServer.Core.Authenticate
 {
     public interface IClientAssertionAuthentication
     {
         string GetClientId(AuthenticateInstruction instruction);
-        AuthenticationResult AuthenticateClientWithPrivateKeyJwt(AuthenticateInstruction instruction);
         Task<AuthenticationResult> AuthenticateClientWithPrivateKeyJwtAsync(AuthenticateInstruction instruction);
-        AuthenticationResult AuthenticateClientWithClientSecretJwt(AuthenticateInstruction instruction, string clientSecret);
         Task<AuthenticationResult> AuthenticateClientWithClientSecretJwtAsync(AuthenticateInstruction instruction, string clientSecret);
     }
 
@@ -40,24 +38,55 @@ namespace SimpleIdentityServer.Core.Authenticate
     {
         private readonly IJwsParser _jwsParser;        
         private readonly IConfigurationService _configurationService;
-        private readonly IClientValidator _clientValidator;
+        private readonly IClientRepository _clientRepository;
         private readonly IJwtParser _jwtParser;
 
         public ClientAssertionAuthentication(
             IJwsParser jwsParser,
             IConfigurationService configurationService,
-            IClientValidator clientValidator,
+            IClientRepository clientRepository,
             IJwtParser jwtParser)
         {
             _jwsParser = jwsParser;
             _configurationService = configurationService;
-            _clientValidator = clientValidator;
+            _clientRepository = clientRepository;
             _jwtParser = jwtParser;
         }
 
-        public AuthenticationResult AuthenticateClientWithPrivateKeyJwt(AuthenticateInstruction instruction)
+        /// <summary>
+        /// Try to get the client id.
+        /// </summary>
+        /// <param name="instruction"></param>
+        /// <returns></returns>
+        public string GetClientId(AuthenticateInstruction instruction)
         {
-            return AuthenticateClientWithPrivateKeyJwtAsync(instruction).Result;
+            if (instruction.ClientAssertionType != Common.ClientAssertionTypes.JwtBearer || string.IsNullOrWhiteSpace(instruction.ClientAssertion))
+            {
+                return string.Empty;
+            }
+
+            var clientAssertion = instruction.ClientAssertion;
+            var isJweToken = _jwtParser.IsJweToken(clientAssertion);
+            var isJwsToken = _jwtParser.IsJwsToken(clientAssertion);
+            if (isJweToken && isJwsToken)
+            {
+                return string.Empty;
+            }
+
+            // It's a JWE token then return the client_id from the HTTP body
+            if (isJweToken)
+            {
+                return instruction.ClientIdFromHttpRequestBody;
+            }
+
+            // It's a JWS token then return the client_id from the token.
+            var payload = _jwsParser.GetPayload(clientAssertion);
+            if (payload == null)
+            {
+                return string.Empty;
+            }
+
+            return payload.Issuer;
         }
 
         public async Task<AuthenticationResult> AuthenticateClientWithPrivateKeyJwtAsync(AuthenticateInstruction instruction)
@@ -90,12 +119,7 @@ namespace SimpleIdentityServer.Core.Authenticate
 
             return await ValidateJwsPayLoad(payload);
         }
-
-        public AuthenticationResult AuthenticateClientWithClientSecretJwt(AuthenticateInstruction instruction, string clientSecret)
-        {
-            return AuthenticateClientWithClientSecretJwtAsync(instruction, clientSecret).Result;
-        }
-
+        
         public async Task<AuthenticationResult> AuthenticateClientWithClientSecretJwtAsync(AuthenticateInstruction instruction, string clientSecret)
         {
             if (instruction == null)
@@ -132,47 +156,11 @@ namespace SimpleIdentityServer.Core.Authenticate
 
             return await ValidateJwsPayLoad(jwsPayload);
         }
-
-        /// <summary>
-        /// Try to get the client id.
-        /// </summary>
-        /// <param name="instruction"></param>
-        /// <returns></returns>
-        public string GetClientId(AuthenticateInstruction instruction)
-        {
-            if (instruction.ClientAssertionType != Common.ClientAssertionTypes.JwtBearer || string.IsNullOrWhiteSpace(instruction.ClientAssertion))
-            {
-                return string.Empty;
-            }
-
-            var clientAssertion = instruction.ClientAssertion;
-            var isJweToken = _jwtParser.IsJweToken(clientAssertion);
-            var isJwsToken = _jwtParser.IsJwsToken(clientAssertion);
-            if (isJweToken && isJwsToken)
-            {
-                return string.Empty;
-            }
-            
-            // It's a JWE token then return the client_id from the HTTP body
-            if (isJweToken)
-            {
-                return instruction.ClientIdFromHttpRequestBody;
-            }
-
-            // It's a JWS token then return the client_id from the token.
-            var payload = _jwsParser.GetPayload(clientAssertion);
-            if (payload == null)
-            {
-                return string.Empty;
-            }
-
-            return payload.Issuer;
-        }
-
+        
         private async Task<AuthenticationResult> ValidateJwsPayLoad(JwsPayload jwsPayload)
         {
             // The checks are coming from this url : http://openid.net/specs/openid-connect-core-1_0.html#ClientAuthentication
-            var expectedIssuer = _configurationService.GetIssuerName();
+            var expectedIssuer = await _configurationService.GetIssuerNameAsync();
             var jwsIssuer = jwsPayload.Issuer;
             var jwsSubject = jwsPayload.GetClaimValue(Jwt.Constants.StandardResourceOwnerClaimNames.Subject);
             var jwsAudiences = jwsPayload.Audiences;
@@ -181,7 +169,7 @@ namespace SimpleIdentityServer.Core.Authenticate
             // 1. Check the issuer is correct.
             if (!string.IsNullOrWhiteSpace(jwsIssuer))
             {
-                client = await _clientValidator.ValidateClientExistAsync(jwsIssuer);
+                client = await _clientRepository.GetClientByIdAsync(jwsIssuer);
             }
 
             // 2. Check the client is correct.

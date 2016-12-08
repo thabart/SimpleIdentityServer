@@ -14,9 +14,11 @@
 // limitations under the License.
 #endregion
 
-using System.Linq;
-using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 using SimpleIdentityServer.Core.Repositories;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 {
@@ -29,14 +31,15 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             _context = context;
         }
         
-        public IList<string> GetAll()
+        public async Task<ICollection<string>> GetAllAsync()
         {
-            return _context.Claims.Select(c => c.Code).ToList();
+            return await _context.Claims.Select(c => c.Code).ToListAsync().ConfigureAwait(false);
         }
 
-        public bool HasClaim(string name)
+        public async Task<string> GetAsync(string name)
         {
-            return _context.Claims.Any(c => c.Code == name);
+            var result = await _context.Claims.FirstOrDefaultAsync(c => c.Code == name).ConfigureAwait(false);
+            return result == null ? null : result.Code;
         }
     }
 }

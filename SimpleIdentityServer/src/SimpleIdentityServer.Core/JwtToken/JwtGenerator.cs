@@ -41,16 +41,13 @@ namespace SimpleIdentityServer.Core.JwtToken
 {
     public interface IJwtGenerator
     {
-        JwsPayload GenerateIdTokenPayloadForScopes(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter);
         Task<JwsPayload> GenerateIdTokenPayloadForScopesAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter);
-        JwsPayload GenerateFilteredIdTokenPayload(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter, List<ClaimParameter> claimParameters);
         Task<JwsPayload> GenerateFilteredIdTokenPayloadAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter, List<ClaimParameter> claimParameters);
-        JwsPayload GenerateUserInfoPayloadForScope(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter);
         Task<JwsPayload> GenerateUserInfoPayloadForScopeAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter);
         JwsPayload GenerateFilteredUserInfoPayload(List<ClaimParameter> claimParameters, ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter);
         void FillInOtherClaimsIdentityTokenPayload(JwsPayload jwsPayload, string authorizationCode, string accessToken, AuthorizationParameter authorizationParameter, Client client);
-        string Sign(JwsPayload jwsPayload, JwsAlg alg);
-        string Encrypt(string jwe, JweAlg jweAlg, JweEnc jweEnc);
+        Task<string> SignAsync(JwsPayload jwsPayload, JwsAlg alg);
+        Task<string> EncryptAsync(string jwe, JweAlg jweAlg, JweEnc jweEnc);
     }
 
     public class JwtGenerator : IJwtGenerator
@@ -128,11 +125,6 @@ namespace SimpleIdentityServer.Core.JwtToken
 
         #region Public methods
 
-        public JwsPayload GenerateIdTokenPayloadForScopes(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter)
-        {
-            return GenerateIdTokenPayloadForScopesAsync(claimsPrincipal, authorizationParameter).Result;
-        }
-
         public async Task<JwsPayload> GenerateIdTokenPayloadForScopesAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter)
         {
             if (authorizationParameter == null)
@@ -151,11 +143,6 @@ namespace SimpleIdentityServer.Core.JwtToken
             await FillInIdentityTokenClaims(result, authorizationParameter, new List<ClaimParameter>(), claimsPrincipal);
             await FillInResourceOwnerClaimsFromScopes(result, authorizationParameter, claimsPrincipal);
             return result;
-        }
-
-        public JwsPayload GenerateFilteredIdTokenPayload(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter, List<ClaimParameter> claimParameters)
-        {
-            return GenerateFilteredIdTokenPayloadAsync(claimsPrincipal, authorizationParameter, claimParameters).Result;
         }
 
         public async Task<JwsPayload> GenerateFilteredIdTokenPayloadAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter, List<ClaimParameter> claimParameters)
@@ -177,12 +164,7 @@ namespace SimpleIdentityServer.Core.JwtToken
             FillInResourceOwnerClaimsByClaimsParameter(result, claimParameters, claimsPrincipal, authorizationParameter);
             return result;
         }
-
-        public JwsPayload GenerateUserInfoPayloadForScope(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter)
-        {
-            return GenerateUserInfoPayloadForScopeAsync(claimsPrincipal, authorizationParameter).Result;
-        }
-
+        
         public async Task<JwsPayload> GenerateUserInfoPayloadForScopeAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter)
         {
             if (claimsPrincipal == null ||
@@ -264,26 +246,18 @@ namespace SimpleIdentityServer.Core.JwtToken
             }
         }
 
-        public string Sign(
-            JwsPayload jwsPayload,
-            JwsAlg alg)
+        public async Task<string> SignAsync(JwsPayload jwsPayload, JwsAlg alg)
         {
-            var jsonWebKey = GetJsonWebKey(
+            var jsonWebKey = await GetJsonWebKey(
                 alg.ToAllAlg(),
                 KeyOperations.Sign,
                 Use.Sig);
-            return _jwsGenerator.Generate(
-                jwsPayload,
-                alg, 
-                jsonWebKey);
+            return _jwsGenerator.Generate(jwsPayload, alg, jsonWebKey);
         }
 
-        public string Encrypt(
-            string jwe,
-            JweAlg jweAlg,
-            JweEnc jweEnc)
+        public async Task<string> EncryptAsync(string jwe, JweAlg jweAlg, JweEnc jweEnc)
         {
-            var jsonWebKey = GetJsonWebKey(
+            var jsonWebKey = await GetJsonWebKey(
                 jweAlg.ToAllAlg(),
                 KeyOperations.Encrypt,
                 Use.Enc);
@@ -319,7 +293,7 @@ namespace SimpleIdentityServer.Core.JwtToken
             }
 
             // 2. Fill-in the other claims
-            var scopes = _parameterParserHelper.ParseScopeParameters(authorizationParameter.Scope);
+            var scopes = _parameterParserHelper.ParseScopes(authorizationParameter.Scope);
             var claims = await GetClaimsFromRequestedScopes(scopes, claimsPrincipal);
             foreach (var claim in claims)
             {
@@ -410,8 +384,8 @@ namespace SimpleIdentityServer.Core.JwtToken
             var amrParameter = claimParameters.FirstOrDefault(c => c.Name == Jwt.Constants.StandardClaimNames.Amr);
             var azpParameter = claimParameters.FirstOrDefault(c => c.Name == Jwt.Constants.StandardClaimNames.Azp);
 
-            var timeKeyValuePair = GetExpirationAndIssuedTime();
-            var issuerName = _configurationService.GetIssuerName();
+            var timeKeyValuePair = await GetExpirationAndIssuedTime();
+            var issuerName = await _configurationService.GetIssuerNameAsync();
             var audiences = new List<string>();
             var expirationInSeconds = timeKeyValuePair.Key;
             var issuedAtTime = timeKeyValuePair.Value;
@@ -423,7 +397,7 @@ namespace SimpleIdentityServer.Core.JwtToken
             foreach(var client in clients)
             {
                 var isClientSupportIdTokenResponseType =
-                    _clientValidator.ValidateResponseType(ResponseType.id_token, client);
+                    _clientValidator.CheckResponseTypes(client, ResponseType.id_token);
                 if (isClientSupportIdTokenResponseType ||
                     client.ClientId == authorizationParameter.ClientId)
                 {
@@ -631,7 +605,7 @@ namespace SimpleIdentityServer.Core.JwtToken
         private async Task<Dictionary<string, string>> GetClaimsFromRequestedScopes(IEnumerable<string> scopes, ClaimsPrincipal claimsPrincipal)
         {
             var result = new Dictionary<string, string>();
-            var returnedScopes = await _scopeRepository.SearchScopeByNamesAsync(scopes);
+            var returnedScopes = await _scopeRepository.SearchByNamesAsync(scopes);
             foreach (var returnedScope in returnedScopes)
             {
                 result.AddRange(GetClaims(returnedScope.Claims, claimsPrincipal));
@@ -657,13 +631,13 @@ namespace SimpleIdentityServer.Core.JwtToken
             return result;
         }
 
-        private JsonWebKey GetJsonWebKey(
+        private async Task<JsonWebKey> GetJsonWebKey(
             AllAlg alg,
             KeyOperations operation,
             Use use)
         {
             JsonWebKey result = null;
-            var jsonWebKeys = _jsonWebKeyRepository.GetByAlgorithm(
+            var jsonWebKeys = await _jsonWebKeyRepository.GetByAlgorithmAsync(
                 use,
                 alg,
                 new[] { operation });
@@ -675,10 +649,10 @@ namespace SimpleIdentityServer.Core.JwtToken
             return result;
         }
 
-        private KeyValuePair<double, double> GetExpirationAndIssuedTime()
+        private async Task<KeyValuePair<double, double>> GetExpirationAndIssuedTime()
         {
             var currentDateTime = DateTimeOffset.UtcNow;
-            var expiredDateTime = currentDateTime.AddSeconds(_configurationService.GetTokenValidityPeriodInSeconds());
+            var expiredDateTime = currentDateTime.AddSeconds(await _configurationService.GetTokenValidityPeriodInSecondsAsync());
             var expirationInSeconds = expiredDateTime.ConvertToUnixTimestamp();
             var iatInSeconds = currentDateTime.ConvertToUnixTimestamp();
             return new KeyValuePair<double, double>(expirationInSeconds, iatInSeconds);

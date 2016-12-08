@@ -22,13 +22,12 @@ namespace SimpleIdentityServer.Core.Repositories
 {
     public interface IResourceOwnerRepository
     {
-        ResourceOwner GetByUniqueClaim(string id);
-        ResourceOwner GetByUniqueClaim(string id, string password);
-        Task<ResourceOwner> GetByUniqueClaimAsync(string id, string password);
-        bool Insert(ResourceOwner resourceOwner);
-        bool Update(ResourceOwner resourceOwner);
-        List<ResourceOwner> GetAll();
-        bool Delete(string subject);
-        List<ResourceOwner> GetResourceOwners(IEnumerable<System.Security.Claims.Claim> claims);
+        Task<ResourceOwner> GetAsync(string id);
+        Task<ResourceOwner> GetAsync(string id, string password);
+        Task<ICollection<ResourceOwner>> GetAsync(IEnumerable<System.Security.Claims.Claim> claims);
+        Task<ICollection<ResourceOwner>> GetAllAsync();
+        Task<bool> InsertAsync(ResourceOwner resourceOwner);
+        Task<bool> UpdateAsync(ResourceOwner resourceOwner);
+        Task<bool> DeleteAsync(string subject);
     }
 }

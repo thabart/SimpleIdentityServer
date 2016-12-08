@@ -5,6 +5,7 @@ using SimpleIdentityServer.Core.Api.Discovery.Actions;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
 using Xunit;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Discovery
 {
@@ -15,14 +16,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Discovery
         private ICreateDiscoveryDocumentationAction _createDiscoveryDocumentationAction;
 
         [Fact]
-        public void When_Expose_Two_Scopes_Then_DiscoveryDocument_Is_Correct()
+        public async Task When_Expose_Two_Scopes_Then_DiscoveryDocument_Is_Correct()
         {
             // ARRANGE
             InitializeFakeObjects();
             const string firstScopeName = "firstScopeName";
             const string secondScopeName = "secondScopeName";
             const string notExposedScopeName = "notExposedScopeName";
-            var scopes = new List<Scope>
+            ICollection<Scope> scopes = new List<Scope>
             {
                 new Scope
                 {
@@ -40,13 +41,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Discovery
                     Name = secondScopeName
                 }
             };
-            _scopeRepositoryStub.Setup(s => s.GetAllScopes())
-                .Returns(scopes);
-            _claimRepositoryStub.Setup(c => c.GetAll())
-                .Returns(() => new List<string> { "claim" });
+            ICollection<string> claims = new List<string> { "claim" };
+            _scopeRepositoryStub.Setup(s => s.GetAllAsync())
+                .Returns(Task.FromResult(scopes));
+            _claimRepositoryStub.Setup(c => c.GetAllAsync())
+                .Returns(() => Task.FromResult(claims));
 
             // ACT
-            var discoveryInformation = _createDiscoveryDocumentationAction.Execute();
+            var discoveryInformation = await _createDiscoveryDocumentationAction.Execute();
 
             // ASSERT
             Assert.NotNull(discoveryInformation);

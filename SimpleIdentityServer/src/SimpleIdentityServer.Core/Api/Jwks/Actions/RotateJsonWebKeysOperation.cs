@@ -1,12 +1,13 @@
 ﻿using SimpleIdentityServer.Core.Repositories;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Jwks.Actions
 {
     public interface IRotateJsonWebKeysOperation
     {
-        bool Execute();
+        Task<bool> Execute();
     }
 
     public class RotateJsonWebKeysOperation : IRotateJsonWebKeysOperation
@@ -24,9 +25,9 @@ namespace SimpleIdentityServer.Core.Api.Jwks.Actions
 
         #region Public methods
 
-        public bool Execute()
+        public async Task<bool> Execute()
         {
-            var jsonWebKeys = _jsonWebKeyRepository.GetAll();
+            var jsonWebKeys = await _jsonWebKeyRepository.GetAllAsync();
             if (jsonWebKeys == null ||
                 !jsonWebKeys.Any())
             {
@@ -49,7 +50,7 @@ namespace SimpleIdentityServer.Core.Api.Jwks.Actions
 #endif
 
                 jsonWebKey.SerializedKey = serializedRsa;
-                _jsonWebKeyRepository.Update(jsonWebKey);
+                await _jsonWebKeyRepository.UpdateAsync(jsonWebKey);
             }
 
             return true;

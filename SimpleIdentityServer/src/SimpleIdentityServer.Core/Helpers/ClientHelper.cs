@@ -36,9 +36,7 @@ namespace SimpleIdentityServer.Core.Helpers
         private readonly IClientValidator _clientValidator;
         private readonly IJwtGenerator _jwtGenerator;
 
-        public ClientHelper(
-            IClientValidator clientValidator,
-            IJwtGenerator jwtGenerator)
+        public ClientHelper(IClientValidator clientValidator, IJwtGenerator jwtGenerator)
         {
             _clientValidator = clientValidator;
             _jwtGenerator = jwtGenerator;

@@ -24,7 +24,6 @@ using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
 using System;
-using System.Linq;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
@@ -40,23 +39,14 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
     internal class GetTokenByClientCredentialsGrantTypeAction : IGetTokenByClientCredentialsGrantTypeAction
     {
         private readonly IAuthenticateInstructionGenerator _authenticateInstructionGenerator;
-
         private readonly IAuthenticateClient _authenticateClient;
-
         private readonly IClientValidator _clientValidator;
-
         private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
-
         private readonly IScopeValidator _scopeValidator;
-
         private readonly IGrantedTokenRepository _grantedTokenRepository;
-
         private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
-
         private readonly IClientCredentialsGrantTypeParameterValidator _clientCredentialsGrantTypeParameterValidator;
-
         private readonly IClientHelper _clientHelper;
-
         private readonly IGrantedTokenHelper _grantedTokenHelper;
 
         #region Constructor
@@ -129,17 +119,15 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             string allowedTokenScopes = string.Empty;
             if (!string.IsNullOrWhiteSpace(clientCredentialsGrantTypeParameter.Scope))
             {
-                string messageErrorDescription;
-                var scopes = _scopeValidator.IsScopesValid(clientCredentialsGrantTypeParameter.Scope, client, out messageErrorDescription);
-                if (scopes == null ||
-                    !scopes.Any())
+                var scopeValidation = _scopeValidator.Check(clientCredentialsGrantTypeParameter.Scope, client);
+                if (!scopeValidation.IsValid)
                 {
                     throw new IdentityServerException(
                         ErrorCodes.InvalidScope,
-                        messageErrorDescription);
+                        scopeValidation.ErrorMessage);
                 }
 
-                allowedTokenScopes = string.Join(" ", scopes);
+                allowedTokenScopes = string.Join(" ", scopeValidation.Scopes);
             }
 
             // 4. Generate token

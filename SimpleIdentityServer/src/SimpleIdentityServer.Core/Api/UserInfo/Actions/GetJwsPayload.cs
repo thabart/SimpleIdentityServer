@@ -29,12 +29,13 @@ using SimpleIdentityServer.Core.Validators;
 using System;
 using System.Buffers;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
 {
     public interface IGetJwsPayload
     {
-        UserInfoResult Execute(string accessToken);
+        Task<UserInfoResult> Execute(string accessToken);
     }
 
     public class GetJwsPayload : IGetJwsPayload
@@ -56,7 +57,7 @@ namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
             _clientRepository = clientRepository;
         }
 
-        public UserInfoResult Execute(string accessToken)
+        public async Task<UserInfoResult> Execute(string accessToken)
         {
             if (string.IsNullOrWhiteSpace(accessToken))
             {
@@ -70,11 +71,11 @@ namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
                 throw new AuthorizationException(valResult.MessageErrorCode, valResult.MessageErrorDescription);
             }
 
-            var grantedToken = _grantedTokenRepository.GetToken(accessToken);
-            var client = _clientRepository.GetClientById(grantedToken.ClientId);
+            var grantedToken = await _grantedTokenRepository.GetTokenAsync(accessToken);
+            var client = await _clientRepository.GetClientByIdAsync(grantedToken.ClientId);
             if (client == null)
             {
-                client = _clientRepository.GetClientById(Constants.AnonymousClientId);
+                client = await _clientRepository.GetClientByIdAsync(Constants.AnonymousClientId);
                 if (client == null)
                 {
                     throw new IdentityServerException(ErrorCodes.InternalError,
@@ -99,7 +100,7 @@ namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
                 };
             }
 
-            var jwt = _jwtGenerator.Sign(userInformationPayload,
+            var jwt = await _jwtGenerator.SignAsync(userInformationPayload,
                 signedResponseAlg.Value);
             var encryptedResponseAlg = client.GetUserInfoEncryptedResponseAlg();
             var encryptedResponseEnc = client.GetUserInfoEncryptedResponseEnc();
@@ -110,7 +111,7 @@ namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
                     encryptedResponseEnc = JweEnc.A128CBC_HS256;
                 }
 
-                jwt = _jwtGenerator.Encrypt(jwt,
+                jwt = await _jwtGenerator.EncryptAsync(jwt,
                     encryptedResponseAlg.Value,
                     encryptedResponseEnc.Value);
             }

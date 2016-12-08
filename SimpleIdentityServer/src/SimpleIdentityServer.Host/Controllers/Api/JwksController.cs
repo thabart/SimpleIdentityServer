@@ -39,9 +39,9 @@ namespace SimpleIdentityServer.Api.Controllers.Api
         }
 
         [HttpPut]
-        public bool Put()
+        public async Task<bool> Put()
         {
-            return _jwksActions.RotateJwks();
+            return await _jwksActions.RotateJwks();
         }
     }
 }

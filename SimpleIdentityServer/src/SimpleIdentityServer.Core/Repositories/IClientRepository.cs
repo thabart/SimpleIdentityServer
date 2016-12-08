@@ -21,13 +21,11 @@ namespace SimpleIdentityServer.Core.Repositories
 {
     public interface IClientRepository
     {
-        Models.Client GetClientById(string clientId);
         Task<Models.Client> GetClientByIdAsync(string clientId);
-        bool InsertClient(Models.Client client);
-        bool DeleteClient(Models.Client client);
-        IEnumerable<Models.Client> GetAll();
         Task<IEnumerable<Models.Client>> GetAllAsync();
-        bool UpdateClient(Models.Client client);
-        bool RemoveAll();
+        Task<bool> UpdateAsync(Models.Client client);
+        Task<bool> RemoveAllAsync();
+        Task<bool> InsertAsync(Models.Client client);
+        Task<bool> DeleteAsync(Models.Client client);
     }
 }

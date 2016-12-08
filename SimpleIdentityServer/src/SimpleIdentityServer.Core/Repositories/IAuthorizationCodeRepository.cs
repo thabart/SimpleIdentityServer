@@ -21,11 +21,8 @@ namespace SimpleIdentityServer.Core.Repositories
 {
     public interface IAuthorizationCodeRepository
     {
-        bool AddAuthorizationCode(AuthorizationCode authorizationCode);
-        Task<bool> AddAuthorizationCodeAsync(AuthorizationCode authorizationCode);
-        AuthorizationCode GetAuthorizationCode(string code);
-        Task<AuthorizationCode> GetAuthorizationCodeAsync(string code);
-        bool RemoveAuthorizationCode(string code);
-        Task<bool> RemoveAuthorizationCodeAsync(string code);
+        Task<bool> AddAsync(AuthorizationCode authorizationCode);
+        Task<AuthorizationCode> GetAsync(string code);
+        Task<bool> RemoveAsync(string code);
     }
 }

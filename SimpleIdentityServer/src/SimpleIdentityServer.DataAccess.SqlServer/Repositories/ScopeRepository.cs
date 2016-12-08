@@ -14,15 +14,15 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.EntityFrameworkCore;
+using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
+using SimpleIdentityServer.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SimpleIdentityServer.Core.Repositories;
-using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
-using Domains = SimpleIdentityServer.Core.Models;
-using Microsoft.EntityFrameworkCore;
-using SimpleIdentityServer.Logging;
 using System.Threading.Tasks;
+using Domains = SimpleIdentityServer.Core.Models;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 {
@@ -39,7 +39,45 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             _managerEventSource = managerEventSource;
         }
 
-        public bool InsertScope(Domains.Scope scope)
+        public async Task<Domains.Scope> GetAsync(string name)
+        {
+            var result = await _context.Scopes
+                .Include(s => s.ScopeClaims).ThenInclude(c => c.Claim)
+                .FirstOrDefaultAsync(s => s.Name == name)
+                .ConfigureAwait(false);
+            if (result == null)
+            {
+                return null;
+            }
+
+            return result.ToDomain();
+        }
+
+        public async Task<ICollection<Domains.Scope>> SearchByNamesAsync(IEnumerable<string> names)
+        {
+            if (names == null)
+            {
+                throw new ArgumentNullException(nameof(names));
+            }
+
+            return await _context.Scopes
+                .Include(s => s.ScopeClaims).ThenInclude(c => c.Claim)
+                .Where(s => names.Contains(s.Name))
+                .Select(s => s.ToDomain())
+                .ToListAsync()
+                .ConfigureAwait(false);
+        }
+
+        public async Task<ICollection<Domains.Scope>> GetAllAsync()
+        {
+            return await _context.Scopes
+                .Include(s => s.ScopeClaims).ThenInclude(c => c.Claim)
+                .Select(r => r.ToDomain())
+                .ToListAsync()
+                .ConfigureAwait(false);
+        }
+
+        public async Task<bool> InsertAsync(Domains.Scope scope)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
@@ -59,7 +97,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                     if (scope.Claims != null &&
                         scope.Claims.Any())
                     {
-                        foreach(var type in scope.Claims)
+                        foreach (var type in scope.Claims)
                         {
                             var rec = _context.Claims.FirstOrDefault(c => c.Code == type);
                             if (rec == null)
@@ -73,7 +111,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                     }
 
                     _context.Scopes.Add(record);
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
                     transaction.Commit();
                 }
                 catch (Exception ex)
@@ -87,72 +125,22 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             return true;
         }
 
-        public Domains.Scope GetScopeByName(string name)
-        {
-            var result = _context.Scopes
-                .FirstOrDefault(s => s.Name == name);
-            if (result == null)
-            {
-                return null;
-            }
-
-
-            result.ScopeClaims = _context.ScopeClaims
-                .Include(c => c.Claim)
-                .Where(c => c.ScopeName == name)
-                .ToList();
-            return result.ToDomain();
-        }
-
-        public IEnumerable<Domains.Scope> SearchScopeByNames(IEnumerable<string> names)
-        {
-            return SearchScopeByNamesAsync(names).Result;
-        }
-
-        public async Task<IEnumerable<Domains.Scope>> SearchScopeByNamesAsync(IEnumerable<string> names)
-        {
-            if (names == null)
-            {
-                throw new ArgumentNullException(nameof(names));
-            }
-
-            return await _context.Scopes
-                .Include(s => s.ScopeClaims).ThenInclude(c => c.Claim)
-                .Where(s => names.Contains(s.Name))
-                .Select(s => s.ToDomain())
-                .ToListAsync()
-                .ConfigureAwait(false);
-        }
-
-        public IList<Domains.Scope> GetAllScopes()
-        {
-            var result = _context.Scopes.ToList();
-            foreach(var scope in result)
-            {
-                scope.ScopeClaims = _context.ScopeClaims
-                .Include(c => c.Claim)
-                .Where(c => c.ScopeName == scope.Name)
-                .ToList();
-            }
-
-            return result.Select(r => r.ToDomain()).ToList();
-        }
-
-        public bool DeleteScope(Domains.Scope scope)
+        public async Task<bool> DeleteAsync(Domains.Scope scope)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
                 try
                 {
-                    var connectedScope = _context.Scopes
-                        .FirstOrDefault(c => c.Name == scope.Name);
+                    var connectedScope = await _context.Scopes
+                        .FirstOrDefaultAsync(c => c.Name == scope.Name)
+                        .ConfigureAwait(false);
                     if (connectedScope == null)
                     {
                         return false;
                     }
 
                     _context.Scopes.Remove(connectedScope);
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync();
                     transaction.Commit();
 
                 }
@@ -167,15 +155,16 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             return true;
         }
 
-        public bool UpdateScope(Domains.Scope scope)
+        public async Task<bool> UpdateAsync(Domains.Scope scope)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
                 try
                 {
-                    var connectedScope = _context.Scopes
+                    var connectedScope = await _context.Scopes
                         .Include(s => s.ScopeClaims)
-                        .FirstOrDefault(c => c.Name == scope.Name);
+                        .FirstOrDefaultAsync(c => c.Name == scope.Name)
+                        .ConfigureAwait(false);
                     connectedScope.Description = scope.Description;
                     connectedScope.IsOpenIdScope = scope.IsOpenIdScope;
                     connectedScope.IsDisplayedInConsent = scope.IsDisplayedInConsent;
@@ -213,7 +202,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                         _context.ScopeClaims.Remove(scopeClaim);
                     }
 
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
                     transaction.Commit();
 
                 }

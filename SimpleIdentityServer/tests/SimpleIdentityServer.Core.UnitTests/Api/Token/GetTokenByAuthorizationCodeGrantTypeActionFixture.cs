@@ -28,6 +28,7 @@ using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
 using System;
+using System.Collections.Generic;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Xunit;
@@ -102,7 +103,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
                 .Returns(() => Task.FromResult(client));
-            _authorizationCodeRepositoryFake.Setup(a => a.GetAuthorizationCodeAsync(It.IsAny<string>()))
+            _authorizationCodeRepositoryFake.Setup(a => a.GetAsync(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((AuthorizationCode)null));
 
             // ACT & ASSERTS
@@ -135,7 +136,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
                 .Returns(() => Task.FromResult(result));
-            _authorizationCodeRepositoryFake.Setup(a => a.GetAuthorizationCodeAsync(It.IsAny<string>()))
+            _authorizationCodeRepositoryFake.Setup(a => a.GetAsync(It.IsAny<string>()))
                 .Returns(() => Task.FromResult(authorizationCode));
 
             // ACT & ASSERTS
@@ -172,7 +173,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
                 .Returns(Task.FromResult(result));
-            _authorizationCodeRepositoryFake.Setup(a => a.GetAuthorizationCodeAsync(It.IsAny<string>()))
+            _authorizationCodeRepositoryFake.Setup(a => a.GetAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(authorizationCode));
 
             // ACT & ASSERTS
@@ -207,10 +208,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
                 .Returns(Task.FromResult(result));
-            _authorizationCodeRepositoryFake.Setup(a => a.GetAuthorizationCodeAsync(It.IsAny<string>()))
+            _authorizationCodeRepositoryFake.Setup(a => a.GetAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(authorizationCode));
-            _simpleIdentityServerConfiguratorFake.Setup(s => s.GetAuthorizationCodeValidityPeriodInSeconds())
-                .Returns(2);
+            _simpleIdentityServerConfiguratorFake.Setup(s => s.GetAuthorizationCodeValidityPeriodInSecondsAsync())
+                .Returns(Task.FromResult((double)2));
 
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<IdentityServerException>(() =>
@@ -244,12 +245,12 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
                 .Returns(Task.FromResult(result));
-            _authorizationCodeRepositoryFake.Setup(a => a.GetAuthorizationCodeAsync(It.IsAny<string>()))
+            _authorizationCodeRepositoryFake.Setup(a => a.GetAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(authorizationCode));
-            _simpleIdentityServerConfiguratorFake.Setup(s => s.GetAuthorizationCodeValidityPeriodInSeconds())
-                .Returns(3000);
-            _clientValidatorFake.Setup(c => c.ValidateRedirectionUrl(It.IsAny<string>(), It.IsAny<Models.Client>()))
-                .Returns(() => null);
+            _simpleIdentityServerConfiguratorFake.Setup(s => s.GetAuthorizationCodeValidityPeriodInSecondsAsync())
+                .Returns(Task.FromResult((double)3000));
+            _clientValidatorFake.Setup(c => c.GetRedirectionUrls(It.IsAny<Models.Client>(), It.IsAny<string[]>()))
+                .Returns((IEnumerable<string>)null);
 
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<IdentityServerException>(() =>
@@ -303,12 +304,12 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
                 .Returns(Task.FromResult(result));
-            _authorizationCodeRepositoryFake.Setup(a => a.GetAuthorizationCodeAsync(It.IsAny<string>()))
+            _authorizationCodeRepositoryFake.Setup(a => a.GetAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(authorizationCode));
-            _simpleIdentityServerConfiguratorFake.Setup(s => s.GetAuthorizationCodeValidityPeriodInSeconds())
-                .Returns(3000);
-            _clientValidatorFake.Setup(c => c.ValidateRedirectionUrl(It.IsAny<string>(), It.IsAny<Models.Client>()))
-                .Returns("redirectUri");
+            _simpleIdentityServerConfiguratorFake.Setup(s => s.GetAuthorizationCodeValidityPeriodInSecondsAsync())
+                .Returns(Task.FromResult((double)3000));
+            _clientValidatorFake.Setup(c => c.GetRedirectionUrls(It.IsAny<Models.Client>(), It.IsAny<string>()))
+                .Returns(new[] { "redirectUri" });
             _grantedTokenHelperStub.Setup(g => g.GetValidGrantedTokenAsync(It.IsAny<string>(),
                 It.IsAny<string>(),
                 It.IsAny<JwsPayload>(),
@@ -358,12 +359,12 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
                 .Returns(Task.FromResult(authResult));
-            _authorizationCodeRepositoryFake.Setup(a => a.GetAuthorizationCodeAsync(It.IsAny<string>()))
+            _authorizationCodeRepositoryFake.Setup(a => a.GetAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(authorizationCode));
-            _simpleIdentityServerConfiguratorFake.Setup(s => s.GetAuthorizationCodeValidityPeriodInSeconds())
-                .Returns(3000);
-            _clientValidatorFake.Setup(c => c.ValidateRedirectionUrl(It.IsAny<string>(), It.IsAny<Models.Client>()))
-                .Returns("redirectUri");
+            _simpleIdentityServerConfiguratorFake.Setup(s => s.GetAuthorizationCodeValidityPeriodInSecondsAsync())
+                .Returns(Task.FromResult((double)3000));
+            _clientValidatorFake.Setup(c => c.GetRedirectionUrls(It.IsAny<Models.Client>(), It.IsAny<string>()))
+                .Returns(new[] { "redirectUri" });
             _grantedTokenHelperStub.Setup(g => g.GetValidGrantedTokenAsync(It.IsAny<string>(),
                 It.IsAny<string>(),
                 It.IsAny<JwsPayload>(),

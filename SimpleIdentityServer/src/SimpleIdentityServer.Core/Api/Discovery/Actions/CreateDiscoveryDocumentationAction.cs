@@ -21,12 +21,13 @@ using SimpleIdentityServer.Core.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Discovery.Actions
 {
     public interface ICreateDiscoveryDocumentationAction
     {
-        DiscoveryInformation Execute();
+        Task<DiscoveryInformation> Execute();
     }
 
     public class CreateDiscoveryDocumentationAction : ICreateDiscoveryDocumentationAction
@@ -40,12 +41,12 @@ namespace SimpleIdentityServer.Core.Api.Discovery.Actions
             _claimRepository = claimRepository;
         }
 
-        public DiscoveryInformation Execute()
+        public async Task<DiscoveryInformation> Execute()
         {
             var result = new DiscoveryInformation();
 
             // Returns only the exposed scopes
-            var scopes = _scopeRepository.GetAllScopes();
+            var scopes = await _scopeRepository.GetAllAsync();
             var scopeSupportedNames = new string[0];
             if (scopes != null ||
                 scopes.Any())
@@ -62,7 +63,7 @@ namespace SimpleIdentityServer.Core.Api.Discovery.Actions
             result.RequestParameterSupported = true;
             result.RequestUriParameterSupported = true;
             result.RequireRequestUriRegistration = true;
-            result.ClaimsSupported = _claimRepository.GetAll().ToArray();
+            result.ClaimsSupported = (await _claimRepository.GetAllAsync()).ToArray();
             result.ScopesSupported = scopeSupportedNames;
             result.ResponseTypesSupported = responseTypesSupported;
             result.ResponseModesSupported = Constants.Supported.SupportedResponseModes.ToArray();

@@ -19,6 +19,7 @@ using SimpleIdentityServer.Core.Api.Discovery;
 using SimpleIdentityServer.Host;
 using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Core.Common.DTOs;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Api.Controllers.Api
 {
@@ -35,12 +36,12 @@ namespace SimpleIdentityServer.Api.Controllers.Api
         }
 
         [HttpGet]
-        public DiscoveryInformation Get()
+        public async Task<DiscoveryInformation> Get()
         {
-            return GetMetadata();
+            return await GetMetadata();
         }
 
-        private DiscoveryInformation GetMetadata()
+        private async Task<DiscoveryInformation> GetMetadata()
         {
             var issuer = Request.GetAbsoluteUriWithVirtualPath();
             var authorizationEndPoint = issuer + "/" + Constants.EndPoints.Authorization;
@@ -54,7 +55,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             var endSessionEndPoint = issuer + "/" + Constants.EndPoints.EndSession;
             var introspectionEndPoint = issuer + "/" + Constants.EndPoints.Introspection;
 
-            var result = _discoveryActions.CreateDiscoveryInformation();
+            var result = await _discoveryActions.CreateDiscoveryInformation();
             result.Issuer = issuer;
             result.AuthorizationEndPoint = authorizationEndPoint;
             result.TokenEndPoint = tokenEndPoint;

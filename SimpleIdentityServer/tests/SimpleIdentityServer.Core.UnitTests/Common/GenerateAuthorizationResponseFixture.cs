@@ -115,19 +115,19 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 RedirectInstruction = new RedirectInstruction()
             };
             var jwsPayload = new JwsPayload();
-            _parameterParserHelperFake.Setup(p => p.ParseResponseType(It.IsAny<string>()))
+            _parameterParserHelperFake.Setup(p => p.ParseResponseTypes(It.IsAny<string>()))
                 .Returns(new List<ResponseType>
                 {
                     ResponseType.id_token  
                 });
             _jwtGeneratorFake.Setup(
-                j => j.GenerateIdTokenPayloadForScopes(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
-                .Returns(jwsPayload);
+                j => j.GenerateIdTokenPayloadForScopesAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
+                .Returns(Task.FromResult(jwsPayload));
             _jwtGeneratorFake.Setup(
-                j => j.GenerateUserInfoPayloadForScope(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
-                .Returns(jwsPayload);
-            _jwtGeneratorFake.Setup(j => j.Encrypt(It.IsAny<string>(), It.IsAny<JweAlg>(), It.IsAny<JweEnc>()))
-                .Returns(idToken);
+                j => j.GenerateUserInfoPayloadForScopeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
+                .Returns(Task.FromResult(jwsPayload));
+            _jwtGeneratorFake.Setup(j => j.EncryptAsync(It.IsAny<string>(), It.IsAny<JweAlg>(), It.IsAny<JweEnc>()))
+                .Returns(Task.FromResult(idToken));
             _clientHelperFake.Setup(c => c.GenerateIdToken(It.IsAny<string>(),
                 It.IsAny<JwsPayload>()))
                 .Returns(idToken);
@@ -163,20 +163,20 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 RedirectInstruction = new RedirectInstruction()
             };
             var jwsPayload = new JwsPayload();
-            _parameterParserHelperFake.Setup(p => p.ParseResponseType(It.IsAny<string>()))
+            _parameterParserHelperFake.Setup(p => p.ParseResponseTypes(It.IsAny<string>()))
                 .Returns(new List<ResponseType>
                 {
                     ResponseType.token  
                 });
             _jwtGeneratorFake.Setup(
-                j => j.GenerateIdTokenPayloadForScopes(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
-                .Returns(jwsPayload);
+                j => j.GenerateIdTokenPayloadForScopesAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
+                .Returns(Task.FromResult(jwsPayload));
             _jwtGeneratorFake.Setup(
-                j => j.GenerateUserInfoPayloadForScope(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
-                .Returns(jwsPayload);
-            _jwtGeneratorFake.Setup(j => j.Encrypt(It.IsAny<string>(), It.IsAny<JweAlg>(), It.IsAny<JweEnc>()))
-                .Returns(idToken);
-            _parameterParserHelperFake.Setup(p => p.ParseScopeParameters(It.IsAny<string>()))
+                j => j.GenerateUserInfoPayloadForScopeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
+                .Returns(Task.FromResult(jwsPayload));
+            _jwtGeneratorFake.Setup(j => j.EncryptAsync(It.IsAny<string>(), It.IsAny<JweAlg>(), It.IsAny<JweEnc>()))
+                .Returns(Task.FromResult(idToken));
+            _parameterParserHelperFake.Setup(p => p.ParseScopes(It.IsAny<string>()))
                 .Returns(() => new List<string> { scope });
             _grantedTokenHelperStub.Setup(r => r.GetValidGrantedToken(It.IsAny<string>(),
                 It.IsAny<string>(),
@@ -195,7 +195,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             // ASSERTS
             Assert.True(actionResult.RedirectInstruction.Parameters.Any(p => p.Name == Core.Constants.StandardAuthorizationResponseNames.AccessTokenName));
             Assert.True(actionResult.RedirectInstruction.Parameters.Any(p => p.Value == grantedToken.AccessToken));
-            _grantedTokenRepositoryFake.Verify(g => g.Insert(grantedToken));
+            _grantedTokenRepositoryFake.Verify(g => g.InsertAsync(grantedToken));
             _simpleIdentityServerEventSource.Verify(e => e.GrantAccessToClient(clientId, grantedToken.AccessToken, scope));
         }
 
@@ -222,20 +222,20 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 RedirectInstruction = new RedirectInstruction()
             };
             var jwsPayload = new JwsPayload();
-            _parameterParserHelperFake.Setup(p => p.ParseResponseType(It.IsAny<string>()))
+            _parameterParserHelperFake.Setup(p => p.ParseResponseTypes(It.IsAny<string>()))
                 .Returns(new List<ResponseType>
                 {
                     ResponseType.token  
                 });
             _jwtGeneratorFake.Setup(
-                j => j.GenerateIdTokenPayloadForScopes(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
-                .Returns(jwsPayload);
+                j => j.GenerateIdTokenPayloadForScopesAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
+                .Returns(Task.FromResult(jwsPayload));
             _jwtGeneratorFake.Setup(
-                j => j.GenerateUserInfoPayloadForScope(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
-                .Returns(jwsPayload);
-            _jwtGeneratorFake.Setup(j => j.Encrypt(It.IsAny<string>(), It.IsAny<JweAlg>(), It.IsAny<JweEnc>()))
-                .Returns(idToken);
-            _parameterParserHelperFake.Setup(p => p.ParseScopeParameters(It.IsAny<string>()))
+                j => j.GenerateUserInfoPayloadForScopeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
+                .Returns(Task.FromResult(jwsPayload));
+            _jwtGeneratorFake.Setup(j => j.EncryptAsync(It.IsAny<string>(), It.IsAny<JweAlg>(), It.IsAny<JweEnc>()))
+                .Returns(Task.FromResult(idToken));
+            _parameterParserHelperFake.Setup(p => p.ParseScopes(It.IsAny<string>()))
                 .Returns(() => new List<string> { scope });
             _grantedTokenHelperStub.Setup(r => r.GetValidGrantedTokenAsync(It.IsAny<string>(),
                 It.IsAny<string>(),
@@ -271,19 +271,19 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 RedirectInstruction = new RedirectInstruction()
             };
             var jwsPayload = new JwsPayload();
-            _parameterParserHelperFake.Setup(p => p.ParseResponseType(It.IsAny<string>()))
+            _parameterParserHelperFake.Setup(p => p.ParseResponseTypes(It.IsAny<string>()))
                 .Returns(new List<ResponseType>
                 {
                     ResponseType.code  
                 });
             _jwtGeneratorFake.Setup(
-                j => j.GenerateIdTokenPayloadForScopes(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
-                .Returns(jwsPayload);
+                j => j.GenerateIdTokenPayloadForScopesAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
+                .Returns(Task.FromResult(jwsPayload));
             _jwtGeneratorFake.Setup(
-                j => j.GenerateUserInfoPayloadForScope(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
-                .Returns(jwsPayload);
-            _jwtGeneratorFake.Setup(j => j.Encrypt(It.IsAny<string>(), It.IsAny<JweAlg>(), It.IsAny<JweEnc>()))
-                .Returns(idToken);
+                j => j.GenerateUserInfoPayloadForScopeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
+                .Returns(Task.FromResult(jwsPayload));
+            _jwtGeneratorFake.Setup(j => j.EncryptAsync(It.IsAny<string>(), It.IsAny<JweAlg>(), It.IsAny<JweEnc>()))
+                .Returns(Task.FromResult(idToken));
             _consentHelperFake.Setup(c => c.GetConsentConfirmedByResourceOwner(It.IsAny<string>(),
                 It.IsAny<AuthorizationParameter>()))
                 .Returns(consent);
@@ -293,7 +293,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
 
             // ASSERTS
             Assert.True(actionResult.RedirectInstruction.Parameters.Any(p => p.Name == Core.Constants.StandardAuthorizationResponseNames.AuthorizationCodeName));
-            _authorizationCodeRepositoryFake.Verify(a => a.AddAuthorizationCode(It.IsAny<AuthorizationCode>()));
+            _authorizationCodeRepositoryFake.Verify(a => a.AddAsync(It.IsAny<AuthorizationCode>()));
             _simpleIdentityServerEventSource.Verify(s => s.GrantAuthorizationCodeToClient(clientId, It.IsAny<string>(), scope));
         }
 
@@ -324,19 +324,19 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 RedirectInstruction = new RedirectInstruction()
             };
             var jwsPayload = new JwsPayload();
-            _parameterParserHelperFake.Setup(p => p.ParseResponseType(It.IsAny<string>()))
+            _parameterParserHelperFake.Setup(p => p.ParseResponseTypes(It.IsAny<string>()))
                 .Returns(new List<ResponseType>
                 {
                     ResponseType.id_token  
                 });
             _jwtGeneratorFake.Setup(
-                j => j.GenerateIdTokenPayloadForScopes(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
-                .Returns(jwsPayload);
+                j => j.GenerateIdTokenPayloadForScopesAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
+                .Returns(Task.FromResult(jwsPayload));
             _jwtGeneratorFake.Setup(
-                j => j.GenerateUserInfoPayloadForScope(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
-                .Returns(jwsPayload);
-            _jwtGeneratorFake.Setup(j => j.Encrypt(It.IsAny<string>(), It.IsAny<JweAlg>(), It.IsAny<JweEnc>()))
-                .Returns(idToken);
+                j => j.GenerateUserInfoPayloadForScopeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
+                .Returns(Task.FromResult(jwsPayload));
+            _jwtGeneratorFake.Setup(j => j.EncryptAsync(It.IsAny<string>(), It.IsAny<JweAlg>(), It.IsAny<JweEnc>()))
+                .Returns(Task.FromResult(idToken));
 
             // ACT
             await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client());
@@ -375,19 +375,19 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 Type = TypeActionResult.RedirectToCallBackUrl
             };
             var jwsPayload = new JwsPayload();
-            _parameterParserHelperFake.Setup(p => p.ParseResponseType(It.IsAny<string>()))
+            _parameterParserHelperFake.Setup(p => p.ParseResponseTypes(It.IsAny<string>()))
                 .Returns(new List<ResponseType>
                 {
                     ResponseType.id_token  
                 });
             _jwtGeneratorFake.Setup(
-                j => j.GenerateIdTokenPayloadForScopes(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
-                .Returns(jwsPayload);
+                j => j.GenerateIdTokenPayloadForScopesAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
+                .Returns(Task.FromResult(jwsPayload));
             _jwtGeneratorFake.Setup(
-                j => j.GenerateUserInfoPayloadForScope(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
-                .Returns(jwsPayload);
-            _jwtGeneratorFake.Setup(j => j.Encrypt(It.IsAny<string>(), It.IsAny<JweAlg>(), It.IsAny<JweEnc>()))
-                .Returns(idToken);
+                j => j.GenerateUserInfoPayloadForScopeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthorizationParameter>()))
+                .Returns(Task.FromResult(jwsPayload));
+            _jwtGeneratorFake.Setup(j => j.EncryptAsync(It.IsAny<string>(), It.IsAny<JweAlg>(), It.IsAny<JweEnc>()))
+                .Returns(Task.FromResult(idToken));
             _authorizationFlowHelperFake.Setup(
                 a => a.GetAuthorizationFlow(It.IsAny<ICollection<ResponseType>>(), It.IsAny<string>()))
                 .Returns(AuthorizationFlow.ImplicitFlow);

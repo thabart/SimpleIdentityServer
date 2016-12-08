@@ -15,114 +15,40 @@
 #endregion
 
 using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Repositories;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Validators
 {
     public interface IClientValidator
     {
-        Models.Client ValidateClientExist(string clientId);
-        Task<Models.Client> ValidateClientExistAsync(string clientId);
-        string ValidateRedirectionUrl(string url, Models.Client client);
-        bool ValidateGrantType(GrantType grantType, Models.Client client);
-        bool ValidateGrantTypes(Models.Client client, params GrantType[] grantTypes);
-        bool ValidateResponseType(ResponseType responseType, Models.Client client);
-        bool ValidateResponseTypes(IList<ResponseType> responseType, Models.Client client);
+        IEnumerable<string> GetRedirectionUrls(Client client, params string[] urls);
+        bool CheckGrantTypes(Client client, params GrantType[] grantTypes);
+        bool CheckResponseTypes(Client client, params ResponseType[] responseTypes);
     }
 
     public class ClientValidator : IClientValidator
-    {
-        private readonly IClientRepository _clientRepository;
-
-        #region Constructor
-
-        public ClientValidator(
-            IClientRepository clientRepository)
+    {        
+        public IEnumerable<string> GetRedirectionUrls(Client client, params string[] urls)
         {
-            _clientRepository = clientRepository;
-        }
-
-        #endregion
-
-        #region Public methods
-
-        public Models.Client ValidateClientExist(string clientId)
-        {
-            return ValidateClientExistAsync(clientId).Result;
-        }
-
-        public async Task<Models.Client> ValidateClientExistAsync(string clientId)
-        {
-            return await _clientRepository.GetClientByIdAsync(clientId);
-        }
-
-
-        public string ValidateRedirectionUrl(string url, Models.Client client)
-        {
-            if (string.IsNullOrWhiteSpace(url) ||
+            if (urls == null ||
                 client == null || 
                 client.RedirectionUrls == null || 
                 !client.RedirectionUrls.Any())
             {
-                return null;
+                return new string[0];
             }
 
-            return client.RedirectionUrls.FirstOrDefault(r => r == url);
+            return client.RedirectionUrls.Where(r => urls.Contains(r));
         }
 
-        public bool ValidateGrantType(GrantType grantType, Models.Client client)
-        {
-            if (client == null)
-            {
-                return false;
-            }
-
-            SetDefaultClientGrantType(client);
-            return client.GrantTypes != null && client.GrantTypes.Contains(grantType);
-        }
-
-        public bool ValidateGrantTypes(Models.Client client, params GrantType[] grantTypes)
+        public bool CheckGrantTypes(Client client, params GrantType[] grantTypes)
         {
             if (client == null || grantTypes == null)
             {
                 return false;
             }
 
-            SetDefaultClientGrantType(client);
-            return client.GrantTypes != null && grantTypes.All(gt => client.GrantTypes.Contains(gt));
-        }
-
-        public bool ValidateResponseType(ResponseType responseType, Models.Client client)
-        {
-            if (client == null)
-            {
-                return false;
-            }
-
-            SetDefaultClientResponseType(client);
-            return client.ResponseTypes != null && client.ResponseTypes.Contains(responseType);
-        }
-
-        public bool ValidateResponseTypes(IList<ResponseType> responseTypes, Models.Client client)
-        {
-            if (client == null)
-            {
-                return false;
-            }
-
-            SetDefaultClientResponseType(client);
-            return client.ResponseTypes != null && responseTypes.All(rt => client.ResponseTypes.Contains(rt));
-        }
-
-        #endregion
-
-        #region Private static methods
-
-        private static void SetDefaultClientGrantType(Models.Client client)
-        {
             if (client.GrantTypes == null || !client.GrantTypes.Any())
             {
                 client.GrantTypes = new List<GrantType>
@@ -130,10 +56,17 @@ namespace SimpleIdentityServer.Core.Validators
                     GrantType.authorization_code
                 };
             }
-        }
 
-        private static void SetDefaultClientResponseType(Models.Client client)
+            return client.GrantTypes != null && grantTypes.All(gt => client.GrantTypes.Contains(gt));
+        }
+        
+        public bool CheckResponseTypes(Client client, params ResponseType[] responseTypes)
         {
+            if (client == null)
+            {
+                return false;
+            }
+
             if (client.ResponseTypes == null || !client.ResponseTypes.Any())
             {
                 client.ResponseTypes = new List<ResponseType>
@@ -141,8 +74,8 @@ namespace SimpleIdentityServer.Core.Validators
                     ResponseType.code
                 };
             }
-        }
 
-        #endregion
+            return client.ResponseTypes != null && responseTypes.All(rt => client.ResponseTypes.Contains(rt));
+        }
     }
 }

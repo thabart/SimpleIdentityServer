@@ -21,6 +21,7 @@ using SimpleIdentityServer.Core.Api.Registration;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Host;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Api.Controllers.Api
 {
@@ -35,14 +36,14 @@ namespace SimpleIdentityServer.Api.Controllers.Api
         }
 
         [HttpPost]
-        public RegistrationResponse Post([FromBody] ClientResponse client)
+        public async Task<RegistrationResponse> Post([FromBody] ClientResponse client)
         {
             if (client == null)
             {
                 throw new ArgumentNullException(nameof(client));
             }
             
-            return _registerActions.PostRegistration(client.ToParameter());
+            return await _registerActions.PostRegistration(client.ToParameter());
         }
     }
 }

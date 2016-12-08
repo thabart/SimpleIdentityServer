@@ -22,16 +22,11 @@ namespace SimpleIdentityServer.Core.Repositories
 {
     public interface IGrantedTokenRepository
     {
-        bool Insert(GrantedToken grantedToken);
         Task<bool> InsertAsync(GrantedToken grantedToken);
-        bool Delete(GrantedToken grantedToken);
         Task<bool> DeleteAsync(GrantedToken grantedToken);
-        bool Update(GrantedToken grantedToken);
-        GrantedToken GetToken(string scopes, string clientId, JwsPayload idTokenJwsPayload, JwsPayload userInfoJwsPayload);
+        Task<bool> UpdateAsync(GrantedToken grantedToken);
         Task<GrantedToken> GetTokenAsync(string scopes, string clientId, JwsPayload idTokenJwsPayload, JwsPayload userInfoJwsPayload);
         Task<GrantedToken> GetTokenByRefreshTokenAsync(string refreshToken);
-        GrantedToken GetTokenByRefreshToken(string refreshToken);
         Task<GrantedToken> GetTokenAsync(string accessToken);
-        GrantedToken GetToken(string accessToken);
     }
 }

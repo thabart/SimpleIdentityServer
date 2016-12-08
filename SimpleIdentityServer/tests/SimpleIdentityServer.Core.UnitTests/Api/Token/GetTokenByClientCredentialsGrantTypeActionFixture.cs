@@ -170,8 +170,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(authenticateInstruction);
             _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
                 .Returns(Task.FromResult(client));
-            _scopeValidatorStub.Setup(s => s.IsScopesValid(It.IsAny<string>(), It.IsAny<Models.Client>(), out messageDescription))
-                .Returns(() => null);
+            _scopeValidatorStub.Setup(s => s.Check(It.IsAny<string>(), It.IsAny<Models.Client>()))
+                .Returns(() => new ScopeValidationResult(false));
 
             // ACT & ASSERT
             var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null));
@@ -221,8 +221,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(authenticateInstruction);
             _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
                 .Returns(Task.FromResult(client));
-            _scopeValidatorStub.Setup(s => s.IsScopesValid(It.IsAny<string>(), It.IsAny<Models.Client>(), out messageDescription))
-                .Returns(scopes);
+            _scopeValidatorStub.Setup(s => s.Check(It.IsAny<string>(), It.IsAny<Models.Client>()))
+                .Returns(() => new ScopeValidationResult(true)
+                {
+                    Scopes = scopes
+                });
             _grantedTokenHelperStub.Setup(g => g.GetValidGrantedTokenAsync(It.IsAny<string>(),
                 It.IsAny<string>(),
                 It.IsAny<JwsPayload>(),

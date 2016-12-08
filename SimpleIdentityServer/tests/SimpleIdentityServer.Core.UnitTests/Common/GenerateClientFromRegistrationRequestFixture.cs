@@ -19,7 +19,6 @@ using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Converter;
-using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Validators;
@@ -33,9 +32,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
     public class GenerateClientFromRegistrationRequestFixture
     {
         private Mock<IRegistrationParameterValidator> _registrationParameterValidatorFake;
-
         private Mock<IJsonWebKeyConverter> _jsonWebKeyConverterFake;
-
         private IGenerateClientFromRegistrationRequest _generateClientFromRegistrationRequest;
 
         #region Exceptions

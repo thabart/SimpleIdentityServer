@@ -70,7 +70,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization
                 parameter.ResponseType,
                 parameter.Scope,
                 parameter.Claims == null ? string.Empty : parameter.Claims.ToString());
-            var responseTypes = _parameterParserHelper.ParseResponseType(parameter.ResponseType);
+            var responseTypes = _parameterParserHelper.ParseResponseTypes(parameter.ResponseType);
             var authorizationFlow = _authorizationFlowHelper.GetAuthorizationFlow(responseTypes, parameter.State);
             switch (authorizationFlow)
             {
@@ -78,10 +78,10 @@ namespace SimpleIdentityServer.Core.Api.Authorization
                     actionResult = await _getAuthorizationCodeOperation.Execute(parameter, claimsPrincipal, client);
                     break;
                 case AuthorizationFlow.ImplicitFlow:
-                    actionResult =  _getTokenViaImplicitWorkflowOperation.Execute(parameter, claimsPrincipal, client);
+                    actionResult =  await _getTokenViaImplicitWorkflowOperation.Execute(parameter, claimsPrincipal, client);
                     break;
                 case AuthorizationFlow.HybridFlow:
-                    actionResult = _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(parameter, claimsPrincipal, client);
+                    actionResult = await _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(parameter, claimsPrincipal, client);
                     break;
             }
 
