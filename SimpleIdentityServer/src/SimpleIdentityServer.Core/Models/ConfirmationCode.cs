@@ -21,11 +21,8 @@ namespace SimpleIdentityServer.Core.Models
     public class ConfirmationCode
     {
         public string Code { get; set; }
-
         public int ExpiresIn { get; set; }
-
         public DateTime CreateDateTime { get; set; }
-
         public bool IsConfirmed { get; set; }
     }
 }

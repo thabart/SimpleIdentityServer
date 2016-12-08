@@ -32,28 +32,19 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
             AuthorizationParameter parameter,
             ClaimsPrincipal claimsPrincipal,
             string code);
-
-        ResourceOwner LocalUserAuthentication(LocalAuthenticationParameter localAuthenticationParameter);
-
-        ActionResult LocalOpenIdUserAuthentication(
+        Task<ResourceOwner> LocalUserAuthentication(LocalAuthenticationParameter localAuthenticationParameter);
+        Task<LocalOpenIdAuthenticationResult> LocalOpenIdUserAuthentication(
             LocalAuthenticationParameter localAuthenticationParameter,
             AuthorizationParameter authorizationParameter,
-            string code,
-            out List<Claim> claims);
-
-        ActionResult ExternalOpenIdUserAuthentication(
+            string code);
+        Task<ExternalOpenIdAuthenticationResult> ExternalOpenIdUserAuthentication(
             List<Claim> claims,
             AuthorizationParameter authorizationParameter,
-            string code,
-            out IEnumerable<Claim> filteredClaims);
-
-        IEnumerable<Claim> LoginCallback(ClaimsPrincipal claimsPrincipal);
-
+            string code);
+        Task<IEnumerable<Claim>> LoginCallback(ClaimsPrincipal claimsPrincipal);
         Task<string> GenerateAndSendCode(string subject);
-
-        bool ValidateCode(string code);
-
-        bool RemoveCode(string code);
+        Task<bool> ValidateCode(string code);
+        Task<bool> RemoveCode(string code);
     }
 
     public class AuthenticateActions : IAuthenticateActions
@@ -107,21 +98,20 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
                 code);
         }
 
-        public ResourceOwner LocalUserAuthentication(LocalAuthenticationParameter localAuthenticationParameter)
+        public async Task<ResourceOwner> LocalUserAuthentication(LocalAuthenticationParameter localAuthenticationParameter)
         {
             if (localAuthenticationParameter == null)
             {
                 throw new ArgumentNullException("localAuthenticationParameter");
             }
 
-            return _localUserAuthenticationAction.Execute(localAuthenticationParameter);
+            return await _localUserAuthenticationAction.Execute(localAuthenticationParameter);
         }
 
-        public ActionResult LocalOpenIdUserAuthentication(
+        public async Task<LocalOpenIdAuthenticationResult> LocalOpenIdUserAuthentication(
             LocalAuthenticationParameter localAuthenticationParameter,
             AuthorizationParameter authorizationParameter,
-            string code,
-            out List<Claim> claims)
+            string code)
         {
             if (localAuthenticationParameter == null)
             {
@@ -133,19 +123,17 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
                 throw new ArgumentNullException("authorizationParameter");
             }
 
-            return _localOpenIdUserAuthenticationAction.Execute(
+            return await _localOpenIdUserAuthenticationAction.Execute(
                 localAuthenticationParameter,
                 authorizationParameter,
-                code,
-                out claims);
+                code);
         }
 
 
-        public ActionResult ExternalOpenIdUserAuthentication(
+        public async Task<ExternalOpenIdAuthenticationResult> ExternalOpenIdUserAuthentication(
             List<Claim> claims, 
             AuthorizationParameter authorizationParameter, 
-            string code,
-            out IEnumerable<Claim> filteredClaims)
+            string code)
         {
             if (claims == null || !claims.Any())
             {
@@ -162,15 +150,14 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
                 throw new ArgumentNullException("code");
             }
 
-            return _externalOpenIdUserAuthenticationAction.Execute(claims,
+            return await _externalOpenIdUserAuthenticationAction.Execute(claims,
                 authorizationParameter,
-                code,
-                out filteredClaims);
+                code);
         }
 
-        public IEnumerable<Claim> LoginCallback(ClaimsPrincipal claimsPrincipal)
+        public async Task<IEnumerable<Claim>> LoginCallback(ClaimsPrincipal claimsPrincipal)
         {
-            return _loginCallbackAction.Execute(claimsPrincipal);
+            return await _loginCallbackAction.Execute(claimsPrincipal);
         }
 
         public async Task<string> GenerateAndSendCode(string subject)
@@ -178,14 +165,14 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
             return await _generateAndSendCodeAction.ExecuteAsync(subject);
         }
 
-        public bool ValidateCode(string code)
+        public async Task<bool> ValidateCode(string code)
         {
-            return _validateConfirmationCodeAction.Execute(code);
+            return await _validateConfirmationCodeAction.Execute(code);
         }
 
-        public bool RemoveCode(string code)
+        public async Task<bool> RemoveCode(string code)
         {
-            return _removeConfirmationCodeAction.Execute(code);
+            return await _removeConfirmationCodeAction.Execute(code);
         }
     }
 }

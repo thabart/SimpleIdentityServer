@@ -14,13 +14,13 @@
 // limitations under the License.
 #endregion
 
-using System;
+using Microsoft.AspNetCore.Mvc;
+using SimpleIdentityServer.Core.Api.Registration;
+using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Host.DTOs.Response;
 using SimpleIdentityServer.Host.Extensions;
-using SimpleIdentityServer.Core.Api.Registration;
-using SimpleIdentityServer.Core.Results;
-using SimpleIdentityServer.Host;
-using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Api.Controllers.Api
@@ -36,7 +36,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
         }
 
         [HttpPost]
-        public async Task<RegistrationResponse> Post([FromBody] ClientResponse client)
+        public async Task<ClientRegistrationResponse> Post([FromBody] ClientResponse client)
         {
             if (client == null)
             {

@@ -25,7 +25,7 @@ namespace SimpleIdentityServer.Client.Operations
 {
     public interface IRegisterClientOperation
     {
-        Task<Core.Common.DTOs.Client> ExecuteAsync(Core.Common.DTOs.Client client, Uri requestUri, string authorizationValue);
+        Task<Core.Common.DTOs.ClientRegistrationResponse> ExecuteAsync(Core.Common.DTOs.Client client, Uri requestUri, string authorizationValue);
     }
 
     internal class RegisterClientOperation : IRegisterClientOperation
@@ -37,7 +37,7 @@ namespace SimpleIdentityServer.Client.Operations
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<Core.Common.DTOs.Client> ExecuteAsync(Core.Common.DTOs.Client client, Uri requestUri, string authorizationValue)
+        public async Task<Core.Common.DTOs.ClientRegistrationResponse> ExecuteAsync(Core.Common.DTOs.Client client, Uri requestUri, string authorizationValue)
         {
             if (client == null)
             {
@@ -61,7 +61,7 @@ namespace SimpleIdentityServer.Client.Operations
             var result = await httpClient.SendAsync(request);
             result.EnsureSuccessStatusCode();
             var content = await result.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<Core.Common.DTOs.Client>(content);
+            return JsonConvert.DeserializeObject<Core.Common.DTOs.ClientRegistrationResponse>(content);
         }
     }
 }

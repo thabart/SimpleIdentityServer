@@ -31,12 +31,13 @@ using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Logging;
 using System;
 using SimpleIdentityServer.Core.Services;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
 {
     public interface IConfirmConsentAction
     {
-        ActionResult Execute(
+        Task<ActionResult> Execute(
             AuthorizationParameter authorizationParameter,
             ClaimsPrincipal claimsPrincipal);
     }
@@ -88,7 +89,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
         /// <param name="authorizationParameter">Authorization code grant-type</param>
         /// <param name="claimsPrincipal">Resource owner's claims</param>
         /// <returns>Redirects the authorization code to the callback.</returns>
-        public ActionResult Execute(
+        public async Task<ActionResult> Execute(
             AuthorizationParameter authorizationParameter,
             ClaimsPrincipal claimsPrincipal)
         {
@@ -103,8 +104,15 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
                 throw new ArgumentNullException("claimsPrincipal");
             }
 
+            var client = await _clientRepository.GetClientByIdAsync(authorizationParameter.ClientId);
+            if (client == null)
+            {
+                throw new InvalidOperationException(string.Format("the client id {0} doesn't exist",
+                    authorizationParameter.ClientId));
+            }
+
             var subject = claimsPrincipal.GetSubject();
-            Models.Consent assignedConsent = _consentHelper.GetConsentConfirmedByResourceOwner(subject, authorizationParameter);
+            Models.Consent assignedConsent = await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter);
             // Insert a new consent.
             if (assignedConsent == null)
             {
@@ -115,8 +123,8 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
                     // A consent can be given to a set of claims
                     assignedConsent = new Models.Consent
                     {
-                        Client = _clientRepository.GetClientById(authorizationParameter.ClientId),
-                        ResourceOwner = _authenticateResourceOwnerService.AuthenticateResourceOwner(subject),
+                        Client = client,
+                        ResourceOwner = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(subject),
                         Claims = claimsParameter.GetClaimNames()
                     };
                 }
@@ -125,14 +133,14 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
                     // A consent can be given to a set of scopes
                     assignedConsent = new Models.Consent
                     {
-                        Client = _clientRepository.GetClientById(authorizationParameter.ClientId),
-                        GrantedScopes = GetScopes(authorizationParameter.Scope),
-                        ResourceOwner = _authenticateResourceOwnerService.AuthenticateResourceOwner(subject),
+                        Client = client,
+                        GrantedScopes = (await GetScopes(authorizationParameter.Scope)).ToList(),
+                        ResourceOwner = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(subject),
                     };
                 }
 
                 // A consent can be given to a set of claims
-                _consentRepository.InsertConsent(assignedConsent);
+                await _consentRepository.InsertAsync(assignedConsent);
 
                 _simpleIdentityServerEventSource.GiveConsent(subject,
                     authorizationParameter.ClientId,
@@ -140,8 +148,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
             }
 
             var result = _actionResultFactory.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
-            //// TODO : ADD CLIENT
-            _generateAuthorizationResponse.Execute(result, authorizationParameter, claimsPrincipal, null);
+            await _generateAuthorizationResponse.ExecuteAsync(result, authorizationParameter, claimsPrincipal, client);
 
             // If redirect to the callback and the responde mode has not been set.
             if (result.Type == TypeActionResult.RedirectToCallBackUrl)
@@ -149,7 +156,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
                 var responseMode = authorizationParameter.ResponseMode;
                 if (responseMode == ResponseMode.None)
                 {
-                    var responseTypes = _parameterParserHelper.ParseResponseType(authorizationParameter.ResponseType);
+                    var responseTypes = _parameterParserHelper.ParseResponseTypes(authorizationParameter.ResponseType);
                     var authorizationFlow = GetAuthorizationFlow(responseTypes, authorizationParameter.State);
                     responseMode = GetResponseMode(authorizationFlow);
                 }
@@ -165,20 +172,11 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
         /// </summary>
         /// <param name="concatenateListOfScopes"></param>
         /// <returns>List of scopes</returns>
-        private List<Scope> GetScopes(string concatenateListOfScopes)
+        private async Task<ICollection<Scope>> GetScopes(string concatenateListOfScopes)
         {
             var result = new List<Scope>();
-            var scopeNames = _parameterParserHelper.ParseScopeParameters(concatenateListOfScopes);
-            foreach (var scopeName in scopeNames)
-            {
-                var scope = _scopeRepository.GetScopeByName(scopeName);
-                if (scope != null)
-                {
-                    result.Add(scope);
-                }
-            }
-
-            return result;
+            var scopeNames = _parameterParserHelper.ParseScopes(concatenateListOfScopes);
+            return await _scopeRepository.SearchByNamesAsync(scopeNames);
         }
 
         private static AuthorizationFlow GetAuthorizationFlow(ICollection<ResponseType> responseTypes, string state)

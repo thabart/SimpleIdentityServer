@@ -19,20 +19,18 @@ using SimpleIdentityServer.Core.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Translation
 {
     public interface ITranslationManager
     {
-        Dictionary<string, string> GetTranslations(
-            string concatenateListOfCodeLanguages,
-            List<string> translationCodes);
+        Task<Dictionary<string, string>> GetTranslationsAsync(string concatenateListOfCodeLanguages, List<string> translationCodes);
     }
 
     public class TranslationManager : ITranslationManager
     {
         private readonly IConfigurationService _configurationService;
-
         private readonly ITranslationRepository _translationRepository;
 
         public TranslationManager(
@@ -49,20 +47,18 @@ namespace SimpleIdentityServer.Core.Translation
         /// <param name="concatenateListOfCodeLanguages"></param>
         /// <param name="translationCodes"></param>
         /// <returns></returns>
-        public Dictionary<string, string> GetTranslations(
-            string concatenateListOfCodeLanguages,
-            List<string> translationCodes)
+        public async Task<Dictionary<string, string>> GetTranslationsAsync(string concatenateListOfCodeLanguages, List<string> translationCodes)
         {
             if (translationCodes == null)
             {
                 throw new ArgumentNullException("translationCodes");
             }
 
-            var preferredLanguage = GetPreferredLanguage(concatenateListOfCodeLanguages);
+            var preferredLanguage = await GetPreferredLanguage(concatenateListOfCodeLanguages);
             var result = new Dictionary<string, string>();
             foreach(var translationCode in translationCodes)
             {
-                var record = _translationRepository.GetTranslationByCode(preferredLanguage, translationCode);
+                var record = await _translationRepository.GetAsync(preferredLanguage, translationCode);
                 if (record != null)
                 {
                     result.Add(record.Code, record.Value);
@@ -75,19 +71,19 @@ namespace SimpleIdentityServer.Core.Translation
             return result;
         }
 
-        private string GetPreferredLanguage(string concatenateListOfCodeLanguages)
+        private async Task<string> GetPreferredLanguage(string concatenateListOfCodeLanguages)
         {
             if (string.IsNullOrWhiteSpace(concatenateListOfCodeLanguages))
             {
-                return _configurationService.DefaultLanguage();
+                return await _configurationService.DefaultLanguageAsync();
             }
 
             var listOfCodeLanguages = concatenateListOfCodeLanguages.Split(' ');
-            var supportedCodeLanguages = _translationRepository.GetSupportedLanguageTag();
+            var supportedCodeLanguages = await _translationRepository.GetLanguageTagsAsync();
             if (listOfCodeLanguages == null || !listOfCodeLanguages.Any() ||
                 supportedCodeLanguages == null || !supportedCodeLanguages.Any())
             {
-                return _configurationService.DefaultLanguage();
+                return await _configurationService.DefaultLanguageAsync();
             }
 
             foreach (var codeLanguage in listOfCodeLanguages)
@@ -98,7 +94,7 @@ namespace SimpleIdentityServer.Core.Translation
                 }
             }
 
-            return _configurationService.DefaultLanguage();
+            return await _configurationService.DefaultLanguageAsync();
         }
     }
 }

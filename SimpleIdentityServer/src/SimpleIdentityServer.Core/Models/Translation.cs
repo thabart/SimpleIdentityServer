@@ -13,17 +13,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
+/// <summary>
+/// RFC :  http://tools.ietf.org/html/rfc5646
+/// </summary>
 namespace SimpleIdentityServer.Core.Models
 {
     public class Translation
     {
         public string Code { get; set; }
-
-        /// <summary>
-        /// Naming convention of the language tag is defined by the RFC : http://tools.ietf.org/html/rfc5646
-        /// </summary>
         public string LanguageTag { get; set; }
-
         public string Value { get; set; }
     }
 }

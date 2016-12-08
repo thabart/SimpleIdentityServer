@@ -13,10 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
 using SimpleIdentityServer.Core.Common.Extensions;
 
 namespace SimpleIdentityServer.Core.Parameters
@@ -155,33 +155,19 @@ namespace SimpleIdentityServer.Core.Parameters
     public sealed class AuthorizationParameter
     {
         public string ClientId { get; set; }
-
         public string Scope { get; set; }
-
         public string ResponseType { get; set; }
-
         public string RedirectUrl { get; set; }
-
         public string State { get; set; }
-
         public ResponseMode ResponseMode { get; set; }
-
         public string Nonce { get; set; }
-
         public Display Display { get; set; }
-
         public string Prompt { get; set; }
-
         public double MaxAge { get; set; }
-
         public string UiLocales { get; set; }
-
-        public string IdTokenHint { get; set; }
-        
+        public string IdTokenHint { get; set; }        
         public string LoginHint { get; set; }
-
         public string AcrValues { get; set; }
-
         public ClaimsParameter Claims { get; set; }
     }
 }

@@ -19,33 +19,14 @@ using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Validators;
 using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Validators
 {
     public class ClientValidatorFixture
     {
-        private Mock<IClientRepository> _clientRepositoryStub;
-
         private IClientValidator _clientValidator;
-
-        #region ValidateClientExist
-
-        [Fact]
-        public void When_Checking_Client_Exists_Then_Operation_Is_Called()
-        {
-            // ARRANGE
-            const string clientId = "client_id";
-            InitializeMockingObjects();
-
-            // ACT
-            _clientValidator.ValidateClientExist(clientId);
-
-            // ASSERT
-            _clientRepositoryStub.Verify(c => c.GetClientByIdAsync(clientId));
-        }
-
-        #endregion
 
         #region ValidateRedirectionUrl
 
@@ -56,13 +37,13 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             InitializeMockingObjects();
 
             // ACTS & ASSERTS
-            Assert.Null(_clientValidator.ValidateRedirectionUrl(null, null));
-            Assert.Null(_clientValidator.ValidateRedirectionUrl("url", null));
-            Assert.Null(_clientValidator.ValidateRedirectionUrl("url", new Models.Client()));
-            Assert.Null(_clientValidator.ValidateRedirectionUrl("url", new Models.Client
+            Assert.Empty(_clientValidator.GetRedirectionUrls(null, null));
+            Assert.Empty(_clientValidator.GetRedirectionUrls(new Models.Client(), null));
+            Assert.Empty(_clientValidator.GetRedirectionUrls(new Models.Client(), "url"));
+            Assert.Null(_clientValidator.GetRedirectionUrls(new Models.Client
             {
                 RedirectionUrls = new List<string>()
-            }));
+            }, "url"));
         }
 
         [Fact]
@@ -80,10 +61,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             InitializeMockingObjects();
 
             // ACT
-            var result = _clientValidator.ValidateRedirectionUrl(url, client);
+            var result = _clientValidator.GetRedirectionUrls(client, url);
 
             // ASSERT
-            Assert.True(result == url);
+            Assert.True(result.First() == url);
         }
 
         #endregion
@@ -97,7 +78,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             InitializeMockingObjects();
 
             // ACT
-            var result = _clientValidator.ValidateGrantType(GrantType.authorization_code, null);
+            var result = _clientValidator.CheckGrantTypes(null, GrantType.authorization_code);
 
             // ASSERTS
             Assert.False(result);
@@ -111,7 +92,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             var client = new Models.Client();
 
             // ACT
-            var result = _clientValidator.ValidateGrantType(GrantType.authorization_code, client);
+            var result = _clientValidator.CheckGrantTypes(client, GrantType.authorization_code);
 
             // ASSERTS
             Assert.True(result);
@@ -132,7 +113,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             };
 
             // ACT
-            var result = _clientValidator.ValidateGrantType(GrantType.@implicit, client);
+            var result = _clientValidator.CheckGrantTypes(client, GrantType.@implicit);
 
             // ASSERTS
             Assert.True(result);
@@ -149,8 +130,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             InitializeMockingObjects();
 
             // ACTS & ASSERTS
-            Assert.False(_clientValidator.ValidateGrantTypes(null, null));
-            Assert.False(_clientValidator.ValidateGrantTypes(new Models.Client(), null));
+            Assert.False(_clientValidator.CheckGrantTypes(null, null));
+            Assert.False(_clientValidator.CheckGrantTypes(new Models.Client(), null));
         }
 
         [Fact]
@@ -168,8 +149,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             };
 
             // ACTS & ASSERTS
-            Assert.True(_clientValidator.ValidateGrantTypes(client, GrantType.@implicit, GrantType.password));
-            Assert.True(_clientValidator.ValidateGrantTypes(client, GrantType.@implicit));
+            Assert.True(_clientValidator.CheckGrantTypes(client, GrantType.@implicit, GrantType.password));
+            Assert.True(_clientValidator.CheckGrantTypes(client, GrantType.@implicit));
         }
 
         [Fact]
@@ -187,16 +168,15 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             };
 
             // ACTS & ASSERTS
-            Assert.False(_clientValidator.ValidateGrantTypes(client, GrantType.refresh_token));
-            Assert.False(_clientValidator.ValidateGrantTypes(client, GrantType.refresh_token, GrantType.password));
+            Assert.False(_clientValidator.CheckGrantTypes(client, GrantType.refresh_token));
+            Assert.False(_clientValidator.CheckGrantTypes(client, GrantType.refresh_token, GrantType.password));
         }
 
         #endregion
 
         public void InitializeMockingObjects()
         {
-            _clientRepositoryStub = new Mock<IClientRepository>();
-            _clientValidator = new ClientValidator(_clientRepositoryStub.Object);
+            _clientValidator = new ClientValidator();
         }
     }
 }

@@ -56,7 +56,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                 .Select(r => r.ToDomain()).ToListAsync().ConfigureAwait(false);
         }
 
-        public async Task<ICollection<List<string>>> GetLanguageTagsAsync()
+        public async Task<ICollection<string>> GetLanguageTagsAsync()
         {
             return await _context.Translations.Select(t => t.LanguageTag).Distinct().ToListAsync().ConfigureAwait(false);
         }

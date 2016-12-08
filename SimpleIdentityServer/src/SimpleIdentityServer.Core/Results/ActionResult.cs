@@ -26,7 +26,6 @@ namespace SimpleIdentityServer.Core.Results
     public class ActionResult
     {
         public TypeActionResult Type { get; set; }
-
         public RedirectInstruction RedirectInstruction { get; set; }
     }
 }

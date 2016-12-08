@@ -103,7 +103,7 @@ namespace SimpleIdentityServer.Core.Helpers
         /// <returns>list of scopes or null</returns>
         public ICollection<string> ParseScopes(string parameter)
         {
-            return string.IsNullOrWhiteSpace(parameter) ? new List<string>() : parameter.Split(' ').Where(s => !string.IsNullOrWhiteSpace(s));
+            return string.IsNullOrWhiteSpace(parameter) ? new List<string>() : parameter.Split(' ').Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
         }
 
         /*

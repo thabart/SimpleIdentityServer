@@ -15,8 +15,8 @@
 #endregion
 
 using SimpleIdentityServer.Core.Api.Registration.Actions;
+using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Results;
 using System;
 using System.Threading.Tasks;
 
@@ -24,7 +24,7 @@ namespace SimpleIdentityServer.Core.Api.Registration
 {
     public interface IRegistrationActions
     {
-        Task<RegistrationResponse> PostRegistration(RegistrationParameter registrationParameter);
+        Task<ClientRegistrationResponse> PostRegistration(RegistrationParameter registrationParameter);
     }
 
     public class RegistrationActions : IRegistrationActions
@@ -36,7 +36,7 @@ namespace SimpleIdentityServer.Core.Api.Registration
             _registerClientAction = registerClientAction;
         }
 
-        public async Task<RegistrationResponse> PostRegistration(RegistrationParameter registrationParameter)
+        public async Task<ClientRegistrationResponse> PostRegistration(RegistrationParameter registrationParameter)
         {
             if (registrationParameter == null)
             {

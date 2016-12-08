@@ -14,9 +14,6 @@
 // limitations under the License.
 #endregion
 
-using System.Collections.Generic;
-using System.Security.Claims;
-
 namespace SimpleIdentityServer.Core.Parameters
 {
     public class AddUserParameter

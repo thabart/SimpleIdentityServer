@@ -23,7 +23,6 @@ namespace SimpleIdentityServer.Core.Protector
     public interface IEncoder
     {
         string Decode(string code);
-
         string Encode(string code);
     }
 

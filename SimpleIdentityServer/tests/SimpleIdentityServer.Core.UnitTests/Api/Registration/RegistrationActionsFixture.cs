@@ -11,7 +11,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
     public sealed class RegistrationActionsFixture
     {
         private Mock<IRegisterClientAction> _registerClientActionFake;
-
         private IRegistrationActions _registrationActions;
 
         [Fact]

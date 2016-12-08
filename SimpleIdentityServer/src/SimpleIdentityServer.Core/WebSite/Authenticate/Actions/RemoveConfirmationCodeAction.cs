@@ -16,12 +16,13 @@
 
 using SimpleIdentityServer.Core.Repositories;
 using System;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 {
     public interface IRemoveConfirmationCodeAction
     {
-        bool Execute(string code);
+        Task<bool> Execute(string code);
     }
 
     internal class RemoveConfirmationCodeAction : IRemoveConfirmationCodeAction
@@ -33,14 +34,14 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
             _confirmationCodeRepository = confirmationCodeRepository;
         }
 
-        public bool Execute(string code)
+        public async Task<bool> Execute(string code)
         {
             if (string.IsNullOrWhiteSpace(code))
             {
                 throw new ArgumentNullException(nameof(code));
             }
 
-            return _confirmationCodeRepository.Remove(code);
+            return await _confirmationCodeRepository.RemoveAsync(code);
         }
     }
 }

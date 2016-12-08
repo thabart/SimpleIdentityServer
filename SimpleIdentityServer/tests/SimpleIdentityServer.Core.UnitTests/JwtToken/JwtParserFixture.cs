@@ -10,7 +10,6 @@ using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.UnitTests.Fake;
-using SimpleIdentityServer.Core.Validators;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,49 +23,42 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
     public sealed class JwtParserFixture
     {
         private Mock<IJweParser> _jweParserMock;
-
         private Mock<IJwsParser> _jwsParserMock;
-
         private Mock<IHttpClientFactory> _httpClientFactoryMock;
-
-        private Mock<IClientValidator> _clientValidatorMock;
-
+        private Mock<IClientRepository> _clientRepositoryStub;
         private Mock<IJsonWebKeyConverter> _jsonWebKeyConverterMock;
-
         private Mock<IJsonWebKeyRepository> _jsonWebKeyRepositoryMock;
-
         private IJwtParser _jwtParser;
 
-        #region Decrypt method
+        #region DecryptAsync method
 
         [Fact]
-        public void When_Passing_Empty_String_To_Decrypt_Without_ClientId_Method_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Empty_String_To_DecryptAsync_Without_ClientId_Method_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _jwtParser.Decrypt(string.Empty));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _jwtParser.DecryptAsync(string.Empty));
         }
 
         [Fact]
-        public void When_Passing_Not_Valid_Header_To_Decrypt_Without_ClientId_Method_Then_Empty_Is_Returned()
+        public async Task When_Passing_Not_Valid_Header_To_DecryptAsync_Without_ClientId_Method_Then_Empty_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
-            const string clientId = "client_id";
             _jwsParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
                 .Returns(() => null);
 
             // ACT
-            var result = _jwtParser.Decrypt("jws");
+            var result = await _jwtParser.DecryptAsync("jws");
 
             // ASSERT
             Assert.Empty(result);
         }
 
         [Fact]
-        public void When_Passing_Jwe_With_Not_Existing_JsonWebKey_To_Decrypt_Without_ClientId_Method_Then_Empty_Is_Returned()
+        public async Task When_Passing_Jwe_With_Not_Existing_JsonWebKey_To_DecryptAsync_Without_ClientId_Method_Then_Empty_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -76,18 +68,18 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             };
             _jweParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
                 .Returns(jwsProtectedHeader);
-            _jsonWebKeyRepositoryMock.Setup(j => j.GetByKid(It.IsAny<string>()))
+            _jsonWebKeyRepositoryMock.Setup(j => j.GetByKidAsync(It.IsAny<string>()))
                 .Returns(() => null);
 
             // ACT
-            var result = _jwtParser.Decrypt("jws");
+            var result = await _jwtParser.DecryptAsync("jws");
 
             // ASSERT
             Assert.Empty(result);
         }
 
         [Fact]
-        public void When_Passing_Valid_Request_To_Decrypt_Without_ClientId_Method_Then_Parse_Method_Is_Called()
+        public async Task When_Passing_Valid_Request_To_DecryptAsync_Without_ClientId_Method_Then_Parse_Method_Is_Called()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -98,11 +90,11 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             var jsonWebKey = new JsonWebKey();
             _jweParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
                 .Returns(jwsProtectedHeader);
-            _jsonWebKeyRepositoryMock.Setup(j => j.GetByKid(It.IsAny<string>()))
-                .Returns(jsonWebKey);
+            _jsonWebKeyRepositoryMock.Setup(j => j.GetByKidAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(jsonWebKey));
 
             // ACT
-            var result = _jwtParser.Decrypt("jws");
+            var result = await _jwtParser.DecryptAsync("jws");
 
             // ASSERT
             _jweParserMock.Verify(j => j.Parse(It.IsAny<string>(), It.IsAny<JsonWebKey>()));
@@ -110,56 +102,56 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 
         #endregion
 
-        #region Decrypt with client_id method
+        #region DecryptAsync with client_id method
 
         [Fact]
-        public void When_Passing_Empty_String_To_Decrypt_Method_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Empty_String_To_DecryptAsync_Method_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<AggregateException>(() => _jwtParser.Decrypt(string.Empty, string.Empty));
-            Assert.Throws<AggregateException>(() => _jwtParser.Decrypt("jwe", string.Empty));
+            await Assert.ThrowsAsync<AggregateException>(() => _jwtParser.DecryptAsync(string.Empty, string.Empty));
+            await Assert.ThrowsAsync<AggregateException>(() => _jwtParser.DecryptAsync("jwe", string.Empty));
         }
 
         [Fact]
-        public void When_Passing_Invalid_Client_To_Function_Decrypt_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Invalid_Client_To_Function_DecryptAsync_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
             const string clientId = "client_id";
             _jwsParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
                 .Returns(() => null);
-            _clientValidatorMock.Setup(c => c.ValidateClientExistAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((Models.Client)null));
 
             // ACT & ASSERT
-            var aggr = Assert.Throws<AggregateException>(() => _jwtParser.Decrypt("jws", clientId));
+            var aggr = await Assert.ThrowsAsync<AggregateException>(() => _jwtParser.DecryptAsync("jws", clientId));
             var ex = aggr.InnerExceptions.First();
             Assert.True(ex.Message == string.Format(ErrorDescriptions.ClientIsNotValid, clientId));
         }
 
         [Fact]
-        public void When_Passing_Jws_With_Invalid_Header_To_Decrypt_Then_Empty_Is_Returned()
+        public async Task When_Passing_Jws_With_Invalid_Header_To_DecryptAsync_Then_Empty_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
             var client = new Models.Client();
             _jwsParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
                 .Returns(() => null);
-            _clientValidatorMock.Setup(c => c.ValidateClientExistAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
 
             // ACT
-            var result = _jwtParser.Decrypt("jws", "client_id");
+            var result = await _jwtParser.DecryptAsync("jws", "client_id");
 
             // ASSERT
             Assert.Empty(result);
         }
 
         [Fact]
-        public void When_Passing_Jws_To_Decrypt_And_Cannot_Extract_Json_Web_Key_Then_Empty_Is_Returned()
+        public async Task When_Passing_Jws_To_DecryptAsync_And_Cannot_Extract_Json_Web_Key_Then_Empty_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -175,18 +167,18 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             };
             _jweParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
                 .Returns(jwsProtectedHeader);
-            _clientValidatorMock.Setup(c => c.ValidateClientExistAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
 
             // ACT
-            var result = _jwtParser.Decrypt("jws", clientId);
+            var result = await _jwtParser.DecryptAsync("jws", clientId);
 
             // ASSERT
             Assert.Empty(result);
         }
 
         [Fact]
-        public void When_Passing_Jws_With_Valid_Kid_To_Decrypt_Then_Parse_Is_Called_And_Payload_Is_Returned()
+        public async Task When_Passing_Jws_With_Valid_Kid_To_DecryptAsync_Then_Parse_Is_Called_And_Payload_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -215,13 +207,13 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 
             _jweParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
                 .Returns(jwsProtectedHeader);
-            _clientValidatorMock.Setup(c => c.ValidateClientExistAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
             _jwsParserMock.Setup(j => j.ValidateSignature(It.IsAny<string>(), It.IsAny<JsonWebKey>()))
                 .Returns(payLoad);
 
             // ACT
-            _jwtParser.Decrypt(jws, clientId);
+            await _jwtParser.DecryptAsync(jws, clientId);
 
             // ASSERT
             _jweParserMock.Verify(j => j.Parse(jws, jsonWebKey));
@@ -229,10 +221,10 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 
         #endregion
 
-        #region Decrypt with password method
+        #region DecryptAsync with password method
         
         [Fact]
-        public void When_Passing_Jws_To_Decrypt_With_Password_And_Cannot_Extract_Json_Web_Key_Then_Empty_Is_Returned()
+        public async Task When_Passing_Jws_To_DecryptAsync_With_Password_And_Cannot_Extract_Json_Web_Key_Then_Empty_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -249,11 +241,11 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             };
             _jweParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
                 .Returns(jwsProtectedHeader);
-            _clientValidatorMock.Setup(c => c.ValidateClientExistAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
 
             // ACT
-            var result = _jwtParser.DecryptWithPassword("jws", clientId, password);
+            var result = await _jwtParser.DecryptWithPasswordAsync("jws", clientId, password);
 
             // ASSERT
             Assert.Empty(result);
@@ -261,7 +253,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 
 
         [Fact]
-        public void When_Decrypt_Jwe_With_Password_Then_Function_Is_Called()
+        public async Task When_DecryptAsync_Jwe_With_Password_Then_Function_Is_Called()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -291,13 +283,13 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 
             _jweParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
                 .Returns(jwsProtectedHeader);
-            _clientValidatorMock.Setup(c => c.ValidateClientExistAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
             _jwsParserMock.Setup(j => j.ValidateSignature(It.IsAny<string>(), It.IsAny<JsonWebKey>()))
                 .Returns(payLoad);
 
             // ACT
-            _jwtParser.DecryptWithPassword(jws, clientId, password);
+            await _jwtParser.DecryptWithPasswordAsync(jws, clientId, password);
 
             // ASSERT
             _jweParserMock.Verify(j => j.ParseByUsingSymmetricPassword(jws, jsonWebKey, password));
@@ -308,17 +300,17 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
         #region Unsign method
 
         [Fact]
-        public void When_Passing_Null_To_Unsign_Without_ClientId_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_To_Unsign_Without_ClientId_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _jwtParser.UnSign(string.Empty));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _jwtParser.UnSignAsync(string.Empty));
         }
 
         [Fact]
-        public void When_Passing_Not_Valid_Header_To_Unsign_Without_ClientId_Then_Null_Is_Returned()
+        public async Task When_Passing_Not_Valid_Header_To_Unsign_Without_ClientId_Then_Null_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -326,14 +318,14 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 .Returns(() => null);
 
             // ACT
-            var result = _jwtParser.UnSign("jws");
+            var result = await _jwtParser.UnSignAsync("jws");
 
             // ASSERT
             Assert.True(result == null);
         }
 
         [Fact]
-        public void When_Passing_Valid_Request_To_Unsign_Without_ClientId_Then_No_Exception_Is_Thrown()
+        public async Task When_Passing_Valid_Request_To_Unsign_Without_ClientId_Then_No_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -354,13 +346,13 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 
             _jwsParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
                 .Returns(jwsProtectedHeader);
-            _jsonWebKeyRepositoryMock.Setup(j => j.GetByKid(It.IsAny<string>()))
-                .Returns(jsonWebKey);
+            _jsonWebKeyRepositoryMock.Setup(j => j.GetByKidAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(jsonWebKey));
             _jwsParserMock.Setup(j => j.ValidateSignature(It.IsAny<string>(), It.IsAny<JsonWebKey>()))
                 .Returns(payLoad);
 
             // ACT
-            var result = _jwtParser.UnSign(jws);
+            var result = await _jwtParser.UnSignAsync(jws);
 
             // ASSERT
             Assert.NotNull(result);
@@ -372,53 +364,53 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
         #region Unsign with client_id method
 
         [Fact]
-        public void When_Passing_Empty_String_To_Function_Unsign_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Empty_String_To_Function_Unsign_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<AggregateException>(() => _jwtParser.UnSign(string.Empty, string.Empty));
-            Assert.Throws<AggregateException>(() => _jwtParser.UnSign("jws", string.Empty));
+            await Assert.ThrowsAsync<AggregateException>(() => _jwtParser.UnSignAsync(string.Empty, string.Empty));
+            await Assert.ThrowsAsync<AggregateException>(() => _jwtParser.UnSignAsync("jws", string.Empty));
         }
 
         [Fact]
-        public void When_Passing_Invalid_Client_To_Function_Unsign_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Invalid_Client_To_Function_Unsign_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             const string clientId = "client_id";
             InitializeFakeObjects();
-            _clientValidatorMock.Setup(c => c.ValidateClientExistAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((Models.Client)null));
 
             // ACT & ASSERTS
-            var aggr = Assert.Throws<AggregateException>(() => _jwtParser.UnSign("jws", clientId));
+            var aggr = await Assert.ThrowsAsync<AggregateException>(() => _jwtParser.UnSignAsync("jws", clientId));
             Assert.NotNull(aggr);
             var ex = aggr.InnerExceptions.First();
             Assert.True(ex.Message == string.Format(ErrorDescriptions.ClientIsNotValid, clientId));
         }
 
         [Fact]
-        public void When_Passing_Jws_With_Invalid_Header_To_Function_Unsign_Then_Null_Is_Returned()
+        public async Task When_Passing_Jws_With_Invalid_Header_To_Function_Unsign_Then_Null_Is_Returned()
         {
             // ARRANGE
             const string clientId = "client_id";
             var client = new Models.Client();
             InitializeFakeObjects();
-            _clientValidatorMock.Setup(c => c.ValidateClientExistAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
             _jwsParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
                 .Returns(() => null);
 
             // ACT
-            var result = _jwtParser.UnSign("jws", clientId);
+            var result = await _jwtParser.UnSignAsync("jws", clientId);
 
             // ASSERT
             Assert.Null(result);
         }
 
         [Fact]
-        public void When_Json_Web_Key_Uri_Is_Not_Valid_And_Algorithm_Is_PS256_And_Unsign_Then_Null_Is_Returned()
+        public async Task When_Json_Web_Key_Uri_Is_Not_Valid_And_Algorithm_Is_PS256_And_Unsign_Then_Null_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -435,20 +427,20 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             var jsonWebKeys = new List<JsonWebKey>();
             _jwsParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
                 .Returns(jwsProtectedHeader);
-            _clientValidatorMock.Setup(c => c.ValidateClientExistAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
             _jsonWebKeyConverterMock.Setup(j => j.ExtractSerializedKeys(It.IsAny<JsonWebKeySet>()))
                 .Returns(jsonWebKeys);
 
             // ACT
-            var result = _jwtParser.UnSign("jws", clientId);
+            var result = await _jwtParser.UnSignAsync("jws", clientId);
 
             // ASSERT
             Assert.Null(result);
         }
         
         [Fact]
-        public void When_Requesting_Uri_Returned_Error_And_Algorithm_Is_PS256_And_Unsign_Then_Null_Is_Returned()
+        public async Task When_Requesting_Uri_Returned_Error_And_Algorithm_Is_PS256_And_Unsign_Then_Null_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -469,7 +461,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             };
             _jwsParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
                 .Returns(jwsProtectedHeader);
-            _clientValidatorMock.Setup(c => c.ValidateClientExistAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
             var handler = new FakeHttpMessageHandler(httpResponseMessage);
             var httpClientFake = new HttpClient(handler);
@@ -477,14 +469,14 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 .Returns(httpClientFake);
 
             // ACT
-            var result = _jwtParser.UnSign("jws", clientId);
+            var result = await _jwtParser.UnSignAsync("jws", clientId);
 
             // ASSERT
             Assert.Null(result);
         }
 
         [Fact]
-        public void When_No_Json_Web_Key_Can_Be_Extracted_From_Uri_And_Algorithm_Is_PS256_And_Unsign_Then_Null_Is_Returned()
+        public async Task When_No_Json_Web_Key_Can_Be_Extracted_From_Uri_And_Algorithm_Is_PS256_And_Unsign_Then_Null_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -507,7 +499,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             var jsonWebKeys = new List<JsonWebKey>();
             _jwsParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
                 .Returns(jwsProtectedHeader);
-            _clientValidatorMock.Setup(c => c.ValidateClientExistAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
             var handler = new FakeHttpMessageHandler(httpResponseMessage);
             var httpClientFake = new HttpClient(handler);
@@ -517,14 +509,14 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 .Returns(jsonWebKeys);
 
             // ACT
-            var result = _jwtParser.UnSign("jws", clientId);
+            var result = await _jwtParser.UnSignAsync("jws", clientId);
 
             // ASSERT
             Assert.Null(result);
         }
 
         [Fact]
-        public void When_No_Json_Web_Key_Can_Be_Extracted_From_Jwks_And_Algorithm_Is_PS256_And_Unsign_Then_Null_Is_Returned()
+        public async Task When_No_Json_Web_Key_Can_Be_Extracted_From_Jwks_And_Algorithm_Is_PS256_And_Unsign_Then_Null_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -540,18 +532,18 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             };
             _jwsParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
                 .Returns(jwsProtectedHeader);
-            _clientValidatorMock.Setup(c => c.ValidateClientExistAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
 
             // ACT
-            var result = _jwtParser.UnSign("jws", clientId);
+            var result = await _jwtParser.UnSignAsync("jws", clientId);
 
             // ASSERT
             Assert.Null(result);
         }
 
         [Fact]
-        public void When_No_Uri_And_JsonWebKeys_Are_Defined_And_Algorithm_Is_PS256_And_Unsign_Then_Null_Is_Returned()
+        public async Task When_No_Uri_And_JsonWebKeys_Are_Defined_And_Algorithm_Is_PS256_And_Unsign_Then_Null_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -566,18 +558,18 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             };
             _jwsParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
                 .Returns(jwsProtectedHeader);
-            _clientValidatorMock.Setup(c => c.ValidateClientExistAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
 
             // ACT
-            var result = _jwtParser.UnSign("jws", clientId);
+            var result = await _jwtParser.UnSignAsync("jws", clientId);
 
             // ASSERT
             Assert.Null(result);
         }
 
         [Fact]
-        public void When_Passing_Jws_With_None_Algorithm_To_Unsign_And_No_Uri_And_Jwks_Are_Defined_Then_Payload_Is_Returned()
+        public async Task When_Passing_Jws_With_None_Algorithm_To_Unsign_And_No_Uri_And_Jwks_Are_Defined_Then_Payload_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -595,13 +587,13 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 
             _jwsParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
                 .Returns(jwsProtectedHeader);
-            _clientValidatorMock.Setup(c => c.ValidateClientExistAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
             _jwsParserMock.Setup(j => j.GetPayload(It.IsAny<string>()))
                 .Returns(payLoad);
 
             // ACT
-            var result = _jwtParser.UnSign(jws, clientId);
+            var result = await _jwtParser.UnSignAsync(jws, clientId);
 
             // ASSERT
             Assert.NotNull(result);
@@ -609,7 +601,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
         }
 
         [Fact]
-        public void When_Passing_Jws_With_Algorithm_Other_Than_None_To_Unsign_And_Retrieve_Json_Web_Key_From_Uri_Then_Jwis_Is_Unsigned_And_Payload_Is_Returned()
+        public async Task When_Passing_Jws_With_Algorithm_Other_Than_None_To_Unsign_And_Retrieve_Json_Web_Key_From_Uri_Then_Jwis_Is_Unsigned_And_Payload_Is_Returned()
         {            
             // ARRANGE
             InitializeFakeObjects();
@@ -647,7 +639,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 
             _jwsParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
                 .Returns(jwsProtectedHeader);
-            _clientValidatorMock.Setup(c => c.ValidateClientExistAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
             _jwsParserMock.Setup(j => j.ValidateSignature(It.IsAny<string>(), It.IsAny<JsonWebKey>()))
                 .Returns(payLoad);
@@ -657,7 +649,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 .Returns(jsonWebKeys);
 
             // ACT
-            var result = _jwtParser.UnSign(jws, clientId);
+            var result = await _jwtParser.UnSignAsync(jws, clientId);
 
             // ASSERT
             Assert.NotNull(result);
@@ -665,7 +657,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
         }
         
         [Fact]
-        public void When_Passing_Jws_With_Algorithm_Other_Than_None_To_Unsign_And_Retrieve_Json_Web_Key_From_Parameter_Then_Jws_Is_Unsigned_And_Payload_Is_Returned()
+        public async Task When_Passing_Jws_With_Algorithm_Other_Than_None_To_Unsign_And_Retrieve_Json_Web_Key_From_Parameter_Then_Jws_Is_Unsigned_And_Payload_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -694,13 +686,13 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 
             _jwsParserMock.Setup(j => j.GetHeader(It.IsAny<string>()))
                 .Returns(jwsProtectedHeader);
-            _clientValidatorMock.Setup(c => c.ValidateClientExistAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
             _jwsParserMock.Setup(j => j.ValidateSignature(It.IsAny<string>(), It.IsAny<JsonWebKey>()))
                 .Returns(payLoad);
 
             // ACT
-            var result = _jwtParser.UnSign(jws, clientId);
+            var result = await _jwtParser.UnSignAsync(jws, clientId);
 
             // ASSERT
             Assert.NotNull(result);
@@ -714,14 +706,14 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             _jweParserMock = new Mock<IJweParser>();
             _jwsParserMock = new Mock<IJwsParser>();
             _httpClientFactoryMock = new Mock<IHttpClientFactory>();
-            _clientValidatorMock = new Mock<IClientValidator>();
+            _clientRepositoryStub = new Mock<IClientRepository>();
             _jsonWebKeyConverterMock = new Mock<IJsonWebKeyConverter>();
             _jsonWebKeyRepositoryMock = new Mock<IJsonWebKeyRepository>();
             _jwtParser = new JwtParser(
                 _jweParserMock.Object,
                 _jwsParserMock.Object,
                 _httpClientFactoryMock.Object,
-                _clientValidatorMock.Object,
+                _clientRepositoryStub.Object,
                 _jsonWebKeyConverterMock.Object,
                 _jsonWebKeyRepositoryMock.Object);
         }

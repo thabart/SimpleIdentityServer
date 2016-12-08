@@ -24,6 +24,7 @@ using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Parameters;
 using System.Collections.Generic;
 using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Common;
 
 namespace SimpleIdentityServer.Core.Validators
 {
@@ -46,7 +47,7 @@ namespace SimpleIdentityServer.Core.Validators
             const string localhost = "localhost";
             if (parameter == null)
             {
-                throw new ArgumentNullException("parameter");
+                throw new ArgumentNullException(nameof(parameter));
             }
 
             // Validate the redirection uris
@@ -55,7 +56,7 @@ namespace SimpleIdentityServer.Core.Validators
             {
                 throw new IdentityServerException(
                     ErrorCodes.InvalidRedirectUri,
-                    string.Format(ErrorDescriptions.MissingParameter, Constants.StandardRegistrationRequestParameterNames.RequestUris));
+                    string.Format(ErrorDescriptions.MissingParameter, ClientNames.RequestUris));
             }
 
             foreach (var redirectUri in parameter.RedirectUris)
@@ -132,10 +133,10 @@ namespace SimpleIdentityServer.Core.Validators
                 }
             }
 
-            ValidateNotMandatoryUri(parameter.LogoUri, Constants.StandardRegistrationRequestParameterNames.LogoUri);
-            ValidateNotMandatoryUri(parameter.ClientUri, Constants.StandardRegistrationRequestParameterNames.ClientUri);
-            ValidateNotMandatoryUri(parameter.TosUri, Constants.StandardRegistrationRequestParameterNames.TosUri);
-            ValidateNotMandatoryUri(parameter.JwksUri, Constants.StandardRegistrationRequestParameterNames.JwksUri);
+            ValidateNotMandatoryUri(parameter.LogoUri, ClientNames.LogoUri);
+            ValidateNotMandatoryUri(parameter.ClientUri, ClientNames.ClientUri);
+            ValidateNotMandatoryUri(parameter.TosUri, ClientNames.TosUri);
+            ValidateNotMandatoryUri(parameter.JwksUri, ClientNames.JwksUri);
 
             if (parameter.Jwks != null)
             {
@@ -148,7 +149,7 @@ namespace SimpleIdentityServer.Core.Validators
             }
 
             ValidateNotMandatoryUri(parameter.SectorIdentifierUri,
-                Constants.StandardRegistrationRequestParameterNames.SectoreIdentifierUri, true);
+                ClientNames.SectorIdentifierUri, true);
 
             // Based on the RFC : http://openid.net/specs/openid-connect-registration-1_0.html#SectorIdentifierValidation validate the sector_identifier_uri
             if (!string.IsNullOrWhiteSpace(parameter.SectorIdentifierUri))
@@ -202,7 +203,7 @@ namespace SimpleIdentityServer.Core.Validators
             }
 
             ValidateNotMandatoryUri(parameter.InitiateLoginUri,
-                Constants.StandardRegistrationRequestParameterNames.InitiateLoginUri, true);
+                ClientNames.InitiateLoginUri, true);
 
             if (parameter.RequestUris != null &&
                 parameter.RequestUris.Any())

@@ -25,7 +25,6 @@ namespace SimpleIdentityServer.Core.Helpers
 {
     public interface IGrantedTokenHelper 
     {
-        GrantedToken GetValidGrantedToken(string scopes, string clientId, JwsPayload idTokenJwsPayload = null, JwsPayload userInfoJwsPayload = null);
         Task<GrantedToken> GetValidGrantedTokenAsync(string scopes, string clientId, JwsPayload idTokenJwsPayload = null, JwsPayload userInfoJwsPayload = null);
     }
 
@@ -33,24 +32,11 @@ namespace SimpleIdentityServer.Core.Helpers
     {
         private readonly IGrantedTokenRepository _grantedTokenRepository;
         private readonly IGrantedTokenValidator _grantedTokenValidator;
-
-        #region Constructor
-
-        public GrantedTokenHelper(
-            IGrantedTokenRepository grantedTokenRepository,
-            IGrantedTokenValidator grantedTokenValidator)
+        
+        public GrantedTokenHelper(IGrantedTokenRepository grantedTokenRepository, IGrantedTokenValidator grantedTokenValidator)
         {
             _grantedTokenRepository = grantedTokenRepository;
             _grantedTokenValidator = grantedTokenValidator;
-        }
-
-        #endregion
-
-        #region Public methods
-
-        public GrantedToken GetValidGrantedToken(string scopes, string clientId, JwsPayload idTokenJwsPayload = null, JwsPayload userInfoJwsPayload = null)
-        {
-            return GetValidGrantedTokenAsync(scopes, clientId, idTokenJwsPayload, userInfoJwsPayload).Result;
         }
 
         public async Task<GrantedToken> GetValidGrantedTokenAsync(string scopes, string clientId, JwsPayload idTokenJwsPayload = null, JwsPayload userInfoJwsPayload = null)
@@ -78,7 +64,5 @@ namespace SimpleIdentityServer.Core.Helpers
 
             return token;
         }
-
-        #endregion
     }
 }

@@ -193,4 +193,22 @@ namespace SimpleIdentityServer.Core.Common
         public const string Touch = "touch";
         public const string Wap = "wap";
     }
+
+    public static class GrantedTokenNames
+    {
+        public const string AccessToken = "access_token";
+        public const string IdToken = "id_token";
+        public const string RefreshToken = "refresh_token";
+        public const string TokenType = "token_type";
+        public const string Scope = "scope";
+        public const string ExpiresIn = "expires_in";
+    }
+
+    public static class RegistrationResponseNames
+    {
+        public const string RegistrationAccessToken = "registration_access_token";
+        public const string RegistrationClientUri = "registration_client_uri";
+        public const string ClientIdIssuedAt = "client_id_issued_at";
+        public const string ClientSecretExpiresAt = "client_secret_expires_at";
+    }
 }

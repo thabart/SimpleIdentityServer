@@ -26,8 +26,7 @@ namespace SimpleIdentityServer.Core.Helpers
 {
     public interface IConsentHelper
     {
-        Consent GetConsentConfirmedByResourceOwner(string subject, AuthorizationParameter authorizationParameter);
-        Task<Consent> GetConsentConfirmedByResourceOwnerAsync(string subject, AuthorizationParameter authorizationParameter);
+        Task<Consent> GetConfirmedConsentsAsync(string subject, AuthorizationParameter authorizationParameter);
     }
 
     public class ConsentHelper : IConsentHelper
@@ -41,12 +40,7 @@ namespace SimpleIdentityServer.Core.Helpers
             _parameterParserHelper = parameterParserHelper;
         }
 
-        public Consent GetConsentConfirmedByResourceOwner(string subject, AuthorizationParameter authorizationParameter)
-        {
-            return GetConsentConfirmedByResourceOwnerAsync(subject, authorizationParameter).Result;
-        }
-
-        public async Task<Consent> GetConsentConfirmedByResourceOwnerAsync(string subject, AuthorizationParameter authorizationParameter)
+        public async Task<Consent> GetConfirmedConsentsAsync(string subject, AuthorizationParameter authorizationParameter)
         {
             if (string.IsNullOrWhiteSpace(subject))
             {
@@ -77,7 +71,7 @@ namespace SimpleIdentityServer.Core.Helpers
                 else
                 {
                     var scopeNames =
-                        _parameterParserHelper.ParseScopeParameters(authorizationParameter.Scope);
+                        _parameterParserHelper.ParseScopes(authorizationParameter.Scope);
                     confirmedConsent = consents.FirstOrDefault(
                         c =>
                             c.Client.ClientId == authorizationParameter.ClientId &&

@@ -18,64 +18,48 @@ using Moq;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Services;
 using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Helpers
 {
     public class GrantedTokenGeneratorHelperFixture
     {
-        #region Fields
-
         private Mock<IConfigurationService> _simpleIdentityServerConfiguratorStub;
-
         private IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
-
-        #endregion
-
-        #region Exceptions
-
+        
         [Fact]
-        public void When_Passing_NullOrWhiteSpace_Then_Exceptions_Are_Thrown()
+        public async Task When_Passing_NullOrWhiteSpace_Then_Exceptions_Are_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            Assert.Throws<ArgumentNullException>(() => _grantedTokenGeneratorHelper.GenerateToken(null, null));
-            Assert.Throws<ArgumentNullException>(() => _grantedTokenGeneratorHelper.GenerateToken(string.Empty, null));
-            Assert.Throws<ArgumentNullException>(() => _grantedTokenGeneratorHelper.GenerateToken("clientid", null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenGeneratorHelper.GenerateTokenAsync(null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenGeneratorHelper.GenerateTokenAsync(string.Empty, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenGeneratorHelper.GenerateTokenAsync("clientid", null));
         }
-        
-        #endregion
-
-        #region Happy paths
 
         [Fact]
-        public void When_ExpirationTime_Is_Set_Then_ExpiresInProperty_Is_Set()
+        public async Task When_ExpirationTime_Is_Set_Then_ExpiresInProperty_Is_Set()
         {
             // ARRANGE
             InitializeFakeObjects();
-            _simpleIdentityServerConfiguratorStub.Setup(c => c.GetTokenValidityPeriodInSeconds())
-                .Returns(3700);
+            _simpleIdentityServerConfiguratorStub.Setup(c => c.GetTokenValidityPeriodInSecondsAsync())
+                .Returns(Task.FromResult((double)3700));
 
             // ACT
-            var result = _grantedTokenGeneratorHelper.GenerateToken("client_id", "scope");
+            var result = await _grantedTokenGeneratorHelper.GenerateTokenAsync("client_id", "scope");
 
             // ASSERT
             Assert.NotNull(result);
             Assert.True(result.ExpiresIn == 3700);
         }
 
-        #endregion
-
-        #region Private methods
-
         private void InitializeFakeObjects()
         {
             _simpleIdentityServerConfiguratorStub = new Mock<IConfigurationService>();
             _grantedTokenGeneratorHelper = new GrantedTokenGeneratorHelper(_simpleIdentityServerConfiguratorStub.Object);
         }
-
-        #endregion
     }
 }

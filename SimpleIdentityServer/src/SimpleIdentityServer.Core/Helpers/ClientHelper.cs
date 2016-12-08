@@ -18,33 +18,27 @@ using System;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Core.Models;
 using System.Threading.Tasks;
+using SimpleIdentityServer.Core.Repositories;
 
 namespace SimpleIdentityServer.Core.Helpers
 {
     public interface IClientHelper
     {
-        string GenerateIdToken(string clientId, JwsPayload jwsPayload);
         Task<string> GenerateIdTokenAsync(string clientId, JwsPayload jwsPayload);
-        string GenerateIdToken(Client client, JwsPayload jwsPayload);
+        Task<string> GenerateIdTokenAsync(Client client, JwsPayload jwsPayload);
     }
 
     public sealed class ClientHelper : IClientHelper
     {
-        private readonly IClientValidator _clientValidator;
+        private readonly IClientRepository _clientRepository;
         private readonly IJwtGenerator _jwtGenerator;
 
-        public ClientHelper(IClientValidator clientValidator, IJwtGenerator jwtGenerator)
+        public ClientHelper(IClientRepository clientRepository, IJwtGenerator jwtGenerator)
         {
-            _clientValidator = clientValidator;
+            _clientRepository = clientRepository;
             _jwtGenerator = jwtGenerator;
-        }
-
-        public string GenerateIdToken(string clientId, JwsPayload jwsPayload)
-        {
-            return GenerateIdTokenAsync(clientId, jwsPayload).Result;
         }
 
         public async Task<string> GenerateIdTokenAsync(string clientId, JwsPayload jwsPayload)
@@ -59,16 +53,16 @@ namespace SimpleIdentityServer.Core.Helpers
                 throw new ArgumentNullException(nameof(jwsPayload));
             }
 
-            var client = await _clientValidator.ValidateClientExistAsync(clientId);
+            var client = await _clientRepository.GetClientByIdAsync(clientId);
             if (client == null)
             {
                 return null;
             }
 
-            return GenerateIdToken(client, jwsPayload);
+            return await GenerateIdTokenAsync(client, jwsPayload);
         }
 
-        public string GenerateIdToken(Client client, JwsPayload jwsPayload)
+        public async Task<string> GenerateIdTokenAsync(Client client, JwsPayload jwsPayload)
         {
             if (client == null)
             {
@@ -88,9 +82,7 @@ namespace SimpleIdentityServer.Core.Helpers
                 signedResponseAlg = JwsAlg.RS256;
             }
 
-            var idToken = _jwtGenerator.Sign(jwsPayload,
-                signedResponseAlg.Value);
-
+            var idToken = await _jwtGenerator.SignAsync(jwsPayload, signedResponseAlg.Value);
             if (encryptResponseAlg == null)
             {
                 return idToken;
@@ -101,7 +93,7 @@ namespace SimpleIdentityServer.Core.Helpers
                 encryptResponseEnc = JweEnc.A128CBC_HS256;
             }
 
-            return _jwtGenerator.Encrypt(idToken, encryptResponseAlg.Value, encryptResponseEnc.Value);
+            return await _jwtGenerator.EncryptAsync(idToken, encryptResponseAlg.Value, encryptResponseEnc.Value);
         }
     }
 }

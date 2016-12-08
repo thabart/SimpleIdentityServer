@@ -23,6 +23,7 @@ using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.WebSite.Account.Actions;
 using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.Account
@@ -34,22 +35,22 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Account
         private IAddResourceOwnerAction _addResourceOwnerAction;
         
         [Fact]
-        public void When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
+        public async Task When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            Assert.Throws<ArgumentNullException>(() => _addResourceOwnerAction.Execute(null));
-            Assert.Throws<ArgumentNullException>(() => _addResourceOwnerAction.Execute(new AddUserParameter()));
-            Assert.Throws<ArgumentNullException>(() => _addResourceOwnerAction.Execute(new AddUserParameter
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(new AddUserParameter()));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(new AddUserParameter
             {
                 Login = "name"
             }));
         }
 
         [Fact]
-        public void When_ResourceOwner_With_Same_Credentials_Exists_Then_Exception_Is_Thrown()
+        public async Task When_ResourceOwner_With_Same_Credentials_Exists_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -59,11 +60,11 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Account
                 Password = "password"
             };
 
-            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwner(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(new ResourceOwner());
+            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(Task.FromResult(new ResourceOwner()));
 
             // ACT
-            var exception = Assert.Throws<IdentityServerException>(() => _addResourceOwnerAction.Execute(parameter));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _addResourceOwnerAction.Execute(parameter));
 
             // ASSERTS
             Assert.NotNull(exception);
@@ -72,7 +73,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Account
         }
         
         [Fact]
-        public void When_Add_ResourceOwner_Then_Operation_Is_Called()
+        public async Task When_Add_ResourceOwner_Then_Operation_Is_Called()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -82,14 +83,14 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Account
                 Password = "password"
             };
 
-            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwner(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns((ResourceOwner)null);
+            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(Task.FromResult((ResourceOwner)null));
 
             // ACT
-            _addResourceOwnerAction.Execute(parameter);
+            await _addResourceOwnerAction.Execute(parameter);
 
             // ASSERT
-            _resourceOwnerRepositoryStub.Verify(r => r.Insert(It.IsAny<ResourceOwner>()));
+            _resourceOwnerRepositoryStub.Verify(r => r.InsertAsync(It.IsAny<ResourceOwner>()));
         }
 
         private void InitializeFakeObjects()

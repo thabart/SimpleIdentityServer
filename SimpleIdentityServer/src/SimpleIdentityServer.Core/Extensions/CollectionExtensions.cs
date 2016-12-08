@@ -13,9 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using System.Collections.Generic;
 
-namespace SimpleIdentityServer.Core.Exceptions
+namespace SimpleIdentityServer.Core.Extensions
 {
     public static class CollectionExtensions
     {

@@ -320,7 +320,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             await _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null);
 
             // ASSERTS
-            _clientHelper.Verify(j => j.GenerateIdToken(It.IsAny<Client>(), It.IsAny<JwsPayload>()));
+            _clientHelper.Verify(j => j.GenerateIdTokenAsync(It.IsAny<Client>(), It.IsAny<JwsPayload>()));
         }
 
         [Fact]
@@ -370,11 +370,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 It.IsAny<JwsPayload>(),
                 It.IsAny<JwsPayload>()))
                 .Returns(() => Task.FromResult((GrantedToken)null));
-            _grantedTokenGeneratorHelperFake.Setup(g => g.GenerateToken(It.IsAny<string>(),
+            _grantedTokenGeneratorHelperFake.Setup(g => g.GenerateTokenAsync(It.IsAny<string>(),
                 It.IsAny<string>(),
                 It.IsAny<JwsPayload>(),
                 It.IsAny<JwsPayload>()))
-                .Returns(grantedToken); ;
+                .Returns(Task.FromResult(grantedToken)); ;
 
             // ACT
             var result = await _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null);

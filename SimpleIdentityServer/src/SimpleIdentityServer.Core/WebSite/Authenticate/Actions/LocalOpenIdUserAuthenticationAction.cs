@@ -26,6 +26,7 @@ using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 {
@@ -41,11 +42,16 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
         /// <param name="code">Encrypted & signed authorization parameters</param>
         /// <param name="claims">Returned the claims of the authenticated user</param>
         /// <returns>Consent screen or redirect to the Index page.</returns>
-        ActionResult Execute(
+        Task<LocalOpenIdAuthenticationResult> Execute(
             LocalAuthenticationParameter localAuthenticationParameter,
             AuthorizationParameter authorizationParameter,
-            string code,
-            out List<Claim> claims);
+            string code);
+    }
+
+    public class LocalOpenIdAuthenticationResult
+    {
+        public ActionResult ActionResult { get; set; }
+        public ICollection<Claim> Claims { get; set; }
     }
 
     public class LocalOpenIdUserAuthenticationAction : ILocalOpenIdUserAuthenticationAction
@@ -76,11 +82,10 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
         /// <param name="code">Encrypted & signed authorization parameters</param>
         /// <param name="claims">Returned the claims of the authenticated user</param>
         /// <returns>Consent screen or redirect to the Index page.</returns>
-        public ActionResult Execute(
+        public async Task<LocalOpenIdAuthenticationResult> Execute(
             LocalAuthenticationParameter localAuthenticationParameter,
             AuthorizationParameter authorizationParameter,
-            string code,
-            out List<Claim> claims)
+            string code)
         {
             if (localAuthenticationParameter == null)
             {
@@ -92,22 +97,25 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                 throw new ArgumentNullException(nameof(authorizationParameter));
             }
 
-            var resourceOwner = _authenticateResourceOwnerService.AuthenticateResourceOwner(localAuthenticationParameter.UserName,
+            var resourceOwner = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(localAuthenticationParameter.UserName,
                 localAuthenticationParameter.Password);
             if (resourceOwner == null)
             {
-                claims = new List<Claim>();
                 throw new IdentityServerAuthenticationException("the resource owner credentials are not correct");
             }
 
-            claims = resourceOwner.Claims == null ? new List<Claim>() : resourceOwner.Claims.ToList();
+            var claims = resourceOwner.Claims == null ? new List<Claim>() : resourceOwner.Claims.ToList();
             claims.Add(new Claim(ClaimTypes.AuthenticationInstant,
                 DateTimeOffset.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture),
                 ClaimValueTypes.Integer));
-            return _authenticateHelper.ProcessRedirection(authorizationParameter,
-                code,
-                resourceOwner.Id,
-                claims);
+            return new LocalOpenIdAuthenticationResult
+            {
+                ActionResult = _authenticateHelper.ProcessRedirection(authorizationParameter,
+                                code,
+                                resourceOwner.Id,
+                                claims),
+                Claims = claims
+            };
         }
 
         #endregion

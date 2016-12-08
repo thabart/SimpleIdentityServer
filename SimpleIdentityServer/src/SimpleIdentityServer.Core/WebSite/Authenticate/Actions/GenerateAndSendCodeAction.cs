@@ -56,7 +56,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                 throw new ArgumentNullException(nameof(subject));
             }
             
-            var resourceOwner = _authenticateResourceOwnerService.AuthenticateResourceOwner(subject);
+            var resourceOwner = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(subject);
             if (resourceOwner == null)
             {
                 throw new IdentityServerException(
@@ -73,13 +73,13 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 
             var confirmationCode = new ConfirmationCode
             {
-                Code = GetCode(),
+                Code = await GetCode(),
                 CreateDateTime = DateTime.UtcNow,
                 ExpiresIn = 300,
                 IsConfirmed = false
             };
 
-            if (!_confirmationCodeRepository.AddCode(confirmationCode))
+            if (!await _confirmationCodeRepository.AddAsync(confirmationCode))
             {
                 throw new IdentityServerException(
                     ErrorCodes.UnhandledExceptionCode,
@@ -90,13 +90,13 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
             return confirmationCode.Code;
         }
         
-        private string GetCode()
+        private async Task<string> GetCode()
         {
             var random = new Random();
             var number = random.Next(100000, 999999);
-            if (_confirmationCodeRepository.Get(number.ToString()) != null)
+            if (_confirmationCodeRepository.GetAsync(number.ToString()) != null)
             {
-                return GetCode();
+                return await GetCode();
             }
 
             return number.ToString();

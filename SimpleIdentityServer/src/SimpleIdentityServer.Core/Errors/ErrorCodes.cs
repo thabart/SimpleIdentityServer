@@ -19,9 +19,6 @@ namespace SimpleIdentityServer.Core.Errors
     public static class ErrorCodes
     {
         public static string UnhandledExceptionCode = "unhandled_exception";
-
-        #region Standard error codes
-
         public static string InvalidRequestCode = "invalid_request";
         public static string InvalidClient = "invalid_client";
         public static string InvalidGrant = "invalid_grant";
@@ -36,7 +33,5 @@ namespace SimpleIdentityServer.Core.Errors
         public static string InvalidClientMetaData = "invalid_client_metadata";
         public static string InternalError = "internal_error";
         public static string UnsupportedTokenType = "unsupported_token_type";
-
-        #endregion
     }
 }

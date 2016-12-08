@@ -16,12 +16,13 @@
 
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.WebSite.Account.Actions;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.Account
 {
     public interface IAccountActions
     {
-        void AddResourceOwner(AddUserParameter addUserParameter);
+        Task AddResourceOwner(AddUserParameter addUserParameter);
     }
 
     internal class AccountActions : IAccountActions
@@ -43,9 +44,9 @@ namespace SimpleIdentityServer.Core.WebSite.Account
 
         #region Public methods
 
-        public void AddResourceOwner(AddUserParameter addUserParameter)
+        public async Task AddResourceOwner(AddUserParameter addUserParameter)
         {
-            _addResourceOwnerAction.Execute(addUserParameter);
+            await _addResourceOwnerAction.Execute(addUserParameter);
         }
 
         #endregion

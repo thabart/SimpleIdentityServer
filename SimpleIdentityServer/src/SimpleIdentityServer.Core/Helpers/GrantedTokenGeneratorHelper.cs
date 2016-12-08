@@ -19,30 +19,25 @@ using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Models;
 using System.Text;
 using SimpleIdentityServer.Core.Services;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Helpers
 {
     public interface IGrantedTokenGeneratorHelper
     {
-        GrantedToken GenerateToken(string clientId, string scope, JwsPayload userInformationPayload = null, JwsPayload idTokenPayload = null);
+        Task<GrantedToken> GenerateTokenAsync(string clientId, string scope, JwsPayload userInformationPayload = null, JwsPayload idTokenPayload = null);
     }
 
     public class GrantedTokenGeneratorHelper : IGrantedTokenGeneratorHelper
     {
         private readonly IConfigurationService _configurationService;
 
-        #region Constructor
-
         public GrantedTokenGeneratorHelper(IConfigurationService configurationService)
         {
             _configurationService = configurationService;
         }
 
-        #endregion
-
-        #region Public methods
-
-        public GrantedToken GenerateToken(string clientId, string scope, JwsPayload userInformationPayload = null, JwsPayload idTokenPayload = null)
+        public async Task<GrantedToken> GenerateTokenAsync(string clientId, string scope, JwsPayload userInformationPayload = null, JwsPayload idTokenPayload = null)
         {
             if (string.IsNullOrWhiteSpace(clientId))
             {
@@ -54,7 +49,7 @@ namespace SimpleIdentityServer.Core.Helpers
                 throw new ArgumentNullException(nameof(scope));
             }
 
-            var expiresIn = (int)_configurationService.GetTokenValidityPeriodInSeconds();
+            var expiresIn = (int) await _configurationService.GetTokenValidityPeriodInSecondsAsync();
             var accessTokenId = Encoding.UTF8.GetBytes(Guid.NewGuid().ToString());
             var refreshTokenId = Encoding.UTF8.GetBytes(Guid.NewGuid().ToString());
             return new GrantedToken
@@ -71,7 +66,5 @@ namespace SimpleIdentityServer.Core.Helpers
                 ClientId = clientId
             };
         }
-
-        #endregion
     }
 }

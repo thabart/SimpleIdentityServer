@@ -12,12 +12,14 @@ using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
+using System.Threading.Tasks;
+using SimpleIdentityServer.Core.Repositories;
 
 namespace SimpleIdentityServer.Core.WebSite.Authenticate.Common
 {
     public interface IAuthenticateHelper
     {
-        ActionResult ProcessRedirection(
+        Task<ActionResult> ProcessRedirection(
             AuthorizationParameter authorizationParameter,
             string code,
             string subject,
@@ -27,25 +29,25 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Common
     public sealed class AuthenticateHelper : IAuthenticateHelper
     {
         private readonly IParameterParserHelper _parameterParserHelper;
-
         private readonly IActionResultFactory _actionResultFactory;
-
         private readonly IConsentHelper _consentHelper;
-
         private readonly IGenerateAuthorizationResponse _generateAuthorizationResponse;
+        private readonly IClientRepository _clientRepository;
 
         public AuthenticateHelper(IParameterParserHelper parameterParserHelper,
             IActionResultFactory actionResultFactory,
             IConsentHelper consentHelper,
-            IGenerateAuthorizationResponse generateAuthorizationResponse)
+            IGenerateAuthorizationResponse generateAuthorizationResponse,
+            IClientRepository clientRepository)
         {
             _parameterParserHelper = parameterParserHelper;
             _actionResultFactory = actionResultFactory;
             _consentHelper = consentHelper;
             _generateAuthorizationResponse = generateAuthorizationResponse;
+            _clientRepository = clientRepository;
         }
 
-        public ActionResult ProcessRedirection(
+        public async Task<ActionResult> ProcessRedirection(
             AuthorizationParameter authorizationParameter,
             string code,
             string subject,
@@ -56,9 +58,16 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Common
                 throw new ArgumentNullException("authorizationParameter");
             }
 
+            var client = await _clientRepository.GetClientByIdAsync(authorizationParameter.ClientId);
+            if (client == null)
+            {
+                throw new InvalidOperationException(string.Format("the client id {0} doesn't exist",
+                    authorizationParameter.ClientId));
+            }
+
             // Redirect to the consent page if the prompt parameter contains "consent"
             ActionResult result;
-            var prompts = _parameterParserHelper.ParsePromptParameters(authorizationParameter.Prompt);
+            var prompts = _parameterParserHelper.ParsePrompts(authorizationParameter.Prompt);
             if (prompts != null &&
                 prompts.Contains(PromptParameter.consent))
             {
@@ -68,7 +77,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Common
                 return result;
             }
 
-            var assignedConsent = _consentHelper.GetConsentConfirmedByResourceOwner(subject, authorizationParameter);
+            var assignedConsent = await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter);
 
             // If there's already one consent then redirect to the callback
             if (assignedConsent != null)
@@ -76,12 +85,11 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Common
                 result = _actionResultFactory.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
                 var claimsIdentity = new ClaimsIdentity(claims, "simpleIdentityServer");
                 var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-                //// TODO : Pass the client
-                _generateAuthorizationResponse.Execute(result, authorizationParameter, claimsPrincipal, null);
+                await _generateAuthorizationResponse.ExecuteAsync(result, authorizationParameter, claimsPrincipal, client);
                 var responseMode = authorizationParameter.ResponseMode;
                 if (responseMode == ResponseMode.None)
                 {
-                    var responseTypes = _parameterParserHelper.ParseResponseType(authorizationParameter.ResponseType);
+                    var responseTypes = _parameterParserHelper.ParseResponseTypes(authorizationParameter.ResponseType);
                     var authorizationFlow = GetAuthorizationFlow(responseTypes, authorizationParameter.State);
                     responseMode = GetResponseMode(authorizationFlow);
                 }

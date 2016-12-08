@@ -20,12 +20,13 @@ using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Services;
 using System;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 {
     public interface ILocalUserAuthenticationAction
     {
-        ResourceOwner Execute(LocalAuthenticationParameter localAuthenticationParameter);
+        Task<ResourceOwner> Execute(LocalAuthenticationParameter localAuthenticationParameter);
     }
 
     public sealed class LocalUserAuthenticationAction : ILocalUserAuthenticationAction
@@ -37,14 +38,14 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
             _authenticateResourceOwnerService = authenticateResourceOwnerService;
         }
         
-        public ResourceOwner Execute(LocalAuthenticationParameter localAuthenticationParameter)
+        public async Task<ResourceOwner> Execute(LocalAuthenticationParameter localAuthenticationParameter)
         {
             if (localAuthenticationParameter == null)
             {
                 throw new ArgumentNullException("localAuthenticationParameter");
             }
 
-            var record = _authenticateResourceOwnerService.AuthenticateResourceOwner(localAuthenticationParameter.UserName,
+            var record = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(localAuthenticationParameter.UserName,
                 localAuthenticationParameter.Password);
             if (record == null)
             {

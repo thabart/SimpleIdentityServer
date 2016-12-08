@@ -108,7 +108,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                 result.Code.UserInfoPayLoad);
             if (grantedToken == null)
             {
-                grantedToken = _grantedTokenGeneratorHelper.GenerateToken(
+                grantedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(
                     result.Code.ClientId,
                     result.Code.Scopes,
                     result.Code.UserInfoPayLoad,
@@ -123,7 +123,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             // Fill-in the id-token
             if (grantedToken.IdTokenPayLoad != null)
             {
-                grantedToken.IdToken = _clientHelper.GenerateIdToken(result.Client, grantedToken.IdTokenPayLoad);
+                grantedToken.IdToken = await _clientHelper.GenerateIdTokenAsync(result.Client, grantedToken.IdTokenPayLoad);
             }
 
             return grantedToken;

@@ -28,25 +28,19 @@ namespace SimpleIdentityServer.Host.Services
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
 
-        public DefaultAuthenticateResourceOwerService(
-            IResourceOwnerRepository resourceOwnerRepository)
+        public DefaultAuthenticateResourceOwerService(IResourceOwnerRepository resourceOwnerRepository)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
         }
 
-        public ResourceOwner AuthenticateResourceOwner(string login)
+        public async Task<ResourceOwner> AuthenticateResourceOwnerAsync(string login)
         {
             if (string.IsNullOrWhiteSpace(login))
             {
                 throw new ArgumentNullException(nameof(login));
             }
 
-            return _resourceOwnerRepository.GetByUniqueClaim(login);
-        }
-
-        public ResourceOwner AuthenticateResourceOwner(string login, string password)
-        {
-            return AuthenticateResourceOwnerAsync(login, password).Result;
+            return await _resourceOwnerRepository.GetAsync(login);
         }
 
         public async Task<ResourceOwner> AuthenticateResourceOwnerAsync(string login, string password)
@@ -61,7 +55,7 @@ namespace SimpleIdentityServer.Host.Services
                 throw new ArgumentNullException(nameof(password));
             }
 
-            return await _resourceOwnerRepository.GetByUniqueClaimAsync(login, GetHashedPassword(password));
+            return await _resourceOwnerRepository.GetAsync(login, GetHashedPassword(password));
         }
 
         public string GetHashedPassword(string password)

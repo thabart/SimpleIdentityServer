@@ -22,12 +22,13 @@ using SimpleIdentityServer.Core.Services;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.Account.Actions
 {
     public interface IAddResourceOwnerAction
     {
-        void Execute(AddUserParameter addUserParameter);
+        Task Execute(AddUserParameter addUserParameter);
     }
 
     public class AddResourceOwnerAction : IAddResourceOwnerAction
@@ -43,7 +44,7 @@ namespace SimpleIdentityServer.Core.WebSite.Account.Actions
             _authenticateResourceOwnerService = authenticateResourceOwnerService;
         }
         
-        public void Execute(AddUserParameter addUserParameter)
+        public async Task Execute(AddUserParameter addUserParameter)
         {
             if (addUserParameter == null)
             {
@@ -60,7 +61,7 @@ namespace SimpleIdentityServer.Core.WebSite.Account.Actions
                 throw new ArgumentNullException(nameof(addUserParameter.Password));
             }
             
-            if (_authenticateResourceOwnerService.AuthenticateResourceOwner(addUserParameter.Login,
+            if (await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(addUserParameter.Login,
                 addUserParameter.Password) != null)
             {
                 throw new IdentityServerException(
@@ -81,7 +82,7 @@ namespace SimpleIdentityServer.Core.WebSite.Account.Actions
                 IsLocalAccount = true,
                 Password = _authenticateResourceOwnerService.GetHashedPassword(addUserParameter.Password)
             };            
-            _resourceOwnerRepository.Insert(newResourceOwner);
+            await _resourceOwnerRepository.InsertAsync(newResourceOwner);
         }
     }
 }

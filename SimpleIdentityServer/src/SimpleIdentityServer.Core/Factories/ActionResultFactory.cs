@@ -20,11 +20,8 @@ namespace SimpleIdentityServer.Core.Factories
     public interface IActionResultFactory
     {
         ActionResult CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
-
         ActionResult CreateAnEmptyActionResultWithRedirection();
-
         ActionResult CreateAnEmptyActionResultWithOutput();
-
         ActionResult CreateAnEmptyActionResultWithNoEffect();
     }
 

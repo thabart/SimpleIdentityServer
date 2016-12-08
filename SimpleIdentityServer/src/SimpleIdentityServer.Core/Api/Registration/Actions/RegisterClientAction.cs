@@ -15,11 +15,11 @@
 #endregion
 
 using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
-using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Logging;
 using System;
@@ -32,7 +32,7 @@ namespace SimpleIdentityServer.Core.Api.Registration.Actions
 {
     public interface IRegisterClientAction
     {
-        Task<RegistrationResponse> Execute(RegistrationParameter registrationParameter);
+        Task<ClientRegistrationResponse> Execute(RegistrationParameter registrationParameter);
     }
 
     public class RegisterClientAction : IRegisterClientAction
@@ -54,7 +54,7 @@ namespace SimpleIdentityServer.Core.Api.Registration.Actions
             _encryptedPasswordFactory = encryptedPasswordFactory;
         }
 
-        public async Task<RegistrationResponse> Execute(RegistrationParameter registrationParameter)
+        public async Task<ClientRegistrationResponse> Execute(RegistrationParameter registrationParameter)
         {
             if (registrationParameter == null)
             {
@@ -77,7 +77,7 @@ namespace SimpleIdentityServer.Core.Api.Registration.Actions
                 client.ClientName = "Unknown " + clientId;
             }
 
-            var result = new RegistrationResponse
+            var result = new ClientRegistrationResponse
             {
                 ClientId = clientId,
                 ClientSecretExpiresAt = 0,
@@ -113,8 +113,8 @@ namespace SimpleIdentityServer.Core.Api.Registration.Actions
                     client.ResponseTypes.Select(r => Enum.GetName(typeof(ResponseType), r)).ToArray(),
                 RequestUris = GetDefaultValues(client.RequestUris).ToList(),
                 RedirectUris = GetDefaultValues(client.RedirectionUrls).ToArray(),
-                TokenEndPointAuthSigningAlg = GetDefaultValue(client.TokenEndPointAuthSigningAlg),
-                TokenEndPointAuthMethod = Enum.GetName(typeof(TokenEndPointAuthenticationMethods), client.TokenEndPointAuthMethod),
+                TokenEndpointAuthSigningAlg = GetDefaultValue(client.TokenEndPointAuthSigningAlg),
+                TokenEndpointAuthMethod = Enum.GetName(typeof(TokenEndPointAuthenticationMethods), client.TokenEndPointAuthMethod),
                 ScimProfile = client.ScimProfile
             };
 

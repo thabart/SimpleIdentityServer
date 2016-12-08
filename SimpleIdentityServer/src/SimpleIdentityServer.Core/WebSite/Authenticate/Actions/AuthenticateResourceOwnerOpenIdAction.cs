@@ -24,6 +24,7 @@ using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 {
@@ -47,9 +48,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
     public class AuthenticateResourceOwnerOpenIdAction : IAuthenticateResourceOwnerOpenIdAction
     {
         private readonly IParameterParserHelper _parameterParserHelper;
-
         private readonly IActionResultFactory _actionResultFactory;
-
         private readonly IAuthenticateHelper _authenticateHelper;
 
         public AuthenticateResourceOwnerOpenIdAction(
@@ -83,7 +82,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
             }
 
             var resourceOwnerIsAuthenticated = resourceOwnerPrincipal.IsAuthenticated();
-            var promptParameters = _parameterParserHelper.ParsePromptParameters(authorizationParameter.Prompt);
+            var promptParameters = _parameterParserHelper.ParsePrompts(authorizationParameter.Prompt);
 
             // 1).
             if (resourceOwnerIsAuthenticated && 

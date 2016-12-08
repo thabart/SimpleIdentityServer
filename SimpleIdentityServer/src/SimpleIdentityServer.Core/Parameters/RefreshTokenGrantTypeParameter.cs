@@ -17,10 +17,7 @@
 namespace SimpleIdentityServer.Core.Parameters
 {
     public sealed class RefreshTokenGrantTypeParameter
-    {        
-        /// <summary>
-        /// Gets or sets the refresh token.
-        /// </summary>
+    {
         public string RefreshToken { get; set; }
     }
 }

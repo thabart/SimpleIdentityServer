@@ -28,17 +28,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
 {
     public class GrantedTokenHelperFixture
     {
-        #region Fields
-
         private Mock<IGrantedTokenRepository> _grantedTokenRepositoryStub;
-
         private Mock<IGrantedTokenValidator> _grantedTokenValidatorStub;
-
         private IGrantedTokenHelper _grantedTokenHelper;
-
-        #endregion
-
-        #region Exceptions
 
         [Fact]
         public async Task When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
@@ -50,10 +42,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
             await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenHelper.GetValidGrantedTokenAsync(null, null, null, null));
             await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenHelper.GetValidGrantedTokenAsync("scopes", null, null, null));
         }
-
-        #endregion
-
-        #region Happy path
 
         [Fact]
         public async Task When_Valid_Token_Doesnt_Exist_Then_Null_Is_Returned()
@@ -111,10 +99,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
             Assert.NotNull(result);
         }
 
-        #endregion
-
-        #region Private methods
-
         private void InitializeFakeObjects()
         {
             _grantedTokenRepositoryStub = new Mock<IGrantedTokenRepository>();
@@ -123,7 +107,5 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
                 _grantedTokenRepositoryStub.Object,
                 _grantedTokenValidatorStub.Object);
         }
-
-        #endregion
     }
 }

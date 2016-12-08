@@ -23,11 +23,11 @@ namespace SimpleIdentityServer.Client
 {
     public interface IRegistrationClient
     {
-        Core.Common.DTOs.Client Execute(Core.Common.DTOs.Client client, string jwksUrl);
-        Core.Common.DTOs.Client Execute(Core.Common.DTOs.Client client, Uri jwksUri);
-        Task<Core.Common.DTOs.Client> ExecuteAsync(Core.Common.DTOs.Client client, string registrationUrl);
-        Task<Core.Common.DTOs.Client> ExecuteAsync(Core.Common.DTOs.Client client, Uri registrationUri);
-        Task<Core.Common.DTOs.Client> ResolveAsync(Core.Common.DTOs.Client client, string configurationUrl);
+        Core.Common.DTOs.ClientRegistrationResponse Execute(Core.Common.DTOs.Client client, string jwksUrl);
+        Core.Common.DTOs.ClientRegistrationResponse Execute(Core.Common.DTOs.Client client, Uri jwksUri);
+        Task<Core.Common.DTOs.ClientRegistrationResponse> ExecuteAsync(Core.Common.DTOs.Client client, string registrationUrl);
+        Task<Core.Common.DTOs.ClientRegistrationResponse> ExecuteAsync(Core.Common.DTOs.Client client, Uri registrationUri);
+        Task<Core.Common.DTOs.ClientRegistrationResponse> ResolveAsync(Core.Common.DTOs.Client client, string configurationUrl);
     }
 
     internal class RegistrationClient : IRegistrationClient
@@ -41,17 +41,17 @@ namespace SimpleIdentityServer.Client
             _getDiscoveryOperation = getDiscoveryOperation;
         }
 
-        public Core.Common.DTOs.Client Execute(Core.Common.DTOs.Client client, Uri registrationUri)
+        public Core.Common.DTOs.ClientRegistrationResponse Execute(Core.Common.DTOs.Client client, Uri registrationUri)
         {
             return ExecuteAsync(client, registrationUri).Result;
         }
 
-        public Core.Common.DTOs.Client Execute(Core.Common.DTOs.Client client, string registrationUrl)
+        public Core.Common.DTOs.ClientRegistrationResponse Execute(Core.Common.DTOs.Client client, string registrationUrl)
         {
             return ExecuteAsync(client, registrationUrl).Result;
         }
 
-        public async Task<Core.Common.DTOs.Client> ExecuteAsync(Core.Common.DTOs.Client client, Uri registrationUri)
+        public async Task<Core.Common.DTOs.ClientRegistrationResponse> ExecuteAsync(Core.Common.DTOs.Client client, Uri registrationUri)
         {
             if (client == null)
             {
@@ -66,7 +66,7 @@ namespace SimpleIdentityServer.Client
             return await _registerClientOperation.ExecuteAsync(client, registrationUri, string.Empty);
         }
 
-        public async Task<Core.Common.DTOs.Client> ExecuteAsync(Core.Common.DTOs.Client client, string registrationUrl)
+        public async Task<Core.Common.DTOs.ClientRegistrationResponse> ExecuteAsync(Core.Common.DTOs.Client client, string registrationUrl)
         {
             if (client == null)
             {
@@ -87,7 +87,7 @@ namespace SimpleIdentityServer.Client
             return await ExecuteAsync(client, uri);
         }
 
-        public async Task<Core.Common.DTOs.Client> ResolveAsync(Core.Common.DTOs.Client client, string configurationUrl)
+        public async Task<Core.Common.DTOs.ClientRegistrationResponse> ResolveAsync(Core.Common.DTOs.Client client, string configurationUrl)
         {
             if (string.IsNullOrWhiteSpace(configurationUrl))
             {

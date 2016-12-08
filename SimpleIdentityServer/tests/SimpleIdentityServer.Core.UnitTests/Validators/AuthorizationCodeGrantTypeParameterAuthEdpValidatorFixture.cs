@@ -10,15 +10,15 @@ using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Validators;
 using Xunit;
 using System.Threading.Tasks;
+using SimpleIdentityServer.Core.Repositories;
 
 namespace SimpleIdentityServer.Core.UnitTests.Validators
 {
     public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidatorFixture
     {
         private Mock<IParameterParserHelper> _parameterParserHelperFake;
-
+        private Mock<IClientRepository> _clientRepository;
         private Mock<IClientValidator> _clientValidatorFake;
-
         private IAuthorizationCodeGrantTypeParameterAuthEdpValidator
             _authorizationCodeGrantTypeParameterAuthEdpValidator;
 
@@ -165,7 +165,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
                 ResponseType = "code",
                 Prompt = "none login"
             };
-            _parameterParserHelperFake.Setup(p => p.ParsePromptParameters(It.IsAny<string>()))
+            _parameterParserHelperFake.Setup(p => p.ParsePrompts(It.IsAny<string>()))
                 .Returns(new List<PromptParameter>
                 {
                     PromptParameter.none,
@@ -196,7 +196,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
                 ResponseType = "code",
                 Prompt = "none"
             };
-            _parameterParserHelperFake.Setup(p => p.ParsePromptParameters(It.IsAny<string>()))
+            _parameterParserHelperFake.Setup(p => p.ParsePrompts(It.IsAny<string>()))
                 .Returns(new List<PromptParameter>
                 {
                     PromptParameter.none
@@ -226,12 +226,12 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
                 ResponseType = "code",
                 Prompt = "none"
             };
-            _parameterParserHelperFake.Setup(p => p.ParsePromptParameters(It.IsAny<string>()))
+            _parameterParserHelperFake.Setup(p => p.ParsePrompts(It.IsAny<string>()))
                 .Returns(new List<PromptParameter>
                 {
                     PromptParameter.none
                 });
-            _clientValidatorFake.Setup(c => c.ValidateClientExistAsync(It.IsAny<string>()))
+            _clientRepository.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((Client)null));
 
             // ACT & ASSERT
@@ -259,16 +259,15 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
                 Prompt = "none"
             };
             var client = new Models.Client();
-            _parameterParserHelperFake.Setup(p => p.ParsePromptParameters(It.IsAny<string>()))
+            _parameterParserHelperFake.Setup(p => p.ParsePrompts(It.IsAny<string>()))
                 .Returns(new List<PromptParameter>
                 {
                     PromptParameter.none
                 });
-            _clientValidatorFake.Setup(c => c.ValidateClientExistAsync(It.IsAny<string>()))
+            _clientRepository.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
-            _clientValidatorFake.Setup(c => c.ValidateRedirectionUrl(It.IsAny<string>(),
-                It.IsAny<Models.Client>()))
-                .Returns(() => string.Empty);
+            _clientValidatorFake.Setup(c => c.GetRedirectionUrls(It.IsAny<Models.Client>(), It.IsAny<string[]>()))
+                .Returns(() => new string[0]);
 
             // ACT & ASSERT
             var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _authorizationCodeGrantTypeParameterAuthEdpValidator.ValidateAsync(authorizationParameter));
@@ -281,8 +280,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
         {
             _parameterParserHelperFake = new Mock<IParameterParserHelper>();
             _clientValidatorFake = new Mock<IClientValidator>();
+            _clientRepository = new Mock<IClientRepository>();
             _authorizationCodeGrantTypeParameterAuthEdpValidator = new AuthorizationCodeGrantTypeParameterAuthEdpValidator(
                 _parameterParserHelperFake.Object,
+                _clientRepository.Object,
                 _clientValidatorFake.Object);
         }
     }

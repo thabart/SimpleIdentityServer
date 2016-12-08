@@ -24,9 +24,7 @@ namespace SimpleIdentityServer.Core.Validators
 {
     public interface IGrantedTokenValidator
     {
-        GrantedTokenValidationResult CheckAccessToken(string accessToken);
         Task<GrantedTokenValidationResult> CheckAccessTokenAsync(string accessToken);
-        GrantedTokenValidationResult CheckRefreshToken(string accessToken);
         Task<GrantedTokenValidationResult> CheckRefreshTokenAsync(string refreshToken);
         GrantedTokenValidationResult CheckGrantedToken(GrantedToken token);
     }
@@ -47,11 +45,6 @@ namespace SimpleIdentityServer.Core.Validators
             _grantedTokenRepository = grantedTokenRepository;
         }
 
-        public GrantedTokenValidationResult CheckAccessToken(string accessToken)
-        {
-            return CheckAccessTokenAsync(accessToken).Result;
-        }
-
         public async Task<GrantedTokenValidationResult> CheckAccessTokenAsync(string accessToken)
         {
             if (string.IsNullOrWhiteSpace(accessToken))
@@ -61,11 +54,6 @@ namespace SimpleIdentityServer.Core.Validators
 
             var grantedToken = await _grantedTokenRepository.GetTokenAsync(accessToken);
             return CheckGrantedToken(grantedToken);
-        }
-
-        public GrantedTokenValidationResult CheckRefreshToken(string refreshToken)
-        {
-            return CheckRefreshTokenAsync(refreshToken).Result;
         }
 
         public async Task<GrantedTokenValidationResult> CheckRefreshTokenAsync(string refreshToken)

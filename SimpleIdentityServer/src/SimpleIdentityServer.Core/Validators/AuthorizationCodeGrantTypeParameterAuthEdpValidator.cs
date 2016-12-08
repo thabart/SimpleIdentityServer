@@ -19,6 +19,7 @@ using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
+using SimpleIdentityServer.Core.Repositories;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -34,11 +35,15 @@ namespace SimpleIdentityServer.Core.Validators
     public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidator : IAuthorizationCodeGrantTypeParameterAuthEdpValidator
     {
         private readonly IParameterParserHelper _parameterParserHelper;
+        private readonly IClientRepository _clientRepository;
         private readonly IClientValidator _clientValidator;
 
-        public AuthorizationCodeGrantTypeParameterAuthEdpValidator(IParameterParserHelper parameterParserHelper, IClientValidator clientValidator)
+        public AuthorizationCodeGrantTypeParameterAuthEdpValidator(
+            IParameterParserHelper parameterParserHelper, IClientRepository clientRepository,
+            IClientValidator clientValidator)
         {
             _parameterParserHelper = parameterParserHelper;
+            _clientRepository = clientRepository;
             _clientValidator = clientValidator;
         }
 
@@ -96,7 +101,7 @@ namespace SimpleIdentityServer.Core.Validators
                     parameter.State);
             }
 
-            var client = await _clientValidator.ValidateClientExistAsync(parameter.ClientId);
+            var client = await _clientRepository.GetClientByIdAsync(parameter.ClientId);
             if (client == null)
             {
                 throw new IdentityServerExceptionWithState(
@@ -105,7 +110,7 @@ namespace SimpleIdentityServer.Core.Validators
                     parameter.State);
             }
 
-            if (string.IsNullOrWhiteSpace(_clientValidator.ValidateRedirectionUrl(parameter.RedirectUrl, client)))
+            if (!_clientValidator.GetRedirectionUrls(client, parameter.RedirectUrl).Any())
             {
                 throw new IdentityServerExceptionWithState(
                     ErrorCodes.InvalidRequestCode,
@@ -168,7 +173,7 @@ namespace SimpleIdentityServer.Core.Validators
                     state);
             }
 
-            var prompts = _parameterParserHelper.ParsePromptParameters(prompt);
+            var prompts = _parameterParserHelper.ParsePrompts(prompt);
             if (prompts.Contains(PromptParameter.none) &&
                 (prompts.Contains(PromptParameter.login) ||
                 prompts.Contains(PromptParameter.consent) ||

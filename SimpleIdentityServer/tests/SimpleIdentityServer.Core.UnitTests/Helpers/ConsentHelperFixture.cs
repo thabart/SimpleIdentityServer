@@ -26,22 +26,22 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
             InitializeFakeObjects();
 
             // ACT & ASSERTS
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _consentHelper.GetConsentConfirmedByResourceOwnerAsync("subject", null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _consentHelper.GetConfirmedConsentsAsync("subject", null));
         }
 
         [Fact]
-        public void When_No_Consent_Has_Been_Given_By_The_Resource_Owner_Then_Null_Is_Returned()
+        public async Task When_No_Consent_Has_Been_Given_By_The_Resource_Owner_Then_Null_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
             const string subject = "subject";
             var authorizationParameter = new AuthorizationParameter();
 
-            _consentRepositoryFake.Setup(c => c.GetConsentsForGivenUser(It.IsAny<string>()))
-                .Returns(() => null);
+            _consentRepositoryFake.Setup(c => c.GetConsentsForGivenUserAsync(It.IsAny<string>()))
+                .Returns(() => Task.FromResult((IEnumerable<Consent>)null));
 
             // ACT
-            var result = _consentHelper.GetConsentConfirmedByResourceOwner(subject,
+            var result = await _consentHelper.GetConfirmedConsentsAsync(subject,
                 authorizationParameter);
 
             // ASSERT
@@ -49,7 +49,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
         }
 
         [Fact]
-        public void When_A_Consent_Has_Been_Given_For_Claim_Name_Then_Consent_Is_Returned()
+        public async Task When_A_Consent_Has_Been_Given_For_Claim_Name_Then_Consent_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -89,7 +89,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
                 .Returns(Task.FromResult(consents));
 
             // ACT
-            var result = _consentHelper.GetConsentConfirmedByResourceOwner(subject,
+            var result = await _consentHelper.GetConfirmedConsentsAsync(subject,
                 authorizationParameter);
 
             // ASSERT
@@ -99,7 +99,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
         }
 
         [Fact]
-        public void When_A_Consent_Has_Been_Given_For_Scope_Profile_Then_Consent_Is_Returned()
+        public async Task When_A_Consent_Has_Been_Given_For_Scope_Profile_Then_Consent_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -132,11 +132,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
             {
                 scope
             };
-            _parameterParserHelperFake.Setup(p => p.ParseScopeParameters(It.IsAny<string>())).Returns(scopes);
+            _parameterParserHelperFake.Setup(p => p.ParseScopes(It.IsAny<string>())).Returns(scopes);
             _consentRepositoryFake.Setup(c => c.GetConsentsForGivenUserAsync(It.IsAny<string>())).Returns(Task.FromResult(consents));
 
             // ACT
-            var result = _consentHelper.GetConsentConfirmedByResourceOwner(subject,
+            var result = await _consentHelper.GetConfirmedConsentsAsync(subject,
                 authorizationParameter);
 
             // ASSERT
@@ -146,7 +146,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
         }
         
         [Fact]
-        public void When_Consent_Has_Been_Assigned_To_OpenId_Profile_And_Request_Consent_For_Scope_OpenId_Profile_Email_Then_Null_Is_Returned()
+        public async Task When_Consent_Has_Been_Assigned_To_OpenId_Profile_And_Request_Consent_For_Scope_OpenId_Profile_Email_Then_Null_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -160,7 +160,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
                 ClientId = clientId,
                 Scope = openIdScope + " " + profileScope + " "+ emailScope
             };
-            var consents = new List<Consent>
+            IEnumerable<Consent> consents = new List<Consent>
             {
                 new Consent
                 {
@@ -188,13 +188,13 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
                 emailScope
             };
 
-            _parameterParserHelperFake.Setup(p => p.ParseScopeParameters(It.IsAny<string>()))
+            _parameterParserHelperFake.Setup(p => p.ParseScopes(It.IsAny<string>()))
                 .Returns(scopes);
-            _consentRepositoryFake.Setup(c => c.GetConsentsForGivenUser(It.IsAny<string>()))
-                .Returns(consents);
+            _consentRepositoryFake.Setup(c => c.GetConsentsForGivenUserAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(consents));
 
             // ACT
-            var result = _consentHelper.GetConsentConfirmedByResourceOwner(subject,
+            var result = await _consentHelper.GetConfirmedConsentsAsync(subject,
                 authorizationParameter);
 
             // ASSERT

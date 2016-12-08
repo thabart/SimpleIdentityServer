@@ -22,7 +22,6 @@ namespace SimpleIdentityServer.Core.Services
     public interface ITwoFactorAuthenticationService
     {
         Task SendAsync(string code, ResourceOwner user);
-
         int Code { get; }
     }
 }

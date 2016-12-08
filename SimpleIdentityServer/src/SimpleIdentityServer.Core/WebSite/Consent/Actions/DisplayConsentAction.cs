@@ -29,6 +29,7 @@ using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Extensions;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
 {
@@ -44,7 +45,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
         /// <param name="allowedScopes">Allowed scopes</param>
         /// <param name="allowedClaims">Allowed claims</param>
         /// <returns>Action result.</returns>
-        ActionResult Execute(
+        Task<ActionResult> Execute(
             AuthorizationParameter authorizationParameter,
             ClaimsPrincipal claimsPrincipal,
             out Models.Client client,
@@ -55,15 +56,10 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
     public class DisplayConsentAction : IDisplayConsentAction
     {
         private readonly IScopeRepository _scopeRepository;
-
         private readonly IClientRepository _clientRepository;
-
         private readonly IConsentHelper _consentHelper;
-
         private readonly IGenerateAuthorizationResponse _generateAuthorizationResponse;
-
         private readonly IParameterParserHelper _parameterParserHelper;
-
         private readonly IActionResultFactory _actionResultFactory;
 
         public DisplayConsentAction(
@@ -92,7 +88,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
         /// <param name="allowedScopes">Allowed scopes</param>
         /// <param name="allowedClaims">Allowed claims</param>
         /// <returns>Action result.</returns>
-        public ActionResult Execute(
+        public async Task<ActionResult> Execute(
             AuthorizationParameter authorizationParameter,
             ClaimsPrincipal claimsPrincipal,
             out Models.Client client,
@@ -112,7 +108,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
             
             allowedClaims = new List<string>();
             allowedScopes = new List<Scope>();
-            client = _clientRepository.GetClientById(authorizationParameter.ClientId);
+            var client = await _clientRepository.GetClientByIdAsync(authorizationParameter.ClientId);
             if (client == null)
             {
                 throw new IdentityServerExceptionWithState(ErrorCodes.InvalidRequestCode,

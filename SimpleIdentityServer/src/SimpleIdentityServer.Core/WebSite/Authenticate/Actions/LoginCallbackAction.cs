@@ -23,12 +23,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 {
     public interface ILoginCallbackAction
     {
-        IEnumerable<Claim> Execute(ClaimsPrincipal claimsPrincipal);
+        Task<IEnumerable<Claim>> Execute(ClaimsPrincipal claimsPrincipal);
     }
 
     internal class LoginCallbackAction : ILoginCallbackAction
@@ -48,7 +49,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
             _authenticateResourceOwnerService = authenticateResourceOwnerService;
         }
         
-        public IEnumerable<Claim> Execute(ClaimsPrincipal claimsPrincipal)
+        public async Task<IEnumerable<Claim>> Execute(ClaimsPrincipal claimsPrincipal)
         {
             // 1. Check parameters.
             if (claimsPrincipal == null)
@@ -76,7 +77,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
             }
             
             // 4. If a user already exists with the same subject then ignore.
-            var resourceOwner = _authenticateResourceOwnerService.AuthenticateResourceOwner(subject);
+            var resourceOwner = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(subject);
             if (resourceOwner != null)
             {
                 return resourceOwner.Claims;
@@ -92,7 +93,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                 Claims = new List<Claim>(),
                 Password = _authenticateResourceOwnerService.GetHashedPassword(clearPassword)
             };
-            var claims = _claimRepository.GetAll();
+            var claims = await _claimRepository.GetAllAsync();
             foreach(var claim in claimsPrincipal.Claims.Where(c => claims.Contains(c.Type)))
             {
                 resourceOwner.Claims.Add(claim);
@@ -103,7 +104,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                 resourceOwner.Claims.Add(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject));
             }
 
-            _resourceOwnerRepository.Insert(resourceOwner);
+            await _resourceOwnerRepository.InsertAsync(resourceOwner);
             return resourceOwner.Claims;
         }
     }

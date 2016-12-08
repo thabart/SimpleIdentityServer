@@ -16,12 +16,13 @@
 
 using SimpleIdentityServer.Core.Repositories;
 using System;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 {
     public interface IValidateConfirmationCodeAction
     {
-        bool Execute(string code);
+        Task<bool> Execute(string code);
     }
 
     internal class ValidateConfirmationCodeAction : IValidateConfirmationCodeAction
@@ -33,14 +34,14 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
             _confirmationCodeRepository = confirmationCodeRepository;
         }
 
-        public bool Execute(string code)
+        public async Task<bool> Execute(string code)
         {
             if (string.IsNullOrWhiteSpace(code))
             {
                 throw new ArgumentNullException(nameof(code));
             }
 
-            var confirmationCode = _confirmationCodeRepository.Get(code);
+            var confirmationCode = await _confirmationCodeRepository.GetAsync(code);
             if (confirmationCode == null)
             {
                 return false;

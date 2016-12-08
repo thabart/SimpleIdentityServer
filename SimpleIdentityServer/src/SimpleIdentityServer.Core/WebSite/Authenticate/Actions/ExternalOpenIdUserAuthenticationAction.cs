@@ -27,16 +27,22 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 {
     public interface IExternalOpenIdUserAuthenticationAction
     {
-        ActionResult Execute(
+        Task<ExternalOpenIdAuthenticationResult> Execute(
             List<Claim> claims,
             AuthorizationParameter authorizationParameter,
-            string code,
-            out IEnumerable<Claim> filteredClaims);
+            string code);
+    }
+
+    public class ExternalOpenIdAuthenticationResult
+    {
+        public ActionResult ActionResult { get; set; }
+        public IEnumerable<Claim> Claims { get; set; }
     }
 
     public sealed class ExternalOpenIdUserAuthenticationAction : IExternalOpenIdUserAuthenticationAction
@@ -58,27 +64,25 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
             _claimRepository = claimRepository;
         }
 
-        public ActionResult Execute(
+        public async Task<ExternalOpenIdAuthenticationResult> Execute(
             List<Claim> claims,
             AuthorizationParameter authorizationParameter,
-            string code,
-            out IEnumerable<Claim> filteredClaims)
+            string code)
         {
-            filteredClaims = null;
             // 1. Check parameters.
             if (claims == null || !claims.Any())
             {
-                throw new ArgumentNullException("claims");
+                throw new ArgumentNullException(nameof(claims));
             }
 
             if (authorizationParameter == null)
             {
-                throw new ArgumentNullException("authorizationParameter");
+                throw new ArgumentNullException(nameof(authorizationParameter));
             }
 
             if (string.IsNullOrWhiteSpace(code))
             {
-                throw new ArgumentNullException("code");
+                throw new ArgumentNullException(nameof(code));
             }
 
             // 2. Subject cannot be extracted.
@@ -90,10 +94,10 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
             }
             
             // 3. Create the resource owner if needed.
-            var resourceOwner = _authenticateResourceOwnerService.AuthenticateResourceOwner(subject);
+            var resourceOwner = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(subject);
             if (resourceOwner == null)
             {
-                var standardClaims = _claimRepository.GetAll();
+                var standardClaims = await _claimRepository.GetAllAsync();
                 resourceOwner = new ResourceOwner
                 {
                     Id = Guid.NewGuid().ToString(),
@@ -106,14 +110,16 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                     resourceOwner.Claims.Add(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject));
                 }
 
-                _resourceOwnerRepository.Insert(resourceOwner);
+                await _resourceOwnerRepository.InsertAsync(resourceOwner);
             }
-
-            filteredClaims = resourceOwner.Claims;
-            return _authenticateHelper.ProcessRedirection(authorizationParameter,
-                code,
-                "subject",
-                claims);
+            return new ExternalOpenIdAuthenticationResult
+            {
+                ActionResult = _authenticateHelper.ProcessRedirection(authorizationParameter,
+                                code,
+                                "subject",
+                                claims),
+                Claims = resourceOwner.Claims
+            };
         }
     }
 }

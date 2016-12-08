@@ -23,6 +23,6 @@ namespace SimpleIdentityServer.Core.Repositories
     {
         Task<Models.Translation> GetAsync(string languageTag, string code);
         Task<ICollection<Models.Translation>> GetAsync(string languageTag);
-        Task<ICollection<List<string>>> GetLanguageTagsAsync();
+        Task<ICollection<string>> GetLanguageTagsAsync();
     }
 }
