@@ -114,7 +114,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
         public async Task When_TokenResponseType_Is_Not_Supported_Then_Exception_Is_Thrown()
         {
             // ARRANGE
-            var message = "message";
             InitializeFakeObjects();
             var clientCredentialsGrantTypeParameter = new ClientCredentialsGrantTypeParameter
             {
@@ -170,8 +169,12 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(authenticateInstruction);
             _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
                 .Returns(Task.FromResult(client));
+            _clientValidatorStub.Setup(c => c.GetRedirectionUrls(It.IsAny<Client>(), It.IsAny<string[]>())).Returns(new string[0]);
             _scopeValidatorStub.Setup(s => s.Check(It.IsAny<string>(), It.IsAny<Models.Client>()))
-                .Returns(() => new ScopeValidationResult(false));
+                .Returns(() => new ScopeValidationResult(false)
+                {
+                    ErrorMessage = messageDescription
+                });
 
             // ACT & ASSERT
             var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null));

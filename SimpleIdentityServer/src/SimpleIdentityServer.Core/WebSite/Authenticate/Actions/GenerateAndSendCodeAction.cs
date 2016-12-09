@@ -94,7 +94,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
         {
             var random = new Random();
             var number = random.Next(100000, 999999);
-            if (_confirmationCodeRepository.GetAsync(number.ToString()) != null)
+            if (await _confirmationCodeRepository.GetAsync(number.ToString()) != null)
             {
                 return await GetCode();
             }

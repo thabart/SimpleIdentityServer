@@ -163,7 +163,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             } };
             _consentHelperFake.Setup(c => c.GetConfirmedConsentsAsync(It.IsAny<string>(),
                 It.IsAny<AuthorizationParameter>()))
-                .Returns(() => null);
+                .Returns(Task.FromResult((Models.Consent)null));
             _clientRepositoryFake.Setup(c => c.GetClientByIdAsync(It.IsAny<string>())).
                 Returns(Task.FromResult(client));
             _scopeRepositoryFake.Setup(s => s.SearchByNamesAsync(It.IsAny<IEnumerable<string>>()))

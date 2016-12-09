@@ -14,9 +14,7 @@
 // limitations under the License.
 #endregion
 
-using Moq;
 using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Validators;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +29,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
         #region ValidateRedirectionUrl
 
         [Fact]
-        public void When_Client_Doesnt_Contain_RedirectionUri_Then_Null_Is_Returned()
+        public void When_Client_Doesnt_Contain_RedirectionUri_Then_EmptyArray_Is_Returned()
         {
             // ARRANGE
             InitializeMockingObjects();
@@ -40,7 +38,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             Assert.Empty(_clientValidator.GetRedirectionUrls(null, null));
             Assert.Empty(_clientValidator.GetRedirectionUrls(new Models.Client(), null));
             Assert.Empty(_clientValidator.GetRedirectionUrls(new Models.Client(), "url"));
-            Assert.Null(_clientValidator.GetRedirectionUrls(new Models.Client
+            Assert.Empty(_clientValidator.GetRedirectionUrls(new Models.Client
             {
                 RedirectionUrls = new List<string>()
             }, "url"));

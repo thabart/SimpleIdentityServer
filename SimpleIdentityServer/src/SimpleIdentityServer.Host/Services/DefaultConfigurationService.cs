@@ -31,45 +31,27 @@ namespace SimpleIdentityServer.Host.Services
             _contextAccessor = contextAccessor;
         }
 
-        public string DefaultLanguage()
-        {
-            return "en";
-        }
-
         public Task<string> DefaultLanguageAsync()
         {
-            throw new NotImplementedException();
-        }
-
-        public double GetAuthorizationCodeValidityPeriodInSeconds()
-        {
-            return 3600;
+            return Task.FromResult("en");
         }
 
         public Task<double> GetAuthorizationCodeValidityPeriodInSecondsAsync()
         {
-            throw new NotImplementedException();
-        }
-
-        public string GetIssuerName()
-        {
-            var request = _contextAccessor.HttpContext.Request;
-            return request.GetAbsoluteUriWithVirtualPath();
+            double result = 3600;
+            return Task.FromResult(result);
         }
 
         public Task<string> GetIssuerNameAsync()
         {
-            throw new NotImplementedException();
-        }
-
-        public double GetTokenValidityPeriodInSeconds()
-        {
-            return 3600;
+            var request = _contextAccessor.HttpContext.Request;
+            return Task.FromResult(request.GetAbsoluteUriWithVirtualPath());
         }
 
         public Task<double> GetTokenValidityPeriodInSecondsAsync()
         {
-            throw new NotImplementedException();
+            double result = 3600;
+            return Task.FromResult(result);
         }
     }
 }

@@ -241,6 +241,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 CreateDateTime = DateTime.UtcNow
             };
 
+            _authorizationCodeRepositoryFake.Setup(a => a.RemoveAsync(It.IsAny<string>())).Returns(Task.FromResult(true));
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
@@ -250,7 +251,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _simpleIdentityServerConfiguratorFake.Setup(s => s.GetAuthorizationCodeValidityPeriodInSecondsAsync())
                 .Returns(Task.FromResult((double)3000));
             _clientValidatorFake.Setup(c => c.GetRedirectionUrls(It.IsAny<Models.Client>(), It.IsAny<string[]>()))
-                .Returns((IEnumerable<string>)null);
+                .Returns(new string[0]);
 
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<IdentityServerException>(() =>

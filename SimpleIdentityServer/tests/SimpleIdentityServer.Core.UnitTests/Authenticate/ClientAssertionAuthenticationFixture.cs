@@ -30,8 +30,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<AggregateException>(
-                () => _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(null));
         }
 
         [Fact]
@@ -286,7 +285,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<AggregateException>(() => _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(null, string.Empty));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(null, string.Empty));
         }
 
         [Fact]

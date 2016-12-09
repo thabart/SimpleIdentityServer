@@ -49,7 +49,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             };
 
             // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _authenticateHelper.ProcessRedirection(null, null, null, null));
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _authenticateHelper.ProcessRedirection(authorizationParameter, null, null, null));
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheClientIdDoesntExist, authorizationParameter.ClientId));
         }
 

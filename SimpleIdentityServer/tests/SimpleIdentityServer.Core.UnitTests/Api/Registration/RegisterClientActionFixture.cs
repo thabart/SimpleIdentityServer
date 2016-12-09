@@ -156,10 +156,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
                 }
             };
             _generateClientFromRegistrationRequest.Setup(g => g.Execute(It.IsAny<RegistrationParameter>()))
-                .Returns(client);
-                
+                .Returns(client);                
             _clientRepositoryFake.Setup(c => c.InsertAsync(It.IsAny<Models.Client>()))
-                .Callback<Models.Client>(c => client = c);
+                .Callback<Models.Client>(c => client = c)
+                .Returns(Task.FromResult(true));
 
             // ACT
             var result = await _registerClientAction.Execute(registrationParameter);

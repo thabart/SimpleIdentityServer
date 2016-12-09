@@ -26,7 +26,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<AggregateException>(() => _authenticateClient.AuthenticateAsync(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateClient.AuthenticateAsync(null));
         }
 
         [Fact]
