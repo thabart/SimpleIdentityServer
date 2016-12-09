@@ -356,13 +356,17 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
             {
                 var consents = new List<Consent>()
                 {
+                    new Consent
                     {
-                        new Consent
-                        {
-                            Id = 1,
-                            ClientId = "implicit_client",
-                            ResourceOwnerId = "administrator"
-                        }
+                        Id = 1,
+                        ClientId = "authcode_client",
+                        ResourceOwnerId = "administrator"
+                    },
+                    new Consent
+                    {
+                        Id = 2,
+                        ClientId = "implicit_client",
+                        ResourceOwnerId = "administrator"
                     }
                 };
                 context.Consents.AddRange(consents);
@@ -383,6 +387,16 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                     new ConsentScope
                     {
                         ConsentId = 1,
+                        ScopeName = "openid"
+                    },
+                    new ConsentScope
+                    {
+                        ConsentId = 2,
+                        ScopeName = "api1"
+                    },
+                    new ConsentScope
+                    {
+                        ConsentId = 2,
                         ScopeName = "openid"
                     }
                 };
@@ -567,6 +581,32 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                     },
                     new DataAccess.SqlServer.Models.Client
                     {
+                        ClientId = "authcode_client",
+                        ClientName = "authcode_client",
+                        ClientSecret = "authcode_client",
+                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
+                        LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
+                        PolicyUri = "http://openid.net",
+                        TosUri = "http://openid.net",
+                        ClientScopes = new List<ClientScope>
+                        {
+                            new ClientScope
+                            {
+                                ScopeName = "api1"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "openid"
+                            }
+                        },
+                        GrantTypes = "0",
+                        ResponseTypes = "0,1,2",
+                        IdTokenSignedResponseAlg = "RS256",
+                        ApplicationType = ApplicationTypes.web,
+                        RedirectionUrls = "http://localhost:5000/callback"
+                    },
+                    new DataAccess.SqlServer.Models.Client
+                    {
                         ClientId = "implicit_client",
                         ClientName = "implicit_client",
                         ClientSecret = "implicit_client",
@@ -585,8 +625,8 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                                 ScopeName = "openid"
                             }
                         },
-                        GrantTypes = "0,1",
-                        ResponseTypes = "0,1,2",
+                        GrantTypes = "1",
+                        ResponseTypes = "1,2",
                         IdTokenSignedResponseAlg = "RS256",
                         ApplicationType = ApplicationTypes.web,
                         RedirectionUrls = "http://localhost:5000/callback"
