@@ -21,6 +21,9 @@ using SimpleIdentityServer.Client.Operations;
 using System.Threading.Tasks;
 using Xunit;
 using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Client.Selectors;
+using System;
+using SimpleIdentityServer.Core.Common;
 
 namespace SimpleIdentityServer.Host.Tests
 {
@@ -29,6 +32,7 @@ namespace SimpleIdentityServer.Host.Tests
         private readonly TestScimServerFixture _server;
         private Mock<IHttpClientFactory> _httpClientFactoryStub;
         private IAuthorizationClient _authorizationClient;
+        private IClientAuthSelector _clientAuthSelector;
 
         public AuthorizationClientFixture(TestScimServerFixture server)
         {
@@ -45,7 +49,7 @@ namespace SimpleIdentityServer.Host.Tests
 
             // ACT
             var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration", new AuthorizationRequest(new[] { "openid", "api1" }, new[] { ResponseTypes.Code }, "implicit_client", "http://localhost:5000/invalid_callback", "state"));
-
+            
             // ASSERTS
             Assert.NotNull(result);
             Assert.NotNull(result.Content);
@@ -61,12 +65,23 @@ namespace SimpleIdentityServer.Host.Tests
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
 
             // ACT
+            // NOTE : The consent has already been given in the database.
             var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration", 
-                new AuthorizationRequest(new [] { "openid", "api1" }, new[] { ResponseTypes.Code }, "implicit_client", "http://localhost:5000/callback", "state"));
+                new AuthorizationRequest(new[] { "openid", "api1" }, new[] { ResponseTypes.Code }, "implicit_client", "http://localhost:5000/callback", "state")
+                {
+                    Prompt = PromptNames.None
+                });
+            Uri location = result.Location;
+            var code = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(location.Query)["code"];
+            var token = await _clientAuthSelector.UseClientSecretPostAuth("implicit_client", "implicit_client")
+                .UseAuthorizationCode(code, "http://localhost:5000/callback")
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
 
             // ASSERTS
             Assert.NotNull(result);
             Assert.NotNull(result.Location);
+            Assert.NotNull(token);
+            Assert.NotEmpty(token.AccessToken);
         }
 
         private void InitializeFakeObjects()
@@ -74,7 +89,14 @@ namespace SimpleIdentityServer.Host.Tests
             _httpClientFactoryStub = new Mock<IHttpClientFactory>();
             var getAuthorizationOperation = new GetAuthorizationOperation(_httpClientFactoryStub.Object);
             var getDiscoveryOperation = new GetDiscoveryOperation(_httpClientFactoryStub.Object);
+            var postTokenOperation = new PostTokenOperation(_httpClientFactoryStub.Object);
+            var introspectionOperation = new IntrospectOperation(_httpClientFactoryStub.Object);
+            var revokeTokenOperation = new RevokeTokenOperation(_httpClientFactoryStub.Object);
             _authorizationClient = new AuthorizationClient(getAuthorizationOperation, getDiscoveryOperation);
+            _clientAuthSelector = new ClientAuthSelector(
+                new TokenClientFactory(postTokenOperation, getDiscoveryOperation),
+                new IntrospectClientFactory(introspectionOperation, getDiscoveryOperation),
+                new RevokeTokenClientFactory(revokeTokenOperation, getDiscoveryOperation));
         }
     }
 }

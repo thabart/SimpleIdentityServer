@@ -27,6 +27,7 @@ using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.DataAccess.SqlServer;
 using SimpleIdentityServer.Host.Tests.Extensions;
+using SimpleIdentityServer.Host.Tests.MiddleWares;
 using SimpleIdentityServer.Host.Tests.Services;
 using SimpleIdentityServer.Logging;
 using System;
@@ -70,7 +71,7 @@ namespace SimpleIdentityServer.Host.Tests
                 },
                 Authenticate = new AuthenticateOptions
                 {
-                    CookieName = "SimpleIdServer"
+                    CookieName = FakeAuthenticatedRequestMiddleware.TestingCookieAuthentication
                 },
                 Scim = new ScimOptions
                 {
@@ -99,7 +100,7 @@ namespace SimpleIdentityServer.Host.Tests
             parts.Clear();
             parts.Add(new AssemblyPart(typeof(DiscoveryController).GetTypeInfo().Assembly));
             // 5. Configure authentication.
-            services.AddAuthentication(opts => opts.SignInScheme = "SimpleIdServer");
+            services.AddAuthentication(opts => opts.SignInScheme = FakeAuthenticatedRequestMiddleware.TestingCookieAuthentication);
             return services.BuildServiceProvider();
         }
 
@@ -118,8 +119,11 @@ namespace SimpleIdentityServer.Host.Tests
             // 3. Use cookie authentication
             app.UseCookieAuthentication(new CookieAuthenticationOptions
             {
-                AuthenticationScheme = "SimpleIdServer"
+                AuthenticationScheme = FakeAuthenticatedRequestMiddleware.TestingCookieAuthentication,
+                AutomaticAuthenticate = true,
+                AutomaticChallenge = true
             });
+            app.UseMiddleware<FakeAuthenticatedRequestMiddleware>();
             // 4. Use simple identity server.
             app.UseSimpleIdentityServer(_options);
             // 5. Client JWKS endpoint

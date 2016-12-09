@@ -36,43 +36,35 @@ namespace SimpleIdentityServer.Startup.Configuration
             _simpleIdServerConfigurationClientFactory = simpleIdServerConfigurationClientFactory;
         }
 
-        /// <summary>
-        /// Returns the validity of an access token or identity token in seconds
-        /// </summary>
-        /// <returns>Validity of an access token or identity token in seconds</returns>
-        public double GetTokenValidityPeriodInSeconds()
+        public Task<string> GetIssuerNameAsync()
+        {
+            var request = _httpContextAccessor.HttpContext.Request;
+            return Task.FromResult(request.GetAbsoluteUriWithVirtualPath());
+        }
+
+        public Task<double> GetTokenValidityPeriodInSecondsAsync()
         {
             return GetExpirationTime("TokenExpirationTime");
         }
 
-        /// <summary>
-        /// Returns the validity period of an authorization token in seconds.
-        /// </summary>
-        /// <returns>Validity period is seconds</returns>
-        public double GetAuthorizationCodeValidityPeriodInSeconds()
+        public Task<double> GetAuthorizationCodeValidityPeriodInSecondsAsync()
         {
             return GetExpirationTime("AuthorizationCodeExpirationTime");
         }
 
-        public string DefaultLanguage()
+        public Task<string> DefaultLanguageAsync()
         {
-            return "en";
+            return Task.FromResult("en");
         }
 
-        public string GetIssuerName()
-        {
-            return GetCurrentPath();
-        }
-        
-        private double GetExpirationTime(string key)
+        private async Task<double> GetExpirationTime(string key)
         {
             double result = 0;
             double defaultValue = 3600;
             try
             {
-                var setting = _simpleIdServerConfigurationClientFactory.GetSettingClient()
-                    .GetSettingByResolving(key, /*_configurationParameters.ConfigurationUrl*/ null)
-                    .Result;
+                var setting = await _simpleIdServerConfigurationClientFactory.GetSettingClient()
+                    .GetSettingByResolving(key, /*_configurationParameters.ConfigurationUrl*/ null);
                 if (setting == null || !double.TryParse(setting.Value, out result))
                 {
                     return defaultValue;
@@ -85,32 +77,6 @@ namespace SimpleIdentityServer.Startup.Configuration
             {
                 return defaultValue;
             }
-        }
-
-        private string GetCurrentPath()
-        {
-            var request = _httpContextAccessor.HttpContext.Request;
-            return request.GetAbsoluteUriWithVirtualPath();
-        }
-
-        public Task<string> GetIssuerNameAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<double> GetTokenValidityPeriodInSecondsAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<double> GetAuthorizationCodeValidityPeriodInSecondsAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<string> DefaultLanguageAsync()
-        {
-            throw new NotImplementedException();
         }
     }
 }

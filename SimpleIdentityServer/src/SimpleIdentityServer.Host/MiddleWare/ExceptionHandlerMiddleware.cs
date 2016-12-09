@@ -28,7 +28,6 @@ namespace SimpleIdentityServer.Host.MiddleWare
     public class ExceptionHandlerMiddleware
     {
         private readonly RequestDelegate _next;
-
         private readonly ExceptionHandlerMiddlewareOptions _options;
 
         #region Constructor

@@ -137,6 +137,8 @@ namespace SimpleIdentityServer.Core.Common
         public const string ClientCredentials = "client_credentials";
         public const string Password = "password";
         public const string RefreshToken = "refresh_token";
+        public const string AuthorizationCode = "authorization_code";
+        public const string ValidateBearer = "validate_bearer";
     }
 
     public static class TokenTypes
@@ -210,5 +212,13 @@ namespace SimpleIdentityServer.Core.Common
         public const string RegistrationClientUri = "registration_client_uri";
         public const string ClientIdIssuedAt = "client_id_issued_at";
         public const string ClientSecretExpiresAt = "client_secret_expires_at";
+    }
+
+    public static class PromptNames
+    {
+        public const string None = "none";
+        public const string Login = "login";
+        public const string Consent = "consent";
+        public const string SelectAccount = "select_account";
     }
 }

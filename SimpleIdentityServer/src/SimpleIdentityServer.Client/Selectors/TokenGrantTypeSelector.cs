@@ -24,6 +24,7 @@ namespace SimpleIdentityServer.Client.Selectors
 {
     public interface ITokenGrantTypeSelector
     {
+        ITokenClient UseAuthorizationCode(string code, string redirectUrl);
         ITokenClient UseClientCredentials(params string[] scopes);
         ITokenClient UseClientCredentials(List<string> scopes);
         ITokenClient UsePassword(string userName, string password, params string[] scopes);
@@ -47,7 +48,26 @@ namespace SimpleIdentityServer.Client.Selectors
             _introspectClient = introspectClient;
             _revokeTokenClient = revokeTokenClient;
         }
-        
+
+        public ITokenClient UseAuthorizationCode(string code, string redirectUrl)
+        {
+            if (string.IsNullOrWhiteSpace(code))
+            {
+                throw new ArgumentNullException(nameof(code));
+            }
+
+            if (string.IsNullOrWhiteSpace(redirectUrl))
+            {
+                throw new ArgumentNullException(nameof(redirectUrl));
+            }
+
+            _requestBuilder.Content.Add(RequestTokenNames.Code, code);
+            _requestBuilder.Content.Add(RequestTokenNames.GrantType, GrantTypes.AuthorizationCode);
+            _requestBuilder.Content.Add(RequestTokenNames.RedirectUri, redirectUrl);
+            return _tokenClient;
+        }
+
+
         public ITokenClient UseClientCredentials(params string[] scopes)
         {
             if (scopes == null || !scopes.Any())

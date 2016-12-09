@@ -39,11 +39,11 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
         
         public async Task<IEnumerable<Core.Models.Consent>> GetConsentsForGivenUserAsync(string subject)
         {
-            var resourceOwner = await _context.ResourceOwners
-                .Include(r => r.Claims).ThenInclude(c => c.Claim)
-                .Include(r => r.Consents).ThenInclude(c => c.ConsentScopes)
-                .Include(r => r.Consents).ThenInclude(c => c.ConsentClaims)
-                .Where(r => r.Claims.Any(c => c.Claim.IsIdentifier && c.Value == subject))
+            var resourceOwner = await _context.ResourceOwnerClaims
+                .Include(r => r.Claim)
+                .Include(r => r.ResourceOwner).ThenInclude(r => r.Consents).ThenInclude(r => r.ConsentClaims)
+                .Include(r => r.ResourceOwner).ThenInclude(r => r.Consents).ThenInclude(r => r.ConsentScopes)
+                .Where(r => r.Claim != null && r.Claim.IsIdentifier == true && r.Value == subject)
                 .FirstOrDefaultAsync()
                 .ConfigureAwait(false);
             if (resourceOwner == null)
@@ -51,7 +51,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                 return null;
             }
 
-            return resourceOwner.Consents.Select(c => c.ToDomain());;
+            return resourceOwner.ResourceOwner.Consents == null ? new Core.Models.Consent[0] : resourceOwner.ResourceOwner.Consents.Select(c => c.ToDomain());
         }
 
         public async Task<Core.Models.Consent> InsertAsync(Core.Models.Consent record)

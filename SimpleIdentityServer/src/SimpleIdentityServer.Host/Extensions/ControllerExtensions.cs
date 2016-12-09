@@ -43,6 +43,11 @@ namespace SimpleIdentityServer.Host.Extensions
             }
 
             var user = await controller.HttpContext.Authentication.AuthenticateAsync(scheme);
+            if (user == null)
+            {
+                user = controller.User;
+            }
+
             return user ?? new ClaimsPrincipal(new ClaimsIdentity());
         }
 

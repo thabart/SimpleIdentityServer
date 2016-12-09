@@ -34,6 +34,8 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
             InsertResourceOwners(context);
             InsertJsonWebKeys(context);
             InsertClients(context, sharedCtx);
+            InsertConsents(context);
+            InsertConsentScopes(context);
             try
             {
                 context.SaveChanges();
@@ -205,7 +207,7 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                 {
                     new ResourceOwner
                     {
-                        Id = Guid.NewGuid().ToString(),
+                        Id = "administrator",
                         Claims = new List<ResourceOwnerClaim>
                         {
                             new ResourceOwnerClaim
@@ -345,6 +347,46 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                         IsLocalAccount = true
                     }
                 });
+            }
+        }
+
+        private static void InsertConsents(SimpleIdentityServerContext context)
+        {
+            if (!context.Consents.Any())
+            {
+                var consents = new List<Consent>()
+                {
+                    {
+                        new Consent
+                        {
+                            Id = 1,
+                            ClientId = "implicit_client",
+                            ResourceOwnerId = "administrator"
+                        }
+                    }
+                };
+                context.Consents.AddRange(consents);
+            }
+        }
+
+        private static void InsertConsentScopes(SimpleIdentityServerContext context)
+        {
+            if (!context.ConsentScopes.Any())
+            {
+                var consentScopes = new List<ConsentScope>
+                {
+                    new ConsentScope
+                    {
+                        ConsentId = 1,
+                        ScopeName = "api1"
+                    },
+                    new ConsentScope
+                    {
+                        ConsentId = 1,
+                        ScopeName = "openid"
+                    }
+                };
+                context.ConsentScopes.AddRange(consentScopes);
             }
         }
 
