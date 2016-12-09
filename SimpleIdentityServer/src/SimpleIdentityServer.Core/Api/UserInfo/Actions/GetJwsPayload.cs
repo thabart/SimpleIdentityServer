@@ -61,12 +61,12 @@ namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
         {
             if (string.IsNullOrWhiteSpace(accessToken))
             {
-                throw new ArgumentNullException("accessToken");
+                throw new ArgumentNullException(nameof(accessToken));
             }
 
             // Check if the access token is still valid otherwise raise an authorization exception.
             GrantedTokenValidationResult valResult;
-            if (!((valResult = _grantedTokenValidator.CheckAccessToken(accessToken)).IsValid))
+            if (!((valResult = await _grantedTokenValidator.CheckAccessTokenAsync(accessToken)).IsValid))
             {
                 throw new AuthorizationException(valResult.MessageErrorCode, valResult.MessageErrorDescription);
             }

@@ -28,7 +28,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
 {
     public interface IAuthenticateActions
     {
-        ActionResult AuthenticateResourceOwnerOpenId(
+       Task<ActionResult> AuthenticateResourceOwnerOpenId(
             AuthorizationParameter parameter,
             ClaimsPrincipal claimsPrincipal,
             string code);
@@ -78,7 +78,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
             _removeConfirmationCodeAction = removeConfirmationCodeAction;
         }
 
-        public ActionResult AuthenticateResourceOwnerOpenId(
+        public async Task<ActionResult> AuthenticateResourceOwnerOpenId(
             AuthorizationParameter parameter,
             ClaimsPrincipal claimsPrincipal,
             string code)
@@ -93,7 +93,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
                 throw new ArgumentNullException("claimsPrincipal");
             }
 
-            return _authenticateResourceOwnerOpenIdAction.Execute(parameter, 
+            return await _authenticateResourceOwnerOpenIdAction.Execute(parameter, 
                 claimsPrincipal, 
                 code);
         }

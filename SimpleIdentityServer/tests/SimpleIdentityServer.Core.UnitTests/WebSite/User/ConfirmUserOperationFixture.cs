@@ -22,6 +22,7 @@ using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.WebSite.User.Actions;
 using System;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
@@ -33,24 +34,24 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
         private IConfirmUserOperation _confirmUserOperation;
         
         [Fact]
-        public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ASSERT
-            Assert.Throws<ArgumentNullException>(() => _confirmUserOperation.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _confirmUserOperation.Execute(null));
         }
 
         [Fact]
-        public void When_User_Is_Not_Authenticated_Then_Exception_Is_Thrown()
+        public async Task When_User_Is_Not_Authenticated_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
             var emptyClaimsPrincipal = new ClaimsPrincipal();
 
             // ACT
-            var exception = Assert.Throws<IdentityServerException>(() => _confirmUserOperation.Execute(emptyClaimsPrincipal));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _confirmUserOperation.Execute(emptyClaimsPrincipal));
 
             // ASSERT
             Assert.NotNull(exception);
@@ -59,7 +60,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
         }
 
         [Fact]
-        public void When_Subject_Is_Not_Passed_Then_Exception_Is_Thrown()
+        public async Task When_Subject_Is_Not_Passed_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -68,7 +69,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
             // ACT
-            var exception = Assert.Throws<IdentityServerException>(() => _confirmUserOperation.Execute(claimsPrincipal));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _confirmUserOperation.Execute(claimsPrincipal));
 
             // ASSERT
             Assert.NotNull(exception);
@@ -77,18 +78,18 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
         }
 
         [Fact]
-        public void When_Ro_DoesntExist_Then_Exception_Is_Thrown()
+        public async Task When_Ro_DoesntExist_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
             var claimsIdentity = new ClaimsIdentity("test");
             claimsIdentity.AddClaim(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, "subject"));
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwner(It.IsAny<string>()))
-                .Returns((ResourceOwner)null);
+            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult((ResourceOwner)null));
 
             // ACT
-            var exception = Assert.Throws<IdentityServerException>(() => _confirmUserOperation.Execute(claimsPrincipal));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _confirmUserOperation.Execute(claimsPrincipal));
 
             // ASSERT
             Assert.NotNull(exception);
@@ -97,21 +98,21 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
         }
 
         [Fact]
-        public void When_Trying_To_Enable_Confirmed_Account_Then_Exception_Is_Thrown()
+        public async Task When_Trying_To_Enable_Confirmed_Account_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
             var claimsIdentity = new ClaimsIdentity("test");
             claimsIdentity.AddClaim(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, "subject"));
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwner(It.IsAny<string>()))
-                .Returns(new ResourceOwner
+            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(new ResourceOwner
                 {
                     IsLocalAccount = true
-                });
+                }));
 
             // ACT
-            var exception = Assert.Throws<IdentityServerException>(() => _confirmUserOperation.Execute(claimsPrincipal));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _confirmUserOperation.Execute(claimsPrincipal));
 
             // ASSERT
             Assert.NotNull(exception);
@@ -120,24 +121,24 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
         }
         
         [Fact]
-        public void When_Correct_Subject_Is_Passed_Then_Account_Is_Enabled()
+        public async Task When_Correct_Subject_Is_Passed_Then_Account_Is_Enabled()
         {
             // ARRANGE
             InitializeFakeObjects();
             var claimsIdentity = new ClaimsIdentity("test");
             claimsIdentity.AddClaim(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, "subject"));
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwner(It.IsAny<string>()))
-                .Returns(new ResourceOwner
+            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(new ResourceOwner
                 {
                     IsLocalAccount = false
-                });
+                }));
 
             // ACT
-            _confirmUserOperation.Execute(claimsPrincipal);
+            await _confirmUserOperation.Execute(claimsPrincipal);
 
             // ASSERT
-            _resourceOwnerRepositoryStub.Verify(r => r.Update(It.IsAny<ResourceOwner>()));
+            _resourceOwnerRepositoryStub.Verify(r => r.UpdateAsync(It.IsAny<ResourceOwner>()));
         }
                 
         private void InitializeFakeObjects()

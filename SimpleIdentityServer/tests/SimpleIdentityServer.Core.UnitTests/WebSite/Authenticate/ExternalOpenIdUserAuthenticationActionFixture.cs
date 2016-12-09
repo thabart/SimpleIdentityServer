@@ -11,6 +11,8 @@ using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Repositories;
 using Xunit;
 using SimpleIdentityServer.Core.Services;
+using System.Threading.Tasks;
+using SimpleIdentityServer.Core.Models;
 
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 {
@@ -23,7 +25,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
         private IExternalOpenIdUserAuthenticationAction _externalOpenIdUserAuthenticationAction;
 
         [Fact]
-        public void When_Passing_Null_Parameters_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_Parameters_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -31,21 +33,19 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             {
                 new Claim("sub", "subject")
             };
-            IEnumerable<Claim> filteredClaim = null;
             var authorizationParameter = new AuthorizationParameter();
 
             // ACTS & ASSERTS
-            Assert.Throws<ArgumentNullException>(() => _externalOpenIdUserAuthenticationAction.Execute(null, null, null, out filteredClaim));
-            Assert.Throws<ArgumentNullException>(() => _externalOpenIdUserAuthenticationAction.Execute(claims, null, null, out filteredClaim));
-            Assert.Throws<ArgumentNullException>(() => _externalOpenIdUserAuthenticationAction.Execute(claims, authorizationParameter, null, out filteredClaim));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _externalOpenIdUserAuthenticationAction.Execute(null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _externalOpenIdUserAuthenticationAction.Execute(claims, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _externalOpenIdUserAuthenticationAction.Execute(claims, authorizationParameter, null));
         }
 
         [Fact]
-        public void When_The_Subject_Is_Not_Specified_Then_Exception_Is_Thrown()
+        public async Task When_The_Subject_Is_Not_Specified_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
-            IEnumerable<Claim> filteredClaim = null;
             const string subject = "subject";
             var claims = new List<Claim>
             {
@@ -60,19 +60,18 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             _authenticateHelperStub.Setup(a => a.ProcessRedirection(It.IsAny<AuthorizationParameter>(),
                 It.IsAny<string>(),
                 It.IsAny<string>(),
-                It.IsAny<List<Claim>>())).Returns(actionResult);
+                It.IsAny<List<Claim>>())).Returns(Task.FromResult(actionResult));
 
             // ACT & ASSERT
-            var exception = Assert.Throws<IdentityServerException>(() => _externalOpenIdUserAuthenticationAction.Execute(claims, authorizationParameter, code, out filteredClaim));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _externalOpenIdUserAuthenticationAction.Execute(claims, authorizationParameter, code));
             Assert.True(exception.Message == ErrorDescriptions.NoSubjectCanBeExtracted);
         }
 
         [Fact]
-        public void When_Passing_Parameters_Then_Operation_Is_Called()
+        public async Task When_Passing_Parameters_Then_Operation_Is_Called()
         {
             // ARRANGE
             InitializeFakeObjects();
-            IEnumerable<Claim> filteredClaim = null;
             const string subject = "subject";
             var claims = new List<Claim>
             {
@@ -84,20 +83,21 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             {
                 Type = TypeActionResult.None
             };
-            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwner(It.IsAny<string>()))
-                .Returns(() => null);
-            _claimRepositoryStub.Setup(c => c.GetAll()).Returns(new List<string>());
+            ICollection<string> claimValues = new List<string>();
+            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult((ResourceOwner)null));
+            _claimRepositoryStub.Setup(c => c.GetAllAsync()).Returns(Task.FromResult(claimValues));
             _authenticateHelperStub.Setup(a => a.ProcessRedirection(It.IsAny<AuthorizationParameter>(),
                 It.IsAny<string>(),
                 It.IsAny<string>(),
-                It.IsAny<List<Claim>>())).Returns(actionResult);
+                It.IsAny<List<Claim>>())).Returns(Task.FromResult(actionResult));
 
             // ACT
-            var result = _externalOpenIdUserAuthenticationAction.Execute(claims, authorizationParameter, code, out filteredClaim);
+            var result = await _externalOpenIdUserAuthenticationAction.Execute(claims, authorizationParameter, code);
 
             // ASSERT
             Assert.NotNull(result);
-            Assert.True(result.Type == TypeActionResult.None);
+            Assert.True(result.ActionResult.Type == TypeActionResult.None);
             _authenticateHelperStub.Verify(a => a.ProcessRedirection(It.IsAny<AuthorizationParameter>(),
                 It.IsAny<string>(),
                 It.IsAny<string>(),

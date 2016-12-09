@@ -33,16 +33,10 @@ namespace SimpleIdentityServer.Host.Controllers.Api
     {
         private readonly IIntrospectionActions _introspectionActions;
 
-        #region Constructor
-
         public IntrospectionController(IIntrospectionActions introspectionActions)
         {
             _introspectionActions = introspectionActions;
         }
-
-        #endregion
-
-        #region Public methods
 
         [HttpPost]
         public async Task<Introspection> Post()
@@ -72,7 +66,5 @@ namespace SimpleIdentityServer.Host.Controllers.Api
             var result = await _introspectionActions.PostIntrospection(introspectionRequest.ToParameter(), authenticationHeaderValue);
             return result.ToDto();
         }
-
-        #endregion
     }
 }

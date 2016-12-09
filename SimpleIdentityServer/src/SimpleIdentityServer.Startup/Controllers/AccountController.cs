@@ -20,30 +20,18 @@ using SimpleIdentityServer.Core.WebSite.Account;
 using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.Startup.ViewModels;
 using System;
-using System.Collections.Generic;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Startup.Controllers
 {
     public class AccountController : Controller
     {
-        #region Private fields
-
         private readonly IAccountActions _accountActions;
-
-        #endregion
-
-        #region Constructor
 
         public AccountController(IAccountActions accountActions)
         {
             _accountActions = accountActions;
         }
-
-        #endregion
-
-        #region Public methods
 
         [HttpGet]
         public async Task<ActionResult> Index()
@@ -73,7 +61,7 @@ namespace SimpleIdentityServer.Startup.Controllers
                 return RedirectToAction("Index", "User");
             }
 
-            _accountActions.AddResourceOwner(new AddUserParameter
+            await _accountActions.AddResourceOwner(new AddUserParameter
             {
                 Login = updateResourceOwnerViewModel.Login,
                 Password = updateResourceOwnerViewModel.Password
@@ -81,7 +69,5 @@ namespace SimpleIdentityServer.Startup.Controllers
 
             return RedirectToAction("Index", "Authenticate");
         }
-
-        #endregion
     }
 }

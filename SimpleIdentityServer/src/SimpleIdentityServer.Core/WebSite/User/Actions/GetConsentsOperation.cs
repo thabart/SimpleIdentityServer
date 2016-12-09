@@ -19,12 +19,13 @@ using SimpleIdentityServer.Core.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.User.Actions
 {
     public interface IGetConsentsOperation
     {
-        IEnumerable<Models.Consent> Execute(ClaimsPrincipal claimsPrincipal);
+        Task<IEnumerable<Models.Consent>> Execute(ClaimsPrincipal claimsPrincipal);
     }
 
     internal class GetConsentsOperation : IGetConsentsOperation
@@ -36,7 +37,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
             _consentRepository = consentRepository;
         }
         
-        public IEnumerable<Models.Consent> Execute(ClaimsPrincipal claimsPrincipal)
+        public async Task<IEnumerable<Models.Consent>> Execute(ClaimsPrincipal claimsPrincipal)
         {
             if (claimsPrincipal == null ||
                 claimsPrincipal.Identity == null)
@@ -45,7 +46,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
             }
 
             var subject = claimsPrincipal.GetSubject();
-            return _consentRepository.GetConsentsForGivenUser(subject);
+            return await _consentRepository.GetConsentsForGivenUserAsync(subject);
         }
     }
 }

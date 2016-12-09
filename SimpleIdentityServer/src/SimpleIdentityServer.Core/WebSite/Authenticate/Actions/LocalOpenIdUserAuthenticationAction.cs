@@ -110,7 +110,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                 ClaimValueTypes.Integer));
             return new LocalOpenIdAuthenticationResult
             {
-                ActionResult = _authenticateHelper.ProcessRedirection(authorizationParameter,
+                ActionResult = await _authenticateHelper.ProcessRedirection(authorizationParameter,
                                 code,
                                 resourceOwner.Id,
                                 claims),

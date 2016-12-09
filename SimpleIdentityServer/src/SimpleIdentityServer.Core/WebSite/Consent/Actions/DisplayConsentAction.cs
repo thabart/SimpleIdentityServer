@@ -14,21 +14,21 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
 using SimpleIdentityServer.Core.Api.Authorization;
 using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
+using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Results;
-using SimpleIdentityServer.Core.Extensions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
@@ -41,16 +41,18 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
         /// </summary>
         /// <param name="authorizationParameter">Authorization code grant type parameter.</param>
         /// <param name="claimsPrincipal"></param>
-        /// <param name="client">Information about the client</param>
-        /// <param name="allowedScopes">Allowed scopes</param>
-        /// <param name="allowedClaims">Allowed claims</param>
         /// <returns>Action result.</returns>
-        Task<ActionResult> Execute(
+        Task<DisplayContentResult> Execute(
             AuthorizationParameter authorizationParameter,
-            ClaimsPrincipal claimsPrincipal,
-            out Models.Client client,
-            out List<Scope> allowedScopes,
-            out List<string> allowedClaims);
+            ClaimsPrincipal claimsPrincipal);
+    }
+
+    public class DisplayContentResult
+    {
+        public Client Client { get; set; }
+        public ICollection<Scope> Scopes { get; set; }
+        public ICollection<string> AllowedClaims { get; set; }
+        public ActionResult ActionResult { get; set; }
     }
 
     public class DisplayConsentAction : IDisplayConsentAction
@@ -88,12 +90,9 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
         /// <param name="allowedScopes">Allowed scopes</param>
         /// <param name="allowedClaims">Allowed claims</param>
         /// <returns>Action result.</returns>
-        public async Task<ActionResult> Execute(
+        public async Task<DisplayContentResult> Execute(
             AuthorizationParameter authorizationParameter,
-            ClaimsPrincipal claimsPrincipal,
-            out Models.Client client,
-            out List<Scope> allowedScopes,
-            out List<string> allowedClaims)
+            ClaimsPrincipal claimsPrincipal)
         {
             if (authorizationParameter == null)
             {
@@ -106,8 +105,6 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
                 throw new ArgumentNullException(nameof(claimsPrincipal));
             }
             
-            allowedClaims = new List<string>();
-            allowedScopes = new List<Scope>();
             var client = await _clientRepository.GetClientByIdAsync(authorizationParameter.ClientId);
             if (client == null)
             {
@@ -118,24 +115,29 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
 
             ActionResult actionResult;
             var subject = claimsPrincipal.GetSubject();
-            var assignedConsent = _consentHelper.GetConsentConfirmedByResourceOwner(subject, authorizationParameter);
+            var assignedConsent = await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter);
             // If there's already a consent then redirect to the callback
             if (assignedConsent != null)
             {
                 actionResult = _actionResultFactory.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
-                _generateAuthorizationResponse.Execute(actionResult, authorizationParameter, claimsPrincipal, client);
+                await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, client);
                 var responseMode = authorizationParameter.ResponseMode;
                 if (responseMode == ResponseMode.None)
                 {
-                    var responseTypes = _parameterParserHelper.ParseResponseType(authorizationParameter.ResponseType);
+                    var responseTypes = _parameterParserHelper.ParseResponseTypes(authorizationParameter.ResponseType);
                     var authorizationFlow = GetAuthorizationFlow(responseTypes, authorizationParameter.State);
                     responseMode = GetResponseMode(authorizationFlow);
                 }
 
                 actionResult.RedirectInstruction.ResponseMode = responseMode;
-                return actionResult;
+                return new DisplayContentResult
+                {
+                    ActionResult = actionResult
+                };
             }
 
+            ICollection<string> allowedClaims = null;
+            ICollection<Scope> allowedScopes = null;
             var claimsParameter = authorizationParameter.Claims;
             if (claimsParameter.IsAnyIdentityTokenClaimParameter() ||
                 claimsParameter.IsAnyUserInfoClaimParameter())
@@ -144,13 +146,19 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
             }
             else
             {
-                allowedScopes = GetScopes(authorizationParameter.Scope)
+                allowedScopes = (await GetScopes(authorizationParameter.Scope))
                     .Where(s => s.IsDisplayedInConsent)
                     .ToList();
             }
 
             actionResult = _actionResultFactory.CreateAnEmptyActionResultWithOutput();
-            return actionResult;
+            return new DisplayContentResult
+            {
+                AllowedClaims = allowedClaims,
+                Scopes = allowedScopes,
+                ActionResult = actionResult,
+                Client = client
+            };
         }
 
         /// <summary>
@@ -158,20 +166,11 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
         /// </summary>
         /// <param name="concatenateListOfScopes"></param>
         /// <returns>List of scopes</returns>
-        private IEnumerable<Scope> GetScopes(string concatenateListOfScopes)
+        private async Task<IEnumerable<Scope>> GetScopes(string concatenateListOfScopes)
         {
             var result = new List<Scope>();
             var scopeNames = concatenateListOfScopes.Split(' ');
-            foreach (var scopeName in scopeNames)
-            {
-                var scope = _scopeRepository.GetScopeByName(scopeName);
-                if (scope != null)
-                {
-                    result.Add(scope);
-                }
-            }
-
-            return result;
+            return await _scopeRepository.SearchByNamesAsync(scopeNames);
         }
 
         #region Private static methods

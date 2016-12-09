@@ -14,28 +14,19 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using SimpleIdentityServer.Core.WebSite.Consent.Actions;
-using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
+using SimpleIdentityServer.Core.WebSite.Consent.Actions;
+using System;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.Consent
 {
     public interface IConsentActions
     {
-        ActionResult DisplayConsent(
-            AuthorizationParameter authorizationParameter,
-            ClaimsPrincipal claimsPrincipal,
-            out Models.Client client,
-            out List<Scope> allowedScopes,
-            out List<string> allowedClaims);
-
-        ActionResult ConfirmConsent(
-            AuthorizationParameter authorizationParameter,
-            ClaimsPrincipal claimsPrincipal);
+        Task<DisplayContentResult> DisplayConsent(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal);
+        Task<ActionResult> ConfirmConsent(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal);
     }
 
     public class ConsentActions : IConsentActions
@@ -52,48 +43,36 @@ namespace SimpleIdentityServer.Core.WebSite.Consent
             _confirmConsentAction = confirmConsentAction;
         }
 
-        public ActionResult DisplayConsent(
-            AuthorizationParameter authorizationParameter,
-            ClaimsPrincipal claimsPrincipal,
-            out Models.Client client,
-            out List<Scope> allowedScopes,
-            out List<string> allowedClaims)
+        public async Task<DisplayContentResult> DisplayConsent(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal)
         {
             if (authorizationParameter == null)
             {
-                throw new ArgumentNullException("authorizationParameter");
+                throw new ArgumentNullException(nameof(authorizationParameter));
             }
 
             if (claimsPrincipal == null ||
                 claimsPrincipal.Identity == null)
             {
-                throw new ArgumentNullException("claimsPrincipal");
+                throw new ArgumentNullException(nameof(claimsPrincipal));
             }
 
-            return _displayConsentAction.Execute(authorizationParameter,
-                claimsPrincipal,
-                out client,
-                out allowedScopes,
-                out allowedClaims);
+            return await _displayConsentAction.Execute(authorizationParameter, claimsPrincipal);
         }
 
-        public ActionResult ConfirmConsent(
-            AuthorizationParameter authorizationParameter,
-            ClaimsPrincipal claimsPrincipal)
+        public async Task<ActionResult> ConfirmConsent(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal)
         {
             if (authorizationParameter == null)
             {
-                throw new ArgumentNullException("authorizationParameter");
+                throw new ArgumentNullException(nameof(authorizationParameter));
             }
 
             if (claimsPrincipal == null ||
                 claimsPrincipal.Identity == null)
             {
-                throw new ArgumentNullException("claimsPrincipal");
+                throw new ArgumentNullException(nameof(claimsPrincipal));
             }
 
-            return _confirmConsentAction.Execute(authorizationParameter,
-                claimsPrincipal);
+            return await _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal);
         }
     }
 }

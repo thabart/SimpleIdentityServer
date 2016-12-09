@@ -15,19 +15,19 @@
 #endregion
 
 using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Services;
 using System;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.User.Actions
 {
     public interface IUpdateUserOperation
     {
-        bool Execute(UpdateUserParameter updateUserParameter);
+        Task<bool> Execute(UpdateUserParameter updateUserParameter);
     }
 
     internal class UpdateUserOperation : IUpdateUserOperation
@@ -43,7 +43,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
             _authenticateResourceOwnerService = authenticateResourceOwnerService;
         }
         
-        public bool Execute(UpdateUserParameter updateUserParameter)
+        public async Task<bool> Execute(UpdateUserParameter updateUserParameter)
         {
             if (updateUserParameter == null)
             {
@@ -55,7 +55,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                 throw new ArgumentNullException(nameof(updateUserParameter.Login));
             }
 
-            var resourceOwner = _authenticateResourceOwnerService.AuthenticateResourceOwner(updateUserParameter.Login);
+            var resourceOwner = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(updateUserParameter.Login);
             if (resourceOwner == null)
             {
                 throw new IdentityServerException(
@@ -81,7 +81,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                 resourceOwner.Claims.Add(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt, DateTime.UtcNow.ToString()));
             }
 
-            return _resourceOwnerRepository.Update(resourceOwner);
+            return await _resourceOwnerRepository.UpdateAsync(resourceOwner);
         }
     }
 }

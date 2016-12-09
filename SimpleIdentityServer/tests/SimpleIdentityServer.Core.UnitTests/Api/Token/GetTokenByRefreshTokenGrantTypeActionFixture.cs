@@ -82,11 +82,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             };
             _grantedTokenRepositoryFake.Setup(g => g.GetTokenByRefreshTokenAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(grantedToken));
-            _grantedTokenGeneratorHelperStub.Setup(g => g.GenerateToken(
+            _grantedTokenGeneratorHelperStub.Setup(g => g.GenerateTokenAsync(
                 It.IsAny<string>(),
                 It.IsAny<string>(), 
                 It.IsAny<JwsPayload>(),
-                It.IsAny<JwsPayload>())).Returns(grantedToken);
+                It.IsAny<JwsPayload>())).Returns(Task.FromResult(grantedToken));
 
             // ACT
              await _getTokenByRefreshTokenGrantTypeAction.Execute(parameter);

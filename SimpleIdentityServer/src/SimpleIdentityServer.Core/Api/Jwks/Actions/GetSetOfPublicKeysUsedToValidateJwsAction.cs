@@ -14,12 +14,11 @@
 // limitations under the License.
 #endregion
 
-using System.Collections.Generic;
-using System.Linq;
-
-using SimpleIdentityServer.Core.Exceptions;
+using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Repositories;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Jwks.Actions

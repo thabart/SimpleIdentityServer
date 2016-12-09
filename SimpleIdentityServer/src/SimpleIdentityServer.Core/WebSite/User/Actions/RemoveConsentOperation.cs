@@ -16,12 +16,13 @@
 
 using SimpleIdentityServer.Core.Repositories;
 using System;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.User.Actions
 {
     public interface IRemoveConsentOperation
     {
-        bool Execute(string consentId);
+        Task<bool> Execute(string consentId);
     }
 
     internal class RemoveConsentOperation : IRemoveConsentOperation
@@ -33,7 +34,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
             _consentRepository = consentRepository;
         }
         
-        public bool Execute(string consentId)
+        public async Task<bool> Execute(string consentId)
         {
             if (string.IsNullOrWhiteSpace(consentId))
             {
@@ -45,7 +46,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                 Id = consentId
             };
 
-            return _consentRepository.DeleteConsent(consentToBeDeleted);
+            return await _consentRepository.DeleteAsync(consentToBeDeleted);
         }
     }
 }

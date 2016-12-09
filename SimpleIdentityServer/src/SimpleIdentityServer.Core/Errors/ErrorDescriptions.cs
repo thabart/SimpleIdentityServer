@@ -120,5 +120,6 @@ namespace SimpleIdentityServer.Core.Errors
         public const string TheConfirmationCodeCannotBeSaved = "the confirmation code cannot be saved";
         public const string TheExternalResourceOwnerIsNotAuthenticated = "the 'external' resource owner is not authenticated";
         public const string TheResourceOwnerIsNotALocalAccount = "the resource owner is not a local account";
+        public const string TheClientIdDoesntExist = "the client id {0} doesn't exist";
     }
 }

@@ -53,8 +53,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
         {
             // ARRANGE
             InitializeFakeObjects();
-            _grantedTokenValidatorFake.Setup(g => g.CheckAccessToken(It.IsAny<string>()))
-                .Returns(new GrantedTokenValidationResult { IsValid = false });
+            _grantedTokenValidatorFake.Setup(g => g.CheckAccessTokenAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(new GrantedTokenValidationResult { IsValid = false }));
 
             // ACT & ASSERT
             await Assert.ThrowsAsync<AuthorizationException>(() => _getJwsPayload.Execute("access_token"));
@@ -65,8 +65,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
         {
             // ARRANGE
             InitializeFakeObjects();
-            _grantedTokenValidatorFake.Setup(g => g.CheckAccessToken(It.IsAny<string>()))
-                .Returns(new GrantedTokenValidationResult { IsValid = true });
+            _grantedTokenValidatorFake.Setup(g => g.CheckAccessTokenAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(new GrantedTokenValidationResult { IsValid = true }));
             _grantedTokenRepositoryFake.Setup(g => g.GetTokenAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(new GrantedToken()));
             _clientRepositoryFake.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
@@ -92,8 +92,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
             {
                 UserInfoSignedResponseAlg = Jwt.Constants.JwsAlgNames.NONE
             };
-            _grantedTokenValidatorFake.Setup(g => g.CheckAccessToken(It.IsAny<string>()))
-                .Returns(new GrantedTokenValidationResult { IsValid = true });
+            _grantedTokenValidatorFake.Setup(g => g.CheckAccessTokenAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(new GrantedTokenValidationResult { IsValid = true }));
             _grantedTokenRepositoryFake.Setup(g => g.GetTokenAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(grantedToken));
             _clientRepositoryFake.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
@@ -119,8 +119,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
             {
                 UserInfoSignedResponseAlg = string.Empty
             };
-            _grantedTokenValidatorFake.Setup(g => g.CheckAccessToken(It.IsAny<string>()))
-                .Returns(new GrantedTokenValidationResult { IsValid = true });
+            _grantedTokenValidatorFake.Setup(g => g.CheckAccessTokenAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(new GrantedTokenValidationResult { IsValid = true }));
             _grantedTokenRepositoryFake.Setup(g => g.GetTokenAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(grantedToken));
             _clientRepositoryFake.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
@@ -148,8 +148,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
                 UserInfoSignedResponseAlg = Jwt.Constants.JwsAlgNames.RS256,
                 UserInfoEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5
             };
-            _grantedTokenValidatorFake.Setup(g => g.CheckAccessToken(It.IsAny<string>()))
-                .Returns(new GrantedTokenValidationResult { IsValid = true });
+            _grantedTokenValidatorFake.Setup(g => g.CheckAccessTokenAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(new GrantedTokenValidationResult { IsValid = true }));
             _grantedTokenRepositoryFake.Setup(g => g.GetTokenAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(grantedToken));
             _clientRepositoryFake.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))

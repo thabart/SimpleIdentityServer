@@ -19,18 +19,16 @@ using Moq;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Core.Validators;
 using Xunit;
 using System.Threading.Tasks;
+using SimpleIdentityServer.Core.Repositories;
 
 namespace SimpleIdentityServer.Core.UnitTests.Helpers
 {
     public sealed class ClientHelperFixture
     {
-        private Mock<IClientValidator> _clientValidatorFake;
-
-        private Mock<IJwtGenerator> _jwtGeneratorFake;
-
+        private Mock<IClientRepository> _clientRepositoryStub;
+        private Mock<IJwtGenerator> _jwtGeneratorStub;
         private IClientHelper _clientHelper;
 
         [Fact]
@@ -50,14 +48,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
             // ARRANGE
             InitializeFakeObjects();
             var client = new Models.Client();
-            _clientValidatorFake.Setup(c => c.ValidateClientExistAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
 
             // ACT
             await _clientHelper.GenerateIdTokenAsync("client_id", new JwsPayload());
 
             // ASSERT
-            _jwtGeneratorFake.Verify(j => j.Sign(It.IsAny<JwsPayload>(), JwsAlg.RS256));
+            _jwtGeneratorStub.Verify(j => j.SignAsync(It.IsAny<JwsPayload>(), JwsAlg.RS256));
         }
 
         [Fact]
@@ -70,15 +68,15 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
                 IdTokenSignedResponseAlg = Jwt.Constants.JwsAlgNames.RS256,
                 IdTokenEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5
             };
-            _clientValidatorFake.Setup(c => c.ValidateClientExistAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
 
             // ACT
             await _clientHelper.GenerateIdTokenAsync("client_id", new JwsPayload());
 
             // ASSERT
-            _jwtGeneratorFake.Verify(j => j.Sign(It.IsAny<JwsPayload>(), JwsAlg.RS256));
-            _jwtGeneratorFake.Verify(j => j.Encrypt(It.IsAny<string>(), JweAlg.RSA1_5, JweEnc.A128CBC_HS256));
+            _jwtGeneratorStub.Verify(j => j.SignAsync(It.IsAny<JwsPayload>(), JwsAlg.RS256));
+            _jwtGeneratorStub.Verify(j => j.EncryptAsync(It.IsAny<string>(), JweAlg.RSA1_5, JweEnc.A128CBC_HS256));
         }
         
         [Fact]
@@ -92,24 +90,24 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
                 IdTokenEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5,
                 IdTokenEncryptedResponseEnc = Jwt.Constants.JweEncNames.A128CBC_HS256
             };
-            _clientValidatorFake.Setup(c => c.ValidateClientExistAsync(It.IsAny<string>()))
+            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
 
             // ACT
             await _clientHelper.GenerateIdTokenAsync("client_id", new JwsPayload());
 
             // ASSERT
-            _jwtGeneratorFake.Verify(j => j.Sign(It.IsAny<JwsPayload>(), JwsAlg.RS256));
-            _jwtGeneratorFake.Verify(j => j.Encrypt(It.IsAny<string>(), JweAlg.RSA1_5, JweEnc.A128CBC_HS256));
+            _jwtGeneratorStub.Verify(j => j.SignAsync(It.IsAny<JwsPayload>(), JwsAlg.RS256));
+            _jwtGeneratorStub.Verify(j => j.EncryptAsync(It.IsAny<string>(), JweAlg.RSA1_5, JweEnc.A128CBC_HS256));
         }
 
         private void InitializeFakeObjects()
         {
-            _clientValidatorFake = new Mock<IClientValidator>();
-            _jwtGeneratorFake = new Mock<IJwtGenerator>();
+            _clientRepositoryStub = new Mock<IClientRepository>();
+            _jwtGeneratorStub = new Mock<IJwtGenerator>();
             _clientHelper = new ClientHelper(
-                _clientValidatorFake.Object,
-                _jwtGeneratorFake.Object);
+                _clientRepositoryStub.Object,
+                _jwtGeneratorStub.Object);
         }
     }
 }

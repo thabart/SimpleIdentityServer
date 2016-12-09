@@ -23,7 +23,7 @@ using SimpleIdentityServer.Api.Controllers.Api;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Api.Jwks.Actions;
 using SimpleIdentityServer.Core.Common.DTOs;
-using SimpleIdentityServer.Core.Exceptions;
+using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.DataAccess.SqlServer;
 using SimpleIdentityServer.Host.Tests.Extensions;

@@ -14,19 +14,20 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Models;
-using System.Security.Claims;
-using System;
-using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
+using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Services;
+using System;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.User.Actions
 {
     public interface IGetUserOperation
     {
-        ResourceOwner Execute(ClaimsPrincipal claimsPrincipal);
+        Task<ResourceOwner> Execute(ClaimsPrincipal claimsPrincipal);
     }
 
     internal class GetUserOperation : IGetUserOperation
@@ -34,15 +35,13 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
         private readonly IAuthenticateResourceOwnerService _authenticateResourceOwnerService;
 
-        public GetUserOperation(
-            IResourceOwnerRepository resourceOwnerRepository,
-            IAuthenticateResourceOwnerService authenticateResourceOwnerService)
+        public GetUserOperation(IResourceOwnerRepository resourceOwnerRepository, IAuthenticateResourceOwnerService authenticateResourceOwnerService)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
             _authenticateResourceOwnerService = authenticateResourceOwnerService;
         }
         
-        public ResourceOwner Execute(ClaimsPrincipal claimsPrincipal)
+        public async Task<ResourceOwner> Execute(ClaimsPrincipal claimsPrincipal)
         {
             if (claimsPrincipal == null)
             {
@@ -66,7 +65,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                     Errors.ErrorDescriptions.TheSubjectCannotBeRetrieved);
             }
             
-            var result = _authenticateResourceOwnerService.AuthenticateResourceOwner(subject);
+            var result = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(subject);
             if (result == null)
             {
                 throw new IdentityServerException(

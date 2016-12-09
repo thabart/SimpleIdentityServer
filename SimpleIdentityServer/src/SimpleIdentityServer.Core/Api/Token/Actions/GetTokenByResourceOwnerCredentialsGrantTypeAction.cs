@@ -131,12 +131,12 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             var generatedToken = await _grantedTokenHelper.GetValidGrantedTokenAsync(client.ClientId, allowedTokenScopes, payload, payload);
             if (generatedToken == null)
             {
-                generatedToken = _grantedTokenGeneratorHelper.GenerateToken(client.ClientId, allowedTokenScopes, payload, payload);
+                generatedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(client.ClientId, allowedTokenScopes, payload, payload);
                 await _grantedTokenRepository.InsertAsync(generatedToken);
                 // Fill-in the id-token
                 if (generatedToken.IdTokenPayLoad != null)
                 {
-                    generatedToken.IdToken = _clientHelper.GenerateIdToken(client, generatedToken.IdTokenPayLoad);
+                    generatedToken.IdToken = await _clientHelper.GenerateIdTokenAsync(client, generatedToken.IdTokenPayLoad);
                 }
 
                 _simpleIdentityServerEventSource.GrantAccessToClient(client.ClientId, generatedToken.AccessToken, allowedTokenScopes);

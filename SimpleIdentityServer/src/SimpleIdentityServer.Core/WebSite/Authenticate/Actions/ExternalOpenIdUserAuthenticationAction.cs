@@ -114,7 +114,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
             }
             return new ExternalOpenIdAuthenticationResult
             {
-                ActionResult = _authenticateHelper.ProcessRedirection(authorizationParameter,
+                ActionResult = await _authenticateHelper.ProcessRedirection(authorizationParameter,
                                 code,
                                 "subject",
                                 claims),

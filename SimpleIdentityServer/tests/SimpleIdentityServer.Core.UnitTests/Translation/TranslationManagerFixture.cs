@@ -5,6 +5,7 @@ using SimpleIdentityServer.Core.Translation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Translation
@@ -12,23 +13,21 @@ namespace SimpleIdentityServer.Core.UnitTests.Translation
     public sealed class TranslationManagerFixture
     {
         private Mock<IConfigurationService> _simpleIdentityServerConfiguratorFake;
-
         private Mock<ITranslationRepository> _translationRepositoryFake;
-
         private ITranslationManager _translationManager;
 
         [Fact]
-        public void When_Passing_No_Translation_Codes_Then_Exception_Is_Raised()
+        public async Task When_Passing_No_Translation_Codes_Then_Exception_Is_Raised()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _translationManager.GetTranslations(string.Empty, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _translationManager.GetTranslationsAsync(string.Empty, null));
         }
 
         [Fact]
-        public void When_Passing_No_Preferred_Language_Then_Codes_Are_Translated_And_Default_Language_Is_Used()
+        public async Task When_Passing_No_Preferred_Language_Then_Codes_Are_Translated_And_Default_Language_Is_Used()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -42,14 +41,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Translation
                 Code = "code",
                 Value = "value"
             };
-            _simpleIdentityServerConfiguratorFake.Setup(s => s.DefaultLanguage())
-                .Returns(defaultLanguage);
-            _translationRepositoryFake.Setup(t => t.GetTranslationByCode(It.IsAny<string>(),
+            _simpleIdentityServerConfiguratorFake.Setup(s => s.DefaultLanguageAsync())
+                .Returns(Task.FromResult(defaultLanguage));
+            _translationRepositoryFake.Setup(t => t.GetAsync(It.IsAny<string>(),
                 It.IsAny<string>()))
-                .Returns(translation); ;
+                .Returns(Task.FromResult(translation)); ;
 
             // ACT
-            var result = _translationManager.GetTranslations(string.Empty, translationCodes);
+            var result = await _translationManager.GetTranslationsAsync(string.Empty, translationCodes);
 
             // ASSERT
             Assert.True(result.Count == 1);
@@ -57,7 +56,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Translation
         }
 
         [Fact]
-        public void When_Passing_No_Preferred_Language_And_There_Is_No_Translation_Then_Codes_Are_Returned()
+        public async Task When_Passing_No_Preferred_Language_And_There_Is_No_Translation_Then_Codes_Are_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -66,14 +65,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Translation
                 "translation_code"
             };
             var defaultLanguage = "EN";
-            _simpleIdentityServerConfiguratorFake.Setup(s => s.DefaultLanguage())
-                .Returns(defaultLanguage);
-            _translationRepositoryFake.Setup(t => t.GetTranslationByCode(It.IsAny<string>(),
+            _simpleIdentityServerConfiguratorFake.Setup(s => s.DefaultLanguageAsync())
+                .Returns(Task.FromResult(defaultLanguage));
+            _translationRepositoryFake.Setup(t => t.GetAsync(It.IsAny<string>(),
                 It.IsAny<string>()))
-                .Returns(() => null); ;
+                .Returns(Task.FromResult((Models.Translation)null)); 
 
             // ACT
-            var result = _translationManager.GetTranslations(string.Empty, translationCodes);
+            var result = await _translationManager.GetTranslationsAsync(string.Empty, translationCodes);
 
             // ASSERT
             Assert.True(result.Count == 1);

@@ -216,11 +216,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 It.IsAny<JwsPayload>(),
                 It.IsAny<JwsPayload>()))
                 .Returns(Task.FromResult((GrantedToken)null));
-            _grantedTokenGeneratorHelperFake.Setup(g => g.GenerateToken(It.IsAny<string>(),
+            _grantedTokenGeneratorHelperFake.Setup(g => g.GenerateTokenAsync(It.IsAny<string>(),
                 It.IsAny<string>(),
                 It.IsAny<JwsPayload>(),
                 It.IsAny<JwsPayload>()))
-                .Returns(() => grantedToken);
+                .Returns(Task.FromResult(grantedToken));
 
             // ACT
             await _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(resourceOwnerGrantTypeParameter, null);
@@ -228,7 +228,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             // ASSERT
             _grantedTokenRepositoryFake.Verify(g => g.InsertAsync(grantedToken));
             _simpleIdentityServerEventSourceFake.Verify(s => s.GrantAccessToClient(clientId, accessToken, invalidScope));
-            _clientHelperStub.Verify(c => c.GenerateIdToken(It.IsAny<Client>(), It.IsAny<JwsPayload>()));
+            _clientHelperStub.Verify(c => c.GenerateIdTokenAsync(It.IsAny<Client>(), It.IsAny<JwsPayload>()));
         }
 
         #endregion

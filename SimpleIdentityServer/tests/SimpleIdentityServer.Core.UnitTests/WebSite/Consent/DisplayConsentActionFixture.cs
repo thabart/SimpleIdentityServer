@@ -1,76 +1,56 @@
-﻿using System;
-
-using Moq;
-
+﻿using Moq;
 using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Errors;
+using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Helpers;
+using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
-using SimpleIdentityServer.Core.WebSite.Consent.Actions;
-using SimpleIdentityServer.Core.Models;
-using System.Collections.Generic;
-using System.Security.Claims;
 using SimpleIdentityServer.Core.Results;
-using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Errors;
+using SimpleIdentityServer.Core.WebSite.Consent.Actions;
+using System;
+using System.Collections.Generic;
 using System.Linq;
-using Xunit;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
 {
     public sealed class DisplayConsentActionFixture
     {
         private Mock<IScopeRepository> _scopeRepositoryFake;
-
         private Mock<IClientRepository> _clientRepositoryFake;
-
         private Mock<IConsentHelper> _consentHelperFake;
-
         private Mock<IGenerateAuthorizationResponse> _generateAuthorizationResponseFake;
-
         private Mock<IParameterParserHelper> _parameterParserHelperFake;
-
         private Mock<IActionResultFactory> _actionResultFactoryFake;
-
         private IDisplayConsentAction _displayConsentAction;
 
         [Fact]
-        public void When_Parameter_Is_Null_Then_Exception_Is_Thrown()
+        public async Task When_Parameter_Is_Null_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
             var authorizationParameter = new AuthorizationParameter();
-            Models.Client client;
-            List<Scope> scopes;
-            List<string> claims;
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _displayConsentAction.Execute(
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _displayConsentAction.Execute(
                 null, 
-                null, 
-                out client,
-                out scopes,
-                out claims));
-            Assert.Throws <ArgumentNullException>(() => _displayConsentAction.Execute(
+                null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _displayConsentAction.Execute(
                 authorizationParameter,
-                null,
-                out client,
-                out scopes,
-                out claims));
+                null));
         }
 
         [Fact]
-        public void When_A_Consent_Has_Been_Given_Then_Redirect_To_Callback()
+        public async Task When_A_Consent_Has_Been_Given_Then_Redirect_To_Callback()
         {
             // ARRANGE
             InitializeFakeObjects();
             var claimsIdentity = new ClaimsIdentity();
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            Models.Client client;
-            List<Scope> scopes;
-            List<string> claims;
             var actionResult = new ActionResult
             {
                 RedirectInstruction = new RedirectInstruction()
@@ -80,28 +60,24 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
                 ResponseMode = ResponseMode.fragment
             };
             var consent = new Core.Models.Consent();
-            _clientRepositoryFake.Setup(c => c.GetClientById(It.IsAny<string>()))
-                .Returns(new Client());
-            _consentHelperFake.Setup(c => c.GetConsentConfirmedByResourceOwner(It.IsAny<string>(),
+            _clientRepositoryFake.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(new Client()));
+            _consentHelperFake.Setup(c => c.GetConfirmedConsentsAsync(It.IsAny<string>(),
                 It.IsAny<AuthorizationParameter>()))
-                .Returns(consent);
+                .Returns(Task.FromResult(consent));
             _actionResultFactoryFake.Setup(a => a.CreateAnEmptyActionResultWithRedirectionToCallBackUrl())
                 .Returns(actionResult);
 
             // ACT
-            actionResult = _displayConsentAction.Execute(authorizationParameter,
-                claimsPrincipal,
-                out client,
-                out scopes,
-                out claims);
+            var result = await _displayConsentAction.Execute(authorizationParameter, claimsPrincipal);
 
             // ASSERT
             _actionResultFactoryFake.Verify(a => a.CreateAnEmptyActionResultWithRedirectionToCallBackUrl());
-            Assert.True(actionResult.RedirectInstruction.ResponseMode == ResponseMode.fragment);
+            Assert.True(result.ActionResult.RedirectInstruction.ResponseMode == ResponseMode.fragment);
         }
 
         [Fact]
-        public void When_A_Consent_Has_Been_Given_And_The_AuthorizationFlow_Is_Not_Supported_Then_Exception_Is_Thrown()
+        public async Task When_A_Consent_Has_Been_Given_And_The_AuthorizationFlow_Is_Not_Supported_Then_Exception_Is_Thrown()
         {            
             // ARRANGE
             InitializeFakeObjects();
@@ -109,9 +85,6 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             const string state = "state";
             var claimsIdentity = new ClaimsIdentity();
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            Models.Client client;
-            List<Scope> scopes;
-            List<string> claims;
             var responseTypes = new List<ResponseType>();
             var authorizationParameter = new AuthorizationParameter
             {
@@ -120,20 +93,17 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
                 ResponseMode = ResponseMode.None // No response mode is defined
             };
             var consent = new Core.Models.Consent();
-            _clientRepositoryFake.Setup(c => c.GetClientById(It.IsAny<string>()))
-                .Returns(new Client());
-            _consentHelperFake.Setup(c => c.GetConsentConfirmedByResourceOwner(It.IsAny<string>(),
+            _clientRepositoryFake.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(new Client()));
+            _consentHelperFake.Setup(c => c.GetConfirmedConsentsAsync(It.IsAny<string>(),
                 It.IsAny<AuthorizationParameter>()))
-                .Returns(consent);
-            _parameterParserHelperFake.Setup(p => p.ParseResponseType(It.IsAny<string>()))
+                .Returns(Task.FromResult(consent));
+            _parameterParserHelperFake.Setup(p => p.ParseResponseTypes(It.IsAny<string>()))
                 .Returns(responseTypes);
 
             // ACT & ASSERTS
-            var exception = Assert.Throws<IdentityServerExceptionWithState>(() => _displayConsentAction.Execute(authorizationParameter,
-               claimsPrincipal,
-               out client,
-               out scopes,
-               out claims));
+            var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _displayConsentAction.Execute(authorizationParameter,
+               claimsPrincipal));
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == ErrorDescriptions.TheAuthorizationFlowIsNotSupported);
             Assert.True(exception.State == state);
@@ -141,7 +111,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
         }
 
         [Fact]
-        public void When_No_Consent_Has_Been_Given_And_Client_Doesnt_Exist_Then_Exception_Is_Thrown()
+        public async Task When_No_Consent_Has_Been_Given_And_Client_Doesnt_Exist_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -149,33 +119,27 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             const string state = "state";
             var claimsIdentity = new ClaimsIdentity();
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            Models.Client client;
-            List<Scope> scopes;
-            List<string> claims;
             var authorizationParameter = new AuthorizationParameter
             {
                 ClientId = clientId,
                 State = state
             };
-            _consentHelperFake.Setup(c => c.GetConsentConfirmedByResourceOwner(It.IsAny<string>(),
+            _consentHelperFake.Setup(c => c.GetConfirmedConsentsAsync(It.IsAny<string>(),
                 It.IsAny<AuthorizationParameter>()))
-                .Returns(() => null);
-            _clientRepositoryFake.Setup(c => c.GetClientById(It.IsAny<string>())).
-                Returns(() => null);
+                .Returns(Task.FromResult((Models.Consent)null));
+            _clientRepositoryFake.Setup(c => c.GetClientByIdAsync(It.IsAny<string>())).
+                Returns(Task.FromResult((Client)null));
 
             // ACT & ASSERTS
-            var exception = Assert.Throws<IdentityServerExceptionWithState>(() => _displayConsentAction.Execute(authorizationParameter,
-               claimsPrincipal,
-               out client,
-               out scopes,
-               out claims));
+            var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _displayConsentAction.Execute(authorizationParameter,
+               claimsPrincipal));
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.ClientIsNotValid, clientId));
             Assert.True(exception.State == state);
         }
 
         [Fact]
-        public void When_No_Consent_Has_Been_Given_Then_Redirect_To_Consent_Screen()
+        public async Task When_No_Consent_Has_Been_Given_Then_Redirect_To_Consent_Screen()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -185,8 +149,6 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             var claimsIdentity = new ClaimsIdentity();
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             var client = new Models.Client();
-            List<Scope> scopes;
-            List<string> claims;
             var authorizationParameter = new AuthorizationParameter
             {
                 ClientId = clientId,
@@ -194,25 +156,22 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
                 Claims = null,
                 Scope = scopeName
             };
-            var scope = new Scope
+            ICollection<Scope> scopes = new List<Scope> { new Scope
             {
                 IsDisplayedInConsent = true,
                 Name = scopeName
-            };
-            _consentHelperFake.Setup(c => c.GetConsentConfirmedByResourceOwner(It.IsAny<string>(),
+            } };
+            _consentHelperFake.Setup(c => c.GetConfirmedConsentsAsync(It.IsAny<string>(),
                 It.IsAny<AuthorizationParameter>()))
                 .Returns(() => null);
-            _clientRepositoryFake.Setup(c => c.GetClientById(It.IsAny<string>())).
-                Returns(client);
-            _scopeRepositoryFake.Setup(s => s.GetScopeByName(scopeName))
-                .Returns(scope);
+            _clientRepositoryFake.Setup(c => c.GetClientByIdAsync(It.IsAny<string>())).
+                Returns(Task.FromResult(client));
+            _scopeRepositoryFake.Setup(s => s.SearchByNamesAsync(It.IsAny<IEnumerable<string>>()))
+                .Returns(Task.FromResult(scopes));
 
             // ACT
-            _displayConsentAction.Execute(authorizationParameter,
-               claimsPrincipal,
-               out client,
-               out scopes,
-               out claims);
+            await _displayConsentAction.Execute(authorizationParameter,
+               claimsPrincipal);
 
             // ASSERTS
             Assert.True(scopes.Any(s => s.Name == scopeName));

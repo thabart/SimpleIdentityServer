@@ -231,11 +231,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 It.IsAny<JwsPayload>(),
                 It.IsAny<JwsPayload>()))
                 .Returns(Task.FromResult((GrantedToken)null));
-            _grantedTokenGeneratorHelperStub.Setup(g => g.GenerateToken(It.IsAny<string>(),
+            _grantedTokenGeneratorHelperStub.Setup(g => g.GenerateTokenAsync(It.IsAny<string>(),
                 It.IsAny<string>(),
                 It.IsAny<JwsPayload>(),
                 It.IsAny<JwsPayload>()))
-                .Returns(grantedToken);
+                .Returns(Task.FromResult(grantedToken));
 
             // ACT
             var result = await _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null);

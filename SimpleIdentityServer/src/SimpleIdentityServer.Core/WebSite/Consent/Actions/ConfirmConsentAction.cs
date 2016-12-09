@@ -37,9 +37,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
 {
     public interface IConfirmConsentAction
     {
-        Task<ActionResult> Execute(
-            AuthorizationParameter authorizationParameter,
-            ClaimsPrincipal claimsPrincipal);
+        Task<ActionResult> Execute(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal);
     }
 
     public class ConfirmConsentAction : IConfirmConsentAction
@@ -95,13 +93,13 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
         {
             if (authorizationParameter == null)
             {
-                throw new ArgumentNullException("authorizationParameter");
+                throw new ArgumentNullException(nameof(authorizationParameter));
             }
 
             if (claimsPrincipal == null ||
                 claimsPrincipal.Identity == null)
             {
-                throw new ArgumentNullException("claimsPrincipal");
+                throw new ArgumentNullException(nameof(claimsPrincipal));
             }
 
             var client = await _clientRepository.GetClientByIdAsync(authorizationParameter.ClientId);

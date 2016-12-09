@@ -37,13 +37,13 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
         private IGenerateAndSendCodeAction _generateAndSendCodeAction;
 
         [Fact]
-        public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.ThrowsAsync<ArgumentNullException>(() => _generateAndSendCodeAction.ExecuteAsync(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAndSendCodeAction.ExecuteAsync(null));
         }
 
         [Fact]
@@ -51,8 +51,8 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
         {
             // ARRANGE
             InitializeFakeObjects();
-            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwner(It.IsAny<string>()))
-                .Returns((ResourceOwner)null);
+            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult((ResourceOwner)null));
 
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _generateAndSendCodeAction.ExecuteAsync("subject"));
@@ -66,11 +66,11 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
         {
             // ARRANGE
             InitializeFakeObjects();
-            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwner(It.IsAny<string>()))
-                .Returns(new ResourceOwner
+            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(new ResourceOwner
                 {
                     TwoFactorAuthentication = TwoFactorAuthentications.NONE
-                });
+                }));
 
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _generateAndSendCodeAction.ExecuteAsync("subject"));
@@ -84,14 +84,14 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
         {
             // ARRANGE
             InitializeFakeObjects();
-            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwner(It.IsAny<string>()))
-                .Returns(new ResourceOwner
+            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(new ResourceOwner
                 {
                     TwoFactorAuthentication = TwoFactorAuthentications.Email
-                });
-            _confirmationCodeRepositoryStub.Setup(r => r.Get(It.IsAny<string>())).Returns((ConfirmationCode)null);
-            _confirmationCodeRepositoryStub.Setup(r => r.AddCode(It.IsAny<ConfirmationCode>()))
-                .Returns(false);
+                }));
+            _confirmationCodeRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>())).Returns(Task.FromResult((ConfirmationCode)null));
+            _confirmationCodeRepositoryStub.Setup(r => r.AddAsync(It.IsAny<ConfirmationCode>()))
+                .Returns(Task.FromResult(false));
 
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _generateAndSendCodeAction.ExecuteAsync("subject"));
@@ -105,14 +105,14 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
         {
             // ARRANGE
             InitializeFakeObjects();
-            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwner(It.IsAny<string>()))
-                .Returns(new ResourceOwner
+            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(new ResourceOwner
                 {
                     TwoFactorAuthentication = TwoFactorAuthentications.Email
-                });
-            _confirmationCodeRepositoryStub.Setup(r => r.Get(It.IsAny<string>())).Returns((ConfirmationCode)null);
-            _confirmationCodeRepositoryStub.Setup(r => r.AddCode(It.IsAny<ConfirmationCode>()))
-                .Returns(true);
+                }));
+            _confirmationCodeRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>())).Returns(Task.FromResult((ConfirmationCode)null));
+            _confirmationCodeRepositoryStub.Setup(r => r.AddAsync(It.IsAny<ConfirmationCode>()))
+                .Returns(Task.FromResult(true));
 
             // ACT
             await _generateAndSendCodeAction.ExecuteAsync("subject");

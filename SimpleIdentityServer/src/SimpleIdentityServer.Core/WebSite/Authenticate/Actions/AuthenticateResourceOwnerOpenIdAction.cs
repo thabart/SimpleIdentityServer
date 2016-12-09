@@ -39,7 +39,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
         /// <param name="resourceOwnerPrincipal">Resource owner principal</param>
         /// <param name="code">Encrypted parameter</param>
         /// <returns>Action result to the controller's action</returns>
-        ActionResult Execute(
+        Task<ActionResult> Execute(
             AuthorizationParameter authorizationParameter,
             ClaimsPrincipal resourceOwnerPrincipal,
             string code);
@@ -71,7 +71,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
         /// <param name="resourceOwnerPrincipal">Resource owner principal</param>
         /// <param name="code">Encrypted parameter</param>
         /// <returns>Action result to the controller's action</returns>
-        public ActionResult Execute(
+        public async Task<ActionResult> Execute(
             AuthorizationParameter authorizationParameter,
             ClaimsPrincipal resourceOwnerPrincipal,
             string code)
@@ -91,7 +91,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
             {
                 var subject = resourceOwnerPrincipal.GetSubject();
                 var claims = resourceOwnerPrincipal.Claims.ToList();
-                return _authenticateHelper.ProcessRedirection(authorizationParameter,
+                return await _authenticateHelper.ProcessRedirection(authorizationParameter,
                     code,
                     subject,
                     claims);

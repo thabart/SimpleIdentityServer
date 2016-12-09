@@ -38,11 +38,8 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
     public class GetTokenViaImplicitWorkflowOperation : IGetTokenViaImplicitWorkflowOperation
     {
         private readonly IProcessAuthorizationRequest _processAuthorizationRequest;
-
         private readonly IGenerateAuthorizationResponse _generateAuthorizationResponse;
-
         private readonly IClientValidator _clientValidator;
-
         private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
 
         public GetTokenViaImplicitWorkflowOperation(
@@ -96,7 +93,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
             if (result.Type == TypeActionResult.RedirectToCallBackUrl)
             {
                 var claimsPrincipal = principal as ClaimsPrincipal;
-                _generateAuthorizationResponse.Execute(result, authorizationParameter, claimsPrincipal, client);
+                await _generateAuthorizationResponse.ExecuteAsync(result, authorizationParameter, claimsPrincipal, client);
             }
             
             var actionTypeName = Enum.GetName(typeof(TypeActionResult), result.Type);

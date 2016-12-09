@@ -6,6 +6,7 @@ using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;
 using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
@@ -16,17 +17,17 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
         private ILocalUserAuthenticationAction _localUserAuthenticationAction;
 
         [Fact]
-        public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _localUserAuthenticationAction.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _localUserAuthenticationAction.Execute(null));
         }
 
         [Fact]
-        public void When_ResourceOwner_Cannot_Be_Authenticated_Then_Exception_Is_Thrown()
+        public async Task When_ResourceOwner_Cannot_Be_Authenticated_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -35,17 +36,17 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
                 UserName = "username",
                 Password = "password"
             };
-            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwner(It.IsAny<string>(),
+            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>(),
                 It.IsAny<string>()))
-                .Returns((ResourceOwner)null);
+                .Returns(Task.FromResult((ResourceOwner)null));
 
             // ACT & ASSERT
-            var exception = Assert.Throws<IdentityServerAuthenticationException>(() => _localUserAuthenticationAction.Execute(parameter));
+            var exception = await Assert.ThrowsAsync<IdentityServerAuthenticationException>(() => _localUserAuthenticationAction.Execute(parameter));
             Assert.True(exception.Message == ErrorDescriptions.TheResourceOwnerCredentialsAreNotCorrect);
         }
 
         [Fact]
-        public void When_Authenticate_ResourceOwner_Then_Claims_Are_Returned()
+        public async Task When_Authenticate_ResourceOwner_Then_Claims_Are_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -59,12 +60,12 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             {
                 Id = subject
             };
-            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwner(It.IsAny<string>(),
+            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>(),
                 It.IsAny<string>()))
-                .Returns(resourceOwner);
+                .Returns(Task.FromResult(resourceOwner));
 
             // ACT
-            var res = _localUserAuthenticationAction.Execute(parameter);
+            var res = await _localUserAuthenticationAction.Execute(parameter);
 
             // ASSERT
             Assert.NotNull(res);

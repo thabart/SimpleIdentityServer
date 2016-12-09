@@ -60,7 +60,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             // 1. Validate parameters
             var grantedToken = await ValidateParameter(refreshTokenGrantTypeParameter);
             // 2. Generate a new access token & insert it
-            var generatedToken = _grantedTokenGeneratorHelper.GenerateToken(
+            var generatedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(
                 grantedToken.ClientId,
                 grantedToken.Scope,
                 grantedToken.UserInfoPayLoad,

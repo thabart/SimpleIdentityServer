@@ -345,7 +345,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
         private async Task<Consent> GetResourceOwnerConsent(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter)
         {
             var subject = claimsPrincipal.GetSubject();
-            return await _consentHelper.GetConsentConfirmedByResourceOwnerAsync(subject, authorizationParameter);
+            return await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter);
         }
 
         private static bool IsAuthenticated(ClaimsPrincipal principal)

@@ -35,15 +35,9 @@ namespace SimpleIdentityServer.Startup.Controllers
     [Authorize("Connected")]
     public class UserController : Controller
     {
-        #region Fields
-
         private const string DefaultLanguage = "en";
-
         private readonly IUserActions _userActions;
-
         private readonly ITranslationManager _translationManager;
-
-        #endregion
 
         #region Constructor
 
@@ -78,7 +72,7 @@ namespace SimpleIdentityServer.Startup.Controllers
         [HttpPost]
         public async Task<ActionResult> Consent(string id)
         {
-            if (!_userActions.DeleteConsent(id))
+            if (!await _userActions.DeleteConsent(id))
             {
                 ViewBag.ErrorMessage = "the consent cannot be deleted";
                 return await GetConsents();
@@ -91,7 +85,7 @@ namespace SimpleIdentityServer.Startup.Controllers
         public async Task<ActionResult> Edit()
         {
             var user = await GetCurrentUser();
-            if (!SetUserEditViewBag(user))
+            if (!await SetUserEditViewBag(user))
             {
                 return RedirectToAction("Index");
             }
@@ -151,7 +145,7 @@ namespace SimpleIdentityServer.Startup.Controllers
             // 1. Set view bag
             var subject = (await this.GetAuthenticatedUser(Constants.CookieName)).GetSubject();
             var user = await GetCurrentUser();
-            if (!SetUserEditViewBag(user))
+            if (!await SetUserEditViewBag(user))
             {
                 throw new IdentityServerException(
                     ErrorCodes.UnhandledExceptionCode,
@@ -173,7 +167,7 @@ namespace SimpleIdentityServer.Startup.Controllers
             }
 
             parameter.Login = subject;
-            _userActions.UpdateUser(parameter);
+            await _userActions.UpdateUser(parameter);
 
             // 4. Returns translated view
             ViewBag.IsUpdated = true;
@@ -208,7 +202,7 @@ namespace SimpleIdentityServer.Startup.Controllers
         public async Task<ActionResult> Confirm()
         {
             var user = await this.GetAuthenticatedUser(Constants.CookieName);
-            _userActions.ConfirmUser(user);
+            await _userActions.ConfirmUser(user);
             return RedirectToAction("Index");
         }
 
@@ -219,7 +213,7 @@ namespace SimpleIdentityServer.Startup.Controllers
         private async Task<ActionResult> GetConsents()
         {
             var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName);
-            var consents = _userActions.GetConsents(authenticatedUser);
+            var consents = await _userActions.GetConsents(authenticatedUser);
             var result = new List<ConsentViewModel>();
             foreach (var consent in consents)
             {
@@ -248,24 +242,24 @@ namespace SimpleIdentityServer.Startup.Controllers
         private async Task<ResourceOwner> GetCurrentUser()
         {
             var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName);
-            return _userActions.GetUser(authenticatedUser);
+            return await _userActions.GetUser(authenticatedUser);
         }
 
-        private bool SetUserEditViewBag(ResourceOwner user)
+        private async Task<bool> SetUserEditViewBag(ResourceOwner user)
         {
             if (!user.IsLocalAccount)
             {
                 return false;
             }
 
-            TranslateUserEditView(DefaultLanguage);
+            await TranslateUserEditView(DefaultLanguage);
             ViewBag.IsLocalAccount = user.IsLocalAccount;
             return true;
         }
 
-        private void TranslateUserEditView(string uiLocales)
+        private async Task TranslateUserEditView(string uiLocales)
         {
-            var translations = _translationManager.GetTranslations(uiLocales, new List<string>
+            var translations = await _translationManager.GetTranslationsAsync(uiLocales, new List<string>
             {
                 Core.Constants.StandardTranslationCodes.LoginCode,
                 Core.Constants.StandardTranslationCodes.EditResourceOwner,

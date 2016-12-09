@@ -134,7 +134,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             var grantedToken = await _grantedTokenHelper.GetValidGrantedTokenAsync(allowedTokenScopes, client.ClientId);
             if (grantedToken == null)
             {
-                grantedToken = _grantedTokenGeneratorHelper.GenerateToken(client.ClientId, allowedTokenScopes);
+                grantedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(client.ClientId, allowedTokenScopes);
                 await _grantedTokenRepository.InsertAsync(grantedToken);
                 _simpleIdentityServerEventSource.GrantAccessToClient(client.ClientId, grantedToken.AccessToken, allowedTokenScopes);
             }

@@ -55,13 +55,13 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Common
         {
             if (authorizationParameter == null)
             {
-                throw new ArgumentNullException("authorizationParameter");
+                throw new ArgumentNullException(nameof(authorizationParameter));
             }
 
             var client = await _clientRepository.GetClientByIdAsync(authorizationParameter.ClientId);
             if (client == null)
             {
-                throw new InvalidOperationException(string.Format("the client id {0} doesn't exist",
+                throw new InvalidOperationException(string.Format(ErrorDescriptions.TheClientIdDoesntExist,
                     authorizationParameter.ClientId));
             }
 

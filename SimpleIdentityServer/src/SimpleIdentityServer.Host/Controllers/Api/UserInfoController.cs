@@ -39,8 +39,6 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             _userInfoActions = userInfoActions;
         }
 
-        #region Public methods
-
         [HttpGet]
         public async Task<ActionResult> Get()
         {
@@ -52,10 +50,6 @@ namespace SimpleIdentityServer.Api.Controllers.Api
         {
             return await ProcessRequest();
         }
-        
-        #endregion
-        
-        #region Private methods
 
         private async Task<ActionResult> ProcessRequest()
         {
@@ -159,7 +153,5 @@ namespace SimpleIdentityServer.Api.Controllers.Api
                 return record.Value.First();
             }
         }
-        
-        #endregion
     }
 }

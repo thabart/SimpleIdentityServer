@@ -21,12 +21,13 @@ using SimpleIdentityServer.Core.Services;
 using System;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.User.Actions
 {
     public interface IConfirmUserOperation
     {
-        void Execute(ClaimsPrincipal claimsPrincipal);
+        Task Execute(ClaimsPrincipal claimsPrincipal);
     }
 
     internal class ConfirmUserOperation : IConfirmUserOperation
@@ -42,7 +43,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
             _authenticateResourceOwnerService = authenticateResourceOwnerService;
         }
         
-        public void Execute(ClaimsPrincipal claimsPrincipal)
+        public async Task Execute(ClaimsPrincipal claimsPrincipal)
         {
             if (claimsPrincipal == null)
             {
@@ -66,7 +67,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                     Errors.ErrorDescriptions.TheSubjectCannotBeRetrieved);
             }
             
-            var result = _authenticateResourceOwnerService.AuthenticateResourceOwner(subject);
+            var result = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(subject);
             if (result == null)
             {
                 throw new IdentityServerException(
@@ -93,7 +94,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                 result.Claims.Add(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt, DateTime.UtcNow.ToString()));
             }
 
-            _resourceOwnerRepository.Update(result);
+            await _resourceOwnerRepository.UpdateAsync(result);
         }
     }
 }

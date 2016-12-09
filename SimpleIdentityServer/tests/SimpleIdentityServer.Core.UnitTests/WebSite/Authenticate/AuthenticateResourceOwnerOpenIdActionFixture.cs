@@ -1,4 +1,20 @@
-﻿using Moq;
+﻿#region copyright
+// Copyright 2015 Habart Thierry
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
+using Moq;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Parameters;
@@ -8,6 +24,7 @@ using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
@@ -20,31 +37,31 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
         private IAuthenticateResourceOwnerOpenIdAction _authenticateResourceOwnerOpenIdAction;
 
         [Fact]
-        public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _authenticateResourceOwnerOpenIdAction.Execute(null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateResourceOwnerOpenIdAction.Execute(null, null, null));
         }
 
         [Fact]
-        public void When_No_Resource_Owner_Is_Passed_Then_Redirect_To_Index_Page()
+        public async Task When_No_Resource_Owner_Is_Passed_Then_Redirect_To_Index_Page()
         {
             // ARRANGE
             InitializeFakeObjects();
             var authorizationParameter = new AuthorizationParameter();
 
             // ACT
-            _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter, null, null);
+            await _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter, null, null);
 
             // ASSERT
             _actionResultFactoryFake.Verify(a => a.CreateAnEmptyActionResultWithNoEffect());
         }
 
         [Fact]
-        public void When_Resource_Owner_Is_Not_Authenticated_Then_Redirect_To_Index_Page()
+        public async Task When_Resource_Owner_Is_Not_Authenticated_Then_Redirect_To_Index_Page()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -53,7 +70,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
             // ACT
-            _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter, 
+            await _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter, 
                 claimsPrincipal, 
                 null);
 
@@ -62,7 +79,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
         }
 
         [Fact]
-        public void When_Prompt_Parameter_Contains_Login_Value_Then_Redirect_To_Index_Page()
+        public async Task When_Prompt_Parameter_Contains_Login_Value_Then_Redirect_To_Index_Page()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -73,11 +90,11 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             {
                 PromptParameter.login
             };
-            _parameterParserHelperFake.Setup(p => p.ParsePromptParameters(It.IsAny<string>()))
+            _parameterParserHelperFake.Setup(p => p.ParsePrompts(It.IsAny<string>()))
                 .Returns(promptParameters);
 
             // ACT
-            _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter,
+            await _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter,
                 claimsPrincipal,
                 null);
 
@@ -86,7 +103,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
         }
 
         [Fact]
-        public void When_Prompt_Parameter_Doesnt_Contain_Login_Value_And_Resource_Owner_Is_Authenticated_Then_Helper_Is_Called()
+        public async Task When_Prompt_Parameter_Doesnt_Contain_Login_Value_And_Resource_Owner_Is_Authenticated_Then_Helper_Is_Called()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -107,13 +124,13 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             {
                 RedirectInstruction = new RedirectInstruction()
             };
-            _parameterParserHelperFake.Setup(p => p.ParsePromptParameters(It.IsAny<string>()))
+            _parameterParserHelperFake.Setup(p => p.ParsePrompts(It.IsAny<string>()))
                 .Returns(promptParameters);
             _actionResultFactoryFake.Setup(a => a.CreateAnEmptyActionResultWithRedirection())
                 .Returns(actionResult);
 
             // ACT
-            _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter,
+            await _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter,
                 claimsPrincipal,
                 code);
 

@@ -1,5 +1,4 @@
 ﻿using Moq;
-
 using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
@@ -15,6 +14,7 @@ using SimpleIdentityServer.Logging;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
@@ -35,19 +35,19 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
         private IConfirmConsentAction _confirmConsentAction;
 
         [Fact]
-        public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
             var authorizationParameter = new AuthorizationParameter();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _confirmConsentAction.Execute(null, null));
-            Assert.Throws<ArgumentNullException>(() => _confirmConsentAction.Execute(authorizationParameter, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _confirmConsentAction.Execute(null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _confirmConsentAction.Execute(authorizationParameter, null));
         }
 
         [Fact]
-        public void When_No_Consent_Has_Been_Given_And_ResponseMode_Is_No_Correct_Then_Exception_Is_Thrown()
+        public async Task When_No_Consent_Has_Been_Given_And_ResponseMode_Is_No_Correct_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -79,22 +79,23 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
                 Type = TypeActionResult.RedirectToCallBackUrl,
                 RedirectInstruction = new RedirectInstruction()
             };
-            _consentHelperFake.Setup(c => c.GetConsentConfirmedByResourceOwner(It.IsAny<string>(),
+            ICollection<string> scopeNames = new List<string>();
+            _consentHelperFake.Setup(c => c.GetConfirmedConsentsAsync(It.IsAny<string>(),
                 It.IsAny<AuthorizationParameter>()))
-                .Returns(() => null);
-            _clientRepositoryFake.Setup(c => c.GetClientById(It.IsAny<string>()))
-                .Returns(client);
-            _parameterParserHelperFake.Setup(p => p.ParseScopeParameters(It.IsAny<string>()))
-                .Returns(new List<string>());
-            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwner(It.IsAny<string>()))
-                .Returns(resourceOwner);
+                .Returns(Task.FromResult((Models.Consent)null));
+            _clientRepositoryFake.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(client));
+            _parameterParserHelperFake.Setup(p => p.ParseScopes(It.IsAny<string>()))
+                .Returns(scopeNames);
+            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(resourceOwner));
             _actionResultFactoryFake.Setup(a => a.CreateAnEmptyActionResultWithRedirectionToCallBackUrl())
                 .Returns(actionResult);
-            _parameterParserHelperFake.Setup(p => p.ParseResponseType(It.IsAny<string>()))
+            _parameterParserHelperFake.Setup(p => p.ParseResponseTypes(It.IsAny<string>()))
                 .Returns(new List<ResponseType> { ResponseType.id_token, ResponseType.id_token });
 
             // ACT & ASSERT
-            var exception = Assert.Throws<IdentityServerExceptionWithState>(() => _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal));
+            var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal));
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == ErrorDescriptions.TheAuthorizationFlowIsNotSupported);
@@ -102,7 +103,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
         }
 
         [Fact]
-        public void When_No_Consent_Has_Been_Given_For_The_Claims_Then_Create_And_Insert_A_New_One()
+        public async Task When_No_Consent_Has_Been_Given_For_The_Claims_Then_Create_And_Insert_A_New_One()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -140,24 +141,24 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             {
                 RedirectInstruction = new RedirectInstruction()
             };
-            _consentHelperFake.Setup(c => c.GetConsentConfirmedByResourceOwner(It.IsAny<string>(),
+            _consentHelperFake.Setup(c => c.GetConfirmedConsentsAsync(It.IsAny<string>(),
                 It.IsAny<AuthorizationParameter>()))
                 .Returns(() => null);
-            _clientRepositoryFake.Setup(c => c.GetClientById(It.IsAny<string>()))
-                .Returns(client);
-            _parameterParserHelperFake.Setup(p => p.ParseScopeParameters(It.IsAny<string>()))
+            _clientRepositoryFake.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(client));
+            _parameterParserHelperFake.Setup(p => p.ParseScopes(It.IsAny<string>()))
                 .Returns(new List<string>());
-            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwner(It.IsAny<string>()))
-                .Returns(resourceOwner);
+            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(resourceOwner));
             _actionResultFactoryFake.Setup(a => a.CreateAnEmptyActionResultWithRedirectionToCallBackUrl())
                 .Returns(actionResult);
             Models.Consent insertedConsent = null;
-            _consentRepositoryFake.Setup(co => co.InsertConsent(It.IsAny<Models.Consent>()))
+            _consentRepositoryFake.Setup(co => co.InsertAsync(It.IsAny<Models.Consent>()))
                 .Callback<Models.Consent>(consent => insertedConsent = consent);
             ;
 
             // ACT
-            _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal);
+            await _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal);
 
             // ASSERT
             Assert.NotNull(insertedConsent);
@@ -168,7 +169,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
         }
 
         [Fact]
-        public void When_No_Consent_Has_Been_Given_Then_Create_And_Insert_A_New_One()
+        public async Task When_No_Consent_Has_Been_Given_Then_Create_And_Insert_A_New_One()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -201,25 +202,25 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
                     
                 }
             };
-            _consentHelperFake.Setup(c => c.GetConsentConfirmedByResourceOwner(It.IsAny<string>(),
+            _consentHelperFake.Setup(c => c.GetConfirmedConsentsAsync(It.IsAny<string>(),
                 It.IsAny<AuthorizationParameter>()))
                 .Returns(() => null);
-            _clientRepositoryFake.Setup(c => c.GetClientById(It.IsAny<string>()))
-                .Returns(client);
-            _parameterParserHelperFake.Setup(p => p.ParseScopeParameters(It.IsAny<string>()))
+            _clientRepositoryFake.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(client));
+            _parameterParserHelperFake.Setup(p => p.ParseScopes(It.IsAny<string>()))
                 .Returns(new List<string>());
-            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwner(It.IsAny<string>()))
-                .Returns(resourceOwner);
+            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(resourceOwner));
             _actionResultFactoryFake.Setup(a => a.CreateAnEmptyActionResultWithRedirectionToCallBackUrl())
                 .Returns(actionResult);
-            _parameterParserHelperFake.Setup(p => p.ParseResponseType(It.IsAny<string>()))
+            _parameterParserHelperFake.Setup(p => p.ParseResponseTypes(It.IsAny<string>()))
                 .Returns(new List<ResponseType> {  ResponseType.code });
 
             // ACT
-            var result = _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal);
+            var result = await _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal);
 
             // ASSERT
-            _consentRepositoryFake.Verify(c => c.InsertConsent(It.IsAny<Models.Consent>()));
+            _consentRepositoryFake.Verify(c => c.InsertAsync(It.IsAny<Models.Consent>()));
             _actionResultFactoryFake.Verify(a => a.CreateAnEmptyActionResultWithRedirectionToCallBackUrl());
             Assert.True(result.RedirectInstruction.ResponseMode == ResponseMode.query);
         }

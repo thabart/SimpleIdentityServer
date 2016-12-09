@@ -20,6 +20,7 @@ using SimpleIdentityServer.Core.WebSite.User.Actions;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
@@ -27,27 +28,20 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
     public class GetConsentsOperationFixture
     {
         private Mock<IConsentRepository> _consentRepositoryStub;
-
         private IGetConsentsOperation _getConsentsOperation;
 
-        #region Exceptions
-
         [Fact]
-        public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _getConsentsOperation.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getConsentsOperation.Execute(null));
         }
 
-        #endregion
-
-        #region Happy paths
-
         [Fact]
-        public void When_Getting_Consents_A_List_Is_Returned()
+        public async Task When_Getting_Consents_A_List_Is_Returned()
         {
             // ARRANGE
             const string subject = "subject";
@@ -56,7 +50,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             {
                 new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject)
             };
-            var consents = new List<Models.Consent>
+            IEnumerable<Models.Consent> consents = new List<Models.Consent>
             {
                 new Models.Consent
                 {
@@ -65,19 +59,17 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             };
             var claimsIdentity = new ClaimsIdentity(claims);
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            _consentRepositoryStub.Setup(c => c.GetConsentsForGivenUser(subject))
-                .Returns(consents);
+            _consentRepositoryStub.Setup(c => c.GetConsentsForGivenUserAsync(subject))
+                .Returns(Task.FromResult(consents));
 
             // ACT
-            var result = _getConsentsOperation.Execute(claimsPrincipal);
+            var result = await _getConsentsOperation.Execute(claimsPrincipal);
 
             // ASSERTS
             Assert.NotNull(result);
             Assert.True(result == consents);
         }
-
-        #endregion
-
+        
         private void InitializeFakeObjects()
         {
             _consentRepositoryStub = new Mock<IConsentRepository>();

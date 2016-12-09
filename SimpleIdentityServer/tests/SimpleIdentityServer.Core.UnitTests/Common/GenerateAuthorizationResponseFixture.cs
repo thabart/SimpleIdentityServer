@@ -128,9 +128,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 .Returns(Task.FromResult(jwsPayload));
             _jwtGeneratorFake.Setup(j => j.EncryptAsync(It.IsAny<string>(), It.IsAny<JweAlg>(), It.IsAny<JweEnc>()))
                 .Returns(Task.FromResult(idToken));
-            _clientHelperFake.Setup(c => c.GenerateIdToken(It.IsAny<string>(),
+            _clientHelperFake.Setup(c => c.GenerateIdTokenAsync(It.IsAny<string>(),
                 It.IsAny<JwsPayload>()))
-                .Returns(idToken);
+                .Returns(Task.FromResult(idToken));
 
             // ACT
             await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client());
@@ -178,16 +178,16 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 .Returns(Task.FromResult(idToken));
             _parameterParserHelperFake.Setup(p => p.ParseScopes(It.IsAny<string>()))
                 .Returns(() => new List<string> { scope });
-            _grantedTokenHelperStub.Setup(r => r.GetValidGrantedToken(It.IsAny<string>(),
+            _grantedTokenHelperStub.Setup(r => r.GetValidGrantedTokenAsync(It.IsAny<string>(),
                 It.IsAny<string>(),
                 It.IsAny<JwsPayload>(),
                 It.IsAny<JwsPayload>()))
-                .Returns(() => null);
-            _grantedTokenGeneratorHelperFake.Setup(r => r.GenerateToken(It.IsAny<string>(),
+                .Returns(Task.FromResult((GrantedToken)null));
+            _grantedTokenGeneratorHelperFake.Setup(r => r.GenerateTokenAsync(It.IsAny<string>(),
                 It.IsAny<string>(),
                 It.IsAny<JwsPayload>(),
                 It.IsAny<JwsPayload>()))
-                .Returns(grantedToken);
+                .Returns(Task.FromResult(grantedToken));
 
             // ACT
             await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client());
@@ -284,9 +284,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 .Returns(Task.FromResult(jwsPayload));
             _jwtGeneratorFake.Setup(j => j.EncryptAsync(It.IsAny<string>(), It.IsAny<JweAlg>(), It.IsAny<JweEnc>()))
                 .Returns(Task.FromResult(idToken));
-            _consentHelperFake.Setup(c => c.GetConsentConfirmedByResourceOwner(It.IsAny<string>(),
+            _consentHelperFake.Setup(c => c.GetConfirmedConsentsAsync(It.IsAny<string>(),
                 It.IsAny<AuthorizationParameter>()))
-                .Returns(consent);
+                .Returns(Task.FromResult(consent));
 
             // ACT
             await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client());

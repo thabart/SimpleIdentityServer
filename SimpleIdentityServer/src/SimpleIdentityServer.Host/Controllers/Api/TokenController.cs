@@ -41,8 +41,6 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             _tokenActions = tokenActions;
         }
 
-        #region Public methods
-
         // [SimpleTypeFilterAttribute(typeof(RateLimitationFilterAttribute), Arguments = new object[] { "PostToken" })]
         [HttpPost]
         public async Task<TokenResponse> PostToken()
@@ -123,7 +121,5 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             await _tokenActions.RevokeToken(revocationRequest.ToParameter(), authenticationHeaderValue);
             return new OkResult();
         }
-
-        #endregion
     }
 }

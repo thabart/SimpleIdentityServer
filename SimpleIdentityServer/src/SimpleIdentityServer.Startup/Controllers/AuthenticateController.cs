@@ -20,22 +20,22 @@ using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
+using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.Authenticate;
 using SimpleIdentityServer.Host.Extensions;
-using SimpleIdentityServer.Startup.ViewModels;
 using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.Startup.Extensions;
+using SimpleIdentityServer.Startup.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using SimpleIdentityServer.Startup.Extensions;
-using SimpleIdentityServer.Core.Common.DTOs;
 
 namespace SimpleIdentityServer.Startup.Controllers
 {
@@ -85,7 +85,7 @@ namespace SimpleIdentityServer.Startup.Controllers
                 authenticatedUser.Identity == null ||
                 !authenticatedUser.Identity.IsAuthenticated)
             {
-                TranslateView(DefaultLanguage);
+                await TranslateView(DefaultLanguage);
                 return View(new AuthorizeViewModel());
             }
 
@@ -110,13 +110,13 @@ namespace SimpleIdentityServer.Startup.Controllers
 
             if (!ModelState.IsValid)
             {
-                TranslateView(DefaultLanguage);
+                await TranslateView(DefaultLanguage);
                 return View("Index", authorizeViewModel);
             }
 
             try
             {
-                var resourceOwner = _authenticateActions.LocalUserAuthentication(authorizeViewModel.ToParameter());
+                var resourceOwner = await _authenticateActions.LocalUserAuthentication(authorizeViewModel.ToParameter());
                 var claims = resourceOwner.Claims;
                 claims.Add(new Claim(ClaimTypes.AuthenticationInstant,
                     DateTimeOffset.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture),
@@ -140,7 +140,7 @@ namespace SimpleIdentityServer.Startup.Controllers
             catch (Exception exception)
             {
                 _simpleIdentityServerEventSource.Failure(exception.Message);
-                TranslateView("en");
+                await TranslateView("en");
                 ModelState.AddModelError("invalid_credentials", exception.Message);
                 return View("Index", authorizeViewModel);
             }
@@ -173,7 +173,7 @@ namespace SimpleIdentityServer.Startup.Controllers
 
             // 1. Check if the user exists and insert it
             var authenticatedUser = await this.GetAuthenticatedUserExternal();
-            var claims = _authenticateActions.LoginCallback(authenticatedUser);
+            var claims = await _authenticateActions.LoginCallback(authenticatedUser);
 
             // 2. Set cookie
             var authManager = this.GetAuthenticationManager();
@@ -197,7 +197,7 @@ namespace SimpleIdentityServer.Startup.Controllers
             }
 
             // 2. Return translated view
-            TranslateView(DefaultLanguage);
+            await TranslateView(DefaultLanguage);
             return View();
         }
 
@@ -234,7 +234,7 @@ namespace SimpleIdentityServer.Startup.Controllers
 
             if (!ModelState.IsValid)
             {
-                TranslateView(DefaultLanguage);
+                await TranslateView(DefaultLanguage);
                 return View(codeViewModel);
             }
 
@@ -248,18 +248,18 @@ namespace SimpleIdentityServer.Startup.Controllers
             }
 
             // 2. Validate the code
-            if (!_authenticateActions.ValidateCode(codeViewModel.Code))
+            if (!await _authenticateActions.ValidateCode(codeViewModel.Code))
             {
-                TranslateView(DefaultLanguage);
+                await TranslateView(DefaultLanguage);
                 ModelState.AddModelError("Code", "confirmation code is not valid");
                 _simpleIdentityServerEventSource.ConfirmationCodeNotValid(codeViewModel.Code);
                 return View(codeViewModel);
             }
 
             // 3. Remove the code
-            if (!_authenticateActions.RemoveCode(codeViewModel.Code))
+            if (!await _authenticateActions.RemoveCode(codeViewModel.Code))
             {
-                TranslateView(DefaultLanguage);
+                await TranslateView(DefaultLanguage);
                 ModelState.AddModelError("Code", "an error occured while trying to remove the code");
                 return View(codeViewModel);
             }
@@ -285,7 +285,7 @@ namespace SimpleIdentityServer.Startup.Controllers
 
             var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName);
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
-            var actionResult = _authenticateActions.AuthenticateResourceOwnerOpenId(
+            var actionResult = await _authenticateActions.AuthenticateResourceOwnerOpenId(
                 request.ToParameter(),
                 authenticatedUser,
                 code);
@@ -296,7 +296,7 @@ namespace SimpleIdentityServer.Startup.Controllers
                 return result;
             }
 
-            TranslateView(request.UiLocales);
+            await TranslateView(request.UiLocales);
             var viewModel = new AuthorizeOpenIdViewModel
             {
                 Code = code
@@ -330,25 +330,23 @@ namespace SimpleIdentityServer.Startup.Controllers
                 // 3. Check the state of the view model
                 if (!ModelState.IsValid)
                 {
-                    TranslateView(uiLocales);
+                    await TranslateView(uiLocales);
                     return View("OpenId", authorizeOpenId);
                 }
 
                 // 4. Local authentication
-                var claims = new List<Claim>();
-                var actionResult = _authenticateActions.LocalOpenIdUserAuthentication(authorizeOpenId.ToParameter(),
+                var actionResult = await _authenticateActions.LocalOpenIdUserAuthentication(authorizeOpenId.ToParameter(),
                     request.ToParameter(),
-                    authorizeOpenId.Code,
-                    out claims);
-                var subject = claims.First(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject).Value;
+                    authorizeOpenId.Code);
+                var subject = actionResult.Claims.First(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject).Value;
 
                 // 5. Authenticate the user by adding a cookie
                 var authenticationManager = this.GetAuthenticationManager();
-                await SetLocalCookie(authenticationManager, claims);
+                await SetLocalCookie(authenticationManager, actionResult.Claims);
                 _simpleIdentityServerEventSource.AuthenticateResourceOwner(subject);
 
                 // 6. Redirect the user agent
-                var result = this.CreateRedirectionFromActionResult(actionResult,
+                var result = this.CreateRedirectionFromActionResult(actionResult.ActionResult,
                     request);
                 if (result != null)
                 {
@@ -361,7 +359,7 @@ namespace SimpleIdentityServer.Startup.Controllers
                 ModelState.AddModelError("invalid_credentials", ex.Message);
             }
 
-            TranslateView(uiLocales);
+            await TranslateView(uiLocales);
             return View("OpenId", authorizeOpenId);
         }
         
@@ -438,19 +436,18 @@ namespace SimpleIdentityServer.Startup.Controllers
 
             // 6. Try to authenticate the resource owner & returns the claims.
             var authorizationRequest = _dataProtector.Unprotect<AuthorizationRequest>(request);
-            var actionResult = _authenticateActions.ExternalOpenIdUserAuthentication(
+            var actionResult = await _authenticateActions.ExternalOpenIdUserAuthentication(
                 claims,
                 authorizationRequest.ToParameter(),
-                request,
-                out fileredClaims);
+                request);
 
             // 7. Store claims into new cookie
-            if (actionResult != null)
+            if (actionResult.ActionResult != null)
             {
                 var authenticationManager = this.GetAuthenticationManager();
                 await SetLocalCookie(authenticationManager, fileredClaims);
                 await authenticationManager.SignOutAsync(Authentication.Middleware.Constants.CookieName);
-                return this.CreateRedirectionFromActionResult(actionResult,
+                return this.CreateRedirectionFromActionResult(actionResult.ActionResult,
                     authorizationRequest);
             }
 
@@ -463,9 +460,9 @@ namespace SimpleIdentityServer.Startup.Controllers
         
         #region Private methods
 
-        private void TranslateView(string uiLocales)
+        private async Task TranslateView(string uiLocales)
         {
-            var translations = _translationManager.GetTranslations(uiLocales, new List<string>
+            var translations = await _translationManager.GetTranslationsAsync(uiLocales, new List<string>
             {
                 Core.Constants.StandardTranslationCodes.LoginCode,
                 Core.Constants.StandardTranslationCodes.UserNameCode,

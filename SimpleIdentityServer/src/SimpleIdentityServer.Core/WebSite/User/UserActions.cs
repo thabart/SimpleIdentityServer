@@ -18,16 +18,17 @@ using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.WebSite.User.Actions;
 using System.Collections.Generic;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.User
 {
     public interface IUserActions
     {
-        IEnumerable<Models.Consent> GetConsents(ClaimsPrincipal claimsPrincipal);
-        bool DeleteConsent(string consentId);
-        Models.ResourceOwner GetUser(ClaimsPrincipal claimsPrincipal);
-        void UpdateUser(UpdateUserParameter updateUserParameter);
-        void ConfirmUser(ClaimsPrincipal claimsPrincipal);
+        Task<IEnumerable<Models.Consent>> GetConsents(ClaimsPrincipal claimsPrincipal);
+        Task<bool> DeleteConsent(string consentId);
+        Task<Models.ResourceOwner> GetUser(ClaimsPrincipal claimsPrincipal);
+        Task<bool> UpdateUser(UpdateUserParameter updateUserParameter);
+        Task ConfirmUser(ClaimsPrincipal claimsPrincipal);
     }
 
     internal class UserActions : IUserActions
@@ -37,8 +38,6 @@ namespace SimpleIdentityServer.Core.WebSite.User
         private readonly IGetUserOperation _getUserOperation;
         private readonly IUpdateUserOperation _updateUserOperation;
         private readonly IConfirmUserOperation _confirmUserOperation;
-
-        #region Constructor
 
         public UserActions(
             IGetConsentsOperation getConsentsOperation,
@@ -54,35 +53,29 @@ namespace SimpleIdentityServer.Core.WebSite.User
             _confirmUserOperation = confirmUserOperation;
         }
 
-        #endregion
-
-        #region Public methods
-
-        public IEnumerable<Models.Consent> GetConsents(ClaimsPrincipal claimsPrincipal)
+        public async Task<IEnumerable<Models.Consent>> GetConsents(ClaimsPrincipal claimsPrincipal)
         {
-            return _getConsentsOperation.Execute(claimsPrincipal);
+            return await _getConsentsOperation.Execute(claimsPrincipal);
         }
 
-        public bool DeleteConsent(string consentId)
+        public async Task<bool> DeleteConsent(string consentId)
         {
-            return _removeConsentOperation.Execute(consentId);
+            return await _removeConsentOperation.Execute(consentId);
         }
 
-        public Models.ResourceOwner GetUser(ClaimsPrincipal claimsPrincipal)
+        public async Task<Models.ResourceOwner> GetUser(ClaimsPrincipal claimsPrincipal)
         {
-            return _getUserOperation.Execute(claimsPrincipal);
+            return await _getUserOperation.Execute(claimsPrincipal);
         }
 
-        public void UpdateUser(UpdateUserParameter updateUserParameter)
+        public async Task<bool> UpdateUser(UpdateUserParameter updateUserParameter)
         {
-            _updateUserOperation.Execute(updateUserParameter);
+            return await _updateUserOperation.Execute(updateUserParameter);
         }
 
-        public void ConfirmUser(ClaimsPrincipal claimsPrincipal)
+        public async Task ConfirmUser(ClaimsPrincipal claimsPrincipal)
         {
-            _confirmUserOperation.Execute(claimsPrincipal);
+            await _confirmUserOperation.Execute(claimsPrincipal);
         }
-
-        #endregion
     }
 }

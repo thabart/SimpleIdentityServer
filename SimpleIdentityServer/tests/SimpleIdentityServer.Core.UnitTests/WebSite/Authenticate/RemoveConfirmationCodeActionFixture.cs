@@ -18,6 +18,7 @@ using Moq;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;
 using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
@@ -25,30 +26,29 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
     public class RemoveConfirmationCodeActionFixture
     {
         private Mock<IConfirmationCodeRepository> _confirmationCodeRepositoryStub;
-
         private IRemoveConfirmationCodeAction _removeConfirmationCodeAction;
 
         [Fact]
-        public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _removeConfirmationCodeAction.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _removeConfirmationCodeAction.Execute(null));
         }
 
         [Fact]
-        public void When_Code_Is_Removed_Then_Operation_Is_Called()
+        public async Task When_Code_Is_Removed_Then_Operation_Is_Called()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT
-            _removeConfirmationCodeAction.Execute("code");
+            await _removeConfirmationCodeAction.Execute("code");
 
             // ASSERT
-            _confirmationCodeRepositoryStub.Verify(c => c.Remove("code"));
+            _confirmationCodeRepositoryStub.Verify(c => c.RemoveAsync("code"));
         }
 
         private void InitializeFakeObjects()

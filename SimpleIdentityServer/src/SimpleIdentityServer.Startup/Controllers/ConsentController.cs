@@ -53,19 +53,16 @@ namespace SimpleIdentityServer.Startup.Controllers
             var scopes = new List<Scope>();
             var claims = new List<string>();
             var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName);
-            var actionResult = _consentActions.DisplayConsent(request.ToParameter(),
-                authenticatedUser, 
-                out client, 
-                out scopes, 
-                out claims);
+            var actionResult = await _consentActions.DisplayConsent(request.ToParameter(),
+                authenticatedUser);
 
-            var result = this.CreateRedirectionFromActionResult(actionResult, request);
+            var result = this.CreateRedirectionFromActionResult(actionResult.ActionResult, request);
             if (result != null)
             {
                 return result;
             }
 
-            TranslateConsentScreen(request.UiLocales);
+            await TranslateConsentScreen(request.UiLocales);
             var viewModel = new ConsentViewModel
             {
                 ClientDisplayName = client.ClientName,
@@ -84,7 +81,7 @@ namespace SimpleIdentityServer.Startup.Controllers
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
             var parameter = request.ToParameter();
             var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName);
-            var actionResult =_consentActions.ConfirmConsent(parameter,
+            var actionResult = await _consentActions.ConfirmConsent(parameter,
                 authenticatedUser);
 
             return this.CreateRedirectionFromActionResult(actionResult,
@@ -103,10 +100,10 @@ namespace SimpleIdentityServer.Startup.Controllers
             return Redirect(request.RedirectUri);
         }
 
-        private void TranslateConsentScreen(string uiLocales)
+        private async Task TranslateConsentScreen(string uiLocales)
         {
             // Retrieve the translation and store them in a ViewBag
-            var translations = _translationManager.GetTranslations(uiLocales, new List<string>
+            var translations = await _translationManager.GetTranslationsAsync(uiLocales, new List<string>
             {
                 Core.Constants.StandardTranslationCodes.ApplicationWouldLikeToCode,
                 Core.Constants.StandardTranslationCodes.IndividualClaimsCode,
