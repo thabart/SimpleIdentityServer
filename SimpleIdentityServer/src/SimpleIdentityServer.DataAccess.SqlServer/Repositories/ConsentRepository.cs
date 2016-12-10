@@ -42,7 +42,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             var resourceOwnerClaim = await _context.ResourceOwnerClaims
                 .Include(r => r.Claim)
                 .Include(r => r.ResourceOwner).ThenInclude(r => r.Consents).ThenInclude(r => r.ConsentClaims)
-                .Include(r => r.ResourceOwner).ThenInclude(r => r.Consents).ThenInclude(r => r.ConsentScopes)
+                .Include(r => r.ResourceOwner).ThenInclude(r => r.Consents).ThenInclude(r => r.ConsentScopes).ThenInclude(r => r.Scope)
                 .Include(r => r.ResourceOwner).ThenInclude(r => r.Consents).ThenInclude(r => r.Client)
                 .Where(r => r.Claim != null && r.Claim.IsIdentifier == true && r.Value == subject)
                 .FirstOrDefaultAsync()

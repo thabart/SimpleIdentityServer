@@ -50,8 +50,6 @@ namespace SimpleIdentityServer.Startup.Controllers
         {
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
             var client = new Core.Models.Client();
-            var scopes = new List<Scope>();
-            var claims = new List<string>();
             var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName);
             var actionResult = await _consentActions.DisplayConsent(request.ToParameter(),
                 authenticatedUser);
@@ -66,8 +64,8 @@ namespace SimpleIdentityServer.Startup.Controllers
             var viewModel = new ConsentViewModel
             {
                 ClientDisplayName = client.ClientName,
-                AllowedScopeDescriptions = !scopes.Any() ? new List<string>() : scopes.Select(s => s.Description).ToList(),
-                AllowedIndividualClaims = claims,
+                AllowedScopeDescriptions = actionResult.Scopes == null ? new List<string>() : actionResult.Scopes.Select(s => s.Description).ToList(),
+                AllowedIndividualClaims = actionResult.AllowedClaims == null ? new List<string>() : actionResult.AllowedClaims,
                 LogoUri = client.LogoUri,
                 PolicyUri = client.PolicyUri,
                 TosUri = client.TosUri,

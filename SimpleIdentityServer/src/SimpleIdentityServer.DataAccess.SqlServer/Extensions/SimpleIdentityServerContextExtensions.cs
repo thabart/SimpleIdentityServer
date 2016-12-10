@@ -634,7 +634,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                             new ResourceOwnerClaim
                             {
                                 Id = Guid.NewGuid().ToString(),
-                                ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.ScimId,
+                                ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.ScimLocation,
                                 Value = "http://localhost:5555/Users/id"
                             }
                         },
