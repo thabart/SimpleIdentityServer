@@ -34,7 +34,7 @@ namespace SimpleIdentityServer.Startup
         private AuthenticationMiddlewareOptions _authenticationOptions;
         private IdentityServerOptions _options;
         public IConfigurationRoot Configuration { get; set; }
-        
+
         public Startup(IHostingEnvironment env)
         {
             // Load all the configuration information from the "json" file & the environment variables.
@@ -60,9 +60,9 @@ namespace SimpleIdentityServer.Startup
                 },
                 ConfigurationEdp = new ConfigurationEdpOptions
                 {
-                    ConfigurationUrl = Configuration["ConfigurationUrl"],
-                    ClientId = Configuration["ClientId"],
-                    ClientSecret = Configuration["ClientSecret"],
+                    ConfigurationUrl = Configuration["ConfigurationEdp:Url"],
+                    ClientId = Configuration["ConfigurationEdp:ClientId"],
+                    ClientSecret = Configuration["ConfigurationEdp:ClientSecret"],
                     Scopes = new List<string>
                     {
                         "display_configuration"
@@ -74,19 +74,12 @@ namespace SimpleIdentityServer.Startup
                 IsDeveloperModeEnabled = false,
                 DataSource = new DataSourceOptions
                 {
-                    DataSourceType = DataSourceTypes.InMemory,
                     IsDataMigrated = true
                 },
                 Logging = new LoggingOptions
                 {
-                    ElasticsearchOptions = new ElasticsearchOptions
-                    {
-                        IsEnabled = false
-                    },
-                    FileLogOptions = new FileLogOptions
-                    {
-                        IsEnabled = false
-                    }
+                    ElasticsearchOptions = new ElasticsearchOptions(),
+                    FileLogOptions = new FileLogOptions()
                 },
                 Authenticate = new AuthenticateOptions
                 {
@@ -98,6 +91,47 @@ namespace SimpleIdentityServer.Startup
                     EndPoint = "http://localhost:5555/"
                 }
             };
+
+            var dbtype = Configuration["Db:Type"];
+            if (string.Equals(dbtype, "SQLSERVER", System.StringComparison.CurrentCultureIgnoreCase))
+            {
+                _options.DataSource.DataSourceType = DataSourceTypes.SqlServer;
+                _options.DataSource.ConnectionString = Configuration["Db:ConnectionString"];
+            }
+            else if (string.Equals(dbtype, "SQLITE", System.StringComparison.CurrentCultureIgnoreCase))
+            {
+                _options.DataSource.DataSourceType = DataSourceTypes.SqlLite;
+                _options.DataSource.ConnectionString = Configuration["Db:ConnectionString"];
+            }
+            else if (string.Equals(dbtype, "POSTGRE", System.StringComparison.CurrentCultureIgnoreCase))
+            {
+                _options.DataSource.DataSourceType = DataSourceTypes.Postgre;
+                _options.DataSource.ConnectionString = Configuration["Db:ConnectionString"];
+            }
+            else
+            {
+                _options.DataSource.DataSourceType = DataSourceTypes.InMemory;
+            }
+
+            bool isLogFileEnabled,
+                isElasticSearchEnabled;
+            if (bool.TryParse(Configuration["Log:File:Enabled"], out isLogFileEnabled))
+            {
+                _options.Logging.FileLogOptions.IsEnabled = isLogFileEnabled;
+                if (isLogFileEnabled)
+                {
+                    _options.Logging.FileLogOptions.PathFormat = Configuration["Log:File:PathFormat"];
+                }
+            }
+            
+            if (bool.TryParse(Configuration["Log:Elasticsearch:Enabled"], out isElasticSearchEnabled))
+            {
+                _options.Logging.ElasticsearchOptions.IsEnabled = isElasticSearchEnabled;
+                if (isElasticSearchEnabled)
+                {
+                    _options.Logging.ElasticsearchOptions.Url = Configuration["Log:Elasticsearch:Url"];
+                }
+            }
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -110,7 +144,7 @@ namespace SimpleIdentityServer.Startup
             }
 
             // 1. Configure the caching
-            if (cachingDatabase == "REDIS")
+            if (string.Equals(cachingDatabase, "REDIS", System.StringComparison.CurrentCultureIgnoreCase))
             {
                 services.AddStorage(opt => opt.UseRedis(o =>
                 {
@@ -118,7 +152,7 @@ namespace SimpleIdentityServer.Startup
                     o.InstanceName = Configuration[cachingConnectionPath + ":InstanceName"];
                 }));
             }
-            else if (cachingDatabase == "INMEMORY")
+            else if (string.Equals(cachingDatabase, "INMEMORY", System.StringComparison.CurrentCultureIgnoreCase))
             {
                 services.AddStorage(opt => opt.UseInMemory());
             }
