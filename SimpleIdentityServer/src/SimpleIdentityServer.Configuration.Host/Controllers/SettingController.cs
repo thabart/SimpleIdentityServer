@@ -32,22 +32,12 @@ namespace SimpleIdentityServer.Configuration.Controllers
     [Route(Constants.RouteValues.Setting)]
     public class SettingController : Controller
     {
-        #region Fields
-
         private readonly ISettingActions _settingActions;
-
-        #endregion
-
-        #region Constructor
 
         public SettingController(ISettingActions settingActions)
         {
             _settingActions = settingActions;
         }
-
-        #endregion
-
-        #region Actions
 
         [HttpGet]
         public List<SettingResponse> GetAll()
@@ -136,7 +126,5 @@ namespace SimpleIdentityServer.Configuration.Controllers
 
             return new NoContentResult();
         }
-
-        #endregion
     }
 }

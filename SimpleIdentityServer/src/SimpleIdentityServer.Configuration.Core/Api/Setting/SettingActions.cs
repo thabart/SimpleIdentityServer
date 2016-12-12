@@ -37,23 +37,12 @@ namespace SimpleIdentityServer.Configuration.Core.Api.Setting
 
     internal class SettingActions : ISettingActions
     {
-        #region Fields
-
         private readonly IDeleteSettingAction _deleteSettingAction;
-
         private readonly IGetAllSettingAction _getAllSettingAction;
-
         private readonly IGetSettingAction _getSettingAction;
-
         private readonly IUpdateSettingAction _updateSettingAction;
-
         private readonly IBulkGetSettingsOperation _bulkGetSettingsOperation;
-
         private readonly IBulkUpdateSettingsOperation _bulkUpdateSettingsOperation;
-
-        #endregion
-
-        #region Constructor
 
         public SettingActions(
             IDeleteSettingAction deleteSettingAction,
@@ -70,10 +59,6 @@ namespace SimpleIdentityServer.Configuration.Core.Api.Setting
             _bulkGetSettingsOperation = bulkGetSettingsOperation;
             _bulkUpdateSettingsOperation = bulkUpdateSettingsOperation;
         }
-
-        #endregion
-
-        #region Public methods
 
         public bool DeleteSetting(string key)
         {
@@ -104,7 +89,5 @@ namespace SimpleIdentityServer.Configuration.Core.Api.Setting
         {
             return _bulkUpdateSettingsOperation.Execute(settings);
         }
-
-        #endregion
     }
 }

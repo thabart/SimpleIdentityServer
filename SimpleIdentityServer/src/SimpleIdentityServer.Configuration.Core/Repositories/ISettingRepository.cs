@@ -14,25 +14,19 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Configuration.Core.Parameters;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Configuration.Core.Repositories
 {
     public interface ISettingRepository
     {
-        List<Models.Setting> GetAll();
-
-        Models.Setting Get(string key);
-
-        bool Insert(Models.Setting configuration);
-
-        bool Remove(string key);
-
-        bool Update(Models.Setting configuration);
-
-        bool Update(IEnumerable<Models.Setting> settings);
-
-        List<Models.Setting> Get(IEnumerable<string> ids);
+        Task<ICollection<Core.Models.Setting>> GetAll();
+        Task<Models.Setting> Get(string key);
+        Task<bool> Insert(Models.Setting configuration);
+        Task<bool> Remove(string key);
+        Task<bool> Update(Models.Setting configuration);
+        Task<bool> Update(IEnumerable<Models.Setting> settings);
+        Task<ICollection<Models.Setting>> Get(IEnumerable<string> ids);
     }
 }

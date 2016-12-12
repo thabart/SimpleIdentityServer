@@ -25,22 +25,12 @@ namespace SimpleIdentityServer.Configuration.Controllers
     [Route(Constants.RouteValues.Representations)]
     public class RepresentationsController : Controller
     {
-        #region Fields
-
         private readonly IRepresentationManager _representationManager;
-
-        #endregion
-
-        #region Constructor
 
         public RepresentationsController(IRepresentationManager representationManager)
         {
             _representationManager = representationManager;
         }
-
-        #endregion
-
-        #region Public methods
 
         [HttpGet]
         [Authorize("display")]
@@ -57,7 +47,5 @@ namespace SimpleIdentityServer.Configuration.Controllers
             await _representationManager.RemoveRepresentations();
             return new NoContentResult();
         }
-
-        #endregion
     }
 }

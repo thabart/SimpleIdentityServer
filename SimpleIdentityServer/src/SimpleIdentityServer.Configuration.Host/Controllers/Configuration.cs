@@ -23,7 +23,6 @@ namespace SimpleIdentityServer.Configuration.Controllers
     [Route(Constants.RouteValues.Configuration)]
     public class Configuration : Controller
     {
-        #region Public methods
 
         [HttpGet]
         public ActionResult Get()
@@ -38,7 +37,5 @@ namespace SimpleIdentityServer.Configuration.Controllers
 
             return new OkObjectResult(result);
         }
-
-        #endregion
     }
 }

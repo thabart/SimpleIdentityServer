@@ -26,28 +26,16 @@ namespace SimpleIdentityServer.Configuration.Core.Api.Setting.Actions
 
     internal class GetAllSettingAction : IGetAllSettingAction
     {
-        #region Fields
-
         private readonly ISettingRepository _settingRepository;
-
-        #endregion
-
-        #region Constructor
 
         public GetAllSettingAction(ISettingRepository settingRepository)
         {
             _settingRepository = settingRepository;
         }
-
-        #endregion
-
-        #region Public methods
-
+        
         public List<Models.Setting> Execute()
         {
             return _settingRepository.GetAll();
         }
-
-        #endregion
     }
 }

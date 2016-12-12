@@ -22,14 +22,10 @@ namespace SimpleIdentityServer.Configuration.Core.Repositories
 {
     public interface IAuthenticationProviderRepository
     {
-        Task<List<AuthenticationProvider>> GetAuthenticationProviders();
-
+        Task<ICollection<AuthenticationProvider>> GetAuthenticationProviders();
         Task<AuthenticationProvider> GetAuthenticationProvider(string name);
-
         Task<bool> UpdateAuthenticationProvider(AuthenticationProvider authenticationProvider);
-
         Task<bool> AddAuthenticationProvider(AuthenticationProvider authenticationProvider);
-
         Task<bool> RemoveAuthenticationProvider(string name);
     }
 }

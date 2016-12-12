@@ -29,10 +29,7 @@ namespace SimpleIdentityServer.Configuration.EF.Repositories
     internal class AuthenticationProviderRepository : IAuthenticationProviderRepository
     {
         private readonly SimpleIdentityServerConfigurationContext _simpleIdentityServerConfigurationContext;
-
         private readonly IConfigurationEventSource _configurationEventSource;
-
-        #region Constructor
 
         public AuthenticationProviderRepository(
             SimpleIdentityServerConfigurationContext simpleIdentityServerConfigurationContext,
@@ -42,17 +39,12 @@ namespace SimpleIdentityServer.Configuration.EF.Repositories
             _configurationEventSource = configurationEventSource;
         }
 
-        #endregion
-
-        #region Public methods
-
-        public async Task<List<AuthenticationProvider>> GetAuthenticationProviders()
+        public async Task<ICollection<AuthenticationProvider>> GetAuthenticationProviders()
         {
             try
             {
                 var authProviders = _simpleIdentityServerConfigurationContext.AuthenticationProviders.Include(a => a.Options);
-                var result = await authProviders.ToListAsync();
-                return result.Select(r => r.ToDomain()).ToList();
+                return await authProviders.Select(r => r.ToDomain()).ToListAsync().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -66,7 +58,7 @@ namespace SimpleIdentityServer.Configuration.EF.Repositories
             try
             {
                 var authProviders = _simpleIdentityServerConfigurationContext.AuthenticationProviders.Include(a => a.Options);
-                var result = await authProviders.FirstOrDefaultAsync(a => a.Name == name);
+                var result = await authProviders.FirstOrDefaultAsync(a => a.Name == name).ConfigureAwait(false);
                 if (result == null)
                 {
                     return null;
@@ -83,100 +75,115 @@ namespace SimpleIdentityServer.Configuration.EF.Repositories
 
         public async Task<bool> UpdateAuthenticationProvider(AuthenticationProvider authenticationProvider)
         {
-            try
+            using (var transaction = await _simpleIdentityServerConfigurationContext.Database.BeginTransactionAsync())
             {
-                var record = await _simpleIdentityServerConfigurationContext
-                    .AuthenticationProviders
-                    .Include(a => a.Options)
-                    .FirstOrDefaultAsync(a => a.Name == authenticationProvider.Name);
-                if (record == null)
+
+                try
                 {
+                    var record = await _simpleIdentityServerConfigurationContext
+                        .AuthenticationProviders
+                        .Include(a => a.Options)
+                        .FirstOrDefaultAsync(a => a.Name == authenticationProvider.Name)
+                        .ConfigureAwait(false);
+                    if (record == null)
+                    {
+                        return false;
+                    }
+
+                    record.IsEnabled = authenticationProvider.IsEnabled;
+                    record.CallbackPath = authenticationProvider.CallbackPath;
+                    record.ClassName = authenticationProvider.ClassName;
+                    record.Code = authenticationProvider.Code;
+                    record.Namespace = authenticationProvider.Namespace;
+                    record.Type = authenticationProvider.Type;
+                    var optsNotToBeDeleted = new List<string>();
+                    if (authenticationProvider.Options != null)
+                    {
+                        foreach (var opt in authenticationProvider.Options)
+                        {
+                            var option = record.Options.FirstOrDefault(o => o.Id == opt.Id);
+                            if (option != null)
+                            {
+                                option.Key = opt.Key;
+                                option.Value = opt.Value;
+                            }
+                            else
+                            {
+                                option = new Models.Option
+                                {
+                                    Id = Guid.NewGuid().ToString(),
+                                    Key = opt.Key,
+                                    Value = opt.Value
+                                };
+                                record.Options.Add(option);
+                            }
+                            optsNotToBeDeleted.Add(option.Id);
+                        }
+                    }
+
+                    var optionIds = record.Options.Select(o => o.Id).ToList();
+                    foreach (var optId in optionIds.Where(id => !optsNotToBeDeleted.Contains(id)))
+                    {
+                        record.Options.Remove(record.Options.First(o => o.Id == optId));
+                    }
+
+                    await _simpleIdentityServerConfigurationContext.SaveChangesAsync().ConfigureAwait(false);
+                    transaction.Commit();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    _configurationEventSource.Failure(ex);
+                    transaction.Rollback();
                     return false;
                 }
-
-                record.IsEnabled = authenticationProvider.IsEnabled;
-                record.CallbackPath = authenticationProvider.CallbackPath;
-                record.ClassName = authenticationProvider.ClassName;
-                record.Code = authenticationProvider.Code;
-                record.Namespace = authenticationProvider.Namespace;
-                record.Type = authenticationProvider.Type;
-                var optsNotToBeDeleted = new List<string>();
-                if (authenticationProvider.Options != null)
-                {
-                    foreach(var opt in authenticationProvider.Options)
-                    {
-                        var option = record.Options.FirstOrDefault(o => o.Id == opt.Id);
-                        if (option != null)
-                        {
-                            option.Key = opt.Key;
-                            option.Value = opt.Value;
-                        }
-                        else
-                        {
-                            option = new Models.Option
-                            {
-                                Id = Guid.NewGuid().ToString(),
-                                Key = opt.Key,
-                                Value = opt.Value
-                            };
-                            record.Options.Add(option);
-                        }
-                        optsNotToBeDeleted.Add(option.Id);
-                    }
-                }
-
-                var optionIds = record.Options.Select(o => o.Id).ToList();
-                foreach(var optId in optionIds.Where(id => !optsNotToBeDeleted.Contains(id)))
-                {
-                    record.Options.Remove(record.Options.First(o => o.Id == optId));
-                }
-                
-                await _simpleIdentityServerConfigurationContext.SaveChangesAsync();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _configurationEventSource.Failure(ex);
-                return false;
             }
         }
 
         public async Task<bool> AddAuthenticationProvider(AuthenticationProvider authenticationProvider)
         {
-            try
+            using (var transaction = await _simpleIdentityServerConfigurationContext.Database.BeginTransactionAsync())
             {
-                _simpleIdentityServerConfigurationContext.AuthenticationProviders.Add(authenticationProvider.ToModel());
-                await _simpleIdentityServerConfigurationContext.SaveChangesAsync();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _configurationEventSource.Failure(ex);
-                return false;
+                try
+                {
+                    _simpleIdentityServerConfigurationContext.AuthenticationProviders.Add(authenticationProvider.ToModel());
+                    await _simpleIdentityServerConfigurationContext.SaveChangesAsync().ConfigureAwait(false);
+                    transaction.Commit();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    _configurationEventSource.Failure(ex);
+                    transaction.Rollback();
+                    return false;
+                }
             }
         }
 
         public async Task<bool> RemoveAuthenticationProvider(string name)
         {
-            try
+            using (var transaction = await _simpleIdentityServerConfigurationContext.Database.BeginTransactionAsync())
             {
-                var result = await _simpleIdentityServerConfigurationContext.AuthenticationProviders.FirstOrDefaultAsync(a => a.Name == name);
-                if (result == null)
+                try
                 {
+                    var result = await _simpleIdentityServerConfigurationContext.AuthenticationProviders.FirstOrDefaultAsync(a => a.Name == name).ConfigureAwait(false);
+                    if (result == null)
+                    {
+                        return false;
+                    }
+
+                    _simpleIdentityServerConfigurationContext.AuthenticationProviders.Remove(result);
+                    await _simpleIdentityServerConfigurationContext.SaveChangesAsync().ConfigureAwait(false);
+                    transaction.Commit();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    _configurationEventSource.Failure(ex);
+                    transaction.Rollback();
                     return false;
                 }
-
-                _simpleIdentityServerConfigurationContext.AuthenticationProviders.Remove(result);
-                await _simpleIdentityServerConfigurationContext.SaveChangesAsync();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _configurationEventSource.Failure(ex);
-                return false;
             }
         }
-
-        #endregion
     }
 }

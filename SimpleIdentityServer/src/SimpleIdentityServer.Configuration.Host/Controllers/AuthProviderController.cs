@@ -28,16 +28,10 @@ namespace SimpleIdentityServer.Configuration.Controllers
     {
         private readonly IAuthProviderActions _authProviderActions;
 
-        #region Constructor
-
         public AuthProviderController(IAuthProviderActions authProviderActions)
         {
             _authProviderActions = authProviderActions;
         }
-
-        #endregion
-
-        #region Public methods
 
         [HttpGet]
         [Authorize("display")]
@@ -117,7 +111,5 @@ namespace SimpleIdentityServer.Configuration.Controllers
 
             return await _authProviderActions.DeleteAuthenticationProvider(id);
         }
-
-        #endregion
     }
 }

@@ -14,161 +14,58 @@
 // limitations under the License.
 #endregion
 
-using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using SimpleIdentityServer.Configuration.Core.Models;
 using SimpleIdentityServer.Configuration.Core.Repositories;
-using System.Collections.Generic;
 using SimpleIdentityServer.Configuration.EF.Extensions;
 using SimpleIdentityServer.Logging;
 using System;
-using SimpleIdentityServer.Configuration.Core.Models;
-using SimpleIdentityServer.Configuration.Core.Parameters;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Configuration.EF.Repositories
 {
     public class SettingRepository : ISettingRepository
     {
         private readonly SimpleIdentityServerConfigurationContext _context;
-
         private readonly IConfigurationEventSource _configurationEventSource;
-
-        #region Constructor
-
-        public SettingRepository(
-            SimpleIdentityServerConfigurationContext context,
+        
+        public SettingRepository(SimpleIdentityServerConfigurationContext context,
             IConfigurationEventSource configurationEventSource)
         {
             _context = context;
             _configurationEventSource = configurationEventSource;
         }
 
-        #endregion
-
-        #region Public methods
-
-        public List<Core.Models.Setting> GetAll()
+        public async Task<ICollection<Core.Models.Setting>> GetAll()
         {
-            return _context.Settings.Select(c => c.ToDomain()).ToList();
+            return await _context.Settings.Select(c => c.ToDomain()).ToListAsync().ConfigureAwait(false);
         }
 
-        public Core.Models.Setting Get(string key)
+        public async Task<Core.Models.Setting> Get(string key)
         {
-            var configuration = _context.Settings.FirstOrDefault(c => c.Key == key);
+            var configuration = await _context.Settings.FirstOrDefaultAsync(c => c.Key == key).ConfigureAwait(false);
             return configuration == null ? null : configuration.ToDomain();
         }
 
-        public bool Insert(Core.Models.Setting configuration)
+        public async Task<bool> Insert(Core.Models.Setting configuration)
         {
             if (configuration == null)
             {
                 return false;
             }
 
-            try
-            {
-                _context.Settings.Add(new Models.Setting
-                {
-                    Key = configuration.Key,
-                    Value = configuration.Value
-                });
-                _context.SaveChanges();
-                return true;
-            }
-            catch(Exception ex)
-            {
-                _configurationEventSource.Failure(ex);
-                return false;
-            }
-        }
-
-        public bool Remove(string key)
-        {
-            if (string.IsNullOrWhiteSpace(key))
-            {
-                return false;
-            }
-
-            try
-            {
-                var configuration = _context.Settings.FirstOrDefault(c => c.Key == key);
-                if (configuration == null)
-                {
-                    return false;
-                }
-
-                _context.Settings.Remove(configuration);
-                _context.SaveChanges();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _configurationEventSource.Failure(ex);
-                return false;
-            }
-        }
-
-        public bool Update(Setting conf)
-        {
-            if (conf == null || string.IsNullOrWhiteSpace(conf.Key))
-            {
-                return false;
-            }
-
-            try
-            {
-                var configuration = _context.Settings.FirstOrDefault(c => c.Key == conf.Key);
-                configuration.Value = conf.Value;
-                _context.SaveChanges();
-                return true;
-            }
-            catch(Exception ex)
-            {
-                _configurationEventSource.Failure(ex);
-                return false;
-            }
-        }
-
-        public List<Setting> Get(IEnumerable<string> ids)
-        {
-            if (ids == null)
-            {
-                throw new ArgumentNullException(nameof(ids));
-            }
-
-            try
-            {
-                return _context.Settings.Where(s => ids.Contains(s.Key)).Select(r => r.ToDomain()).ToList();
-            }
-            catch(Exception ex)
-            {
-                _configurationEventSource.Failure(ex);
-                return new List<Setting>();
-            }
-        }
-
-        public bool Update(IEnumerable<Setting> settings)
-        {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
-
-            using (var transaction = _context.Database.BeginTransaction())
+            using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
                 try
                 {
-                    foreach (var setting in settings)
+                    _context.Settings.Add(new Models.Setting
                     {
-                        var record = _context.Settings.FirstOrDefault(c => c.Key == setting.Key);
-                        if (record == null)
-                        {
-                            transaction.Rollback();
-                            return false;
-                        }
-
-                        record.Value = setting.Value;
-                    }
-
-                    _context.SaveChanges();
+                        Key = configuration.Key,
+                        Value = configuration.Value
+                    });
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
                     transaction.Commit();
                     return true;
                 }
@@ -181,6 +78,115 @@ namespace SimpleIdentityServer.Configuration.EF.Repositories
             }
         }
 
-        #endregion
+        public async Task<bool> Remove(string key)
+        {
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                return false;
+            }
+
+            using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
+            {
+                try
+                {
+                    var configuration = await _context.Settings.FirstOrDefaultAsync(c => c.Key == key).ConfigureAwait(false);
+                    if (configuration == null)
+                    {
+                        return false;
+                    }
+
+                    _context.Settings.Remove(configuration);
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
+                    transaction.Commit();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    _configurationEventSource.Failure(ex);
+                    transaction.Rollback();
+                    return false;
+                }
+            }
+        }
+
+        public async Task<bool> Update(Setting conf)
+        {
+            if (conf == null || string.IsNullOrWhiteSpace(conf.Key))
+            {
+                return false;
+            }
+
+            using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
+            {
+                try
+                {
+                    var configuration = await _context.Settings.FirstOrDefaultAsync(c => c.Key == conf.Key).ConfigureAwait(false);
+                    configuration.Value = conf.Value;
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
+                    transaction.Commit();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    _configurationEventSource.Failure(ex);
+                    transaction.Rollback();
+                    return false;
+                }
+            }
+        }
+
+        public async Task<ICollection<Setting>> Get(IEnumerable<string> ids)
+        {
+            if (ids == null)
+            {
+                throw new ArgumentNullException(nameof(ids));
+            }
+
+            try
+            {
+                return await _context.Settings.Where(s => ids.Contains(s.Key)).Select(r => r.ToDomain()).ToListAsync().ConfigureAwait(false);
+            }
+            catch(Exception ex)
+            {
+                _configurationEventSource.Failure(ex);
+                return new List<Setting>();
+            }
+        }
+
+        public async Task<bool> Update(IEnumerable<Setting> settings)
+        {
+            if (settings == null)
+            {
+                throw new ArgumentNullException(nameof(settings));
+            }
+
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    foreach (var setting in settings)
+                    {
+                        var record = await _context.Settings.FirstOrDefaultAsync(c => c.Key == setting.Key).ConfigureAwait(false);
+                        if (record == null)
+                        {
+                            transaction.Rollback();
+                            return false;
+                        }
+
+                        record.Value = setting.Value;
+                    }
+
+                    await _context.SaveChangesAsync();
+                    transaction.Commit();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    _configurationEventSource.Failure(ex);
+                    transaction.Rollback();
+                    return false;
+                }
+            }
+        }
     }
 }
