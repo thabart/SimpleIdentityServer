@@ -17,6 +17,8 @@
 using SimpleIdentityServer.DataAccess.SqlServer.Mappings;
 using SimpleIdentityServer.DataAccess.SqlServer.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer
 {

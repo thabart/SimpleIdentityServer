@@ -22,6 +22,7 @@ using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
 using SimpleIdentityServer.Logging;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using IsolationLevel = System.Data.IsolationLevel;
@@ -171,7 +172,10 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             {
                 try
                 {
-                    var token = _context.GrantedTokens.Include(g => g.Children).FirstOrDefault(g => g.AccessToken == grantedToken.AccessToken);
+                    var token = _context.GrantedTokens
+                        .Include(g => g.Children)
+                        .FirstOrDefault(g => g.AccessToken == grantedToken.AccessToken);
+                    RecursiveDelete(token.Children);
                     _context.GrantedTokens.Remove(token);
                     await _context.SaveChangesAsync().ConfigureAwait(false);
                     transaction.Commit();
@@ -234,6 +238,21 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             }
 
             return true;
+        }
+
+        private void RecursiveDelete(IList<Models.GrantedToken> children)
+        {
+            foreach (var child in children)
+            {
+                var subToken = _context.GrantedTokens.Include(g => g.Children)
+                    .FirstOrDefault(g => g.Id == child.Id);
+                if (subToken.Children != null && subToken.Children.Any())
+                {
+                    RecursiveDelete(subToken.Children);
+                }
+
+                _context.GrantedTokens.Remove(child);
+            }
         }
     }
 }

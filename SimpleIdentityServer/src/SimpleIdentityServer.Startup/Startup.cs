@@ -104,22 +104,6 @@ namespace SimpleIdentityServer.Startup
         {
             var cachingDatabase = Configuration["Caching:Database"];
             var cachingConnectionPath = Configuration["Caching:ConnectionPath"];
-            var isSqlServer = bool.Parse(Configuration["isSqlServer"]);
-            var isSqlLite = bool.Parse(Configuration["isSqlLite"]);
-            var isPostgre = bool.Parse(Configuration["isPostgre"]);
-            var loggingOptions = new LoggingOptions
-            {
-                ElasticsearchOptions = new ElasticsearchOptions
-                {
-                    IsEnabled = bool.Parse(Configuration["Log:Elasticsearch:Enabled"]),
-                    Url = Configuration["Log:Elasticsearch:Url"]
-                },
-                FileLogOptions = new FileLogOptions
-                {
-                    IsEnabled = bool.Parse(Configuration["Log:File:Enabled"]),
-                    PathFormat = Configuration["Log:File:PathFormat"]
-                }
-            };
             if (string.IsNullOrWhiteSpace(cachingDatabase))
             {
                 cachingDatabase = "INMEMORY";

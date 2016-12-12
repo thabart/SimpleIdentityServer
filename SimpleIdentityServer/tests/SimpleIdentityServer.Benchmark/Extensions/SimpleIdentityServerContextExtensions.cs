@@ -19,31 +19,21 @@ using SimpleIdentityServer.DataAccess.SqlServer;
 using SimpleIdentityServer.DataAccess.SqlServer.Models;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography;
 
-namespace SimpleIdentityServer.Host.Tests.Extensions
+namespace SimpleIdentityServer.Benchmark.Extensions
 {
     public static class SimpleIdentityServerContextExtensions
     {
-        public static void EnsureSeedData(this SimpleIdentityServerContext context, SharedContext sharedCtx)
+        public static void EnsureSeedData(this SimpleIdentityServerContext context)
         {
             InsertClaims(context);
             InsertScopes(context);
             InsertResourceOwners(context);
             InsertJsonWebKeys(context);
-            InsertClients(context, sharedCtx);
-            InsertConsents(context);
-            InsertConsentScopes(context);
-            try
-            {
-                context.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                Trace.WriteLine("items already exists");
-            }
+            InsertClients(context);
+            context.SaveChanges();
         }
 
         private static void InsertClaims(SimpleIdentityServerContext context)
@@ -189,10 +179,8 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                     new Scope
                     {
                         Name = "api1",
-                        IsExposed = false,
                         IsOpenIdScope = false,
                         IsDisplayedInConsent = true,
-                        Description = "Access to your api1",
                         Type = ScopeType.ProtectedApi
                     }
                 });
@@ -207,7 +195,7 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                 {
                     new ResourceOwner
                     {
-                        Id = "administrator",
+                        Id = Guid.NewGuid().ToString(),
                         Claims = new List<ResourceOwnerClaim>
                         {
                             new ResourceOwnerClaim
@@ -343,80 +331,10 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                                 Value = "http://localhost:5555/Users/id"
                             }
                         },
-                        Password = "password",
+                        Password = "5E884898DA28047151D0E56F8DC6292773603D0D6AABBDD62A11EF721D1542D8",
                         IsLocalAccount = true
                     }
                 });
-            }
-        }
-
-        private static void InsertConsents(SimpleIdentityServerContext context)
-        {
-            if (!context.Consents.Any())
-            {
-                var consents = new List<Consent>()
-                {
-                    new Consent
-                    {
-                        Id = "1",
-                        ClientId = "authcode_client",
-                        ResourceOwnerId = "administrator"
-                    },
-                    new Consent
-                    {
-                        Id = "2",
-                        ClientId = "implicit_client",
-                        ResourceOwnerId = "administrator"
-                    },
-                    new Consent
-                    {
-                        Id = "3",
-                        ClientId = "hybrid_client",
-                        ResourceOwnerId = "administrator"
-                    }
-                };
-                context.Consents.AddRange(consents);
-            }
-        }
-
-        private static void InsertConsentScopes(SimpleIdentityServerContext context)
-        {
-            if (!context.ConsentScopes.Any())
-            {
-                var consentScopes = new List<ConsentScope>
-                {
-                    new ConsentScope
-                    {
-                        ConsentId = "1",
-                        ScopeName = "api1"
-                    },
-                    new ConsentScope
-                    {
-                        ConsentId = "1",
-                        ScopeName = "openid"
-                    },
-                    new ConsentScope
-                    {
-                        ConsentId = "2",
-                        ScopeName = "api1"
-                    },
-                    new ConsentScope
-                    {
-                        ConsentId = "2",
-                        ScopeName = "openid"
-                    },
-                    new ConsentScope
-                    {
-                        ConsentId = "3",
-                        ScopeName = "api1"
-                    },
-                    new ConsentScope
-                    {
-                        ConsentId = "3",
-                        ScopeName = "openid"
-                    }
-                };
-                context.ConsentScopes.AddRange(consentScopes);
             }
         }
 
@@ -461,7 +379,7 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
             }
         }
 
-        private static void InsertClients(SimpleIdentityServerContext context, SharedContext sharedCtx)
+        private static void InsertClients(SimpleIdentityServerContext context)
         {
             if (!context.Clients.Any())
             {
@@ -469,13 +387,35 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                 {
                     new DataAccess.SqlServer.Models.Client
                     {
-                        ClientId = "client",
-                        ClientName = "client",
-                        ClientSecret = "client",
+                        ClientId = "client_credentials",
+                        ClientName = "Simple Identity Server Client",
+                        ClientSecret = "client_credentials",
                         TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
                         LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
-                        PolicyUri = "http://openid.net",
-                        TosUri = "http://openid.net",
+                        ClientScopes = new List<ClientScope>
+                        {
+                            new ClientScope
+                            {
+                                ScopeName = "openid"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "api1"
+                            }
+                        },
+                        GrantTypes = "3",
+                        ResponseTypes = "1",
+                        IdTokenSignedResponseAlg = "RS256",
+                        ApplicationType = ApplicationTypes.web,
+                        RedirectionUrls = "https://localhost:5443/User/Callback"
+                    },
+                    new DataAccess.SqlServer.Models.Client
+                    {
+                        ClientId = "password_grantype",
+                        ClientName = "Simple Identity Server Client",
+                        ClientSecret = "password_grantype",
+                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
+                        LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
                         ClientScopes = new List<ClientScope>
                         {
                             new ClientScope
@@ -485,193 +425,13 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                             new ClientScope
                             {
                                 ScopeName = "role"
-                            },
-                            new ClientScope
-                            {
-                                ScopeName = "profile"
-                            },
-                            new ClientScope
-                            {
-                                ScopeName = "scim"
                             }
                         },
                         GrantTypes = "4",
-                        ResponseTypes = "0,1,2",
-                        IdTokenSignedResponseAlg = "RS256",
-                        ApplicationType = ApplicationTypes.web,
-                        RedirectionUrls = "https://localhost:4200/callback"
-                    },
-                    new DataAccess.SqlServer.Models.Client
-                    {
-                        ClientId = "basic_client",
-                        ClientName = "basic_client",
-                        ClientSecret = "basic_client",
-                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_basic,
-                        LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
-                        PolicyUri = "http://openid.net",
-                        TosUri = "http://openid.net",
-                        ClientScopes = new List<ClientScope>
-                        {
-                            new ClientScope
-                            {
-                                ScopeName = "api1"
-                            }
-                        },
-                        GrantTypes = "3",
                         ResponseTypes = "1",
                         IdTokenSignedResponseAlg = "RS256",
                         ApplicationType = ApplicationTypes.web,
-                        RedirectionUrls = "https://localhost:4200/callback"
-                    },
-                    new DataAccess.SqlServer.Models.Client
-                    {
-                        ClientId = "post_client",
-                        ClientName = "post_client",
-                        ClientSecret = "post_client",
-                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
-                        LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
-                        PolicyUri = "http://openid.net",
-                        TosUri = "http://openid.net",
-                        ClientScopes = new List<ClientScope>
-                        {
-                            new ClientScope
-                            {
-                                ScopeName = "api1"
-                            }
-                        },
-                        GrantTypes = "3",
-                        ResponseTypes = "1",
-                        IdTokenSignedResponseAlg = "RS256",
-                        ApplicationType = ApplicationTypes.web,
-                        RedirectionUrls = "https://localhost:4200/callback"
-                    },
-                    new DataAccess.SqlServer.Models.Client
-                    {
-                        ClientId = "jwt_client",
-                        ClientName = "jwt_client",
-                        ClientSecret = "jwt_client",
-                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_jwt,
-                        LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
-                        PolicyUri = "http://openid.net",
-                        TosUri = "http://openid.net",
-                        ClientScopes = new List<ClientScope>
-                        {
-                            new ClientScope
-                            {
-                                ScopeName = "api1"
-                            }
-                        },
-                        GrantTypes = "3",
-                        ResponseTypes = "1",
-                        IdTokenSignedResponseAlg = "RS256",
-                        ApplicationType = ApplicationTypes.web,
-                        RedirectionUrls = "https://localhost:4200/callback",
-                        JsonWebKeys = new List<JsonWebKey>
-                        {
-                            sharedCtx.ModelSignatureKey,
-                            sharedCtx.ModelEncryptionKey
-                        }
-                    },
-                    new DataAccess.SqlServer.Models.Client
-                    {
-                        ClientId = "private_key_client",
-                        ClientName = "private_key_client",
-                        ClientSecret = "private_key_client",
-                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.private_key_jwt,
-                        LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
-                        PolicyUri = "http://openid.net",
-                        TosUri = "http://openid.net",
-                        ClientScopes = new List<ClientScope>
-                        {
-                            new ClientScope
-                            {
-                                ScopeName = "api1"
-                            }
-                        },
-                        GrantTypes = "3",
-                        ResponseTypes = "1",
-                        IdTokenSignedResponseAlg = "RS256",
-                        ApplicationType = ApplicationTypes.web,
-                        RedirectionUrls = "https://localhost:4200/callback",
-                        JwksUri = "http://localhost:5000/jwks_client"
-                    },
-                    new DataAccess.SqlServer.Models.Client
-                    {
-                        ClientId = "authcode_client",
-                        ClientName = "authcode_client",
-                        ClientSecret = "authcode_client",
-                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
-                        LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
-                        PolicyUri = "http://openid.net",
-                        TosUri = "http://openid.net",
-                        ClientScopes = new List<ClientScope>
-                        {
-                            new ClientScope
-                            {
-                                ScopeName = "api1"
-                            },
-                            new ClientScope
-                            {
-                                ScopeName = "openid"
-                            }
-                        },
-                        GrantTypes = "0",
-                        ResponseTypes = "0,1,2",
-                        IdTokenSignedResponseAlg = "RS256",
-                        ApplicationType = ApplicationTypes.web,
-                        RedirectionUrls = "http://localhost:5000/callback"
-                    },
-                    new DataAccess.SqlServer.Models.Client
-                    {
-                        ClientId = "implicit_client",
-                        ClientName = "implicit_client",
-                        ClientSecret = "implicit_client",
-                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
-                        LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
-                        PolicyUri = "http://openid.net",
-                        TosUri = "http://openid.net",
-                        ClientScopes = new List<ClientScope>
-                        {
-                            new ClientScope
-                            {
-                                ScopeName = "api1"
-                            },
-                            new ClientScope
-                            {
-                                ScopeName = "openid"
-                            }
-                        },
-                        GrantTypes = "1",
-                        ResponseTypes = "1,2",
-                        IdTokenSignedResponseAlg = "RS256",
-                        ApplicationType = ApplicationTypes.web,
-                        RedirectionUrls = "http://localhost:5000/callback"
-                    },
-                    new DataAccess.SqlServer.Models.Client
-                    {
-                        ClientId = "hybrid_client",
-                        ClientName = "hybrid_client",
-                        ClientSecret = "hybrid_client",
-                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
-                        LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
-                        PolicyUri = "http://openid.net",
-                        TosUri = "http://openid.net",
-                        ClientScopes = new List<ClientScope>
-                        {
-                            new ClientScope
-                            {
-                                ScopeName = "api1"
-                            },
-                            new ClientScope
-                            {
-                                ScopeName = "openid"
-                            }
-                        },
-                        GrantTypes = "0,1",
-                        ResponseTypes = "0,1,2",
-                        IdTokenSignedResponseAlg = "RS256",
-                        ApplicationType = ApplicationTypes.web,
-                        RedirectionUrls = "http://localhost:5000/callback"
+                        RedirectionUrls = "https://localhost:5443/User/Callback"
                     }
                 });
             }

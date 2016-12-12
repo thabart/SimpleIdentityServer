@@ -18,7 +18,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Models
 {
     public class ConsentClaim
     {
-        public int ConsentId { get; set; }
+        public string ConsentId { get; set; }
 
         public string ClaimCode { get; set; }
 

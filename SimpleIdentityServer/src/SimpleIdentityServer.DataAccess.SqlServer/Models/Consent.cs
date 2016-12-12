@@ -20,7 +20,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Models
 {
     public class Consent
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         public string ClientId { get; set; }
 

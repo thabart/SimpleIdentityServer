@@ -1,5 +1,5 @@
 ﻿#region copyright
-// Copyright 2015 Habart Thierry
+// Copyright 2016 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,16 +14,10 @@
 // limitations under the License.
 #endregion
 
-namespace SimpleIdentityServer.DataAccess.SqlServer.Models
+namespace SimpleIdentityServer.Benchmark
 {
-    public class ConsentScope
+    internal static class Constants
     {
-        public string ConsentId { get; set; }
-
-        public string ScopeName { get; set; }
-
-        public Consent Consent { get; set; }
-
-        public Scope Scope { get; set; }
+        public const string CookieName = "IdServer";
     }
 }

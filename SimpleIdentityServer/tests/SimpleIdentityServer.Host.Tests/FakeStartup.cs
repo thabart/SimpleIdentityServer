@@ -110,6 +110,7 @@ namespace SimpleIdentityServer.Host.Tests
             {
                 var context = serviceScope.ServiceProvider.GetService<SimpleIdentityServerContext>();
                 context.EnsureSeedData(_context);
+                context.SaveChanges();
             }
 
             //1 . Enable CORS.
@@ -163,7 +164,7 @@ namespace SimpleIdentityServer.Host.Tests
                 .AddSimpleIdentityServerJwt()
                 .AddIdServerLogging()
                 .AddLogging()
-                .AddSimpleIdentityServerInMemory();
+                .AddSimpleIdentityServerSqlServer(_options.DataSource.ConnectionString);
         }
 
         private List<Dictionary<string, object>> ExtractPublicKeysForSignature(IEnumerable<JsonWebKey> jsonWebKeys)

@@ -1,4 +1,4 @@
-ab -n 1000 -c 5 -g WellKnownConfiguration.tsv "http://localhost:5000/.well-known/openid-configuration"
+ab -n 1000 -c 5 -g WellKnownConfiguration.tsv "http://localhost:5019/.well-known/openid-configuration"
 gnuplot
 set terminal jpeg
 set output "WellKnownConfiguration.jpg"

@@ -96,6 +96,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 
                     var newConsent = new Consent
                     {
+                        Id = Guid.NewGuid().ToString(),
                         Client = client,
                         ResourceOwner = resourceOwner,
                         ConsentClaims = assignedClaims,
@@ -123,8 +124,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             {
                 try
                 {
-                    var identifier = int.Parse(record.Id);
-                    var consent = await _context.Consents.FirstOrDefaultAsync(c => c.Id == identifier).ConfigureAwait(false);
+                    var consent = await _context.Consents.FirstOrDefaultAsync(c => c.Id == record.Id).ConfigureAwait(false);
                     if (consent == null)
                     {
                         return false;

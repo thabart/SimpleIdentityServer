@@ -1,4 +1,4 @@
-ab -p get-token-clientcredentials.txt  -T application/x-www-form-urlencoded -c 5 -n 1000 -g GetTokenClientCredentials.tsv http://localhost:5000/token
+ab -p get-token-clientcredentials.txt  -T application/x-www-form-urlencoded -c 5 -n 1000 -g GetTokenClientCredentials.tsv http://localhost:5019/token
 gnuplot
 set terminal jpeg
 set output "GetTokenClientCredentials.jpg"

@@ -213,7 +213,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
         {
             return new Domain.Consent
             {
-                Id = consent.Id.ToString(CultureInfo.InvariantCulture),
+                Id = consent.Id,
                 Client = consent.Client == null ? null : consent.Client.ToDomain(),
                 Claims = consent.ConsentClaims == null ? null : consent.ConsentClaims.Select(c => c.ClaimCode).ToList(),
                 ResourceOwner = consent.ResourceOwner == null ? null : consent.ResourceOwner.ToDomain(),
