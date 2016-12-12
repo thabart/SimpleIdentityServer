@@ -15,13 +15,13 @@
 #endregion
 
 using Moq;
-using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Manager.Core.Api.Clients.Actions;
 using SimpleIdentityServer.Manager.Core.Errors;
 using SimpleIdentityServer.Manager.Core.Exceptions;
 using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Manager.Core.Tests.Api.Clients.Actions
@@ -29,44 +29,36 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Clients.Actions
     public class RemoveClientActionFixture
     {
         private Mock<IClientRepository> _clientRepositoryStub;
-
         private Mock<IManagerEventSource> _managerEventSourceStub;
-
         private IRemoveClientAction _removeClientAction;
 
-        #region Exceptions
-
         [Fact]
-        public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _removeClientAction.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _removeClientAction.Execute(null));
         }
 
         [Fact]
-        public void When_Passing_Not_Existing_Client_Id_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Not_Existing_Client_Id_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             const string clientId = "invalid_client_id";
             InitializeFakeObjects();
-            _clientRepositoryStub.Setup(c => c.GetClientById(It.IsAny<string>()))
-                .Returns(() => null);
+            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult((SimpleIdentityServer.Core.Models.Client)null));
 
             // ACT & ASSERT
-            var exception = Assert.Throws<IdentityServerManagerException>(() => _removeClientAction.Execute(clientId));
+            var exception = await Assert.ThrowsAsync<IdentityServerManagerException>(() => _removeClientAction.Execute(clientId));
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheClientDoesntExist, clientId));
         }
 
-        #endregion
-
-        #region Happy path
-
         [Fact]
-        public void When_Deleting_Existing_Client_Then_Operation_Is_Called()
+        public async Task When_Deleting_Existing_Client_Then_Operation_Is_Called()
         {
             // ARRANGE
             const string clientId = "client_id";
@@ -75,17 +67,15 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Clients.Actions
                 ClientId = clientId
             };
             InitializeFakeObjects();
-            _clientRepositoryStub.Setup(c => c.GetClientById(It.IsAny<string>()))
-                .Returns(client);
+            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(client));
 
             // ACT
-            _removeClientAction.Execute(clientId);
+            await _removeClientAction.Execute(clientId);
 
             // ASSERT
-            _clientRepositoryStub.Verify(c => c.DeleteClient(client));
+            _clientRepositoryStub.Verify(c => c.DeleteAsync(client));
         }
-
-        #endregion
 
         private void InitializeFakeObjects()
         {

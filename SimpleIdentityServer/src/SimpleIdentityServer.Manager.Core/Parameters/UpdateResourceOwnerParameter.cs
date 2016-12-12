@@ -21,7 +21,6 @@ namespace SimpleIdentityServer.Manager.Core.Parameters
     public class UpdateResourceOwnerParameter
     {
         public string Subject { get; set; }
-
-        public List<string> Roles { get; set; }
+        public IEnumerable<string> Roles { get; set; }
     }
 }

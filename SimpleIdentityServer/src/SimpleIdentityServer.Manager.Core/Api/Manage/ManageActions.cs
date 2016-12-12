@@ -18,27 +18,20 @@ using SimpleIdentityServer.Manager.Core.Api.Manage.Actions;
 using SimpleIdentityServer.Manager.Core.Parameters;
 using SimpleIdentityServer.Manager.Core.Results;
 using System;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Manager.Core.Manage
 {
     public interface IManageActions
     {
-        ExportResult Export();
-
-        bool Import(ImportParameter importParameter);
+        Task<ExportResult> Export();
+        Task<bool> Import(ImportParameter importParameter);
     }
 
     internal class ManageActions : IManageActions
     {
-        #region Fields
-
         private readonly IExportAction _exportAction;
-
         private readonly IImportAction _importAction;
-
-        #endregion
-
-        #region Constructor
 
         public ManageActions(
             IExportAction exportAction,
@@ -58,20 +51,14 @@ namespace SimpleIdentityServer.Manager.Core.Manage
             _importAction = importAction;
         }
 
-        #endregion
-
-        #region Public methods
-
-        public ExportResult Export()
+        public Task<ExportResult> Export()
         {
             return _exportAction.Execute();
         }
 
-        public bool Import(ImportParameter importParameter)
+        public Task<bool> Import(ImportParameter importParameter)
         {
             return _importAction.Execute(importParameter);
         }
-
-        #endregion
     }
 }

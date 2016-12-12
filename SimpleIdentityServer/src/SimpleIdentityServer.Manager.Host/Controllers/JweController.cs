@@ -29,17 +29,11 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
     {
         private readonly IJweActions _jweActions;
 
-        #region Constructor
-
         public JweController(IJweActions jweActions)
         {
             _jweActions = jweActions;
         }
-
-        #endregion
-
-        #region Public methods
-        
+                
         [HttpGet]
         public async Task<JweInformationResponse> GetJwe([FromQuery] GetJweRequest getJweRequest)
         {
@@ -62,7 +56,5 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
 
             return await _jweActions.CreateJwe(createJweRequest.ToParameter());
         }
-
-        #endregion
     }
 }

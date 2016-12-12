@@ -22,6 +22,7 @@ using SimpleIdentityServer.Manager.Core.Api.ResourceOwners.Actions;
 using SimpleIdentityServer.Manager.Core.Errors;
 using SimpleIdentityServer.Manager.Core.Exceptions;
 using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Manager.Core.Tests.Api.ResourceOwners
@@ -29,34 +30,30 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.ResourceOwners
     public class DeleteResourceOwnerActionFixture
     {
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
-
         private Mock<IManagerEventSource> _managerEventSourceStub;
-
         private IDeleteResourceOwnerAction _deleteResourceOwnerAction;
 
-        #region Exceptions
-
         [Fact]
-        public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _deleteResourceOwnerAction.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _deleteResourceOwnerAction.Execute(null));
         }
 
         [Fact]
-        public void When_ResourceOwner_Doesnt_Exist_Then_Exception_Is_Thrown()
+        public async Task When_ResourceOwner_Doesnt_Exist_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             const string subject = "invalid_subject";
             InitializeFakeObjects();
-            _resourceOwnerRepositoryStub.Setup(r => r.GetByUniqueClaim(It.IsAny<string>()))
-                .Returns((ResourceOwner)null);
+            _resourceOwnerRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult((ResourceOwner)null));
 
             // ACT
-            var exception = Assert.Throws<IdentityServerManagerException>(() => _deleteResourceOwnerAction.Execute(subject));
+            var exception = await Assert.ThrowsAsync<IdentityServerManagerException>(() => _deleteResourceOwnerAction.Execute(subject));
 
             // ASSERT
             Assert.NotNull(exception);
@@ -64,29 +61,21 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.ResourceOwners
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, subject));
         }
 
-        #endregion
-
-        #region Happy path
-
         [Fact]
-        public void When_Delete_Resource_Owner_Then_Operation_Is_Called()
+        public async Task When_Delete_Resource_Owner_Then_Operation_Is_Called()
         {   
             // ARRANGE
             const string subject = "subject";
             InitializeFakeObjects();
-            _resourceOwnerRepositoryStub.Setup(r => r.GetByUniqueClaim(It.IsAny<string>()))
-                .Returns(new ResourceOwner());
+            _resourceOwnerRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(new ResourceOwner()));
 
             // ACT
-            _deleteResourceOwnerAction.Execute(subject);
+            await _deleteResourceOwnerAction.Execute(subject);
 
             // ASSERT
-            _resourceOwnerRepositoryStub.Verify(r => r.Delete(subject));
+            _resourceOwnerRepositoryStub.Verify(r => r.DeleteAsync(subject));
         }
-
-        #endregion
-
-        #region Private methods
 
         private void InitializeFakeObjects()
         {
@@ -96,7 +85,5 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.ResourceOwners
                 _resourceOwnerRepositoryStub.Object,
                 _managerEventSourceStub.Object);
         }
-
-        #endregion
     }
 }

@@ -24,17 +24,14 @@ namespace SimpleIdentityServer.Manager.Core.Parameters
         /// Gets or sets the JSON WEB KEY KID
         /// </summary>
         public string Kid { get; set; }
-
         /// <summary>
         /// Gets or sets the sign alg
         /// </summary>
         public JwsAlg Alg { get; set; }
-
         /// <summary>
         /// Gets or sets the JWKS URL
         /// </summary>
         public string Url { get; set; }
-
         /// <summary>
         /// Gets or sets the Payload
         /// </summary>

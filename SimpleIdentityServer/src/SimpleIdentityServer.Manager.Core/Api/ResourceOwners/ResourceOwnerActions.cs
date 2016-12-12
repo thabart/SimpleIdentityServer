@@ -20,39 +20,26 @@ using System.Collections.Generic;
 using SimpleIdentityServer.Manager.Core.Api.ResourceOwners.Actions;
 using SimpleIdentityServer.Core.WebSite.Account.Actions;
 using SimpleIdentityServer.Core.Parameters;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners
 {
     public interface IResourceOwnerActions
     {
-        bool UpdateResourceOwner(ResourceOwner resourceOwner);
-
-        ResourceOwner GetResourceOwner(string subject);
-
-        List<ResourceOwner> GetResourceOwners();
-
-        bool Delete(string subject);
-
-        void Add(AddUserParameter parameter);
+        Task<bool> UpdateResourceOwner(ResourceOwner resourceOwner);
+        Task<ResourceOwner> GetResourceOwner(string subject);
+        Task<ICollection<ResourceOwner>> GetResourceOwners();
+        Task<bool> Delete(string subject);
+        Task Add(AddUserParameter parameter);
     }
 
     internal class ResourceOwnerActions : IResourceOwnerActions
     {
-        #region Fields
-
         private readonly IGetResourceOwnerAction _getResourceOwnerAction;
-
         private readonly IGetResourceOwnersAction _getResourceOwnersAction;
-
         private readonly IUpdateResourceOwnerAction _updateResourceOwnerAction;
-
         private readonly IDeleteResourceOwnerAction _deleteResourceOwnerAction;
-
         private readonly IAddResourceOwnerAction _addResourceOwnerAction;
-
-        #endregion
-
-        #region Constructor
 
         public ResourceOwnerActions(
             IGetResourceOwnerAction getResourceOwnerAction,
@@ -67,36 +54,30 @@ namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners
             _deleteResourceOwnerAction = deleteResourceOwnerAction;
             _addResourceOwnerAction = addResourceOwnerAction;
         }
-
-        #endregion
-
-        #region Public methods
-
-        public ResourceOwner GetResourceOwner(string subject)
+        
+        public Task<ResourceOwner> GetResourceOwner(string subject)
         {
             return _getResourceOwnerAction.Execute(subject);
         }
 
-        public List<ResourceOwner> GetResourceOwners()
+        public Task<ICollection<ResourceOwner>> GetResourceOwners()
         {
             return _getResourceOwnersAction.Execute();
         }
 
-        public bool UpdateResourceOwner(ResourceOwner resourceOwner)
+        public Task<bool> UpdateResourceOwner(ResourceOwner resourceOwner)
         {
             return _updateResourceOwnerAction.Execute(resourceOwner);
         }
 
-        public bool Delete(string subject)
+        public Task<bool> Delete(string subject)
         {
             return _deleteResourceOwnerAction.Execute(subject);
         }
 
-        public void Add(AddUserParameter parameter)
+        public Task Add(AddUserParameter parameter)
         {
-            _addResourceOwnerAction.Execute(parameter);
+            return _addResourceOwnerAction.Execute(parameter);
         }
-
-        #endregion
     }
 }

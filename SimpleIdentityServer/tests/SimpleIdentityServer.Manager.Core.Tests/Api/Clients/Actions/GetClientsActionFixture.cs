@@ -15,10 +15,10 @@
 #endregion
 
 using Moq;
-using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Manager.Core.Api.Clients.Actions;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Manager.Core.Tests.Api.Clients.Actions
@@ -26,28 +26,24 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Clients.Actions
     public class GetClientsActionFixture
     {
         private Mock<IClientRepository> _clientRepositoryStub;
-
         private IGetClientsAction _getClientsAction;
 
-        #region Happy path
-
         [Fact]
-        public void When_Executing_Operation_Then_Operation_Is_Called()
+        public async Task When_Executing_Operation_Then_Operation_Is_Called()
         {
             // ARRANGE
+            IEnumerable<SimpleIdentityServer.Core.Models.Client> clients = new List<SimpleIdentityServer.Core.Models.Client>();
             InitializeFakeObjects();
-            _clientRepositoryStub.Setup(c => c.GetAll())
-                .Returns(new List<SimpleIdentityServer.Core.Models.Client>());
+            _clientRepositoryStub.Setup(c => c.GetAllAsync())
+                .Returns(Task.FromResult(clients));
 
             // ACT
-            _getClientsAction.Execute();
+            await _getClientsAction.Execute();
 
             // ASSERT
-            _clientRepositoryStub.Verify(c => c.GetAll());
+            _clientRepositoryStub.Verify(c => c.GetAllAsync());
         }
-
-        #endregion
-
+        
         private void InitializeFakeObjects()
         {
             _clientRepositoryStub = new Mock<IClientRepository>();

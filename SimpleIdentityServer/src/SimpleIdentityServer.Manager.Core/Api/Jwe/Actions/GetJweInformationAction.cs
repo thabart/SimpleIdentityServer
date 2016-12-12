@@ -34,12 +34,8 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jwe.Actions
     public class GetJweInformationAction : IGetJweInformationAction
     {
         private readonly IJweParser _jweParser;
-
         private readonly IJwsParser _jwsParser;
-
         private readonly IJsonWebKeyHelper _jsonWebKeyHelper;
-
-        #region Constructor
 
         public GetJweInformationAction(
             IJweParser jweParser,
@@ -50,10 +46,6 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jwe.Actions
             _jwsParser = jwsParser;
             _jsonWebKeyHelper = jsonWebKeyHelper;
         }
-
-        #endregion
-
-        #region Public methods
 
         public async Task<JweInformationResult> ExecuteAsync(GetJweParameter getJweParameter)
         {
@@ -128,7 +120,5 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jwe.Actions
                         
             return result;
         }
-
-        #endregion
     }
 }

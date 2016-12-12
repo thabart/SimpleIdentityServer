@@ -17,6 +17,7 @@
 using Moq;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Manager.Core.Api.ResourceOwners.Actions;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Manager.Core.Tests.Api.ResourceOwners
@@ -24,34 +25,25 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.ResourceOwners
     public class GetResourceOwnersActionFixture
     {
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
-
         private IGetResourceOwnersAction _getResourceOwnersAction;
 
-        #region Happy path
-
         [Fact]
-        public void When_Getting_ResourceOwners_Then_Operation_Is_Called()
+        public async Task When_Getting_ResourceOwners_Then_Operation_Is_Called()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT
-            _getResourceOwnersAction.Execute();
+            await _getResourceOwnersAction.Execute();
 
             // ASSERT
-            _resourceOwnerRepositoryStub.Verify(r => r.GetAll());
+            _resourceOwnerRepositoryStub.Verify(r => r.GetAllAsync());
         }
-
-        #endregion
-
-        #region Private methods
 
         private void InitializeFakeObjects()
         {
             _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
             _getResourceOwnersAction = new GetResourceOwnersAction(_resourceOwnerRepositoryStub.Object);
         }
-
-        #endregion
     }
 }

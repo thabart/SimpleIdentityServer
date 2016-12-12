@@ -35,10 +35,7 @@ namespace SimpleIdentityServer.Manager.Core.Helpers
     public class JsonWebKeyHelper : IJsonWebKeyHelper
     {
         private readonly IJsonWebKeyConverter _jsonWebKeyConverter;
-
         private readonly IHttpClientFactory _httpClientFactory;
-
-        #region Constructors
 
         public JsonWebKeyHelper(
             IJsonWebKeyConverter jsonWebKeyConverter,
@@ -47,10 +44,6 @@ namespace SimpleIdentityServer.Manager.Core.Helpers
             _jsonWebKeyConverter = jsonWebKeyConverter;
             _httpClientFactory = httpClientFactory;
         }
-
-        #endregion
-
-        #region Public methods
 
         public async Task<JsonWebKey> GetJsonWebKey(string kid, Uri uri)
         {
@@ -82,7 +75,5 @@ namespace SimpleIdentityServer.Manager.Core.Helpers
                     string.Format(ErrorDescriptions.TheJsonWebKeyCannotBeFound, kid, uri.AbsoluteUri));
             }
         }
-
-        #endregion
     }
 }

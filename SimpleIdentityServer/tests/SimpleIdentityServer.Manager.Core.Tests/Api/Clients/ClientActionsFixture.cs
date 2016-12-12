@@ -21,6 +21,7 @@ using SimpleIdentityServer.Manager.Core.Api.Clients;
 using SimpleIdentityServer.Manager.Core.Api.Clients.Actions;
 using SimpleIdentityServer.Manager.Core.Parameters;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Manager.Core.Tests.Api.Clients
@@ -28,62 +29,55 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Clients
     public class ClientActionsFixture
     {
         private Mock<IGetClientsAction> _getClientsActionStub;
-
         private Mock<IGetClientAction> _getClientActionStub;
-
         private Mock<IRemoveClientAction> _removeClientActionStub;
-
         private Mock<IUpdateClientAction> _updateClientActionStub;
-
         private Mock<IRegisterClientAction> _registerClientActionStub;
-
         private IClientActions _clientActions;
 
-        #region Happy path
-
         [Fact]
-        public void When_Executing_GetClients_Then_Operation_Is_Called()
+        public async Task When_Executing_GetClients_Then_Operation_Is_Called()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT
-            _clientActions.GetClients();
+            await _clientActions.GetClients();
 
             // ASSERT
             _getClientsActionStub.Verify(g => g.Execute());
         }
 
         [Fact]
-        public void When_Executing_GetClient_Then_Operation_Is_Called()
+        public async Task When_Executing_GetClient_Then_Operation_Is_Called()
         {
             // ARRANGE
             const string clientId = "clientId";
             InitializeFakeObjects();
 
             // ACT
-            _clientActions.GetClient(clientId);
+            await _clientActions.GetClient(clientId);
 
             // ASSERT
             _getClientActionStub.Verify(g => g.Execute(clientId));
         }
 
         [Fact]
-        public void When_Executing_DeleteClient_Then_Operation_Is_Called()
+        public async Task When_Executing_DeleteClient_Then_Operation_Is_Called()
         {
             // ARRANGE
             const string clientId = "clientId";
             InitializeFakeObjects();
 
             // ACT
-            _clientActions.DeleteClient(clientId);
+            await _clientActions.DeleteClient(clientId);
 
             // ASSERT
             _removeClientActionStub.Verify(g => g.Execute(clientId));
         }
 
         [Fact]
-        public void When_Executing_UpdateClient_Then_Operation_Is_Called()
+        public async Task When_Executing_UpdateClient_Then_Operation_Is_Called()
         {
             // ARRANGE
             var parameter = new UpdateClientParameter
@@ -93,14 +87,14 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Clients
             InitializeFakeObjects();
 
             // ACT
-            _clientActions.UpdateClient(parameter);
+            await _clientActions.UpdateClient(parameter);
 
             // ASSERT
             _updateClientActionStub.Verify(g => g.Execute(parameter));
         }
 
         [Fact]
-        public void When_RegisterClient_Then_Operation_Is_Called()
+        public async Task When_RegisterClient_Then_Operation_Is_Called()
         {
             // ARRANGE
             var parameter = new RegistrationParameter
@@ -113,13 +107,11 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Clients
             InitializeFakeObjects();
 
             // ACT
-            _clientActions.AddClient(parameter);
+            await _clientActions.AddClient(parameter);
 
             // ASSERT
             _registerClientActionStub.Verify(g => g.Execute(parameter));
         }
-
-        #endregion
 
         private void InitializeFakeObjects()
         {

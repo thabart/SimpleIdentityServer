@@ -25,17 +25,13 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jwe
     public interface IJweActions
     {
         Task<JweInformationResult> GetJweInformation(GetJweParameter getJweParameter);
-
         Task<string> CreateJwe(CreateJweParameter createJweParameter);
     }
 
     public class JweActions : IJweActions
     {
         private readonly IGetJweInformationAction _getJweInformationAction;
-
         private readonly ICreateJweAction _createJweAction;
-
-        #region Constructor
 
         public JweActions(
             IGetJweInformationAction getJweInformationAction,
@@ -44,10 +40,6 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jwe
             _getJweInformationAction = getJweInformationAction;
             _createJweAction = createJweAction;
         }
-
-        #endregion
-
-        #region Public methods
 
         public Task<JweInformationResult> GetJweInformation(GetJweParameter getJweParameter)
         {
@@ -68,7 +60,5 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jwe
 
             return _createJweAction.ExecuteAsync(createJweParameter);
         }
-
-        #endregion
     }
 }

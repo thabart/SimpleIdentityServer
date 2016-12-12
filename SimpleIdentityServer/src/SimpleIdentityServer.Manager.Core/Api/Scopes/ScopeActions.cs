@@ -17,35 +17,26 @@
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Manager.Core.Api.Scopes.Actions;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Manager.Core.Api.Scopes
 {
     public interface IScopeActions
     {
-        bool DeleteScope(string scopeName);
-
-        Scope GetScope(string scopeName);
-
-        List<Scope> GetScopes();
-
-        bool AddScope(Scope scope);
-
-        bool UpdateScope(Scope scope);
+        Task<bool> DeleteScope(string scopeName);
+        Task<Scope> GetScope(string scopeName);
+        Task<ICollection<Scope>> GetScopes();
+        Task<bool> AddScope(Scope scope);
+        Task<bool> UpdateScope(Scope scope);
     }
 
     internal class ScopeActions : IScopeActions
     {
         private readonly IDeleteScopeOperation _deleteScopeOperation;
-
         private readonly IGetScopeOperation _getScopeOperation;
-
         private readonly IGetScopesOperation _getScopesOperation;
-
         private readonly IAddScopeOperation _addScopeOperation;
-
         private readonly IUpdateScopeOperation _updateScopeOperation;
-
-        #region Constructor
 
         public ScopeActions(
             IDeleteScopeOperation deleteScopeOperation,
@@ -61,35 +52,29 @@ namespace SimpleIdentityServer.Manager.Core.Api.Scopes
             _updateScopeOperation = updateScopeOperation;
         }
 
-        #endregion
-
-        #region Public methods
-
-        public bool DeleteScope(string scopeName)
+        public Task<bool> DeleteScope(string scopeName)
         {
             return _deleteScopeOperation.Execute(scopeName);
         }
 
-        public Scope GetScope(string scopeName)
+        public Task<Scope> GetScope(string scopeName)
         {
             return _getScopeOperation.Execute(scopeName);
         }
 
-        public List<Scope> GetScopes()
+        public Task<ICollection<Scope>> GetScopes()
         {
             return _getScopesOperation.Execute();
         }
 
-        public bool AddScope(Scope scope)
+        public Task<bool> AddScope(Scope scope)
         {
             return _addScopeOperation.Execute(scope);
         }
 
-        public bool UpdateScope(Scope scope)
+        public Task<bool> UpdateScope(Scope scope)
         {
             return _updateScopeOperation.Execute(scope);
         }
-
-        #endregion
     }
 }

@@ -26,12 +26,8 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jwe
     public class JweActionsFixture
     {
         private Mock<IGetJweInformationAction> _getJweInformationActionStub;
-
         private Mock<ICreateJweAction> _createJweActionStub;
-
         private IJweActions _jweActions;
-
-        #region Exceptions GetJweInformation
 
         [Fact]
         public void When_Passing_Null_Parameter_To_GetJweInformation_Then_Exception_Is_Thrown()
@@ -42,10 +38,6 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jwe
             // ACT & ASSERT
             Assert.ThrowsAsync<ArgumentNullException>(() => _jweActions.GetJweInformation(null));
         }
-
-        #endregion
-
-        #region Happy path GetJweInformation 
 
         [Fact]
         public async Task When_Execute_GetJweInformation_Then_Operation_Is_Called()
@@ -60,8 +52,6 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jwe
             // ASSERT
             _getJweInformationActionStub.Verify(g => g.ExecuteAsync(parameter));
         }
-
-        #endregion
 
         private void InitializeFakeObjects()
         {

@@ -35,31 +35,20 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
     [Route(Constants.EndPoints.Manage)]
     public class ManageController : Controller
     {
-        #region Fields
-
         private readonly IManageActions _manageActions;
-
         private readonly IRepresentationManager _representationManager;
-
-        #endregion
-
-        #region Constructor
 
         public ManageController(IManageActions manageActions, IRepresentationManager representationManager)
         {
             _manageActions = manageActions;
             _representationManager = representationManager;
         }
-
-        #endregion
-
-        #region Public methods
-
+        
         [HttpGet("export")]
         [Authorize("manager")]
-        public ActionResult Export()
+        public async Task<ActionResult> Export()
         {
-            var export = _manageActions.Export().ToDto();
+            var export = (await _manageActions.Export()).ToDto();
             var json = JsonConvert.SerializeObject(export);
             return new FileContentResult(Encoding.UTF8.GetBytes(json), "application/json")
             {
@@ -107,7 +96,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                     ErrorDescriptions.TheFileIsNotWellFormed);
             }
 
-            if (!_manageActions.Import(response.ToParameter()))
+            if (!await _manageActions.Import(response.ToParameter()))
             {
                 return new StatusCodeResult((int)HttpStatusCode.InternalServerError);
             }
@@ -115,7 +104,5 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
             await _representationManager.AddOrUpdateRepresentationAsync(this, ClientsController.GetClientsStoreName);
             return new NoContentResult();
         }
-
-        #endregion
     }
 }

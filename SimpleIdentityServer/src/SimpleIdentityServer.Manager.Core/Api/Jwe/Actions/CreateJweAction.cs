@@ -32,10 +32,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jwe.Actions
     public class CreateJweAction : ICreateJweAction
     {
         private readonly IJweGenerator _jweGenerator;
-
         private IJsonWebKeyHelper _jsonWebKeyHelper;
-
-        #region Constructor
 
         public CreateJweAction(
             IJweGenerator jweGenerator,
@@ -44,11 +41,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jwe.Actions
             _jweGenerator = jweGenerator;
             _jsonWebKeyHelper = jsonWebKeyHelper;
         }
-
-        #endregion
-
-        #region Public methods
-
+        
         public async Task<string> ExecuteAsync(CreateJweParameter createJweParameter)
         {
             if (createJweParameter == null)
@@ -106,7 +99,5 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jwe.Actions
 
             return result;
         }
-
-        #endregion
     }
 }

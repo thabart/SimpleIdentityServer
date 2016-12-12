@@ -21,6 +21,7 @@ using SimpleIdentityServer.Manager.Core.Api.Scopes.Actions;
 using SimpleIdentityServer.Manager.Core.Errors;
 using SimpleIdentityServer.Manager.Core.Exceptions;
 using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Manager.Core.Tests.Api.Scopes.Actions
@@ -28,33 +29,30 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Scopes.Actions
     public class AddScopeOperationFixture
     {
         private Mock<IScopeRepository> _scopeRepositoryStub;
-
         private IAddScopeOperation _addScopeOperation;
 
-        #region Exceptions
-
         [Fact]
-        public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _addScopeOperation.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _addScopeOperation.Execute(null));
         }
 
         [Fact]
-        public void When_Scope_Already_Exists_Then_Exception_Is_Thrown()
+        public async Task When_Scope_Already_Exists_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             const string name = "scope_name";
             var scope = new Scope();
             InitializeFakeObjects();
-            _scopeRepositoryStub.Setup(s => s.GetScopeByName(It.IsAny<string>()))
-                .Returns(scope);
+            _scopeRepositoryStub.Setup(s => s.GetAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(scope));
 
             // ACT & ASSERTS
-            var ex = Assert.Throws<IdentityServerManagerException>(() => _addScopeOperation.Execute(new Scope
+            var ex = await Assert.ThrowsAsync<IdentityServerManagerException>(() => _addScopeOperation.Execute(new Scope
             {
                 Name = name
             }));
@@ -63,12 +61,8 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Scopes.Actions
             Assert.True(ex.Message == string.Format(ErrorDescriptions.TheScopeAlreadyExists, name));
         }
 
-        #endregion
-
-        #region Happy paths
-
         [Fact]
-        public void When_AddingScope_Then_Operation_Is_Called()
+        public async Task When_AddingScope_Then_Operation_Is_Called()
         {
             // ARRANGE
             var parameter = new Scope
@@ -76,26 +70,20 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Scopes.Actions
                 Name = "scope_name"
             };
             InitializeFakeObjects();
-            _scopeRepositoryStub.Setup(s => s.GetScopeByName(It.IsAny<string>()))
-                .Returns((Scope)null);
+            _scopeRepositoryStub.Setup(s => s.GetAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult((Scope)null));
 
             // ACT
-            _addScopeOperation.Execute(parameter);
+            await _addScopeOperation.Execute(parameter);
 
             // ASSERT
-            _scopeRepositoryStub.Verify(s => s.InsertScope(parameter));
+            _scopeRepositoryStub.Verify(s => s.InsertAsync(parameter));
         }
-
-        #endregion
-
-        #region Private methods
 
         private void InitializeFakeObjects()
         {
             _scopeRepositoryStub = new Mock<IScopeRepository>();
             _addScopeOperation = new AddScopeOperation(_scopeRepositoryStub.Object);
         }
-
-        #endregion
     }
 }

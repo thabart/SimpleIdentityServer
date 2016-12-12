@@ -31,12 +31,8 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws.Actions
     public class CreateJwsActionFixture
     {
         private Mock<IJwsGenerator> _jwsGeneratorStub;
-
         private Mock<IJsonWebKeyHelper> _jsonWebKeyHelperStub;
-
         private ICreateJwsAction _createJwsAction;
-
-        #region Exceptions
 
         [Fact]
         public void When_Passing_Null_Parameter_Then_Exceptions_Are_Thrown()
@@ -121,10 +117,6 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws.Actions
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheJsonWebKeyCannotBeFound, kid, url));
         }
 
-        #endregion
-
-        #region Happy paths
-
         [Fact]
         public async Task When_Generating_Unsigned_Jws_Then_Operation_Is_Called()
         {
@@ -169,8 +161,6 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws.Actions
             // ASSERT
             _jwsGeneratorStub.Verify(j => j.Generate(createJwsParameter.Payload, JwsAlg.RS256, jsonWebKey));
         }
-
-        #endregion
 
         private void InitializeFakeObjects()
         {

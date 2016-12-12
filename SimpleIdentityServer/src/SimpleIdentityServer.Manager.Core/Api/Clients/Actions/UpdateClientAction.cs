@@ -24,22 +24,20 @@ using SimpleIdentityServer.Manager.Core.Parameters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Manager.Core.Api.Clients.Actions
 {
     public interface IUpdateClientAction
     {
-        bool Execute(UpdateClientParameter updateClientParameter);
+        Task<bool> Execute(UpdateClientParameter updateClientParameter);
     }
     
     public class UpdateClientAction : IUpdateClientAction
     {
         private readonly IClientRepository _clientRepository;
-
         private readonly IGenerateClientFromRegistrationRequest _generateClientFromRegistrationRequest;
-
-        #region Constructor
-
+        
         public UpdateClientAction(
             IClientRepository clientRepository,
             IGenerateClientFromRegistrationRequest generateClientFromRegistrationRequest)
@@ -48,18 +46,14 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients.Actions
             _generateClientFromRegistrationRequest = generateClientFromRegistrationRequest;
         }
 
-        #endregion
-
-        #region Public methods
-
-        public bool Execute(UpdateClientParameter updateClientParameter)
+        public async Task<bool> Execute(UpdateClientParameter updateClientParameter)
         {
             if (updateClientParameter == null)
             {
                 throw new ArgumentNullException(nameof(updateClientParameter));
             }
 
-            var existedClient = _clientRepository.GetClientById(updateClientParameter.ClientId);
+            var existedClient = await _clientRepository.GetClientByIdAsync(updateClientParameter.ClientId);
             if (existedClient == null)
             {
                 throw new IdentityServerManagerException(ErrorCodes.InvalidParameterCode,
@@ -83,9 +77,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients.Actions
             {
                 Name = s
             }).ToList();
-            return _clientRepository.UpdateClient(client);
+            return await _clientRepository.UpdateAsync(client);
         }
-
-        #endregion
     }
 }

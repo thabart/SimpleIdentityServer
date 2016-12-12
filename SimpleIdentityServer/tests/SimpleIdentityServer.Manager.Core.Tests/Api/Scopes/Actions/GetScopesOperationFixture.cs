@@ -19,6 +19,7 @@ using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Manager.Core.Api.Scopes.Actions;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Manager.Core.Tests.Api.Scopes.Actions
@@ -26,36 +27,28 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Scopes.Actions
     public class GetScopesOperationFixture
     {
         private Mock<IScopeRepository> _scopeRepositoryStub;
-
         private IGetScopesOperation _getScopesOperation;
-
-        #region Happy path
-
+        
         [Fact]
-        public void When_Executing_Operation_Then_Operation_Is_Called()
+        public async Task When_Executing_Operation_Then_Operation_Is_Called()
         {
             // ARRANGE
+            ICollection<Scope> scopes = new List<Scope>();
             InitializeFakeObjects();
-            _scopeRepositoryStub.Setup(c => c.GetAllScopes())
-                .Returns(new List<Scope>());
+            _scopeRepositoryStub.Setup(c => c.GetAllAsync())
+                .Returns(Task.FromResult(scopes));
 
             // ACT
-            _getScopesOperation.Execute();
+            await _getScopesOperation.Execute();
 
             // ASSERT
-            _scopeRepositoryStub.Verify(c => c.GetAllScopes());
+            _scopeRepositoryStub.Verify(c => c.GetAllAsync());
         }
-
-        #endregion
-
-        #region Private methods
 
         private void InitializeFakeObjects()
         {
             _scopeRepositoryStub = new Mock<IScopeRepository>();
             _getScopesOperation = new GetScopesOperation(_scopeRepositoryStub.Object);
         }
-
-        #endregion
     }
 }

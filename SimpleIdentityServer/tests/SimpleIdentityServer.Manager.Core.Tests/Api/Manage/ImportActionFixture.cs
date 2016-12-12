@@ -20,6 +20,7 @@ using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Manager.Core.Api.Manage.Actions;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Manager.Core.Tests.Api.Manage
@@ -27,32 +28,30 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Manage
     public class ImportActionFixture
     {
         private Mock<IClientRepository> _clientRepositoryStub;
-
         private Mock<IManagerEventSource> _managerEventSourceStub;
-
         private IImportAction _importAction;
 
         [Fact]
-        public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _importAction.Execute(null));
-            Assert.Throws<ArgumentNullException>(() => _importAction.Execute(new Parameters.ImportParameter()));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _importAction.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _importAction.Execute(new Parameters.ImportParameter()));
         }
 
         [Fact]
-        public void When_Clients_Cannot_Be_Removed_Then_False_Is_Returned()
+        public async Task When_Clients_Cannot_Be_Removed_Then_False_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
-            _clientRepositoryStub.Setup(m => m.RemoveAll())
-                .Returns(false);
+            _clientRepositoryStub.Setup(m => m.RemoveAllAsync())
+                .Returns(Task.FromResult(false));
 
             // ACT
-            var result = _importAction.Execute(new Parameters.ImportParameter
+            var result = await _importAction.Execute(new Parameters.ImportParameter
             {
                 Clients = new List<SimpleIdentityServer.Core.Models.Client>()
             });
@@ -63,21 +62,21 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Manage
         }
 
         [Fact]
-        public void When_OneClient_Cannot_Be_Inserted_Then_Error_Is_Logged()
+        public async Task When_OneClient_Cannot_Be_Inserted_Then_Error_Is_Logged()
         {
             // ARRANGE
             InitializeFakeObjects();
-            _clientRepositoryStub.Setup(m => m.RemoveAll())
-                .Returns(true);
-            _clientRepositoryStub.Setup(c => c.InsertClient(It.IsAny<SimpleIdentityServer.Core.Models.Client>()))
-                .Returns(false)
+            _clientRepositoryStub.Setup(m => m.RemoveAllAsync())
+                .Returns(Task.FromResult(true));
+            _clientRepositoryStub.Setup(c => c.InsertAsync(It.IsAny<SimpleIdentityServer.Core.Models.Client>()))
+                .Returns(Task.FromResult(false))
                 .Callback<SimpleIdentityServer.Core.Models.Client>((c) =>
                 {
                     throw new Exception("exception");
                 });
 
             // ACT
-            var result = _importAction.Execute(new Parameters.ImportParameter
+            var result = await _importAction.Execute(new Parameters.ImportParameter
             {
                 Clients = new List<SimpleIdentityServer.Core.Models.Client>
                 {
@@ -96,15 +95,15 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Manage
         }
 
         [Fact]
-        public void When_Import_Is_Finished_Then_True_Is_Returned()
+        public async Task When_Import_Is_Finished_Then_True_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
-            _clientRepositoryStub.Setup(m => m.RemoveAll())
-                .Returns(true);
+            _clientRepositoryStub.Setup(m => m.RemoveAllAsync())
+                .Returns(Task.FromResult(true));
 
             // ACT
-            var result = _importAction.Execute(new Parameters.ImportParameter
+            var result = await _importAction.Execute(new Parameters.ImportParameter
             {
                 Clients = new List<SimpleIdentityServer.Core.Models.Client>
                 {

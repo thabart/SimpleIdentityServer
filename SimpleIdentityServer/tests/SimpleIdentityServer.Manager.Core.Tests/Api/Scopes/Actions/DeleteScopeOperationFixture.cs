@@ -23,6 +23,7 @@ using SimpleIdentityServer.Manager.Core.Api.Scopes.Actions;
 using SimpleIdentityServer.Manager.Core.Errors;
 using SimpleIdentityServer.Manager.Core.Exceptions;
 using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Manager.Core.Tests.Api.Scopes.Actions
@@ -30,45 +31,37 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Scopes.Actions
     public class DeleteScopeOperationFixture
     {
         private Mock<IScopeRepository> _scopeRepositoryStub;
-
         private Mock<IManagerEventSource> _managerEventSourceStub;
-
         private IDeleteScopeOperation _deleteScopeOperation;
-        
-        #region Exceptions
 
         [Fact]
-        public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _deleteScopeOperation.Execute(null));
-            Assert.Throws<ArgumentNullException>(() => _deleteScopeOperation.Execute(string.Empty));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _deleteScopeOperation.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _deleteScopeOperation.Execute(string.Empty));
         }
 
         [Fact]
-        public void When_Passing_Not_Existing_ScopeName_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Not_Existing_ScopeName_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             const string scopeName = "invalid_scope";
             InitializeFakeObjects();
-            _scopeRepositoryStub.Setup(c => c.GetScopeByName(It.IsAny<string>()))
-                .Returns(() => null);
+            _scopeRepositoryStub.Setup(c => c.GetAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult((Scope)null));
 
             // ACT & ASSERT
-            var exception = Assert.Throws<IdentityServerManagerException>(() => _deleteScopeOperation.Execute(scopeName));
+            var exception = await Assert.ThrowsAsync<IdentityServerManagerException>(() => _deleteScopeOperation.Execute(scopeName));
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheScopeDoesntExist, scopeName));
         }
 
-        #endregion
-
-        #region Happy path
-
         [Fact]
-        public void When_Deleting_ExistingScope_Then_Operation_Is_Called()
+        public async Task When_Deleting_ExistingScope_Then_Operation_Is_Called()
         {
             // ARRANGE
             const string scopeName = "client_id";
@@ -77,19 +70,15 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Scopes.Actions
                 Name = scopeName
             };
             InitializeFakeObjects();
-            _scopeRepositoryStub.Setup(c => c.GetScopeByName(It.IsAny<string>()))
-                .Returns(scope);
+            _scopeRepositoryStub.Setup(c => c.GetAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(scope));
 
             // ACT
-            _deleteScopeOperation.Execute(scopeName);
+            await _deleteScopeOperation.Execute(scopeName);
 
             // ASSERT
-            _scopeRepositoryStub.Verify(c => c.DeleteScope(scope));
+            _scopeRepositoryStub.Verify(c => c.DeleteAsync(scope));
         }
-
-        #endregion
-
-        #region Private methods
 
         private void InitializeFakeObjects()
         {
@@ -99,7 +88,5 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Scopes.Actions
                 _scopeRepositoryStub.Object,
                 _managerEventSourceStub.Object);
         }
-
-        #endregion
     }
 }

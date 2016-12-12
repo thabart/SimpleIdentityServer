@@ -15,12 +15,12 @@
 #endregion
 
 using Moq;
-using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Manager.Core.Api.Clients.Actions;
 using SimpleIdentityServer.Manager.Core.Errors;
 using SimpleIdentityServer.Manager.Core.Exceptions;
 using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Manager.Core.Tests.Api.Clients.Actions
@@ -28,42 +28,35 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Clients.Actions
     public class GetClientActionFixture
     {
         private Mock<IClientRepository> _clientRepositoryStub;
-
         private IGetClientAction _getClientAction;
 
-        #region Exceptions
-
         [Fact]
-        public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _getClientAction.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getClientAction.Execute(null));
         }
 
         [Fact]
-        public void When_Client_Doesnt_Exist_Then_Exception_Is_Thrown()
+        public async Task When_Client_Doesnt_Exist_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             const string clientId = "client_id";
             InitializeFakeObjects();
-            _clientRepositoryStub.Setup(c => c.GetClientById(It.IsAny<string>()))
-                .Returns(() => null);
+            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult((SimpleIdentityServer.Core.Models.Client)null));
 
             // ACT & ASSERTS
-            var exception = Assert.Throws<IdentityServerManagerException>(() => _getClientAction.Execute(clientId));
+            var exception = await Assert.ThrowsAsync<IdentityServerManagerException>(() => _getClientAction.Execute(clientId));
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheClientDoesntExist, clientId));
         }
 
-        #endregion
-
-        #region Happy path
-
         [Fact]
-        public void When_Getting_Client_Then_Information_Are_Returned()
+        public async Task When_Getting_Client_Then_Information_Are_Returned()
         {
             // ARRANGE
             const string clientId = "clientId";
@@ -72,18 +65,16 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Clients.Actions
                 ClientId = clientId
             };
             InitializeFakeObjects();
-            _clientRepositoryStub.Setup(c => c.GetClientById(It.IsAny<string>()))
-                .Returns(client);
+            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(client));
 
             // ACT
-            var result = _getClientAction.Execute(clientId);
+            var result = await _getClientAction.Execute(clientId);
 
             // ASSERTS
             Assert.NotNull(result);
             Assert.True(result.ClientId == clientId);
         }
-
-        #endregion
 
         private void InitializeFakeObjects()
         {

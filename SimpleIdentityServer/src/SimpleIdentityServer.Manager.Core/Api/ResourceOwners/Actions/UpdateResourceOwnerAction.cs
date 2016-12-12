@@ -21,12 +21,13 @@ using SimpleIdentityServer.Manager.Core.Exceptions;
 using System;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners.Actions
 {
     public interface IUpdateResourceOwnerAction
     {
-        bool Execute(ResourceOwner resourceOwner);
+        Task<bool> Execute(ResourceOwner resourceOwner);
     }
 
     internal class UpdateResourceOwnerAction : IUpdateResourceOwnerAction
@@ -39,7 +40,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners.Actions
             _resourceOwnerRepository = resourceOwnerRepository;
         }
 
-        public bool Execute(ResourceOwner parameter)
+        public async Task<bool> Execute(ResourceOwner parameter)
         {
             if (parameter == null)
             {
@@ -51,7 +52,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners.Actions
                 throw new ArgumentNullException(nameof(parameter.Id));
             }
 
-            if (_resourceOwnerRepository.GetByUniqueClaim(parameter.Id) == null)
+            if (await _resourceOwnerRepository.GetAsync(parameter.Id) == null)
             {
                 throw new IdentityServerManagerException(
                     ErrorCodes.InvalidParameterCode,
@@ -69,7 +70,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners.Actions
                 parameter.Claims.Add(new Claim(SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt, DateTime.UtcNow.ToString()));
             }
 
-            return _resourceOwnerRepository.Update(parameter);
+            return await _resourceOwnerRepository.UpdateAsync(parameter);
         }
     }
 }

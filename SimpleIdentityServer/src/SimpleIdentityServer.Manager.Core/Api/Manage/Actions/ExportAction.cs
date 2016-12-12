@@ -18,25 +18,19 @@ using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Manager.Core.Api.Clients.Actions;
 using SimpleIdentityServer.Manager.Core.Results;
 using System;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Manager.Core.Api.Manage.Actions
 {
     public interface IExportAction
     {
-        ExportResult Execute();
+        Task<ExportResult> Execute();
     }
 
     internal class ExportAction : IExportAction
     {
-        #region Fields
-
-        private readonly IGetClientsAction _getClientsAction;
-        
+        private readonly IGetClientsAction _getClientsAction;        
         private readonly IManagerEventSource _managerEventSource;
-
-        #endregion
-
-        #region Constructor
 
         public ExportAction(IGetClientsAction  getClientsAction, IManagerEventSource managerEventSource)
         {
@@ -53,22 +47,16 @@ namespace SimpleIdentityServer.Manager.Core.Api.Manage.Actions
             _getClientsAction = getClientsAction;
             _managerEventSource = managerEventSource;
         }
-
-        #endregion
-
-        #region Public methods
-
-        public ExportResult Execute()
+        
+        public async Task<ExportResult> Execute()
         {
             _managerEventSource.StartToExport();
             var result = new ExportResult
             {
-                Clients = _getClientsAction.Execute()
+                Clients = await _getClientsAction.Execute()
             };
             _managerEventSource.FinishToExport();
             return result;
         }
-
-        #endregion
     }
 }

@@ -17,34 +17,27 @@
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners.Actions
 {
     public interface IGetResourceOwnersAction
     {
-        List<ResourceOwner> Execute();
+        Task<ICollection<ResourceOwner>> Execute();
     }
 
     internal class GetResourceOwnersAction : IGetResourceOwnersAction
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
 
-        #region Constructor
-
         public GetResourceOwnersAction(IResourceOwnerRepository resourceOwnerRepository)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
         }
 
-        #endregion
-
-        #region Public methods
-
-        public List<ResourceOwner> Execute()
+        public Task<ICollection<ResourceOwner>> Execute()
         {
-            return _resourceOwnerRepository.GetAll();
+            return _resourceOwnerRepository.GetAllAsync();
         }
-
-        #endregion
     }
 }

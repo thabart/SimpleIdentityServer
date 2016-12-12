@@ -33,14 +33,9 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jwe.Actions
     public class GetJweInformationActionFixture
     {
         private Mock<IJweParser> _jweParserStub;
-
         private Mock<IJwsParser> _jwsParserStub;
-
         private Mock<IJsonWebKeyHelper> _jsonWebKeyHelperStub;
-
         private IGetJweInformationAction _getJweInformationAction;
-
-        #region Exceptions
 
         [Fact]
         public void When_Passing_Null_Parameter_Then_Exception_Are_Thrown()
@@ -149,10 +144,6 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jwe.Actions
             Assert.True(exception.Message == ErrorDescriptions.TheContentCannotBeExtractedFromJweToken);
         }
 
-        #endregion
-
-        #region Happys paths
-
         [Fact]
         public async Task When_Decrypting_Jwe_With_Symmetric_Key_Then_Result_Is_Returned()
         {
@@ -185,8 +176,6 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jwe.Actions
             Assert.True(result.IsContentJws);
             Assert.True(result.Content == content);
         }
-
-        #endregion
 
         private void InitializeFakeObjects()
         {

@@ -11,12 +11,8 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws
     public class JwsActionsFixture
     {
         private Mock<IGetJwsInformationAction> _getJwsInformationActionStub;
-
         private Mock<ICreateJwsAction> _createJwsActionStub;
-
         private IJwsActions _jwsActions;
-
-        #region Exceptions
 
         [Fact]
         public void When_Passing_Null_Parameter_To_GetJwsInformation_Then_Exception_Is_Thrown()
@@ -39,10 +35,6 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws
             // ACTS & ASSERTS
             Assert.ThrowsAsync<ArgumentNullException>(() => _jwsActions.CreateJws(null));
         }
-
-        #endregion
-
-        #region Happy paths
 
         [Fact]
         public void When_Executing_GetJwsInformation_Then_Operation_Is_Called()
@@ -77,8 +69,6 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws
             // ASSERT
             _createJwsActionStub.Verify(g => g.Execute(createJwsParameter));
         }
-
-        #endregion
 
         private void InitializeFakeObjects()
         {

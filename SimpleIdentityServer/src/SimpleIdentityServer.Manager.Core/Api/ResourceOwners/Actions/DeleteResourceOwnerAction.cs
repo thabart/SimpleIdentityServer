@@ -19,25 +19,19 @@ using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Manager.Core.Errors;
 using SimpleIdentityServer.Manager.Core.Exceptions;
 using System;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners.Actions
 {
     public interface IDeleteResourceOwnerAction
     {
-        bool Execute(string subject);
+        Task<bool> Execute(string subject);
     }
 
     internal class DeleteResourceOwnerAction : IDeleteResourceOwnerAction
     {
-        #region Fields
-
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
-
         private readonly IManagerEventSource _managerEventSource;
-
-        #endregion
-
-        #region Constructor
 
         public DeleteResourceOwnerAction(
             IResourceOwnerRepository resourceOwnerRepository,
@@ -47,11 +41,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners.Actions
             _managerEventSource = managerEventSource;
         }
 
-        #endregion
-
-        #region Public methods
-
-        public bool Execute(string subject)
+        public async Task<bool> Execute(string subject)
         {
             _managerEventSource.StartToRemoveResourceOwner(subject);
             if (string.IsNullOrWhiteSpace(subject))
@@ -59,7 +49,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners.Actions
                 throw new ArgumentNullException(nameof(subject));
             }
 
-            var resourceOwner = _resourceOwnerRepository.GetByUniqueClaim(subject);
+            var resourceOwner = await _resourceOwnerRepository.GetAsync(subject);
             if (resourceOwner == null)
             {
                 throw new IdentityServerManagerException(ErrorCodes.InvalidRequestCode,
@@ -67,7 +57,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners.Actions
             }
 
 
-            var res = _resourceOwnerRepository.Delete(subject);
+            var res = await _resourceOwnerRepository.DeleteAsync(subject);
             if (res)
             {
                 _managerEventSource.FinishToRemoveResourceOwner(subject);
@@ -75,7 +65,5 @@ namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners.Actions
 
             return res;
         }
-
-        #endregion
     }
 }

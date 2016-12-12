@@ -18,34 +18,27 @@ using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Manager.Core.Api.Scopes.Actions
 {
     public interface IGetScopesOperation
     {
-        List<Scope> Execute();
+        Task<ICollection<Scope>> Execute();
     }
 
     internal class GetScopesOperation : IGetScopesOperation
     {
         private readonly IScopeRepository _scopeRepository;
 
-        #region Constructor
-
         public GetScopesOperation(IScopeRepository scopeRepository)
         {
             _scopeRepository = scopeRepository;
         }
-
-        #endregion
-
-        #region Public methods
-
-        public List<Scope> Execute()
+        
+        public Task<ICollection<Scope>> Execute()
         {
-            return _scopeRepository.GetAllScopes().ToList();
+            return _scopeRepository.GetAllAsync();
         }
-
-        #endregion
     }
 }

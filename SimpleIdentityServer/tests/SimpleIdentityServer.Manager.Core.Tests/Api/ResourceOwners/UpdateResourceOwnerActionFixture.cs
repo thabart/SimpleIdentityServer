@@ -20,8 +20,8 @@ using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Manager.Core.Api.ResourceOwners.Actions;
 using SimpleIdentityServer.Manager.Core.Errors;
 using SimpleIdentityServer.Manager.Core.Exceptions;
-using SimpleIdentityServer.Manager.Core.Parameters;
 using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Manager.Core.Tests.Api.ResourceOwners
@@ -29,24 +29,21 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.ResourceOwners
     public class UpdateResourceOwnerActionFixture
     {
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
-
         private IUpdateResourceOwnerAction _updateResourceOwnerAction;
 
-        #region Exceptions
-
         [Fact]
-        public void When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
+        public async Task When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _updateResourceOwnerAction.Execute(null));
-            Assert.Throws<ArgumentNullException>(() => _updateResourceOwnerAction.Execute(new ResourceOwner()));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _updateResourceOwnerAction.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _updateResourceOwnerAction.Execute(new ResourceOwner()));
         }
 
         [Fact]
-        public void When_ResourceOwner_Doesnt_Exist_Then_Exception_Is_Thrown()
+        public async Task When_ResourceOwner_Doesnt_Exist_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             const string subject = "invalid_subject";
@@ -55,24 +52,20 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.ResourceOwners
                 Id = subject
             };
             InitializeFakeObjects();
-            _resourceOwnerRepositoryStub.Setup(r => r.GetByUniqueClaim(It.IsAny<string>()))
-                .Returns((ResourceOwner)null);
+            _resourceOwnerRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult((ResourceOwner)null));
 
             // ACT
-            var exception = Assert.Throws<IdentityServerManagerException>(() => _updateResourceOwnerAction.Execute(request));
+            var exception = await Assert.ThrowsAsync<IdentityServerManagerException>(() => _updateResourceOwnerAction.Execute(request));
 
             // ASSERT
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidParameterCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, subject));
         }
-
-        #endregion
-
-        #region Happy path
-
+        
         [Fact]
-        public void When_Updating_Resource_Owner_Then_Operation_Is_Called()
+        public async Task When_Updating_Resource_Owner_Then_Operation_Is_Called()
         {
             // ARRANGE
             var request = new ResourceOwner
@@ -80,22 +73,18 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.ResourceOwners
                 Id = "subject"
             };
             InitializeFakeObjects();
-            _resourceOwnerRepositoryStub.Setup(r => r.GetByUniqueClaim(It.IsAny<string>()))
-                .Returns(new ResourceOwner
+            _resourceOwnerRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(new ResourceOwner
                 {
                     IsLocalAccount = true
-                });
+                }));
 
             // ACT
-            _updateResourceOwnerAction.Execute(request);
+            await _updateResourceOwnerAction.Execute(request);
 
             // ASSERT
-            _resourceOwnerRepositoryStub.Verify(r => r.Update(It.IsAny<ResourceOwner>()));
+            _resourceOwnerRepositoryStub.Verify(r => r.UpdateAsync(It.IsAny<ResourceOwner>()));
         }
-
-        #endregion
-
-        #region Private methods
 
         private void InitializeFakeObjects()
         {
@@ -103,7 +92,5 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.ResourceOwners
             _updateResourceOwnerAction = new UpdateResourceOwnerAction(
                 _resourceOwnerRepositoryStub.Object);
         }
-
-        #endregion
     }
 }

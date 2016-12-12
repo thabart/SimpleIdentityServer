@@ -29,19 +29,10 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
     [Route(Constants.EndPoints.Scopes)]
     public class ScopesController : Controller
     {
-        #region Fields
-
         private const string ScopesStoreName = "Scopes";
-
         private const string ScopeStoreName = "Scope_";
-
         private readonly IScopeActions _scopeActions;
-
         private readonly IRepresentationManager _representationManager;
-
-        #endregion
-
-        #region Constructor
 
         public ScopesController(
             IScopeActions scopeActions,
@@ -50,10 +41,6 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
             _scopeActions = scopeActions;
             _representationManager = representationManager;
         }
-
-        #endregion
-
-        #region Public methods
 
         [HttpGet]
         [Authorize("manager")]
@@ -67,7 +54,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                 };
             }
 
-            var result = _scopeActions.GetScopes().ToDtos();
+            var result = (await _scopeActions.GetScopes()).ToDtos();
             await _representationManager.AddOrUpdateRepresentationAsync(this, ScopesStoreName);
             return new OkObjectResult(result);
         }
@@ -84,7 +71,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                 };
             }
 
-            var result = _scopeActions.GetScope(id).ToDto();
+            var result = (await _scopeActions.GetScope(id)).ToDto();
             await _representationManager.AddOrUpdateRepresentationAsync(this, ScopeStoreName + id);
             return new OkObjectResult(result);
         }
@@ -98,7 +85,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                 throw new ArgumentNullException(nameof(id));
             }
 
-            _scopeActions.DeleteScope(id);
+            await _scopeActions.DeleteScope(id);
             await _representationManager.AddOrUpdateRepresentationAsync(this, ScopeStoreName + id, false);
             await _representationManager.AddOrUpdateRepresentationAsync(this, ScopesStoreName, false);
             return new NoContentResult();
@@ -113,7 +100,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                 throw new ArgumentNullException(nameof(request));
             }
 
-            if (!_scopeActions.AddScope(request.ToParameter()))
+            if (!await _scopeActions.AddScope(request.ToParameter()))
             {
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
@@ -131,7 +118,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                 throw new ArgumentNullException(nameof(request));
             }
 
-            if (!_scopeActions.UpdateScope(request.ToParameter()))
+            if (!await _scopeActions.UpdateScope(request.ToParameter()))
             {
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
@@ -139,7 +126,5 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
             await _representationManager.AddOrUpdateRepresentationAsync(this, ScopeStoreName + request.Name, false);
             return new NoContentResult();
         }
-
-        #endregion
     }
 }

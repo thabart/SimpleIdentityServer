@@ -34,10 +34,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jws.Actions
     public class CreateJwsAction : ICreateJwsAction
     {
         private readonly IJwsGenerator _jwsGenerator;
-
         private readonly IJsonWebKeyHelper _jsonWebKeyHelper;
-
-        #region Constructor
 
         public CreateJwsAction(
             IJwsGenerator jwsGenerator,
@@ -46,10 +43,6 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jws.Actions
             _jwsGenerator = jwsGenerator;
             _jsonWebKeyHelper = jsonWebKeyHelper;
         }
-
-        #endregion
-
-        #region Public methods
 
         public async Task<string> Execute(CreateJwsParameter createJwsParameter)
         {
@@ -94,7 +87,5 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jws.Actions
                 createJwsParameter.Alg,
                 jsonWebKey);
         }
-
-        #endregion
     }
 }

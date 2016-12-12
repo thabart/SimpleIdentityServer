@@ -19,37 +19,32 @@ using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Manager.Core.Errors;
 using SimpleIdentityServer.Manager.Core.Exceptions;
 using System;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners.Actions
 {
     public interface IGetResourceOwnerAction
     {
-        ResourceOwner Execute(string subject);
+        Task<ResourceOwner> Execute(string subject);
     }
 
     internal class GetResourceOwnerAction : IGetResourceOwnerAction
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
 
-        #region Constructor
-
         public GetResourceOwnerAction(IResourceOwnerRepository resourceOwnerRepository)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
         }
 
-        #endregion
-
-        #region Public methods
-
-        public ResourceOwner Execute(string subject)
+        public async Task<ResourceOwner> Execute(string subject)
         {
             if (string.IsNullOrWhiteSpace(subject))
             {
                 throw new ArgumentNullException(nameof(subject));
             }
 
-            var resourceOwner = _resourceOwnerRepository.GetByUniqueClaim(subject);
+            var resourceOwner = await _resourceOwnerRepository.GetAsync(subject);
             if (resourceOwner == null)
             {
                 throw new IdentityServerManagerException(ErrorCodes.InvalidRequestCode,
@@ -58,7 +53,5 @@ namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners.Actions
 
             return resourceOwner;
         }
-
-        #endregion
     }
 }

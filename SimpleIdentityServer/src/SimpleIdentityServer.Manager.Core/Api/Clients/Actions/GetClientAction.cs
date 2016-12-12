@@ -14,42 +14,36 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Manager.Core.Errors;
 using SimpleIdentityServer.Manager.Core.Exceptions;
 using System;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Manager.Core.Api.Clients.Actions
 {
     public interface IGetClientAction
     {
-        SimpleIdentityServer.Core.Models.Client Execute(string clientId);
+        Task<SimpleIdentityServer.Core.Models.Client> Execute(string clientId);
     }
 
     public class GetClientAction : IGetClientAction
     {
         private IClientRepository _clientRepository;
 
-        #region Constructor
-
         public GetClientAction(IClientRepository clientRepository)
         {
             _clientRepository = clientRepository;
         }
-
-        #endregion
-
-        #region Public methods
-
-        public SimpleIdentityServer.Core.Models.Client Execute(string clientId)
+        
+        public async Task<SimpleIdentityServer.Core.Models.Client> Execute(string clientId)
         {
             if (string.IsNullOrWhiteSpace(clientId))
             {
                 throw new ArgumentNullException(nameof(clientId));
             }
 
-            var client = _clientRepository.GetClientById(clientId);
+            var client = await _clientRepository.GetClientByIdAsync(clientId);
             if (client == null)
             {
                 throw new IdentityServerManagerException(ErrorCodes.InvalidRequestCode,
@@ -58,7 +52,5 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients.Actions
 
             return client;
         }
-
-        #endregion
     }
 }

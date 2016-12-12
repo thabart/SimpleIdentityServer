@@ -28,8 +28,6 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws.Actions
     {
         private IJsonWebKeyEnricher _jsonWebKeyEnricher;
 
-        #region Exceptions GetPublicKeyInformation
-
         [Fact]
         public void When_Passing_Null_Parameter_To_GetPublicKeyInformation_Then_Exception_Is_Thrown()
         {
@@ -54,10 +52,6 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws.Actions
             var exception = Assert.Throws<IdentityServerManagerException>(() => _jsonWebKeyEnricher.GetPublicKeyInformation(jsonWebKey));
             Assert.True(exception.Code == ErrorCodes.InvalidParameterCode);
         }
-
-        #endregion
-
-        #region Happy Paths GetPublicKeyInformation
 
         [Fact]
         public void When_Getting_Rsa_Key_Information_Then_Modulus_And_Exponent_Are_Returned()
@@ -90,10 +84,6 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws.Actions
             Assert.True(result.ContainsKey(Constants.JsonWebKeyParameterNames.RsaKey.ModulusName));
             Assert.True(result.ContainsKey(Constants.JsonWebKeyParameterNames.RsaKey.ExponentName));
         }
-
-        #endregion
-
-        #region Exceptions GetJsonWebKeyInformation
 
         [Fact]
         public void When_Passing_Null_Parameter_To_GetJsonWebKeyInformation_Then_Exception_Is_Thrown()
@@ -134,10 +124,6 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws.Actions
             Assert.Throws<ArgumentException>(() => _jsonWebKeyEnricher.GetJsonWebKeyInformation(jsonWebKey));
         }
 
-        #endregion
-
-        #region Happy Paths GetJsonWebKeyInformation
-
         [Fact]
         public void When_Passing_JsonWebKey_To_GetJsonWebKeyInformation_Then_Information_Are_Returned()
         {
@@ -160,8 +146,6 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws.Actions
             Assert.True(result.ContainsKey(Constants.JsonWebKeyParameterNames.AlgorithmName));
             Assert.True(result.ContainsKey(Constants.JsonWebKeyParameterNames.KeyIdentifierName));
         }
-
-        #endregion
 
         private void InitializeFakeObjects()
         {

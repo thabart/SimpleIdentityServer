@@ -30,15 +30,8 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
     [Route(Constants.EndPoints.ResourceOwners)]
     public class ResourceOwnersController : Controller
     {
-        #region Fields
-
         private readonly IResourceOwnerActions _resourceOwnerActions;
-
         private readonly IRepresentationManager _representationManager;
-
-        #endregion
-
-        #region Constructor
 
         public ResourceOwnersController(
             IResourceOwnerActions resourceOwnerActions,
@@ -47,10 +40,6 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
             _resourceOwnerActions = resourceOwnerActions;
             _representationManager = representationManager;
         }
-
-        #endregion
-
-        #region Public methods
 
         [HttpGet]
         [Authorize("manager")]
@@ -64,7 +53,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                 };
             }
 
-            var content = _resourceOwnerActions.GetResourceOwners().ToDtos();
+            var content = (await _resourceOwnerActions.GetResourceOwners()).ToDtos();
             await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwners);
             return new OkObjectResult(content);
         }
@@ -86,7 +75,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                 };
             }
 
-            var content = _resourceOwnerActions.GetResourceOwner(id).ToDto();
+            var content = (await _resourceOwnerActions.GetResourceOwner(id)).ToDto();
             await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwner + id);
             return new OkObjectResult(content);
         }
@@ -100,7 +89,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                 throw new ArgumentNullException(nameof(id));
             }
 
-            _resourceOwnerActions.Delete(id);
+            await _resourceOwnerActions.Delete(id);
             await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwner + id, false);
             await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwners, false);
             return new NoContentResult();
@@ -115,7 +104,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                 throw new ArgumentNullException(nameof(resourceOwnerResponse));
             }
 
-            _resourceOwnerActions.UpdateResourceOwner(resourceOwnerResponse.ToParameter());
+            await _resourceOwnerActions.UpdateResourceOwner(resourceOwnerResponse.ToParameter());
             await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwner + resourceOwnerResponse.Login, false);
             return new NoContentResult();
         }
@@ -129,11 +118,9 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                 throw new ArgumentNullException(nameof(addResourceOwnerRequest));
             }
 
-            _resourceOwnerActions.Add(addResourceOwnerRequest.ToParameter());
+            await _resourceOwnerActions.Add(addResourceOwnerRequest.ToParameter());
             await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwners, false);
             return new NoContentResult();
         }
-
-        #endregion
     }
 }

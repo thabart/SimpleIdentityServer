@@ -38,12 +38,8 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Helpers
     public class JsonWebKeyHelperFixture
     {
         private Mock<IJsonWebKeyConverter> _jsonWebKeyConverterStub;
-
         private Mock<IHttpClientFactory> _httpClientFactoryStub;
-
         private IJsonWebKeyHelper _jsonWebKeyHelper;
-
-        #region Exceptions
 
         [Fact]
         public void When_Passing_No_Kid_To_GetJsonWebKey_Then_Exception_Is_Thrown()
@@ -89,10 +85,6 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Helpers
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheJsonWebKeyCannotBeFound, kid, url));
         }
 
-        #endregion
-
-        #region Happy paths
-
         [Fact]
         public async Task When_Requesting_JsonWeb_Key_Then_Its_Information_Are_Returned()
         {
@@ -128,8 +120,6 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Helpers
             Assert.NotNull(result);
             Assert.True(result.Kid == kid);
         }
-
-        #endregion
 
         private void InitializeFakeObjects()
         {

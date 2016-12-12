@@ -21,6 +21,7 @@ using SimpleIdentityServer.Manager.Core.Api.Scopes.Actions;
 using SimpleIdentityServer.Manager.Core.Errors;
 using SimpleIdentityServer.Manager.Core.Exceptions;
 using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Manager.Core.Tests.Api.Scopes.Actions
@@ -28,66 +29,53 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Scopes.Actions
     public class GetScopeOperationFixture
     {
         private Mock<IScopeRepository> _scopeRepositoryStub;
-
         private IGetScopeOperation _getScopeOperation;
 
-        #region Exceptions
-
         [Fact]
-        public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _getScopeOperation.Execute(null));
-            Assert.Throws<ArgumentNullException>(() => _getScopeOperation.Execute(string.Empty));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getScopeOperation.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getScopeOperation.Execute(string.Empty));
         }
 
         [Fact]
-        public void When_Scope_Doesnt_Exist_Then_Exception_Is_Thrown()
+        public async Task When_Scope_Doesnt_Exist_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             const string scopeName = "invalid_scope_name";
             InitializeFakeObjects();
-            _scopeRepositoryStub.Setup(s => s.GetScopeByName(It.IsAny<string>()))
-                .Returns(() => null);
+            _scopeRepositoryStub.Setup(s => s.GetAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult((Scope)null));
 
             // ACT & ASSERTS
-            var exception = Assert.Throws<IdentityServerManagerException>(() => _getScopeOperation.Execute(scopeName));
+            var exception = await Assert.ThrowsAsync<IdentityServerManagerException>(() => _getScopeOperation.Execute(scopeName));
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheScopeDoesntExist, scopeName));
         }
 
-        #endregion
-
-        #region Happy path
-
         [Fact]
-        public void When_Scope_Is_Retrieved_Then_Scope_Is_Returned()
+        public async Task When_Scope_Is_Retrieved_Then_Scope_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
-            _scopeRepositoryStub.Setup(s => s.GetScopeByName(It.IsAny<string>()))
-                .Returns(() => new Scope());
+            _scopeRepositoryStub.Setup(s => s.GetAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(new Scope()));
 
             // ACT
-            _getScopeOperation.Execute("scope");
+            await _getScopeOperation.Execute("scope");
 
             // ASSERT
-            _scopeRepositoryStub.Verify(s => s.GetScopeByName("scope"));
+            _scopeRepositoryStub.Verify(s => s.GetAsync("scope"));
         }
-
-        #endregion
-
-        #region Private methods
 
         private void InitializeFakeObjects()
         {
             _scopeRepositoryStub = new Mock<IScopeRepository>();
             _getScopeOperation = new GetScopeOperation(_scopeRepositoryStub.Object);
         }
-
-        #endregion
     }
 }

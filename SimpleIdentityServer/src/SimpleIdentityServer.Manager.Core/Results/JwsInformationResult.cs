@@ -23,9 +23,7 @@ namespace SimpleIdentityServer.Manager.Core.Results
     public class JwsInformationResult
     {
         public JwsProtectedHeader Header { get; set; }
-
         public JwsPayload Payload { get; set; }
-
         public Dictionary<string, object> JsonWebKey { get; set; }
     }
 }

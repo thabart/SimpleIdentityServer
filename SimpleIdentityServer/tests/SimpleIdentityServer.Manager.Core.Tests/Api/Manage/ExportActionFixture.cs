@@ -18,6 +18,7 @@ using Moq;
 using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Manager.Core.Api.Clients.Actions;
 using SimpleIdentityServer.Manager.Core.Api.Manage.Actions;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Manager.Core.Tests.Api.Manage
@@ -25,19 +26,17 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Manage
     public class ExportActionFixture
     {
         private Mock<IGetClientsAction> _getClientsActionStub;
-
         private Mock<IManagerEventSource> _managerEventSourceStub;
-
         private IExportAction _exportAction;
 
         [Fact]
-        public void When_Settings_Are_Exported_Then_EventsAreLogged_And_Operation_Is_Called()
+        public async Task When_Settings_Are_Exported_Then_EventsAreLogged_And_Operation_Is_Called()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT
-            _exportAction.Execute();
+            await _exportAction.Execute();
 
             // ASSERTS
             _managerEventSourceStub.Verify(m => m.StartToExport());

@@ -28,7 +28,6 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jws.Actions
     public interface IJsonWebKeyEnricher
     {
         Dictionary<string, object> GetPublicKeyInformation(JsonWebKey jsonWebKey);
-
         Dictionary<string, object> GetJsonWebKeyInformation(JsonWebKey jsonWebKey);
     }
 
@@ -45,8 +44,6 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jws.Actions
                 }
             };
         }
-
-        #region Public methods
 
         public Dictionary<string, object> GetPublicKeyInformation(JsonWebKey jsonWebKey)
         {
@@ -101,8 +98,6 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jws.Actions
                 // TODO : we still need to support the other parameters x5u & x5c & x5t & x5t#S256
             };
         }
-
-        #endregion
 
         public void SetRsaPublicKeyInformation(Dictionary<string, object> result, JsonWebKey jsonWebKey)
         {

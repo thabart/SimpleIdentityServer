@@ -29,16 +29,10 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
     {
         private readonly IJwsActions _jwsActions;
 
-        #region Constructor
-
         public JwsController(IJwsActions jwsActions)
         {
             _jwsActions = jwsActions;
         }
-
-        #endregion
-
-        #region Public methods
 
         [HttpGet]
         public async Task<JwsInformationResponse> GetJws([FromQuery] GetJwsRequest getJwsRequest)
@@ -62,7 +56,5 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
 
             return await _jwsActions.CreateJws(createJwsRequest.ToParameter());
         }
-            
-        #endregion
     }
 }

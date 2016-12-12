@@ -21,6 +21,7 @@ using SimpleIdentityServer.Manager.Core.Api.ResourceOwners.Actions;
 using SimpleIdentityServer.Manager.Core.Errors;
 using SimpleIdentityServer.Manager.Core.Exceptions;
 using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Manager.Core.Tests.Api.ResourceOwners
@@ -28,70 +29,57 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.ResourceOwners
     public class GetResourceOwnerActionFixture
     {
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
-
         private IGetResourceOwnerAction _getResourceOwnerAction;
 
-        #region Exceptions
-
         [Fact]
-        public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _getResourceOwnerAction.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getResourceOwnerAction.Execute(null));
         }
 
         [Fact]
-        public void When_ResourceOwner_Doesnt_Exist_Then_Exception_Is_Thrown()
+        public async Task When_ResourceOwner_Doesnt_Exist_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             const string subject = "invalid_subject";
             InitializeFakeObjects();
-            _resourceOwnerRepositoryStub.Setup(r => r.GetByUniqueClaim(It.IsAny<string>()))
-                .Returns((ResourceOwner)null);
+            _resourceOwnerRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult((ResourceOwner)null));
 
             // ACT
-            var exception = Assert.Throws<IdentityServerManagerException>(() => _getResourceOwnerAction.Execute(subject));
+            var exception = await Assert.ThrowsAsync<IdentityServerManagerException>(() => _getResourceOwnerAction.Execute(subject));
 
             // ASSERT
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheResourceOwnerDoesntExist, subject));
         }
-
-        #endregion
-
-        #region Happy path
-
+        
         [Fact]
-        public void When_Getting_Resource_Owner_Then_ResourceOwner_Is_Returned()
+        public async Task When_Getting_Resource_Owner_Then_ResourceOwner_Is_Returned()
         {
             // ARRANGE
             const string subject = "subject";
             InitializeFakeObjects();
-            _resourceOwnerRepositoryStub.Setup(r => r.GetByUniqueClaim(It.IsAny<string>()))
-                .Returns(new ResourceOwner());
+            _resourceOwnerRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(new ResourceOwner()));
 
             // ACT
-            var result = _getResourceOwnerAction.Execute(subject);
+            var result = await _getResourceOwnerAction.Execute(subject);
 
             // ASSERT
             Assert.NotNull(result);
         }
-
-        #endregion
-
-        #region Private methods
-
+        
         private void InitializeFakeObjects()
         {
             _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
             _getResourceOwnerAction = new GetResourceOwnerAction(
                 _resourceOwnerRepositoryStub.Object);
         }
-
-        #endregion
     }
 }

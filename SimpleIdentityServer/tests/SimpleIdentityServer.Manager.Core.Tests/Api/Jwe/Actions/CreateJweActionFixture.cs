@@ -31,12 +31,8 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jwe.Actions
     public class CreateJweActionFixture
     {
         private Mock<IJweGenerator> _jweGeneratorStub;
-
         private Mock<IJsonWebKeyHelper> _jsonWebKeyHelperStub;
-
         private ICreateJweAction _createJweAction;
-
-        #region Exceptions
 
         [Fact]
         public void When_Passing_Null_Parameter_Then_Exception_Are_Thrown()
@@ -103,11 +99,7 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jwe.Actions
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheJsonWebKeyCannotBeFound, kid, url));
         }
-
-        #endregion
-
-        #region Happy paths
-
+        
         [Fact]
         public async Task When_Encrypting_Jws_With_Password_Then_Operation_Is_Called()
         {
@@ -163,8 +155,6 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jwe.Actions
                 It.IsAny<JweEnc>(),
                 It.IsAny<JsonWebKey>()));
         }
-
-        #endregion
 
         private void InitializeFakeObjects()
         {

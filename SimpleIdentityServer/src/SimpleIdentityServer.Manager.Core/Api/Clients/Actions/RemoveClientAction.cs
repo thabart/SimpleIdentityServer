@@ -19,22 +19,20 @@ using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Manager.Core.Errors;
 using SimpleIdentityServer.Manager.Core.Exceptions;
 using System;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Manager.Core.Api.Clients.Actions
 {
     public interface IRemoveClientAction
     {
-        bool Execute(string clientId);
+        Task<bool> Execute(string clientId);
     }
 
     public class RemoveClientAction : IRemoveClientAction
     {
         private readonly IClientRepository _clientRepository;
-
         private readonly IManagerEventSource _managerEventSource;
 
-        #region Constructor
-        
         public RemoveClientAction(
             IClientRepository clientRepository,
             IManagerEventSource managerEventSource)
@@ -43,11 +41,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients.Actions
             _managerEventSource = managerEventSource;
         }
 
-        #endregion
-
-        #region Public methods
-
-        public bool Execute(string clientId)
+        public async Task<bool> Execute(string clientId)
         {
             _managerEventSource.StartToRemoveClient(clientId);
             if (string.IsNullOrWhiteSpace(clientId))
@@ -55,14 +49,14 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients.Actions
                 throw new ArgumentNullException(nameof(clientId));
             }
 
-            var client = _clientRepository.GetClientById(clientId);
+            var client = await _clientRepository.GetClientByIdAsync(clientId);
             if (client == null)
             {
                 throw new IdentityServerManagerException(ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.TheClientDoesntExist, clientId));
             }
 
-            var result = _clientRepository.DeleteClient(client);
+            var result = await _clientRepository.DeleteAsync(client);
             if (result)
             {
                 _managerEventSource.FinishToRemoveClient(clientId);
@@ -70,7 +64,5 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients.Actions
 
             return result;
         }
-
-        #endregion
     }
 }

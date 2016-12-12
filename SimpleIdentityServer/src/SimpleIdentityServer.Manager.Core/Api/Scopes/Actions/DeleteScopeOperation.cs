@@ -19,21 +19,19 @@ using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Manager.Core.Errors;
 using SimpleIdentityServer.Manager.Core.Exceptions;
 using System;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Manager.Core.Api.Scopes.Actions
 {
     public interface IDeleteScopeOperation
     {
-        bool Execute(string scopeName);
+        Task<bool> Execute(string scopeName);
     }
 
     internal class DeleteScopeOperation : IDeleteScopeOperation
     {
         private readonly IScopeRepository _scopeRepository;
-
         private readonly IManagerEventSource _managerEventSource;
-
-        #region Constructor
 
         public DeleteScopeOperation(
             IScopeRepository scopeRepository,
@@ -43,11 +41,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.Scopes.Actions
             _managerEventSource = managerEventSource;
         }
 
-        #endregion
-
-        #region Public methods
-
-        public bool Execute(string scopeName)
+        public async Task<bool> Execute(string scopeName)
         {
             _managerEventSource.StartToRemoveScope(scopeName);
             if (string.IsNullOrWhiteSpace(scopeName))
@@ -55,14 +49,14 @@ namespace SimpleIdentityServer.Manager.Core.Api.Scopes.Actions
                 throw new ArgumentNullException(nameof(scopeName));
             }
 
-            var scope = _scopeRepository.GetScopeByName(scopeName);
+            var scope = await _scopeRepository.GetAsync(scopeName);
             if (scope == null)
             {
                 throw new IdentityServerManagerException(ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.TheScopeDoesntExist, scopeName));
             }
 
-            var res = _scopeRepository.DeleteScope(scope);
+            var res = await _scopeRepository.DeleteAsync(scope);
             if (res)
             {
                 _managerEventSource.FinishToRemoveScope(scopeName);
@@ -70,7 +64,5 @@ namespace SimpleIdentityServer.Manager.Core.Api.Scopes.Actions
 
             return res;
         }
-
-        #endregion
     }
 }

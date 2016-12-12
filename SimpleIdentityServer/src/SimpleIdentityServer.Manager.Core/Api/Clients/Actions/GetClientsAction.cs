@@ -14,38 +14,29 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Manager.Core.Api.Clients.Actions
 {
     public interface IGetClientsAction
     {
-        List<SimpleIdentityServer.Core.Models.Client> Execute();
+        Task<IEnumerable<SimpleIdentityServer.Core.Models.Client>> Execute();
     }
 
     public class GetClientsAction : IGetClientsAction
     {
         private readonly IClientRepository _clientRepository;
 
-        #region Constructor
-
         public GetClientsAction(IClientRepository clientRepository)
         {
             _clientRepository = clientRepository;
         }
 
-        #endregion
-
-        #region Public methods
-
-        public List<SimpleIdentityServer.Core.Models.Client> Execute()
+        public async Task<IEnumerable<SimpleIdentityServer.Core.Models.Client>> Execute()
         {
-            return _clientRepository.GetAll().ToList();
+            return await _clientRepository.GetAllAsync();
         }
-
-        #endregion
     }
 }

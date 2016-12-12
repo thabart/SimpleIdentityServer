@@ -30,19 +30,10 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
     [Route(Constants.EndPoints.Clients)]
     public class ClientsController : Controller
     {
-        #region Fields
-
         public const string GetClientsStoreName = "GetClients";
-
         public const string GetClientStoreName = "GetClient_";
-
         private readonly IClientActions _clientActions;
-
         private readonly IRepresentationManager _representationManager;
-
-        #endregion
-
-        #region Constructor
 
         public ClientsController(
             IClientActions clientActions,
@@ -51,11 +42,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
             _clientActions = clientActions;
             _representationManager = representationManager;
         }
-
-        #endregion
-
-        #region Public methods
-
+        
         [HttpGet]
         [Authorize("manager")]
         public async Task<ActionResult> GetAll()
@@ -68,7 +55,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                 };
             }
 
-            var result =  _clientActions.GetClients().ToDtos();
+            var result =  (await _clientActions.GetClients()).ToDtos();
             await _representationManager.AddOrUpdateRepresentationAsync(this, GetClientsStoreName);
             return new OkObjectResult(result);
         }
@@ -90,7 +77,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                 };
             }
 
-            var result = _clientActions.GetClient(id).ToClientResponseDto();
+            var result = (await _clientActions.GetClient(id)).ToClientResponseDto();
             await _representationManager.AddOrUpdateRepresentationAsync(this, GetClientStoreName + id);
             return new OkObjectResult(result);
         }
@@ -104,7 +91,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                 throw new ArgumentNullException(nameof(id));
             }
 
-            if (!_clientActions.DeleteClient(id))
+            if (!await _clientActions.DeleteClient(id))
             {
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
@@ -123,7 +110,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                 throw new ArgumentNullException(nameof(updateClientRequest));
             }
 
-            if (!_clientActions.UpdateClient(updateClientRequest.ToParameter()))
+            if (!await _clientActions.UpdateClient(updateClientRequest.ToParameter()))
             {
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
@@ -142,11 +129,9 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                 throw new ArgumentNullException(nameof(client));
             }
 
-            var result = _clientActions.AddClient(client.ToParameter());
+            var result = await _clientActions.AddClient(client.ToParameter());
             await _representationManager.AddOrUpdateRepresentationAsync(this, GetClientsStoreName, false);
             return new OkObjectResult(result);
         }
-
-        #endregion
     }
 }

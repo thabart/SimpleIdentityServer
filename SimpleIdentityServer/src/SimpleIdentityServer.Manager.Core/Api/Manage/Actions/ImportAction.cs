@@ -19,25 +19,19 @@ using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Manager.Core.Parameters;
 using System;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Manager.Core.Api.Manage.Actions
 {
     public interface IImportAction
     {
-        bool Execute(ImportParameter importParameter);
+        Task<bool> Execute(ImportParameter importParameter);
     }
 
     internal class ImportAction : IImportAction
     {
-        #region Fields
-
         private readonly IClientRepository _clientRepository;
-
         private readonly IManagerEventSource _managerEventSource;
-
-        #endregion
-
-        #region Constructor
 
         public ImportAction(
             IClientRepository clientRepository,
@@ -56,12 +50,8 @@ namespace SimpleIdentityServer.Manager.Core.Api.Manage.Actions
             _clientRepository = clientRepository;
             _managerEventSource = managerEventSource;
         }
-
-        #endregion
-
-        #region Public methods
-
-        public bool Execute(ImportParameter importParameter)
+        
+        public async Task<bool> Execute(ImportParameter importParameter)
         {
             if (importParameter == null)
             {
@@ -76,7 +66,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.Manage.Actions
             _managerEventSource.StartToImport();
 
             // 1. Remove all the clients
-            if (!_clientRepository.RemoveAll())
+            if (!await _clientRepository.RemoveAllAsync())
             {
                 return false;
             }
@@ -88,7 +78,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.Manage.Actions
             {
                 try
                 {
-                    _clientRepository.InsertClient(client);
+                    await _clientRepository.InsertAsync(client);
                 }
                 catch (Exception ex)
                 {
@@ -99,7 +89,5 @@ namespace SimpleIdentityServer.Manager.Core.Api.Manage.Actions
             _managerEventSource.FinishToImport();
             return true;
         }
-
-        #endregion
     }
 }

@@ -19,46 +19,39 @@ using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Manager.Core.Errors;
 using SimpleIdentityServer.Manager.Core.Exceptions;
 using System;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Manager.Core.Api.Scopes.Actions
 {
     public interface IUpdateScopeOperation
     {
-        bool Execute(Scope scope);
+        Task<bool> Execute(Scope scope);
     }
 
     internal class UpdateScopeOperation : IUpdateScopeOperation
     {
         private readonly IScopeRepository _scopeRepository;
 
-        #region Constructor
-
         public UpdateScopeOperation(IScopeRepository scopeRepository)
         {
             _scopeRepository = scopeRepository;
         }
-
-        #endregion
-
-        #region Public methods
-
-        public bool Execute(Scope scope)
+        
+        public async Task<bool> Execute(Scope scope)
         {
             if (scope == null)
             {
                 throw new ArgumentNullException(nameof(scope));
             }
 
-            if (_scopeRepository.GetScopeByName(scope.Name) == null)
+            if (await _scopeRepository.GetAsync(scope.Name) == null)
             {
                 throw new IdentityServerManagerException(
                     ErrorCodes.InvalidParameterCode,
                     string.Format(ErrorDescriptions.TheScopeDoesntExist, scope.Name));
             }
 
-            return _scopeRepository.UpdateScope(scope);
+            return await _scopeRepository.UpdateAsync(scope);
         }
-
-        #endregion
     }
 }

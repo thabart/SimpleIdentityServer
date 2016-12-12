@@ -465,17 +465,17 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
 
         #region To List of DTOs
 
-        public static List<ClientInformationResponse> ToDtos(this List<SimpleIdentityServer.Core.Models.Client> clients)
+        public static List<ClientInformationResponse> ToDtos(this IEnumerable<SimpleIdentityServer.Core.Models.Client> clients)
         {
             return clients.Select(c => c.ToDto()).ToList();
         }
 
-        public static List<ScopeResponse> ToDtos(this List<Scope> scopes)
+        public static List<ScopeResponse> ToDtos(this ICollection<Scope> scopes)
         {
             return scopes.Select(s => s.ToDto()).ToList();
         }
 
-        public static List<ResourceOwnerResponse> ToDtos(this List<ResourceOwner> resourceOwners)
+        public static List<ResourceOwnerResponse> ToDtos(this ICollection<ResourceOwner> resourceOwners)
         {
             return resourceOwners.Select(r => r.ToDto()).ToList();
         }

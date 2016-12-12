@@ -22,7 +22,6 @@ namespace SimpleIdentityServer.Manager.Core.Parameters
     public class UpdateClientParameter : RegistrationParameter
     {
         public string ClientId { get; set; }
-
         public List<string> AllowedScopes { get; set; }
     }
 }

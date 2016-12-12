@@ -19,37 +19,32 @@ using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Manager.Core.Errors;
 using SimpleIdentityServer.Manager.Core.Exceptions;
 using System;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Manager.Core.Api.Scopes.Actions
 {
     public interface IGetScopeOperation
     {
-        Scope Execute(string scopeName);
+        Task<Scope> Execute(string scopeName);
     }
 
     internal class GetScopeOperation : IGetScopeOperation
     {
         private IScopeRepository _scopeRepository;
 
-        #region Constructor
-
         public GetScopeOperation(IScopeRepository scopeRepository)
         {
             _scopeRepository = scopeRepository;
         }
-
-        #endregion
-
-        #region Public methods
-
-        public Scope Execute(string scopeName)
+        
+        public async Task<Scope> Execute(string scopeName)
         {
             if (string.IsNullOrWhiteSpace(scopeName))
             {
                 throw new ArgumentNullException(nameof(scopeName));
             }
 
-            var result = _scopeRepository.GetScopeByName(scopeName);
+            var result = await _scopeRepository.GetAsync(scopeName);
             if (result == null)
             {
                 throw new IdentityServerManagerException(ErrorCodes.InvalidRequestCode,
@@ -58,7 +53,5 @@ namespace SimpleIdentityServer.Manager.Core.Api.Scopes.Actions
 
             return result;
         }
-
-        #endregion
     }
 }

@@ -35,12 +35,8 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jws.Actions
     public class GetJwsInformationAction : IGetJwsInformationAction
     {
         private readonly IJwsParser _jwsParser;
-
         private readonly IJsonWebKeyHelper _jsonWebKeyHelper;
-
         private readonly IJsonWebKeyEnricher _jsonWebKeyEnricher;
-
-        #region Constructor
 
         public GetJwsInformationAction(
             IJwsParser jwsParser,
@@ -51,11 +47,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jws.Actions
             _jsonWebKeyHelper = jsonWebKeyHelper;
             _jsonWebKeyEnricher = jsonWebKeyEnricher;
         }
-
-        #endregion
-
-        #region Public methods
-
+        
         public async Task<JwsInformationResult> Execute(GetJwsParameter getJwsParameter)
         {
             if (getJwsParameter == null || string.IsNullOrWhiteSpace(getJwsParameter.Jws))
@@ -128,7 +120,5 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jws.Actions
             result.Payload = payload;
             return result;
         }
-
-        #endregion
     }
 }

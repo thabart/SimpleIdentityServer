@@ -35,14 +35,9 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws.Actions
     public class GetJwsInformationActionFixture
     {
         private Mock<IJwsParser> _jwsParserStub;
-
         private Mock<IJsonWebKeyHelper> _jsonWebKeyHelperStub;
-
         private Mock<IJsonWebKeyEnricher> _jsonWebKeyEnricherStub;
-
         private IGetJwsInformationAction _getJwsInformationAction;
-
-        #region Exceptions
 
         [Fact]
         public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
@@ -183,10 +178,6 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws.Actions
             Assert.True(innerException.Message == ErrorDescriptions.TheSignatureIsNotCorrect);
         }
 
-        #endregion
-
-        #region Happy paths
-
         [Fact]
         public async Task When_JsonWebKey_Is_Extracted_And_The_Jws_Is_Unsigned_Then_Information_Are_Returned()
         {
@@ -262,8 +253,6 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws.Actions
             // ASSERTS
             Assert.NotNull(result);
         }
-
-        #endregion
 
         private void InitializeFakeObjects()
         {

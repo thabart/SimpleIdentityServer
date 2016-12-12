@@ -14,12 +14,13 @@
 // limitations under the License.
 #endregion
 
-using System;
 using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Services;
+using System;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Manager.Host.Services
 {
@@ -33,17 +34,17 @@ namespace SimpleIdentityServer.Manager.Host.Services
             _resourceOwnerRepository = resourceOwnerRepository;
         }
 
-        public ResourceOwner AuthenticateResourceOwner(string login)
+        public Task<ResourceOwner> AuthenticateResourceOwnerAsync(string login)
         {
             if (string.IsNullOrWhiteSpace(login))
             {
                 throw new ArgumentNullException(nameof(login));
             }
 
-            return _resourceOwnerRepository.Get(login);
+            return _resourceOwnerRepository.GetAsync(login);
         }
 
-        public ResourceOwner AuthenticateResourceOwner(string login, string password)
+        public Task<ResourceOwner> AuthenticateResourceOwnerAsync(string login, string password)
         {
             if (string.IsNullOrWhiteSpace(login))
             {
@@ -55,7 +56,7 @@ namespace SimpleIdentityServer.Manager.Host.Services
                 throw new ArgumentNullException(nameof(password));
             }
 
-            return _resourceOwnerRepository.Get(login, GetHashedPassword(password));
+            return _resourceOwnerRepository.GetAsync(login, ComputeHash(password));
         }
 
         public string GetHashedPassword(string password)

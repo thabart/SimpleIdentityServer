@@ -15,40 +15,32 @@
 #endregion
 
 using SimpleIdentityServer.Core.Api.Registration.Actions;
+using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Manager.Core.Api.Clients.Actions;
 using SimpleIdentityServer.Manager.Core.Parameters;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Manager.Core.Api.Clients
 {
     public interface IClientActions
     {
-        List<SimpleIdentityServer.Core.Models.Client> GetClients();
-
-        SimpleIdentityServer.Core.Models.Client GetClient(string clientId);
-
-        bool DeleteClient(string clientId);
-
-        bool UpdateClient(UpdateClientParameter updateClientParameter);
-
-        RegistrationResponse AddClient(RegistrationParameter registrationParameter);
+        Task<IEnumerable<SimpleIdentityServer.Core.Models.Client>> GetClients();
+        Task<SimpleIdentityServer.Core.Models.Client> GetClient(string clientId);
+        Task<bool> DeleteClient(string clientId);
+        Task<bool> UpdateClient(UpdateClientParameter updateClientParameter);
+        Task<ClientRegistrationResponse> AddClient(RegistrationParameter registrationParameter);
     }
 
     public class ClientActions : IClientActions
     {
         private readonly IGetClientsAction _getClientsAction;
-
         private readonly IGetClientAction _getClientAction;
-
         private readonly IRemoveClientAction _removeClientAction;
-
         private readonly IUpdateClientAction _updateClientAction;
-
         private readonly IRegisterClientAction _registerClientAction;
-
-        #region Constructor
 
         public ClientActions(
             IGetClientsAction getClientsAction,
@@ -63,36 +55,30 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients
             _updateClientAction = updateClientAction;
             _registerClientAction = registerClientAction;
         }
-
-        #endregion
-
-        #region Public methods
-
-        public List<SimpleIdentityServer.Core.Models.Client> GetClients()
+        
+        public Task<IEnumerable<SimpleIdentityServer.Core.Models.Client>> GetClients()
         {
             return _getClientsAction.Execute();
         }
 
-        public SimpleIdentityServer.Core.Models.Client GetClient(string clientId)
+        public Task<SimpleIdentityServer.Core.Models.Client> GetClient(string clientId)
         {
             return _getClientAction.Execute(clientId);
         }
 
-        public bool DeleteClient(string clientId)
+        public Task<bool> DeleteClient(string clientId)
         {
             return _removeClientAction.Execute(clientId);
         }
 
-        public bool UpdateClient(UpdateClientParameter updateClientParameter)
+        public Task<bool> UpdateClient(UpdateClientParameter updateClientParameter)
         {
             return _updateClientAction.Execute(updateClientParameter);
         }
 
-        public RegistrationResponse AddClient(RegistrationParameter registrationParameter)
+        public Task<ClientRegistrationResponse> AddClient(RegistrationParameter registrationParameter)
         {
             return _registerClientAction.Execute(registrationParameter);
         }
-
-        #endregion
     }
 }
