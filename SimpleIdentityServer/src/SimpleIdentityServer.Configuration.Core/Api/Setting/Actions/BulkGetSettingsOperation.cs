@@ -18,12 +18,13 @@ using SimpleIdentityServer.Configuration.Core.Parameters;
 using SimpleIdentityServer.Configuration.Core.Repositories;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Configuration.Core.Api.Setting.Actions
 {
     public interface IBulkGetSettingsOperation
     {
-        IEnumerable<Models.Setting> Execute(GetBulkSettingsParameter getBulkSettingsParameter);
+        Task<IEnumerable<Models.Setting>> Execute(GetBulkSettingsParameter getBulkSettingsParameter);
     }
 
     internal class BulkGetSettingsOperation : IBulkGetSettingsOperation
@@ -35,14 +36,14 @@ namespace SimpleIdentityServer.Configuration.Core.Api.Setting.Actions
             _settingRepository = settingRepository;
         }
 
-        public IEnumerable<Models.Setting> Execute(GetBulkSettingsParameter getBulkSettingsParameter)
+        public async Task<IEnumerable<Models.Setting>> Execute(GetBulkSettingsParameter getBulkSettingsParameter)
         {
             if (getBulkSettingsParameter == null)
             {
                 throw new ArgumentNullException(nameof(getBulkSettingsParameter));
             }
 
-            return _settingRepository.Get(getBulkSettingsParameter.Ids);
+            return await _settingRepository.Get(getBulkSettingsParameter.Ids);
         }
     }
 }

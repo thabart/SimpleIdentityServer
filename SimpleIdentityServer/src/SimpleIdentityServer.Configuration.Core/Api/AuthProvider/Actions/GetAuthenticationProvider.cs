@@ -31,16 +31,10 @@ namespace SimpleIdentityServer.Configuration.Core.Api.AuthProvider.Actions
     {
         private readonly IAuthenticationProviderRepository _authenticationProviderRepository;
 
-        #region Constructor
-
         public GetAuthenticationProvider(IAuthenticationProviderRepository authenticationProviderRepository)
         {
             _authenticationProviderRepository = authenticationProviderRepository;
         }
-
-        #endregion
-
-        #region Public methods
 
         public async Task<ActionResult> ExecuteAsync(string name)
         {
@@ -57,7 +51,5 @@ namespace SimpleIdentityServer.Configuration.Core.Api.AuthProvider.Actions
 
             return new OkObjectResult(result);
         }
-
-        #endregion
     }
 }

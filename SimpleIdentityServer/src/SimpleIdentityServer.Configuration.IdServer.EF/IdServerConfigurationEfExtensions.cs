@@ -25,8 +25,6 @@ namespace SimpleIdentityServer.Configuration.IdServer.EF
 {
     public static class IdServerConfigurationEfExtensions
     {
-        #region Public static methods
-
         public static IServiceCollection AddIdServerConfigurationSqlServer(
             this IServiceCollection serviceCollection,
             string configurationConnectionString,
@@ -57,16 +55,23 @@ namespace SimpleIdentityServer.Configuration.IdServer.EF
             return serviceCollection;
         }
 
-        #endregion
 
-        #region Private method
+        public static IServiceCollection AddIdServerConfigurationInMemory(this IServiceCollection serviceCollection)
+        {
+            RegisterServices(serviceCollection);
+            serviceCollection.AddEntityFramework()
+                .AddDbContext<IdServerConfigurationDbContext>(options =>
+                    options.UseInMemoryDatabase());
+            serviceCollection.AddEntityFramework()
+                .AddDbContext<ConfigurationDbContext>(options =>
+                    options.UseInMemoryDatabase());
+            return serviceCollection;
+        }
 
         private static void RegisterServices(IServiceCollection serviceCollection)
         {
             serviceCollection.AddTransient<IAuthenticationProviderRepository, AuthenticationProviderRepository>();
             serviceCollection.AddTransient<ISettingRepository, SettingRepository>();
         }
-
-        #endregion
     }
 }

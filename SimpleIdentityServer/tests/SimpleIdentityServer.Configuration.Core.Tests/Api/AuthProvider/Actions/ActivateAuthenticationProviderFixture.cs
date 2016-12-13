@@ -30,12 +30,8 @@ namespace SimpleIdentityServer.Configuration.Core.Tests.Api.AuthProvider.Actions
     public class ActivateAuthenticationProviderFixture
     {
         private Mock<IAuthenticationProviderRepository> _authenticationProviderRepositoryStub;
-
         private Mock<IConfigurationEventSource> _configurationEventSourceStub;
-
         private IActivateAuthenticationProvider _activateAuthenticationProvider;
-
-        #region Exceptions
 
         [Fact]
         public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
@@ -46,10 +42,6 @@ namespace SimpleIdentityServer.Configuration.Core.Tests.Api.AuthProvider.Actions
             // ACT & ASSERT
             Assert.ThrowsAsync<ArgumentNullException>(() => _activateAuthenticationProvider.ExecuteAsync(null, false));
         }
-
-        #endregion
-
-        #region Happy Paths
 
         [Fact]
         public async Task When_AuthenticationProvider_Doesnt_Exist_Then_NotFound_Is_Returned()
@@ -105,10 +97,6 @@ namespace SimpleIdentityServer.Configuration.Core.Tests.Api.AuthProvider.Actions
             Assert.True((result as StatusCodeResult).StatusCode == StatusCodes.Status500InternalServerError);
         }
 
-        #endregion
-
-        #region Private methods
-
         private void InitializeFakeObjects()
         {
             _authenticationProviderRepositoryStub = new Mock<IAuthenticationProviderRepository>();
@@ -117,7 +105,5 @@ namespace SimpleIdentityServer.Configuration.Core.Tests.Api.AuthProvider.Actions
                 _authenticationProviderRepositoryStub.Object,
                 _configurationEventSourceStub.Object);
         }
-
-        #endregion
     }
 }

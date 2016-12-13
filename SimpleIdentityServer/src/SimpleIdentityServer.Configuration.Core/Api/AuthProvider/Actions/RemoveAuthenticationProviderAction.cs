@@ -30,15 +30,8 @@ namespace SimpleIdentityServer.Configuration.Core.Api.AuthProvider.Actions
 
     internal class RemoveAuthenticationProviderAction : IRemoveAuthenticationProviderAction
     {
-        #region Fields
-
         private readonly IAuthenticationProviderRepository _authenticationProviderRepository;
-
         private readonly IConfigurationEventSource _configurationEventSource;
-
-        #endregion
-
-        #region Constructor
 
         public RemoveAuthenticationProviderAction(
             IAuthenticationProviderRepository authenticationProviderRepository,
@@ -47,10 +40,6 @@ namespace SimpleIdentityServer.Configuration.Core.Api.AuthProvider.Actions
             _authenticationProviderRepository = authenticationProviderRepository;
             _configurationEventSource = configurationEventSource;
         }
-
-        #endregion
-
-        #region Public methods
 
         public async Task<ActionResult> ExecuteAsync(string name)
         {
@@ -74,7 +63,5 @@ namespace SimpleIdentityServer.Configuration.Core.Api.AuthProvider.Actions
             _configurationEventSource.FinishToRemoveAuthenticationProvider(name);
             return new NoContentResult();
         }
-
-        #endregion
     }
 }

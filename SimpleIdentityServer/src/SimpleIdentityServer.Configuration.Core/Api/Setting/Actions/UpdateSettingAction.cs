@@ -17,34 +17,25 @@
 using SimpleIdentityServer.Configuration.Core.Parameters;
 using SimpleIdentityServer.Configuration.Core.Repositories;
 using System;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Configuration.Core.Api.Setting.Actions
 {
     public interface IUpdateSettingAction
     {
-        bool Execute(UpdateSettingParameter updateSettingParameter);
+        Task<bool> Execute(UpdateSettingParameter updateSettingParameter);
     }
 
     internal class UpdateSettingAction : IUpdateSettingAction
     {
-        #region Fields
-
         private readonly ISettingRepository _settingRepository;
-
-        #endregion
-
-        #region Constructor
 
         public UpdateSettingAction(ISettingRepository settingRepository)
         {
             _settingRepository = settingRepository;
         }
-
-        #endregion
-
-        #region Public methods
-
-        public bool Execute(UpdateSettingParameter updateSettingParameter)
+        
+        public Task<bool> Execute(UpdateSettingParameter updateSettingParameter)
         {
             if (updateSettingParameter == null)
             {
@@ -62,7 +53,5 @@ namespace SimpleIdentityServer.Configuration.Core.Api.Setting.Actions
                 Value = updateSettingParameter.Value
             });
         }
-
-        #endregion
     }
 }

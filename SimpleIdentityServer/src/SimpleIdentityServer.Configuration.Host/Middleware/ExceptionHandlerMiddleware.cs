@@ -27,10 +27,7 @@ namespace SimpleIdentityServer.Configuration.Middleware
     public class ExceptionHandlerMiddleware
     {
         private readonly RequestDelegate _next;
-
         private readonly ExceptionHandlerMiddlewareOptions _options;
-
-        #region Constructor
 
         public ExceptionHandlerMiddleware(
             RequestDelegate next,
@@ -49,10 +46,6 @@ namespace SimpleIdentityServer.Configuration.Middleware
             _next = next;
             _options = options;
         }
-
-        #endregion
-
-        #region Public methods
 
         public async Task Invoke(HttpContext context)
         {
@@ -82,7 +75,5 @@ namespace SimpleIdentityServer.Configuration.Middleware
                 await context.Response.WriteAsync(serializedErrorResponse);
             }
         }
-
-        #endregion
     }
 }

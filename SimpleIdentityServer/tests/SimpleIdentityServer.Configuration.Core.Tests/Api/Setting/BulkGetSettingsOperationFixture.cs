@@ -20,6 +20,7 @@ using SimpleIdentityServer.Configuration.Core.Api.Setting.Actions;
 using SimpleIdentityServer.Configuration.Core.Repositories;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Configuration.Core.Tests.Api.Setting
@@ -27,21 +28,20 @@ namespace SimpleIdentityServer.Configuration.Core.Tests.Api.Setting
     public class BulkGetSettingsOperationFixture
     {
         private Mock<ISettingRepository> _settingRepositoryStub;
-
         private IBulkGetSettingsOperation _bulkGetSettingsOperation;
 
         [Fact]
-        public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _bulkGetSettingsOperation.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _bulkGetSettingsOperation.Execute(null));
         }
 
         [Fact]
-        public void When_GetSettings_Then_Operation_Is_Called()
+        public async Task When_GetSettings_Then_Operation_Is_Called()
         {
             // ARRANGE
             var parameter = new Parameters.GetBulkSettingsParameter
@@ -54,7 +54,7 @@ namespace SimpleIdentityServer.Configuration.Core.Tests.Api.Setting
             InitializeFakeObjects();
 
             // ACT
-            _bulkGetSettingsOperation.Execute(parameter);
+            await _bulkGetSettingsOperation.Execute(parameter);
 
             // ASSERT
             _settingRepositoryStub.Verify(s => s.Get(parameter.Ids));

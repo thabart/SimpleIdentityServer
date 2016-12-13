@@ -17,25 +17,19 @@
 using SimpleIdentityServer.Configuration.Core.Repositories;
 using SimpleIdentityServer.Logging;
 using System;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Configuration.Core.Api.Setting.Actions
 {
     public interface IDeleteSettingAction
     {
-        bool Execute(string key);
+        Task<bool> Execute(string key);
     }
 
     internal class DeleteSettingAction : IDeleteSettingAction
     {
-        #region Fields
-
         private readonly ISettingRepository _settingRepository;
-
         private readonly IConfigurationEventSource _configurationEventSource;
-
-        #endregion
-
-        #region Constructor
 
         public DeleteSettingAction(
             ISettingRepository settingRepository,
@@ -45,11 +39,7 @@ namespace SimpleIdentityServer.Configuration.Core.Api.Setting.Actions
             _configurationEventSource = configurationEventSource;
         }
 
-        #endregion
-
-        #region Public methods
-
-        public bool Execute(string key)
+        public async Task<bool> Execute(string key)
         {
             _configurationEventSource.StartToDropSetting(key);
             if (string.IsNullOrWhiteSpace(key))
@@ -57,7 +47,7 @@ namespace SimpleIdentityServer.Configuration.Core.Api.Setting.Actions
                 throw new ArgumentNullException(nameof(key));
             }
 
-            var result = _settingRepository.Remove(key);
+            var result = await _settingRepository.Remove(key);
             if (result)
             {
                 _configurationEventSource.FinishToDropSetting(key);
@@ -65,7 +55,5 @@ namespace SimpleIdentityServer.Configuration.Core.Api.Setting.Actions
 
             return result;
         }
-
-        #endregion
     }
 }

@@ -29,8 +29,6 @@ namespace SimpleIdentityServer.Configuration.Extensions
 {
     public static class MappingExtensions
     {
-        #region To Parameter
-
         public static UpdateSettingParameter ToParameter(this UpdateSettingRequest request)
         {
             return new UpdateSettingParameter
@@ -52,10 +50,6 @@ namespace SimpleIdentityServer.Configuration.Extensions
                 Ids = request.Ids
             };
         }
-
-        #endregion
-
-        #region To DTO
 
         public static SettingResponse ToDto(this Setting setting)
         {
@@ -101,12 +95,8 @@ namespace SimpleIdentityServer.Configuration.Extensions
 
             return result;
         }
-
-        #endregion
-
-        #region To DTOs
-
-        public static List<SettingResponse> ToDtos(this List<Setting> settings)
+        
+        public static List<SettingResponse> ToDtos(this ICollection<Setting> settings)
         {
             if (settings == null)
             {
@@ -125,7 +115,5 @@ namespace SimpleIdentityServer.Configuration.Extensions
 
             return records.Select(r => r.ToDto());
         }
-
-        #endregion
     }
 }

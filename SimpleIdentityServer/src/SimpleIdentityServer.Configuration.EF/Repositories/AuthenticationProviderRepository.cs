@@ -43,8 +43,8 @@ namespace SimpleIdentityServer.Configuration.EF.Repositories
         {
             try
             {
-                var authProviders = _simpleIdentityServerConfigurationContext.AuthenticationProviders.Include(a => a.Options);
-                return await authProviders.Select(r => r.ToDomain()).ToListAsync().ConfigureAwait(false);
+                return await _simpleIdentityServerConfigurationContext.AuthenticationProviders.Include(a => a.Options)
+                    .Select(r => r.ToDomain()).ToListAsync().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -57,8 +57,8 @@ namespace SimpleIdentityServer.Configuration.EF.Repositories
         {
             try
             {
-                var authProviders = _simpleIdentityServerConfigurationContext.AuthenticationProviders.Include(a => a.Options);
-                var result = await authProviders.FirstOrDefaultAsync(a => a.Name == name).ConfigureAwait(false);
+                var result = await _simpleIdentityServerConfigurationContext.AuthenticationProviders.Include(a => a.Options)
+                    .FirstOrDefaultAsync(a => a.Name == name).ConfigureAwait(false);
                 if (result == null)
                 {
                     return null;

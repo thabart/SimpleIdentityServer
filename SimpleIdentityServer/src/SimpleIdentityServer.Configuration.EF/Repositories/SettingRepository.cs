@@ -176,7 +176,7 @@ namespace SimpleIdentityServer.Configuration.EF.Repositories
                         record.Value = setting.Value;
                     }
 
-                    await _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
                     transaction.Commit();
                     return true;
                 }

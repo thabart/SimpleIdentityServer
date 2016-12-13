@@ -32,12 +32,8 @@ namespace SimpleIdentityServer.Configuration.Core.Tests.Api.AuthProvider.Actions
     public class AddAuthenticationProviderActionFixture
     {
         private Mock<IAuthenticationProviderRepository> _authenticationProviderRepository;
-
         private Mock<IConfigurationEventSource> _configurationEventSourceStub;
-
         private IAddAuthenticationProviderAction _addAuthenticationProviderAction;
-
-        #region Exceptions
 
         [Fact]
         public void When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
@@ -77,10 +73,6 @@ namespace SimpleIdentityServer.Configuration.Core.Tests.Api.AuthProvider.Actions
             Assert.True(exception.Code == ErrorCodes.InternalErrorCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheAuthenticationProviderAlreadyExists, name));
         }
-
-        #endregion
-
-        #region Happy paths
 
         [Fact]
         public async Task When_AuthenticationProvider_Cannot_Be_Inserted_Then_HttpStatusCode500_Is_Returned()
@@ -128,10 +120,6 @@ namespace SimpleIdentityServer.Configuration.Core.Tests.Api.AuthProvider.Actions
             Assert.True(result.StatusCode == StatusCodes.Status204NoContent);
         }
 
-        #endregion
-
-        #region Private methods
-
         private void InitializeFakeObjects()
         {
             _authenticationProviderRepository = new Mock<IAuthenticationProviderRepository>();
@@ -140,7 +128,5 @@ namespace SimpleIdentityServer.Configuration.Core.Tests.Api.AuthProvider.Actions
                 _authenticationProviderRepository.Object,
                 _configurationEventSourceStub.Object);
         }
-
-        #endregion
     }
 }

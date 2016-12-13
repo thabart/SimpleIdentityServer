@@ -15,28 +15,22 @@
 #endregion
 
 using IdentityServer4.EntityFramework.DbContexts;
+using Microsoft.EntityFrameworkCore;
 using SimpleIdentityServer.Configuration.Core.Repositories;
 using SimpleIdentityServer.Configuration.IdServer.EF.Extensions;
 using SimpleIdentityServer.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Configuration.IdServer.EF.Repositories
 {
     public class SettingRepository : ISettingRepository
     {
-        #region Fields
-
         private readonly ConfigurationDbContext _context;
-
         private readonly IdServerConfigurationDbContext _idServerConfigurationDbContext;
-
         private readonly IConfigurationEventSource _configurationEventSource;
-
-        #endregion
-
-        #region Constructor
 
         public SettingRepository(
             ConfigurationDbContext context,
@@ -48,154 +42,34 @@ namespace SimpleIdentityServer.Configuration.IdServer.EF.Repositories
             _configurationEventSource = configurationEventSource;
         }
 
-        #endregion
-
-        #region Public methods
-
-        public List<Core.Models.Setting> GetAll()
+        public async Task<ICollection<Core.Models.Setting>> GetAll()
         {
-            return _idServerConfigurationDbContext.Settings.Select(c => c.ToDomain()).ToList();
+            return await _idServerConfigurationDbContext.Settings.Select(c => c.ToDomain()).ToListAsync().ConfigureAwait(false);
         }
 
-        public Core.Models.Setting Get(string key)
+        public async Task<Core.Models.Setting> Get(string key)
         {
-            var configuration = _idServerConfigurationDbContext.Settings.FirstOrDefault(c => c.Key == key);
+            var configuration = await _idServerConfigurationDbContext.Settings.FirstOrDefaultAsync(c => c.Key == key).ConfigureAwait(false);
             return configuration == null ? null : configuration.ToDomain();
         }
 
-        public bool Insert(Core.Models.Setting configuration)
+        public async Task<bool> Insert(Core.Models.Setting configuration)
         {
             if (configuration == null)
             {
                 return false;
             }
 
-            try
-            {
-                _idServerConfigurationDbContext.Settings.Add(new Models.Setting
-                {
-                    Key = configuration.Key,
-                    Value = configuration.Value
-                });
-                _idServerConfigurationDbContext.SaveChanges();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _configurationEventSource.Failure(ex);
-                return false;
-            }
-        }
-
-        public bool Remove(string key)
-        {
-            if (string.IsNullOrWhiteSpace(key))
-            {
-                return false;
-            }
-
-            try
-            {
-                var configuration = _idServerConfigurationDbContext.Settings.FirstOrDefault(c => c.Key == key);
-                if (configuration == null)
-                {
-                    return false;
-                }
-
-                _idServerConfigurationDbContext.Settings.Remove(configuration);
-                _idServerConfigurationDbContext.SaveChanges();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _configurationEventSource.Failure(ex);
-                return false;
-            }
-        }
-
-        public bool Update(Core.Models.Setting conf)
-        {
-            if (conf == null || string.IsNullOrWhiteSpace(conf.Key))
-            {
-                return false;
-            }
-
-            try
-            {
-                var configuration = _idServerConfigurationDbContext.Settings.FirstOrDefault(c => c.Key == conf.Key);
-                configuration.Value = conf.Value;
-                int lifeTime;
-                if ((conf.Key == Core.Constants.SettingNames.ExpirationTimeName ||
-                    conf.Key == Core.Constants.SettingNames.AuthorizationCodeExpirationTimeName) && 
-                    int.TryParse(conf.Value, out lifeTime))
-                {
-                    var clients = _context.Clients;
-                    foreach (var client in clients)
-                    {
-                        if (conf.Key == Core.Constants.SettingNames.ExpirationTimeName)
-                        {
-                            client.AccessTokenLifetime = lifeTime;
-                        }
-                        if (conf.Key == Core.Constants.SettingNames.AuthorizationCodeExpirationTimeName)
-                        {
-                            client.AuthorizationCodeLifetime = lifeTime;
-                        }
-                    }
-                }
-
-                _idServerConfigurationDbContext.SaveChanges();
-                _context.SaveChanges();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _configurationEventSource.Failure(ex);
-                return false;
-            }
-        }
-
-        public List<Core.Models.Setting> Get(IEnumerable<string> ids)
-        {
-            if (ids == null)
-            {
-                throw new ArgumentNullException(nameof(ids));
-            }
-
-            try
-            {
-                return _idServerConfigurationDbContext.Settings.Where(s => ids.Contains(s.Key)).Select(r => r.ToDomain()).ToList();
-            }
-            catch (Exception ex)
-            {
-                _configurationEventSource.Failure(ex);
-                return new List<Core.Models.Setting>();
-            }
-        }
-
-        public bool Update(IEnumerable<Core.Models.Setting> settings)
-        {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
-
-            using (var transaction = _context.Database.BeginTransaction())
+            using (var transaction = await _idServerConfigurationDbContext.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
                 try
                 {
-                    foreach (var setting in settings)
+                    _idServerConfigurationDbContext.Settings.Add(new Models.Setting
                     {
-                        var record = _idServerConfigurationDbContext.Settings.FirstOrDefault(c => c.Key == setting.Key);
-                        if (record == null)
-                        {
-                            transaction.Rollback();
-                            return false;
-                        }
-
-                        record.Value = setting.Value;
-                    }
-
-                    _context.SaveChanges();
+                        Key = configuration.Key,
+                        Value = configuration.Value
+                    });
+                    await _idServerConfigurationDbContext.SaveChangesAsync().ConfigureAwait(false);
                     transaction.Commit();
                     return true;
                 }
@@ -208,6 +82,140 @@ namespace SimpleIdentityServer.Configuration.IdServer.EF.Repositories
             }
         }
 
-        #endregion
+        public async Task<bool> Remove(string key)
+        {
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                return false;
+            }
+
+            using (var transaction = await _idServerConfigurationDbContext.Database.BeginTransactionAsync().ConfigureAwait(false))
+            {
+                try
+                {
+                    var configuration = await _idServerConfigurationDbContext.Settings.FirstOrDefaultAsync(c => c.Key == key).ConfigureAwait(false);
+                    if (configuration == null)
+                    {
+                        return false;
+                    }
+
+                    _idServerConfigurationDbContext.Settings.Remove(configuration);
+                    await _idServerConfigurationDbContext.SaveChangesAsync().ConfigureAwait(false);
+                    transaction.Commit();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    _configurationEventSource.Failure(ex);
+                    transaction.Rollback();
+                    return false;
+                }
+            }
+        }
+
+        public async Task<bool> Update(Core.Models.Setting conf)
+        {
+            if (conf == null || string.IsNullOrWhiteSpace(conf.Key))
+            {
+                return false;
+            }
+
+            using (var transaction = await _idServerConfigurationDbContext.Database.BeginTransactionAsync().ConfigureAwait(false))
+            {
+                using (var secondTransaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
+                {
+                    try
+                    {
+                        var configuration = await _idServerConfigurationDbContext.Settings.FirstOrDefaultAsync(c => c.Key == conf.Key).ConfigureAwait(false);
+                        configuration.Value = conf.Value;
+                        int lifeTime;
+                        if ((conf.Key == Core.Constants.SettingNames.ExpirationTimeName ||
+                            conf.Key == Core.Constants.SettingNames.AuthorizationCodeExpirationTimeName) &&
+                            int.TryParse(conf.Value, out lifeTime))
+                        {
+                            var clients = _context.Clients;
+                            foreach (var client in clients)
+                            {
+                                if (conf.Key == Core.Constants.SettingNames.ExpirationTimeName)
+                                {
+                                    client.AccessTokenLifetime = lifeTime;
+                                }
+                                if (conf.Key == Core.Constants.SettingNames.AuthorizationCodeExpirationTimeName)
+                                {
+                                    client.AuthorizationCodeLifetime = lifeTime;
+                                }
+                            }
+                        }
+
+                        await _idServerConfigurationDbContext.SaveChangesAsync().ConfigureAwait(false);
+                        await _context.SaveChangesAsync().ConfigureAwait(false); ;
+                        transaction.Commit();
+                        secondTransaction.Commit();
+                        return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        _configurationEventSource.Failure(ex);
+                        transaction.Rollback();
+                        secondTransaction.Rollback();
+                        return false;
+                    }
+                }
+            }
+        }
+
+        public async Task<ICollection<Core.Models.Setting>> Get(IEnumerable<string> ids)
+        {
+            if (ids == null)
+            {
+                throw new ArgumentNullException(nameof(ids));
+            }
+
+            try
+            {
+                return await _idServerConfigurationDbContext.Settings.Where(s => ids.Contains(s.Key)).Select(r => r.ToDomain()).ToListAsync().ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                _configurationEventSource.Failure(ex);
+                return new List<Core.Models.Setting>();
+            }
+        }
+
+        public async Task<bool> Update(IEnumerable<Core.Models.Setting> settings)
+        {
+            if (settings == null)
+            {
+                throw new ArgumentNullException(nameof(settings));
+            }
+
+            using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
+            {
+                try
+                {
+                    foreach (var setting in settings)
+                    {
+                        var record = await _idServerConfigurationDbContext.Settings.FirstOrDefaultAsync(c => c.Key == setting.Key).ConfigureAwait(false);
+                        if (record == null)
+                        {
+                            transaction.Rollback();
+                            return false;
+                        }
+
+                        record.Value = setting.Value;
+                    }
+
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
+                    transaction.Commit();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    _configurationEventSource.Failure(ex);
+                    transaction.Rollback();
+                    return false;
+                }
+            }
+        }
     }
 }

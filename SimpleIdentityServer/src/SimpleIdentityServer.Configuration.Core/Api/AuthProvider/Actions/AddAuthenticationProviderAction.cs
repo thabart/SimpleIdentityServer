@@ -34,15 +34,8 @@ namespace SimpleIdentityServer.Configuration.Core.Api.AuthProvider.Actions
 
     internal class AddAuthenticationProviderAction : IAddAuthenticationProviderAction
     {
-        #region Fields
-
         private readonly IAuthenticationProviderRepository _authenticationProviderRepository;
-
         private readonly IConfigurationEventSource _configurationEventSource;
-
-        #endregion
-
-        #region Constructor
 
         public AddAuthenticationProviderAction(
             IAuthenticationProviderRepository authenticationProviderRepository,
@@ -51,10 +44,6 @@ namespace SimpleIdentityServer.Configuration.Core.Api.AuthProvider.Actions
             _authenticationProviderRepository = authenticationProviderRepository;
             _configurationEventSource = configurationEventSource;
         }
-
-        #endregion
-
-        #region Public methods
 
         public async Task<ActionResult> ExecuteAsync(AuthenticationProvider authenticationProvider)
         {
@@ -91,7 +80,5 @@ namespace SimpleIdentityServer.Configuration.Core.Api.AuthProvider.Actions
             _configurationEventSource.FinishToAddAuthenticationProvider(json);
             return new NoContentResult();
         }
-
-        #endregion
     }
 }

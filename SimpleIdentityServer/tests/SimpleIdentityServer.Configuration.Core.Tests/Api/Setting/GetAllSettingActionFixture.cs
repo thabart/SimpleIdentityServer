@@ -17,45 +17,33 @@
 using Moq;
 using SimpleIdentityServer.Configuration.Core.Api.Setting.Actions;
 using SimpleIdentityServer.Configuration.Core.Repositories;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Configuration.Core.Tests.Api.Setting
 {
     public class GetAllSettingActionFixture
     {
-        #region Fields
-
         private Mock<ISettingRepository> _settingRepositoryStub;
-
         private IGetAllSettingAction _getAllSettingAction;
 
-        #endregion       
-        
-        #region Happy path
-
         [Fact]
-        public void When_Configurations_Are_Retrieved_Then_Operation_Is_Called()
+        public async Task When_Configurations_Are_Retrieved_Then_Operation_Is_Called()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT
-            _getAllSettingAction.Execute();
+            await _getAllSettingAction.Execute();
 
             // ASSERT
             _settingRepositoryStub.Verify(c => c.GetAll());
         }
-
-        #endregion
-
-        #region Private methods
-
+        
         private void InitializeFakeObjects()
         {
             _settingRepositoryStub = new Mock<ISettingRepository>();
             _getAllSettingAction = new GetAllSettingAction(_settingRepositoryStub.Object);
         }
-
-        #endregion
     }
 }

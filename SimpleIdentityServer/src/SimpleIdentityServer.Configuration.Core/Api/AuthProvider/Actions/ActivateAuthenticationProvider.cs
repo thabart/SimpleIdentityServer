@@ -28,14 +28,10 @@ namespace SimpleIdentityServer.Configuration.Core.Api.AuthProvider.Actions
         Task<ActionResult> ExecuteAsync(string name, bool isEnabled);
     }
 
-
     internal class ActivateAuthenticationProvider : IActivateAuthenticationProvider
     {
         private readonly IAuthenticationProviderRepository _authenticationProviderRepository;
-
         private readonly IConfigurationEventSource _configurationEventSource;
-
-        #region Constructor
 
         public ActivateAuthenticationProvider(
             IAuthenticationProviderRepository authenticationProviderRepository,
@@ -44,10 +40,6 @@ namespace SimpleIdentityServer.Configuration.Core.Api.AuthProvider.Actions
             _authenticationProviderRepository = authenticationProviderRepository;
             _configurationEventSource = configurationEventSource;
         }
-
-        #endregion
-
-        #region Public methods
 
         public async Task<ActionResult> ExecuteAsync(string name, bool isEnabled)
         {
@@ -73,7 +65,5 @@ namespace SimpleIdentityServer.Configuration.Core.Api.AuthProvider.Actions
 
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
-
-        #endregion
     }
 }

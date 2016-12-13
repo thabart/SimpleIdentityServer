@@ -30,6 +30,7 @@ using SimpleIdentityServer.Oauth2Instrospection.Authentication;
 using System;
 using WebApiContrib.Core.Concurrency;
 using WebApiContrib.Core.Storage;
+using WebApiContrib.Core.Storage.InMemory;
 
 namespace SimpleIdentityServer.Configuration.Startup
 {
@@ -56,12 +57,12 @@ namespace SimpleIdentityServer.Configuration.Startup
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            var introspectionUrl = Configuration["IntrospectionUrl"];
-            var clientId = Configuration["ClientId"];
-            var clientSecret = Configuration["ClientSecret"];
+            var introspectionUrl = Configuration["IntrospectionEdp:Url"];
+            var clientId = Configuration["IntrospectionEdp:ClientId"];
+            var clientSecret = Configuration["IntrospectionEdp:ClientSecret"];
             var isDataMigrated = Configuration["DATA_MIGRATED"] == null ? false : bool.Parse(Configuration["DATA_MIGRATED"]);
 
-            // Ensure data are inserted
+            // 1. Ensure data are inserted
             if (isDataMigrated)
             {
                 using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
@@ -72,10 +73,10 @@ namespace SimpleIdentityServer.Configuration.Startup
                 }
             }
 
-            // Enable serilog
+            // 2. Enable serilog
             loggerFactory.AddSerilog();
 
-            // Enable configuration service
+            // 3. Enable configuration service
             app.UseConfigurationService(new Oauth2IntrospectionOptions
             {
                 InstrospectionEndPoint = introspectionUrl,
@@ -84,49 +85,45 @@ namespace SimpleIdentityServer.Configuration.Startup
             });
         }
 
-        #region Private methods
-
         private void RegisterServices(IServiceCollection services)
         {
-            var cachingDatabase = Configuration["Caching:Database"];
-            var cachingConnectionPath = Configuration["Caching:ConnectionPath"];
-            var isSqlServer = bool.Parse(Configuration["isSqlServer"]);
-            var isPostgre = bool.Parse(Configuration["isPostgre"]);
+            var cachingType = Configuration["Caching:Type"];
+            var dbType = Configuration["Db:Type"];
             var isLogFileEnabled = bool.Parse(Configuration["Log:File:Enabled"]);
             var isElasticSearchEnabled = bool.Parse(Configuration["Log:Elasticsearch:Enabled"]);
-            var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
-            var idServerConnectionString = Configuration["Data:IdServerConnection:ConnectionString"];
-            if (string.IsNullOrWhiteSpace(cachingDatabase))
-            {
-                cachingDatabase = "INMEMORY";
-            }
+            var connectionString = Configuration["Data:ConnectionString"];
+            var idServerConnectionString = Configuration["Data:IdServerConnectionString"];
 
-            // Configure database
+            // 1. Configure database
             services.AddSimpleIdentityServerConfiguration();
-            if (isSqlServer)
+            if (string.Equals(dbType, "SQLSERVER", StringComparison.CurrentCultureIgnoreCase))
             {
                 services.AddIdServerConfigurationSqlServer(connectionString, idServerConnectionString);
             }
-            else if (isPostgre)
+            else if (string.Equals(dbType, "POSTGRES", StringComparison.CurrentCultureIgnoreCase))
             {
                 services.AddIdServerConfigurationPostgre(connectionString, idServerConnectionString);
             }
+            else
+            {
+                services.AddIdServerConfigurationInMemory();
+            }
 
-            // Configure caching
-            if (cachingDatabase == "REDIS")
+            // 2. Configure caching
+            if (string.Equals(cachingType, "REDIS", StringComparison.CurrentCultureIgnoreCase))
             {
                 services.AddConcurrency(opt => opt.UseRedis(o =>
                 {
-                    o.Configuration = Configuration[cachingConnectionPath + ":ConnectionString"];
-                    o.InstanceName = Configuration[cachingConnectionPath + ":InstanceName"];
-                }, int.Parse(Configuration[cachingConnectionPath + ":Port"])));
+                    o.Configuration = Configuration["Caching:ConnectionString"];
+                    o.InstanceName = Configuration["Caching:InstanceName"];
+                }, int.Parse(Configuration["Caching:Port"])));
             }
-            else if (cachingDatabase == "INMEMORY")
+            else
             {
-                services.AddConcurrency(opt => opt.UseInMemoryStorage());
+                services.AddConcurrency(opt => opt.UseInMemory());
             }
 
-            // Configure logging
+            // 3. Configure logging
             var logger = new LoggerConfiguration()
                 .MinimumLevel.Information()
                 .Enrich.FromLogContext()
@@ -160,7 +157,5 @@ namespace SimpleIdentityServer.Configuration.Startup
                 .CreateLogger();
             Log.Logger = log;
         }
-
-        #endregion
     }
 }

@@ -16,34 +16,25 @@
 
 using SimpleIdentityServer.Configuration.Core.Repositories;
 using System;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Configuration.Core.Api.Setting.Actions
 {
     public interface IGetSettingAction
     {
-        Models.Setting Execute(string key);
+        Task<Models.Setting> Execute(string key);
     }
 
     internal class GetSettingAction : IGetSettingAction
     {
-        #region Fields
-
         private readonly ISettingRepository _settingRepository;
-
-        #endregion
-
-        #region Constructor
 
         public GetSettingAction(ISettingRepository settingRepository)
         {
             _settingRepository = settingRepository;
         }
-
-        #endregion
-
-        #region Public methods
-
-        public Models.Setting Execute(string key)
+        
+        public Task<Models.Setting> Execute(string key)
         {
             if (string.IsNullOrWhiteSpace(key))
             {
@@ -52,7 +43,5 @@ namespace SimpleIdentityServer.Configuration.Core.Api.Setting.Actions
 
             return _settingRepository.Get(key);
         }
-
-        #endregion
     }
 }

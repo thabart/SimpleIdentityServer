@@ -19,9 +19,7 @@ namespace SimpleIdentityServer.Configuration.Core.Errors
     public static class ErrorCodes
     {
         public const string UnhandledExceptionCode = "unhandled_exception";
-
         public const string InternalErrorCode = "internal_error";
-
         public const string InvalidRequest = "invalid_request";
     }
 }

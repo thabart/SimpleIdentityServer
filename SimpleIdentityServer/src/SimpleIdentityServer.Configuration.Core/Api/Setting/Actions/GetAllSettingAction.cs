@@ -16,12 +16,13 @@
 
 using SimpleIdentityServer.Configuration.Core.Repositories;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Configuration.Core.Api.Setting.Actions
 {
     public interface IGetAllSettingAction
     {
-        List<Models.Setting> Execute();
+        Task<ICollection<Models.Setting>> Execute();
     }
 
     internal class GetAllSettingAction : IGetAllSettingAction
@@ -33,7 +34,7 @@ namespace SimpleIdentityServer.Configuration.Core.Api.Setting.Actions
             _settingRepository = settingRepository;
         }
         
-        public List<Models.Setting> Execute()
+        public Task<ICollection<Models.Setting>> Execute()
         {
             return _settingRepository.GetAll();
         }

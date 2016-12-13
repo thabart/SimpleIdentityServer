@@ -32,16 +32,10 @@ namespace SimpleIdentityServer.Configuration.Core.Api.AuthProvider.Actions
     {
         private readonly IAuthenticationProviderRepository _authenticationProviderRepository;
 
-        #region Constructor
-
         public UpdateAuthenticationProvider(IAuthenticationProviderRepository authenticationProviderRepository)
         {
             _authenticationProviderRepository = authenticationProviderRepository;
         }
-
-        #endregion
-
-        #region Public methods
 
         public async Task<ActionResult> ExecuteAsync(AuthenticationProvider authenticationProvider)
         {
@@ -64,7 +58,5 @@ namespace SimpleIdentityServer.Configuration.Core.Api.AuthProvider.Actions
 
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
-
-        #endregion
     }
 }

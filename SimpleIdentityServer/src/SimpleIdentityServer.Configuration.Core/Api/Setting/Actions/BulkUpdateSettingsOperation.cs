@@ -19,12 +19,13 @@ using SimpleIdentityServer.Configuration.Core.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Configuration.Core.Api.Setting.Actions
 {
     public interface IBulkUpdateSettingsOperation
     {
-        bool Execute(IEnumerable<UpdateSettingParameter> settings);
+        Task<bool> Execute(IEnumerable<UpdateSettingParameter> settings);
     }
 
     internal class BulkUpdateSettingsOperation : IBulkUpdateSettingsOperation
@@ -36,14 +37,14 @@ namespace SimpleIdentityServer.Configuration.Core.Api.Setting.Actions
             _settingRepository = settingRepository;
         }
 
-        public bool Execute(IEnumerable<UpdateSettingParameter> settings)
+        public async Task<bool> Execute(IEnumerable<UpdateSettingParameter> settings)
         {
             if (settings == null)
             {
                 throw new ArgumentNullException(nameof(settings));
             }
 
-            return _settingRepository.Update(settings.Select(s => new Models.Setting
+            return await _settingRepository.Update(settings.Select(s => new Models.Setting
             {
                 Key = s.Key,
                 Value = s.Value

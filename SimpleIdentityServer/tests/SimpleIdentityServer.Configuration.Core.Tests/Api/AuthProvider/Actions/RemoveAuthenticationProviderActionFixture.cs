@@ -30,12 +30,8 @@ namespace SimpleIdentityServer.Configuration.Core.Tests.Api.AuthProvider.Actions
     public class RemoveAuthenticationProviderActionFixture
     {
         private Mock<IAuthenticationProviderRepository> _authenticationProviderRepositoryStub;
-
         private Mock<IConfigurationEventSource> _configurationEventSourceStub;
-
         private IRemoveAuthenticationProviderAction _removeAuthenticationProviderAction;
-
-        #region Exceptions
 
         [Fact]
         public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
@@ -46,10 +42,6 @@ namespace SimpleIdentityServer.Configuration.Core.Tests.Api.AuthProvider.Actions
             // ACT & ASSERT
             Assert.ThrowsAsync<ArgumentNullException>(() => _removeAuthenticationProviderAction.ExecuteAsync(null));
         }
-
-        #endregion
-
-        #region Happy paths
 
         [Fact]
         public async Task When_Removing_Unexisting_AuthenticationProvider_Then_NotFound_Is_Returned()
@@ -102,11 +94,7 @@ namespace SimpleIdentityServer.Configuration.Core.Tests.Api.AuthProvider.Actions
             Assert.NotNull(result);
             Assert.True(result.StatusCode == StatusCodes.Status204NoContent);
         }
-
-        #endregion
-
-        #region Private methods
-
+        
         private void InitializeFakeObjects()
         {
             _authenticationProviderRepositoryStub = new Mock<IAuthenticationProviderRepository>();
@@ -115,7 +103,5 @@ namespace SimpleIdentityServer.Configuration.Core.Tests.Api.AuthProvider.Actions
                 _authenticationProviderRepositoryStub.Object,
                 _configurationEventSourceStub.Object);
         }
-
-        #endregion
     }
 }

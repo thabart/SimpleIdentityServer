@@ -19,56 +19,41 @@ using SimpleIdentityServer.Configuration.Core.Api.Setting.Actions;
 using SimpleIdentityServer.Configuration.Core.Repositories;
 using SimpleIdentityServer.Logging;
 using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Configuration.Core.Tests.Api.Setting
 {
     public class DeleteSettingActionFixture
     {
-        #region Fields
-
         private Mock<ISettingRepository> _settingRepositoryStub;
-
         private Mock<IConfigurationEventSource> _configurationEventSource;
-
         private IDeleteSettingAction _deleteSettingAction;
 
-        #endregion
-
-        #region Exceptions
-
         [Fact]
-        public void When_Passing_NullOr_Empty_Parameter_Then_Exception_Is_Thrown()
+        public async Task When_Passing_NullOr_Empty_Parameter_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            Assert.Throws<ArgumentNullException>(() => _deleteSettingAction.Execute(null));
-            Assert.Throws<ArgumentNullException>(() => _deleteSettingAction.Execute(string.Empty));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _deleteSettingAction.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _deleteSettingAction.Execute(string.Empty));
         }
 
-        #endregion
-
-        #region Happy path
-
         [Fact]
-        public void When_Setting_Is_Removed_Then_Operation_Is_Called()
+        public async Task When_Setting_Is_Removed_Then_Operation_Is_Called()
         {
             // ARRANGE
             const string key = "configuration_key";
             InitializeFakeObjects();
 
             // ACT
-            _deleteSettingAction.Execute(key);
+            await _deleteSettingAction.Execute(key);
 
             // ASSERT
             _settingRepositoryStub.Verify(c => c.Remove(key));
         }
-
-        #endregion
-
-        #region Private methods
 
         private void InitializeFakeObjects()
         {
@@ -78,7 +63,5 @@ namespace SimpleIdentityServer.Configuration.Core.Tests.Api.Setting
                 _settingRepositoryStub.Object,
                 _configurationEventSource.Object);
         }
-
-        #endregion
     }
 }

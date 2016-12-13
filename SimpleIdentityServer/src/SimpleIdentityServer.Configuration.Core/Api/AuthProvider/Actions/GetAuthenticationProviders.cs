@@ -16,9 +16,7 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SimpleIdentityServer.Configuration.Core.Models;
 using SimpleIdentityServer.Configuration.Core.Repositories;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Configuration.Core.Api.AuthProvider.Actions
@@ -32,16 +30,10 @@ namespace SimpleIdentityServer.Configuration.Core.Api.AuthProvider.Actions
     {
         private readonly IAuthenticationProviderRepository _authenticationProviderRepository;
 
-        #region Constructor
-
         public GetAuthenticationProviders(IAuthenticationProviderRepository authenticationProviderRepository)
         {
             _authenticationProviderRepository = authenticationProviderRepository;
         }
-
-        #endregion
-
-        #region Public methods
 
         public async Task<ActionResult> ExecuteAsync()
         {
@@ -52,8 +44,6 @@ namespace SimpleIdentityServer.Configuration.Core.Api.AuthProvider.Actions
             }
 
             return new OkObjectResult(result);
-        } 
-
-        #endregion
+        }
     }
 }

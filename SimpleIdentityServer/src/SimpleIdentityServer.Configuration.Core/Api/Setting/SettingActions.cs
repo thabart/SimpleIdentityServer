@@ -17,22 +17,18 @@
 using SimpleIdentityServer.Configuration.Core.Api.Setting.Actions;
 using SimpleIdentityServer.Configuration.Core.Parameters;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Configuration.Core.Api.Setting
 {
     public interface ISettingActions
     {
-        bool DeleteSetting(string key);
-
-        List<Models.Setting> GetSettings();
-
-        Models.Setting GetSetting(string key);
-
-        bool UpdateSetting(UpdateSettingParameter updateSettingParameter);
-
-        IEnumerable<Models.Setting> BulkGetSettings(GetBulkSettingsParameter parameter);
-
-        bool BulkUpdateSettings(IEnumerable<UpdateSettingParameter> settings);
+        Task<bool> DeleteSetting(string key);
+        Task<ICollection<Models.Setting>> GetSettings();
+        Task<Models.Setting> GetSetting(string key);
+        Task<bool> UpdateSetting(UpdateSettingParameter updateSettingParameter);
+        Task<IEnumerable<Models.Setting>> BulkGetSettings(GetBulkSettingsParameter parameter);
+        Task<bool> BulkUpdateSettings(IEnumerable<UpdateSettingParameter> settings);
     }
 
     internal class SettingActions : ISettingActions
@@ -60,32 +56,32 @@ namespace SimpleIdentityServer.Configuration.Core.Api.Setting
             _bulkUpdateSettingsOperation = bulkUpdateSettingsOperation;
         }
 
-        public bool DeleteSetting(string key)
+        public Task<bool> DeleteSetting(string key)
         {
             return _deleteSettingAction.Execute(key);
         }
 
-        public List<Models.Setting> GetSettings()
+        public Task<ICollection<Models.Setting>> GetSettings()
         {
             return _getAllSettingAction.Execute();
         }
 
-        public Models.Setting GetSetting(string key)
+        public Task<Models.Setting> GetSetting(string key)
         {
             return _getSettingAction.Execute(key);
         }
 
-        public bool UpdateSetting(UpdateSettingParameter updateSettingParameter)
+        public Task<bool> UpdateSetting(UpdateSettingParameter updateSettingParameter)
         {
             return _updateSettingAction.Execute(updateSettingParameter);
         }
 
-        public IEnumerable<Models.Setting> BulkGetSettings(GetBulkSettingsParameter parameter)
+        public Task<IEnumerable<Models.Setting>> BulkGetSettings(GetBulkSettingsParameter parameter)
         {
             return _bulkGetSettingsOperation.Execute(parameter);
         }
 
-        public bool BulkUpdateSettings(IEnumerable<UpdateSettingParameter> settings)
+        public Task<bool> BulkUpdateSettings(IEnumerable<UpdateSettingParameter> settings)
         {
             return _bulkUpdateSettingsOperation.Execute(settings);
         }

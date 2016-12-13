@@ -25,11 +25,11 @@ namespace SimpleIdentityServer.Configuration.Host.Extensions
     {
         public static void UseConfigurationService(this IServiceCollection services)
         {
-            // Add the dependencies needed to enable CORS
+            // 1. Add the dependencies needed to enable CORS.
             services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader()));
-            // Add authorization policies
+            // 2. Add authorization policies.
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("display", policy => policy.RequireClaim("scope", "display_configuration"));
@@ -42,9 +42,9 @@ namespace SimpleIdentityServer.Configuration.Host.Extensions
             assembly = typeof(AuthProviderController).GetTypeInfo().Assembly;
 #endif
 
-            // Add the dependencies needed to run MVC
+            // 3. Add the dependencies needed to run MVC.
             services.AddMvc().AddApplicationPart(assembly);
-
+            // 4. Add logging.
             services.AddLogging();
             services.AddTransient<IConfigurationEventSource, ConfigurationEventSource>();
         }

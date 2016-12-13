@@ -18,12 +18,7 @@ namespace SimpleIdentityServer.Configuration.Core.Parameters
 {
     public class UpdateSettingParameter
     {
-        #region Properties
-
         public string Key { get; set; }
-
         public string Value { get; set; }
-
-        #endregion
     }
 }

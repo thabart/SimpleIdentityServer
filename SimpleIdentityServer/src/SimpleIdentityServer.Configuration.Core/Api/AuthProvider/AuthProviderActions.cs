@@ -24,35 +24,22 @@ namespace SimpleIdentityServer.Configuration.Core.Api.AuthProvider
     public interface IAuthProviderActions
     {
         Task<ActionResult> GetAuthenticationProvider(string name);
-
         Task<ActionResult> GetAuthenticationProviders();
-
         Task<ActionResult> EnableAuthenticationProvider(string name);
-
         Task<ActionResult> DisableAuthenticationProvider(string name);
-
         Task<ActionResult> UpdateAuthenticationProvider(AuthenticationProvider authenticationProvider);
-
         Task<ActionResult> AddAuthenticationProvider(AuthenticationProvider authenticationProvider);
-
         Task<ActionResult> DeleteAuthenticationProvider(string name);
     }
 
     internal class AuthProviderActions : IAuthProviderActions
     {
         private readonly IGetAuthenticationProvider _getAuthenticationProvider;
-
         private readonly IGetAuthenticationProviders _getAuthenticationProviders;
-
         private readonly IActivateAuthenticationProvider _activateAuthenticationProvider;
-
         private readonly IUpdateAuthenticationProvider _updateAuthenticationProvider;
-
         private readonly IAddAuthenticationProviderAction _addAuthenticationProviderAction;
-
         private readonly IRemoveAuthenticationProviderAction _removeAuthenticationProviderAction;
-
-        #region Constructor
 
         public AuthProviderActions(
             IGetAuthenticationProvider getAuthenticationProvider,
@@ -70,45 +57,39 @@ namespace SimpleIdentityServer.Configuration.Core.Api.AuthProvider
             _removeAuthenticationProviderAction = removeAuthenticationProviderAction;
         }
 
-        #endregion
-
-        #region Public methods
-
-        public async Task<ActionResult> GetAuthenticationProvider(string name)
+        public Task<ActionResult> GetAuthenticationProvider(string name)
         {
-            return await _getAuthenticationProvider.ExecuteAsync(name);
+            return _getAuthenticationProvider.ExecuteAsync(name);
         }
 
-        public async Task<ActionResult> GetAuthenticationProviders()
+        public Task<ActionResult> GetAuthenticationProviders()
         {
-            return await _getAuthenticationProviders.ExecuteAsync();
+            return _getAuthenticationProviders.ExecuteAsync();
         }
 
-        public async Task<ActionResult> EnableAuthenticationProvider(string name)
+        public Task<ActionResult> EnableAuthenticationProvider(string name)
         {
-            return await _activateAuthenticationProvider.ExecuteAsync(name, true);
+            return _activateAuthenticationProvider.ExecuteAsync(name, true);
         }
 
-        public async Task<ActionResult> DisableAuthenticationProvider(string name)
+        public Task<ActionResult> DisableAuthenticationProvider(string name)
         {
-            return await _activateAuthenticationProvider.ExecuteAsync(name, false);
+            return _activateAuthenticationProvider.ExecuteAsync(name, false);
         }
 
-        public async Task<ActionResult> UpdateAuthenticationProvider(AuthenticationProvider authenticationProvider)
+        public Task<ActionResult> UpdateAuthenticationProvider(AuthenticationProvider authenticationProvider)
         {
-            return await _updateAuthenticationProvider.ExecuteAsync(authenticationProvider);
+            return _updateAuthenticationProvider.ExecuteAsync(authenticationProvider);
         }
 
-        public async Task<ActionResult> AddAuthenticationProvider(AuthenticationProvider authenticationProvider)
+        public Task<ActionResult> AddAuthenticationProvider(AuthenticationProvider authenticationProvider)
         {
-            return await _addAuthenticationProviderAction.ExecuteAsync(authenticationProvider);
+            return _addAuthenticationProviderAction.ExecuteAsync(authenticationProvider);
         }
 
-        public async Task<ActionResult> DeleteAuthenticationProvider(string name)
+        public Task<ActionResult> DeleteAuthenticationProvider(string name)
         {
-            return await _removeAuthenticationProviderAction.ExecuteAsync(name);
+            return _removeAuthenticationProviderAction.ExecuteAsync(name);
         }
-
-        #endregion
     }
 }

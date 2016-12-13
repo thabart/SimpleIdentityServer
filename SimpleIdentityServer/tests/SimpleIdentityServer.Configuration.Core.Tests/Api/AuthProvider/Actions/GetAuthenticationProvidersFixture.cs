@@ -29,10 +29,7 @@ namespace SimpleIdentityServer.Configuration.Core.Tests.Api.AuthProvider.Actions
     public class GetAuthenticationProvidersFixture
     {
         private Mock<IAuthenticationProviderRepository> _authenticationProviderRepositoryStub;
-
         private IGetAuthenticationProviders _getAuthenticationProviders;
-
-        #region Happy path
 
         [Fact]
         public async Task When_Error_Occured_While_Trying_To_Retrieve_The_AuthorizationProviders_Then_InternalError_Is_Returned()
@@ -40,7 +37,7 @@ namespace SimpleIdentityServer.Configuration.Core.Tests.Api.AuthProvider.Actions
             // ARRANGE
             InitializeFakeObjects();
             _authenticationProviderRepositoryStub.Setup(a => a.GetAuthenticationProviders())
-                .Returns(Task.FromResult<List<AuthenticationProvider>>(null));
+                .Returns(Task.FromResult<ICollection<AuthenticationProvider>>(null));
 
             // ACT
             var result = await _getAuthenticationProviders.ExecuteAsync();
@@ -55,9 +52,10 @@ namespace SimpleIdentityServer.Configuration.Core.Tests.Api.AuthProvider.Actions
         public async Task When_AuthorizationProviders_Are_Retrieved_Then_Ok_Is_Returned()
         {
             // ARRANGE
+            ICollection<AuthenticationProvider> providers = new List<AuthenticationProvider>();
             InitializeFakeObjects();
             _authenticationProviderRepositoryStub.Setup(a => a.GetAuthenticationProviders())
-                .Returns(Task.FromResult(new List<AuthenticationProvider>()));
+                .Returns(Task.FromResult(providers));
 
             // ACT
             var result = await _getAuthenticationProviders.ExecuteAsync();
@@ -67,17 +65,10 @@ namespace SimpleIdentityServer.Configuration.Core.Tests.Api.AuthProvider.Actions
             Assert.True(result is OkObjectResult);
         }
 
-
-        #endregion
-
-        #region Private methods
-
         private void InitializeFakeObjects()
         {
             _authenticationProviderRepositoryStub = new Mock<IAuthenticationProviderRepository>();
             _getAuthenticationProviders = new GetAuthenticationProviders(_authenticationProviderRepositoryStub.Object);
         }
-
-        #endregion
     }
 }

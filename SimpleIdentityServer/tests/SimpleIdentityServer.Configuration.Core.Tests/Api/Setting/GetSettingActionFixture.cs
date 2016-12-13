@@ -18,61 +18,45 @@ using Moq;
 using SimpleIdentityServer.Configuration.Core.Api.Setting.Actions;
 using SimpleIdentityServer.Configuration.Core.Repositories;
 using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Configuration.Core.Tests.Api.Setting
 {
     public class GetSettingActionFixture
     {
-        #region Fields
-
         private Mock<ISettingRepository> _settingRepositoryStub;
-
         private IGetSettingAction _getSettingAction;
 
-        #endregion
-
-        #region Exceptions
-
         [Fact]
-        public void When_Passing_NullOr_Empty_Parameter_Then_Exception_Is_Thrown()
+        public async Task When_Passing_NullOr_Empty_Parameter_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            Assert.Throws<ArgumentNullException>(() => _getSettingAction.Execute(null));
-            Assert.Throws<ArgumentNullException>(() => _getSettingAction.Execute(string.Empty));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getSettingAction.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getSettingAction.Execute(string.Empty));
         }
 
-        #endregion
-
-        #region Happy path
-
         [Fact]
-        public void When_Setting_Is_Gotten_Then_Operation_Is_Called()
+        public async Task When_Setting_Is_Gotten_Then_Operation_Is_Called()
         {
             // ARRANGE
             const string key = "configuration_key";
             InitializeFakeObjects();
 
             // ACT
-            _getSettingAction.Execute(key);
+            await _getSettingAction.Execute(key);
 
             // ASSERT
             _settingRepositoryStub.Verify(c => c.Get(key));
         }
-
-        #endregion
-
-        #region Private methods
 
         private void InitializeFakeObjects()
         {
             _settingRepositoryStub = new Mock<ISettingRepository>();
             _getSettingAction = new GetSettingAction(_settingRepositoryStub.Object);
         }
-
-        #endregion
     }
 }

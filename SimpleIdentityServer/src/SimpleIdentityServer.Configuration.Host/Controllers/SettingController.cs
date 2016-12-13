@@ -26,6 +26,7 @@ using SimpleIdentityServer.Configuration.Host.DTOs.Requests;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Configuration.Controllers
 {
@@ -40,20 +41,21 @@ namespace SimpleIdentityServer.Configuration.Controllers
         }
 
         [HttpGet]
-        public List<SettingResponse> GetAll()
+        public async Task<ActionResult> GetAll()
         {
-            return _settingActions.GetSettings().ToDtos();
+            var settings = await _settingActions.GetSettings();
+            return new OkObjectResult(settings.ToDtos());
         }
 
         [HttpGet("{id}")]
-        public ActionResult Get(string id)
+        public async Task<ActionResult> Get(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
                 throw new ArgumentNullException(nameof(id));
             }
 
-            var setting = _settingActions.GetSetting(id);
+            var setting = await _settingActions.GetSetting(id);
             if (setting == null)
             {
                 return new NotFoundResult();
@@ -63,27 +65,27 @@ namespace SimpleIdentityServer.Configuration.Controllers
         }
 
         [HttpPost]
-        public ActionResult Get([FromBody] GetSettingsRequest request)
+        public async Task<ActionResult> Get([FromBody] GetSettingsRequest request)
         {
             if (request == null)
             {
                 throw new ArgumentNullException(nameof(request));
             }
 
-            var settings = _settingActions.BulkGetSettings(request.ToParameter()).Select(s => s.ToDto());
-            return new OkObjectResult(settings);
+            var settings = await _settingActions.BulkGetSettings(request.ToParameter());
+            return new OkObjectResult(settings.Select(s => s.ToDto()));
         }
 
         [HttpDelete("{id}")]
         [Authorize("manage")]
-        public ActionResult Delete(string id)
+        public async Task<ActionResult> Delete(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
                 throw new ArgumentNullException(nameof(id));
             }
 
-            if (!_settingActions.DeleteSetting(id))
+            if (!await _settingActions.DeleteSetting(id))
             {
                 return new NotFoundResult();
             }
@@ -93,14 +95,14 @@ namespace SimpleIdentityServer.Configuration.Controllers
 
         [HttpPut]
         [Authorize("manage")]
-        public ActionResult Put([FromBody] UpdateSettingRequest updateSettingRequest)
+        public async Task<ActionResult> Put([FromBody] UpdateSettingRequest updateSettingRequest)
         {
             if (updateSettingRequest == null)
             {
                 throw new ArgumentNullException(nameof(updateSettingRequest));
             }
 
-            if (!_settingActions.UpdateSetting(updateSettingRequest.ToParameter()))
+            if (!await _settingActions.UpdateSetting(updateSettingRequest.ToParameter()))
             {
                 return new NotFoundResult();
             }
@@ -110,7 +112,7 @@ namespace SimpleIdentityServer.Configuration.Controllers
 
         [HttpPut("bulk")]
         [Authorize("manage")]
-        public ActionResult Put([FromBody] IEnumerable<UpdateSettingRequest> updateSettingRequests)
+        public async Task<ActionResult> Put([FromBody] IEnumerable<UpdateSettingRequest> updateSettingRequests)
         {
             if (updateSettingRequests == null)
             {
@@ -118,7 +120,7 @@ namespace SimpleIdentityServer.Configuration.Controllers
             }
 
             ;
-            if (!_settingActions.BulkUpdateSettings(updateSettingRequests.Select(s => s.ToParameter())))
+            if (!await _settingActions.BulkUpdateSettings(updateSettingRequests.Select(s => s.ToParameter())))
             {
                 throw new IdentityConfigurationException(ErrorCodes.UnhandledExceptionCode,
                     ErrorDescriptions.BulkUpdateSettingOperationFailed);
