@@ -26,33 +26,29 @@ using System;
 using System.Collections.Generic;
 using Xunit;
 using SimpleIdentityServer.Uma.Logging;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Actions
 {
     public class AddResourceSetActionFixture
     {
         private Mock<IResourceSetRepository> _resourceSetRepositoryStub;
-
         private Mock<IResourceSetParameterValidator> _resourceSetParameterValidatorStub;
-
         private Mock<IUmaServerEventSource> _umaServerEventSourceStub;
-
         private IAddResourceSetAction _addResourceSetAction;
 
-        #region Exceptions
-
         [Fact]
-        public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _addResourceSetAction.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceSetAction.Execute(null));
         }
 
         [Fact]
-        public void When_Resource_Set_Cannot_Be_Inserted_Then_Exception_Is_Thrown()
+        public async Task When_Resource_Set_Cannot_Be_Inserted_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -64,25 +60,20 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
                 Uri = "http://localhost"
             };
             _resourceSetRepositoryStub.Setup(r => r.Insert(It.IsAny<ResourceSet>()))
-                .Returns(() => null);
+                .Returns(() => Task.FromResult(false));
 
             // ACT & ASSERTS
-            var exception = Assert.Throws<BaseUmaException>(() => _addResourceSetAction.Execute(addResourceParameter));
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addResourceSetAction.Execute(addResourceParameter));
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InternalError);
             Assert.True(exception.Message == ErrorDescriptions.TheResourceSetCannotBeInserted);
         }
 
-        #endregion
-
-        #region Happy path
-
         [Fact]
-        public void When_ResourceSet_Is_Inserted_Then_Id_Is_Returned()
+        public async Task When_ResourceSet_Is_Inserted_Then_Id_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
-            const string id = "id";
             var addResourceParameter = new AddResouceSetParameter
             {
                 Name = "name",
@@ -91,17 +82,14 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
                 Uri = "http://localhost"
             };
             _resourceSetRepositoryStub.Setup(r => r.Insert(It.IsAny<ResourceSet>()))
-                .Returns(new ResourceSet { Id = id });
+                .Returns(Task.FromResult(true));
 
             // ACT
-            var result = _addResourceSetAction.Execute(addResourceParameter);
+            var result = await _addResourceSetAction.Execute(addResourceParameter);
 
             // ASSERTS
             Assert.NotNull(result);
-            Assert.True(result == id);
         }
-
-        #endregion
 
         private void InitializeFakeObjects()
         {

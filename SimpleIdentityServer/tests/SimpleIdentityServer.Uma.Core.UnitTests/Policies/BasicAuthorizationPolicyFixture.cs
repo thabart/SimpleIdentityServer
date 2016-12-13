@@ -33,14 +33,9 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
     public class BasicAuthorizationPolicyFixture
     {
         private Mock<IParametersProvider> _parametersProviderStub;
-
         private Mock<IIdentityServerClientFactory> _identityServerClientFactoryStub;
-
         private Mock<IJwtTokenParser> _jwtTokenParserStub;
-
         private IBasicAuthorizationPolicy _basicAuthorizationPolicy;
-
-        #region Exceptions
 
         [Fact]
         public void When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
@@ -52,11 +47,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             Assert.ThrowsAsync<ArgumentNullException>(() => _basicAuthorizationPolicy.Execute(null, null, null));
             Assert.ThrowsAsync<ArgumentNullException>(() => _basicAuthorizationPolicy.Execute(new Ticket(), null, null));
         }
-
-        #endregion
-
-        #region Happy paths
-
+        
         [Fact]
         public async Task When_Doesnt_have_Permission_To_Access_To_Scope_Then_NotAuthorized_Is_Returned()
         {
@@ -726,8 +717,6 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             // ASSERT
             Assert.True(result.Type == AuthorizationPolicyResultEnum.Authorized);
         }
-
-        #endregion
 
         private void InitializeFakeObjects()
         {

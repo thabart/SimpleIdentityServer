@@ -21,6 +21,7 @@ using SimpleIdentityServer.Uma.Core.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Actions
@@ -28,60 +29,48 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
     public class GetPoliciesActionFixture
     {
         private Mock<IPolicyRepository> _policyRepositoryStub;
-
         private IGetPoliciesAction _getPoliciesAction;
 
-        #region Exceptions
-
         [Fact]
-        public void When_Passing_NullOrEmpty_Parameter_Then_Exception_Is_Thrown()
+        public async Task When_Passing_NullOrEmpty_Parameter_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            Assert.Throws<ArgumentNullException>(() => _getPoliciesAction.Execute(null));
-            Assert.Throws<ArgumentNullException>(() => _getPoliciesAction.Execute(string.Empty));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getPoliciesAction.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getPoliciesAction.Execute(string.Empty));
         }
 
-        #endregion
-
-        #region Happy path
-
         [Fact]
-        public void When_RetrievingPolicies_Then_Ids_Are_Returned()
+        public async Task When_RetrievingPolicies_Then_Ids_Are_Returned()
         {
             // ARRANGE
             const string policyId = "policy_id";
-            InitializeFakeObjects();
-            _policyRepositoryStub.Setup(p => p.GetPoliciesByResourceSetId(It.IsAny<string>()))
-                .Returns(new List<Policy>
+            ICollection<Policy> policies = new List<Policy>
+            {
+                new Policy
                 {
-                    new Policy
-                    {
-                        Id = policyId
-                    }
-                });
+                    Id = policyId
+                }
+            };
+            InitializeFakeObjects();
+            _policyRepositoryStub.Setup(p => p.SearchByResourceId(It.IsAny<string>()))
+                .Returns(Task.FromResult(policies));
 
             // ACT
-            var result = _getPoliciesAction.Execute("resource_id");
+            var result = await _getPoliciesAction.Execute("resource_id");
 
             // ASSERT
             Assert.NotNull(result);
-            Assert.True(result.Count == 1);
+            Assert.True(result.Count() == 1);
             Assert.True(result.First() == policyId);
         }
-
-        #endregion
-
-        #region Private methods
 
         private void InitializeFakeObjects()
         {
             _policyRepositoryStub = new Mock<IPolicyRepository>();
             _getPoliciesAction = new GetPoliciesAction(_policyRepositoryStub.Object);
         }
-
-        #endregion
     }
 }

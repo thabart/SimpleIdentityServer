@@ -23,8 +23,6 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Code
     {
         private ICodeProvider _codeProvider;
 
-        #region Happy path
-
         [Fact]
         public void When_BackendFiles_Are_Requested_Then_ZipFile_Is_Returned()
         {
@@ -38,15 +36,9 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Code
             Assert.NotNull(result);
         }
 
-        #endregion
-
-        #region Private methods
-
         private void InitializeFakeObjects()
         {
             _codeProvider = new CodeProvider();
         }
-
-        #endregion
     }
 }

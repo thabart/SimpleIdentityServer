@@ -27,8 +27,6 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Validators
     {
         private IScopeParameterValidator _scopeParameterValidator;
 
-        #region Exceptions
-
         [Fact]
         public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
@@ -90,8 +88,6 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Validators
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, iconUri));
 
         }
-
-        #endregion
 
         private void InitializeFakeObjects()
         {

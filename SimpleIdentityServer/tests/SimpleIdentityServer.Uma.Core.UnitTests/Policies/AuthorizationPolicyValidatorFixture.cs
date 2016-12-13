@@ -32,16 +32,10 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
     public class AuthorizationPolicyValidatorFixture
     {
         private Mock<IPolicyRepository> _policyRepositoryStub;
-
         private Mock<IBasicAuthorizationPolicy> _basicAuthorizationPolicyStub;
-
         private Mock<IResourceSetRepository> _resourceSetRepositoryStub;
-
         private Mock<IUmaServerEventSource> _umaServerEventSourceStub;
-
         private IAuthorizationPolicyValidator _authorizationPolicyValidator;
-
-        #region Exceptions
 
         [Fact]
         public void When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
@@ -63,8 +57,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                 ResourceSetId = "resource_set_id"
             };
             InitializeFakeObjects();
-            _resourceSetRepositoryStub.Setup(r => r.GetResourceSetById(It.IsAny<string>()))
-                .Returns(() => null);
+            _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>()))
+                .Returns(() => Task.FromResult((ResourceSet)null));
 
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _authorizationPolicyValidator.IsAuthorized(ticket, "client_id", null));
@@ -72,10 +66,6 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             Assert.True(exception.Code == ErrorCodes.InternalError);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheResourceSetDoesntExist, ticket.ResourceSetId));
         }
-
-        #endregion
-
-        #region Happy paths
 
         [Fact]
         public async Task When_Policy_Doesnt_Exist_Then_Authorized_Is_Returned()
@@ -87,10 +77,10 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                 AuthorizationPolicyIds = new List<string> { "authorization_policy_id" }
             };
             InitializeFakeObjects();
-            _resourceSetRepositoryStub.Setup(r => r.GetResourceSetById(It.IsAny<string>()))
-                .Returns(resourceSet);
-            _policyRepositoryStub.Setup(p => p.GetPolicy(It.IsAny<string>()))
-                .Returns(() => null);
+            _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>()))
+                .Returns(Task.FromResult(resourceSet));
+            _policyRepositoryStub.Setup(p => p.Get(It.IsAny<string>()))
+                .Returns(() => Task.FromResult((Policy)null));
 
             // ACT
             var result = await _authorizationPolicyValidator.IsAuthorized(ticket, "client_id", null);
@@ -110,10 +100,10 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             };
             var policy = new Policy();
             InitializeFakeObjects();
-            _resourceSetRepositoryStub.Setup(r => r.GetResourceSetById(It.IsAny<string>()))
-                .Returns(resourceSet);
-            _policyRepositoryStub.Setup(p => p.GetPolicy(It.IsAny<string>()))
-                .Returns(policy);
+            _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>()))
+                .Returns(Task.FromResult(resourceSet));
+            _policyRepositoryStub.Setup(p => p.Get(It.IsAny<string>()))
+                .Returns(Task.FromResult(policy));
             _basicAuthorizationPolicyStub.Setup(b => b.Execute(It.IsAny<Ticket>(), It.IsAny<Policy>(), It.IsAny<List<ClaimTokenParameter>>()))
                 .Returns(Task.FromResult(new AuthorizationPolicyResult
                 {
@@ -126,8 +116,6 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             // ASSERT
             Assert.True(result.Type == AuthorizationPolicyResultEnum.Authorized);
         }
-
-        #endregion
 
         private void InitializeFakeObjects()
         {

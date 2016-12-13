@@ -28,8 +28,6 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Validators
     {
         private ResourceSetParameterValidator _resourceSetParameterValidator;
 
-        #region Exceptions
-
         [Fact]
         public void When_Passing_Null_Then_Exception_Is_Thrown()
         {
@@ -111,8 +109,6 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Validators
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, uri));
         }
-
-        #endregion
 
         private void InitializeFakeObjects()
         {

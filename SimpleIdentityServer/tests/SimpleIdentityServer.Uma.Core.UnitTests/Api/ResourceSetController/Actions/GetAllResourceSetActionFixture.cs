@@ -23,42 +23,36 @@ using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using System.Collections.Generic;
 using Xunit;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Actions
 {
     public class GetAllResourceSetActionFixture
     {
         private Mock<IResourceSetRepository> _resourceSetRepositoryStub;
-
         private IGetAllResourceSetAction _getAllResourceSetAction;
 
-        #region Exceptions
-
         [Fact]
-        public void When_Error_Occured_While_Trying_To_Retrieve_ResourceSet_Then_Exception_Is_Thrown()
+        public async Task When_Error_Occured_While_Trying_To_Retrieve_ResourceSet_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObject();
             _resourceSetRepositoryStub.Setup(r => r.GetAll())
-                .Returns(() => null);
+                .Returns(() => Task.FromResult((ICollection<ResourceSet>)null));
 
             // ACT & ASSERTS
-            var exception  = Assert.Throws<BaseUmaException>(() => _getAllResourceSetAction.Execute());
+            var exception  = await Assert.ThrowsAsync<BaseUmaException>(() => _getAllResourceSetAction.Execute());
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InternalError);
             Assert.True(exception.Message == ErrorDescriptions.TheResourceSetsCannotBeRetrieved);
         }
 
-        #endregion
-
-        #region Happy paths
-
         [Fact]
-        public void When_ResourceSets_Are_Retrieved_Then_Ids_Are_Returned()
+        public async Task When_ResourceSets_Are_Retrieved_Then_Ids_Are_Returned()
         {
             // ARRANGE
             const string id = "id";
-            var resourceSets = new List<ResourceSet>
+            ICollection<ResourceSet> resourceSets = new List<ResourceSet>
             {
                 new ResourceSet
                 {
@@ -67,18 +61,16 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
             };
             InitializeFakeObject();
             _resourceSetRepositoryStub.Setup(r => r.GetAll())
-                .Returns(resourceSets);
+                .Returns(Task.FromResult(resourceSets));
 
             // ACT
-            var result = _getAllResourceSetAction.Execute();
+            var result = await _getAllResourceSetAction.Execute();
 
             // ASSERTS
             Assert.NotNull(result);
             Assert.True(result.Count() == 1);
             Assert.True(result.First() == id);
         }
-
-        #endregion
 
         private void InitializeFakeObject()
         {

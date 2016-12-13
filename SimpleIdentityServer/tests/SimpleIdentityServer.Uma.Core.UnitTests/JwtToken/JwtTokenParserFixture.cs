@@ -31,16 +31,10 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.JwtToken
     public class JwtTokenParserFixture
     {
         private Mock<IJwsParser> _jwsParserStub;
-
         private Mock<IIdentityServerClientFactory> _identityServerClientFactoryStub;
-
         private Mock<IParametersProvider> _parametersProviderStub;
-
         private Mock<IJsonWebKeyConverter> _jsonWebKeyConverterStub;
-
         private IJwtTokenParser _jwtTokenParser;
-
-        #region Exceptions
 
         [Fact]
         public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
@@ -94,10 +88,6 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.JwtToken
             // ASSERT
             Assert.Null(result);
         }
-
-        #endregion
-
-        #region Happy paths
         
         [Fact]
         public async Task When_There_Is_No_Algorithm_Then_JwsPayload_Is_Returned()
@@ -169,10 +159,6 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.JwtToken
             _jwsParserStub.Verify(j => j.ValidateSignature(It.IsAny<string>(), It.IsAny<JsonWebKey>()));
         }
 
-        #endregion
-
-        #region Private methods
-
         private void InitializeFakeObjects()
         {
             _jwsParserStub = new Mock<IJwsParser>();
@@ -185,7 +171,5 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.JwtToken
                 _parametersProviderStub.Object,
                 _jsonWebKeyConverterStub.Object);
         }
-
-        #endregion
     }
 }
