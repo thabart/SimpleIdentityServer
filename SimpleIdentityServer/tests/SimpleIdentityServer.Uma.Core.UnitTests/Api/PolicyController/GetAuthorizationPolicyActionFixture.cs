@@ -21,6 +21,7 @@ using SimpleIdentityServer.Uma.Core.Helpers;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
@@ -28,29 +29,21 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
     public class GetAuthorizationPolicyActionFixture
     {
         private Mock<IPolicyRepository> _policyRepositoryStub;
-
         private Mock<IRepositoryExceptionHelper> _repositoryExceptionHelperStub;
-
         private IGetAuthorizationPolicyAction _getAuthorizationPolicyAction;
 
-        #region Exceptions
-
         [Fact]
-        public void When_Passing_Empty_Parameter_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Empty_Parameter_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _getAuthorizationPolicyAction.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getAuthorizationPolicyAction.Execute(null));
         }
-
-        #endregion
-
-        #region Happy paths
-
+        
         [Fact]
-        public void When_Getting_Policy_Then_Policy_Is_Returned()
+        public async Task When_Getting_Policy_Then_Policy_Is_Returned()
         {
             // ARRANGE
             const string policyId = "policy_id";
@@ -61,18 +54,16 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
             InitializeFakeObjects();
             _repositoryExceptionHelperStub.Setup(r => r.HandleException(
                 string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, policyId),
-                It.IsAny<Func<Policy>>()))
-                .Returns(policy);
+                It.IsAny<Func<Task<Policy>>>()))
+                .Returns(Task.FromResult(policy));
 
             // ACT
-            var result = _getAuthorizationPolicyAction.Execute(policyId);
+            var result = await _getAuthorizationPolicyAction.Execute(policyId);
 
             // ASSERTS
             Assert.NotNull(result);
             Assert.True(result.Id == policyId);
         }
-
-        #endregion
 
         private void InitializeFakeObjects()
         {

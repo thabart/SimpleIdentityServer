@@ -34,20 +34,12 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.Authorization.Actions
     public class GetAuthorizationActionFixture
     {
         private Mock<ITicketRepository> _ticketRepositoryStub;
-
         private Mock<IAuthorizationPolicyValidator> _authorizationPolicyValidatorStub;
-
         private Mock<UmaServerOptions> _umaServerOptionsStub;
-
         private Mock<IRptRepository> _rptRepositoryStub;
-
         private Mock<IRepositoryExceptionHelper> _repositoryExceptionHandlerStub;
-
         private Mock<IUmaServerEventSource> _umaServerEventSourceStub;
-
         private IGetAuthorizationAction _getAuthorizationAction;
-
-        #region Exceptions
 
         [Fact]
         public void When_Passing_Null_Parameter_Then_Exceptions_Are_Thrown()
@@ -93,8 +85,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.Authorization.Actions
             {
                 new System.Security.Claims.Claim("type", "value")
             };
-            _ticketRepositoryStub.Setup(t => t.GetTicketById(It.IsAny<string>()))
-                .Returns(() => null);
+            _ticketRepositoryStub.Setup(t => t.Get(It.IsAny<string>()))
+                .Returns(Task.FromResult((Ticket)null));
 
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _getAuthorizationAction.Execute(getAuthorizationActionParameter, claims));
@@ -124,8 +116,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.Authorization.Actions
             {
                 ClientId = clientId
             };
-            _ticketRepositoryStub.Setup(t => t.GetTicketById(It.IsAny<string>()))
-                .Returns(ticket);
+            _ticketRepositoryStub.Setup(t => t.Get(It.IsAny<string>()))
+                .Returns(Task.FromResult(ticket));
 
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _getAuthorizationAction.Execute(getAuthorizationActionParameter, claims));
@@ -155,8 +147,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.Authorization.Actions
                 ClientId = clientId,
                 ExpirationDateTime = DateTime.UtcNow.AddSeconds(-40)
             };
-            _ticketRepositoryStub.Setup(t => t.GetTicketById(It.IsAny<string>()))
-                .Returns(ticket);
+            _ticketRepositoryStub.Setup(t => t.Get(It.IsAny<string>()))
+                .Returns(Task.FromResult(ticket));
 
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _getAuthorizationAction.Execute(getAuthorizationActionParameter, claims));
@@ -164,11 +156,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.Authorization.Actions
             Assert.True(exception.Code == ErrorCodes.ExpiredTicket);
             Assert.True(exception.Message == ErrorDescriptions.TheTicketIsExpired);
         }
-
-        #endregion
-
-        #region Happy paths
-
+        
         [Fact]
         public async Task When_Requesting_Unauthorized_Access_Then_NotAuthorized_Is_Returned()
         {
@@ -190,8 +178,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.Authorization.Actions
                 ClientId = clientId,
                 ExpirationDateTime = DateTime.UtcNow.AddSeconds(40)
             };
-            _ticketRepositoryStub.Setup(t => t.GetTicketById(It.IsAny<string>()))
-                .Returns(ticket);
+            _ticketRepositoryStub.Setup(t => t.Get(It.IsAny<string>()))
+                .Returns(Task.FromResult(ticket));
             _authorizationPolicyValidatorStub.Setup(a => a.IsAuthorized(It.IsAny<Ticket>(),
                 It.IsAny<string>(),
                 It.IsAny<List<ClaimTokenParameter>>()))
@@ -230,8 +218,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.Authorization.Actions
                 ClientId = clientId,
                 ExpirationDateTime = DateTime.UtcNow.AddSeconds(40)
             };
-            _ticketRepositoryStub.Setup(t => t.GetTicketById(It.IsAny<string>()))
-                .Returns(ticket);
+            _ticketRepositoryStub.Setup(t => t.Get(It.IsAny<string>()))
+                .Returns(Task.FromResult(ticket));
             _authorizationPolicyValidatorStub.Setup(a => a.IsAuthorized(It.IsAny<Ticket>(),
                 It.IsAny<string>(),
                 It.IsAny<List<ClaimTokenParameter>>()))
@@ -250,8 +238,6 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.Authorization.Actions
             Assert.True(result.AuthorizationPolicyResult == AuthorizationPolicyResultEnum.Authorized);
             Assert.NotEmpty(result.Rpt);
         }
-
-        #endregion
 
         private void InitializeFakeObjects()
         {

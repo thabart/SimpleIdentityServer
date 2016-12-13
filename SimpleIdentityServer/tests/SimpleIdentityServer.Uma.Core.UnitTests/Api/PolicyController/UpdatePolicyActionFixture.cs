@@ -24,6 +24,7 @@ using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
@@ -31,25 +32,21 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
     public class UpdatePolicyActionFixture
     {
         private Mock<IPolicyRepository> _policyRepositoryStub;
-
-        private Mock<IRepositoryExceptionHelper> _repositoryExceptionHelperStub;
-        
+        private Mock<IRepositoryExceptionHelper> _repositoryExceptionHelperStub;        
         private IUpdatePolicyAction _updatePolicyAction;
-
-        #region Exceptions
-
+        
         [Fact]
-        public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _updatePolicyAction.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _updatePolicyAction.Execute(null));
         }
 
         [Fact]
-        public void When_Rules_Are_Not_Passed_Then_Exception_Is_Thrown()
+        public async Task When_Rules_Are_Not_Passed_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             var updatePolicyParameter = new UpdatePolicyParameter
@@ -59,21 +56,17 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
             InitializeFakeObjects();
             _repositoryExceptionHelperStub.Setup(r => r.HandleException(
                 string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, updatePolicyParameter.PolicyId),
-                It.IsAny<Func<Policy>>())).Returns(() => null);
+                It.IsAny<Func<Task<Policy>>>())).Returns(() => Task.FromResult((Policy)null));
 
             // ACT & ASSERTS
-            var exception = Assert.Throws<BaseUmaException>(() => _updatePolicyAction.Execute(updatePolicyParameter));
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _updatePolicyAction.Execute(updatePolicyParameter));
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddPolicyParameterNames.Rules));
         }
-
-        #endregion
-
-        #region Happy paths
         
         [Fact]
-        public void When_Authorization_Policy_Doesnt_Exist_Then_False_Is_Returned()
+        public async Task When_Authorization_Policy_Doesnt_Exist_Then_False_Is_Returned()
         {
             // ARRANGE
             var updatePolicyParameter = new UpdatePolicyParameter
@@ -87,17 +80,17 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
             InitializeFakeObjects();
             _repositoryExceptionHelperStub.Setup(r => r.HandleException(
                 string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, updatePolicyParameter.PolicyId),
-                It.IsAny<Func<Policy>>())).Returns(() => null);
+                It.IsAny<Func<Task<Policy>>>())).Returns(() => Task.FromResult((Policy)null));
 
             // ACT
-            var result = _updatePolicyAction.Execute(updatePolicyParameter);
+            var result = await _updatePolicyAction.Execute(updatePolicyParameter);
 
             // ASSERT
             Assert.False(result);
         }
 
         [Fact]
-        public void When_Authorization_Policy_Is_Updated_Then_True_Is_Returned()
+        public async Task When_Authorization_Policy_Is_Updated_Then_True_Is_Returned()
         {
             // ARRANGE
             var updatePolicyParameter = new UpdatePolicyParameter
@@ -122,19 +115,17 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
             InitializeFakeObjects();
             _repositoryExceptionHelperStub.Setup(r => r.HandleException(
                 string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, updatePolicyParameter.PolicyId),
-                It.IsAny<Func<Policy>>())).Returns(new Policy());
+                It.IsAny<Func<Task<Policy>>>())).Returns(Task.FromResult(new Policy()));
             _repositoryExceptionHelperStub.Setup(r => r.HandleException(
                 string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeUpdated, updatePolicyParameter.PolicyId),
-                It.IsAny<Func<bool>>())).Returns(true);
+                It.IsAny<Func<Task<bool>>>())).Returns(Task.FromResult(true));
             
             // ACT
-            var result = _updatePolicyAction.Execute(updatePolicyParameter);
+            var result = await _updatePolicyAction.Execute(updatePolicyParameter);
 
             // ASSERT
             Assert.True(result);
         }
-
-        #endregion
 
         private void InitializeFakeObjects()
         {

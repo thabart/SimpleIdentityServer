@@ -23,6 +23,7 @@ using SimpleIdentityServer.Uma.Core.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
@@ -30,18 +31,16 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
     public class GetAuthorizationPoliciesActionFixture
     {
         private Mock<IPolicyRepository> _policyRepositoryStub;
-
         private Mock<IRepositoryExceptionHelper> _repositoryExceptionHelper;
-
         private IGetAuthorizationPoliciesAction _getAuthorizationPoliciesAction;
 
         [Fact]
-        public void When_Getting_Authorization_Policies_Then_A_ListIds_Is_Returned()
+        public async Task When_Getting_Authorization_Policies_Then_A_ListIds_Is_Returned()
         {
             // ARRANGE
             const string policyId = "policy_id";
             InitializeFakeObjects();
-            var policies = new List<Policy>
+            ICollection<Policy> policies = new List<Policy>
             {
                 new Policy
                 {
@@ -49,11 +48,11 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
                 }
             };
             _repositoryExceptionHelper.Setup(r => r.HandleException(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved,
-                It.IsAny<Func<List<Policy>>>()))
-                .Returns(policies);
+                It.IsAny<Func<Task<ICollection<Policy>>>>()))
+                .Returns(Task.FromResult(policies));
 
             // ACT
-            var result = _getAuthorizationPoliciesAction.Execute();
+            var result = await _getAuthorizationPoliciesAction.Execute();
 
             // ASSERT
             Assert.NotNull(result);

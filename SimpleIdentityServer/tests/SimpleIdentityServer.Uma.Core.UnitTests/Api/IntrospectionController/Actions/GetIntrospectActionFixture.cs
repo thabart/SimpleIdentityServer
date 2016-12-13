@@ -25,6 +25,7 @@ using SimpleIdentityServer.Uma.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.IntrospectionController.Actions
@@ -32,43 +33,38 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.IntrospectionController.Ac
     public class GetIntrospectActionFixture
     {
         private Mock<IRptRepository> _rptRepositoryStub;
-
         private Mock<ITicketRepository> _ticketRepositoryStub;
-
         private Mock<IUmaServerEventSource> _umaServerEventSourceStub;
-
         private IGetIntrospectAction _getIntrospectAction;
 
-        #region Exceptions
-
         [Fact]
-        public void When_Passing_Empty_Rpt_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Empty_Rpt_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _getIntrospectAction.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getIntrospectAction.Execute(null));
         }
 
         [Fact]
-        public void When_Rpt_Doesnt_Exist_Then_Exception_Is_Thrown()
+        public async Task When_Rpt_Doesnt_Exist_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             const string rpt = "invalid_rpt";
             InitializeFakeObjects();
-            _rptRepositoryStub.Setup(r => r.GetRpt(It.IsAny<string>()))
-                .Returns(() => null);
+            _rptRepositoryStub.Setup(r => r.Get(It.IsAny<string>()))
+                .Returns(Task.FromResult((Rpt)null));
 
             // ACT & ASSERTS
-            var exception = Assert.Throws<BaseUmaException>(() => _getIntrospectAction.Execute(rpt));
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _getIntrospectAction.Execute(rpt));
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidRpt);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheRptDoesntExist, rpt));
         }
 
         [Fact]
-        public void When_Ticket_Doesnt_Exist_Then_Exception_Is_Thrown()
+        public async Task When_Ticket_Doesnt_Exist_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             const string rpt = "rpt";
@@ -79,24 +75,20 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.IntrospectionController.Ac
                 Value = rpt
             };
             InitializeFakeObjects();
-            _rptRepositoryStub.Setup(r => r.GetRpt(It.IsAny<string>()))
-                .Returns(rptInfo);
-            _ticketRepositoryStub.Setup(t => t.GetTicketById(It.IsAny<string>()))
-                .Returns(() => null);
+            _rptRepositoryStub.Setup(r => r.Get(It.IsAny<string>()))
+                .Returns(Task.FromResult(rptInfo));
+            _ticketRepositoryStub.Setup(t => t.Get(It.IsAny<string>()))
+                .Returns(Task.FromResult((Ticket)null));
 
             // ACT & ASSERTS
-            var exception = Assert.Throws<BaseUmaException>(() => _getIntrospectAction.Execute(rpt));
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _getIntrospectAction.Execute(rpt));
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InternalError);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheTicketDoesntExist, ticketId));
         }
 
-        #endregion
-
-        #region Happy paths
-
         [Fact]
-        public void When_Rpt_Is_Expired_Then_IsActive_Is_False()
+        public async Task When_Rpt_Is_Expired_Then_IsActive_Is_False()
         {
             // ARRANGE
             const string rpt = "rpt";
@@ -110,13 +102,13 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.IntrospectionController.Ac
             };
             var ticket = new Ticket();
             InitializeFakeObjects();
-            _rptRepositoryStub.Setup(r => r.GetRpt(It.IsAny<string>()))
-                .Returns(rptInfo);
-            _ticketRepositoryStub.Setup(t => t.GetTicketById(It.IsAny<string>()))
-                .Returns(ticket);
+            _rptRepositoryStub.Setup(r => r.Get(It.IsAny<string>()))
+                .Returns(Task.FromResult(rptInfo));
+            _ticketRepositoryStub.Setup(t => t.Get(It.IsAny<string>()))
+                .Returns(Task.FromResult(ticket));
 
             // ACT
-            var result = _getIntrospectAction.Execute(rpt);
+            var result = await _getIntrospectAction.Execute(rpt);
 
             // ASSERTS
             Assert.NotNull(result);
@@ -126,7 +118,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.IntrospectionController.Ac
         }
 
         [Fact]
-        public void When_Permission_Is_Expired_Then_IsActive_Is_False()
+        public async Task When_Permission_Is_Expired_Then_IsActive_Is_False()
         {
             // ARRANGE
             const string rpt = "rpt";
@@ -143,13 +135,13 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.IntrospectionController.Ac
                 ExpirationDateTime = DateTime.UtcNow.AddSeconds(-30)
             };
             InitializeFakeObjects();
-            _rptRepositoryStub.Setup(r => r.GetRpt(It.IsAny<string>()))
-                .Returns(rptInfo);
-            _ticketRepositoryStub.Setup(t => t.GetTicketById(It.IsAny<string>()))
-                .Returns(ticket);
+            _rptRepositoryStub.Setup(r => r.Get(It.IsAny<string>()))
+                .Returns(Task.FromResult(rptInfo));
+            _ticketRepositoryStub.Setup(t => t.Get(It.IsAny<string>()))
+                .Returns(Task.FromResult(ticket));
 
             // ACT
-            var result = _getIntrospectAction.Execute(rpt);
+            var result = await _getIntrospectAction.Execute(rpt);
 
             // ASSERTS
             Assert.NotNull(result);
@@ -159,7 +151,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.IntrospectionController.Ac
         }
 
         [Fact]
-        public void When_Rpt_Is_Valid_Then_Permissions_Are_Returned()
+        public async Task When_Rpt_Is_Valid_Then_Permissions_Are_Returned()
         {
             // ARRANGE
             const string rpt = "rpt";
@@ -183,13 +175,13 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.IntrospectionController.Ac
                 ExpirationDateTime = DateTime.UtcNow.AddSeconds(30)
             };
             InitializeFakeObjects();
-            _rptRepositoryStub.Setup(r => r.GetRpt(It.IsAny<string>()))
-                .Returns(rptInfo);
-            _ticketRepositoryStub.Setup(t => t.GetTicketById(It.IsAny<string>()))
-                .Returns(ticket);
+            _rptRepositoryStub.Setup(r => r.Get(It.IsAny<string>()))
+                .Returns(Task.FromResult(rptInfo));
+            _ticketRepositoryStub.Setup(t => t.Get(It.IsAny<string>()))
+                .Returns(Task.FromResult(ticket));
 
             // ACT
-            var result = _getIntrospectAction.Execute(rpt);
+            var result = await _getIntrospectAction.Execute(rpt);
 
             // ASSERTS
             Assert.NotNull(result);
@@ -202,8 +194,6 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.IntrospectionController.Ac
             Assert.True(permission.Scopes == ticket.Scopes);
             Assert.True(permission.Expiration == ticket.ExpirationDateTime.ConvertToUnixTimestamp());
         }
-
-        #endregion
 
         private void InitializeFakeObjects()
         {

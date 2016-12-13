@@ -22,72 +22,62 @@ using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.Logging;
 using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
 {
     public class DeleteAuthorizationPolicyActionFixture
     {
-        private Mock<IPolicyRepository> _policyRepositoryStub;
-                
+        private Mock<IPolicyRepository> _policyRepositoryStub;                
         private Mock<IRepositoryExceptionHelper> _repositoryExceptionHelperStub;
-
         private Mock<IUmaServerEventSource> _umaServerEventSourceStub;
-
         private IDeleteAuthorizationPolicyAction _deleteAuthorizationPolicyAction;
-
-        #region Exceptions
         
         [Fact]
-        public void When_Passing_Empty_Parameter_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Empty_Parameter_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             IntializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _deleteAuthorizationPolicyAction.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _deleteAuthorizationPolicyAction.Execute(null));
         }
 
-        #endregion
-
-        #region Happy paths
-
         [Fact]
-        public void When_AuthorizationPolicy_Doesnt_Exist_Then_False_Is_Returned()
+        public async Task When_AuthorizationPolicy_Doesnt_Exist_Then_False_Is_Returned()
         {
             // ARRANGE
             const string policyId = "policy_id";
             IntializeFakeObjects();
             _repositoryExceptionHelperStub.Setup(r => r.HandleException(string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, policyId),
-                It.IsAny<Func<Policy>>()))
-                .Returns(() => null);
+                It.IsAny<Func<Task<Policy>>>()))
+                .Returns(() => Task.FromResult((Policy)null));
 
             // ACT
-            var isUpdated = _deleteAuthorizationPolicyAction.Execute(policyId);
+            var isUpdated = await _deleteAuthorizationPolicyAction.Execute(policyId);
 
             // ASSERT
             Assert.False(isUpdated);
         }
 
         [Fact]
-        public void When_AuthorizationPolicy_Exists_Then_True_Is_Returned()
+        public async Task When_AuthorizationPolicy_Exists_Then_True_Is_Returned()
         {
             // ARRANGE
             const string policyId = "policy_id";
             var policy = new Policy();
             IntializeFakeObjects();
             _repositoryExceptionHelperStub.Setup(r => r.HandleException(string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, policyId),
-                It.IsAny<Func<Policy>>()))
-                .Returns(policy);
+                It.IsAny<Func<Task<Policy>>>()))
+                .Returns(Task.FromResult(policy));
 
             // ACT
-            var isUpdated = _deleteAuthorizationPolicyAction.Execute(policyId);
+            var isUpdated = await _deleteAuthorizationPolicyAction.Execute(policyId);
 
             // ASSERT
             Assert.True(isUpdated);
         }
-
-        #endregion
 
         private void IntializeFakeObjects()
         {

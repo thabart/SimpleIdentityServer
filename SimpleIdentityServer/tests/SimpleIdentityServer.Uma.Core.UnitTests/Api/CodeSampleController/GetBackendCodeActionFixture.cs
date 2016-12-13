@@ -25,10 +25,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.CodeSampleController
     public class GetBackendCodeActionFixture
     {
         private Mock<ICodeProvider> _codeProviderStub;
-
         private IGetBackendCodeAction _getBackendCodeAction;
-
-        #region Exceptions
 
         [Fact]
         public void When_Passing_Empty_Parameter_Then_Exception_Is_Thrown()
@@ -52,10 +49,6 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.CodeSampleController
             Assert.True(exception.Message == "the language is not supported");
         }
 
-        #endregion
-
-        #region Happy path
-
         [Fact]
         public void When_Getting_Csharp_Backend_Code_Then_MemoryStream_Is_Returned()
         {           
@@ -68,17 +61,11 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.CodeSampleController
             // ASSERT
             _codeProviderStub.Verify(c => c.GetFiles(Languages.Csharp, Core.Code.TypeCode.Backend));
         }
-
-        #endregion
-        
-        #region Private methods
             
         private void InitializeFakeObjects()
         {
             _codeProviderStub = new Mock<ICodeProvider>();
             _getBackendCodeAction = new GetBackendCodeAction(_codeProviderStub.Object);
         }
-
-        #endregion
     }
 }

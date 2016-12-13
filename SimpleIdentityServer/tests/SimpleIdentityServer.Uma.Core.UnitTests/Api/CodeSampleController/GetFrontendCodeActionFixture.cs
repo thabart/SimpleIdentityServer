@@ -25,10 +25,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.CodeSampleController
     public class GetFrontendCodeActionFixture
     {
         private Mock<ICodeProvider> _codeProviderStub;
-
         private IGetFrontendCodeAction _getFrontendCodeAction;
-
-        #region Exceptions
 
         [Fact]
         public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
@@ -51,10 +48,6 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.CodeSampleController
             var exception = Assert.Throws<ArgumentException>(() => _getFrontendCodeAction.Execute("not_supported"));
             Assert.True(exception.Message == "the language is not supported");
         }
-
-        #endregion
-
-        #region Happy path
                 
         [Fact]
         public void When_Getting_Csharp_Frontend_Code_Then_MemoryStream_Is_Returned()
@@ -69,16 +62,10 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.CodeSampleController
             _codeProviderStub.Verify(c => c.GetFiles(Languages.Csharp, Core.Code.TypeCode.Frontend));
         }
 
-        #endregion
-
-        #region Private methods
-
         private void InitializeFakeObjects()
         {
             _codeProviderStub = new Mock<ICodeProvider>();
             _getFrontendCodeAction = new GetFrontendCodeAction(_codeProviderStub.Object);
         }
-
-        #endregion
     }
 }
