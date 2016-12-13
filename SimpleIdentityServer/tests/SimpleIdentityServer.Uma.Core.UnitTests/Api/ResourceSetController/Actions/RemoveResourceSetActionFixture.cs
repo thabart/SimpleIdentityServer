@@ -8,6 +8,7 @@ using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.Logging;
 using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Actions
@@ -15,25 +16,21 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
     public class RemoveResourceSetActionFixture
     {
         private Mock<IResourceSetRepository> _resourceSetRepositoryStub;
-
         private Mock<IUmaServerEventSource> _umaServerEventSourceStub;
-
         private IDeleteResourceSetAction _deleteResourceSetAction;
 
-        #region Exceptions
-
         [Fact]
-        public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _deleteResourceSetAction.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _deleteResourceSetAction.Execute(null));
         }
 
         [Fact]
-        public void When_ResourceSet_Doesnt_Exist_Then_False_Is_Returned()
+        public async Task When_ResourceSet_Doesnt_Exist_Then_False_Is_Returned()
         {
             // ARRANGE
             const string resourceSetId = "resourceSetId";
@@ -49,7 +46,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
         }
 
         [Fact]
-        public void When_ResourceSet_Cannot_Be_Updated_Then_Exception_Is_Thrown()
+        public async Task When_ResourceSet_Cannot_Be_Updated_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             const string resourceSetId = "resourceSetId";
@@ -60,13 +57,11 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
                 .Returns(false);
 
             // ACT & ASSERTS
-            var exception = Assert.Throws<BaseUmaException>(() => _deleteResourceSetAction.Execute(resourceSetId));
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _deleteResourceSetAction.Execute(resourceSetId));
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InternalError);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheResourceSetCannotBeRemoved, resourceSetId));
         }
-
-        #endregion
 
         #region Happy path
 

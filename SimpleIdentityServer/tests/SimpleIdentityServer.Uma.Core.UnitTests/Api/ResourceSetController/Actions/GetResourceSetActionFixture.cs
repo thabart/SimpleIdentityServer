@@ -21,6 +21,7 @@ using SimpleIdentityServer.Uma.Core.Exceptions;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Actions
@@ -28,27 +29,20 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
     public class GetResourceSetActionFixture
     {
         private Mock<IResourceSetRepository> _resourceSetRepositoryStub;
-
         private IGetResourceSetAction _getResourceSetAction;
 
-        #region Exceptions
-
         [Fact]
-        public void When_Passing_Null_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT && ASSERT
-            Assert.Throws<ArgumentNullException>(() => _getResourceSetAction.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getResourceSetAction.Execute(null));
         }
 
-        #endregion
-
-        #region Happy path
-
         [Fact]
-        public void When_Execute_Operation_Then_Resource_Set_Is_Returned()
+        public async Task When_Execute_Operation_Then_Resource_Set_Is_Returned()
         {
             // ARRANGE
             var resourceSet = new ResourceSet
@@ -56,18 +50,16 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
                 Id = "id"
             };
             InitializeFakeObjects();
-            _resourceSetRepositoryStub.Setup(r => r.GetResourceSetById(It.IsAny<string>()))
-                .Returns(resourceSet);
+            _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>()))
+                .Returns(Task.FromResult(resourceSet));
 
             // ACT
-            var result = _getResourceSetAction.Execute(resourceSet.Id);
+            var result = await _getResourceSetAction.Execute(resourceSet.Id);
         
             // ASSERTS
             Assert.NotNull(result);
             Assert.True(result.Id == resourceSet.Id);
         }
-
-        #endregion
 
         private void InitializeFakeObjects()
         {
