@@ -21,18 +21,9 @@ namespace SimpleIdentityServer.Uma.Core.Responses
 {
     public class PermissionResponse : Dictionary<string, object>
     {
-        #region Fields
-
         private const string ResourceSetIdName = "resource_set_id";
-
         private const string ScopesName = "scopes";
-
         private const string ExpirationName = "exp";
-
-        #endregion
-
-        #region Properties
-
         public string ResourceSetId
         {
             get
@@ -44,7 +35,6 @@ namespace SimpleIdentityServer.Uma.Core.Responses
                 this.SetValue(ResourceSetIdName, value);
             }
         }
-
         public List<string> Scopes
         {
             get
@@ -56,7 +46,6 @@ namespace SimpleIdentityServer.Uma.Core.Responses
                 this.SetValue(ScopesName, value);
             }
         }
-
         public double Expiration
         {
             get
@@ -68,28 +57,15 @@ namespace SimpleIdentityServer.Uma.Core.Responses
                 this.SetValue(ExpirationName, value);
             }
         }
-
-        #endregion
     }
 
     public class IntrospectionResponse : Dictionary<string, object>
     {
-        #region Fields
-
         private const string ActiveName = "active";
-
         private const string ExpirationName = "exp";
-
         private const string IatName = "iat";
-
         private const string NbfName = "nbf";
-
         private const string PermissionsName = "permissions";
-
-        #endregion
-
-        #region Properties
-
         public bool IsActive
         {
             get
@@ -101,7 +77,6 @@ namespace SimpleIdentityServer.Uma.Core.Responses
                 this.SetValue(ActiveName, value);
             }
         }
-
         public double Expiration
         {
             get
@@ -112,8 +87,7 @@ namespace SimpleIdentityServer.Uma.Core.Responses
             {
                 this.SetValue(ExpirationName, value);
             }
-        }
-        
+        }        
         public double IssuedAt
         {
             get
@@ -124,8 +98,7 @@ namespace SimpleIdentityServer.Uma.Core.Responses
             {
                 this.SetValue(IatName, value);
             }
-        }
-        
+        }        
         public double Nbf
         {
             get
@@ -137,7 +110,6 @@ namespace SimpleIdentityServer.Uma.Core.Responses
                 this.SetValue(NbfName, value);
             }
         }
-
         public List<PermissionResponse> Permissions
         {
             get
@@ -149,7 +121,5 @@ namespace SimpleIdentityServer.Uma.Core.Responses
                 this.SetValue(PermissionsName, value);
             }
         }
-
-        #endregion
     }
 }

@@ -23,21 +23,19 @@ using SimpleIdentityServer.Uma.Core.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
 {
     public interface IUpdatePolicyAction
     {
-        bool Execute(UpdatePolicyParameter updatePolicyParameter);
+        Task<bool> Execute(UpdatePolicyParameter updatePolicyParameter);
     }
 
     internal class UpdatePolicyAction : IUpdatePolicyAction
     {
         private readonly IPolicyRepository _policyRepository;
-
         private readonly IRepositoryExceptionHelper _repositoryExceptionHelper;
-
-        #region Constructor
 
         public UpdatePolicyAction(IPolicyRepository policyRepository,
             IRepositoryExceptionHelper repositoryExceptionHelper)
@@ -45,12 +43,8 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
             _policyRepository = policyRepository;
             _repositoryExceptionHelper = repositoryExceptionHelper;
         }
-
-        #endregion
-
-        #region Public methods
-
-        public bool Execute(UpdatePolicyParameter updatePolicyParameter)
+        
+        public async Task<bool> Execute(UpdatePolicyParameter updatePolicyParameter)
         {
             if (updatePolicyParameter == null)
             {
@@ -64,9 +58,9 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
                         string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddPolicyParameterNames.Rules));
             }
 
-            var policy = _repositoryExceptionHelper.HandleException(
+            var policy = await _repositoryExceptionHelper.HandleException(
                 string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, updatePolicyParameter.PolicyId),
-                () => _policyRepository.GetPolicy(updatePolicyParameter.PolicyId));
+                () => _policyRepository.Get(updatePolicyParameter.PolicyId));
             if (policy == null)
             {
                 return false;
@@ -96,11 +90,9 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
                 });
             }
 
-            return _repositoryExceptionHelper.HandleException(
+            return await _repositoryExceptionHelper.HandleException(
                 string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeUpdated, updatePolicyParameter.PolicyId),
-                () => _policyRepository.UpdatePolicy(policy));
+                () => _policyRepository.Update(policy));
         }
-
-        #endregion
     }
 }

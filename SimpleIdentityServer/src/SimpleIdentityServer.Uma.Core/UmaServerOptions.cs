@@ -19,13 +19,9 @@ namespace SimpleIdentityServer.Uma.Core
     public class UmaServerOptions
     {
         public string RegisterOperation { get; set; }
-
         public string TokenOperation { get; set; }
-
         public string AuthorizeOperation { get; set; }
-
         public int TicketLifeTime { get; set; }
-
         public int RptLifeTime { get; set; }
     }
 }

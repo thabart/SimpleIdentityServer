@@ -29,10 +29,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.CodeSampleController
     internal class CodeSampleActions : ICodeSampleActions
     {
         private readonly IGetBackendCodeAction _getBackendCodeAction;
-
         private readonly IGetFrontendCodeAction _getFrontendCodeAction;
-
-        #region Constructor
 
         public CodeSampleActions(
             IGetBackendCodeAction getBackendCodeAction,
@@ -41,10 +38,6 @@ namespace SimpleIdentityServer.Uma.Core.Api.CodeSampleController
             _getBackendCodeAction = getBackendCodeAction;
             _getFrontendCodeAction = getFrontendCodeAction;
         }
-
-        #endregion
-
-        #region Public methods
 
         public MemoryStream GetBackendCode(string languageCode)
         {
@@ -55,7 +48,5 @@ namespace SimpleIdentityServer.Uma.Core.Api.CodeSampleController
         {
             return _getFrontendCodeAction.Execute(languageCode);
         }
-
-        #endregion
     }
 }

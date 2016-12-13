@@ -14,12 +14,11 @@
 // limitations under the License.
 #endregion
 
-using System;
+using SimpleIdentityServer.Uma.Core.Api.Authorization.Actions;
 using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Responses;
-using SimpleIdentityServer.Uma.Core.Api.Authorization.Actions;
-using System.Security.Claims;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.Authorization
@@ -34,16 +33,10 @@ namespace SimpleIdentityServer.Uma.Core.Api.Authorization
     {
         private readonly IGetAuthorizationAction _getAuthorizationAction;
 
-        #region Constructor
-
         public AuthorizationActions(IGetAuthorizationAction getAuthorizationAction)
         {
             _getAuthorizationAction = getAuthorizationAction;
         }
-
-        #endregion
-
-        #region Public methods
 
         public async Task<AuthorizationResponse> GetAuthorization(GetAuthorizationActionParameter getAuthorizationActionParameter,
             IEnumerable<Claim> claims)
@@ -51,7 +44,5 @@ namespace SimpleIdentityServer.Uma.Core.Api.Authorization
             return await _getAuthorizationAction.Execute(getAuthorizationActionParameter,
                 claims);
         }
-
-        #endregion
     }
 }

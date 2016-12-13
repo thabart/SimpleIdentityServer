@@ -19,39 +19,28 @@ using SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions;
 using SimpleIdentityServer.Uma.Core.Models;
 using System.Collections.Generic;
 using System;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController
 {
     public interface IResourceSetActions
     {
-        string AddResourceSet(AddResouceSetParameter addResouceSetParameter);
-
-        ResourceSet GetResourceSet(string id);
-
-        bool UpdateResourceSet(UpdateResourceSetParameter updateResourceSetParameter);
-
-        bool RemoveResourceSet(string resourceSetId);
-
-        List<string> GetAllResourceSet();
-
-        List<string> GetPolicies(string resourceId);
+        Task<string> AddResourceSet(AddResouceSetParameter addResouceSetParameter);
+        Task<ResourceSet> GetResourceSet(string id);
+        Task<bool> UpdateResourceSet(UpdateResourceSetParameter updateResourceSetParameter);
+        Task<bool> RemoveResourceSet(string resourceSetId);
+        Task<IEnumerable<string>> GetAllResourceSet();
+        Task<IEnumerable<string>> GetPolicies(string resourceId);
     }
 
     internal class ResourceSetActions : IResourceSetActions
     {
         private readonly IAddResourceSetAction _addResourceSetAction;
-
         private readonly IGetResourceSetAction _getResourceSetAction;
-
         private readonly IUpdateResourceSetAction _updateResourceSetAction;
-
         private readonly IDeleteResourceSetAction _deleteResourceSetAction;
-
         private readonly IGetAllResourceSetAction _getAllResourceSetAction;
-
         private readonly IGetPoliciesAction _getPoliciesAction;
-
-        #region Constructor
 
         public ResourceSetActions(
             IAddResourceSetAction addResourceSetAction,
@@ -69,40 +58,34 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController
             _getPoliciesAction = getPoliciesAction;
         }
         
-        #endregion
-        
-        #region Public methods
-        
-        public string AddResourceSet(AddResouceSetParameter addResouceSetParameter)
+        public Task<string> AddResourceSet(AddResouceSetParameter addResouceSetParameter)
         {
             return _addResourceSetAction.Execute(addResouceSetParameter);
         }
 
-        public ResourceSet GetResourceSet(string id)
+        public Task<ResourceSet> GetResourceSet(string id)
         {
             return _getResourceSetAction.Execute(id);
         }
 
-        public bool UpdateResourceSet(UpdateResourceSetParameter updateResourceSetParameter)
+        public Task<bool> UpdateResourceSet(UpdateResourceSetParameter updateResourceSetParameter)
         {
             return _updateResourceSetAction.Execute(updateResourceSetParameter);
         }
 
-        public bool RemoveResourceSet(string resourceSetId)
+        public Task<bool> RemoveResourceSet(string resourceSetId)
         {
             return _deleteResourceSetAction.Execute(resourceSetId);
         }
 
-        public List<string> GetAllResourceSet()
+        public Task<IEnumerable<string>> GetAllResourceSet()
         {
             return _getAllResourceSetAction.Execute();
         }
 
-        public List<string> GetPolicies(string resourceId)
+        public Task<IEnumerable<string>> GetPolicies(string resourceId)
         {
             return _getPoliciesAction.Execute(resourceId);
         }
-
-        #endregion
     }
 }

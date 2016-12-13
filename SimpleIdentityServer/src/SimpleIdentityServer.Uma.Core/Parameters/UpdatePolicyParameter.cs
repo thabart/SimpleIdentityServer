@@ -21,22 +21,16 @@ namespace SimpleIdentityServer.Uma.Core.Parameters
     public class UpdatePolicyRuleParameter
     {
         public string Id { get; set; }
-
         public List<string> ClientIdsAllowed { get; set; }
-
         public List<string> Scopes { get; set; }
-
         public string Script { get; set; }
-
         public bool IsResourceOwnerConsentNeeded { get; set; }
-
         public List<AddClaimParameter> Claims { get; set; }
     }
 
     public class UpdatePolicyParameter
     {
         public string PolicyId { get; set; }
-
         public List<UpdatePolicyRuleParameter> Rules { get; set; }
     }
 }

@@ -21,13 +21,9 @@ namespace SimpleIdentityServer.Uma.Core.Models
     public class Rpt
     {
         public string Value { get; set; }
-
         public DateTime ExpirationDateTime { get; set; }
-
         public string TicketId { get; set; }
-
         public string ResourceSetId { get; set; }
-
         public DateTime CreateDateTime { get; set; }
     }
 }

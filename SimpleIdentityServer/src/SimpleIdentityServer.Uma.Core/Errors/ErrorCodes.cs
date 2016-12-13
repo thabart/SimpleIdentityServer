@@ -19,19 +19,12 @@ namespace SimpleIdentityServer.Uma.Core.Errors
     internal static class ErrorCodes
     {
         public const string InvalidRequestCode = "invalid_request";
-
         public const string InternalError = "internal_error";
-
         public const string InvalidResourceSetId = "invalid_resource_set_id";
-
         public const string InvalidId = "invalid_id";
-
         public const string InvalidScope = "invalid_scope";
-
         public const string InvalidTicket = "invalid_ticket";
-
         public const string ExpiredTicket = "expired_ticket";
-
         public const string InvalidRpt = "invalid_rpt";
     }
 }

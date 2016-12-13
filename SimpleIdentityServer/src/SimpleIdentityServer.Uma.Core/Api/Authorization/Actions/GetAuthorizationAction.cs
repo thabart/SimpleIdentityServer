@@ -42,18 +42,11 @@ namespace SimpleIdentityServer.Uma.Core.Api.Authorization.Actions
     internal class GetAuthorizationAction : IGetAuthorizationAction
     {
         private readonly ITicketRepository _ticketRepository;
-
         private readonly IAuthorizationPolicyValidator _authorizationPolicyValidator;
-
         private readonly UmaServerOptions _umaServerOptions;
-
         private readonly IRptRepository _rptRepository;
-
         private readonly IRepositoryExceptionHelper _repositoryExceptionHelper;
-
         private readonly IUmaServerEventSource _umaServerEventSource;
-
-        #region Constructor
 
         public GetAuthorizationAction(
             ITicketRepository ticketRepository,
@@ -70,10 +63,6 @@ namespace SimpleIdentityServer.Uma.Core.Api.Authorization.Actions
             _repositoryExceptionHelper = repositoryExceptionHelper;
             _umaServerEventSource = umaServerEventSource;
         }
-
-        #endregion
-
-        #region Public methods
 
         public async Task<AuthorizationResponse> Execute(
             GetAuthorizationActionParameter getAuthorizationActionParameter,
@@ -98,7 +87,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Authorization.Actions
                     string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "ticket_id"));
             }
 
-            var ticket = _ticketRepository.GetTicketById(getAuthorizationActionParameter.TicketId);
+            var ticket = await _ticketRepository.Get(getAuthorizationActionParameter.TicketId);
             if (ticket == null)
             {
                 throw new BaseUmaException(ErrorCodes.InvalidTicket,
@@ -141,9 +130,9 @@ namespace SimpleIdentityServer.Uma.Core.Api.Authorization.Actions
                 CreateDateTime = DateTime.UtcNow
             };
 
-            _repositoryExceptionHelper.HandleException(
+            await _repositoryExceptionHelper.HandleException(
                 ErrorDescriptions.TheRptCannotBeInserted,
-                () => _rptRepository.InsertRpt(rpt));
+                () => _rptRepository.Insert(rpt));
             _umaServerEventSource.RequestIsAuthorized(json);
             return new AuthorizationResponse
             {
@@ -151,10 +140,6 @@ namespace SimpleIdentityServer.Uma.Core.Api.Authorization.Actions
                 Rpt = rpt.Value
             };
         }
-
-        #endregion
-
-        #region Private static methods
 
         private static string GetClientId(IEnumerable<System.Security.Claims.Claim> claims)
         {
@@ -166,7 +151,5 @@ namespace SimpleIdentityServer.Uma.Core.Api.Authorization.Actions
 
             return clientClaim.Value;
         }
-
-        #endregion
     }
 }

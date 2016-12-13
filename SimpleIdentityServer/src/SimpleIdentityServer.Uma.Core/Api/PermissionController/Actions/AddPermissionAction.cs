@@ -25,12 +25,13 @@ using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.Logging;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions
 {
     internal interface IAddPermissionAction
     {
-        string Execute(
+        Task<string> Execute(
             AddPermissionParameter addPermissionParameter,
             string clientId);
     }
@@ -38,16 +39,10 @@ namespace SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions
     internal class AddPermissionAction : IAddPermissionAction
     {
         private readonly IResourceSetRepository _resourceSetRepository;
-
         private readonly ITicketRepository _ticketRepository;
-
         private readonly IRepositoryExceptionHelper _repositoryExceptionHelper;
-
         private readonly UmaServerOptions _umaServerOptions;
-
         private readonly IUmaServerEventSource _umaServerEventSource;
-
-        #region Constructor
 
         public AddPermissionAction(
             IResourceSetRepository resourceSetRepository,
@@ -63,11 +58,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions
             _umaServerEventSource = umaServerEventSource;
         }
 
-        #endregion
-
-        #region Public methods
-
-        public string Execute(
+        public async Task<string> Execute(
             AddPermissionParameter addPermissionParameter,
             string clientId)
         {
@@ -83,7 +74,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions
                 throw new ArgumentNullException(nameof(clientId));
             }
 
-            CheckAddPermissionParameter(addPermissionParameter);
+            await CheckAddPermissionParameter(addPermissionParameter);
             var ticketLifetimeInSeconds = _umaServerOptions.TicketLifeTime;
             var ticket = new Ticket
             {
@@ -95,18 +86,14 @@ namespace SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions
                 CreateDateTime = DateTime.UtcNow
             };
 
-            var newTicket = _repositoryExceptionHelper.HandleException(
+            await _repositoryExceptionHelper.HandleException(
                 string.Format(ErrorDescriptions.TheTicketCannotBeInserted, addPermissionParameter.ResourceSetId),
-                () => _ticketRepository.InsertTicket(ticket));
+                () => _ticketRepository.Insert(ticket));
             _umaServerEventSource.FinishAddPermission(json);
-            return newTicket.Id;
+            return ticket.Id;
         }
 
-        #endregion
-
-        #region Private methods
-
-        private void CheckAddPermissionParameter(AddPermissionParameter addPermissionParameter)
+        private async Task CheckAddPermissionParameter(AddPermissionParameter addPermissionParameter)
         {
             if (string.IsNullOrWhiteSpace(addPermissionParameter.ResourceSetId))
             {
@@ -123,9 +110,9 @@ namespace SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions
                     string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddPermissionNames.Scopes));
             }
 
-            var resourceSet = _repositoryExceptionHelper.HandleException(
+            var resourceSet = await _repositoryExceptionHelper.HandleException(
                 string.Format(ErrorDescriptions.TheResourceSetCannotBeRetrieved, addPermissionParameter.ResourceSetId),
-                () => _resourceSetRepository.GetResourceSetById(addPermissionParameter.ResourceSetId));
+                () => _resourceSetRepository.Get(addPermissionParameter.ResourceSetId));
             if (resourceSet == null)
             {
                 throw new BaseUmaException(
@@ -141,7 +128,5 @@ namespace SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions
                     ErrorDescriptions.TheScopeAreNotValid);
             }
         }
-
-        #endregion
     }
 }

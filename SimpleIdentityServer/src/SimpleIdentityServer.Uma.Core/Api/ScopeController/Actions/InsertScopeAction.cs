@@ -23,23 +23,20 @@ using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.Core.Validators;
 using SimpleIdentityServer.Uma.Logging;
 using System;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions
 {
     internal interface IInsertScopeAction
     {
-        bool Execute(AddScopeParameter addScopeParameter);
+        Task<bool> Execute(AddScopeParameter addScopeParameter);
     }
 
     internal class InsertScopeAction : IInsertScopeAction
     {
         private readonly IScopeRepository _scopeRepository;
-
         private readonly IScopeParameterValidator _scopeParameterValidator;
-
         private readonly IUmaServerEventSource _umaServerEventSource;
-
-        #region Constructor
 
         public InsertScopeAction(
             IScopeRepository scopeRepository,
@@ -51,11 +48,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions
             _umaServerEventSource = umaServerEventSource;
         }
 
-        #endregion
-
-        #region Public methods
-
-        public bool Execute(AddScopeParameter addScopeParameter)
+        public async Task<bool> Execute(AddScopeParameter addScopeParameter)
         {
             var json = addScopeParameter == null ? string.Empty : JsonConvert.SerializeObject(addScopeParameter);
             _umaServerEventSource.StartToAddScope(json);
@@ -67,7 +60,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions
             Scope scope = null;
             try
             {
-                scope = _scopeRepository.GetScope(addScopeParameter.Id);
+                scope = await _scopeRepository.Get(addScopeParameter.Id);
             }
             catch (Exception ex)
             {
@@ -92,7 +85,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions
             
             try
             {
-                _scopeRepository.InsertScope(scope);
+                await _scopeRepository.Insert(scope);
                 _umaServerEventSource.FinishToAddScope(json);
                 return true;
             }
@@ -103,7 +96,5 @@ namespace SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions
                     ex);
             }
         }
-
-        #endregion
     }
 }

@@ -19,9 +19,7 @@ namespace SimpleIdentityServer.Uma.Core.Parameters
     public class AddScopeParameter
     {
         public string Id { get; set; }
-
         public string Name { get; set; }
-
         public string IconUri { get; set; }
     }
 }

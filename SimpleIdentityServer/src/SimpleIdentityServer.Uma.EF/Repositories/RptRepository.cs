@@ -14,47 +14,46 @@
 // limitations under the License.
 #endregion
 
-using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.EF.Extensions;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.EF.Repositories
 {
     internal class RptRepository : IRptRepository
     {
-        private readonly SimpleIdServerUmaContext _simpleIdServerUmaContext;
+        private readonly SimpleIdServerUmaContext _context;
 
-        #region Constructor
-
-        public RptRepository(SimpleIdServerUmaContext simpleIdServerUmaContext)
+        public RptRepository(SimpleIdServerUmaContext context)
         {
-            _simpleIdServerUmaContext = simpleIdServerUmaContext;
+            _context = context;
         }
 
-        #endregion
-
-        #region Public methods
-
-        public bool InsertRpt(Rpt rpt)
+        public async Task<bool> Insert(Rpt rpt)
         {
-            var record = rpt.ToModel();
-            _simpleIdServerUmaContext.Add(record);
-            _simpleIdServerUmaContext.SaveChanges();
-            return true;
-        }
-
-        public Rpt GetRpt(string value)
-        {
-            var record = _simpleIdServerUmaContext.Rpts.FirstOrDefault(r => r.Value == value);
-            if (record == null)
+            using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
-                return null;
+                try
+                {
+                    _context.Add(rpt.ToModel());
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
+                    transaction.Commit();
+                    return true;
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    return false;
+                }
             }
-
-            return record.ToDomain();
         }
 
-        #endregion
+        public async Task<Rpt> Get(string value)
+        {
+            var record = await _context.Rpts.FirstOrDefaultAsync(r => r.Value == value).ConfigureAwait(false);
+            return record == null ? null : record.ToDomain();
+        }
     }
 }

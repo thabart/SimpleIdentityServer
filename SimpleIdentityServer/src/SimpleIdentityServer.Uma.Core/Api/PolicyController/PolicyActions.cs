@@ -18,44 +18,30 @@ using SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Parameters;
 using System.Collections.Generic;
-using System;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.PolicyController
 {
     public interface IPolicyActions
     {
-        string AddPolicy(AddPolicyParameter addPolicyParameter);
-
-        Policy GetPolicy(string policyId);
-
-        bool DeletePolicy(string policyId);
-
-        bool UpdatePolicy(UpdatePolicyParameter updatePolicyParameter);
-
-        List<string> GetPolicies();
-
-        bool AddResourceSet(AddResourceSetParameter addResourceSetParameter);
-
-        bool DeleteResourceSet(string id, string resourceId);
+        Task<string> AddPolicy(AddPolicyParameter addPolicyParameter);
+        Task<Policy> GetPolicy(string policyId);
+        Task<bool> DeletePolicy(string policyId);
+        Task<bool> UpdatePolicy(UpdatePolicyParameter updatePolicyParameter);
+        Task<ICollection<string>> GetPolicies();
+        Task<bool> AddResourceSet(AddResourceSetParameter addResourceSetParameter);
+        Task<bool> DeleteResourceSet(string id, string resourceId);
     }
 
     internal class PolicyActions : IPolicyActions
     {
         private readonly IAddAuthorizationPolicyAction _addAuthorizationPolicyAction;
-
         private readonly IGetAuthorizationPolicyAction _getAuthorizationPolicyAction;
-
         private readonly IDeleteAuthorizationPolicyAction _deleteAuthorizationPolicyAction;
-
         private readonly IGetAuthorizationPoliciesAction _getAuthorizationPoliciesAction;
-
         private readonly IUpdatePolicyAction _updatePolicyAction;
-
         private readonly IAddResourceSetToPolicyAction _addResourceSetAction;
-
         private readonly IDeleteResourcePolicyAction _deleteResourcePolicyAction;
-
-        #region  Constructor
 
         public PolicyActions(
             IAddAuthorizationPolicyAction addAuthorizationPolicyAction,
@@ -74,46 +60,40 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController
             _addResourceSetAction = addResourceSetAction;
             _deleteResourcePolicyAction = deleteResourcePolicyAction;
         }
-
-        #endregion
-
-        #region Public methods
-
-        public string AddPolicy(AddPolicyParameter addPolicyParameter)
+        
+        public Task<string> AddPolicy(AddPolicyParameter addPolicyParameter)
         {
             return _addAuthorizationPolicyAction.Execute(addPolicyParameter);
         }
 
-        public Policy GetPolicy(string policyId)
+        public Task<Policy> GetPolicy(string policyId)
         {
             return _getAuthorizationPolicyAction.Execute(policyId);
         }
 
-        public bool DeletePolicy(string policyId)
+        public Task<bool> DeletePolicy(string policyId)
         {
             return _deleteAuthorizationPolicyAction.Execute(policyId);
         }
 
-        public List<string> GetPolicies()
+        public Task<ICollection<string>> GetPolicies()
         {
             return _getAuthorizationPoliciesAction.Execute();
         }
 
-        public bool UpdatePolicy(UpdatePolicyParameter updatePolicyParameter)
+        public Task<bool> UpdatePolicy(UpdatePolicyParameter updatePolicyParameter)
         {
             return _updatePolicyAction.Execute(updatePolicyParameter);
         }
 
-        public bool AddResourceSet(AddResourceSetParameter addResourceSetParameter)
+        public Task<bool> AddResourceSet(AddResourceSetParameter addResourceSetParameter)
         {
             return _addResourceSetAction.Execute(addResourceSetParameter);
         }
 
-        public bool DeleteResourceSet(string id, string resourceId)
+        public Task<bool> DeleteResourceSet(string id, string resourceId)
         {
             return _deleteResourcePolicyAction.Execute(id, resourceId);
         }
-
-        #endregion
     }
 }

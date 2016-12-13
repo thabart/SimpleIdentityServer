@@ -21,7 +21,6 @@ namespace SimpleIdentityServer.Uma.Core.Parameters
     public class AddPermissionParameter
     {
         public string ResourceSetId { get; set; }
-
         public List<string> Scopes { get; set; }
     }
 }

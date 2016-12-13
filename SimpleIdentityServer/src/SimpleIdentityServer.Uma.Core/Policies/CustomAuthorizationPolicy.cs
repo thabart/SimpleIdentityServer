@@ -29,8 +29,6 @@ namespace SimpleIdentityServer.Uma.Core.Policies
 
     internal class CustomAuthorizationPolicy : ICustomAuthorizationPolicy
     {
-        #region Public methods
-
         public bool Execute(
             Ticket validTicket,
             Policy authorizationPolicy,
@@ -55,7 +53,5 @@ namespace SimpleIdentityServer.Uma.Core.Policies
 
             return true;
         }
-
-        #endregion
     }
 }

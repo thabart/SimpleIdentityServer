@@ -23,23 +23,20 @@ using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.Core.Validators;
 using SimpleIdentityServer.Uma.Logging;
 using Newtonsoft.Json;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
 {
     internal interface IAddResourceSetAction
     {
-        string Execute(AddResouceSetParameter addResourceSetParameter);
+        Task<string> Execute(AddResouceSetParameter addResourceSetParameter);
     }
 
     internal class AddResourceSetAction : IAddResourceSetAction
     {
         private readonly IResourceSetRepository _resourceSetRepository;
-
         private readonly IResourceSetParameterValidator _resourceSetParameterValidator;
-
         private readonly IUmaServerEventSource _umaServerEventSource;
-
-        #region Constructor
 
         public AddResourceSetAction(
             IResourceSetRepository resourceSetRepository,
@@ -50,10 +47,8 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
             _resourceSetParameterValidator = resourceSetParameterValidator;
             _umaServerEventSource = umaServerEventSource;
         }
-        
-        #endregion
     
-        public string Execute(AddResouceSetParameter addResourceSetParameter)
+        public async Task<string> Execute(AddResouceSetParameter addResourceSetParameter)
         {
             var json = addResourceSetParameter == null ? string.Empty : JsonConvert.SerializeObject(addResourceSetParameter);
             _umaServerEventSource.StartToAddResourceSet(json);
@@ -64,6 +59,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
             
             var resourceSet = new ResourceSet
             {
+                Id = Guid.NewGuid().ToString(),
                 Name = addResourceSetParameter.Name,
                 Uri = addResourceSetParameter.Uri,
                 Type = addResourceSetParameter.Type,
@@ -72,15 +68,14 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
             };
 
             _resourceSetParameterValidator.CheckResourceSetParameter(resourceSet);
-            var result = _resourceSetRepository.Insert(resourceSet);
-            if (result == null)
+            if (!await _resourceSetRepository.Insert(resourceSet))
             {
                 throw new BaseUmaException(ErrorCodes.InternalError,
                     ErrorDescriptions.TheResourceSetCannotBeInserted);
             }
 
-            _umaServerEventSource.FinishToAddResourceSet(JsonConvert.SerializeObject(result));
-            return result.Id;
+            _umaServerEventSource.FinishToAddResourceSet(JsonConvert.SerializeObject(resourceSet));
+            return resourceSet.Id;
         }
     }
 }

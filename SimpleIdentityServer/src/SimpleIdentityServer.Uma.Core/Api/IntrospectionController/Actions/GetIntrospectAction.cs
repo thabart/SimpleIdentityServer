@@ -23,23 +23,20 @@ using SimpleIdentityServer.Uma.Core.Responses;
 using SimpleIdentityServer.Uma.Logging;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.IntrospectionController.Actions
 {
     public interface IGetIntrospectAction
     {
-        IntrospectionResponse Execute(string rpt);
+        Task<IntrospectionResponse> Execute(string rpt);
     }
 
     internal class GetIntrospectAction : IGetIntrospectAction
     {
         private readonly IRptRepository _rptRepository;
-
         private readonly ITicketRepository _ticketRepository;
-
         private readonly IUmaServerEventSource _umaServerEventSource;
-
-        #region Constructor
 
         public GetIntrospectAction(
             IRptRepository rptRepository,
@@ -50,12 +47,8 @@ namespace SimpleIdentityServer.Uma.Core.Api.IntrospectionController.Actions
             _ticketRepository = ticketRepository;
             _umaServerEventSource = umaServerEventSource;
         }
-
-        #endregion
-
-        #region Public methods
-
-        public IntrospectionResponse Execute(string rpt)
+        
+        public async Task<IntrospectionResponse> Execute(string rpt)
         {
             _umaServerEventSource.StartToIntrospect(rpt);
             if (string.IsNullOrWhiteSpace(rpt))
@@ -63,14 +56,14 @@ namespace SimpleIdentityServer.Uma.Core.Api.IntrospectionController.Actions
                 throw new ArgumentNullException(nameof(rpt));
             }
 
-            var rptInformation = _rptRepository.GetRpt(rpt);
+            var rptInformation = await _rptRepository.Get(rpt);
             if (rptInformation == null)
             {
                 throw new BaseUmaException(ErrorCodes.InvalidRpt,
                     string.Format(ErrorDescriptions.TheRptDoesntExist, rpt));
             }
 
-            var ticket = _ticketRepository.GetTicketById(rptInformation.TicketId);
+            var ticket = await _ticketRepository.Get(rptInformation.TicketId);
             if (ticket == null)
             {
                 throw new BaseUmaException(ErrorCodes.InternalError,
@@ -105,7 +98,5 @@ namespace SimpleIdentityServer.Uma.Core.Api.IntrospectionController.Actions
             _umaServerEventSource.EndIntrospection(JsonConvert.SerializeObject(result));
             return result;
         }
-
-        #endregion
     }
 }

@@ -19,9 +19,7 @@ using System;
 namespace SimpleIdentityServer.Uma.Core.Exceptions
 {
     public class BaseUmaException : Exception
-    {
-        #region Constructors
-    
+    {    
         public BaseUmaException(string code, string message) : base(message)
         {
             Code = code;
@@ -31,13 +29,7 @@ namespace SimpleIdentityServer.Uma.Core.Exceptions
         {
             Code = code;
         }
-        
-        #endregion
-        
-        #region Properties
 
         public string Code { get; private set; }
-        
-        #endregion
     }
 }

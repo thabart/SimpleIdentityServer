@@ -30,16 +30,10 @@ namespace SimpleIdentityServer.Uma.Core.Api.CodeSampleController.Actions
     {
         private readonly ICodeProvider _codeProvider;
 
-        #region Constructor
-
         public GetFrontendCodeAction(ICodeProvider codeProvider)
         {
             _codeProvider = codeProvider;
         }
-
-        #endregion
-
-        #region Public methods
 
         public MemoryStream Execute(string languageCode)
         {
@@ -56,7 +50,5 @@ namespace SimpleIdentityServer.Uma.Core.Api.CodeSampleController.Actions
             var language = Constants.MappingLanguageToCodes.First(m => m.Value == languageCode).Key;
             return _codeProvider.GetFiles(language, Code.TypeCode.Frontend);
         }
-
-        #endregion
     }
 }

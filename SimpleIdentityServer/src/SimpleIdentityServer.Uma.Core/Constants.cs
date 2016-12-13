@@ -21,54 +21,40 @@ namespace SimpleIdentityServer.Uma.Core
 {
     internal static class Constants
     {
-        #region DTOs
-
         public static class AddPermissionNames
         {
             public const string ResourceSetId = "resource_set_id";
-
             public const string Scopes = "scopes";
         }
 
         public static class AddPolicyParameterNames
         {
             public const string ResourceSetIds = "resource_set_ids";
-
             public const string Rules = "rules";
         }
 
         public static class AddResourceSetParameterNames
         {
             public const string PolicyId = "_id";
-
             public const string ResourceSet = "resources";
         }
 
         public static class AddPolicyRuleParameterNames
         {
             public const string Script = "script";
-
             public const string Scopes = "scopes";
-
             public const string ClientIdsAllowed = "allowed_clients";
         }
 
         public static class ErrorDetailNames
         {
             public const string RequestingPartyClaims = "requesting_party_claims";
-
             public const string RequiredClaims = "required_claims";
-
             public const string ClaimName = "name";
-
             public const string ClaimFriendlyName = "friendly_name";
-
             public const string ClaimIssuer = "issuer";
-
             public const string RedirectUser = "redirect_user";
         }
-
-        #endregion
 
         public static class LanguageCodes
         {

@@ -21,15 +21,10 @@ namespace SimpleIdentityServer.Uma.Core.Parameters
     public class UpdateResourceSetParameter
     {
         public string Id { get; set; }
-
         public string Name { get; set; }
-
         public string Uri { get; set; }
-
         public string Type { get; set; }
-
         public List<string> Scopes { get; set; }
-
         public string IconUri { get; set; }
     }
 }

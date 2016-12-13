@@ -14,47 +14,46 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.EntityFrameworkCore;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.EF.Extensions;
-using System.Linq;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.EF.Repositories
 {
     internal class TicketRepository : ITicketRepository
     {
-        private readonly SimpleIdServerUmaContext _simpleIdServerUmaContext;
+        private readonly SimpleIdServerUmaContext _context;
 
-        #region Constructor
-
-        public TicketRepository(SimpleIdServerUmaContext simpleIdServerUmaContext)
+        public TicketRepository(SimpleIdServerUmaContext context)
         {
-            _simpleIdServerUmaContext = simpleIdServerUmaContext;
+            _context = context;
         }
 
-        #endregion
-
-        #region Public methods
-
-        public Ticket GetTicketById(string id)
+        public async Task<Ticket> Get(string id)
         {
-            var ticket = _simpleIdServerUmaContext.Tickets.FirstOrDefault(t => t.Id == id);
-            if (ticket == null)
+            var ticket = await _context.Tickets.FirstOrDefaultAsync(t => t.Id == id).ConfigureAwait(false);
+            return ticket == null ? null : ticket.ToDomain();
+        }
+
+        public async Task<bool> Insert(Ticket ticket)
+        {
+            using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
-                return null;
+                try
+                {
+                    _context.Tickets.Add(ticket.ToModel());
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
+                    transaction.Commit();
+                    return true;
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    return false;
+                }
             }
-
-            return ticket.ToDomain();
         }
-
-        public Ticket InsertTicket(Ticket ticket)
-        {
-            var newTicket = ticket.ToModel();
-            _simpleIdServerUmaContext.Tickets.Add(newTicket);
-            _simpleIdServerUmaContext.SaveChanges();
-            return newTicket.ToDomain();
-        }
-
-        #endregion
     }
 }

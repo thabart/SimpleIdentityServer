@@ -18,10 +18,6 @@ namespace SimpleIdentityServer.Uma.Core
 {
     public interface IParametersProvider
     {
-        #region Public methods
-
         string GetOpenIdConfigurationUrl();
-
-        #endregion
     }
 }

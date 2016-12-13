@@ -44,8 +44,6 @@ namespace SimpleIdentityServer.Uma.Core
 {
     public static class SimpleIdServerUmaCoreExtensions
     {
-        #region Public static methods
-
         public static IServiceCollection AddSimpleIdServerUmaCore(
             this IServiceCollection serviceCollection,
             UmaServerOptions umaServerOptions)
@@ -73,10 +71,6 @@ namespace SimpleIdentityServer.Uma.Core
             RegisterDependencies(serviceCollection, umaServerOptions);
             return serviceCollection;
         }
-
-        #endregion
-
-        #region Private static methods
 
         private static void RegisterDependencies(
             IServiceCollection serviceCollection,
@@ -127,7 +121,5 @@ namespace SimpleIdentityServer.Uma.Core
             serviceCollection.AddSimpleIdentityServerJwt();
             serviceCollection.AddSingleton(umaServerOptions);
         }
-
-        #endregion
     }
 }

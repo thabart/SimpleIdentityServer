@@ -19,21 +19,19 @@ using SimpleIdentityServer.Uma.Core.Helpers;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using System;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
 {
     public interface IGetAuthorizationPolicyAction
     {
-        Policy Execute(string policyId);
+        Task<Policy> Execute(string policyId);
     }
 
     internal class GetAuthorizationPolicyAction : IGetAuthorizationPolicyAction
     {
         private readonly IPolicyRepository _policyRepository;
-
         private readonly IRepositoryExceptionHelper _repositoryExceptionHelper;
-
-        #region Constructor
 
         public GetAuthorizationPolicyAction(
             IPolicyRepository policyRepository,
@@ -43,23 +41,17 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
             _repositoryExceptionHelper = repositoryExceptionHelper;
         }
 
-        #endregion
-
-        #region Public methods
-
-        public Policy Execute(string policyId)
+        public async Task<Policy> Execute(string policyId)
         {
             if (string.IsNullOrWhiteSpace(policyId))
             {
                 throw new ArgumentNullException(nameof(policyId));
             }
 
-            var policy = _repositoryExceptionHelper.HandleException(
+            var policy = await _repositoryExceptionHelper.HandleException(
                 string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, policyId),
-                () => _policyRepository.GetPolicy(policyId));
+                () => _policyRepository.Get(policyId));
             return policy;
         }
-
-        #endregion
     }
 }

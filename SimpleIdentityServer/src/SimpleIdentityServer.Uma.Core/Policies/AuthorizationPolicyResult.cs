@@ -27,7 +27,6 @@ namespace SimpleIdentityServer.Uma.Core.Policies
     public class AuthorizationPolicyResult
     {
         public AuthorizationPolicyResultEnum Type { get; set; }
-
         public object ErrorDetails { get; set; }
     }
 }

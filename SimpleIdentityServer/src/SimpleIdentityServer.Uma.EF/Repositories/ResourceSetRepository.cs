@@ -21,53 +21,47 @@ using SimpleIdentityServer.Uma.EF.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.EF.Repositories
 {
     internal class ResourceSetRepository : IResourceSetRepository
     {
-        private readonly SimpleIdServerUmaContext _simpeIdServerUmaContext;
+        private readonly SimpleIdServerUmaContext _context;
 
-        #region Constructor
-
-        public ResourceSetRepository(SimpleIdServerUmaContext simpleIdServerUmaContext)
+        public ResourceSetRepository(SimpleIdServerUmaContext context)
         {
-            _simpeIdServerUmaContext = simpleIdServerUmaContext;
+            _context = context;
         }
 
-        #endregion
-
-        #region Public methods
-
-        public ResourceSet Insert(ResourceSet resourceSet)
+        public async Task<bool> Insert(ResourceSet resourceSet)
         {
-            try
+            using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
-                var model = resourceSet.ToModel();
-                model.Id = Guid.NewGuid().ToString();
-                _simpeIdServerUmaContext.Add(model);
-                _simpeIdServerUmaContext.SaveChanges();
-                return model.ToDomain();
-            }
-            catch(Exception)
-            {
-                return null;
+                try
+                { 
+                    _context.ResourceSets.Add(resourceSet.ToModel());
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
+                    transaction.Commit();
+                    return true;
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    return false;
+                }
             }
         }
 
-        public ResourceSet GetResourceSetById(string id)
+        public async Task<ResourceSet> Get(string id)
         {
             try
             {
-                var resourceSet = _simpeIdServerUmaContext.ResourceSets
+                var resourceSet = await _context.ResourceSets
                     .Include(r => r.PolicyResources)
-                    .FirstOrDefault(r => r.Id == id);
-                if (resourceSet == null)
-                {
-                    return null;
-                }
-
-                return resourceSet.ToDomain();
+                    .FirstOrDefaultAsync(r => r.Id == id)
+                    .ConfigureAwait(false);
+                return resourceSet == null ? null : resourceSet.ToDomain();
             }
             catch (Exception)
             {
@@ -75,68 +69,73 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
             }
         }
 
-        public ResourceSet UpdateResource(ResourceSet resourceSet)
+        public async Task<bool> Update(ResourceSet resourceSet)
         {
-            try
+            using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
-                var record = _simpeIdServerUmaContext.ResourceSets.FirstOrDefault(r => r.Id == resourceSet.Id);
-                if (record == null)
+                try
                 {
-                    return null;
+                    var record = await _context.ResourceSets.FirstOrDefaultAsync(r => r.Id == resourceSet.Id).ConfigureAwait(false);
+                    if (record == null)
+                    {
+                        return false;
+                    }
+                    
+                    record.Name = resourceSet.Name;
+                    record.Scopes = MappingExtensions.GetConcatenatedList(resourceSet.Scopes);
+                    record.Type = resourceSet.Type;
+                    record.Uri = resourceSet.Uri;
+                    record.IconUri = resourceSet.IconUri;
+
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
+                    transaction.Commit();
+                    return true;
                 }
-
-                var rs = resourceSet.ToModel();
-                record.Name = rs.Name;
-                record.Scopes = rs.Scopes;
-                record.Type = rs.Type;
-                record.Uri = rs.Uri;
-                record.IconUri = rs.IconUri;
-
-                _simpeIdServerUmaContext.SaveChanges();
-                return record.ToDomain();
-            }
-            catch (Exception)
-            {
-                return null;
+                catch (Exception)
+                {
+                    transaction.Rollback();
+                    return false;
+                }
             }
         }
 
-        public List<ResourceSet> GetAll()
+        public async Task<ICollection<ResourceSet>> GetAll()
         {
             try
             {
-                var resourceSets = _simpeIdServerUmaContext.ResourceSets.Select(r => r.ToDomain());
-                return resourceSets.ToList();
+                return await _context.ResourceSets.Select(r => r.ToDomain()).ToListAsync().ConfigureAwait(false);
             }
-            catch (Exception)
+            catch
             {
                 return null;
             }            
         }
 
-        public bool DeleteResource(string id)
+        public async Task<bool> Delete(string id)
         {
-            try
+            using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
-                var record = _simpeIdServerUmaContext.ResourceSets
-                    .Include(r => r.Rpts)
-                    .Include(r => r.Tickets)
-                    .FirstOrDefault(r => r.Id == id);
-                if (record == null)
+                try
+                {
+                    var record = await _context.ResourceSets
+                        .Include(r => r.Rpts)
+                        .Include(r => r.Tickets)
+                        .FirstOrDefaultAsync(r => r.Id == id)
+                        .ConfigureAwait(false);
+                    if (record == null)
+                    {
+                        return false;
+                    }
+
+                    _context.ResourceSets.Remove(record);
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
+                    return true;
+                }
+                catch
                 {
                     return false;
                 }
-
-                _simpeIdServerUmaContext.ResourceSets.Remove(record);
-                _simpeIdServerUmaContext.SaveChanges();
-                return true;
-            }
-            catch(Exception)
-            {
-                return false;
             }
         }
-
-        #endregion
     }
 }

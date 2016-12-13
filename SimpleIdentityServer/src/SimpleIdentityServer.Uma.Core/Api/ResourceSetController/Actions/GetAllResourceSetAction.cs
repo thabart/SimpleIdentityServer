@@ -19,19 +19,18 @@ using SimpleIdentityServer.Uma.Core.Exceptions;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
 {
     internal interface IGetAllResourceSetAction
     {
-        List<string> Execute();
+        Task<IEnumerable<string>> Execute();
     }
 
     internal class GetAllResourceSetAction : IGetAllResourceSetAction
     {
         private readonly IResourceSetRepository _resourceSetRepository;
-
-        #region Constructor
 
         public GetAllResourceSetAction(
             IResourceSetRepository resourceSetRepository)
@@ -39,13 +38,9 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
             _resourceSetRepository = resourceSetRepository;
         }
 
-        #endregion
-
-        #region Public methods
-
-        public List<string> Execute()
+        public async Task<IEnumerable<string>> Execute()
         {
-            var resourceSets = _resourceSetRepository.GetAll();
+            var resourceSets = await _resourceSetRepository.GetAll();
             if (resourceSets == null)
             {
                 throw new BaseUmaException(
@@ -53,9 +48,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
                     ErrorDescriptions.TheResourceSetsCannotBeRetrieved);
             }
 
-            return resourceSets.Select(r => r.Id).ToList();
+            return resourceSets.Select(r => r.Id);
         }
-
-        #endregion
     }
 }

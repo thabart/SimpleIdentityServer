@@ -18,35 +18,26 @@ using SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Parameters;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ScopeController
 {
     public interface IScopeActions
     {
-        bool InsertScope(AddScopeParameter addScopeParameter);
-
-        Scope GetScope(string scopeId);
-
-        List<string> GetScopes();
-
-        bool UpdateScope(UpdateScopeParameter updateScopeParameter);
-
-        bool DeleteScope(string scopeId);
+        Task<bool> InsertScope(AddScopeParameter addScopeParameter);
+        Task<Scope> GetScope(string scopeId);
+        Task<IEnumerable<string>> GetScopes();
+        Task<bool> UpdateScope(UpdateScopeParameter updateScopeParameter);
+        Task<bool> DeleteScope(string scopeId);
     }
 
     internal class ScopeActions : IScopeActions
     {
         private readonly IGetScopeAction _getScopeAction;
-
         private readonly IInsertScopeAction _insertScopeAction;
-
         private readonly IDeleteScopeAction _deleteScopeAction;
-
         private readonly IGetScopesAction _getScopesAction;
-
         private readonly IUpdateScopeAction _updateScopeAction;
-
-        #region Constructor
 
         public ScopeActions(
             IGetScopeAction getScopeAction,
@@ -62,36 +53,29 @@ namespace SimpleIdentityServer.Uma.Core.Api.ScopeController
             _deleteScopeAction = deleteScopeAction;
         }
 
-        #endregion
-
-        #region Public methods
-
-        public bool InsertScope(AddScopeParameter addScopeParameter)
+        public Task<bool> InsertScope(AddScopeParameter addScopeParameter)
         {
             return _insertScopeAction.Execute(addScopeParameter);
         }
 
-        public Scope GetScope(string scopeId)
+        public Task<Scope> GetScope(string scopeId)
         {
             return _getScopeAction.Execute(scopeId);
         }
 
-        public List<string> GetScopes()
+        public Task<IEnumerable<string>> GetScopes()
         {
             return _getScopesAction.Execute();
         } 
 
-        public bool UpdateScope(UpdateScopeParameter updateScopeParameter)
+        public Task<bool> UpdateScope(UpdateScopeParameter updateScopeParameter)
         {
             return _updateScopeAction.Execute(updateScopeParameter);
         }
 
-        public bool DeleteScope(string scopeId)
+        public Task<bool> DeleteScope(string scopeId)
         {
             return _deleteScopeAction.Execute(scopeId);
         }
-
-
-        #endregion
     }
 }

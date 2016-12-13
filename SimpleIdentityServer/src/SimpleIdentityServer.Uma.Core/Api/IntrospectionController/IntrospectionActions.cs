@@ -16,34 +16,27 @@
 
 using SimpleIdentityServer.Uma.Core.Api.IntrospectionController.Actions;
 using SimpleIdentityServer.Uma.Core.Responses;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.IntrospectionController
 {
     public interface IIntrospectionActions
     {
-        IntrospectionResponse GetIntrospection(string rpt);
+        Task<IntrospectionResponse> GetIntrospection(string rpt);
     }
 
     internal class IntrospectionActions : IIntrospectionActions
     {
         private readonly IGetIntrospectAction _getIntrospectAction;
 
-        #region Constructor
-
         public IntrospectionActions(IGetIntrospectAction getIntrospectAction)
         {
             _getIntrospectAction = getIntrospectAction;
         }
 
-        #endregion
-
-        #region Public methods
-
-        public IntrospectionResponse GetIntrospection(string rpt)
+        public Task<IntrospectionResponse> GetIntrospection(string rpt)
         {
             return _getIntrospectAction.Execute(rpt);
         }
-
-        #endregion
     }
 }

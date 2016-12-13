@@ -22,28 +22,19 @@ using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.Core.Validators;
 using System;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
 {
     internal interface IUpdateResourceSetAction
     {
-        /// <summary>
-        /// throw an <see cref="ArgumentNullException"/> exception when the parameter is null.
-        /// throw an <see cref="BaseUmaException"/> exception when an exception occured while trying to update the resource set.
-        /// if the resource set doesn't exist then false is returned
-        /// </summary>
-        /// <param name="udpateResourceSetParameter"></param>
-        /// <returns></returns>
-        bool Execute(UpdateResourceSetParameter udpateResourceSetParameter);
+        Task<bool> Execute(UpdateResourceSetParameter udpateResourceSetParameter);
     }
 
     internal class UpdateResourceSetAction : IUpdateResourceSetAction
     {
         private readonly IResourceSetRepository _resourceSetRepository;
-
         private readonly IResourceSetParameterValidator _resourceSetParameterValidator;
-
-        #region Constructor
 
         public UpdateResourceSetAction(
             IResourceSetRepository resourceSetRepository,
@@ -53,18 +44,14 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
             _resourceSetParameterValidator = resourceSetParameterValidator;
         }
 
-        #endregion
-
-        #region Public methods
-
-        public bool Execute(UpdateResourceSetParameter udpateResourceSetParameter)
+        public async Task<bool> Execute(UpdateResourceSetParameter udpateResourceSetParameter)
         {
             if (udpateResourceSetParameter == null)
             {
                 throw new ArgumentNullException(nameof(udpateResourceSetParameter));
             }
 
-            if (_resourceSetRepository.GetResourceSetById(udpateResourceSetParameter.Id) == null)
+            if (await _resourceSetRepository.Get(udpateResourceSetParameter.Id) == null)
             {
                 return false;
             }
@@ -80,8 +67,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
             };
 
             _resourceSetParameterValidator.CheckResourceSetParameter(resourceSet);
-            var result = _resourceSetRepository.UpdateResource(resourceSet);
-            if (result == null)
+            if (!await _resourceSetRepository.Update(resourceSet))
             {
                 throw new BaseUmaException(
                     ErrorCodes.InternalError,
@@ -90,7 +76,5 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
 
             return true;
         }
-
-        #endregion
     }
 }

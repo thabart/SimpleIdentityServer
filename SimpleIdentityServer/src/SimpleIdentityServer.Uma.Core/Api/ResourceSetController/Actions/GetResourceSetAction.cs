@@ -17,39 +17,32 @@
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using System;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
 {
     internal interface IGetResourceSetAction
     {
-        ResourceSet Execute(string id);
+        Task<ResourceSet> Execute(string id);
     }
 
     internal class GetResourceSetAction : IGetResourceSetAction
     {
         private readonly IResourceSetRepository _resourceSetRepository;
 
-        #region Constructor
-
         public GetResourceSetAction(IResourceSetRepository resourceSetRepository)
         {
             _resourceSetRepository = resourceSetRepository;
         }
 
-        #endregion
-
-        #region Public methods
-
-        public ResourceSet Execute(string id)
+        public async Task<ResourceSet> Execute(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
                 throw new ArgumentNullException(nameof(id));
             }
 
-            return _resourceSetRepository.GetResourceSetById(id);
+            return await _resourceSetRepository.Get(id);
         }
-
-        #endregion
     }
 }

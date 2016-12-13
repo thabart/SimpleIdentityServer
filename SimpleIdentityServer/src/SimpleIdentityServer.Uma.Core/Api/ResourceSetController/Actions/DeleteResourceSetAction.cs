@@ -19,29 +19,19 @@ using SimpleIdentityServer.Uma.Core.Exceptions;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.Logging;
 using System;
-using System.Net;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
 {
     internal interface IDeleteResourceSetAction
     {
-        /// <summary>
-        /// throw an <see cref="ArgumentNullException"/> exception when the parameter is null
-        /// throw an <see cref="BaseUmaException"/> exception when an error occured while trying to delete the resource set.
-        /// false is returned if the resource set doesn't exist
-        /// </summary>
-        /// <param name="resourceSetId"></param>
-        /// <returns></returns>
-        bool Execute(string resourceSetId);
+        Task<bool> Execute(string resourceSetId);
     }
 
     internal class DeleteResourceSetAction : IDeleteResourceSetAction
     {
         private readonly IResourceSetRepository _resourceSetRepository;
-
         private readonly IUmaServerEventSource _umaServerEventSource;
-
-        #region Constructor
 
         public DeleteResourceSetAction(
             IResourceSetRepository resourceSetRepository,
@@ -51,11 +41,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
             _umaServerEventSource = umaServerEventSource;
         }
 
-        #endregion
-
-        #region Public methods
-
-        public bool Execute(string resourceSetId)
+        public async Task<bool> Execute(string resourceSetId)
         {
             _umaServerEventSource.StartToRemoveResourceSet(resourceSetId);
             if (string.IsNullOrWhiteSpace(resourceSetId))
@@ -63,13 +49,13 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
                 throw new ArgumentNullException(nameof(resourceSetId));
             }
 
-            var result = _resourceSetRepository.GetResourceSetById(resourceSetId);
+            var result = await _resourceSetRepository.Get(resourceSetId);
             if (result == null)
             {
                 return false;
             }
 
-            if (!_resourceSetRepository.DeleteResource(resourceSetId))
+            if (!await _resourceSetRepository.Delete(resourceSetId))
             {
                 throw new BaseUmaException(
                     ErrorCodes.InternalError,
@@ -79,7 +65,5 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
             _umaServerEventSource.FinishToRemoveResourceSet(resourceSetId);
             return true;
         }
-
-        #endregion
     }
 }

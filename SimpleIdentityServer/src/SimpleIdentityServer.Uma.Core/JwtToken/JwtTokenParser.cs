@@ -33,14 +33,9 @@ namespace SimpleIdentityServer.Uma.Core.JwtToken
     internal class JwtTokenParser : IJwtTokenParser
     {
         private readonly IJwsParser _jwsParser;
-
         private readonly IIdentityServerClientFactory _identityServerClientFactory;
-
         private readonly IParametersProvider _parametersProvider;
-
         private readonly IJsonWebKeyConverter _jsonWebKeyConverter;
-
-        #region Constructor
 
         public JwtTokenParser(
             IJwsParser jwsParser,
@@ -53,10 +48,6 @@ namespace SimpleIdentityServer.Uma.Core.JwtToken
             _parametersProvider = parametersProvider;
             _jsonWebKeyConverter = jsonWebKeyConverter;
         }
-
-        #endregion
-
-        #region Public methods
 
         public async Task<JwsPayload> UnSign(string jws)
         {
@@ -89,7 +80,5 @@ namespace SimpleIdentityServer.Uma.Core.JwtToken
 
             return _jwsParser.ValidateSignature(jws, jsonWebKey);
         }
-
-        #endregion
     }
 }

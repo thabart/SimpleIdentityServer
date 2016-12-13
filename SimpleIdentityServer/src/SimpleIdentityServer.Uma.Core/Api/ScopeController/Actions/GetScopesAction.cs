@@ -20,35 +20,30 @@ using SimpleIdentityServer.Uma.Core.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions
 {
     internal interface IGetScopesAction
     {
-        List<string> Execute();
+        Task<IEnumerable<string>> Execute();
     }
 
     internal class GetScopesAction : IGetScopesAction
     {
         private readonly IScopeRepository _scopeRepository;
 
-        #region Constructor
-
         public GetScopesAction(IScopeRepository scopeRepository)
         {
             _scopeRepository = scopeRepository;
         }
 
-        #endregion
-
-        #region Public methods
-
-        public List<string> Execute()
+        public async Task<IEnumerable<string>> Execute()
         {
             try
             {
-                var scopes = _scopeRepository.GetAll();
-                return scopes.Select(s => s.Id).ToList();
+                var scopes = await _scopeRepository.GetAll();
+                return scopes.Select(s => s.Id);
             }
             catch (Exception ex)
             {
@@ -57,7 +52,5 @@ namespace SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions
                     ex);
             }
         }
-
-        #endregion
     }
 }

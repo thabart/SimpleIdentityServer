@@ -18,66 +18,36 @@ namespace SimpleIdentityServer.Uma.Core.Errors
 {
     internal static class ErrorDescriptions
     {
-        public const string TheParameterNeedsToBeSpecified = "the parameter {0} needs to be specified";   
-        
+        public const string TheParameterNeedsToBeSpecified = "the parameter {0} needs to be specified";           
         public const string TheUrlIsNotWellFormed = "the url {0} is not well formed";
-
         public const string TheResourceSetCannotBeInserted = "an error occured while trying to insert the resource set";
-
         public const string TheResourceSetDoesntExist = "resource set {0} doesn't exist";
-
         public const string ThePolicyDoesntContainResource = "the authorization policy doesn't contain the resource";
-
         public const string TheResourceSetCannotBeUpdated = "resource set {0} cannot be udpated";
-
         public const string TheResourceSetCannotBeRemoved = "resource set {0} cannot be removed";
-
         public const string TheResourceSetCannotBeRetrieved = "resource set {0} cannot be retrieved";
-
         public const string TheResourceSetsCannotBeRetrieved = "resource sets cannot be retrieved";
-
         public const string TheScopeCannotBeRetrieved = "scope cannot be retrieved";
-
         public const string TheScopeCannotBeInserted = "scope cannot be inserted";
-
         public const string TheScopeCannotBeUpdated = "scope cannot be updated";
-
         public const string TheScopeCannotBeRemoved = "scope cannot be removed";
-
         public const string TheScopesCannotBeRetrieved = "scopes cannot be retrieved";
-
         public const string TheScopeAlreadyExists = "scope {0} already exists";
-
         public const string TheScopeAreNotValid = "one or more scopes are not valid";
-
         public const string TheSchemeIsNotCorrect = "authorization scheme is not correct";
-
         public const string TheTicketCannotBeInserted = "ticket cannot be inserted";
-
         public const string TheTicketDoesntExist = "the ticket {0} doesn't exist";
-
         public const string TheTicketIssuerIsDifferentFromTheClient = "the ticket issuer is different from the client";
-
         public const string TheTicketIsExpired = "the ticket is expired";
-
         public const string TheRptCannotBeInserted = "the rpt cannot be inserted";
-
         public const string ThePolicyCannotBeInserted = "the authorization policy cannot be inserted";
-
         public const string ThePolicyCannotBeUpdated = "the authorization policy cannot be updated";
-
         public const string OneOrMoreScopesDontBelongToAResourceSet = "one or more scopes don't belong to a resource set";
-
         public const string TheAuthorizationPolicyCannotBeRetrieved = "the authorization policy {0} cannot be retrieved";
-
         public const string TheAuthorizationPolicyCannotBeUpdated = "the authorization policy {0} cannot be updated";
-
         public const string TheAutorizationPoliciesCannotBeRetrieved = "the authorization policies cannot be retrieved";
-
         public const string TheRptDoesntExist = "the rpt {0} doesn't exist";
-
         public const string TheRptIsExpired = "the rpt is expired";
-
         public const string TheAuthorizationPolicyDoesntExist = "the authorization policy {0} doesn't exist";
     }
 }

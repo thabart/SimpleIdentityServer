@@ -20,12 +20,7 @@ namespace SimpleIdentityServer.Uma.Core.Parameters
 {
     public class AddResourceSetParameter
     {
-        #region Properties
-
         public string PolicyId { get; set; }
-
         public List<string> ResourceSets { get; set; }
-
-        #endregion
     }
 }

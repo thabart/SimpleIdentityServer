@@ -16,19 +16,16 @@
 
 using SimpleIdentityServer.Uma.Core.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Repositories
 {
     public interface IScopeRepository
     {
-        Scope InsertScope(Scope scope);
-
-        Scope UpdateScope(Scope scope);
-
-        Scope GetScope(string id);
-
-        bool DeleteScope(string id);
-
-        List<Scope> GetAll();
+        Task<bool> Insert(Scope scope);
+        Task<bool> Update(Scope scope);
+        Task<Scope> Get(string id);
+        Task<bool> Delete(string id);
+        Task<ICollection<Scope>> GetAll();
     }
 }

@@ -19,30 +19,25 @@ using SimpleIdentityServer.Uma.Core.Exceptions;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using System;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions
 {
     internal interface IGetScopeAction
     {
-        Scope Execute(string scopeId);
+        Task<Scope> Execute(string scopeId);
     }
 
     internal class GetScopeAction : IGetScopeAction
     {
         private readonly IScopeRepository _scopeRepository;
 
-        #region Constructor
-
         public GetScopeAction(IScopeRepository scopeRepository)
         {
             _scopeRepository = scopeRepository;
         }
 
-        #endregion
-
-        #region Public methods
-
-        public Scope Execute(string scopeId)
+        public async Task<Scope> Execute(string scopeId)
         {
             if (string.IsNullOrWhiteSpace(scopeId))
             {
@@ -51,7 +46,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions
 
             try
             {
-                return _scopeRepository.GetScope(scopeId);
+                return await _scopeRepository.Get(scopeId);
             }
             catch(Exception ex)
             {
@@ -60,7 +55,5 @@ namespace SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions
                     ex);
             }
         }
-
-        #endregion
     }
 }

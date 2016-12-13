@@ -28,8 +28,6 @@ namespace SimpleIdentityServer.Uma.Core.Validators
 
     internal class ScopeParameterValidator : IScopeParameterValidator
     {
-        #region Public methods
-
         public void CheckScopeParameter(Scope scope)
         {
             if (scope == null)
@@ -56,7 +54,5 @@ namespace SimpleIdentityServer.Uma.Core.Validators
                     string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, scope.IconUri));
             }
         }
-
-        #endregion
     }
 }

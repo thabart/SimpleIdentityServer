@@ -37,15 +37,10 @@ namespace SimpleIdentityServer.Uma.Core.Policies
     internal class BasicAuthorizationPolicy : IBasicAuthorizationPolicy
     {
         private readonly IParametersProvider _parametersProvider;
-
         private readonly IIdentityServerClientFactory _identityServerClientFactory;
-
         private readonly IJwtTokenParser _jwtTokenParser;
-
         private const string IdTokenType = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken";
-
-        #region Constructor
-
+        
         public BasicAuthorizationPolicy(
             IParametersProvider parametersProvider,
             IIdentityServerClientFactory identityServerClientFactory,
@@ -55,10 +50,6 @@ namespace SimpleIdentityServer.Uma.Core.Policies
             _identityServerClientFactory = identityServerClientFactory;
             _jwtTokenParser = jwtTokenParser;
         }
-
-        #endregion
-
-        #region Public methods
 
         public async Task<AuthorizationPolicyResult> Execute(
             Ticket validTicket,
@@ -96,10 +87,6 @@ namespace SimpleIdentityServer.Uma.Core.Policies
 
             return result;
         }
-
-        #endregion
-
-        #region Private methods
 
         private async Task<AuthorizationPolicyResult> ExecuteAuthorizationPolicyRule(
             Ticket validTicket,
@@ -292,7 +279,5 @@ namespace SimpleIdentityServer.Uma.Core.Policies
                 Type = AuthorizationPolicyResultEnum.Authorized
             };
         }
-
-        #endregion
     }
 }

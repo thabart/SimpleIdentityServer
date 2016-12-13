@@ -16,12 +16,13 @@
 
 using SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions;
 using SimpleIdentityServer.Uma.Core.Parameters;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.PermissionController
 {
     public interface IPermissionControllerActions
     {
-        string AddPermission(
+        Task<string> AddPermission(
                AddPermissionParameter addPermissionParameter,
                string clientId);
     }
@@ -30,24 +31,16 @@ namespace SimpleIdentityServer.Uma.Core.Api.PermissionController
     {
         private readonly IAddPermissionAction _addPermissionAction;
 
-        #region Constructor
-
         public PermissionControllerActions(IAddPermissionAction addPermissionAction)
         {
             _addPermissionAction = addPermissionAction;
         }
 
-        #endregion
-
-        #region Public methods
-
-        public string AddPermission(
+        public Task<string> AddPermission(
             AddPermissionParameter addPermissionParameter,
             string clientId)
         {
             return _addPermissionAction.Execute(addPermissionParameter, clientId);
         }
-
-        #endregion
     }
 }

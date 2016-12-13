@@ -19,27 +19,20 @@ using SimpleIdentityServer.Uma.Core.Exceptions;
 using SimpleIdentityServer.Uma.Core.Helpers;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using System;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
 {
     public interface IDeleteResourcePolicyAction
     {
-        bool Execute(string id, string resourceId);
+        Task<bool> Execute(string id, string resourceId);
     }
 
     internal class DeleteResourcePolicyAction : IDeleteResourcePolicyAction
     {
-        #region Fields
-
         private readonly IPolicyRepository _policyRepository;
-
         private readonly IRepositoryExceptionHelper _repositoryExceptionHelper;
-
         private readonly IResourceSetRepository _resourceSetRepository;
-
-        #endregion
-
-        #region Constructor
 
         public DeleteResourcePolicyAction(
             IPolicyRepository policyRepository,
@@ -50,12 +43,8 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
             _repositoryExceptionHelper = repositoryExceptionHelper;
             _resourceSetRepository = resourceSetRepository;
         }
-
-        #endregion
-
-        #region Public methods
-
-        public bool Execute(string id, string resourceId)
+        
+        public async Task<bool> Execute(string id, string resourceId)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -67,17 +56,17 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
                 throw new ArgumentNullException(nameof(resourceId));
             }
 
-            var policy = _repositoryExceptionHelper.HandleException(
+            var policy = await _repositoryExceptionHelper.HandleException(
                 string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, id),
-                () => _policyRepository.GetPolicy(id));
+                () => _policyRepository.Get(id));
             if (policy == null)
             {
                 return false;
             }
 
-            var resourceSet = _repositoryExceptionHelper.HandleException(
+            var resourceSet = await _repositoryExceptionHelper.HandleException(
                 string.Format(ErrorDescriptions.TheResourceSetCannotBeRetrieved, resourceId),
-                () => _resourceSetRepository.GetResourceSetById(resourceId));
+                () => _resourceSetRepository.Get(resourceId));
             if (resourceSet == null)
             {
                 throw new BaseUmaException(ErrorCodes.InvalidResourceSetId,
@@ -92,9 +81,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
             }
 
             policy.ResourceSetIds.Remove(resourceId);
-            return _policyRepository.UpdatePolicy(policy);
+            return await _policyRepository.Update(policy);
         }
-
-        #endregion
     }
 }

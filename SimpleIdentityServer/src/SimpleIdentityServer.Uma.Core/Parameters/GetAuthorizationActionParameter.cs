@@ -21,9 +21,7 @@ namespace SimpleIdentityServer.Uma.Core.Parameters
     public class GetAuthorizationActionParameter
     {
         public string Rpt { get; set; }
-
         public string TicketId { get; set; }
-
         public List<ClaimTokenParameter> ClaimTokenParameters { get; set; }
     }
 }

@@ -20,21 +20,19 @@ using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.Logging;
 using System;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions
 {
     internal interface IDeleteScopeAction
     {
-        bool Execute(string scopeId);
+        Task<bool> Execute(string scopeId);
     }
 
     internal class DeleteScopeAction : IDeleteScopeAction
     {
         private readonly IScopeRepository _scopeRepository;
-
         private readonly IUmaServerEventSource _umaServerEventSource;
-
-        #region Constructor
 
         public DeleteScopeAction(
             IScopeRepository scopeRepository,
@@ -44,11 +42,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions
             _umaServerEventSource = umaServerEventSource;
         }
 
-        #endregion
-
-        #region Public methods
-
-        public bool Execute(string scopeId)
+        public async Task<bool> Execute(string scopeId)
         {
             _umaServerEventSource.StartToRemoveScope(scopeId);
             if (string.IsNullOrWhiteSpace(scopeId))
@@ -59,7 +53,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions
             Scope scope = null;
             try
             {
-                scope = _scopeRepository.GetScope(scopeId);
+                scope = await _scopeRepository.Get(scopeId);
             }
             catch (Exception ex)
             {
@@ -75,7 +69,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions
 
             try
             {
-                _scopeRepository.DeleteScope(scopeId);
+                await _scopeRepository.Delete(scopeId);
                 _umaServerEventSource.FinishToRemoveScope(scopeId);
                 return true;
             }
@@ -86,7 +80,5 @@ namespace SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions
                     ex);
             }
         }
-
-        #endregion
     }
 }

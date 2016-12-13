@@ -18,23 +18,18 @@ using SimpleIdentityServer.Uma.Core.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
 {
     public interface IGetPoliciesAction
     {
-        List<string> Execute(string resourceId);
+        Task<IEnumerable<string>> Execute(string resourceId);
     }
 
     internal class GetPoliciesAction : IGetPoliciesAction
     {
-        #region Fields
-
         private readonly IPolicyRepository _repository;
-
-        #endregion
-
-        #region Constructor
 
         public GetPoliciesAction(IPolicyRepository repository)
         {
@@ -46,15 +41,15 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
             _repository = repository;
         }
 
-        #endregion
-        public List<string> Execute(string resourceId)
+        public async Task<IEnumerable<string>> Execute(string resourceId)
         {
             if (string.IsNullOrWhiteSpace(resourceId))
             {
                 throw new ArgumentNullException(nameof(resourceId));
             }
 
-            return _repository.GetPoliciesByResourceSetId(resourceId).Select(p => p.Id).ToList();
+            var result = await _repository.SearchByResourceId(resourceId);
+            return result.Select(p => p.Id);
         }
     }
 }

@@ -16,21 +16,17 @@
 
 using SimpleIdentityServer.Uma.Core.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Repositories
 {
     public interface IPolicyRepository
     {
-        List<Policy> GetPolicies();
-
-        Policy GetPolicy(string id);
-
-        bool AddPolicy(Policy policy);
-
-        bool DeletePolicy(string id);
-
-        bool UpdatePolicy(Policy policy);
-
-        List<Policy> GetPoliciesByResourceSetId(string resourceSetId);
+        Task<ICollection<Policy>> GetAll();
+        Task<Policy> Get(string id);
+        Task<bool> Add(Policy policy);
+        Task<bool> Delete(string id);
+        Task<bool> Update(Policy policy);
+        Task<ICollection<Policy>> SearchByResourceId(string resourceSetId);
     }
 }

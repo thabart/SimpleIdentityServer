@@ -19,21 +19,19 @@ using SimpleIdentityServer.Uma.Core.Helpers;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
 {
     public interface IGetAuthorizationPoliciesAction
     {
-        List<string> Execute();
+        Task<ICollection<string>> Execute();
     }
 
     internal class GetAuthorizationPoliciesAction : IGetAuthorizationPoliciesAction
     {
         private readonly IPolicyRepository _policyRepository;
-
         private readonly IRepositoryExceptionHelper _repositoryExceptionHelper;
-
-        #region Constructor
 
         public GetAuthorizationPoliciesAction(
             IPolicyRepository policyRepository,
@@ -42,16 +40,12 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
             _policyRepository = policyRepository;
             _repositoryExceptionHelper = repositoryExceptionHelper;
         }
-
-        #endregion
-
-        #region Public methods
-
-        public List<string> Execute()
+        
+        public async Task<ICollection<string>> Execute()
         {
-            var policies = _repositoryExceptionHelper.HandleException(
+            var policies = await _repositoryExceptionHelper.HandleException(
                 ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved,
-                () => _policyRepository.GetPolicies());
+                () => _policyRepository.GetAll());
             if (policies == null
                 || !policies.Any())
             {
@@ -60,7 +54,5 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
 
             return policies.Select(p => p.Id).ToList();
         }
-
-        #endregion
     }
 }

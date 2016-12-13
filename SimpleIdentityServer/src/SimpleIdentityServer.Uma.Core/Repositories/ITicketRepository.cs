@@ -15,13 +15,13 @@
 #endregion
 
 using SimpleIdentityServer.Uma.Core.Models;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Repositories
 {
     public interface ITicketRepository
     {
-        Ticket GetTicketById(string id);
-
-        Ticket InsertTicket(Ticket ticket);
+        Task<Ticket> Get(string id);
+        Task<bool> Insert(Ticket ticket);
     }
 }

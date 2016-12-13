@@ -19,23 +19,20 @@ using SimpleIdentityServer.Uma.Core.Helpers;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.Logging;
 using System;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
 {
     public interface IDeleteAuthorizationPolicyAction
     {
-        bool Execute(string policyId);
+        Task<bool> Execute(string policyId);
     }
 
     internal class DeleteAuthorizationPolicyAction : IDeleteAuthorizationPolicyAction
     {
         private readonly IPolicyRepository _policyRepository;
-
         private readonly IRepositoryExceptionHelper _repositoryExceptionHelper;
-
         private readonly IUmaServerEventSource _umaServerEventSource;
-
-        #region Constructor
 
         public DeleteAuthorizationPolicyAction(
             IPolicyRepository policyRepository,
@@ -47,11 +44,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
             _umaServerEventSource = umaServerEventSource;
         }
 
-        #endregion
-
-        #region Public methods
-        
-        public bool Execute(string policyId)
+        public async Task<bool> Execute(string policyId)
         {
             _umaServerEventSource.StartToRemoveAuthorizationPolicy(policyId);
             if (string.IsNullOrWhiteSpace(policyId))
@@ -59,21 +52,19 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
                 throw new ArgumentNullException(nameof(policyId));
             }
 
-            var policy = _repositoryExceptionHelper.HandleException(
+            var policy = await _repositoryExceptionHelper.HandleException(
                 string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, policyId),
-                () => _policyRepository.GetPolicy(policyId));
+                () => _policyRepository.Get(policyId));
             if (policy == null)
             {
                 return false;
             }
 
-            _repositoryExceptionHelper.HandleException(
+            await _repositoryExceptionHelper.HandleException(
                 string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeUpdated, policyId),
-                () => _policyRepository.DeletePolicy(policyId));
+                () => _policyRepository.Delete(policyId));
             _umaServerEventSource.FinishToRemoveAuthorizationPolicy(policyId);
             return true;
         }
-
-        #endregion
     }
 }

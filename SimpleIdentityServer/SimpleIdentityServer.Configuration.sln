@@ -55,6 +55,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02. WebApiContrib", "02. We
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "WebApiContrib.Core.Storage.Redis", "src\WebApiContrib.Core.Storage.Redis\WebApiContrib.Core.Storage.Redis.xproj", "{8571D8F9-0847-46C8-A794-845B331982B7}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "WebApiContrib.Core.Storage.InMemory", "src\WebApiContrib.Core.Storage.InMemory\WebApiContrib.Core.Storage.InMemory.xproj", "{A999228E-D51C-46EE-A620-79D385216430}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -129,6 +131,10 @@ Global
 		{8571D8F9-0847-46C8-A794-845B331982B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8571D8F9-0847-46C8-A794-845B331982B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8571D8F9-0847-46C8-A794-845B331982B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A999228E-D51C-46EE-A620-79D385216430}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A999228E-D51C-46EE-A620-79D385216430}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A999228E-D51C-46EE-A620-79D385216430}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A999228E-D51C-46EE-A620-79D385216430}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -154,5 +160,6 @@ Global
 		{25296E68-A707-4F3A-B90B-6265D69B98DD} = {0B66C3BA-832B-435F-B097-11DB1C265D69}
 		{175B3352-F702-454B-AA4C-FCD20EC0FE16} = {0B66C3BA-832B-435F-B097-11DB1C265D69}
 		{8571D8F9-0847-46C8-A794-845B331982B7} = {175B3352-F702-454B-AA4C-FCD20EC0FE16}
+		{A999228E-D51C-46EE-A620-79D385216430} = {175B3352-F702-454B-AA4C-FCD20EC0FE16}
 	EndGlobalSection
 EndGlobal

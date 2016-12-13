@@ -14,83 +14,97 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.EntityFrameworkCore;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Repositories;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using SimpleIdentityServer.Uma.EF.Extensions;
-using Model = SimpleIdentityServer.Uma.EF.Models;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.EF.Repositories
 {
     internal class ScopeRepository : IScopeRepository
     {
-        private readonly SimpleIdServerUmaContext _simpleIdServerUmaContext;
+        private readonly SimpleIdServerUmaContext _context;
 
-        #region Constructor
-
-        public ScopeRepository(SimpleIdServerUmaContext simpleIdServerUmaContext)
+        public ScopeRepository(SimpleIdServerUmaContext context)
         {
-            _simpleIdServerUmaContext = simpleIdServerUmaContext;
+            _context = context;
         }
 
-        #endregion
-
-        #region Public methods
-
-        public bool DeleteScope(string id)
-        {   
-            var scope = _simpleIdServerUmaContext.Scopes.FirstOrDefault(s => s.Id == id);
-            if (scope == null)
+        public async Task<bool> Delete(string id)
+        {
+            using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
-                return false;
+                try
+                {
+                    var scope = await _context.Scopes.FirstOrDefaultAsync(s => s.Id == id).ConfigureAwait(false);
+                    if (scope == null)
+                    {
+                        return false;
+                    }
+
+                    _context.Scopes.Remove(scope);
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
+                    return true;
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    return false;
+                }
             }
-
-            _simpleIdServerUmaContext.Scopes.Remove(scope);
-            _simpleIdServerUmaContext.SaveChanges();
-            return true;
         }
 
-        public List<Scope> GetAll()
-        {   
-            var scopes = _simpleIdServerUmaContext.Scopes;
-            return scopes.Select(s => s.ToDomain()).ToList();
-        }
-
-        public Scope GetScope(string id)
+        public async Task<ICollection<Scope>> GetAll()
         {
-            var scope = _simpleIdServerUmaContext.Scopes.FirstOrDefault(s => s.Id == id);
-            if (scope == null)
+            return await _context.Scopes.Select(s => s.ToDomain()).ToListAsync().ConfigureAwait(false);
+        }
+
+        public async Task<Scope> Get(string id)
+        {
+            var scope = await _context.Scopes.FirstOrDefaultAsync(s => s.Id == id);
+            return scope == null ? null : scope.ToDomain();
+        }
+
+        public async Task<bool> Insert(Scope scope)
+        {
+            using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
-                return null;
+                try
+                {
+                    _context.Scopes.Add(scope.ToModel());
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
+                    return true;
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    return false;
+                }
             }
-
-            return scope.ToDomain();
         }
 
-        public Scope InsertScope(Scope scope)
+        public async Task<bool> Update(Scope scope)
         {
-            var record = scope.ToModel();
-            _simpleIdServerUmaContext.Scopes.Add(record);
-            _simpleIdServerUmaContext.SaveChanges();
-            return scope;
-        }
-
-        public Scope UpdateScope(Scope scope)
-        {
-            var record = _simpleIdServerUmaContext.Scopes.FirstOrDefault(s => s.Id == scope.Id);
-            if (record == null)
+            using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
-                return null;
+                try
+                {
+                    var record = await _context.Scopes.FirstOrDefaultAsync(s => s.Id == scope.Id);
+                    record.Name = scope.Name;
+                    record.IconUri = scope.IconUri;
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
+                    transaction.Commit();
+                    return true;
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    return false;
+                }
             }
-            
-            record.Name = scope.Name;
-            record.IconUri = scope.IconUri;
-            _simpleIdServerUmaContext.SaveChanges();
-            return scope;
         }
-
-        #endregion
     }
 }

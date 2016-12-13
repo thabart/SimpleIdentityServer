@@ -21,21 +21,19 @@ using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.Core.Validators;
 using System;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions
 {
     internal interface IUpdateScopeAction
     {
-        bool Execute(UpdateScopeParameter updateScopeParameter);
+        Task<bool> Execute(UpdateScopeParameter updateScopeParameter);
     }
 
     internal class UpdateScopeAction : IUpdateScopeAction
     {
         private readonly IScopeRepository _scopeRepository;
-
         private readonly IScopeParameterValidator _scopeParameterValidator;
-
-        #region Constructor
 
         public UpdateScopeAction(
             IScopeRepository scopeRepository,
@@ -45,12 +43,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions
             _scopeParameterValidator = scopeParameterValidator;
         }
 
-        #endregion
-
-        #region Public methods
-
-
-        public bool Execute(UpdateScopeParameter updateScopeParameter)
+        public async Task<bool> Execute(UpdateScopeParameter updateScopeParameter)
         {
             if (updateScopeParameter == null)
             {
@@ -60,7 +53,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions
             Scope scope = null;
             try
             {
-                scope = _scopeRepository.GetScope(updateScopeParameter.Id);
+                scope = await _scopeRepository.Get(updateScopeParameter.Id);
             }
             catch (Exception ex)
             {
@@ -84,7 +77,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions
 
             try
             {
-                _scopeRepository.UpdateScope(scope);
+                await _scopeRepository.Update(scope);
                 return true;
             }
             catch (Exception ex)
@@ -94,7 +87,5 @@ namespace SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions
                     ex);
             }
         }
-
-        #endregion
     }
 }

@@ -38,14 +38,9 @@ namespace SimpleIdentityServer.Uma.Core.Policies
     internal class AuthorizationPolicyValidator : IAuthorizationPolicyValidator
     {
         private readonly IPolicyRepository _policyRepository;
-
         private readonly IBasicAuthorizationPolicy _basicAuthorizationPolicy;
-
         private readonly IResourceSetRepository _resourceSetRepository;
-
         private readonly IUmaServerEventSource _umaServerEventSource;
-
-        #region Constructor
 
         public AuthorizationPolicyValidator(
             IPolicyRepository policyRepository,
@@ -58,11 +53,7 @@ namespace SimpleIdentityServer.Uma.Core.Policies
             _resourceSetRepository = resourceSetRepository;
             _umaServerEventSource = umaServerEventSource;
         }
-
-        #endregion
-
-        #region Public methods
-
+        
         public async Task<AuthorizationPolicyResult> IsAuthorized(
             Ticket validTicket,
             string clientId,
@@ -78,7 +69,7 @@ namespace SimpleIdentityServer.Uma.Core.Policies
                 throw new ArgumentNullException(nameof(clientId));
             }
 
-            var resourceSet = _resourceSetRepository.GetResourceSetById(validTicket.ResourceSetId);
+            var resourceSet = await _resourceSetRepository.Get(validTicket.ResourceSetId);
             if (resourceSet == null)
             {
                 throw new BaseUmaException(ErrorCodes.InternalError,
@@ -96,7 +87,7 @@ namespace SimpleIdentityServer.Uma.Core.Policies
 
             foreach(var authorizationPolicyId in resourceSet.AuthorizationPolicyIds)
             {
-                var authorizationPolicy = _policyRepository.GetPolicy(authorizationPolicyId);
+                var authorizationPolicy = await _policyRepository.Get(authorizationPolicyId);
                 if (authorizationPolicy == null)
                 {
                     continue;
@@ -115,7 +106,5 @@ namespace SimpleIdentityServer.Uma.Core.Policies
                 Type = AuthorizationPolicyResultEnum.Authorized
             };            
         }
-
-        #endregion
     }
 }

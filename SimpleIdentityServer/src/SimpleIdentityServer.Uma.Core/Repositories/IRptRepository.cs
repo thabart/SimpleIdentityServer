@@ -15,13 +15,13 @@
 #endregion
 
 using SimpleIdentityServer.Uma.Core.Models;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Repositories
 {
     public interface IRptRepository
     {
-        bool InsertRpt(Rpt rpt);
-
-        Rpt GetRpt(string value);
+        Task<bool> Insert(Rpt rpt);
+        Task<Rpt> Get(string value);
     }
 }

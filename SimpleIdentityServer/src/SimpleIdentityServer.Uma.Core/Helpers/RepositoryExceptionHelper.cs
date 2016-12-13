@@ -17,18 +17,18 @@
 using SimpleIdentityServer.Uma.Core.Errors;
 using SimpleIdentityServer.Uma.Core.Exceptions;
 using System;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Helpers
 {
     public interface IRepositoryExceptionHelper
     {
         T HandleException<T>(string message, Func<T> callback);
+        Task<T> HandleException<T>(string message, Func<Task<T>> callback);
     }
 
     internal class RepositoryExceptionHelper : IRepositoryExceptionHelper
     {
-        #region Public methods
-
         public T HandleException<T>(string message, Func<T> callback)
         {
             if (string.IsNullOrWhiteSpace(message))
@@ -53,6 +53,28 @@ namespace SimpleIdentityServer.Uma.Core.Helpers
             }
         }
 
-        #endregion
+        public Task<T> HandleException<T>(string message, Func<Task<T>> callback)
+        {
+            if (string.IsNullOrWhiteSpace(message))
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
+
+            if (callback == null)
+            {
+                throw new ArgumentNullException(nameof(callback));
+            }
+
+            try
+            {
+                return callback();
+            }
+            catch (Exception ex)
+            {
+                throw new BaseUmaException(ErrorCodes.InternalError,
+                    message,
+                    ex);
+            }
+        }
     }
 }

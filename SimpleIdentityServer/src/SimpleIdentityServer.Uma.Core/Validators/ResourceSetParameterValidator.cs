@@ -29,8 +29,6 @@ namespace SimpleIdentityServer.Uma.Core.Validators
 
     internal class ResourceSetParameterValidator : IResourceSetParameterValidator
     {
-        #region Public methods
-
         public void CheckResourceSetParameter(ResourceSet resourceSet)
         {
             if (resourceSet == null)
@@ -65,7 +63,5 @@ namespace SimpleIdentityServer.Uma.Core.Validators
                     string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, resourceSet.Uri));
             }
         }
-
-        #endregion
     }
 }

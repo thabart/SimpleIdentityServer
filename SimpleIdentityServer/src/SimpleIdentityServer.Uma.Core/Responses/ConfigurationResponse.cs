@@ -20,40 +20,23 @@ namespace SimpleIdentityServer.Uma.Core.Responses
 {
     public sealed class ConfigurationResponse
     {
-        public string Version { get; set; }
-        
+        public string Version { get; set; }        
         public List<string> AatGrantTypesSupported { get; set; }
-
         public List<string> AatProfilesSupported { get; set; }
-
         public string AuthorizationEndPoint { get; set; }
-
         public List<string> ClaimTokenProfilesSupported { get; set; }
-
         public string DynamicClientEndPoint { get; set; }
-
         public string IntrospectionEndPoint { get; set; }
-
         public string Issuer { get; set; }
-
         public List<string> PatGrantTypesSupported { get; set; }
-
         public List<string> PatProfilesSupported { get; set; }
-
         public string PermissionRegistrationEndPoint { get; set; }
-
         public string RequestingPartyClaimsEndPoint { get; set; }
-
         public string ResourceSetRegistrationEndPoint { get; set; }
-
         public string RtpEndPoint { get; set; }
-
         public List<string> RtpProfilesSupported { get; set; }
-
         public string TokenEndPoint { get; set; }
-
         public List<string> UmaProfilesSupported { get; set; }
-
         public string PolicyEndPoint { get; set; }
     }
 }

@@ -25,25 +25,21 @@ using SimpleIdentityServer.Uma.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
 {
     public interface IAddAuthorizationPolicyAction
     {
-        string Execute(AddPolicyParameter addPolicyParameter);
+        Task<string> Execute(AddPolicyParameter addPolicyParameter);
     }
 
     internal class AddAuthorizationPolicyAction : IAddAuthorizationPolicyAction
     {
         private readonly IPolicyRepository _policyRepository;
-
         private readonly IResourceSetRepository _resourceSetRepository;
-
         private readonly IRepositoryExceptionHelper _repositoryExceptionHelper;
-
         private readonly IUmaServerEventSource _umaServerEventSource;
-
-        #region Constructor
 
         public AddAuthorizationPolicyAction(
             IPolicyRepository policyRepository,
@@ -56,12 +52,8 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
             _repositoryExceptionHelper = repositoryExceptionHelper;
             _umaServerEventSource = umaServerEventSource;
         }
-
-        #endregion
-
-        #region Public methods
-
-        public string Execute(AddPolicyParameter addPolicyParameter)
+        
+        public async Task<string> Execute(AddPolicyParameter addPolicyParameter)
         {
             var json = addPolicyParameter == null ? string.Empty : JsonConvert.SerializeObject(addPolicyParameter);
             _umaServerEventSource.StartAddingAuthorizationPolicy(json);
@@ -86,9 +78,9 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
 
             foreach (var resourceSetId in addPolicyParameter.ResourceSetIds)
             {
-                var resourceSet = _repositoryExceptionHelper.HandleException(
+                var resourceSet = await _repositoryExceptionHelper.HandleException(
                     string.Format(ErrorDescriptions.TheResourceSetCannotBeRetrieved, resourceSetId),
-                    () => _resourceSetRepository.GetResourceSetById(resourceSetId));
+                    () => _resourceSetRepository.Get(resourceSetId));
                 if (resourceSet == null)
                 {
                     throw new BaseUmaException(ErrorCodes.InvalidResourceSetId,
@@ -134,13 +126,11 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
                 ResourceSetIds = addPolicyParameter.ResourceSetIds
             };
 
-            _repositoryExceptionHelper.HandleException(
+            await _repositoryExceptionHelper.HandleException(
                 ErrorDescriptions.ThePolicyCannotBeInserted,
-                () => _policyRepository.AddPolicy(policy));
+                () => _policyRepository.Add(policy));
             _umaServerEventSource.FinishToAddAuthorizationPolicy(JsonConvert.SerializeObject(policy));
             return policy.Id;
         }
-
-        #endregion
     }
 }

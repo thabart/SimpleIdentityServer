@@ -16,19 +16,16 @@
 
 using SimpleIdentityServer.Uma.Core.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Repositories
 {
     public interface IResourceSetRepository
     {
-        ResourceSet Insert(ResourceSet resourceSet);
-
-        ResourceSet GetResourceSetById(string id);
-
-        ResourceSet UpdateResource(ResourceSet resourceSet);
-
-        List<ResourceSet> GetAll();
-
-        bool DeleteResource(string id);
+        Task<bool> Insert(ResourceSet resourceSet);
+        Task<ResourceSet> Get(string id);
+        Task<bool> Update(ResourceSet resourceSet);
+        Task<ICollection<ResourceSet>> GetAll();
+        Task<bool> Delete(string id);
     }
 }

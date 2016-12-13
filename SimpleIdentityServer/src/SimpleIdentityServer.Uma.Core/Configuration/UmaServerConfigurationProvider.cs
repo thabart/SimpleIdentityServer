@@ -18,10 +18,6 @@ namespace SimpleIdentityServer.Uma.Core.Configuration
 {
     public interface IUmaServerConfigurationProvider
     {
-        /// <summary>
-        /// Get RPT litetime in seconds
-        /// </summary>
-        /// <returns></returns>
         int GetRptLifetime();
     }
 }

@@ -27,23 +27,15 @@ namespace SimpleIdentityServer.Uma.Core.Api.ConfigurationController
     public class ConfigurationActions : IConfigurationActions
     {
         private readonly IGetConfigurationAction _getConfigurationAction;
-    
-        #region Constructor
         
         public ConfigurationActions(IGetConfigurationAction getConfigurationAction)
         {
             _getConfigurationAction = getConfigurationAction;
         }
-        
-        #endregion
-        
-        #region Public methods
-        
+                
         public ConfigurationResponse GetConfiguration()
         {
             return _getConfigurationAction.Execute();
         }
-        
-        #endregion
     }
 } 

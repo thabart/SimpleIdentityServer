@@ -27,18 +27,14 @@ namespace SimpleIdentityServer.Uma.Core.Api.ConfigurationController.Actions
     
     public class GetConfigurationAction : IGetConfigurationAction
     {
-        #region Fields
-
         private readonly List<string> _patsupportedProfiles = new List<string>
         {
             "bearer"
         };
-
         private readonly List<string> _aatsupportedProfiles = new List<string>
         {
             "bearer"
         };
-
         private readonly List<string> _bearerRptProfiles = new List<string>
         {
             "https://docs.kantarainitiative.org/uma/profiles/uma-token-bearer-1.0"
@@ -48,40 +44,24 @@ namespace SimpleIdentityServer.Uma.Core.Api.ConfigurationController.Actions
         {
             "authorization_code"
         };
-
         private readonly List<string> _aatGrantTypesSupported = new List<string>
         {
             "authorization_code"
         };
-
         private readonly List<string> _umaProfilesSupported = new List<string>
         {
             "https://docs.kantarainitiative.org/uma/profiles/uma-token-bearer-1.0"
-        };
-        
+        };        
         private const string RegisterApi = "/connect/register";
-
         private const string TokenApi = "/token";
-
         private const string AuthorizeApi = "/authorize";
-
         private const string ResourceSetApi = "/rs/resource_set";
-
         private const string PermissionApi = "/perm";
-
         private const string RptApi = "/rpt";
-
         private const string PolicyApi = "/policies";
-
         private const string IntrospectionApi = "/status";
-
         private readonly IHostingProvider _hostingProvider;
-
         private readonly UmaServerOptions _umaServerOptions;
-
-        #endregion
-
-        #region Constructor
 
         public GetConfigurationAction(
             IHostingProvider hostingProvider,
@@ -90,10 +70,6 @@ namespace SimpleIdentityServer.Uma.Core.Api.ConfigurationController.Actions
             _hostingProvider = hostingProvider;
             _umaServerOptions = umaServerOptions;
         }
-        
-        #endregion
-        
-        #region Public methods
         
         public ConfigurationResponse Execute()
         {
@@ -122,7 +98,5 @@ namespace SimpleIdentityServer.Uma.Core.Api.ConfigurationController.Actions
             
             return result;
         }
-        
-        #endregion
     }
 }
