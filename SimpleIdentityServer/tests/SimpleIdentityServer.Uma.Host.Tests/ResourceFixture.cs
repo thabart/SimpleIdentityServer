@@ -18,7 +18,9 @@ using Moq;
 using SimpleIdentityServer.Client.Configuration;
 using SimpleIdentityServer.Client.ResourceSet;
 using SimpleIdentityServer.Uma.Client.Factory;
+using System;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -44,7 +46,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
 
             // ACT
-            var resources = await _resourceSetClient.GetAllByResolvingUrl(
+            var resources = await _resourceSetClient.GetAllByResolution(
                 baseUrl + "/.well-known/uma-configuration", "header");
 
             // ASSERT
@@ -61,13 +63,34 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
 
             // ACT
-            var resources = await _resourceSetClient.GetAllByResolvingUrl(
+            var resources = await _resourceSetClient.GetAllByResolution(
                 baseUrl + "/.well-known/uma-configuration", "header");
-            var resource = await _resourceSetClient.GetByResolvingUrl(resources.First(),
+            var resource = await _resourceSetClient.GetByResolution(resources.First(),
                 baseUrl + "/.well-known/uma-configuration", "header");
 
             // ASSERT
             Assert.NotNull(resource);
+        }
+
+        [Fact]
+        public async Task When_Deleting_ResourceInformation_Then_It_Doesnt_Exist()
+        {
+            const string baseUrl = "http://localhost:5000";
+            // ARRANGE
+            InitializeFakeObjects();
+            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
+            // ACT
+            var resources = await _resourceSetClient.GetAllByResolution(
+                baseUrl + "/.well-known/uma-configuration", "header");
+            var resource = await _resourceSetClient.DeleteByResolution(resources.First(),
+                baseUrl + "/.well-known/uma-configuration", "header");
+            var information = await Assert.ThrowsAsync<HttpRequestException>(() => _resourceSetClient.GetByResolution(resources.First(),
+                baseUrl + "/.well-known/uma-configuration", "header"));
+
+            // ASSERT
+            Assert.True(resource);
+            Assert.NotNull(information);
         }
 
         private void InitializeFakeObjects()

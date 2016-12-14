@@ -25,8 +25,6 @@ namespace SimpleIdentityServer.Uma.EF
 {
     public static class SimpleIdServerUmaExtensions
     {
-        #region Public static methods
-
         public static IServiceCollection AddSimpleIdServerUmaSqlServer(
             this IServiceCollection serviceCollection,
             string connectionString)
@@ -76,14 +74,10 @@ namespace SimpleIdentityServer.Uma.EF
 
             RegisterServices(serviceCollection);
             serviceCollection.AddEntityFramework()
-                            .AddDbContext<SimpleIdServerUmaContext>(options => options.UseInMemoryDatabase());
+                            .AddDbContext<SimpleIdServerUmaContext>(options => options.UseInMemoryDatabase().ConfigureWarnings(warnings => warnings.Ignore(InMemoryEventId.TransactionIgnoredWarning)));
             return serviceCollection;
         }
-
-        #endregion
-
-        #region Private static methods
-
+        
         private static void RegisterServices(IServiceCollection serviceCollection)
         {
             serviceCollection.AddTransient<IResourceSetRepository, ResourceSetRepository>();
@@ -92,7 +86,5 @@ namespace SimpleIdentityServer.Uma.EF
             serviceCollection.AddTransient<IPolicyRepository, PolicyRepository>();
             serviceCollection.AddTransient<IRptRepository, RptRepository>();
         }
-
-        #endregion
     }
 }
