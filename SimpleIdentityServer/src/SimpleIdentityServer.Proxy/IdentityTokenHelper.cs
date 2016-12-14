@@ -16,6 +16,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Client;
+using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Converter;
@@ -48,21 +49,11 @@ namespace SimpleIdentityServer.Proxy
 
     public class IdentityTokenHelper : IIdentityTokenHelper
     {
-        #region Fields
-
         private readonly IJweParser _jweParser;
-
         private readonly IJwsParser _jwsParser;
-
         private readonly IJsonWebKeyConverter _jsonWebKeyConverter;
-
         private readonly IDiscoveryClient _discoveryClient;
-
         private readonly IHttpClientFactory _httpClientFactory;
-
-        #endregion
-
-        #region Constructor
 
         public IdentityTokenHelper()
         {
@@ -75,10 +66,6 @@ namespace SimpleIdentityServer.Proxy
             _discoveryClient = new IdentityServerClientFactory().CreateDiscoveryClient();
             _httpClientFactory = new HttpClientFactory();
         }
-
-        #endregion
-
-        #region Public methods
 
         public async Task<string> DecryptIdentityTokenByResolution(
             string jwe,
@@ -170,10 +157,6 @@ namespace SimpleIdentityServer.Proxy
             return _jwsParser.ValidateSignature(jws, jsonWebKey);
         }
 
-        #endregion
-
-        #region Private methods
-
         private async Task<JsonWebKey> GetJsonWebKey(
             string jwksUri,
             string kid)
@@ -207,15 +190,9 @@ namespace SimpleIdentityServer.Proxy
             return result;
         }
 
-        #endregion
-
-        #region Private static methods
-
         private static void RegisterDependencies(IServiceCollection serviceCollection)
         {
             serviceCollection.AddSimpleIdentityServerJwt();
         }
-
-        #endregion
     }
 }

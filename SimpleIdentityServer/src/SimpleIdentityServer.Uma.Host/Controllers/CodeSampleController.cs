@@ -25,16 +25,10 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
     {
         private readonly ICodeSampleActions _codeSampleActions;
 
-        #region Constructor
-
         public CodeSampleController(ICodeSampleActions codeSampleActions)
         {
             _codeSampleActions = codeSampleActions;
         }
-
-        #endregion
-
-        #region Public methods
 
         [HttpGet("backend/{id}")]
         public ActionResult GetBackend(string id)
@@ -67,7 +61,5 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 FileDownloadName = "Frontend.zip"
             };
         }
-
-        #endregion
     }
 }

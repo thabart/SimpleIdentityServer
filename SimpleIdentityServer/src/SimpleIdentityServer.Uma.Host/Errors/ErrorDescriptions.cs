@@ -19,9 +19,7 @@ namespace SimpleIdentityServer.Uma.Host.Errors
     internal static class ErrorDescriptions
     {
         public const string TheClientIsNotAuthorized = "the client is not authorized";
-
         public const string TheAuthorizationProcessNeedsMoreInformation = "the authorization process needs more information";
-
         public const string TheResourceOwnerDidntGiveHisConsent = "require intervention of the resource owner";
     }
 }

@@ -27,12 +27,8 @@ namespace SimpleIdentityServer.Uma.Host.Middlewares
     internal class ExceptionHandlerMiddleware
     {
         private const string UnhandledExceptionCode = "unhandled_error";
-
         private readonly RequestDelegate _next;
-
         private readonly ExceptionHandlerMiddlewareOptions _options;
-
-        #region Constructor
 
         public ExceptionHandlerMiddleware(
             RequestDelegate next,
@@ -51,10 +47,6 @@ namespace SimpleIdentityServer.Uma.Host.Middlewares
             _next = next;
             _options = options;
         }
-
-        #endregion
-
-        #region Public methods
 
         public async Task Invoke(HttpContext context)
         {
@@ -82,16 +74,10 @@ namespace SimpleIdentityServer.Uma.Host.Middlewares
             }
         }
 
-        #endregion
-
-        #region Private static methods
-
         private static void PopulateError(ErrorResponse errorResponse, BaseUmaException exception)
         {
             errorResponse.Error = exception.Code;
             errorResponse.ErrorDescription = exception.Message;
         }
-
-        #endregion
     }
 }

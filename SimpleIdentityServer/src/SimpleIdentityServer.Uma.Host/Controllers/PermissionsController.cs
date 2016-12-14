@@ -22,6 +22,7 @@ using SimpleIdentityServer.Uma.Host.DTOs.Responses;
 using SimpleIdentityServer.Uma.Host.Extensions;
 using System;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Host.Controllers
 {
@@ -30,20 +31,14 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
     {
         private readonly IPermissionControllerActions _permissionControllerActions;
 
-        #region Constructor
-
         public PermissionsController(IPermissionControllerActions permissionControllerActions)
         {
             _permissionControllerActions = permissionControllerActions;
         }
 
-        #endregion
-
-        #region Public methods
-
         [HttpPost]
         [Authorize("UmaProtection")]
-        public ActionResult PostPermission([FromBody] PostPermission postPermission)
+        public async Task<ActionResult> PostPermission([FromBody] PostPermission postPermission)
         {
             if (postPermission == null)
             {
@@ -52,7 +47,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
 
             var parameter = postPermission.ToParameter();
             var clientId = this.GetClientId();
-            var ticketId = _permissionControllerActions.AddPermission(parameter, clientId);
+            var ticketId = await _permissionControllerActions.AddPermission(parameter, clientId);
             var result = new AddPermissionResponse
             {
                 TicketId = ticketId
@@ -62,7 +57,5 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 StatusCode = (int)HttpStatusCode.Created
             };
         }
-
-        #endregion
     }
 }

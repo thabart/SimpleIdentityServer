@@ -49,17 +49,11 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 GetRequestSubmitted
             }
         };
-        
-        #region Constructor
 
         public AuthorizationController(IAuthorizationActions authorizationActions)
         {
             _authorizationActions = authorizationActions;
         }
-
-        #endregion
-
-        #region Public methods
 
         [HttpPost]
         [Authorize("Authorization")]
@@ -86,10 +80,6 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             };
             return new OkObjectResult(content);
         }
-
-        #endregion
-
-        #region Private static methods
 
         private static ActionResult GetErrorResponse(AuthorizationPolicyResultEnum authorizationPolicyResult)
         {
@@ -127,7 +117,5 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 ErrorDescription = ErrorDescriptions.TheResourceOwnerDidntGiveHisConsent
             };
         }
-
-        #endregion
     }
 }

@@ -23,6 +23,7 @@ using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.Core.Validators;
 using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Actions
@@ -30,25 +31,21 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
     public class UpdateResourceSetActionFixture
     {
         private Mock<IResourceSetRepository> _resourceSetRepositoryStub;
-
         private Mock<IResourceSetParameterValidator> _resourceSetParameterValidator;
-
         private IUpdateResourceSetAction _updateResourceSetAction;
 
-        #region Exceptions
-
         [Fact]
-        public void When_Passing_No_Parameter_Then_Exception_Is_Thrown()
+        public async Task When_Passing_No_Parameter_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _updateResourceSetAction.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _updateResourceSetAction.Execute(null));
         }
 
         [Fact]
-        public void When_ResourceSet_Cannot_Be_Updated_Then_Exception_Is_Thrown()
+        public async Task When_ResourceSet_Cannot_Be_Updated_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -61,24 +58,20 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
             {
                 Id = id
             };
-            _resourceSetRepositoryStub.Setup(r => r.GetResourceSetById(It.IsAny<string>()))
-                .Returns(resourceSet);
-            _resourceSetRepositoryStub.Setup(r => r.UpdateResource(It.IsAny<ResourceSet>()))
-                .Returns(() => null);
+            _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>()))
+                .Returns(Task.FromResult(resourceSet));
+            _resourceSetRepositoryStub.Setup(r => r.Update(It.IsAny<ResourceSet>()))
+                .Returns(() => Task.FromResult(false));
 
             // ACT & ASSERTS
-            var exception = Assert.Throws<BaseUmaException>(() => _updateResourceSetAction.Execute(udpateResourceSetParameter));
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _updateResourceSetAction.Execute(udpateResourceSetParameter));
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InternalError);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheResourceSetCannotBeUpdated, udpateResourceSetParameter.Id));
         }
 
-        #endregion
-
-        #region Happy path
-
         [Fact]
-        public void When_A_ResourceSet_Is_Updated_Then_Http_Ok_Is_Returned()
+        public async Task When_A_ResourceSet_Is_Updated_Then_Http_Ok_Is_Returned()
         {
             // ARRANGE
             const string id = "id";
@@ -91,21 +84,19 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
             {
                 Id = id
             };
-            _resourceSetRepositoryStub.Setup(r => r.GetResourceSetById(It.IsAny<string>()))
-                .Returns(resourceSet);
-            _resourceSetRepositoryStub.Setup(r => r.UpdateResource(It.IsAny<ResourceSet>()))
-                .Returns(resourceSet);
+            _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>()))
+                .Returns(Task.FromResult(resourceSet));
+            _resourceSetRepositoryStub.Setup(r => r.Update(It.IsAny<ResourceSet>()))
+                .Returns(Task.FromResult(true));
 
             // ACT
-            var result = _updateResourceSetAction.Execute(udpateResourceSetParameter);
+            var result = await _updateResourceSetAction.Execute(udpateResourceSetParameter);
 
             // ASSERTS
             Assert.NotNull(result);
             Assert.True(result);
 
         }
-
-        #endregion
 
         private void InitializeFakeObjects()
         {

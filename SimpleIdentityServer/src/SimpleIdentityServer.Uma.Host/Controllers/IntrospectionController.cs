@@ -29,17 +29,11 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
     {
         private readonly IIntrospectionActions _introspectionActions;
 
-        #region Constructor
-
         public IntrospectionController(IIntrospectionActions introspectionActions)
         {
             _introspectionActions = introspectionActions;
         }
-
-        #endregion
-
-        #region Public methods
-
+        
         [HttpGet]
         public ActionResult Get()
         {
@@ -51,10 +45,6 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         {
             return Introspect();
         }
-
-        #endregion
-
-        #region Private methods
 
         private ActionResult Introspect()
         {
@@ -81,7 +71,5 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             var result = _introspectionActions.GetIntrospection(authenticationHeaderValue.Parameter);
             return new OkObjectResult(result);
         }
-
-        #endregion
     }
 }

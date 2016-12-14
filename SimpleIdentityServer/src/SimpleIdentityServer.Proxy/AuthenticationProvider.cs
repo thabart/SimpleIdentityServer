@@ -32,22 +32,15 @@ namespace SimpleIdentityServer.Proxy
     internal class AuthenticationProvider : IAuthenticationProvider
     {
         private readonly AuthOptions _authOptions;
-
         private readonly IClientAuthSelector _clientAuthSelector;
-
-        #region Constructor
 
         public AuthenticationProvider(
             AuthOptions options,
             IIdentityServerClientFactory identityServerClientFactory)
         {
             _authOptions = options;
-            _clientAuthSelector = identityServerClientFactory.CreateTokenClient();
+            _clientAuthSelector = identityServerClientFactory.CreateAuthSelector();
         }
-
-        #endregion
-
-        #region Public methods
 
         public async Task<string> GetIdentityToken(
             string login, 
@@ -70,7 +63,5 @@ namespace SimpleIdentityServer.Proxy
                 .ResolveAsync(_authOptions.OpenIdConfigurationUrl);
             return grantedToken.IdToken;
         }
-
-        #endregion
     }
 }

@@ -25,8 +25,6 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
 {
     internal static class ControllerExtensions
     {
-        #region Public static methods
-
         public static AuthenticationHeaderValue GetAuthenticationHeader(this Controller controller)
         {
             const string authorizationName = "Authorization";
@@ -69,7 +67,5 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
 
             return controller.User.Claims;
         }
-
-        #endregion
     }
 }

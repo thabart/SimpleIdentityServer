@@ -23,6 +23,7 @@ using SimpleIdentityServer.Uma.Core.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ScopeController.Actions
@@ -30,13 +31,10 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ScopeController.Actions
     public class GetScopesActionFixture
     {
         private Mock<IScopeRepository> _scopeRepositoryStub;
-
         private IGetScopesAction _getScopesAction;
 
-        #region Exceptions
-
         [Fact]
-        public void When_UnexpectedException_Is_Thrown_Then_BaseUmaException_Is_Thrown()
+        public async Task When_UnexpectedException_Is_Thrown_Then_BaseUmaException_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -47,18 +45,14 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ScopeController.Actions
                 });
 
             // ACT & ASSERTS
-            var exception = Assert.Throws<BaseUmaException>(() => _getScopesAction.Execute());
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _getScopesAction.Execute());
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InternalError);
             Assert.True(exception.Message == ErrorDescriptions.TheScopesCannotBeRetrieved);
         }
 
-        #endregion
-
-        #region Happy paths
-
         [Fact]
-        public void When_Retrieving_Scopes_Then_Ids_Are_Returned()
+        public async Task When_Retrieving_Scopes_Then_Ids_Are_Returned()
         {
             // ARRANGE
             const string scopeId = "scope_id";
@@ -66,12 +60,13 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ScopeController.Actions
             {
                 Id = scopeId
             };
+            ICollection<Scope> scopes = new List<Scope> { scope };
             InitializeFakeObjects();
             _scopeRepositoryStub.Setup(s => s.GetAll())
-                .Returns(new List<Scope> { scope });
+                .Returns(Task.FromResult(scopes));
 
             // ACT
-            var result = _getScopesAction.Execute();
+            var result = await _getScopesAction.Execute();
 
             // ASSERTS
             Assert.NotNull(result);
@@ -79,16 +74,10 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ScopeController.Actions
             Assert.True(result.First() == scopeId);
         }
 
-        #endregion
-
-        #region Private methods
-
         private void InitializeFakeObjects()
         {
             _scopeRepositoryStub = new Mock<IScopeRepository>();
             _getScopesAction = new GetScopesAction(_scopeRepositoryStub.Object);
         }
-
-        #endregion
     }
 }

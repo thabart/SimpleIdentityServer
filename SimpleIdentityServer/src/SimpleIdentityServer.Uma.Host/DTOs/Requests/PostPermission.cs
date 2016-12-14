@@ -24,7 +24,6 @@ namespace SimpleIdentityServer.Uma.Host.DTOs.Requests
     {
         [DataMember(Name = Constants.PostPermissionNames.ResourceSetId)]
         public string ResourceSetId { get; set; }
-
         [DataMember(Name = Constants.PostPermissionNames.Scopes)]
         public List<string> Scopes { get; set; }
     }

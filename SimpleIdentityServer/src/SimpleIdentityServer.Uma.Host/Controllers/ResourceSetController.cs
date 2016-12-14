@@ -32,10 +32,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
     public class ResourceSetController : Controller
     {
         private readonly IResourceSetActions _resourceSetActions;
-
         private readonly IRepresentationManager _representationManager;
-
-        #region Constructor
 
         public ResourceSetController(
             IResourceSetActions resourceSetActions,
@@ -44,10 +41,6 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             _resourceSetActions = resourceSetActions;
             _representationManager = representationManager;
         }
-
-        #endregion
-
-        #region Public methods
 
         [HttpGet]
         [Authorize("UmaProtection")]
@@ -83,7 +76,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 };
             }
 
-            var result = _resourceSetActions.GetResourceSet(id);
+            var result = await _resourceSetActions.GetResourceSet(id);
             if (result == null)
             {
                 return GetNotFoundResourceSet();
@@ -104,7 +97,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             }
 
             var parameter = postResourceSet.ToParameter();
-            var result = _resourceSetActions.AddResourceSet(parameter);
+            var result = await _resourceSetActions.AddResourceSet(parameter);
             var response = new AddResourceSetResponse
             {
                 Id = result
@@ -126,7 +119,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             }
 
             var parameter = putResourceSet.ToParameter();
-            var resourceSetExists = _resourceSetActions.UpdateResourceSet(parameter);
+            var resourceSetExists = await _resourceSetActions.UpdateResourceSet(parameter);
             if (!resourceSetExists)
             {
                 return GetNotFoundResourceSet();
@@ -153,8 +146,8 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 throw new ArgumentNullException(nameof(id));
             }
 
-            var policyIds = _resourceSetActions.GetPolicies(id);
-            var resourceSetExists = _resourceSetActions.RemoveResourceSet(id);
+            var policyIds = await _resourceSetActions.GetPolicies(id);
+            var resourceSetExists = await _resourceSetActions.RemoveResourceSet(id);
             if (!resourceSetExists)
             {
                 return GetNotFoundResourceSet();
@@ -171,10 +164,6 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             return new StatusCodeResult((int)HttpStatusCode.NoContent);
         }
 
-        #endregion
-
-        #region Private methods
-
         private static ActionResult GetNotFoundResourceSet()
         {
             var errorResponse = new ErrorResponse
@@ -188,7 +177,5 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 StatusCode = (int)HttpStatusCode.NotFound
             };
         }
-
-        #endregion
     }
 }

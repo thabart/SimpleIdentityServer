@@ -33,10 +33,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
     public class PoliciesController : Controller
     {
         private readonly IPolicyActions _policyActions;
-
         private readonly IRepresentationManager _representationManager;
-
-        #region Constructor
 
         public PoliciesController(
             IPolicyActions policyActions,
@@ -45,10 +42,6 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             _policyActions = policyActions;
             _representationManager = representationManager;
         }
-
-        #endregion
-
-        #region Public methods
         
         [HttpGet("{id}")]
         [Authorize("UmaProtection")]
@@ -67,7 +60,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 };
             }
 
-            var result = _policyActions.GetPolicy(id);
+            var result = await _policyActions.GetPolicy(id);
             if (result == null)
             {
                 return GetNotFoundPolicy();
@@ -90,7 +83,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 };
             }
 
-            var policies = _policyActions.GetPolicies();
+            var policies = await _policyActions.GetPolicies();
             await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPoliciesStoreName);
             return new OkObjectResult(policies);
         }
@@ -105,7 +98,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 throw new ArgumentNullException(nameof(putPolicy));
             }
 
-            var isPolicyExists = _policyActions.UpdatePolicy(putPolicy.ToParameter());
+            var isPolicyExists = await _policyActions.UpdatePolicy(putPolicy.ToParameter());
             if (!isPolicyExists)
             {
                 return GetNotFoundPolicy();
@@ -129,7 +122,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 throw new ArgumentNullException(nameof(postAddResourceSet));
             }
 
-            var isPolicyExists = _policyActions.AddResourceSet(new AddResourceSetParameter
+            var isPolicyExists = await _policyActions.AddResourceSet(new AddResourceSetParameter
             {
                 PolicyId = id,
                 ResourceSets = postAddResourceSet.ResourceSets
@@ -157,7 +150,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 throw new ArgumentNullException(nameof(resourceId));
             }
 
-            var isPolicyExists = _policyActions.DeleteResourceSet(id, resourceId);
+            var isPolicyExists = await _policyActions.DeleteResourceSet(id, resourceId);
             if (!isPolicyExists)
             {
                 return GetNotFoundPolicy();
@@ -176,7 +169,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 throw new ArgumentNullException(nameof(postPolicy));
             }
 
-            var policyId = _policyActions.AddPolicy(postPolicy.ToParameter());
+            var policyId = await _policyActions.AddPolicy(postPolicy.ToParameter());
             var content = new AddPolicyResponse
             {
                 PolicyId = policyId
@@ -198,7 +191,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 throw new ArgumentNullException(nameof(id));
             }
 
-            var isPolicyExists = _policyActions.DeletePolicy(id);
+            var isPolicyExists = await _policyActions.DeletePolicy(id);
             if (!isPolicyExists)
             {
                 return GetNotFoundPolicy();
@@ -208,10 +201,6 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPoliciesStoreName, false);
             return new StatusCodeResult((int)HttpStatusCode.NoContent);
         }
-
-        #endregion
-
-        #region Private static methods
 
         private static ActionResult GetNotFoundPolicy()
         {
@@ -226,7 +215,5 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 StatusCode = (int)HttpStatusCode.NotFound
             };
         }
-
-        #endregion
     }
 }

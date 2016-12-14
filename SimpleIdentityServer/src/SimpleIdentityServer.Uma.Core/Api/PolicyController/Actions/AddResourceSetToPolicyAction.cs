@@ -76,7 +76,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
                         
             foreach (var resourceSetId in addResourceSetParameter.ResourceSets)
             {
-                var resourceSet = _repositoryExceptionHelper.HandleException(
+                var resourceSet = await _repositoryExceptionHelper.HandleException(
                     string.Format(ErrorDescriptions.TheResourceSetCannotBeRetrieved, resourceSetId),
                     () => _resourceSetRepository.Get(resourceSetId));
                 if (resourceSet == null)

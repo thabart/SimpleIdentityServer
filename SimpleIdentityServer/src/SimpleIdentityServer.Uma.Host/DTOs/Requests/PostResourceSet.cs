@@ -22,33 +22,14 @@ namespace SimpleIdentityServer.Uma.Host.DTOs.Requests
     [DataContract]
     public class PostResourceSet
     {
-        /// <summary>
-        /// Human-readable string describing a set of one or more resources.
-        /// </summary>
         [DataMember(Name = Constants.ResourceSetResponseNames.Name)]
-        public string Name { get; set; }
-                
-        /// <summary>
-        /// Network location for the resource set being registered.
-        /// </summary>
+        public string Name { get; set; }       
         [DataMember(Name = Constants.ResourceSetResponseNames.Uri)]
-        public string Uri { get; set; }
-               
-        /// <summary>
-        /// String uniquely identifying the semantics of the resource set.
-        /// </summary>
+        public string Uri { get; set; }            
         [DataMember(Name = Constants.ResourceSetResponseNames.Type)]
-        public string Type { get; set; }
-        
-        /// <summary>
-        /// Available scopes for this resource set.
-        /// </summary>
+        public string Type { get; set; }        
         [DataMember(Name = Constants.ResourceSetResponseNames.Scopes)]
-        public List<string> Scopes { get; set; }
-        
-        /// <summary>
-        /// URI for a graphic icon representing the resource set.
-        /// </summary>
+        public List<string> Scopes { get; set; }        
         [DataMember(Name = Constants.ResourceSetResponseNames.IconUri)]
         public string IconUri { get; set; }
     }

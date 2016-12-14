@@ -22,6 +22,7 @@ using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.Logging;
 using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ScopeController.Actions
@@ -29,68 +30,60 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ScopeController.Actions
     public class DeleteScopeActionFixture
     {
         private Mock<IScopeRepository> _scopeRepositoryStub;
-
         private Mock<IUmaServerEventSource> _umaServerEventSourceStub;
-
         private IDeleteScopeAction _deleteScopeAction;
 
-        #region Exceptions
-
         [Fact]
-        public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _deleteScopeAction.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _deleteScopeAction.Execute(null));
         }
 
         [Fact]
-        public void When_UnexpectedException_Occured_In_GetScope_Then_BaseUmaException_Is_Thrown()
+        public async Task When_UnexpectedException_Occured_In_GetScope_Then_BaseUmaException_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
-            _scopeRepositoryStub.Setup(s => s.GetScope(It.IsAny<string>()))
+            _scopeRepositoryStub.Setup(s => s.Get(It.IsAny<string>()))
                 .Callback(() =>
                 {
                     throw new Exception();
                 });
 
             // ACT & ASSERTS
-            var exception = Assert.Throws<BaseUmaException>(() => _deleteScopeAction.Execute("id"));
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _deleteScopeAction.Execute("id"));
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InternalError);
             Assert.True(exception.Message == ErrorDescriptions.TheScopeCannotBeRetrieved);
         }
 
         [Fact]
-        public void When_UnexpectedException_Occured_In_DeleteScope_ThenBaseUmaException_Is_Thrown()
+        public async Task When_UnexpectedException_Occured_In_DeleteScope_ThenBaseUmaException_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
-            _scopeRepositoryStub.Setup(s => s.GetScope(It.IsAny<string>()))
-                .Returns(new Scope());
-            _scopeRepositoryStub.Setup(s => s.DeleteScope(It.IsAny<string>()))
+            _scopeRepositoryStub.Setup(s => s.Get(It.IsAny<string>()))
+                .Returns(Task.FromResult(new Scope()));
+            _scopeRepositoryStub.Setup(s => s.Delete(It.IsAny<string>()))
                 .Callback(() =>
                 {
                     throw new Exception();
                 });
 
             // ACT & ASSERTS
-            var exception = Assert.Throws<BaseUmaException>(() => _deleteScopeAction.Execute("id"));
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _deleteScopeAction.Execute("id"));
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InternalError);
             Assert.True(exception.Message == ErrorDescriptions.TheScopeCannotBeRemoved);
 
         }
 
-        #endregion
-
-        #region Happy paths
-
         [Fact]
-        public void When_Deleting_Scope_Then_True_Is_Returned()
+        public async Task When_Deleting_Scope_Then_True_Is_Returned()
         {
             // ARRANGE
             const string scopeId = "scope_id";
@@ -99,20 +92,20 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ScopeController.Actions
                 Id = scopeId
             };
             InitializeFakeObjects();
-            _scopeRepositoryStub.Setup(s => s.GetScope(It.IsAny<string>()))
-                .Returns(scope);
-            _scopeRepositoryStub.Setup(s => s.DeleteScope(It.IsAny<string>()))
-                .Returns(true);
+            _scopeRepositoryStub.Setup(s => s.Get(It.IsAny<string>()))
+                .Returns(Task.FromResult(scope));
+            _scopeRepositoryStub.Setup(s => s.Delete(It.IsAny<string>()))
+                .Returns(Task.FromResult(true));
 
             // ACT
-            var result = _deleteScopeAction.Execute(scopeId);
+            var result = await _deleteScopeAction.Execute(scopeId);
 
             // ASSERTS
             Assert.True(result);
         }
 
         [Fact]
-        public void When_Deleting_Not_Existing_Scope_Then_False_Is_Returned()
+        public async Task When_Deleting_Not_Existing_Scope_Then_False_Is_Returned()
         {
             // ARRANGE
             const string scopeId = "scope_id";
@@ -121,19 +114,15 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ScopeController.Actions
                 Id = scopeId
             };
             InitializeFakeObjects();
-            _scopeRepositoryStub.Setup(s => s.GetScope(It.IsAny<string>()))
-                .Returns(() => null);
+            _scopeRepositoryStub.Setup(s => s.Get(It.IsAny<string>()))
+                .Returns(() => Task.FromResult((Scope)null));
 
             // ACT
-            var result = _deleteScopeAction.Execute(scopeId);
+            var result = await _deleteScopeAction.Execute(scopeId);
 
             // ASSERTS
             Assert.False(result);
         }
-
-        #endregion
-
-        #region Private methods
 
         private void InitializeFakeObjects()
         {
@@ -143,7 +132,5 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ScopeController.Actions
                 _scopeRepositoryStub.Object,
                 _umaServerEventSourceStub.Object);
         }
-
-        #endregion
     }
 }

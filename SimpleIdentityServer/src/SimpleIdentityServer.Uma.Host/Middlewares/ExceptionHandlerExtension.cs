@@ -21,8 +21,6 @@ namespace SimpleIdentityServer.Uma.Host.Middlewares
 {
     internal static class ExceptionHandlerExtension
     {
-        #region Public static methods
-
         public static IApplicationBuilder UseUmaExceptionHandler(
             this IApplicationBuilder applicationBuilder,
             ExceptionHandlerMiddlewareOptions options)
@@ -34,7 +32,5 @@ namespace SimpleIdentityServer.Uma.Host.Middlewares
 
             return applicationBuilder.UseMiddleware<ExceptionHandlerMiddleware>(options);
         }
-
-        #endregion
     }
 }

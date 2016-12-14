@@ -24,7 +24,6 @@ namespace SimpleIdentityServer.Uma.Host.DTOs.Requests
     {
         [DataMember(Name = Constants.ClaimNames.Type)]
         public string Type { get; set; }
-
         [DataMember(Name = Constants.ClaimNames.Value)]
         public string Value { get; set; }
     }
@@ -34,16 +33,12 @@ namespace SimpleIdentityServer.Uma.Host.DTOs.Requests
     {
         [DataMember(Name = Constants.PolicyRuleNames.ClientIdsAllowed)]
         public List<string> ClientIdsAllowed { get; set; }
-
         [DataMember(Name = Constants.PolicyRuleNames.Scopes)]
         public List<string> Scopes { get; set; }
-
         [DataMember(Name = Constants.PolicyRuleNames.Claims)]
         public List<PostClaim> Claims { get; set; }
-
         [DataMember(Name = Constants.PolicyRuleNames.IsResourceOwnerConsentNeeded)]
         public bool IsResourceOwnerConsentNeeded { get; set; }
-
         [DataMember(Name = Constants.PolicyRuleNames.Script)]
         public string Script { get; set; }
     }
@@ -53,7 +48,6 @@ namespace SimpleIdentityServer.Uma.Host.DTOs.Requests
     {
         [DataMember(Name = Constants.PolicyNames.ResourceSetIds)]
         public List<string> ResourceSetIds { get; set; }
-
         [DataMember(Name = Constants.PolicyNames.Rules)]
         public List<PostPolicyRule> Rules { get; set; }
     }

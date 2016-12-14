@@ -23,6 +23,7 @@ using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.Core.Validators;
 using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ScopeController.Actions
@@ -30,102 +31,92 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ScopeController.Actions
     public class UpdateScopeActionFixture
     {
         private Mock<IScopeRepository> _scopeRepositoryStub;
-
         private Mock<IScopeParameterValidator> _scopeParameterValidator;
-
         private IUpdateScopeAction _updateScopeAction;
 
-        #region Exceptions
-
         [Fact]
-        public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _updateScopeAction.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _updateScopeAction.Execute(null));
         }
 
         [Fact]
-        public void When_An_Error_Occured_While_Retrieving_Scope_Then_Exception_Is_Thrown()
+        public async Task When_An_Error_Occured_While_Retrieving_Scope_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
             var updateScopeParameter = new UpdateScopeParameter();
-            _scopeRepositoryStub.Setup(s => s.GetScope(It.IsAny<string>()))
+            _scopeRepositoryStub.Setup(s => s.Get(It.IsAny<string>()))
                 .Callback(() =>
                 {
                     throw new Exception();
                 });
 
             // ACT & ASSERTS
-            var exception = Assert.Throws<BaseUmaException>(() => _updateScopeAction.Execute(updateScopeParameter));
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _updateScopeAction.Execute(updateScopeParameter));
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InternalError);
             Assert.True(exception.Message == ErrorDescriptions.TheScopeCannotBeRetrieved);
         }
 
         [Fact]
-        public void When_An_Error_Occured_While_Inserted_Scope_Then_Exception_Is_Thrown()
+        public async Task When_An_Error_Occured_While_Inserted_Scope_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
             var updateScopeParameter = new UpdateScopeParameter();
-            _scopeRepositoryStub.Setup(s => s.GetScope(It.IsAny<string>()))
-                .Returns(new Scope());
-            _scopeRepositoryStub.Setup(s => s.UpdateScope(It.IsAny<Scope>()))
+            _scopeRepositoryStub.Setup(s => s.Get(It.IsAny<string>()))
+                .Returns(Task.FromResult(new Scope()));
+            _scopeRepositoryStub.Setup(s => s.Update(It.IsAny<Scope>()))
                 .Callback(() =>
                 {
                     throw new Exception();
                 });
 
             // ACT & ASSERTS
-            var exception = Assert.Throws<BaseUmaException>(() => _updateScopeAction.Execute(updateScopeParameter));
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _updateScopeAction.Execute(updateScopeParameter));
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InternalError);
             Assert.True(exception.Message == ErrorDescriptions.TheScopeCannotBeUpdated);
         }
 
-        #endregion
-
-        #region Happy paths
-
         [Fact]
-        public void When_A_Scope_Is_Updated_Then_True_Is_Returned()
+        public async Task When_A_Scope_Is_Updated_Then_True_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
             var updateScopeParameter = new UpdateScopeParameter();
-            _scopeRepositoryStub.Setup(s => s.GetScope(It.IsAny<string>()))
-                .Returns(new Scope());
-            _scopeRepositoryStub.Setup(s => s.InsertScope(It.IsAny<Scope>()))
-                .Returns(new Scope());
+            _scopeRepositoryStub.Setup(s => s.Get(It.IsAny<string>()))
+                .Returns(Task.FromResult(new Scope()));
+            _scopeRepositoryStub.Setup(s => s.Insert(It.IsAny<Scope>()))
+                .Returns(Task.FromResult(true));
 
             // ACT
-            var result = _updateScopeAction.Execute(updateScopeParameter);
+            var result = await _updateScopeAction.Execute(updateScopeParameter);
 
             // ASSERT
             Assert.True(result);
         }
 
         [Fact]
-        public void When_Trying_To_Update_A_Not_Existed_Scope_Then_False_Is_Returned()
+        public async Task When_Trying_To_Update_A_Not_Existed_Scope_Then_False_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
             var updateScopeParameter = new UpdateScopeParameter();
-            _scopeRepositoryStub.Setup(s => s.GetScope(It.IsAny<string>()))
-                .Returns(() => null);
+            _scopeRepositoryStub.Setup(s => s.Get(It.IsAny<string>()))
+                .Returns(Task.FromResult((Scope)null));
 
             // ACT
-            var result = _updateScopeAction.Execute(updateScopeParameter);
+            var result = await _updateScopeAction.Execute(updateScopeParameter);
 
             // ASSERT
             Assert.False(result);
         }
-
-        #endregion
 
         private void InitializeFakeObjects()
         {

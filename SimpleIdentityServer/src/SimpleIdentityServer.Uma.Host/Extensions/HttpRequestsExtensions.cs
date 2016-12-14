@@ -20,8 +20,6 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
 {
     internal static class HttpRequestsExtensions
     {
-        #region Public static methods
-
         public static string GetAbsoluteUriWithVirtualPath(this HttpRequest requestMessage)
         {
             var host = requestMessage.Host.Value;
@@ -34,7 +32,5 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
             var relativePath = requestMessage.PathBase.Value;
             return http + host + relativePath;
         }
-
-        #endregion
     }
 }

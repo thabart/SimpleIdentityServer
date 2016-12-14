@@ -157,7 +157,6 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PermissionController.Actio
             // ARRANGE
             const string clientId = "client_id";
             const string resourceSetId = "resource_set_id";
-            const string ticketId = "ticket_id";
             InitializeFakeObjects();
             var addPermissionParameter = new AddPermissionParameter
             {
@@ -177,7 +176,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PermissionController.Actio
             };
             var ticket = new Ticket
             {
-                Id = ticketId
+                Id = "ticket_id"
             };
             _repositoryExceptionHelperStub.Setup(r => r.HandleException<ResourceSet>(It.IsAny<string>(), It.IsAny<Func<Task<ResourceSet>>>()))
                 .Returns(Task.FromResult(resourceSet));
@@ -189,8 +188,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PermissionController.Actio
             var result = await _addPermissionAction.Execute(addPermissionParameter, clientId);
 
             // ASSERTS
-            Assert.NotNull(result);
-            Assert.True(result == ticketId);
+            Assert.NotEmpty(result);
         }
 
         private void InitializeFakeObjects()

@@ -27,8 +27,6 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
 {
     internal static class MappingExtensions
     {
-        #region To parameters
-
         public static AddResouceSetParameter ToParameter(this PostResourceSet postResourceSet)
         {
             return new AddResouceSetParameter
@@ -169,10 +167,6 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
             };
         }
 
-        #endregion
-
-        #region To responses
-
         public static ResourceSetResponse ToResponse(this ResourceSet resourceSet)
         {
             return new ResourceSetResponse
@@ -255,7 +249,5 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
                 Version = configuration.Version
             };
         }
-
-        #endregion
     }
 }

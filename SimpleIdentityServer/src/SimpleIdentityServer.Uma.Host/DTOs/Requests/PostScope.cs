@@ -23,10 +23,8 @@ namespace SimpleIdentityServer.Uma.Host.DTOs.Requests
     {
         [DataMember(Name = Constants.ScopeResponseNames.Id)]
         public string Id { get; set; }
-
         [DataMember(Name = Constants.ScopeResponseNames.Name)]
         public string Name { get; set; }
-
         [DataMember(Name = Constants.ScopeResponseNames.IconUri)]
         public string IconUri { get; set; }
     }

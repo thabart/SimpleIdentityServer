@@ -35,11 +35,11 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
             // ARRANGE
             const string resourceSetId = "resourceSetId";
             InitializeFakeObjects();
-            _resourceSetRepositoryStub.Setup(r => r.GetResourceSetById(It.IsAny<string>()))
-                .Returns(() => null);
+            _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>()))
+                .Returns(() => Task.FromResult((ResourceSet)null));
 
             // ACT
-            var result = _deleteResourceSetAction.Execute(resourceSetId);
+            var result = await _deleteResourceSetAction.Execute(resourceSetId);
 
             // ASSERT
             Assert.False(result);
@@ -51,10 +51,10 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
             // ARRANGE
             const string resourceSetId = "resourceSetId";
             InitializeFakeObjects();
-            _resourceSetRepositoryStub.Setup(r => r.GetResourceSetById(It.IsAny<string>()))
-                .Returns(new ResourceSet());
-            _resourceSetRepositoryStub.Setup(r => r.DeleteResource(It.IsAny<string>()))
-                .Returns(false);
+            _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>()))
+                .Returns(Task.FromResult(new ResourceSet()));
+            _resourceSetRepositoryStub.Setup(r => r.Delete(It.IsAny<string>()))
+                .Returns(Task.FromResult(false));
 
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _deleteResourceSetAction.Execute(resourceSetId));
@@ -63,29 +63,23 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheResourceSetCannotBeRemoved, resourceSetId));
         }
 
-        #region Happy path
-
         [Fact]
-        public void When_ResourceSet_Is_Removed_Then_True_Is_Returned()
+        public async Task When_ResourceSet_Is_Removed_Then_True_Is_Returned()
         {
             // ARRANGE
             const string resourceSetId = "resourceSetId";
             InitializeFakeObjects();
-            _resourceSetRepositoryStub.Setup(r => r.GetResourceSetById(It.IsAny<string>()))
-                .Returns(new ResourceSet());
-            _resourceSetRepositoryStub.Setup(r => r.DeleteResource(It.IsAny<string>()))
-               .Returns(true);
+            _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>()))
+                .Returns(Task.FromResult(new ResourceSet()));
+            _resourceSetRepositoryStub.Setup(r => r.Delete(It.IsAny<string>()))
+               .Returns(Task.FromResult(true));
 
             // ACT
-            var result = _deleteResourceSetAction.Execute(resourceSetId);
+            var result = await _deleteResourceSetAction.Execute(resourceSetId);
 
             // ASSERT
             Assert.True(result);
         }
-
-        #endregion
-
-        #region Private methods
 
         private void InitializeFakeObjects()
         {
@@ -95,7 +89,5 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
                 _resourceSetRepositoryStub.Object,
                 _umaServerEventSourceStub.Object);
         }
-
-        #endregion
     }
 }

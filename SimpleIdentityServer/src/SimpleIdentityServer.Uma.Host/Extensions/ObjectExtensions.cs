@@ -21,8 +21,6 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
 {
     internal static class ObjectExtensions
     {
-        #region Public static methods
-
         public static string SerializeWithDataContract(this object parameter)
         {
             var serializer = new DataContractJsonSerializer(parameter.GetType());
@@ -34,7 +32,5 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
                 return reader.ReadToEnd();
             }
         }
-
-        #endregion
     }
 }

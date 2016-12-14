@@ -24,17 +24,11 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
     public class ConfigurationController : Controller
     {
         private readonly IConfigurationActions _configurationActions;
-
-        #region Constructor
         
         public ConfigurationController(IConfigurationActions configurationActions)
         {
             _configurationActions = configurationActions;
         }
-
-        #endregion
-
-        #region Public methods
 
         [HttpGet]
         public ActionResult GetConfiguration()
@@ -43,7 +37,5 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 .ToResponse();
             return new OkObjectResult(result);
         }
-
-        #endregion
     }
 }

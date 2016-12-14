@@ -129,14 +129,14 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
             // ARRANGE
             InitializeFakeObjects();
             _repositoryExceptionHelperStub.Setup(r =>
-                r.HandleException(string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, policyId), It.IsAny<Func<Policy>>()))
-                .Returns(() => new Policy
+                r.HandleException(string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, policyId), It.IsAny<Func<Task<Policy>>>()))
+                .Returns(() => Task.FromResult(new Policy
                 {
                     ResourceSetIds = new List<string>
                     {
                         resourceId
                     }
-                });
+                }));
             _repositoryExceptionHelperStub.Setup(r =>
                 r.HandleException(string.Format(ErrorDescriptions.TheResourceSetCannotBeRetrieved, resourceId), It.IsAny<Func<Task<ResourceSet>>>()))
                 .Returns(() => Task.FromResult(new ResourceSet()));

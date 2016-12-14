@@ -24,6 +24,7 @@ using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.Core.Validators;
 using SimpleIdentityServer.Uma.Logging;
 using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ScopeController.Actions
@@ -31,46 +32,41 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ScopeController.Actions
     public class InsertScopeActionFixture
     {
         private Mock<IScopeRepository> _scopeRepositoryStub;
-
         private Mock<IScopeParameterValidator> _scopeParameterValidator;
-
         private Mock<IUmaServerEventSource> _umaServerEventSourceStub;
-
         private IInsertScopeAction _insertScopeAction;
 
-        #region Exceptions
-
         [Fact]
-        public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _insertScopeAction.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _insertScopeAction.Execute(null));
         }
 
         [Fact]
-        public void When_An_Error_Occured_While_Retrieving_Scope_Then_Exception_Is_Thrown()
+        public async Task When_An_Error_Occured_While_Retrieving_Scope_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
             var addScopeParameter = new AddScopeParameter();
-            _scopeRepositoryStub.Setup(s => s.GetScope(It.IsAny<string>()))
+            _scopeRepositoryStub.Setup(s => s.Get(It.IsAny<string>()))
                 .Callback(() =>
                 {
                     throw new Exception();
                 });
 
             // ACT & ASSERTS
-            var exception = Assert.Throws<BaseUmaException>(() => _insertScopeAction.Execute(addScopeParameter));
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _insertScopeAction.Execute(addScopeParameter));
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InternalError);
             Assert.True(exception.Message == ErrorDescriptions.TheScopeCannotBeRetrieved);
         }
 
         [Fact]
-        public void When_Scope_Already_Exists_Then_Exception_Is_Thrown()
+        public async Task When_Scope_Already_Exists_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -79,60 +75,54 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ScopeController.Actions
             {
                 Id = scopeId
             };
-            _scopeRepositoryStub.Setup(s => s.GetScope(It.IsAny<string>()))
-                .Returns(new Scope());
+            _scopeRepositoryStub.Setup(s => s.Get(It.IsAny<string>()))
+                .Returns(Task.FromResult(new Scope()));
 
             // ACT & ASSERTS
-            var exception = Assert.Throws<BaseUmaException>(() => _insertScopeAction.Execute(addScopeParameter));
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _insertScopeAction.Execute(addScopeParameter));
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheScopeAlreadyExists, scopeId));
         }
 
         [Fact]
-        public void When_An_Error_Occured_While_Inserted_Scope_Then_Exception_Is_Thrown()
+        public async Task When_An_Error_Occured_While_Inserted_Scope_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
             var addScopeParameter = new AddScopeParameter();
-            _scopeRepositoryStub.Setup(s => s.GetScope(It.IsAny<string>()))
-                .Returns(() => null);
-            _scopeRepositoryStub.Setup(s => s.InsertScope(It.IsAny<Scope>()))
+            _scopeRepositoryStub.Setup(s => s.Get(It.IsAny<string>()))
+                .Returns(() => Task.FromResult((Scope)null));
+            _scopeRepositoryStub.Setup(s => s.Insert(It.IsAny<Scope>()))
                 .Callback(() =>
                 {
                     throw new Exception();
                 });
 
             // ACT & ASSERTS
-            var exception = Assert.Throws<BaseUmaException>(() => _insertScopeAction.Execute(addScopeParameter));
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _insertScopeAction.Execute(addScopeParameter));
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InternalError);
             Assert.True(exception.Message == ErrorDescriptions.TheScopeCannotBeInserted);
         }
-
-        #endregion
-
-        #region Happy paths
-        
+                
         [Fact]
-        public void When_A_Scope_Is_Inserted_Then_True_Is_Returned()
+        public async Task When_A_Scope_Is_Inserted_Then_True_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
             var addScopeParameter = new AddScopeParameter();
-            _scopeRepositoryStub.Setup(s => s.GetScope(It.IsAny<string>()))
-                .Returns(() => null);
-            _scopeRepositoryStub.Setup(s => s.InsertScope(It.IsAny<Scope>()))
-                .Returns(new Scope());
+            _scopeRepositoryStub.Setup(s => s.Get(It.IsAny<string>()))
+                .Returns(() => Task.FromResult((Scope)null));
+            _scopeRepositoryStub.Setup(s => s.Insert(It.IsAny<Scope>()))
+                .Returns(Task.FromResult(true));
 
             // ACT
-            var result = _insertScopeAction.Execute(addScopeParameter);
+            var result = await _insertScopeAction.Execute(addScopeParameter);
 
             // ASSERT
             Assert.True(result);
         }
-
-        #endregion
 
         private void InitializeFakeObjects()
         {
