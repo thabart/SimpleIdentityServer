@@ -17,11 +17,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Client.Authorization;
 using SimpleIdentityServer.Client.Configuration;
-using SimpleIdentityServer.Client.Factory;
 using SimpleIdentityServer.Client.Introspection;
 using SimpleIdentityServer.Client.Permission;
 using SimpleIdentityServer.Client.Policy;
 using SimpleIdentityServer.Client.ResourceSet;
+using SimpleIdentityServer.Uma.Client.Factory;
 using System;
 
 namespace SimpleIdentityServer.Client
@@ -29,13 +29,9 @@ namespace SimpleIdentityServer.Client
     public interface IIdentityServerUmaClientFactory
     {
         IPermissionClient GetPermissionClient();
-
         IResourceSetClient GetResourceSetClient();
-
         IAuthorizationClient GetAuthorizationClient();
-
         IPolicyClient GetPolicyClient();
-
         IIntrospectionClient GetIntrospectionClient();
     }
 
@@ -43,18 +39,12 @@ namespace SimpleIdentityServer.Client
     {
         private readonly IServiceProvider _serviceProvider;
 
-        #region Constructor
-
         public IdentityServerUmaClientFactory()
         {
             var services = new ServiceCollection();
             RegisterDependencies(services);
             _serviceProvider = services.BuildServiceProvider();
         }
-
-        #endregion
-
-        #region Public methods
 
         public IPermissionClient GetPermissionClient()
         {
@@ -86,10 +76,6 @@ namespace SimpleIdentityServer.Client
             return introspectionClient;
         }
 
-        #endregion
-
-        #region Private static methods
-
         private static void RegisterDependencies(IServiceCollection serviceCollection)
         {
             // Register clients
@@ -113,8 +99,7 @@ namespace SimpleIdentityServer.Client
             serviceCollection.AddTransient<IDeletePolicyOperation, DeletePolicyOperation>();
             serviceCollection.AddTransient<IGetPoliciesOperation, GetPoliciesOperation>();
             serviceCollection.AddTransient<IGetIntrospectionAction, GetIntrospectionAction>();
+            serviceCollection.AddTransient<IGetResourcesOperation, GetResourcesOperation>();
         }
-
-        #endregion
     }
 }

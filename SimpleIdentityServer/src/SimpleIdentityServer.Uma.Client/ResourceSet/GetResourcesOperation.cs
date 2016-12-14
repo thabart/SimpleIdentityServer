@@ -21,49 +21,45 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace SimpleIdentityServer.Client.Policy
+namespace SimpleIdentityServer.Client.ResourceSet
 {
-    public interface IGetPoliciesOperation
+    public interface IGetResourcesOperation
     {
-        Task<List<string>> ExecuteAsync(
-            Uri policyUri,
-            string authorizationHeaderValue);
+        Task<IEnumerable<string>> ExecuteAsync(string resourceSetUrl, string authorizationHeaderValue);
     }
 
-    internal class GetPoliciesOperation : IGetPoliciesOperation
+    internal class GetResourcesOperation : IGetResourcesOperation
     {
         private readonly IHttpClientFactory _httpClientFactory;
 
-        public GetPoliciesOperation(IHttpClientFactory httpClientFactory)
+        public GetResourcesOperation(IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<List<string>> ExecuteAsync(
-            Uri policyUri,
-            string authorizationHeaderValue)
+        public async Task<IEnumerable<string>> ExecuteAsync(string resourceSetUrl, string authorizationHeaderValue)
         {
-            if (policyUri == null)
+            if (string.IsNullOrWhiteSpace(resourceSetUrl))
             {
-                throw new ArgumentNullException(nameof(policyUri));
+                throw new ArgumentNullException(nameof(resourceSetUrl));
             }
 
             if (string.IsNullOrWhiteSpace(authorizationHeaderValue))
             {
                 throw new ArgumentNullException(nameof(authorizationHeaderValue));
             }
-
+            
             var request = new HttpRequestMessage
             {
-                Method = HttpMethod.Get,
-                RequestUri = policyUri
+                Method = HttpMethod.Delete,
+                RequestUri = new Uri(resourceSetUrl)
             };
             request.Headers.Add("Authorization", "Bearer " + authorizationHeaderValue);
             var httpClient = _httpClientFactory.GetHttpClient();
-            var httpResult = await httpClient.SendAsync(request);
+            var httpResult = await httpClient.GetAsync(resourceSetUrl).ConfigureAwait(false);
             httpResult.EnsureSuccessStatusCode();
-            var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            return JsonConvert.DeserializeObject<List<string>>(content);
+            var json = await httpResult.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<IEnumerable<string>>(json);
         }
     }
 }

@@ -17,7 +17,7 @@
 using Newtonsoft.Json;
 using SimpleIdentityServer.Client.DTOs.Requests;
 using SimpleIdentityServer.Client.DTOs.Responses;
-using SimpleIdentityServer.Client.Factory;
+using SimpleIdentityServer.Uma.Client.Factory;
 using System;
 using System.Net.Http;
 using System.Text;
@@ -37,16 +37,10 @@ namespace SimpleIdentityServer.Client.Policy
     {
         private readonly IHttpClientFactory _httpClientFactory;
 
-        #region Constructor
-
         public AddPolicyOperation(IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
         }
-
-        #endregion
-
-        #region Public methods
 
         public async Task<AddPolicyResponse> ExecuteAsync(
             PostPolicy postPolicy,
@@ -83,7 +77,5 @@ namespace SimpleIdentityServer.Client.Policy
             var content = await httpResult.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<AddPolicyResponse>(content);
         }
-
-        #endregion
     }
 }

@@ -24,16 +24,10 @@ namespace SimpleIdentityServer.Uma.Host.Configuration
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        #region Constructor
-
         public HostingProvider(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
         }
-
-        #endregion
-
-        #region Public methods
         
         public string GetAbsoluteUriWithVirtualPath()
         {
@@ -41,7 +35,5 @@ namespace SimpleIdentityServer.Uma.Host.Configuration
             var result = request.GetAbsoluteUriWithVirtualPath();
             return result;
         }
-
-        #endregion
     }
 }

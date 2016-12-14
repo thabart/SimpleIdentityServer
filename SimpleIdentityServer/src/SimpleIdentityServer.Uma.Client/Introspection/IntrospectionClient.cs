@@ -27,15 +27,12 @@ namespace SimpleIdentityServer.Client.Introspection
         Task<IntrospectionResponse> GetIntrospectionAsync(
             string rpt,
             string introspectionUrl);
-
         Task<IntrospectionResponse> GetIntrospectionAsync(
             string rpt,
             Uri introspectionUri);
-
         Task<IntrospectionResponse> GetIntrospectionByResolvingUrlAsync(
             string rpt,
             string configurationUrl);
-
         Task<IntrospectionResponse> GetIntrospectionByResolvingUrlAsync(
             string rpt,
             Uri configurationUri);
@@ -44,10 +41,7 @@ namespace SimpleIdentityServer.Client.Introspection
     internal class IntrospectionClient : IIntrospectionClient
     {
         private readonly IGetIntrospectionAction _getIntrospectionAction;
-
         private readonly IGetConfigurationOperation _getConfigurationOperation;
-
-        #region Constructor
 
         public IntrospectionClient(
             IGetIntrospectionAction getIntrospectionAction,
@@ -56,10 +50,6 @@ namespace SimpleIdentityServer.Client.Introspection
             _getIntrospectionAction = getIntrospectionAction;
             _getConfigurationOperation = getConfigurationOperation;
         }
-
-        #endregion
-
-        #region Public methods
 
         public async Task<IntrospectionResponse> GetIntrospectionAsync(string rpt, string introspectionUrl)
         {
@@ -82,10 +72,6 @@ namespace SimpleIdentityServer.Client.Introspection
             return await GetIntrospectionAsync(rpt, introspectionEndPoint);
         }
 
-        #endregion
-
-        #region private methods
-
         private async Task<string> GetIntrospectionEndpoint(Uri configurationUri)
         {
             if (configurationUri == null)
@@ -96,7 +82,5 @@ namespace SimpleIdentityServer.Client.Introspection
             var configuration = await _getConfigurationOperation.ExecuteAsync(configurationUri);
             return configuration.IntrospectionEndPoint;
         }
-
-        #endregion
     }
 }

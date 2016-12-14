@@ -16,7 +16,7 @@
 
 using Newtonsoft.Json;
 using SimpleIdentityServer.Client.DTOs.Responses;
-using SimpleIdentityServer.Client.Factory;
+using SimpleIdentityServer.Uma.Client.Factory;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -35,16 +35,10 @@ namespace SimpleIdentityServer.Client.Policy
     {
         private readonly IHttpClientFactory _httpClientFactory;
 
-        #region Constructor
-
         public GetPolicyOperation(IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
         }
-
-        #endregion
-
-        #region Public methods
 
         public async Task<PolicyResponse> ExecuteAsync(
             string policyId,
@@ -84,7 +78,5 @@ namespace SimpleIdentityServer.Client.Policy
             var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             return JsonConvert.DeserializeObject<PolicyResponse>(content);
         }
-
-        #endregion
     }
 }

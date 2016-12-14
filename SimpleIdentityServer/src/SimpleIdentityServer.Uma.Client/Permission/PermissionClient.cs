@@ -30,17 +30,14 @@ namespace SimpleIdentityServer.Client.Permission
             PostPermission postPermission,
             string permissionUrl,
             string authorizationValue);
-
         Task<AddPermissionResponse> AddPermissionAsync(
             PostPermission postPermission,
             Uri permissionUri,
             string authorizationValue);
-
         Task<AddPermissionResponse> AddPermissionByResolvingUrlAsync(
             PostPermission postPermission,
             string configurationUrl,
             string authorizationValue);
-
         Task<AddPermissionResponse> AddPermissionByResolvingUrlAsync(
             PostPermission postPermission,
             Uri configurationUri,
@@ -50,10 +47,7 @@ namespace SimpleIdentityServer.Client.Permission
     internal class PermissionClient : IPermissionClient
     {
         private readonly IAddPermissionOperation _addPermissionOperation;
-
         private readonly IGetConfigurationOperation _getConfigurationOperation;
-
-        #region Constructor
 
         public PermissionClient(
             IAddPermissionOperation addPermissionOperation,
@@ -62,10 +56,6 @@ namespace SimpleIdentityServer.Client.Permission
             _addPermissionOperation = addPermissionOperation;
             _getConfigurationOperation = getConfigurationOperation;
         }
-
-        #endregion
-
-        #region Public methods
 
         public async Task<AddPermissionResponse> AddPermissionAsync(
             PostPermission postPermission,
@@ -103,7 +93,5 @@ namespace SimpleIdentityServer.Client.Permission
                 configuration.PermissionRegistrationEndPoint,
                 authorizationValue);
         }
-
-        #endregion
     }
 }

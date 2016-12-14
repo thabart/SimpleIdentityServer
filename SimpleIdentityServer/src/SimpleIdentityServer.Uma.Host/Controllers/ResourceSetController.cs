@@ -54,7 +54,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 };
             }
 
-            var resourceSetIds = _resourceSetActions.GetAllResourceSet();
+            var resourceSetIds = await _resourceSetActions.GetAllResourceSet();
             await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetResourcesStoreName);
             return new OkObjectResult(resourceSetIds);
         }

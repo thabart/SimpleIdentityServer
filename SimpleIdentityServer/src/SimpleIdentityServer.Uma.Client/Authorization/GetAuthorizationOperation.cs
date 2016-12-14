@@ -17,7 +17,7 @@
 using Newtonsoft.Json;
 using SimpleIdentityServer.Client.DTOs.Requests;
 using SimpleIdentityServer.Client.DTOs.Responses;
-using SimpleIdentityServer.Client.Factory;
+using SimpleIdentityServer.Uma.Client.Factory;
 using System;
 using System.Net.Http;
 using System.Text;
@@ -36,17 +36,11 @@ namespace SimpleIdentityServer.Client.Authorization
     internal class GetAuthorizationOperation : IGetAuthorizationOperation
     {
         private readonly IHttpClientFactory _httpClientFactory;
-
-        #region Constructor
-
+        
         public GetAuthorizationOperation(IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
         }
-
-        #endregion
-
-        #region Public methods
 
         public async Task<AuthorizationResponse> ExecuteAsync(
             PostAuthorization postAuthorization,
@@ -83,7 +77,5 @@ namespace SimpleIdentityServer.Client.Authorization
             var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
             return JsonConvert.DeserializeObject<AuthorizationResponse>(content);
         }
-
-        #endregion
     }
 }

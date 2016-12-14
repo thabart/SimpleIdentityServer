@@ -19,7 +19,7 @@ using System.Net;
 #endif
 using System.Net.Http;
 
-namespace SimpleIdentityServer.Client.Factory
+namespace SimpleIdentityServer.Uma.Client.Factory
 {
     public interface IHttpClientFactory
     {

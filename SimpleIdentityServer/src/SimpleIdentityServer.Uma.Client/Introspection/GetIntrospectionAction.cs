@@ -16,7 +16,7 @@
 
 using Newtonsoft.Json;
 using SimpleIdentityServer.Client.DTOs.Responses;
-using SimpleIdentityServer.Client.Factory;
+using SimpleIdentityServer.Uma.Client.Factory;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -34,16 +34,10 @@ namespace SimpleIdentityServer.Client.Introspection
     {
         private readonly IHttpClientFactory _httpClientFactory;
 
-        #region Constructor
-
         public GetIntrospectionAction(IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
         }
-
-        #endregion
-
-        #region Public methods
 
         public async Task<IntrospectionResponse> ExecuteAsync(
             string rpt,
@@ -71,7 +65,5 @@ namespace SimpleIdentityServer.Client.Introspection
             var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             return JsonConvert.DeserializeObject<IntrospectionResponse>(content);
         }
-
-        #endregion
     }
 }

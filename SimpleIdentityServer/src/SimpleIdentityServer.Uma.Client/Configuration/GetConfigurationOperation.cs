@@ -16,7 +16,7 @@
 
 using Newtonsoft.Json;
 using SimpleIdentityServer.Client.DTOs.Responses;
-using SimpleIdentityServer.Client.Factory;
+using SimpleIdentityServer.Uma.Client.Factory;
 using System;
 using System.Threading.Tasks;
 

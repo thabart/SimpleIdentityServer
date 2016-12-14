@@ -29,17 +29,14 @@ namespace SimpleIdentityServer.Client.Authorization
             PostAuthorization postAuthorization,
             string authorizationUrl,
             string authorizationValue);
-
         Task<AuthorizationResponse> GetAuthorizationAsync(
             PostAuthorization postAuthorization,
             Uri authorizationUri,
             string authorizationValue);
-
         Task<AuthorizationResponse> GetAuthorizationByResolvingUrlAsync(
             PostAuthorization postAuthorization,
             string configurationUrl,
             string authorizationValue);
-
         Task<AuthorizationResponse> GetAuthorizationByResolvingUrlAsync(
             PostAuthorization postAuthorization,
             Uri configurationUri,
@@ -49,10 +46,7 @@ namespace SimpleIdentityServer.Client.Authorization
     internal class AuthorizationClient : IAuthorizationClient
     {
         private readonly IGetAuthorizationOperation _getAuthorizationOperation;
-
         private readonly IGetConfigurationOperation _getConfigurationOperation;
-
-        #region Constructor
 
         public AuthorizationClient(
             IGetAuthorizationOperation getAuthorizationOperation,
@@ -61,10 +55,6 @@ namespace SimpleIdentityServer.Client.Authorization
             _getAuthorizationOperation = getAuthorizationOperation;
             _getConfigurationOperation = getConfigurationOperation;
         }
-
-        #endregion
-
-        #region Public methods
 
         public async Task<AuthorizationResponse> GetAuthorizationAsync(PostAuthorization postAuthorization, string authorizationUrl, string authorizationValue)
         {
@@ -90,7 +80,5 @@ namespace SimpleIdentityServer.Client.Authorization
                 configuration.RptEndPoint,
                 authorizationValue);
         }
-
-        #endregion
     }
 }

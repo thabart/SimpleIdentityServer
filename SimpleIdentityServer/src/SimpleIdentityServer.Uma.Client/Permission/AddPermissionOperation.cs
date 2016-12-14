@@ -17,7 +17,7 @@
 using Newtonsoft.Json;
 using SimpleIdentityServer.Client.DTOs.Requests;
 using SimpleIdentityServer.Client.DTOs.Responses;
-using SimpleIdentityServer.Client.Factory;
+using SimpleIdentityServer.Uma.Client.Factory;
 using System;
 using System.Net.Http;
 using System.Text;
@@ -37,16 +37,10 @@ namespace SimpleIdentityServer.Client.Permission
     {
         private readonly IHttpClientFactory _httpClientFactory;
 
-        #region Constructor
-
         public AddPermissionOperation(IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
         }
-
-        #endregion
-
-        #region Public methods
 
         public async Task<AddPermissionResponse> ExecuteAsync(
             PostPermission postPermission,
@@ -83,7 +77,5 @@ namespace SimpleIdentityServer.Client.Permission
             var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
             return JsonConvert.DeserializeObject<AddPermissionResponse>(content);
         }
-
-        #endregion
     }
 }

@@ -96,16 +96,10 @@ namespace SimpleIdentityServer.Client.Policy
     internal class PolicyClient : IPolicyClient
     {
         private readonly IAddPolicyOperation _addPolicyOperation;
-
         private readonly IGetPolicyOperation _getPolicyOperation;
-
         private readonly IDeletePolicyOperation _deletePolicyOperation;
-
         private readonly IGetPoliciesOperation _getPoliciesOperation;
-
         private readonly IGetConfigurationOperation _getConfigurationOperation;
-
-        #region Constructor
 
         public PolicyClient(
             IAddPolicyOperation addPolicyOperation,
@@ -120,10 +114,6 @@ namespace SimpleIdentityServer.Client.Policy
             _getPoliciesOperation = getPoliciesOperation;
             _getConfigurationOperation = getConfigurationOperation;
         }
-
-        #endregion
-
-        #region Public methods
 
         public async Task<AddPolicyResponse> AddPolicyAsync(PostPolicy postPolicy, string policyUrl, string authorizationHeaderValue)
         {
@@ -200,11 +190,7 @@ namespace SimpleIdentityServer.Client.Policy
             var policyEndpoint = await GetPolicyEndPoint(configurationUri);
             return await GetPoliciesAsync(policyEndpoint, authorizationHeaderValue);
         }
-
-        #endregion
-
-        #region private methods
-
+        
         private async Task<string> GetPolicyEndPoint(Uri configurationUri)
         {
             if (configurationUri == null)
@@ -215,7 +201,5 @@ namespace SimpleIdentityServer.Client.Policy
             var configuration = await _getConfigurationOperation.ExecuteAsync(configurationUri);
             return configuration.PolicyEndPoint;
         }
-
-        #endregion
     }
 }

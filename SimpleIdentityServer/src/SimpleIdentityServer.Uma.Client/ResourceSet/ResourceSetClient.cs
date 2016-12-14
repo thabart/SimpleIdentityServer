@@ -17,9 +17,9 @@
 using SimpleIdentityServer.Client.Configuration;
 using SimpleIdentityServer.Client.DTOs.Requests;
 using SimpleIdentityServer.Client.DTOs.Responses;
-using SimpleIdentityServer.Client.Errors;
 using SimpleIdentityServer.Client.Extensions;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Client.ResourceSet
@@ -30,56 +30,48 @@ namespace SimpleIdentityServer.Client.ResourceSet
             PostResourceSet postResourceSet,
             string resourceSetUrl,
             string authorizationHeaderValue);
-
         Task<AddResourceSetResponse> AddResourceSetAsync(
             PostResourceSet postResourceSet,
             Uri resourceSetUri,
             string authorizationHeaderValue);
-
         Task<AddResourceSetResponse> AddResourceSetByResolvingUrlAsync(
             PostResourceSet postResourceSet,
             string configurationUrl,
             string authorizationHeaderValue);
-
         Task<AddResourceSetResponse> AddResourceSetByResolvingUrlAsync(
             PostResourceSet postResourceSet,
             Uri configurationUri,
             string authorizationHeaderValue);
-
         Task<bool> DeleteResourceSetAsync(
             string resourceSetId,
             string resourceSetUrl,
             string authorizationHeaderValue);
-
         Task<bool> DeleteResourceSetByResolvingUrlAsync(
             string resourceSetId,
             string configurationUrl,
             string authorizationHeaderValue);
+        Task<IEnumerable<string>> GetAll(string resourceSetUrl, string authorizationHeaderValue);
+        Task<IEnumerable<string>> GetAllByResolvingUrl(string configurationUrl, string authorizationHeaderValue);
     }
 
     internal class ResourceSetClient : IResourceSetClient
     {
         private readonly IAddResourceSetOperation _addResourceSetOperation;
-
         private readonly IDeleteResourceSetOperation _deleteResourceSetOperation;
-
+        private readonly IGetResourcesOperation _getResourcesOperation;
         private readonly IGetConfigurationOperation _getConfigurationOperation;
-
-        #region Constructor
 
         public ResourceSetClient(
             IAddResourceSetOperation addResourceSetOperation,
             IDeleteResourceSetOperation deleteResourceSetOperation,
+            IGetResourcesOperation getResourcesOperation,
             IGetConfigurationOperation getConfigurationOperation)
         {
             _addResourceSetOperation = addResourceSetOperation;
             _deleteResourceSetOperation = deleteResourceSetOperation;
+            _getResourcesOperation = getResourcesOperation;
             _getConfigurationOperation = getConfigurationOperation;
         }
-
-        #endregion
-
-        #region Public methods
 
         public async Task<AddResourceSetResponse> AddResourceSetAsync(
             PostResourceSet postResourceSet,
@@ -127,6 +119,15 @@ namespace SimpleIdentityServer.Client.ResourceSet
             return await DeleteResourceSetAsync(resourceSetId, configuration.ResourceSetRegistrationEndPoint, authorizationHeaderValue);
         }
 
-        #endregion
+        public Task<IEnumerable<string>> GetAll(string resourceSetUrl, string authorizationHeaderValue)
+        {
+            return _getResourcesOperation.ExecuteAsync(resourceSetUrl, authorizationHeaderValue);
+        }
+
+        public async Task<IEnumerable<string>> GetAllByResolvingUrl(string configurationUrl, string authorizationHeaderValue)
+        {
+            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(configurationUrl));
+            return await GetAll(configuration.ResourceSetRegistrationEndPoint, authorizationHeaderValue);
+        }
     }
 }

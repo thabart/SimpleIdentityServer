@@ -14,7 +14,7 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Client.Factory;
+using SimpleIdentityServer.Uma.Client.Factory;
 using System;
 using System.Net;
 using System.Net.Http;
@@ -34,16 +34,10 @@ namespace SimpleIdentityServer.Client.ResourceSet
     {
         private readonly IHttpClientFactory _httpClientFactory;
 
-        #region Constructor
-
         public DeleteResourceSetOperation(IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
         }
-
-        #endregion
-
-        #region Public methods
 
         public async Task<bool> ExecuteAsync(
             string resourceSetId,
@@ -82,7 +76,5 @@ namespace SimpleIdentityServer.Client.ResourceSet
             httpResult.EnsureSuccessStatusCode();
             return httpResult.StatusCode == HttpStatusCode.NoContent;
         }
-
-        #endregion
     }
 }
