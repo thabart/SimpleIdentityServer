@@ -1,5 +1,5 @@
 ﻿#region copyright
-// Copyright 2015 Habart Thierry
+// Copyright 2016 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,29 +16,34 @@
 
 using Newtonsoft.Json;
 using SimpleIdentityServer.Uma.Client.Factory;
+using SimpleIdentityServer.Uma.Common.DTOs;
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Client.ResourceSet
 {
-    public interface IGetResourcesOperation
+    public interface IGetResourceOperation
     {
-        Task<IEnumerable<string>> ExecuteAsync(string resourceSetUrl, string authorizationHeaderValue);
+        Task<ResourceSetResponse> ExecuteAsync(string resourceSetId, string resourceSetUrl, string authorizationHeaderValue);
     }
 
-    internal class GetResourcesOperation : IGetResourcesOperation
+    internal class GetResourceOperation : IGetResourceOperation
     {
         private readonly IHttpClientFactory _httpClientFactory;
 
-        public GetResourcesOperation(IHttpClientFactory httpClientFactory)
+        public GetResourceOperation(IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<IEnumerable<string>> ExecuteAsync(string resourceSetUrl, string authorizationHeaderValue)
+        public async Task<ResourceSetResponse> ExecuteAsync(string resourceSetId, string resourceSetUrl, string authorizationHeaderValue)
         {
+            if (string.IsNullOrWhiteSpace(resourceSetId))
+            {
+                throw new ArgumentNullException(nameof(resourceSetId));
+            }
+
             if (string.IsNullOrWhiteSpace(resourceSetUrl))
             {
                 throw new ArgumentNullException(nameof(resourceSetUrl));
@@ -48,7 +53,13 @@ namespace SimpleIdentityServer.Client.ResourceSet
             {
                 throw new ArgumentNullException(nameof(authorizationHeaderValue));
             }
-            
+
+            if (resourceSetUrl.EndsWith("/"))
+            {
+                resourceSetUrl = resourceSetUrl.Remove(0, resourceSetUrl.Length - 1);
+            }
+
+            resourceSetUrl = resourceSetUrl + "/" + resourceSetId;
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
@@ -59,7 +70,7 @@ namespace SimpleIdentityServer.Client.ResourceSet
             var httpResult = await httpClient.SendAsync(request).ConfigureAwait(false);
             httpResult.EnsureSuccessStatusCode();
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            return JsonConvert.DeserializeObject<IEnumerable<string>>(json);
+            return JsonConvert.DeserializeObject<ResourceSetResponse>(json);
         }
     }
 }

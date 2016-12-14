@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Uma.Common;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
@@ -22,17 +23,17 @@ namespace SimpleIdentityServer.Uma.Host.DTOs.Requests
     [DataContract]
     public class PutResourceSet
     {
-        [DataMember(Name = Constants.ResourceSetResponseNames.Id)]
+        [DataMember(Name = ResourceSetResponseNames.Id)]
         public string Id { get; set; }
-        [DataMember(Name = Constants.ResourceSetResponseNames.Name)]
+        [DataMember(Name = ResourceSetResponseNames.Name)]
         public string Name { get; set; }
-        [DataMember(Name = Constants.ResourceSetResponseNames.Uri)]
+        [DataMember(Name = ResourceSetResponseNames.Uri)]
         public string Uri { get; set; }
-        [DataMember(Name = Constants.ResourceSetResponseNames.Type)]
+        [DataMember(Name = ResourceSetResponseNames.Type)]
         public string Type { get; set; }
-        [DataMember(Name = Constants.ResourceSetResponseNames.Scopes)]
+        [DataMember(Name = ResourceSetResponseNames.Scopes)]
         public List<string> Scopes { get; set; }
-        [DataMember(Name = Constants.ResourceSetResponseNames.IconUri)]
+        [DataMember(Name = ResourceSetResponseNames.IconUri)]
         public string IconUri { get; set; }
     }
 }

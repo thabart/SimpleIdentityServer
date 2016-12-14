@@ -72,7 +72,7 @@ namespace SimpleIdentityServer.Client.ResourceSet
             };
             request.Headers.Add("Authorization", "Bearer " + authorizationHeaderValue);
             var httpClient = _httpClientFactory.GetHttpClient();
-            var httpResult = await httpClient.DeleteAsync(resourceSetUrl);
+            var httpResult = await httpClient.SendAsync(request).ConfigureAwait(false);
             httpResult.EnsureSuccessStatusCode();
             return httpResult.StatusCode == HttpStatusCode.NoContent;
         }

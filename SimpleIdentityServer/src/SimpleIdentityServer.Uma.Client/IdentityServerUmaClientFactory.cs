@@ -100,6 +100,7 @@ namespace SimpleIdentityServer.Client
             serviceCollection.AddTransient<IGetPoliciesOperation, GetPoliciesOperation>();
             serviceCollection.AddTransient<IGetIntrospectionAction, GetIntrospectionAction>();
             serviceCollection.AddTransient<IGetResourcesOperation, GetResourcesOperation>();
+            serviceCollection.AddTransient<IGetResourceOperation, GetResourceOperation>();
         }
     }
 }

@@ -65,6 +65,8 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "WebApiContrib.Core.Storage.
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Uma.Host.Tests", "tests\SimpleIdentityServer.Uma.Host.Tests\SimpleIdentityServer.Uma.Host.Tests.xproj", "{5BFB5BE7-382B-4D54-86EA-6424E7449A37}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Uma.Common", "src\SimpleIdentityServer.Uma.Common\SimpleIdentityServer.Uma.Common.xproj", "{D9E87DC4-8616-4F4A-A731-5AEFA5B1E878}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -159,6 +161,10 @@ Global
 		{5BFB5BE7-382B-4D54-86EA-6424E7449A37}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5BFB5BE7-382B-4D54-86EA-6424E7449A37}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5BFB5BE7-382B-4D54-86EA-6424E7449A37}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9E87DC4-8616-4F4A-A731-5AEFA5B1E878}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9E87DC4-8616-4F4A-A731-5AEFA5B1E878}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9E87DC4-8616-4F4A-A731-5AEFA5B1E878}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9E87DC4-8616-4F4A-A731-5AEFA5B1E878}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -190,5 +196,6 @@ Global
 		{8571D8F9-0847-46C8-A794-845B331982B7} = {E11EC7CF-2CAC-4A94-A082-0F06D822622E}
 		{A999228E-D51C-46EE-A620-79D385216430} = {E11EC7CF-2CAC-4A94-A082-0F06D822622E}
 		{5BFB5BE7-382B-4D54-86EA-6424E7449A37} = {EFE51CB2-A176-4724-8614-25C3E7DBCFA5}
+		{D9E87DC4-8616-4F4A-A731-5AEFA5B1E878} = {A70EBAB2-FCB5-491F-822F-76AB632B4F0C}
 	EndGlobalSection
 EndGlobal

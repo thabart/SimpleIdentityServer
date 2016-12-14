@@ -14,14 +14,14 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Uma.Core.Parameters;
+using SimpleIdentityServer.Uma.Common.DTOs;
 using SimpleIdentityServer.Uma.Core.Models;
+using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Host.DTOs.Requests;
 using SimpleIdentityServer.Uma.Host.DTOs.Responses;
-
-using DomainResponse = SimpleIdentityServer.Uma.Core.Responses;
 using System.Collections.Generic;
 using System.Linq;
+using DomainResponse = SimpleIdentityServer.Uma.Core.Responses;
 
 namespace SimpleIdentityServer.Uma.Host.Extensions
 {

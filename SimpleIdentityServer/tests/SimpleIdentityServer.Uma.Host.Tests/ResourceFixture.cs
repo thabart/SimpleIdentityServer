@@ -52,12 +52,31 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             Assert.True(resources.Any());
         }
 
+        [Fact]
+        public async Task When_Getting_ResourceInformation_Then_Dto_Is_Returned()
+        {
+            const string baseUrl = "http://localhost:5000";
+            // ARRANGE
+            InitializeFakeObjects();
+            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
+            // ACT
+            var resources = await _resourceSetClient.GetAllByResolvingUrl(
+                baseUrl + "/.well-known/uma-configuration", "header");
+            var resource = await _resourceSetClient.GetByResolvingUrl(resources.First(),
+                baseUrl + "/.well-known/uma-configuration", "header");
+
+            // ASSERT
+            Assert.NotNull(resource);
+        }
+
         private void InitializeFakeObjects()
         {
             _httpClientFactoryStub = new Mock<IHttpClientFactory>();
             _resourceSetClient = new ResourceSetClient(new AddResourceSetOperation(_httpClientFactoryStub.Object),
                 new DeleteResourceSetOperation(_httpClientFactoryStub.Object),
                 new GetResourcesOperation(_httpClientFactoryStub.Object),
+                new GetResourceOperation(_httpClientFactoryStub.Object),
                 new GetConfigurationOperation(_httpClientFactoryStub.Object));
         }
     }
