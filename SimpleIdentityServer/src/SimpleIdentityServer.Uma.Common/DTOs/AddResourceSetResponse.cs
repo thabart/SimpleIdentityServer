@@ -14,21 +14,16 @@
 // limitations under the License.
 #endregion
 
-namespace SimpleIdentityServer.Uma.Common
-{
-    public static class ResourceSetResponseNames
-    {
-        public const string Id = "_id";
-        public const string Name = "name";
-        public const string Uri = "uri";
-        public const string Type = "type";
-        public const string Scopes = "scopes";
-        public const string IconUri = "icon_uri";
-    }
+using System.Runtime.Serialization;
 
-    public static class AddResourceSetResponseNames
+namespace SimpleIdentityServer.Uma.Common.DTOs
+{
+    [DataContract]
+    public class AddResourceSetResponse
     {
-        public const string Id = "_id";
-        public const string UserAccessPolicyUri = "user_access_policy_uri";
+        [DataMember(Name = ResourceSetResponseNames.Id)]
+        public string Id { get; set; }
+        [DataMember(Name = AddResourceSetResponseNames.UserAccessPolicyUri)]
+        public string UserAccessPolicyUri { get; set; }
     }
 }

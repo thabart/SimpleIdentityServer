@@ -18,7 +18,9 @@ using Moq;
 using SimpleIdentityServer.Client.Configuration;
 using SimpleIdentityServer.Client.ResourceSet;
 using SimpleIdentityServer.Uma.Client.Factory;
+using SimpleIdentityServer.Uma.Common.DTOs;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -91,6 +93,29 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             // ASSERT
             Assert.True(resource);
             Assert.NotNull(information);
+        }
+
+        [Fact]
+        public async Task When_Adding_Resource_Then_Information_Can_Be_Retrieved()
+        {
+            const string baseUrl = "http://localhost:5000";
+            // ARRANGE
+            InitializeFakeObjects();
+            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
+            // ACT
+            var resource = await _resourceSetClient.AddByResolution(new PostResourceSet
+            {
+                Name = "name",
+                Scopes = new List<string>
+                {
+                    "scope"
+                }
+            },
+            baseUrl + "/.well-known/uma-configuration", "header");
+
+            // ASSERT
+            Assert.NotNull(resource);
         }
 
         private void InitializeFakeObjects()

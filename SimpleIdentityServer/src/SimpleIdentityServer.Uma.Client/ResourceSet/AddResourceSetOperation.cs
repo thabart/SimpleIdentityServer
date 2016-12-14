@@ -15,9 +15,8 @@
 #endregion
 
 using Newtonsoft.Json;
-using SimpleIdentityServer.Client.DTOs.Requests;
-using SimpleIdentityServer.Client.DTOs.Responses;
 using SimpleIdentityServer.Uma.Client.Factory;
+using SimpleIdentityServer.Uma.Common.DTOs;
 using System;
 using System.Net.Http;
 using System.Text;
@@ -27,10 +26,7 @@ namespace SimpleIdentityServer.Client.ResourceSet
 {
     public interface IAddResourceSetOperation
     {
-        Task<AddResourceSetResponse> ExecuteAsync(
-            PostResourceSet postResourceSet,
-            Uri resourceSetUri,
-            string authorizationHeaderValue);
+        Task<AddResourceSetResponse> ExecuteAsync(PostResourceSet request, string url, string token);
     }
 
     public class AddResourceSetOperation : IAddResourceSetOperation
@@ -42,37 +38,34 @@ namespace SimpleIdentityServer.Client.ResourceSet
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<AddResourceSetResponse> ExecuteAsync(
-            PostResourceSet postResourceSet,
-            Uri resourceSetUri,
-            string authorizationHeaderValue)
+        public async Task<AddResourceSetResponse> ExecuteAsync(PostResourceSet request, string url, string token)
         {
-            if (postResourceSet == null)
+            if (request == null)
             {
-                throw new ArgumentNullException(nameof(postResourceSet));
+                throw new ArgumentNullException(nameof(request));
             }
 
-            if (resourceSetUri == null)
+            if (string.IsNullOrWhiteSpace(url))
             {
-                throw new ArgumentNullException(nameof(resourceSetUri));
+                throw new ArgumentNullException(nameof(url));
             }
 
-            if (string.IsNullOrWhiteSpace(authorizationHeaderValue))
+            if (string.IsNullOrWhiteSpace(token))
             {
-                throw new ArgumentNullException(nameof(authorizationHeaderValue));
+                throw new ArgumentNullException(nameof(token));
             }
 
             var httpClient = _httpClientFactory.GetHttpClient();
-            var serializedPostResourceSet = JsonConvert.SerializeObject(postResourceSet);
+            var serializedPostResourceSet = JsonConvert.SerializeObject(request);
             var body = new StringContent(serializedPostResourceSet, Encoding.UTF8, "application/json");
-            var request = new HttpRequestMessage
+            var httpRequest = new HttpRequestMessage
             {
                 Content = body,
                 Method = HttpMethod.Post,
-                RequestUri = resourceSetUri
+                RequestUri = new Uri(url)
             };
-            request.Headers.Add("Authorization", "Bearer " + authorizationHeaderValue);
-            var httpResult = await httpClient.SendAsync(request);
+            httpRequest.Headers.Add("Authorization", "Bearer " + token);
+            var httpResult = await httpClient.SendAsync(httpRequest);
             httpResult.EnsureSuccessStatusCode();
             var content = await httpResult.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<AddResourceSetResponse>(content);

@@ -15,6 +15,7 @@
 #endregion
 
 using Microsoft.AspNetCore.Mvc;
+using SimpleIdentityServer.Uma.Common.DTOs;
 using SimpleIdentityServer.Uma.Core.Api.ScopeController;
 using SimpleIdentityServer.Uma.Host.DTOs.Requests;
 using SimpleIdentityServer.Uma.Host.DTOs.Responses;

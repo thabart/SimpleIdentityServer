@@ -15,11 +15,8 @@
 #endregion
 
 using SimpleIdentityServer.Client.Configuration;
-using SimpleIdentityServer.Client.DTOs.Requests;
-using SimpleIdentityServer.Client.DTOs.Responses;
 using SimpleIdentityServer.Client.Extensions;
 using SimpleIdentityServer.Uma.Common.DTOs;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -27,22 +24,8 @@ namespace SimpleIdentityServer.Client.ResourceSet
 {
     public interface IResourceSetClient
     {
-        Task<AddResourceSetResponse> AddResourceSetAsync(
-            PostResourceSet postResourceSet,
-            string resourceSetUrl,
-            string authorizationHeaderValue);
-        Task<AddResourceSetResponse> AddResourceSetAsync(
-            PostResourceSet postResourceSet,
-            Uri resourceSetUri,
-            string authorizationHeaderValue);
-        Task<AddResourceSetResponse> AddResourceSetByResolvingUrlAsync(
-            PostResourceSet postResourceSet,
-            string configurationUrl,
-            string authorizationHeaderValue);
-        Task<AddResourceSetResponse> AddResourceSetByResolvingUrlAsync(
-            PostResourceSet postResourceSet,
-            Uri configurationUri,
-            string authorizationHeaderValue);
+        Task<AddResourceSetResponse> Add(PostResourceSet request, string url, string token);
+        Task<AddResourceSetResponse> AddByResolution(PostResourceSet request, string url, string token);
         Task<bool> Delete(string id, string url, string token);
         Task<bool> DeleteByResolution(string id, string url, string token);
         Task<IEnumerable<string>> GetAll(string url, string token);
@@ -73,39 +56,15 @@ namespace SimpleIdentityServer.Client.ResourceSet
             _getConfigurationOperation = getConfigurationOperation;
         }
 
-        public async Task<AddResourceSetResponse> AddResourceSetAsync(
-            PostResourceSet postResourceSet,
-            string resourceSetUrl,
-            string authorizationHeaderValue)
+        public Task<AddResourceSetResponse> Add(PostResourceSet request, string url, string token)
         {
-            return await AddResourceSetAsync(postResourceSet, UriHelpers.GetUri(resourceSetUrl), authorizationHeaderValue);
+            return _addResourceSetOperation.ExecuteAsync(request, url, token);
         }
 
-        public async Task<AddResourceSetResponse> AddResourceSetAsync(
-            PostResourceSet postResourceSet,
-            Uri resourceSetUri,
-            string authorizationHeaderValue)
+        public async Task<AddResourceSetResponse> AddByResolution(PostResourceSet request, string url, string token)
         {
-            return await _addResourceSetOperation.ExecuteAsync(postResourceSet,
-                resourceSetUri,
-                authorizationHeaderValue);
-        }
-
-        public async Task<AddResourceSetResponse> AddResourceSetByResolvingUrlAsync(
-            PostResourceSet postResourceSet,
-            string configurationUrl,
-            string authorizationHeaderValue)
-        {
-            return await AddResourceSetByResolvingUrlAsync(postResourceSet, UriHelpers.GetUri(configurationUrl), authorizationHeaderValue);
-        }
-
-        public async Task<AddResourceSetResponse> AddResourceSetByResolvingUrlAsync(
-            PostResourceSet postResourceSet,
-            Uri configurationUri,
-            string authorizationHeaderValue)
-        {
-            var configuration = await _getConfigurationOperation.ExecuteAsync(configurationUri);
-            return await AddResourceSetAsync(postResourceSet, configuration.ResourceSetRegistrationEndPoint, authorizationHeaderValue);
+            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url));
+            return await Add(request, configuration.ResourceSetRegistrationEndPoint, token);
         }
 
         public async Task<bool> Delete(string id, string url, string token)
