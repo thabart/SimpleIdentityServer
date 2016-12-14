@@ -118,65 +118,51 @@ namespace SimpleIdentityServer.Uma.Host
             });
         }
 
-        #region Private methods
-
         public void RegisterServices(IServiceCollection services)
         {
-            var cachingDatabase = Configuration["Caching:Database"];
-            var cachingConnectionPath = Configuration["Caching:ConnectionPath"];
-            var wellKnownConfiguration = Configuration["OpenId:WellKnownConfiguration"];
-            var authorizationEndPoint = Configuration["OpenId:AuthorizationEndPoint"];
-            var registerEndPoint = Configuration["OpenId:RegisterEndPoint"];
-            var tokenEndPoint = Configuration["OpenId:TokenEndPoint"];
-            var isSqlServer = bool.Parse(Configuration["isSqlServer"]);
-            var isPostgre = bool.Parse(Configuration["isPostgre"]);
-            var isInMemory = bool.Parse(Configuration["isInMemory"]);
+            var cachingType = Configuration["Caching:Type"];
+            var dbType = Configuration["Db:Type"];
             var isLogFileEnabled = bool.Parse(Configuration["Log:File:Enabled"]);
             var isElasticSearchEnabled = bool.Parse(Configuration["Log:Elasticsearch:Enabled"]);
-            var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
-            if (string.IsNullOrWhiteSpace(cachingDatabase))
-            {
-                cachingDatabase = "INMEMORY";
-            }
-
-            var parametersProvider = new ParametersProvider(wellKnownConfiguration);
+            var parametersProvider = new ParametersProvider(Configuration["OpenId:WellKnownConfiguration"]);
             services.AddSimpleIdServerUmaCore(opt =>
             {
-                opt.AuthorizeOperation = authorizationEndPoint;
-                opt.RegisterOperation = registerEndPoint;
-                opt.TokenOperation = tokenEndPoint;
+                opt.AuthorizeOperation = Configuration["OpenId:AuthorizationEndPoint"];
+                opt.RegisterOperation = Configuration["OpenId:RegisterEndPoint"];
+                opt.TokenOperation = Configuration["OpenId:TokenEndPoint"];
                 opt.RptLifeTime = 3000;
                 opt.TicketLifeTime = 3000;
             });
 
-            if (cachingDatabase == "REDIS")
+            // 1. Enable caching.
+            if (string.Equals(cachingType, "REDIS", StringComparison.CurrentCultureIgnoreCase))
             {
                 services.AddConcurrency(opt => opt.UseRedis(o =>
                 {
-                    o.Configuration = Configuration[cachingConnectionPath + ":ConnectionString"];
-                    o.InstanceName = Configuration[cachingConnectionPath + ":InstanceName"];
+                    o.Configuration = Configuration["Caching:ConnectionString"];
+                    o.InstanceName = Configuration["Caching:InstanceName"];
                 }));
             }
-            else if (cachingDatabase == "INMEMORY")
+            else
             {
                 services.AddConcurrency(opt => opt.UseInMemory());
             }
 
-            if (isSqlServer)
+            // 2. Enable database.
+            if (string.Equals(dbType, "SQLSERVER", StringComparison.CurrentCultureIgnoreCase))
             {
-                services.AddSimpleIdServerUmaSqlServer(connectionString);
+                services.AddSimpleIdServerUmaSqlServer(Configuration["Db:ConnectionString"]);
             }
-
-            if (isPostgre)
+            else if (string.Equals(dbType, "POSTGRES", StringComparison.CurrentCultureIgnoreCase))
             {
-                services.AddSimpleIdServerUmaPostgresql(connectionString);
+                services.AddSimpleIdServerUmaPostgresql(Configuration["Db:ConnectionString"]);
             }
-
-            if (isInMemory)
+            else
             {
                 services.AddSimpleIdServerUmaInMemory();
             }
 
+            // 3. Enable logging.
             var logger = new LoggerConfiguration()
                 .MinimumLevel.Information()
                 .Enrich.FromLogContext()
@@ -215,7 +201,5 @@ namespace SimpleIdentityServer.Uma.Host
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IUmaServerEventSource, UmaServerEventSource>();
         }
-
-        #endregion
     }
 }
