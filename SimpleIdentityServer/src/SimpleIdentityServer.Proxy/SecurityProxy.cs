@@ -15,9 +15,6 @@
 #endregion
 
 using SimpleIdentityServer.Client;
-using SimpleIdentityServer.Client.DTOs.Requests;
-using SimpleIdentityServer.Client.DTOs.Response;
-using SimpleIdentityServer.Client.DTOs.Responses;
 using SimpleIdentityServer.Uma.Common.DTOs;
 using SimpleIdentityServer.UmaManager.Client;
 using SimpleIdentityServer.UmaManager.Client.DTOs.Requests;
@@ -245,7 +242,7 @@ namespace SimpleIdentityServer.Proxy
             };
 
             return await _identityServerUmaClientFactory.GetAuthorizationClient()
-                .GetAuthorizationByResolvingUrlAsync(postAuthorization, _securityOptions.UmaConfigurationUrl, accessToken);
+                .GetByResolution(postAuthorization, _securityOptions.UmaConfigurationUrl, accessToken);
         }
 
         private async Task<AuthorizationResponse> GetAuthorization(
@@ -267,7 +264,7 @@ namespace SimpleIdentityServer.Proxy
             };
 
             return await _identityServerUmaClientFactory.GetAuthorizationClient()
-                .GetAuthorizationByResolvingUrlAsync(postAuthorization, _securityOptions.UmaConfigurationUrl, accessToken);
+                .GetByResolution(postAuthorization, _securityOptions.UmaConfigurationUrl, accessToken);
         }
 
         #endregion

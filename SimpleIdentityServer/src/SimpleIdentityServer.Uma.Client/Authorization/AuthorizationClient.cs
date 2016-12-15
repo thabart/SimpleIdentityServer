@@ -15,32 +15,16 @@
 #endregion
 
 using SimpleIdentityServer.Client.Configuration;
-using SimpleIdentityServer.Client.DTOs.Requests;
-using SimpleIdentityServer.Client.DTOs.Responses;
 using SimpleIdentityServer.Client.Extensions;
-using System;
+using SimpleIdentityServer.Uma.Common.DTOs;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Client.Authorization
 {
     public interface IAuthorizationClient
     {
-        Task<AuthorizationResponse> GetAuthorizationAsync(
-            PostAuthorization postAuthorization,
-            string authorizationUrl,
-            string authorizationValue);
-        Task<AuthorizationResponse> GetAuthorizationAsync(
-            PostAuthorization postAuthorization,
-            Uri authorizationUri,
-            string authorizationValue);
-        Task<AuthorizationResponse> GetAuthorizationByResolvingUrlAsync(
-            PostAuthorization postAuthorization,
-            string configurationUrl,
-            string authorizationValue);
-        Task<AuthorizationResponse> GetAuthorizationByResolvingUrlAsync(
-            PostAuthorization postAuthorization,
-            Uri configurationUri,
-            string authorizationValue);
+        Task<AuthorizationResponse> Get(PostAuthorization request, string url, string token);
+        Task<AuthorizationResponse> GetByResolution(PostAuthorization request, string url, string token);
     }
 
     internal class AuthorizationClient : IAuthorizationClient
@@ -56,29 +40,15 @@ namespace SimpleIdentityServer.Client.Authorization
             _getConfigurationOperation = getConfigurationOperation;
         }
 
-        public async Task<AuthorizationResponse> GetAuthorizationAsync(PostAuthorization postAuthorization, string authorizationUrl, string authorizationValue)
+        public Task<AuthorizationResponse> Get(PostAuthorization request, string url, string token)
         {
-            return await GetAuthorizationAsync(postAuthorization, UriHelpers.GetUri(authorizationUrl), authorizationValue);
+            return _getAuthorizationOperation.ExecuteAsync(request, url, token);
         }
 
-        public async Task<AuthorizationResponse> GetAuthorizationAsync(PostAuthorization postAuthorization, Uri authorizationUri, string authorizationValue)
+        public async Task<AuthorizationResponse> GetByResolution(PostAuthorization request, string url, string token)
         {
-            return await _getAuthorizationOperation.ExecuteAsync(postAuthorization, authorizationUri, authorizationValue);
-        }
-
-        public async Task<AuthorizationResponse> GetAuthorizationByResolvingUrlAsync(PostAuthorization postAuthorization, string configurationUrl, string authorizationValue)
-        {
-            return await GetAuthorizationByResolvingUrlAsync(postAuthorization,
-                UriHelpers.GetUri(configurationUrl),
-                authorizationValue);
-        }
-
-        public async Task<AuthorizationResponse> GetAuthorizationByResolvingUrlAsync(PostAuthorization postAuthorization, Uri configurationUri, string authorizationValue)
-        {
-            var configuration = await _getConfigurationOperation.ExecuteAsync(configurationUri);
-            return await GetAuthorizationAsync(postAuthorization,
-                configuration.RptEndPoint,
-                authorizationValue);
+            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url));
+            return await Get(request, configuration.RptEndPoint, token);
         }
     }
 }

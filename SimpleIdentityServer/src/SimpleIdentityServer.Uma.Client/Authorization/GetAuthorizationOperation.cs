@@ -15,9 +15,8 @@
 #endregion
 
 using Newtonsoft.Json;
-using SimpleIdentityServer.Client.DTOs.Requests;
-using SimpleIdentityServer.Client.DTOs.Responses;
 using SimpleIdentityServer.Uma.Client.Factory;
+using SimpleIdentityServer.Uma.Common.DTOs;
 using System;
 using System.Net.Http;
 using System.Text;
@@ -27,10 +26,7 @@ namespace SimpleIdentityServer.Client.Authorization
 {
     public interface IGetAuthorizationOperation
     {
-        Task<AuthorizationResponse> ExecuteAsync(
-               PostAuthorization postAuthorization,
-               Uri requestUri,
-               string authorizationValue);
+        Task<AuthorizationResponse> ExecuteAsync(PostAuthorization request, string url, string token);
     }
 
     internal class GetAuthorizationOperation : IGetAuthorizationOperation
@@ -42,37 +38,34 @@ namespace SimpleIdentityServer.Client.Authorization
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<AuthorizationResponse> ExecuteAsync(
-            PostAuthorization postAuthorization,
-            Uri requestUri,
-            string authorizationValue)
+        public async Task<AuthorizationResponse> ExecuteAsync(PostAuthorization request, string url, string token)
         {
-            if (postAuthorization == null)
+            if (request == null)
             {
-                throw new ArgumentNullException(nameof(postAuthorization));
+                throw new ArgumentNullException(nameof(request));
             }
 
-            if (requestUri == null)
+            if (string.IsNullOrWhiteSpace(url))
             {
-                throw new ArgumentNullException(nameof(requestUri));
+                throw new ArgumentNullException(nameof(url));
             }
 
-            if (string.IsNullOrWhiteSpace(authorizationValue))
+            if (string.IsNullOrWhiteSpace(token))
             {
-                throw new ArgumentNullException(nameof(authorizationValue));
+                throw new ArgumentNullException(nameof(token));
             }
 
             var httpClient = _httpClientFactory.GetHttpClient();
-            var serializedPostAuthorization = JsonConvert.SerializeObject(postAuthorization);
+            var serializedPostAuthorization = JsonConvert.SerializeObject(request);
             var body = new StringContent(serializedPostAuthorization, Encoding.UTF8, "application/json");
-            var request = new HttpRequestMessage
+            var httpRequest = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
                 Content = body,
-                RequestUri = requestUri
+                RequestUri = new Uri(url)
             };
-            request.Headers.Add("Authorization", "Bearer " + authorizationValue);
-            var result = await httpClient.SendAsync(request).ConfigureAwait(false);
+            httpRequest.Headers.Add("Authorization", "Bearer " + token);
+            var result = await httpClient.SendAsync(httpRequest).ConfigureAwait(false);
             result.EnsureSuccessStatusCode();
             var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
             return JsonConvert.DeserializeObject<AuthorizationResponse>(content);

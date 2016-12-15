@@ -69,27 +69,6 @@ namespace SimpleIdentityServer.Uma.Host
             public const string PolicyEndPoint = "policy_endpoint";
         }
 
-        public static class AuthorizationResponseNames
-        {
-            public const string Rpt = "rpt";
-        }
-
-        public static class PostAuthorizationNames
-        {
-            public const string Rpt = "rpt";
-
-            public const string TicketId = "ticket";
-
-            public const string ClaimTokens = "claim_tokens";
-        }
-
-        public static class PostClaimTokenNames
-        {
-            public const string Format = "format";
-
-            public const string Token = "token";
-        }
-
         public static class ClaimNames
         {
             public const string Type = "type";

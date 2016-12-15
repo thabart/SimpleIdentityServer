@@ -60,7 +60,7 @@ namespace SimpleIdentityServer.Uma.Core
         {
             public const string Csharp = "csharp";
         }
-        
+
         public static Dictionary<Languages, string> MappingLanguageToCodes = new Dictionary<Languages, string>
         {
             {
