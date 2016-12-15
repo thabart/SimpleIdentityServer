@@ -25,9 +25,7 @@ namespace SimpleIdentityServer.Client.Policy
 {
     public interface IGetPoliciesOperation
     {
-        Task<List<string>> ExecuteAsync(
-            Uri policyUri,
-            string authorizationHeaderValue);
+        Task<IEnumerable<string>> ExecuteAsync(string url, string token);
     }
 
     internal class GetPoliciesOperation : IGetPoliciesOperation
@@ -39,31 +37,29 @@ namespace SimpleIdentityServer.Client.Policy
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<List<string>> ExecuteAsync(
-            Uri policyUri,
-            string authorizationHeaderValue)
+        public async Task<IEnumerable<string>> ExecuteAsync(string url, string token)
         {
-            if (policyUri == null)
+            if (string.IsNullOrWhiteSpace(url))
             {
-                throw new ArgumentNullException(nameof(policyUri));
+                throw new ArgumentNullException(nameof(url));
             }
 
-            if (string.IsNullOrWhiteSpace(authorizationHeaderValue))
+            if (string.IsNullOrWhiteSpace(token))
             {
-                throw new ArgumentNullException(nameof(authorizationHeaderValue));
+                throw new ArgumentNullException(nameof(token));
             }
 
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
-                RequestUri = policyUri
+                RequestUri = new Uri(url)
             };
-            request.Headers.Add("Authorization", "Bearer " + authorizationHeaderValue);
+            request.Headers.Add("Authorization", "Bearer " + token);
             var httpClient = _httpClientFactory.GetHttpClient();
             var httpResult = await httpClient.SendAsync(request);
             httpResult.EnsureSuccessStatusCode();
             var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            return JsonConvert.DeserializeObject<List<string>>(content);
+            return JsonConvert.DeserializeObject<IEnumerable<string>>(content);
         }
     }
 }

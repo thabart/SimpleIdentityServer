@@ -21,9 +21,9 @@ using SimpleIdentityServer.Client.ResourceSet;
 using SimpleIdentityServer.Uma.Client.Factory;
 using SimpleIdentityServer.Uma.Common.DTOs;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
-using System.Linq;
 
 namespace SimpleIdentityServer.Uma.Host.Tests
 {
@@ -94,6 +94,56 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             Assert.False(rule.IsResourceOwnerConsentNeeded);
             Assert.True(rule.Claims.Count() == 1);
             Assert.True(rule.Scopes.Count() == 1);
+        }
+
+        [Fact]
+        public async Task When_Getting_Policies_Then_Information_Are_Returned()
+        {
+            const string baseUrl = "http://localhost:5000";
+            // ARRANGE
+            InitializeFakeObjects();
+            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+            var addResource = await _resourceSetClient.AddByResolution(new PostResourceSet
+            {
+                Name = "picture",
+                Scopes = new List<string>
+                {
+                    "read"
+                }
+            }, baseUrl + "/.well-known/uma-configuration", "header");
+            var addPolicy = await _policyClient.AddByResolution(new PostPolicy
+            {
+                Rules = new List<PostPolicyRule>
+                {
+                    new PostPolicyRule
+                    {
+                        IsResourceOwnerConsentNeeded = false,
+                        Claims = new List<PostClaim>
+                        {
+                            new PostClaim
+                            {
+                                Type = "role",
+                                Value = "administrator"
+                            }
+                        },
+                        Scopes = new List<string>
+                        {
+                            "read"
+                        }
+                    }
+                },
+                ResourceSetIds = new List<string>
+                {
+                    addResource.Id
+                }
+            }, baseUrl + "/.well-known/uma-configuration", "header");
+
+            // ACT
+            var response = await _policyClient.GetAllByResolution(baseUrl + "/.well-known/uma-configuration", "header");
+            
+            // ASSERT
+            Assert.NotNull(response);
+            Assert.True(response.Any(r => r == addPolicy.PolicyId));
         }
         
         private void InitializeFakeObjects()
