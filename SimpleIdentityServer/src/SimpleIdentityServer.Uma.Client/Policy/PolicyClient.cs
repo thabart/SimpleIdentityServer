@@ -33,6 +33,12 @@ namespace SimpleIdentityServer.Client.Policy
         Task<IEnumerable<string>> GetAllByResolution(string url, string token);
         Task<bool> Delete(string id, string url, string token);
         Task<bool> DeleteByResolution(string id, string url, string token);
+        Task<bool> Update(PutPolicy request, string url, string token);
+        Task<bool> UpdateByResolution(PutPolicy request, string url, string token);
+        Task<bool> AddResource(string id, PostAddResourceSet request, string url, string token);
+        Task<bool> AddResourceByResolution(string id, PostAddResourceSet request, string url, string token);
+        Task<bool> DeleteResource(string id, string resourceId, string url, string token);
+        Task<bool> DeleteResourceByResolution(string id, string resourceId, string url, string token);
     }
 
     internal class PolicyClient : IPolicyClient
@@ -41,6 +47,9 @@ namespace SimpleIdentityServer.Client.Policy
         private readonly IGetPolicyOperation _getPolicyOperation;
         private readonly IDeletePolicyOperation _deletePolicyOperation;
         private readonly IGetPoliciesOperation _getPoliciesOperation;
+        private readonly IAddResourceToPolicyOperation _addResourceToPolicyOperation;
+        private readonly IDeleteResourceFromPolicyOperation _deleteResourceFromPolicyOperation;
+        private readonly IUpdatePolicyOperation _updatePolicyOperation;
         private readonly IGetConfigurationOperation _getConfigurationOperation;
 
         public PolicyClient(
@@ -48,12 +57,18 @@ namespace SimpleIdentityServer.Client.Policy
             IGetPolicyOperation getPolicyOperation,
             IDeletePolicyOperation deletePolicyOperation,
             IGetPoliciesOperation getPoliciesOperation,
+            IAddResourceToPolicyOperation addResourceToPolicyOperation,
+            IDeleteResourceFromPolicyOperation deleteResourceFromPolicyOperation,
+            IUpdatePolicyOperation updatePolicyOperation,
             IGetConfigurationOperation getConfigurationOperation)
         {
             _addPolicyOperation = addPolicyOperation;
             _getPolicyOperation = getPolicyOperation;
             _deletePolicyOperation = deletePolicyOperation;
             _getPoliciesOperation = getPoliciesOperation;
+            _addResourceToPolicyOperation = addResourceToPolicyOperation;
+            _deleteResourceFromPolicyOperation = deleteResourceFromPolicyOperation;
+            _updatePolicyOperation = updatePolicyOperation;
             _getConfigurationOperation = getConfigurationOperation;
         }
 
@@ -99,6 +114,39 @@ namespace SimpleIdentityServer.Client.Policy
         {
             var policyEndpoint = await GetPolicyEndPoint(UriHelpers.GetUri(url));
             return await Delete(id, policyEndpoint, token);
+        }
+
+        public Task<bool> Update(PutPolicy request, string url, string token)
+        {
+            return _updatePolicyOperation.ExecuteAsync(request, url, token);
+        }
+
+        public async Task<bool> UpdateByResolution(PutPolicy request, string url, string token)
+        {
+            var policyEndpoint = await GetPolicyEndPoint(UriHelpers.GetUri(url));
+            return await Update(request, policyEndpoint, token);
+        }
+
+        public Task<bool> AddResource(string id, PostAddResourceSet request, string url, string token)
+        {
+            return _addResourceToPolicyOperation.ExecuteAsync(id, request, url, token);
+        }
+
+        public async Task<bool> AddResourceByResolution(string id, PostAddResourceSet request, string url, string token)
+        {
+            var policyEndpoint = await GetPolicyEndPoint(UriHelpers.GetUri(url));
+            return await AddResource(id, request, policyEndpoint, token);
+        }
+
+        public Task<bool> DeleteResource(string id, string resourceId, string url, string token)
+        {
+            return _deleteResourceFromPolicyOperation.ExecuteAsync(id, resourceId, url, token);
+        }
+
+        public async Task<bool> DeleteResourceByResolution(string id, string resourceId, string url, string token)
+        {
+            var policyEndpoint = await GetPolicyEndPoint(UriHelpers.GetUri(url));
+            return await DeleteResource(id, resourceId, policyEndpoint, token);
         }
         
         private async Task<string> GetPolicyEndPoint(Uri configurationUri)

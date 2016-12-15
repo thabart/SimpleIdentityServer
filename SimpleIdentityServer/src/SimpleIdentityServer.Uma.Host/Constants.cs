@@ -69,11 +69,6 @@ namespace SimpleIdentityServer.Uma.Host
             public const string PolicyEndPoint = "policy_endpoint";
         }
 
-        public static class PostAddResourceSetNames
-        {
-            public const string ResourceSets = "resources";
-        }
-
         public static class AuthorizationResponseNames
         {
             public const string Rpt = "rpt";
@@ -100,35 +95,6 @@ namespace SimpleIdentityServer.Uma.Host
             public const string Type = "type";
 
             public const string Value = "value";
-        }
-
-        public static class PolicyNames
-        {
-            public const string Id = "id";
-
-            public const string ResourceSetIds = "resource_set_ids";
-
-            public const string Rules = "rules";
-        }
-
-        public static class PolicyRuleNames
-        {
-            public const string Id = "id";
-
-            public const string ClientIdsAllowed = "clients";
-
-            public const string IsResourceOwnerConsentNeeded = "consent_needed";
-
-            public const string Scopes = "scopes";
-
-            public const string Script = "script";
-
-            public const string Claims = "claims";
-        }
-
-        public static class AddPolicyResponseNames
-        {
-            public const string PolicyId = "policy";
         }
 
         public static class ErrorResponseNames

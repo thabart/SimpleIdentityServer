@@ -102,6 +102,9 @@ namespace SimpleIdentityServer.Client
             serviceCollection.AddTransient<IGetResourcesOperation, GetResourcesOperation>();
             serviceCollection.AddTransient<IGetResourceOperation, GetResourceOperation>();
             serviceCollection.AddTransient<IUpdateResourceOperation, UpdateResourceOperation>();
+            serviceCollection.AddTransient<IAddResourceToPolicyOperation, AddResourceToPolicyOperation>();
+            serviceCollection.AddTransient<IDeleteResourceFromPolicyOperation, DeleteResourceFromPolicyOperation>();
+            serviceCollection.AddTransient<IUpdatePolicyOperation, UpdatePolicyOperation>();
         }
     }
 }

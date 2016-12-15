@@ -17,12 +17,12 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.Uma.Host.DTOs.Requests
+namespace SimpleIdentityServer.Uma.Common.DTOs
 {
     [DataContract]
     public class PostAddResourceSet
     {
-        [DataMember(Name = Constants.PostAddResourceSetNames.ResourceSets)]
+        [DataMember(Name = PostAddResourceSetNames.ResourceSets)]
         public List<string> ResourceSets { get; set; }
     }
 }

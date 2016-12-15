@@ -64,4 +64,9 @@ namespace SimpleIdentityServer.Uma.Common
     {
         public const string PolicyId = "policy";
     }
+
+    public static class PostAddResourceSetNames
+    {
+        public const string ResourceSets = "resources";
+    }
 }

@@ -14,35 +14,34 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Uma.Common.DTOs;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.Uma.Host.DTOs.Requests
+namespace SimpleIdentityServer.Uma.Common.DTOs
 {
     [DataContract]
     public class PutPolicyRule
     {
-        [DataMember(Name = Constants.PolicyRuleNames.Id)]
+        [DataMember(Name = PolicyRuleNames.Id)]
         public string Id { get; set; }
-        [DataMember(Name = Constants.PolicyRuleNames.ClientIdsAllowed)]
+        [DataMember(Name = PolicyRuleNames.ClientIdsAllowed)]
         public List<string> ClientIdsAllowed { get; set; }
-        [DataMember(Name = Constants.PolicyRuleNames.Scopes)]
+        [DataMember(Name = PolicyRuleNames.Scopes)]
         public List<string> Scopes { get; set; }
-        [DataMember(Name = Constants.PolicyRuleNames.Claims)]
+        [DataMember(Name = PolicyRuleNames.Claims)]
         public List<PostClaim> Claims { get; set; }
-        [DataMember(Name = Constants.PolicyRuleNames.IsResourceOwnerConsentNeeded)]
+        [DataMember(Name = PolicyRuleNames.IsResourceOwnerConsentNeeded)]
         public bool IsResourceOwnerConsentNeeded { get; set; }
-        [DataMember(Name = Constants.PolicyRuleNames.Script)]
+        [DataMember(Name = PolicyRuleNames.Script)]
         public string Script { get; set; }
     }
 
     [DataContract]
     public class PutPolicy
     {
-        [DataMember(Name = Constants.PolicyNames.Id)]
+        [DataMember(Name = PolicyNames.Id)]
         public string PolicyId { get; set; }
-        [DataMember(Name = Constants.PolicyNames.Rules)]
+        [DataMember(Name = PolicyNames.Rules)]
         public List<PutPolicyRule> Rules { get; set; }
     }
 }
