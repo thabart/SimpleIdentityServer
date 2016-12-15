@@ -1,5 +1,5 @@
 ﻿#region copyright
-// Copyright 2015 Habart Thierry
+// Copyright 2016 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,33 +15,16 @@
 #endregion
 
 using SimpleIdentityServer.Client.Configuration;
-using SimpleIdentityServer.Client.DTOs.Requests;
-using SimpleIdentityServer.Client.DTOs.Responses;
-using SimpleIdentityServer.Client.Errors;
 using SimpleIdentityServer.Client.Extensions;
-using System;
+using SimpleIdentityServer.Uma.Common.DTOs;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Client.Permission
 {
     public interface IPermissionClient
     {
-        Task<AddPermissionResponse> AddPermissionAsync(
-            PostPermission postPermission,
-            string permissionUrl,
-            string authorizationValue);
-        Task<AddPermissionResponse> AddPermissionAsync(
-            PostPermission postPermission,
-            Uri permissionUri,
-            string authorizationValue);
-        Task<AddPermissionResponse> AddPermissionByResolvingUrlAsync(
-            PostPermission postPermission,
-            string configurationUrl,
-            string authorizationValue);
-        Task<AddPermissionResponse> AddPermissionByResolvingUrlAsync(
-            PostPermission postPermission,
-            Uri configurationUri,
-            string authorizationValue);
+        Task<AddPermissionResponse> Add(PostPermission request, string url, string token);
+        Task<AddPermissionResponse> AddByResolution(PostPermission request, string url, string token);
     }
 
     internal class PermissionClient : IPermissionClient
@@ -57,41 +40,15 @@ namespace SimpleIdentityServer.Client.Permission
             _getConfigurationOperation = getConfigurationOperation;
         }
 
-        public async Task<AddPermissionResponse> AddPermissionAsync(
-            PostPermission postPermission,
-            string permissionUrl,
-            string authorizationValue)
+        public Task<AddPermissionResponse> Add(PostPermission request, string url, string token)
         {
-            return await AddPermissionAsync(postPermission, UriHelpers.GetUri(permissionUrl), authorizationValue);
+            return _addPermissionOperation.ExecuteAsync(request, url, token);
         }
 
-        public async Task<AddPermissionResponse> AddPermissionAsync(
-            PostPermission postPermission,
-            Uri permissionUri,
-            string authorizationValue)
+        public async Task<AddPermissionResponse> AddByResolution(PostPermission request, string url, string token)
         {
-            return await _addPermissionOperation.ExecuteAsync(postPermission, permissionUri, authorizationValue);
-        }
-
-        public async Task<AddPermissionResponse> AddPermissionByResolvingUrlAsync(
-            PostPermission postPermission,
-            string configurationUrl,
-            string authorizationValue)
-        {
-            return await AddPermissionByResolvingUrlAsync(postPermission,
-                UriHelpers.GetUri(configurationUrl),
-                authorizationValue);
-        }
-
-        public async Task<AddPermissionResponse> AddPermissionByResolvingUrlAsync(
-            PostPermission postPermission,
-            Uri configurationUri,
-            string authorizationValue)
-        {
-            var configuration = await _getConfigurationOperation.ExecuteAsync(configurationUri);
-            return await AddPermissionAsync(postPermission,
-                configuration.PermissionRegistrationEndPoint,
-                authorizationValue);
+            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url));
+            return await Add(request, configuration.PermissionRegistrationEndPoint, token);
         }
     }
 }

@@ -31,16 +31,10 @@ namespace SimpleIdentityServer.Client.Configuration
     {
         private readonly IHttpClientFactory _httpClientFactory;
 
-        #region Constructor
-
         public GetConfigurationOperation(IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
         }
-
-        #endregion
-
-        #region Public methods
 
         public async Task<ConfigurationResponse> ExecuteAsync(Uri configurationUri)
         {
@@ -53,7 +47,5 @@ namespace SimpleIdentityServer.Client.Configuration
             var result = await httpClient.GetStringAsync(configurationUri);
             return JsonConvert.DeserializeObject<ConfigurationResponse>(result);
         }
-
-        #endregion
     }
 }

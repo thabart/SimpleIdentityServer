@@ -28,7 +28,9 @@ using SimpleIdentityServer.Uma.Host.Middlewares;
 using SimpleIdentityServer.Uma.Host.Tests.Extensions;
 using SimpleIdentityServer.Uma.Logging;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
+using System.Security.Claims;
 using WebApiContrib.Core.Concurrency;
 using WebApiContrib.Core.Storage.InMemory;
 
@@ -47,12 +49,22 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                 simpleIdServerUmaContext.Database.EnsureCreated();
                 simpleIdServerUmaContext.EnsureSeedData();
             }
-            // 3. Display exception
+            // 3. Use fake user
+            app.Use(next => async context =>
+            {
+                var claimsIdentity = new ClaimsIdentity(new List<Claim>
+                {
+                    new Claim("client_id", "client")
+                }, "fakests");
+                context.User = new ClaimsPrincipal(claimsIdentity);
+                await next.Invoke(context);
+            });
+            // 4. Display exception
             app.UseUmaExceptionHandler(new ExceptionHandlerMiddlewareOptions
             {
                 UmaEventSource = app.ApplicationServices.GetService<IUmaServerEventSource>()
             });
-            // 4. Launch ASP.NET MVC
+            // 5. Launch ASP.NET MVC
             app.UseMvc();
         }
 

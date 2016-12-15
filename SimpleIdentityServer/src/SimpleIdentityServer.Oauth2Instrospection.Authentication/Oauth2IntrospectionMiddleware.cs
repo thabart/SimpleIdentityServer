@@ -43,8 +43,6 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
         private readonly RequestDelegate _next;
         private readonly RequestDelegate _nullAuthenticationNext;
 
-        #region Constructor
-
         public Oauth2IntrospectionMiddleware(
             RequestDelegate next,
             IApplicationBuilder app,
@@ -86,10 +84,6 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
             _nullAuthenticationNext = nullAuthenticationBuilder.Build();
         }
 
-        #endregion
-
-        #region Public methods
-
         public async Task Invoke(HttpContext context)
         {
             // 1. Try to authenticate the user against the introspection endpoint
@@ -124,10 +118,6 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
 
             await _nullAuthenticationNext(context);
         }
-
-        #endregion
-
-        #region Private methods
 
         private string GetAccessToken(string authorizationValue)
         {
@@ -183,10 +173,6 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
             var content = await response.Content.ReadAsStringAsync();
             return ParseIntrospection(content);
         }
-
-        #endregion
-
-        #region Private static methods
         
         private static ClaimsPrincipal CreateClaimPrincipal(IntrospectionResponse introspectionResponse)
         {
@@ -315,7 +301,5 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
                 UserName = userName
             };
         }
-
-        #endregion
     }
 }

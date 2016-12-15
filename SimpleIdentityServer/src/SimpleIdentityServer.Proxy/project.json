@@ -11,10 +11,11 @@
     "defaultNamespace": "SimpleIdentityServer.Proxy"
   },
   "dependencies": {
-    "SimpleIdentityServer.Core.Jwt": "*",
-    "SimpleIdentityServer.Uma.Client": "*",
-    "SimpleIdentityServer.Client": "*",
-    "SimpleIdentityServer.UmaManager.Client": "*"
+    "SimpleIdentityServer.Core.Jwt": { "target": "project" },
+    "SimpleIdentityServer.Uma.Client": { "target": "project" },
+    "SimpleIdentityServer.Client": { "target": "project" },
+    "SimpleIdentityServer.UmaManager.Client": { "target": "project" },
+    "SimpleIdentityServer.Uma.Common": { "target": "project" }
   },
   "frameworks": {
     "net46": {

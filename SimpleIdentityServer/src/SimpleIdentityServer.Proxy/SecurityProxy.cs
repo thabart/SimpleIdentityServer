@@ -18,6 +18,7 @@ using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Client.DTOs.Requests;
 using SimpleIdentityServer.Client.DTOs.Response;
 using SimpleIdentityServer.Client.DTOs.Responses;
+using SimpleIdentityServer.Uma.Common.DTOs;
 using SimpleIdentityServer.UmaManager.Client;
 using SimpleIdentityServer.UmaManager.Client.DTOs.Requests;
 using SimpleIdentityServer.UmaManager.Client.DTOs.Responses;
@@ -231,7 +232,7 @@ namespace SimpleIdentityServer.Proxy
             };
 
             return await _identityServerUmaClientFactory.GetPermissionClient()
-                .AddPermissionByResolvingUrlAsync(postPermission, _securityOptions.UmaConfigurationUrl, accessToken);
+                .AddByResolution(postPermission, _securityOptions.UmaConfigurationUrl, accessToken);
         }
 
         private async Task<AuthorizationResponse> GetAuthorization(
