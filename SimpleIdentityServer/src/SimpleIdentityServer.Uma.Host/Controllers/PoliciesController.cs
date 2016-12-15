@@ -19,7 +19,6 @@ using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Uma.Common.DTOs;
 using SimpleIdentityServer.Uma.Core.Api.PolicyController;
 using SimpleIdentityServer.Uma.Core.Parameters;
-using SimpleIdentityServer.Uma.Host.DTOs.Requests;
 using SimpleIdentityServer.Uma.Host.DTOs.Responses;
 using SimpleIdentityServer.Uma.Host.Extensions;
 using System;

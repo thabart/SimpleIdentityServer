@@ -17,7 +17,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Uma.Common.DTOs;
 using SimpleIdentityServer.Uma.Core.Api.ScopeController;
-using SimpleIdentityServer.Uma.Host.DTOs.Requests;
 using SimpleIdentityServer.Uma.Host.DTOs.Responses;
 using SimpleIdentityServer.Uma.Host.Extensions;
 using System;
@@ -37,7 +36,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> GetScopeIds()
+        public async Task<ActionResult> GetScopes()
         {
             var resourceSetIds = await _scopeActions.GetScopes();
             return new OkObjectResult(resourceSetIds);
@@ -61,7 +60,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddResourceSet([FromBody] PostScope postScope)
+        public async Task<ActionResult> AddScope([FromBody] PostScope postScope)
         {
             if (postScope == null)
             {
@@ -70,7 +69,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
 
             var parameter = postScope.ToParameter();
             await _scopeActions.InsertScope(parameter);
-            var response = new AddResourceSetResponse
+            var response = new AddScopeResponseName
             {
                 Id = postScope.Id
             };
@@ -81,7 +80,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult> UpdateResourceSet([FromBody] PutScope putScope)
+        public async Task<ActionResult> UpdateScope([FromBody] PutScope putScope)
         {
             if (putScope == null)
             {
@@ -107,7 +106,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleleteResourceSet(string id)
+        public async Task<ActionResult> DeleteScope(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
             {

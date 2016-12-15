@@ -137,4 +137,11 @@ namespace SimpleIdentityServer.Uma.Common
         public const string RtpEndPoint = "rpt_endpoint";
         public const string PolicyEndPoint = "policy_endpoint";
     }
+
+    public static class ScopeResponseNames
+    {
+        public const string Id = "id";
+        public const string Name = "name";
+        public const string IconUri = "icon_uri";
+    }
 }

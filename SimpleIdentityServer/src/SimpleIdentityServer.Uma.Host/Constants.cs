@@ -46,15 +46,6 @@ namespace SimpleIdentityServer.Uma.Host
             public const string ErrorDetails = "error_details";
         }
 
-        public static class ScopeResponseNames
-        {
-            public const string Id = "id";
-
-            public const string Name = "name";
-
-            public const string IconUri = "icon_uri";
-        }
-
         public static class ErrorCodes
         {
             public const string NotFound = "not_found";

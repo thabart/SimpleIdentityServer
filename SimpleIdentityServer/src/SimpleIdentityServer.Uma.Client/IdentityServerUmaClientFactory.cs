@@ -21,6 +21,7 @@ using SimpleIdentityServer.Client.Introspection;
 using SimpleIdentityServer.Client.Permission;
 using SimpleIdentityServer.Client.Policy;
 using SimpleIdentityServer.Client.ResourceSet;
+using SimpleIdentityServer.Client.Scope;
 using SimpleIdentityServer.Uma.Client.Factory;
 using System;
 
@@ -33,6 +34,7 @@ namespace SimpleIdentityServer.Client
         IAuthorizationClient GetAuthorizationClient();
         IPolicyClient GetPolicyClient();
         IIntrospectionClient GetIntrospectionClient();
+        IScopeClient GetScopeClient();
     }
 
     public class IdentityServerUmaClientFactory : IIdentityServerUmaClientFactory
@@ -76,6 +78,12 @@ namespace SimpleIdentityServer.Client
             return introspectionClient;
         }
 
+        public IScopeClient GetScopeClient()
+        {
+            var scopeClient = (IScopeClient)_serviceProvider.GetService(typeof(IScopeClient));
+            return scopeClient;
+        }
+
         private static void RegisterDependencies(IServiceCollection serviceCollection)
         {
             // Register clients
@@ -84,6 +92,7 @@ namespace SimpleIdentityServer.Client
             serviceCollection.AddTransient<IAuthorizationClient, AuthorizationClient>();
             serviceCollection.AddTransient<IPolicyClient, PolicyClient>();
             serviceCollection.AddTransient<IIntrospectionClient, IntrospectionClient>();
+            serviceCollection.AddTransient<IScopeClient, ScopeClient>();
 
             // Regsiter factories
             serviceCollection.AddTransient<IHttpClientFactory, HttpClientFactory>();
@@ -105,6 +114,12 @@ namespace SimpleIdentityServer.Client
             serviceCollection.AddTransient<IAddResourceToPolicyOperation, AddResourceToPolicyOperation>();
             serviceCollection.AddTransient<IDeleteResourceFromPolicyOperation, DeleteResourceFromPolicyOperation>();
             serviceCollection.AddTransient<IUpdatePolicyOperation, UpdatePolicyOperation>();
+            serviceCollection.AddTransient<IGetScopeOperation, GetScopeOperation>();
+            serviceCollection.AddTransient<IGetScopesOperation, GetScopesOperation>();
+            serviceCollection.AddTransient<IDeleteScopeOperation, DeleteScopeOperation>();
+            serviceCollection.AddTransient<IUpdateScopeOperation, UpdateScopeOperation>();
+            serviceCollection.AddTransient<IAddScopeOperation, AddScopeOperation>();
+
         }
     }
 }
