@@ -15,9 +15,9 @@
 #endregion
 
 using Newtonsoft.Json;
-using SimpleIdentityServer.Client.DTOs.Requests;
 using SimpleIdentityServer.Client.DTOs.Responses;
 using SimpleIdentityServer.Uma.Client.Factory;
+using SimpleIdentityServer.Uma.Common.DTOs;
 using System;
 using System.Net.Http;
 using System.Text;
@@ -27,10 +27,7 @@ namespace SimpleIdentityServer.Client.Policy
 {
     public interface IAddPolicyOperation
     {
-        Task<AddPolicyResponse> ExecuteAsync(
-            PostPolicy postPolicy,
-            Uri policyUri,
-            string authorizationHeaderValue);
+        Task<AddPolicyResponse> ExecuteAsync(PostPolicy request, string url, string authorizationHeaderValue);
     }
 
     internal class AddPolicyOperation : IAddPolicyOperation
@@ -42,19 +39,16 @@ namespace SimpleIdentityServer.Client.Policy
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<AddPolicyResponse> ExecuteAsync(
-            PostPolicy postPolicy,
-            Uri policyUri,
-            string authorizationHeaderValue)
+        public async Task<AddPolicyResponse> ExecuteAsync(PostPolicy request, string url, string authorizationHeaderValue)
         {
-            if (postPolicy == null)
+            if (request == null)
             {
-                throw new ArgumentNullException(nameof(postPolicy));
+                throw new ArgumentNullException(nameof(request));
             }
 
-            if (policyUri == null)
+            if (string.IsNullOrWhiteSpace(url))
             {
-                throw new ArgumentNullException(nameof(policyUri));
+                throw new ArgumentNullException(nameof(url));
             }
 
             if (string.IsNullOrWhiteSpace(authorizationHeaderValue))
@@ -63,16 +57,16 @@ namespace SimpleIdentityServer.Client.Policy
             }
 
             var httpClient = _httpClientFactory.GetHttpClient();
-            var serializedPostResourceSet = JsonConvert.SerializeObject(postPolicy);
+            var serializedPostResourceSet = JsonConvert.SerializeObject(request);
             var body = new StringContent(serializedPostResourceSet, Encoding.UTF8, "application/json");
-            var request = new HttpRequestMessage
+            var httpRequest = new HttpRequestMessage
             {
                 Content = body,
                 Method = HttpMethod.Post,
-                RequestUri = policyUri
+                RequestUri = new Uri(url)
             };
-            request.Headers.Add("Authorization", "Bearer " + authorizationHeaderValue);
-            var httpResult = await httpClient.SendAsync(request);
+            httpRequest.Headers.Add("Authorization", "Bearer " + authorizationHeaderValue);
+            var httpResult = await httpClient.SendAsync(httpRequest);
             httpResult.EnsureSuccessStatusCode();
             var content = await httpResult.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<AddPolicyResponse>(content);

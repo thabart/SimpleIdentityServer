@@ -14,7 +14,7 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Uma.Host.DTOs.Requests;
+using SimpleIdentityServer.Uma.Common.DTOs;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 

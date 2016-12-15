@@ -17,38 +17,38 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.Uma.Host.DTOs.Requests
+namespace SimpleIdentityServer.Uma.Common.DTOs
 {
     [DataContract]
     public class PostClaim
     {
-        [DataMember(Name = Constants.ClaimNames.Type)]
+        [DataMember(Name = ClaimNames.Type)]
         public string Type { get; set; }
-        [DataMember(Name = Constants.ClaimNames.Value)]
+        [DataMember(Name = ClaimNames.Value)]
         public string Value { get; set; }
     }
 
     [DataContract]
     public class PostPolicyRule
     {
-        [DataMember(Name = Constants.PolicyRuleNames.ClientIdsAllowed)]
+        [DataMember(Name = PolicyRuleNames.ClientIdsAllowed)]
         public List<string> ClientIdsAllowed { get; set; }
-        [DataMember(Name = Constants.PolicyRuleNames.Scopes)]
+        [DataMember(Name = PolicyRuleNames.Scopes)]
         public List<string> Scopes { get; set; }
-        [DataMember(Name = Constants.PolicyRuleNames.Claims)]
+        [DataMember(Name = PolicyRuleNames.Claims)]
         public List<PostClaim> Claims { get; set; }
-        [DataMember(Name = Constants.PolicyRuleNames.IsResourceOwnerConsentNeeded)]
+        [DataMember(Name = PolicyRuleNames.IsResourceOwnerConsentNeeded)]
         public bool IsResourceOwnerConsentNeeded { get; set; }
-        [DataMember(Name = Constants.PolicyRuleNames.Script)]
+        [DataMember(Name = PolicyRuleNames.Script)]
         public string Script { get; set; }
     }
 
     [DataContract]
     public class PostPolicy
     {
-        [DataMember(Name = Constants.PolicyNames.ResourceSetIds)]
+        [DataMember(Name = PolicyNames.ResourceSetIds)]
         public List<string> ResourceSetIds { get; set; }
-        [DataMember(Name = Constants.PolicyNames.Rules)]
+        [DataMember(Name = PolicyNames.Rules)]
         public List<PostPolicyRule> Rules { get; set; }
     }
 }

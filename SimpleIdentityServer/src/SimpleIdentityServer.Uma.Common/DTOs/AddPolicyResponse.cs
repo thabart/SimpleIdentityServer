@@ -16,12 +16,12 @@
 
 using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.Client.DTOs.Responses
+namespace SimpleIdentityServer.Uma.Common.DTOs
 {
     [DataContract]
     public class AddPolicyResponse
     {
-        [DataMember(Name = Constants.AddPolicyResponseNames.PolicyId)]
+        [DataMember(Name = AddPolicyResponseNames.PolicyId)]
         public string PolicyId { get; set; }
     }
 }
