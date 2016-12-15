@@ -15,7 +15,6 @@
 #endregion
 
 using SimpleIdentityServer.Client.Configuration;
-using SimpleIdentityServer.Client.DTOs.Responses;
 using SimpleIdentityServer.Client.Extensions;
 using SimpleIdentityServer.Uma.Common.DTOs;
 using System;
@@ -28,21 +27,8 @@ namespace SimpleIdentityServer.Client.Policy
     {
         Task<AddPolicyResponse> Add(PostPolicy request, string url, string token);
         Task<AddPolicyResponse> AddByResolution(PostPolicy request, string url, string token);
-
-        Task<PolicyResponse> GetPolicyAsync(
-            string policyId,
-            string policyUrl,
-            string authorizationHeaderValue);
-
-        Task<PolicyResponse> GetPolicyByResolvingUrlAsync(
-            string policyId,
-            string configurationUrl,
-            string authorizationHeaderValue);
-
-        Task<PolicyResponse> GetPolicyByResolvingUrlAsync(
-            string policyId,
-            Uri configurationUri,
-            string authorizationHeaderValue);
+        Task<PolicyResponse> Get(string id, string url, string token);
+        Task<PolicyResponse> GetByResolution(string id, string url, string token);
         
         Task<bool> DeletePolicyAsync(
             string policyId,
@@ -109,20 +95,15 @@ namespace SimpleIdentityServer.Client.Policy
             return await Add(request, policyEndpoint, token);
         }
 
-        public async Task<PolicyResponse> GetPolicyAsync(string policyId, string policyUrl, string authorizationHeaderValue)
+        public async Task<PolicyResponse> Get(string id, string url, string token)
         {
-            return await _getPolicyOperation.ExecuteAsync(policyId, policyUrl, authorizationHeaderValue);
+            return await _getPolicyOperation.ExecuteAsync(id, url, token);
         }
 
-        public async Task<PolicyResponse> GetPolicyByResolvingUrlAsync(string policyId, string configurationUrl, string authorizationHeaderValue)
+        public async Task<PolicyResponse> GetByResolution(string id, string url, string token)
         {
-            return await GetPolicyByResolvingUrlAsync(policyId, UriHelpers.GetUri(configurationUrl), authorizationHeaderValue);
-        }
-
-        public async Task<PolicyResponse> GetPolicyByResolvingUrlAsync(string policyId, Uri configurationUri, string authorizationHeaderValue)
-        {
-            var policyEndpoint = await GetPolicyEndPoint(configurationUri);
-            return await GetPolicyAsync(policyId, policyEndpoint, authorizationHeaderValue);
+            var policyEndpoint = await GetPolicyEndPoint(UriHelpers.GetUri(url));
+            return await Get(id, policyEndpoint, token);
         }
         
         public async Task<bool> DeletePolicyAsync(string policyId, string policyUrl, string authorizationHeaderValue)

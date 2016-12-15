@@ -20,25 +20,4 @@ using System.Runtime.Serialization;
 
 namespace SimpleIdentityServer.Uma.Host.DTOs.Responses
 {
-    [DataContract]
-    public class PolicyRuleResponse
-    {
-        [DataMember(Name = Constants.PolicyRuleNames.Id)]
-        public string Id { get; set; }
-
-        [DataMember(Name = Constants.PolicyRuleNames.ClientIdsAllowed)]
-        public List<string> ClientIdsAllowed { get; set; }
-
-        [DataMember(Name = Constants.PolicyRuleNames.Scopes)]
-        public List<string> Scopes { get; set; }
-
-        [DataMember(Name = Constants.PolicyRuleNames.Claims)]
-        public List<PostClaim> Claims { get; set; }
-
-        [DataMember(Name = Constants.PolicyRuleNames.IsResourceOwnerConsentNeeded)]
-        public bool IsResourceOwnerConsentNeeded { get; set; }
-
-        [DataMember(Name = Constants.PolicyRuleNames.Script)]
-        public string Script { get; set; }
-    }
 }

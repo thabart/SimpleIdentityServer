@@ -23,6 +23,7 @@ using SimpleIdentityServer.Uma.Common.DTOs;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
+using System.Linq;
 
 namespace SimpleIdentityServer.Uma.Host.Tests
 {
@@ -39,7 +40,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
         }
 
         [Fact]
-        public async Task When_Adding_Policy_Then_Its_Identifier_Is_Returned()
+        public async Task When_Adding_Policy_Then_Information_Can_Be_Retrieved()
         {
             const string baseUrl = "http://localhost:5000";
             // ARRANGE
@@ -81,12 +82,20 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                     addResponse.Id
                 }
             }, baseUrl + "/.well-known/uma-configuration", "header");
+            var information = await _policyClient.GetByResolution(response.PolicyId, baseUrl + "/.well-known/uma-configuration", "header");
 
             // ASSERT
             Assert.NotNull(response);
             Assert.False(string.IsNullOrWhiteSpace(response.PolicyId));
+            Assert.NotNull(information);
+            Assert.True(information.Rules.Count() == 1);
+            Assert.True(information.ResourceSetIds.Count() == 1 && information.ResourceSetIds.First() == addResponse.Id);
+            var rule = information.Rules.First();
+            Assert.False(rule.IsResourceOwnerConsentNeeded);
+            Assert.True(rule.Claims.Count() == 1);
+            Assert.True(rule.Scopes.Count() == 1);
         }
-
+        
         private void InitializeFakeObjects()
         {
             _httpClientFactoryStub = new Mock<IHttpClientFactory>();

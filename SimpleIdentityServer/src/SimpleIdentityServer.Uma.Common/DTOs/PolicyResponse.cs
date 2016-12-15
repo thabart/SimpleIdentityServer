@@ -17,18 +17,33 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.Uma.Host.DTOs.Responses
+namespace SimpleIdentityServer.Uma.Common.DTOs
 {
     [DataContract]
     public class PolicyResponse
     {
-        [DataMember(Name = Constants.PolicyNames.Id)]
+        [DataMember(Name = PolicyNames.Id)]
         public string Id { get; set; }
-
-        [DataMember(Name = Constants.PolicyNames.ResourceSetIds)]
+        [DataMember(Name = PolicyNames.ResourceSetIds)]
         public List<string> ResourceSetIds { get; set; }
-
-        [DataMember(Name = Constants.PolicyNames.Rules)]
+        [DataMember(Name = PolicyNames.Rules)]
         public List<PolicyRuleResponse> Rules { get; set; }
+    }
+
+    [DataContract]
+    public class PolicyRuleResponse
+    {
+        [DataMember(Name = PolicyRuleNames.Id)]
+        public string Id { get; set; }
+        [DataMember(Name = PolicyRuleNames.ClientIdsAllowed)]
+        public List<string> ClientIdsAllowed { get; set; }
+        [DataMember(Name = PolicyRuleNames.Scopes)]
+        public List<string> Scopes { get; set; }
+        [DataMember(Name = PolicyRuleNames.Claims)]
+        public List<PostClaim> Claims { get; set; }
+        [DataMember(Name = PolicyRuleNames.IsResourceOwnerConsentNeeded)]
+        public bool IsResourceOwnerConsentNeeded { get; set; }
+        [DataMember(Name = PolicyRuleNames.Script)]
+        public string Script { get; set; }
     }
 }
