@@ -24,6 +24,8 @@ namespace SimpleIdentityServer.Client.ResourceSet
 {
     public interface IResourceSetClient
     {
+        Task<UpdateResourceSetResponse> Update(PutResourceSet request, string url, string token);
+        Task<UpdateResourceSetResponse> UpdateByResolution(PutResourceSet request, string url, string token);
         Task<AddResourceSetResponse> Add(PostResourceSet request, string url, string token);
         Task<AddResourceSetResponse> AddByResolution(PostResourceSet request, string url, string token);
         Task<bool> Delete(string id, string url, string token);
@@ -40,6 +42,7 @@ namespace SimpleIdentityServer.Client.ResourceSet
         private readonly IDeleteResourceSetOperation _deleteResourceSetOperation;
         private readonly IGetResourcesOperation _getResourcesOperation;
         private readonly IGetResourceOperation _getResourceOperation;
+        private readonly IUpdateResourceOperation _updateResourceOperation;
         private readonly IGetConfigurationOperation _getConfigurationOperation;
 
         public ResourceSetClient(
@@ -47,13 +50,26 @@ namespace SimpleIdentityServer.Client.ResourceSet
             IDeleteResourceSetOperation deleteResourceSetOperation,
             IGetResourcesOperation getResourcesOperation,
             IGetResourceOperation getResourceOperation,
+            IUpdateResourceOperation updateResourceOperation,
             IGetConfigurationOperation getConfigurationOperation)
         {
             _addResourceSetOperation = addResourceSetOperation;
             _deleteResourceSetOperation = deleteResourceSetOperation;
             _getResourcesOperation = getResourcesOperation;
             _getResourceOperation = getResourceOperation;
+            _updateResourceOperation = updateResourceOperation;
             _getConfigurationOperation = getConfigurationOperation;
+        }
+
+        public Task<UpdateResourceSetResponse> Update(PutResourceSet request, string url, string token)
+        {
+            return _updateResourceOperation.ExecuteAsync(request, url, token);
+        }
+
+        public async Task<UpdateResourceSetResponse> UpdateByResolution(PutResourceSet request, string url, string token)
+        {
+            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url));
+            return await Update(request, configuration.ResourceSetRegistrationEndPoint, token);
         }
 
         public Task<AddResourceSetResponse> Add(PostResourceSet request, string url, string token)

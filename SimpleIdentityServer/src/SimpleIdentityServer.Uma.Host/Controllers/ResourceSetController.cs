@@ -18,7 +18,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Uma.Common.DTOs;
 using SimpleIdentityServer.Uma.Core.Api.ResourceSetController;
-using SimpleIdentityServer.Uma.Host.DTOs.Requests;
 using SimpleIdentityServer.Uma.Host.DTOs.Responses;
 using SimpleIdentityServer.Uma.Host.Extensions;
 using System;
@@ -126,7 +125,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 return GetNotFoundResourceSet();
             }
 
-            var response = new UpdateSetResponse
+            var response = new UpdateResourceSetResponse
             {
                 Id = putResourceSet.Id
             };

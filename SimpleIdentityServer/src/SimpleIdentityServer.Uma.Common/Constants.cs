@@ -31,4 +31,9 @@ namespace SimpleIdentityServer.Uma.Common
         public const string Id = "_id";
         public const string UserAccessPolicyUri = "user_access_policy_uri";
     }
+
+    public static class UpdateSetResponseNames
+    {
+        public const string Id = "_id";
+    }
 }

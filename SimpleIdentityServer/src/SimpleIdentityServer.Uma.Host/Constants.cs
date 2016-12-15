@@ -21,19 +21,12 @@ namespace SimpleIdentityServer.Uma.Host
         public static class RouteValues
         {
             public const string Configuration = ".well-known/uma-configuration";
-
             public const string ResourceSet = "rs/resource_set";
-
             public const string Scope = "scopes";
-
             public const string Permission = "/perm";
-
             public const string Authorization = "/rpt";
-
             public const string Policies = "/policies";
-
             public const string Introspection = "/status";
-
             public const string CodeSample = "/codesamples";
         }
 
@@ -154,11 +147,6 @@ namespace SimpleIdentityServer.Uma.Host
             public const string Name = "name";
 
             public const string IconUri = "icon_uri";
-        }
-
-        public static class UpdateSetResponseNames
-        {
-            public const string Id = "_id";
         }
 
         public static class ErrorCodes

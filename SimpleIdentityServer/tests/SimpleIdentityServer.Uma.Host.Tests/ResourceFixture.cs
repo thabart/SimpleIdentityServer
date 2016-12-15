@@ -19,7 +19,6 @@ using SimpleIdentityServer.Client.Configuration;
 using SimpleIdentityServer.Client.ResourceSet;
 using SimpleIdentityServer.Uma.Client.Factory;
 using SimpleIdentityServer.Uma.Common.DTOs;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -118,6 +117,43 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             Assert.NotNull(resource);
         }
 
+        [Fact]
+        public async Task When_Updating_Resource_Then_Changes_Are_Persisted()
+        {
+            const string baseUrl = "http://localhost:5000";
+            // ARRANGE
+            InitializeFakeObjects();
+            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+            var resource = await _resourceSetClient.AddByResolution(new PostResourceSet
+            {
+                Name = "name",
+                Scopes = new List<string>
+                {
+                    "scope"
+                }
+            },
+            baseUrl + "/.well-known/uma-configuration", "header");
+
+            // ACT
+            var updateResult = await _resourceSetClient.UpdateByResolution(new PutResourceSet
+            {
+                Id = resource.Id,
+                Name = "name2",
+                Type = "type",
+                Scopes = new List<string>
+                {
+                    "scope2"
+                }
+            }, baseUrl + "/.well-known/uma-configuration", "header");
+            var information = await _resourceSetClient.GetByResolution(updateResult.Id, baseUrl + "/.well-known/uma-configuration", "header");
+
+            // ASSERT
+            Assert.NotNull(information);
+            Assert.True(information.Name == "name2");
+            Assert.True(information.Type == "type");
+            Assert.True(information.Scopes.Count() == 1 && information.Scopes.First() == "scope2");
+        }
+
         private void InitializeFakeObjects()
         {
             _httpClientFactoryStub = new Mock<IHttpClientFactory>();
@@ -125,6 +161,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                 new DeleteResourceSetOperation(_httpClientFactoryStub.Object),
                 new GetResourcesOperation(_httpClientFactoryStub.Object),
                 new GetResourceOperation(_httpClientFactoryStub.Object),
+                new UpdateResourceOperation(_httpClientFactoryStub.Object),
                 new GetConfigurationOperation(_httpClientFactoryStub.Object));
         }
     }
