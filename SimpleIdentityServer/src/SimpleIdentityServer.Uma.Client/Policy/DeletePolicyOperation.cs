@@ -24,10 +24,7 @@ namespace SimpleIdentityServer.Client.Policy
 {
     public interface IDeletePolicyOperation
     {
-        Task<bool> ExecuteAsync(
-               string policyId,
-               string policyUrl,
-               string authorizationHeaderValue);
+        Task<bool> ExecuteAsync(string id, string url, string token);
     }
 
     internal class DeletePolicyOperation : IDeletePolicyOperation
@@ -39,40 +36,37 @@ namespace SimpleIdentityServer.Client.Policy
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<bool> ExecuteAsync(
-            string policyId,
-            string policyUrl,
-            string authorizationHeaderValue)
+        public async Task<bool> ExecuteAsync(string id, string url, string token)
         {
-            if (string.IsNullOrWhiteSpace(policyId))
+            if (string.IsNullOrWhiteSpace(id))
             {
-                throw new ArgumentNullException(nameof(policyId));
+                throw new ArgumentNullException(nameof(id));
             }
 
-            if (string.IsNullOrWhiteSpace(policyUrl))
+            if (string.IsNullOrWhiteSpace(url))
             {
-                throw new ArgumentNullException(nameof(policyUrl));
+                throw new ArgumentNullException(nameof(url));
             }
 
-            if (string.IsNullOrWhiteSpace(authorizationHeaderValue))
+            if (string.IsNullOrWhiteSpace(token))
             {
-                throw new ArgumentNullException(nameof(authorizationHeaderValue));
+                throw new ArgumentNullException(nameof(token));
             }
 
-            if (policyUrl.EndsWith("/"))
+            if (url.EndsWith("/"))
             {
-                policyUrl = policyUrl.Remove(0, policyUrl.Length - 1);
+                url = url.Remove(0, url.Length - 1);
             }
 
-            policyUrl = policyUrl + "/" + policyId;
+            url = url + "/" + id;
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Delete,
-                RequestUri = new Uri(policyUrl)
+                RequestUri = new Uri(url)
             };
-            request.Headers.Add("Authorization", "Bearer " + authorizationHeaderValue);
+            request.Headers.Add("Authorization", "Bearer " + token);
             var httpClient = _httpClientFactory.GetHttpClient();
-            var httpResult = await httpClient.SendAsync(request);
+            var httpResult = await httpClient.SendAsync(request).ConfigureAwait(false);
             httpResult.EnsureSuccessStatusCode();
             return httpResult.StatusCode == HttpStatusCode.NoContent;
         }

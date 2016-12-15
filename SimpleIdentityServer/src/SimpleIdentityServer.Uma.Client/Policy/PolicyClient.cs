@@ -31,21 +31,8 @@ namespace SimpleIdentityServer.Client.Policy
         Task<PolicyResponse> GetByResolution(string id, string url, string token);
         Task<IEnumerable<string>> GetAll(string url, string token);
         Task<IEnumerable<string>> GetAllByResolution(string url, string token);
-
-        Task<bool> DeletePolicyAsync(
-            string policyId,
-            string policyUrl,
-            string authorizationHeaderValue);
-
-        Task<bool> DeletePolicyByResolvingUrlAsync(
-            string policyId,
-            string configurationUrl,
-            string authorizationHeaderValue);
-
-        Task<bool> DeletePolicyByResolvingUrlAsync(
-            string policyId,
-            Uri configurationUri,
-            string authorizationHeaderValue);
+        Task<bool> Delete(string id, string url, string token);
+        Task<bool> DeleteByResolution(string id, string url, string token);
     }
 
     internal class PolicyClient : IPolicyClient
@@ -81,9 +68,9 @@ namespace SimpleIdentityServer.Client.Policy
             return await Add(request, policyEndpoint, token);
         }
 
-        public async Task<PolicyResponse> Get(string id, string url, string token)
+        public Task<PolicyResponse> Get(string id, string url, string token)
         {
-            return await _getPolicyOperation.ExecuteAsync(id, url, token);
+            return _getPolicyOperation.ExecuteAsync(id, url, token);
         }
 
         public async Task<PolicyResponse> GetByResolution(string id, string url, string token)
@@ -92,9 +79,9 @@ namespace SimpleIdentityServer.Client.Policy
             return await Get(id, policyEndpoint, token);
         }
         
-        public async Task<IEnumerable<string>> GetAll(string url, string token)
+        public Task<IEnumerable<string>> GetAll(string url, string token)
         {
-            return await _getPoliciesOperation.ExecuteAsync(url, token);
+            return _getPoliciesOperation.ExecuteAsync(url, token);
         }
 
         public async Task<IEnumerable<string>> GetAllByResolution(string url, string token)
@@ -103,20 +90,15 @@ namespace SimpleIdentityServer.Client.Policy
             return await GetAll(policyEndpoint, token);
         }
 
-        public async Task<bool> DeletePolicyAsync(string policyId, string policyUrl, string authorizationHeaderValue)
+        public Task<bool> Delete(string id, string url, string token)
         {
-            return await _deletePolicyOperation.ExecuteAsync(policyId, policyUrl, authorizationHeaderValue);
+            return _deletePolicyOperation.ExecuteAsync(id, url, token);
         }
 
-        public async Task<bool> DeletePolicyByResolvingUrlAsync(string policyId, string configurationUrl, string authorizationHeaderValue)
+        public async Task<bool> DeleteByResolution(string id, string url, string token)
         {
-            return await DeletePolicyByResolvingUrlAsync(policyId, UriHelpers.GetUri(configurationUrl), authorizationHeaderValue);
-        }
-
-        public async Task<bool> DeletePolicyByResolvingUrlAsync(string policyId, Uri configurationUri, string authorizationHeaderValue)
-        {
-            var policyEndpoint = await GetPolicyEndPoint(configurationUri);
-            return await DeletePolicyAsync(policyId, policyEndpoint, authorizationHeaderValue);
+            var policyEndpoint = await GetPolicyEndPoint(UriHelpers.GetUri(url));
+            return await Delete(id, policyEndpoint, token);
         }
         
         private async Task<string> GetPolicyEndPoint(Uri configurationUri)
