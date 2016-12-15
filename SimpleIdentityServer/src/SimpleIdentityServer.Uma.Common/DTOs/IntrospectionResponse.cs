@@ -14,35 +14,23 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Client.Extensions;
+using SimpleIdentityServer.Uma.Common.Extensions;
 using System.Collections.Generic;
 
-namespace SimpleIdentityServer.Client.DTOs.Responses
+namespace SimpleIdentityServer.Uma.Common.DTOs
 {
 
     public class PermissionResponse : Dictionary<string, object>
     {
-        #region Fields
-
-        private const string ResourceSetIdName = "resource_set_id";
-
-        private const string ScopesName = "scopes";
-
-        private const string ExpirationName = "exp";
-
-        #endregion
-
-        #region Properties
-
         public string ResourceSetId
         {
             get
             {
-                return this.GetString(ResourceSetIdName);
+                return this.GetString(IntrospectPermissionNames.ResourceSetIdName);
             }
             set
             {
-                this.SetValue(ResourceSetIdName, value);
+                this.SetValue(IntrospectPermissionNames.ResourceSetIdName, value);
             }
         }
 
@@ -50,11 +38,11 @@ namespace SimpleIdentityServer.Client.DTOs.Responses
         {
             get
             {
-                return this.GetObject<List<string>>(ScopesName);
+                return this.GetObject<List<string>>(IntrospectPermissionNames.ScopesName);
             }
             set
             {
-                this.SetObject(ScopesName, value);
+                this.SetObject(IntrospectPermissionNames.ScopesName, value);
             }
         }
 
@@ -62,44 +50,27 @@ namespace SimpleIdentityServer.Client.DTOs.Responses
         {
             get
             {
-                return this.GetDouble(ExpirationName);
+                return this.GetDouble(IntrospectPermissionNames.ExpirationName);
             }
             set
             {
-                this.SetValue(ExpirationName, value);
+                this.SetValue(IntrospectPermissionNames.ExpirationName, value);
             }
         }
-
-        #endregion
     }
 
     public class IntrospectionResponse : Dictionary<string, object>
     {
-        #region Fields
-
-        private const string ActiveName = "active";
-
-        private const string ExpirationName = "exp";
-
-        private const string IatName = "iat";
-
-        private const string NbfName = "nbf";
-
-        private const string PermissionsName = "permissions";
-
-        #endregion
-
-        #region Properties
 
         public bool IsActive
         {
             get
             {
-                return this.GetBoolean(ActiveName);
+                return this.GetBoolean(IntrospectNames.ActiveName);
             }
             set
             {
-                this.SetValue(ActiveName, value);
+                this.SetValue(IntrospectNames.ActiveName, value);
             }
         }
 
@@ -107,11 +78,11 @@ namespace SimpleIdentityServer.Client.DTOs.Responses
         {
             get
             {
-                return this.GetDouble(ExpirationName);
+                return this.GetDouble(IntrospectNames.ExpirationName);
             }
             set
             {
-                this.SetValue(ExpirationName, value);
+                this.SetValue(IntrospectNames.ExpirationName, value);
             }
         }
 
@@ -119,11 +90,11 @@ namespace SimpleIdentityServer.Client.DTOs.Responses
         {
             get
             {
-                return this.GetDouble(IatName);
+                return this.GetDouble(IntrospectNames.IatName);
             }
             set
             {
-                this.SetValue(IatName, value);
+                this.SetValue(IntrospectNames.IatName, value);
             }
         }
 
@@ -131,11 +102,11 @@ namespace SimpleIdentityServer.Client.DTOs.Responses
         {
             get
             {
-                return this.GetDouble(NbfName);
+                return this.GetDouble(IntrospectNames.NbfName);
             }
             set
             {
-                this.SetValue(NbfName, value);
+                this.SetValue(IntrospectNames.NbfName, value);
             }
         }
 
@@ -143,14 +114,12 @@ namespace SimpleIdentityServer.Client.DTOs.Responses
         {
             get
             {
-                return this.GetObject<List<PermissionResponse>>(PermissionsName);
+                return this.GetObject<List<PermissionResponse>>(IntrospectNames.PermissionsName);
             }
             set
             {
-                this.SetObject(PermissionsName, value);
+                this.SetObject(IntrospectNames.PermissionsName, value);
             }
         }
-
-        #endregion
     }
 }

@@ -99,4 +99,20 @@ namespace SimpleIdentityServer.Uma.Common
     {
         public const string Rpt = "rpt";
     }
+
+    public static class IntrospectPermissionNames
+    {
+        public const string ResourceSetIdName = "resource_set_id";
+        public const string ScopesName = "scopes";
+        public const string ExpirationName = "exp";
+    }
+
+    public static class IntrospectNames
+    {
+        public const string ActiveName = "active";
+        public const string ExpirationName = "exp";
+        public const string IatName = "iat";
+        public const string NbfName = "nbf";
+        public const string PermissionsName = "permissions";
+    }
 }

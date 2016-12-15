@@ -2084,7 +2084,7 @@
           "System.Threading": "4.0.11"
         },
         "compile": {
-          "ref/netstandard1.3/_._": {}
+          "ref/netstandard1.3/System.Collections.Specialized.dll": {}
         },
         "runtime": {
           "lib/netstandard1.3/System.Collections.Specialized.dll": {}
@@ -4128,7 +4128,6 @@
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection": "1.0.0",
           "Newtonsoft.Json": "9.0.1",
-          "SimpleIdentityServer.Core.Common": "1.0.0",
           "SimpleIdentityServer.Core.Jwt": "1.0.0",
           "System.Net.Http": "4.1.0",
           "System.Runtime.Serialization.Primitives": "4.1.1"
@@ -4144,7 +4143,9 @@
         "type": "project",
         "framework": ".NETStandard,Version=v1.6",
         "dependencies": {
+          "Microsoft.AspNetCore.Http.Features": "1.0.0",
           "Newtonsoft.Json": "9.0.1",
+          "System.Collections.Specialized": "4.0.1",
           "System.IO": "4.1.0",
           "System.Runtime.Extensions": "4.1.0",
           "System.Runtime.Serialization.Json": "4.0.2"
@@ -4195,6 +4196,24 @@
           "netstandard1.5/SimpleIdentityServer.Logging.dll": {}
         }
       },
+      "SimpleIdentityServer.Uma.Common/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v1.6",
+        "dependencies": {
+          "Microsoft.AspNetCore.Http.Features": "1.0.0",
+          "Newtonsoft.Json": "9.0.1",
+          "System.Collections.Specialized": "4.0.1",
+          "System.IO": "4.1.0",
+          "System.Runtime.Extensions": "4.1.0",
+          "System.Runtime.Serialization.Json": "4.0.2"
+        },
+        "compile": {
+          "netstandard1.6/SimpleIdentityServer.Uma.Common.dll": {}
+        },
+        "runtime": {
+          "netstandard1.6/SimpleIdentityServer.Uma.Common.dll": {}
+        }
+      },
       "SimpleIdentityServer.Uma.Core/1.0.0": {
         "type": "project",
         "framework": ".NETStandard,Version=v1.6",
@@ -4206,6 +4225,7 @@
           "SimpleIdentityServer.Client": "1.0.0",
           "SimpleIdentityServer.Core.Jwt": "1.0.0",
           "SimpleIdentityServer.Logging": "1.0.0",
+          "SimpleIdentityServer.Uma.Common": "1.0.0",
           "System.IO.Compression": "4.1.0",
           "System.Net.Http": "4.1.0"
         },
@@ -6095,7 +6115,6 @@
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection": "1.0.0",
           "Newtonsoft.Json": "9.0.1",
-          "SimpleIdentityServer.Core.Common": "1.0.0",
           "SimpleIdentityServer.Core.Jwt": "1.0.0"
         },
         "frameworkAssemblies": [
@@ -6113,6 +6132,7 @@
         "type": "project",
         "framework": ".NETFramework,Version=v4.6",
         "dependencies": {
+          "Microsoft.AspNetCore.Http.Features": "1.0.0",
           "Newtonsoft.Json": "9.0.1"
         },
         "frameworkAssemblies": [
@@ -6162,6 +6182,26 @@
           "net46/SimpleIdentityServer.Logging.dll": {}
         }
       },
+      "SimpleIdentityServer.Uma.Common/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.6",
+        "dependencies": {
+          "Microsoft.AspNetCore.Http.Features": "1.0.0",
+          "Newtonsoft.Json": "9.0.1"
+        },
+        "frameworkAssemblies": [
+          "System.Runtime",
+          "System.Runtime.Serialization",
+          "System.Web.Extensions",
+          "System.Xml"
+        ],
+        "compile": {
+          "net46/SimpleIdentityServer.Uma.Common.dll": {}
+        },
+        "runtime": {
+          "net46/SimpleIdentityServer.Uma.Common.dll": {}
+        }
+      },
       "SimpleIdentityServer.Uma.Core/1.0.0": {
         "type": "project",
         "framework": ".NETFramework,Version=v4.6",
@@ -6172,7 +6212,8 @@
           "Newtonsoft.Json": "9.0.1",
           "SimpleIdentityServer.Client": "1.0.0",
           "SimpleIdentityServer.Core.Jwt": "1.0.0",
-          "SimpleIdentityServer.Logging": "1.0.0"
+          "SimpleIdentityServer.Logging": "1.0.0",
+          "SimpleIdentityServer.Uma.Common": "1.0.0"
         },
         "frameworkAssemblies": [
           "System.IO.Compression",
@@ -12719,6 +12760,11 @@
       "type": "project",
       "path": "../SimpleIdentityServer.Logging/project.json",
       "msbuildProject": "../SimpleIdentityServer.Logging/SimpleIdentityServer.Logging.xproj"
+    },
+    "SimpleIdentityServer.Uma.Common/1.0.0": {
+      "type": "project",
+      "path": "../SimpleIdentityServer.Uma.Common/project.json",
+      "msbuildProject": "../SimpleIdentityServer.Uma.Common/SimpleIdentityServer.Uma.Common.xproj"
     },
     "SimpleIdentityServer.Uma.Core/1.0.0": {
       "type": "project",

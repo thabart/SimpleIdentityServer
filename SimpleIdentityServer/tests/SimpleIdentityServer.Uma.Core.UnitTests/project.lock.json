@@ -1843,7 +1843,6 @@
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection": "1.0.0",
           "Newtonsoft.Json": "9.0.1",
-          "SimpleIdentityServer.Core.Common": "1.0.0",
           "SimpleIdentityServer.Core.Jwt": "1.0.0"
         },
         "frameworkAssemblies": [
@@ -1861,6 +1860,7 @@
         "type": "project",
         "framework": ".NETFramework,Version=v4.6",
         "dependencies": {
+          "Microsoft.AspNetCore.Http.Features": "1.0.0",
           "Newtonsoft.Json": "9.0.1"
         },
         "frameworkAssemblies": [
@@ -1910,6 +1910,26 @@
           "net46/SimpleIdentityServer.Logging.dll": {}
         }
       },
+      "SimpleIdentityServer.Uma.Common/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.6",
+        "dependencies": {
+          "Microsoft.AspNetCore.Http.Features": "1.0.0",
+          "Newtonsoft.Json": "9.0.1"
+        },
+        "frameworkAssemblies": [
+          "System.Runtime",
+          "System.Runtime.Serialization",
+          "System.Web.Extensions",
+          "System.Xml"
+        ],
+        "compile": {
+          "net46/SimpleIdentityServer.Uma.Common.dll": {}
+        },
+        "runtime": {
+          "net46/SimpleIdentityServer.Uma.Common.dll": {}
+        }
+      },
       "SimpleIdentityServer.Uma.Core/1.0.0": {
         "type": "project",
         "framework": ".NETFramework,Version=v4.6",
@@ -1920,7 +1940,8 @@
           "Newtonsoft.Json": "9.0.1",
           "SimpleIdentityServer.Client": "1.0.0",
           "SimpleIdentityServer.Core.Jwt": "1.0.0",
-          "SimpleIdentityServer.Logging": "1.0.0"
+          "SimpleIdentityServer.Logging": "1.0.0",
+          "SimpleIdentityServer.Uma.Common": "1.0.0"
         },
         "frameworkAssemblies": [
           "System.IO.Compression",
@@ -5679,6 +5700,11 @@
       "type": "project",
       "path": "../../src/SimpleIdentityServer.Logging/project.json",
       "msbuildProject": "../../src/SimpleIdentityServer.Logging/SimpleIdentityServer.Logging.xproj"
+    },
+    "SimpleIdentityServer.Uma.Common/1.0.0": {
+      "type": "project",
+      "path": "../../src/SimpleIdentityServer.Uma.Common/project.json",
+      "msbuildProject": "../../src/SimpleIdentityServer.Uma.Common/SimpleIdentityServer.Uma.Common.xproj"
     },
     "SimpleIdentityServer.Uma.Core/1.0.0": {
       "type": "project",

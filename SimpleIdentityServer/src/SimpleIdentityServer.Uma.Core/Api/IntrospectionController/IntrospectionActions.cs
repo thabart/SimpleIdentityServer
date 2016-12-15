@@ -14,8 +14,8 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Uma.Common.DTOs;
 using SimpleIdentityServer.Uma.Core.Api.IntrospectionController.Actions;
-using SimpleIdentityServer.Uma.Core.Responses;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.IntrospectionController

@@ -1532,7 +1532,6 @@
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection": "1.0.0",
           "Newtonsoft.Json": "9.0.1",
-          "SimpleIdentityServer.Core.Common": "1.0.0",
           "SimpleIdentityServer.Core.Jwt": "1.0.0"
         },
         "frameworkAssemblies": [
@@ -1550,6 +1549,7 @@
         "type": "project",
         "framework": ".NETFramework,Version=v4.6",
         "dependencies": {
+          "Microsoft.AspNetCore.Http.Features": "1.0.0",
           "Newtonsoft.Json": "9.0.1"
         },
         "frameworkAssemblies": [
@@ -1597,6 +1597,26 @@
         },
         "runtime": {
           "net46/SimpleIdentityServer.Logging.dll": {}
+        }
+      },
+      "SimpleIdentityServer.Uma.Common/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.6",
+        "dependencies": {
+          "Microsoft.AspNetCore.Http.Features": "1.0.0",
+          "Newtonsoft.Json": "9.0.1"
+        },
+        "frameworkAssemblies": [
+          "System.Runtime",
+          "System.Runtime.Serialization",
+          "System.Web.Extensions",
+          "System.Xml"
+        ],
+        "compile": {
+          "net46/SimpleIdentityServer.Uma.Common.dll": {}
+        },
+        "runtime": {
+          "net46/SimpleIdentityServer.Uma.Common.dll": {}
         }
       }
     },
@@ -2896,7 +2916,7 @@
           "System.Threading": "4.0.11"
         },
         "compile": {
-          "ref/netstandard1.3/_._": {}
+          "ref/netstandard1.3/System.Collections.Specialized.dll": {}
         },
         "runtime": {
           "lib/netstandard1.3/System.Collections.Specialized.dll": {}
@@ -4379,7 +4399,6 @@
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection": "1.0.0",
           "Newtonsoft.Json": "9.0.1",
-          "SimpleIdentityServer.Core.Common": "1.0.0",
           "SimpleIdentityServer.Core.Jwt": "1.0.0",
           "System.Net.Http": "4.1.0",
           "System.Runtime.Serialization.Primitives": "4.1.1"
@@ -4395,7 +4414,9 @@
         "type": "project",
         "framework": ".NETStandard,Version=v1.6",
         "dependencies": {
+          "Microsoft.AspNetCore.Http.Features": "1.0.0",
           "Newtonsoft.Json": "9.0.1",
+          "System.Collections.Specialized": "4.0.1",
           "System.IO": "4.1.0",
           "System.Runtime.Extensions": "4.1.0",
           "System.Runtime.Serialization.Json": "4.0.2"
@@ -4444,6 +4465,24 @@
         },
         "runtime": {
           "netstandard1.5/SimpleIdentityServer.Logging.dll": {}
+        }
+      },
+      "SimpleIdentityServer.Uma.Common/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v1.6",
+        "dependencies": {
+          "Microsoft.AspNetCore.Http.Features": "1.0.0",
+          "Newtonsoft.Json": "9.0.1",
+          "System.Collections.Specialized": "4.0.1",
+          "System.IO": "4.1.0",
+          "System.Runtime.Extensions": "4.1.0",
+          "System.Runtime.Serialization.Json": "4.0.2"
+        },
+        "compile": {
+          "netstandard1.6/SimpleIdentityServer.Uma.Common.dll": {}
+        },
+        "runtime": {
+          "netstandard1.6/SimpleIdentityServer.Uma.Common.dll": {}
         }
       },
       "System.Security.Cryptography.Algorithms.Extensions/1.0.0": {
@@ -9579,6 +9618,11 @@
       "path": "../SimpleIdentityServer.Logging/project.json",
       "msbuildProject": "../SimpleIdentityServer.Logging/SimpleIdentityServer.Logging.xproj"
     },
+    "SimpleIdentityServer.Uma.Common/1.0.0": {
+      "type": "project",
+      "path": "../SimpleIdentityServer.Uma.Common/project.json",
+      "msbuildProject": "../SimpleIdentityServer.Uma.Common/SimpleIdentityServer.Uma.Common.xproj"
+    },
     "System.Security.Cryptography.Algorithms.Extensions/1.0.0": {
       "type": "project",
       "path": "../System.Security.Cryptography.Algorithms.Extensions/project.json",
@@ -9593,7 +9637,8 @@
       "Newtonsoft.Json >= 9.0.1",
       "SimpleIdentityServer.Client",
       "SimpleIdentityServer.Core.Jwt",
-      "SimpleIdentityServer.Logging"
+      "SimpleIdentityServer.Logging",
+      "SimpleIdentityServer.Uma.Common"
     ],
     ".NETFramework,Version=v4.6": [
       "System.IO.Compression",

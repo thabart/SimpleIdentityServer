@@ -21,6 +21,7 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Host.Controllers
 {
@@ -35,18 +36,18 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         }
         
         [HttpGet]
-        public ActionResult Get()
+        public async Task<ActionResult> Get()
         {
-            return Introspect();
+            return await Introspect();
         }
 
         [HttpPost]
-        public ActionResult Post()
+        public async Task<ActionResult> Post()
         {
-            return Introspect();
+            return await Introspect();
         }
 
-        private ActionResult Introspect()
+        private async Task<ActionResult> Introspect()
         {
             StringValues authorizationHeader;
             AuthenticationHeaderValue authenticationHeaderValue = null;
@@ -68,7 +69,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 return new StatusCodeResult((int)HttpStatusCode.Forbidden);
             }
 
-            var result = _introspectionActions.GetIntrospection(authenticationHeaderValue.Parameter);
+            var result = await _introspectionActions.GetIntrospection(authenticationHeaderValue.Parameter);
             return new OkObjectResult(result);
         }
     }

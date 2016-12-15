@@ -17,12 +17,10 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
 
-namespace SimpleIdentityServer.Client.Extensions
+namespace SimpleIdentityServer.Uma.Common.Extensions
 {
     internal static class DictionaryExtensions
     {
-        #region Set methods
-
         public static void SetObject(
             this Dictionary<string, object> dic,
             string name,
@@ -51,10 +49,6 @@ namespace SimpleIdentityServer.Client.Extensions
 
             dic[name] = value;
         }
-
-        #endregion
-
-        #region Get methods
 
         public static T GetObject<T>(
             this Dictionary<string, object> dic,
@@ -103,7 +97,5 @@ namespace SimpleIdentityServer.Client.Extensions
 
             return double.Parse(dic[name].ToString());
         }
-
-        #endregion
     }
 }

@@ -15,11 +15,11 @@
 #endregion
 
 using Newtonsoft.Json;
+using SimpleIdentityServer.Uma.Common.DTOs;
 using SimpleIdentityServer.Uma.Core.Errors;
 using SimpleIdentityServer.Uma.Core.Exceptions;
 using SimpleIdentityServer.Uma.Core.Extensions;
 using SimpleIdentityServer.Uma.Core.Repositories;
-using SimpleIdentityServer.Uma.Core.Responses;
 using SimpleIdentityServer.Uma.Logging;
 using System;
 using System.Collections.Generic;

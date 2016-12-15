@@ -191,7 +191,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.IntrospectionController.Ac
             Assert.True(result.Permissions.Count == 1);
             var permission = result.Permissions.First();
             Assert.True(permission.ResourceSetId == resourceSetId);
-            Assert.True(permission.Scopes == ticket.Scopes);
+            Assert.True(permission.Scopes.Count() == ticket.Scopes.Count());
             Assert.True(permission.Expiration == ticket.ExpirationDateTime.ConvertToUnixTimestamp());
         }
 

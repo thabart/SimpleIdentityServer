@@ -15,8 +15,8 @@
 #endregion
 
 using Newtonsoft.Json;
-using SimpleIdentityServer.Client.DTOs.Responses;
 using SimpleIdentityServer.Uma.Client.Factory;
+using SimpleIdentityServer.Uma.Common.DTOs;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -25,9 +25,7 @@ namespace SimpleIdentityServer.Client.Introspection
 {
     public interface IGetIntrospectionAction
     {
-        Task<IntrospectionResponse> ExecuteAsync(
-            string rpt,
-            Uri introspectionUri);
+        Task<IntrospectionResponse> ExecuteAsync(string rpt, string url);
     }
 
     internal class GetIntrospectionAction : IGetIntrospectionAction
@@ -39,24 +37,22 @@ namespace SimpleIdentityServer.Client.Introspection
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<IntrospectionResponse> ExecuteAsync(
-            string rpt,
-            Uri introspectionUri)
+        public async Task<IntrospectionResponse> ExecuteAsync(string rpt, string url)
         {
             if (string.IsNullOrWhiteSpace(rpt))
             {
                 throw new ArgumentNullException(nameof(rpt));
             }
 
-            if (introspectionUri == null)
+            if (string.IsNullOrWhiteSpace(url))
             {
-                throw new ArgumentNullException(nameof(introspectionUri));
+                throw new ArgumentNullException(nameof(url));
             }
 
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
-                RequestUri = introspectionUri
+                RequestUri = new Uri(url)
             };
             request.Headers.Add("Authorization", "Bearer " + rpt);
             var httpClient = _httpClientFactory.GetHttpClient();

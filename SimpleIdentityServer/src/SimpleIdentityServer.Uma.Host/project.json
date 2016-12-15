@@ -41,7 +41,6 @@
     "Serilog.Sinks.ElasticSearch": { "target": "project" },
     "SimpleIdentityServer.Uma.Core": { "target": "project" },
     "SimpleIdentityServer.Uma.EF": { "target": "project" },
-    "SimpleIdentityServer.Uma.Common": {"target": "project" },
     "SimpleIdentityServer.Oauth2Instrospection.Authentication": { "target": "project" },
     "WebApiContrib.Core.Storage.Redis": { "target": "project" },
     "WebApiContrib.Core.Storage.InMemory": { "target": "project" },
