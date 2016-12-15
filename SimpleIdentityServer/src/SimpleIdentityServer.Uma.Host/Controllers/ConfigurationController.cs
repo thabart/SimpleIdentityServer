@@ -33,8 +33,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         [HttpGet]
         public ActionResult GetConfiguration()
         {
-            var result = _configurationActions.GetConfiguration()
-                .ToResponse();
+            var result = _configurationActions.GetConfiguration().ToResponse();
             return new OkObjectResult(result);
         }
     }

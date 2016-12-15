@@ -15,8 +15,8 @@
 #endregion
 
 using Newtonsoft.Json;
-using SimpleIdentityServer.Client.DTOs.Responses;
 using SimpleIdentityServer.Uma.Client.Factory;
+using SimpleIdentityServer.Uma.Common.DTOs;
 using System;
 using System.Threading.Tasks;
 

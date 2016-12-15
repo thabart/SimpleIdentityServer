@@ -63,9 +63,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ConfigurationController.Actions
         private readonly IHostingProvider _hostingProvider;
         private readonly UmaServerOptions _umaServerOptions;
 
-        public GetConfigurationAction(
-            IHostingProvider hostingProvider,
-            UmaServerOptions umaServerOptions)
+        public GetConfigurationAction(IHostingProvider hostingProvider, UmaServerOptions umaServerOptions)
         {
             _hostingProvider = hostingProvider;
             _umaServerOptions = umaServerOptions;
