@@ -98,7 +98,7 @@ namespace SimpleIdentityServer.Client
             serviceCollection.AddTransient<IHttpClientFactory, HttpClientFactory>();
 
             // Register operations
-            serviceCollection.AddTransient<IAddPermissionOperation, AddPermissionOperation>();
+            serviceCollection.AddTransient<IAddPermissionsOperation, AddPermissionsOperation>();
             serviceCollection.AddTransient<IGetConfigurationOperation, GetConfigurationOperation>();
             serviceCollection.AddTransient<IAddResourceSetOperation, AddResourceSetOperation>();
             serviceCollection.AddTransient<IDeleteResourceSetOperation, DeleteResourceSetOperation>();

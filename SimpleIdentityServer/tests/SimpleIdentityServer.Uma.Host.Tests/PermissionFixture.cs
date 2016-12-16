@@ -71,6 +71,48 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             Assert.NotEmpty(ticket.TicketId);
         }
 
+        [Fact]
+        public async Task When_Adding_Permissions_Then_TicketIds_Is_Returned()
+        {
+            const string baseUrl = "http://localhost:5000";
+            // ARRANGE
+            InitializeFakeObjects();
+            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+            var resource = await _resourceSetClient.AddByResolution(new PostResourceSet
+            {
+                Name = "picture",
+                Scopes = new List<string>
+                {
+                    "read"
+                }
+            }, baseUrl + "/.well-known/uma-configuration", "header");
+            var permissions = new List<PostPermission>
+            {
+                new PostPermission
+                {
+                    ResourceSetId = resource.Id,
+                    Scopes = new List<string>
+                    {
+                        "read"
+                    }
+                },
+                new PostPermission
+                {
+                    ResourceSetId = resource.Id,
+                    Scopes = new List<string>
+                    {
+                        "read"
+                    }
+                }
+            };
+
+            // ACT
+            var ticket = await _permissionClient.AddByResolution(permissions, baseUrl + "/.well-known/uma-configuration", "header");
+
+            // ASSERT
+            Assert.NotNull(ticket);
+        }
+
         private void InitializeFakeObjects()
         {
             _httpClientFactoryStub = new Mock<IHttpClientFactory>();
@@ -89,7 +131,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                 new UpdateResourceOperation(_httpClientFactoryStub.Object),
                 new GetConfigurationOperation(_httpClientFactoryStub.Object));
             _permissionClient = new PermissionClient(
-                new AddPermissionOperation(_httpClientFactoryStub.Object),
+                new AddPermissionsOperation(_httpClientFactoryStub.Object),
                 new GetConfigurationOperation(_httpClientFactoryStub.Object));
         }
     }

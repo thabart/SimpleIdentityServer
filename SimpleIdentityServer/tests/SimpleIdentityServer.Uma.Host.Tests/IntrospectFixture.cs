@@ -127,7 +127,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             _authorizationClient = new AuthorizationClient(new GetAuthorizationOperation(_httpClientFactoryStub.Object),
                 new GetConfigurationOperation(_httpClientFactoryStub.Object));
             _permissionClient = new PermissionClient(
-                new AddPermissionOperation(_httpClientFactoryStub.Object),
+                new AddPermissionsOperation(_httpClientFactoryStub.Object),
                 new GetConfigurationOperation(_httpClientFactoryStub.Object));
             _introspectionClient = new IntrospectionClient(
                 new GetIntrospectionAction(_httpClientFactoryStub.Object),
