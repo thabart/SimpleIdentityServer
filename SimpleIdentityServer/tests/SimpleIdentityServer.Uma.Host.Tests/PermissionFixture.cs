@@ -22,6 +22,7 @@ using SimpleIdentityServer.Client.ResourceSet;
 using SimpleIdentityServer.Uma.Client.Factory;
 using SimpleIdentityServer.Uma.Common.DTOs;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -107,10 +108,11 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             };
 
             // ACT
-            var ticket = await _permissionClient.AddByResolution(permissions, baseUrl + "/.well-known/uma-configuration", "header");
+            var tickets = await _permissionClient.AddByResolution(permissions, baseUrl + "/.well-known/uma-configuration", "header");
 
             // ASSERT
-            Assert.NotNull(ticket);
+            Assert.NotNull(tickets);
+            Assert.True(tickets.TicketIds.Count() == 2);
         }
 
         private void InitializeFakeObjects()
