@@ -34,9 +34,8 @@ namespace SimpleIdentityServer.Uma.Core.Api.Authorization.Actions
 {
     public interface IGetAuthorizationAction
     {
-        Task<AuthorizationResponse> Execute(
-               GetAuthorizationActionParameter getAuthorizationActionParameter,
-               IEnumerable<System.Security.Claims.Claim> claims);
+        Task<AuthorizationResponse> Execute(GetAuthorizationActionParameter parameter, IEnumerable<System.Security.Claims.Claim> claims);
+        Task<IEnumerable<AuthorizationResponse>> Execute(IEnumerable<GetAuthorizationActionParameter> parameters, IEnumerable<System.Security.Claims.Claim> claims);
     }
 
     internal class GetAuthorizationAction : IGetAuthorizationAction
@@ -64,9 +63,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Authorization.Actions
             _umaServerEventSource = umaServerEventSource;
         }
 
-        public async Task<AuthorizationResponse> Execute(
-            GetAuthorizationActionParameter getAuthorizationActionParameter,
-            IEnumerable<System.Security.Claims.Claim> claims)
+        public async Task<AuthorizationResponse> Execute(GetAuthorizationActionParameter getAuthorizationActionParameter, IEnumerable<System.Security.Claims.Claim> claims)
         {
             var json = getAuthorizationActionParameter == null ? string.Empty : JsonConvert.SerializeObject(getAuthorizationActionParameter);
             _umaServerEventSource.StartGettingAuthorization(json);
@@ -139,6 +136,55 @@ namespace SimpleIdentityServer.Uma.Core.Api.Authorization.Actions
                 AuthorizationPolicyResult = AuthorizationPolicyResultEnum.Authorized,
                 Rpt = rpt.Value
             };
+        }
+
+        public async Task<IEnumerable<AuthorizationResponse>> Execute(IEnumerable<GetAuthorizationActionParameter> parameters, IEnumerable<System.Security.Claims.Claim> claims)
+        {
+            // 1. Check parameters.
+            if (parameters == null)
+            {
+                throw new ArgumentNullException(nameof(parameters));
+            }
+
+            if (claims == null ||
+                !claims.Any())
+            {
+                throw new ArgumentNullException(nameof(claims));
+            }
+
+            // 2. Retrieve the tickets.
+            var clientId = GetClientId(claims);
+            var json = JsonConvert.SerializeObject(parameters);
+            _umaServerEventSource.StartGettingAuthorization(json);
+            var tickets = await _ticketRepository.Get(parameters.Select(p => p.TicketId));
+            // 3. Check parameters.
+            foreach(var parameter in parameters)
+            {
+                if (string.IsNullOrWhiteSpace(parameter.TicketId))
+                {
+                    throw new BaseUmaException(ErrorCodes.InvalidRequestCode,
+                        string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "ticket_id"));
+                }
+
+                var ticket = tickets.FirstOrDefault(t => t.Id == parameter.TicketId);
+                if (ticket == null)
+                {
+                    throw new BaseUmaException(ErrorCodes.InvalidTicket,
+                        string.Format(ErrorDescriptions.TheTicketDoesntExist, parameter.TicketId));
+                }
+
+                if (ticket.ClientId != clientId)
+                {
+                    throw new BaseUmaException(ErrorCodes.InvalidTicket,
+                        ErrorDescriptions.TheTicketIssuerIsDifferentFromTheClient);
+                }
+
+                if (ticket.ExpirationDateTime < DateTime.UtcNow)
+                {
+                    throw new BaseUmaException(ErrorCodes.ExpiredTicket, ErrorDescriptions.TheTicketIsExpired);
+                }
+            }
+            return null;
         }
 
         private static string GetClientId(IEnumerable<System.Security.Claims.Claim> claims)

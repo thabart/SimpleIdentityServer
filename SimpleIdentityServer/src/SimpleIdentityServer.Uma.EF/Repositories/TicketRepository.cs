@@ -21,6 +21,7 @@ using SimpleIdentityServer.Uma.EF.Extensions;
 using System.Threading.Tasks;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SimpleIdentityServer.Uma.EF.Repositories
 {
@@ -37,6 +38,11 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
         {
             var ticket = await _context.Tickets.FirstOrDefaultAsync(t => t.Id == id).ConfigureAwait(false);
             return ticket == null ? null : ticket.ToDomain();
+        }
+
+        public async Task<IEnumerable<Ticket>> Get(IEnumerable<string> ids)
+        {
+            return await _context.Tickets.Where(t => ids.Contains(t.Id)).Select(t => t.ToDomain()).ToListAsync().ConfigureAwait(false);
         }
 
         public async Task<bool> Insert(IEnumerable<Ticket> tickets)

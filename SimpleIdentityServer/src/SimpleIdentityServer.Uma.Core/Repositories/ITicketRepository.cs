@@ -23,6 +23,7 @@ namespace SimpleIdentityServer.Uma.Core.Repositories
     public interface ITicketRepository
     {
         Task<Ticket> Get(string id);
+        Task<IEnumerable<Ticket>> Get(IEnumerable<string> ids);
         Task<bool> Insert(Ticket ticket);
         Task<bool> Insert(IEnumerable<Ticket> tickets);
     }

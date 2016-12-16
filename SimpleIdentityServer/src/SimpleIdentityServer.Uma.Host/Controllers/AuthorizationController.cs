@@ -81,6 +81,18 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             return new OkObjectResult(content);
         }
 
+        [HttpPost("bulk")]
+        [Authorize("Authorization")]
+        public async Task<ActionResult> GetAuthorizations([FromBody] IEnumerable<PostAuthorization> postAuthorizations)
+        {
+            if (postAuthorizations == null)
+            {
+                throw new ArgumentNullException(nameof(postAuthorizations));
+            }
+
+            return null;
+        }
+
         private static ActionResult GetErrorResponse(AuthorizationPolicyResultEnum authorizationPolicyResult)
         {
             var error = _mappingResultWithError[authorizationPolicyResult];
