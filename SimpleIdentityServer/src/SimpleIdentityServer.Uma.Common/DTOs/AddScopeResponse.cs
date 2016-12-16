@@ -19,7 +19,7 @@ using System.Runtime.Serialization;
 namespace SimpleIdentityServer.Uma.Common.DTOs
 {
     [DataContract]
-    public class AddScopeResponseName
+    public class AddScopeResponse
     {
         [DataMember(Name = ScopeResponseNames.Id)]
         public string Id { get; set; }

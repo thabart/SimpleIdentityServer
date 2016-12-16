@@ -64,7 +64,7 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
 
         public async Task<Scope> Get(string id)
         {
-            var scope = await _context.Scopes.FirstOrDefaultAsync(s => s.Id == id);
+            var scope = await _context.Scopes.FirstOrDefaultAsync(s => s.Id == id).ConfigureAwait(false);
             return scope == null ? null : scope.ToDomain();
         }
 
@@ -92,7 +92,12 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
             {
                 try
                 {
-                    var record = await _context.Scopes.FirstOrDefaultAsync(s => s.Id == scope.Id);
+                    var record = await _context.Scopes.FirstOrDefaultAsync(s => s.Id == scope.Id).ConfigureAwait(false);
+                    if (record == null)
+                    {
+                        return false;
+                    }
+
                     record.Name = scope.Name;
                     record.IconUri = scope.IconUri;
                     await _context.SaveChangesAsync().ConfigureAwait(false);

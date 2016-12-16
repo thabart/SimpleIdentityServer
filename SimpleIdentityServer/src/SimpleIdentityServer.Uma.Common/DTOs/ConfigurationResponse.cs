@@ -58,11 +58,11 @@ namespace SimpleIdentityServer.Uma.Common.DTOs
         [DataMember(Name = ConfigurationResponseNames.ResourceSetRegistrationEndPoint)]
         public string ResourceSetRegistrationEndPoint { get; set; }
 
-        [DataMember(Name = ConfigurationResponseNames.RtpEndPoint)]
-        public string RtpEndPoint { get; set; }
+        [DataMember(Name = ConfigurationResponseNames.RptEndPoint)]
+        public string RptEndPoint { get; set; }
 
-        [DataMember(Name = ConfigurationResponseNames.RtpProfilesSupported)]
-        public List<string> RtpProfilesSupported { get; set; }
+        [DataMember(Name = ConfigurationResponseNames.RptProfilesSupported)]
+        public List<string> RptProfilesSupported { get; set; }
 
         [DataMember(Name = ConfigurationResponseNames.TokenEndPoint)]
         public string TokenEndPoint { get; set; }
@@ -75,5 +75,7 @@ namespace SimpleIdentityServer.Uma.Common.DTOs
 
         [DataMember(Name = ConfigurationResponseNames.PolicyEndPoint)]
         public string PolicyEndPoint { get; set; }
+        [DataMember(Name = ConfigurationResponseNames.ScopeEndPoint)]
+        public string ScopeEndPoint { get; set; }
     }
 }

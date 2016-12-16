@@ -60,6 +60,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ConfigurationController.Actions
         private const string RptApi = "/rpt";
         private const string PolicyApi = "/policies";
         private const string IntrospectionApi = "/status";
+        private const string ScopeApi = "/scopes";
         private readonly IHostingProvider _hostingProvider;
         private readonly UmaServerOptions _umaServerOptions;
 
@@ -78,7 +79,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ConfigurationController.Actions
                 Issuer = absoluteUriWithVirtualPath,
                 PatProfilesSupported = _patsupportedProfiles,
                 AatProfilesSupported = _aatsupportedProfiles,
-                RtpProfilesSupported = _bearerRptProfiles,
+                RptProfilesSupported = _bearerRptProfiles,
                 PatGrantTypesSupported = _patGrantTypesSupported,
                 AatGrantTypesSupported = _aatGrantTypesSupported,
                 ClaimTokenProfilesSupported = new List<string>(),
@@ -90,8 +91,9 @@ namespace SimpleIdentityServer.Uma.Core.Api.ConfigurationController.Actions
                 IntrospectionEndPoint = absoluteUriWithVirtualPath + IntrospectionApi,
                 ResourceSetRegistrationEndPoint = absoluteUriWithVirtualPath + ResourceSetApi,
                 PermissionRegistrationEndPoint = absoluteUriWithVirtualPath + PermissionApi,
-                RtpEndPoint = absoluteUriWithVirtualPath + RptApi,
-                PolicyEndPoint = absoluteUriWithVirtualPath + PolicyApi
+                RptEndPoint = absoluteUriWithVirtualPath + RptApi,
+                PolicyEndPoint = absoluteUriWithVirtualPath + PolicyApi,
+                ScopeEndPoint = absoluteUriWithVirtualPath + ScopeApi
             };
             
             return result;

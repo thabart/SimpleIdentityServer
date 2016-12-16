@@ -69,7 +69,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
 
             var parameter = postScope.ToParameter();
             await _scopeActions.InsertScope(parameter);
-            var response = new AddScopeResponseName
+            var response = new AddScopeResponse
             {
                 Id = postScope.Id
             };

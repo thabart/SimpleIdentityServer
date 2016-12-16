@@ -33,10 +33,11 @@ namespace SimpleIdentityServer.Uma.Core.Responses
         public string PermissionRegistrationEndPoint { get; set; }
         public string RequestingPartyClaimsEndPoint { get; set; }
         public string ResourceSetRegistrationEndPoint { get; set; }
-        public string RtpEndPoint { get; set; }
-        public List<string> RtpProfilesSupported { get; set; }
+        public string RptEndPoint { get; set; }
+        public List<string> RptProfilesSupported { get; set; }
         public string TokenEndPoint { get; set; }
         public List<string> UmaProfilesSupported { get; set; }
         public string PolicyEndPoint { get; set; }
+        public string ScopeEndPoint { get; set; }
     }
 }

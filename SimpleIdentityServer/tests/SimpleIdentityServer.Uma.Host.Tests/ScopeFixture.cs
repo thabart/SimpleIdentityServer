@@ -17,6 +17,7 @@
 using Moq;
 using SimpleIdentityServer.Client.Configuration;
 using SimpleIdentityServer.Client.ResourceSet;
+using SimpleIdentityServer.Client.Scope;
 using SimpleIdentityServer.Uma.Client.Factory;
 using SimpleIdentityServer.Uma.Common.DTOs;
 using System.Collections.Generic;
@@ -30,7 +31,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
     public class ScopeFixture : IClassFixture<TestUmaServerFixture>
     {
         private Mock<IHttpClientFactory> _httpClientFactoryStub;
-        private IResourceSetClient _resourceSetClient;
+        private IScopeClient _scopeClient;
         private readonly TestUmaServerFixture _server;
 
         public ScopeFixture(TestUmaServerFixture server)
@@ -38,14 +39,37 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             _server = server;
         }
 
+        [Fact]
+        public async Task When_Adding_Scope_Then_Information_Are_Persisted()
+        {
+            const string baseUrl = "http://localhost:5000";
+            // ARRANGE
+            InitializeFakeObjects();
+            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
+            // ACT
+            var addResult = await _scopeClient.AddByResolution(new PostScope
+            {
+                Id = "add_client",
+                Name = "add client",
+                IconUri = "http://localhost/client.png"
+            }, baseUrl + "/.well-known/uma-configuration");
+            var scope = await _scopeClient.GetByResolution(addResult.Id, baseUrl + "/.well-known/uma-configuration");
+
+            // ASSERTS
+            Assert.NotNull(scope);
+            Assert.True(scope.IconUri == "http://localhost/client.png");
+            Assert.True(scope.Name == "add client");
+        }
+
         private void InitializeFakeObjects()
         {
             _httpClientFactoryStub = new Mock<IHttpClientFactory>();
-            _resourceSetClient = new ResourceSetClient(new AddResourceSetOperation(_httpClientFactoryStub.Object),
-                new DeleteResourceSetOperation(_httpClientFactoryStub.Object),
-                new GetResourcesOperation(_httpClientFactoryStub.Object),
-                new GetResourceOperation(_httpClientFactoryStub.Object),
-                new UpdateResourceOperation(_httpClientFactoryStub.Object),
+            _scopeClient = new ScopeClient(new GetScopeOperation(_httpClientFactoryStub.Object),
+                new GetScopesOperation(_httpClientFactoryStub.Object),
+                new DeleteScopeOperation(_httpClientFactoryStub.Object),
+                new UpdateScopeOperation(_httpClientFactoryStub.Object),
+                new AddScopeOperation(_httpClientFactoryStub.Object),
                 new GetConfigurationOperation(_httpClientFactoryStub.Object));
         }
     }

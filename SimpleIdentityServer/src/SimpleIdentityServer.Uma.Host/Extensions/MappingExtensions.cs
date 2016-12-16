@@ -240,11 +240,12 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
                 PolicyEndPoint = configuration.PolicyEndPoint,
                 RequestingPartyClaimsEndPoint = configuration.RequestingPartyClaimsEndPoint,
                 ResourceSetRegistrationEndPoint = configuration.ResourceSetRegistrationEndPoint,
-                RtpEndPoint = configuration.RtpEndPoint,
-                RtpProfilesSupported = configuration.RtpProfilesSupported,
+                RptEndPoint = configuration.RptEndPoint,
+                RptProfilesSupported = configuration.RptProfilesSupported,
                 TokenEndPoint = configuration.TokenEndPoint,
                 UmaProfilesSupported = configuration.UmaProfilesSupported,
-                Version = configuration.Version
+                Version = configuration.Version,
+                ScopeEndPoint = configuration.ScopeEndPoint
             };
         }
     }
