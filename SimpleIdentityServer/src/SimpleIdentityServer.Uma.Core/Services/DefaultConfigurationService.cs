@@ -1,5 +1,5 @@
 ﻿#region copyright
-// Copyright 2015 Habart Thierry
+// Copyright 2016 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,17 +14,15 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Uma.Core.Services;
+using System.Threading.Tasks;
 
-namespace SimpleIdentityServer.Uma.Core
+namespace SimpleIdentityServer.Uma.Core.Services
 {
-    public class UmaServerOptions
+    public class DefaultConfigurationService : IConfigurationService
     {
-        public string RegisterOperation { get; set; }
-        public string TokenOperation { get; set; }
-        public string AuthorizeOperation { get; set; }
-        public int TicketLifeTime { get; set; }
-        public int RptLifeTime { get; set; }
-        public IConfigurationService ConfigurationService { get; set; }
+        public Task<int> GetTicketLifeTime()
+        {
+            return Task.FromResult(3000);
+        }
     }
 }

@@ -19,6 +19,8 @@ using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.EF.Extensions;
 using System.Threading.Tasks;
+using System;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Uma.EF.Repositories
 {
@@ -37,8 +39,41 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
             return ticket == null ? null : ticket.ToDomain();
         }
 
+        public async Task<bool> Insert(IEnumerable<Ticket> tickets)
+        {
+            if (tickets == null)
+            {
+                throw new ArgumentNullException(nameof(tickets));
+            }
+
+            using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
+            {
+                try
+                {
+                    foreach(var ticket in tickets)
+                    {
+                        _context.Tickets.Add(ticket.ToModel());
+                    }
+
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
+                    transaction.Commit();
+                    return true;
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    return false;
+                }
+            }
+        }
+
         public async Task<bool> Insert(Ticket ticket)
         {
+            if (ticket == null)
+            {
+                throw new ArgumentNullException(nameof(ticket));
+            }
+
             using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
                 try

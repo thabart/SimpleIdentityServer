@@ -82,6 +82,11 @@ namespace SimpleIdentityServer.Uma.Common
         public const string TicketId = "ticket_id";
     }
 
+    public static class AddPermissionsResponseNames
+    {
+        public const string TicketIds = "ticket_ids";
+    }
+
     public static class PostClaimTokenNames
     {
         public const string Format = "format";

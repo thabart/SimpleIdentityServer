@@ -15,6 +15,7 @@
 #endregion
 
 using SimpleIdentityServer.Uma.Core.Models;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Repositories
@@ -23,5 +24,6 @@ namespace SimpleIdentityServer.Uma.Core.Repositories
     {
         Task<Ticket> Get(string id);
         Task<bool> Insert(Ticket ticket);
+        Task<bool> Insert(IEnumerable<Ticket> tickets);
     }
 }

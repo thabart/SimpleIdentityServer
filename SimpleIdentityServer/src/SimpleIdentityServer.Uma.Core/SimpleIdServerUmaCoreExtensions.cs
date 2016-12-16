@@ -37,6 +37,7 @@ using SimpleIdentityServer.Uma.Core.Code;
 using SimpleIdentityServer.Uma.Core.Helpers;
 using SimpleIdentityServer.Uma.Core.JwtToken;
 using SimpleIdentityServer.Uma.Core.Policies;
+using SimpleIdentityServer.Uma.Core.Services;
 using SimpleIdentityServer.Uma.Core.Validators;
 using System;
 
@@ -118,6 +119,15 @@ namespace SimpleIdentityServer.Uma.Core
             serviceCollection.AddTransient<IAddResourceSetToPolicyAction, AddResourceSetToPolicyAction>();
             serviceCollection.AddTransient<IDeleteResourcePolicyAction, DeleteResourcePolicyAction>();
             serviceCollection.AddTransient<IGetPoliciesAction, GetPoliciesAction>();
+            if (umaServerOptions.ConfigurationService == null)
+            {
+                serviceCollection.AddTransient<IConfigurationService, DefaultConfigurationService>();
+            }
+            else
+            {
+                serviceCollection.AddSingleton<IConfigurationService>(umaServerOptions.ConfigurationService);
+            }
+
             serviceCollection.AddSimpleIdentityServerJwt();
             serviceCollection.AddSingleton(umaServerOptions);
         }

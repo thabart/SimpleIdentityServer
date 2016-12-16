@@ -20,6 +20,8 @@ using SimpleIdentityServer.Uma.Common.DTOs;
 using SimpleIdentityServer.Uma.Core.Api.PermissionController;
 using SimpleIdentityServer.Uma.Host.Extensions;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -46,10 +48,32 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
 
             var parameter = postPermission.ToParameter();
             var clientId = this.GetClientId();
-            var ticketId = await _permissionControllerActions.AddPermission(parameter, clientId);
+            var ticketId = await _permissionControllerActions.Add(parameter, clientId);
             var result = new AddPermissionResponse
             {
                 TicketId = ticketId
+            };
+            return new ObjectResult(result)
+            {
+                StatusCode = (int)HttpStatusCode.Created
+            };
+        }
+
+        [HttpPost("bulk")]
+        [Authorize("UmaProtection")]
+        public async Task<ActionResult> PostPermissions([FromBody] IEnumerable<PostPermission> postPermissions)
+        {
+            if (postPermissions == null)
+            {
+                throw new ArgumentNullException(nameof(postPermissions));
+            }
+
+            var parameters = postPermissions.Select(p => p.ToParameter());
+            var clientId = this.GetClientId();
+            var ticketIds = await _permissionControllerActions.Add(parameters, clientId);
+            var result = new AddPermissionsResponse
+            {
+                TicketIds = ticketIds
             };
             return new ObjectResult(result)
             {

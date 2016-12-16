@@ -14,17 +14,12 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Uma.Core.Services;
+using System.Threading.Tasks;
 
-namespace SimpleIdentityServer.Uma.Core
+namespace SimpleIdentityServer.Uma.Core.Services
 {
-    public class UmaServerOptions
+    public interface IConfigurationService
     {
-        public string RegisterOperation { get; set; }
-        public string TokenOperation { get; set; }
-        public string AuthorizeOperation { get; set; }
-        public int TicketLifeTime { get; set; }
-        public int RptLifeTime { get; set; }
-        public IConfigurationService ConfigurationService { get; set; }
+        Task<int> GetTicketLifeTime();
     }
 }

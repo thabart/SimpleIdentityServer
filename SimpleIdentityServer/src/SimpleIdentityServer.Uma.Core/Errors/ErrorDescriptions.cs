@@ -22,6 +22,7 @@ namespace SimpleIdentityServer.Uma.Core.Errors
         public const string TheUrlIsNotWellFormed = "the url {0} is not well formed";
         public const string TheResourceSetCannotBeInserted = "an error occured while trying to insert the resource set";
         public const string TheResourceSetDoesntExist = "resource set {0} doesn't exist";
+        public const string AtLeastOneResourceDoesntExist = "at least one resource doesn't exist";
         public const string ThePolicyDoesntContainResource = "the authorization policy doesn't contain the resource";
         public const string TheResourceSetCannotBeUpdated = "resource set {0} cannot be udpated";
         public const string TheResourceSetCannotBeRemoved = "resource set {0} cannot be removed";
@@ -35,7 +36,7 @@ namespace SimpleIdentityServer.Uma.Core.Errors
         public const string TheScopeAlreadyExists = "scope {0} already exists";
         public const string TheScopeAreNotValid = "one or more scopes are not valid";
         public const string TheSchemeIsNotCorrect = "authorization scheme is not correct";
-        public const string TheTicketCannotBeInserted = "ticket cannot be inserted";
+        public const string AtLeastOneTicketCannotBeInserted = "at least one ticket cannot be inserted";
         public const string TheTicketDoesntExist = "the ticket {0} doesn't exist";
         public const string TheTicketIssuerIsDifferentFromTheClient = "the ticket issuer is different from the client";
         public const string TheTicketIsExpired = "the ticket is expired";

@@ -137,5 +137,22 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
                 }
             }
         }
+
+        public async Task<IEnumerable<ResourceSet>> Get(IEnumerable<string> ids)
+        {
+            try
+            {
+                return await _context.ResourceSets
+                    .Include(r => r.PolicyResources)
+                    .Where(r => ids.Contains(r.Id))
+                    .Select(r => r.ToDomain())
+                    .ToListAsync()
+                    .ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
     }
 }

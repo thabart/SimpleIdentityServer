@@ -14,17 +14,15 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Uma.Core.Services;
+using System.Collections.Generic;
+using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.Uma.Core
+namespace SimpleIdentityServer.Uma.Common.DTOs
 {
-    public class UmaServerOptions
+    [DataContract]
+    public class AddPermissionsResponse
     {
-        public string RegisterOperation { get; set; }
-        public string TokenOperation { get; set; }
-        public string AuthorizeOperation { get; set; }
-        public int TicketLifeTime { get; set; }
-        public int RptLifeTime { get; set; }
-        public IConfigurationService ConfigurationService { get; set; }
+        [DataMember(Name = AddPermissionsResponseNames.TicketIds)]
+        public IEnumerable<string> TicketIds { get; set; }
     }
 }

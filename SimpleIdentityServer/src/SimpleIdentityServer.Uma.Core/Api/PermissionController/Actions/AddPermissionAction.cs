@@ -15,15 +15,16 @@
 #endregion
 
 using Newtonsoft.Json;
-using SimpleIdentityServer.Uma.Core.Configuration;
 using SimpleIdentityServer.Uma.Core.Errors;
 using SimpleIdentityServer.Uma.Core.Exceptions;
 using SimpleIdentityServer.Uma.Core.Helpers;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Repositories;
+using SimpleIdentityServer.Uma.Core.Services;
 using SimpleIdentityServer.Uma.Logging;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -31,9 +32,8 @@ namespace SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions
 {
     internal interface IAddPermissionAction
     {
-        Task<string> Execute(
-            AddPermissionParameter addPermissionParameter,
-            string clientId);
+        Task<string> Execute(string clientId, AddPermissionParameter addPermissionParameters);
+        Task<IEnumerable<string>> Execute(string clientId, IEnumerable<AddPermissionParameter> addPermissionParameters);
     }
 
     internal class AddPermissionAction : IAddPermissionAction
@@ -41,91 +41,107 @@ namespace SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions
         private readonly IResourceSetRepository _resourceSetRepository;
         private readonly ITicketRepository _ticketRepository;
         private readonly IRepositoryExceptionHelper _repositoryExceptionHelper;
-        private readonly UmaServerOptions _umaServerOptions;
+        private readonly IConfigurationService _configurationService;
         private readonly IUmaServerEventSource _umaServerEventSource;
 
         public AddPermissionAction(
             IResourceSetRepository resourceSetRepository,
             ITicketRepository ticketRepository,
             IRepositoryExceptionHelper repositoryExceptionHelper,
-            UmaServerOptions umaServerOptions,
+            IConfigurationService configurationService,
             IUmaServerEventSource umaServerEventSource)
         {
             _resourceSetRepository = resourceSetRepository;
             _ticketRepository = ticketRepository;
             _repositoryExceptionHelper = repositoryExceptionHelper;
-            _umaServerOptions = umaServerOptions;
+            _configurationService = configurationService;
             _umaServerEventSource = umaServerEventSource;
         }
 
-        public async Task<string> Execute(
-            AddPermissionParameter addPermissionParameter,
-            string clientId)
+        public async Task<string> Execute(string clientId, AddPermissionParameter addPermissionParameter)
         {
-            var json = addPermissionParameter == null ? string.Empty : JsonConvert.SerializeObject(addPermissionParameter);
-            _umaServerEventSource.StartAddPermission(json);
-            if (addPermissionParameter == null)
-            {
-                throw new ArgumentNullException(nameof(addPermissionParameter));
-            }
-
-            if (string.IsNullOrWhiteSpace(clientId))
-            {
-                throw new ArgumentNullException(nameof(clientId));
-            }
-
-            await CheckAddPermissionParameter(addPermissionParameter);
-            var ticketLifetimeInSeconds = _umaServerOptions.TicketLifeTime;
-            var ticket = new Ticket
-            {
-                Id = Guid.NewGuid().ToString(),
-                ClientId = clientId,
-                ExpirationDateTime = DateTime.UtcNow.AddSeconds(ticketLifetimeInSeconds),
-                Scopes = addPermissionParameter.Scopes,
-                ResourceSetId = addPermissionParameter.ResourceSetId,
-                CreateDateTime = DateTime.UtcNow
-            };
-
-            await _repositoryExceptionHelper.HandleException(
-                string.Format(ErrorDescriptions.TheTicketCannotBeInserted, addPermissionParameter.ResourceSetId),
-                () => _ticketRepository.Insert(ticket));
-            _umaServerEventSource.FinishAddPermission(json);
-            return ticket.Id;
+            var result = await Execute(clientId, new[] { addPermissionParameter });
+            return result.First();
         }
 
-        private async Task CheckAddPermissionParameter(AddPermissionParameter addPermissionParameter)
+        public async Task<IEnumerable<string>> Execute(string clientId, IEnumerable<AddPermissionParameter> addPermissionParameters)
         {
-            if (string.IsNullOrWhiteSpace(addPermissionParameter.ResourceSetId))
+            if (string.IsNullOrWhiteSpace(clientId))
             {
-                throw new BaseUmaException(
-                    ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddPermissionNames.ResourceSetId));
+                throw new ArgumentNullException(clientId);
             }
 
-            if (addPermissionParameter.Scopes == null ||
-                !addPermissionParameter.Scopes.Any())
+            if (addPermissionParameters == null)
             {
-                throw new BaseUmaException(
-                    ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddPermissionNames.Scopes));
+                throw new ArgumentNullException(nameof(addPermissionParameters));
             }
 
-            var resourceSet = await _repositoryExceptionHelper.HandleException(
-                string.Format(ErrorDescriptions.TheResourceSetCannotBeRetrieved, addPermissionParameter.ResourceSetId),
-                () => _resourceSetRepository.Get(addPermissionParameter.ResourceSetId));
-            if (resourceSet == null)
-            {
-                throw new BaseUmaException(
-                    ErrorCodes.InvalidResourceSetId,
-                    string.Format(ErrorDescriptions.TheResourceSetDoesntExist, addPermissionParameter.ResourceSetId));
-            }
+            var json = addPermissionParameters == null ? string.Empty : JsonConvert.SerializeObject(addPermissionParameters);
+            _umaServerEventSource.StartAddPermission(json);
 
-            if (resourceSet.Scopes == null ||
-                addPermissionParameter.Scopes.Any(s => !resourceSet.Scopes.Contains(s)))
+            await CheckAddPermissionParameter(addPermissionParameters);
+            var ticketLifetimeInSeconds = await _configurationService.GetTicketLifeTime();
+            var tickets = new List<Ticket>();
+            foreach(var addPermissionParameter in addPermissionParameters)
             {
-                throw new BaseUmaException(
-                    ErrorCodes.InvalidScope,
-                    ErrorDescriptions.TheScopeAreNotValid);
+                tickets.Add(new Ticket
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    ClientId = clientId,
+                    ExpirationDateTime = DateTime.UtcNow.AddSeconds(ticketLifetimeInSeconds),
+                    Scopes = addPermissionParameter.Scopes,
+                    ResourceSetId = addPermissionParameter.ResourceSetId,
+                    CreateDateTime = DateTime.UtcNow
+                });
+            }
+            
+            await _repositoryExceptionHelper.HandleException(
+                ErrorDescriptions.AtLeastOneTicketCannotBeInserted,
+                () => _ticketRepository.Insert(tickets));
+            _umaServerEventSource.FinishAddPermission(json);
+            return tickets.Select(t => t.Id);
+        }
+
+        private async Task CheckAddPermissionParameter(IEnumerable<AddPermissionParameter> addPermissionParameters)
+        {
+            // 1. Get resource sets.
+            var resourceSets = await _repositoryExceptionHelper.HandleException(
+                ErrorDescriptions.TheResourceSetsCannotBeRetrieved,
+                () => _resourceSetRepository.Get(addPermissionParameters.Select(p => p.ResourceSetId)));
+
+            // 2. Check parameters & scope exist.
+            foreach (var addPermissionParameter in addPermissionParameters)
+            {
+                if (string.IsNullOrWhiteSpace(addPermissionParameter.ResourceSetId))
+                {
+                    throw new BaseUmaException(
+                        ErrorCodes.InvalidRequestCode,
+                        string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddPermissionNames.ResourceSetId));
+                }
+
+                if (addPermissionParameter.Scopes == null ||
+                    !addPermissionParameter.Scopes.Any())
+                {
+                    throw new BaseUmaException(
+                        ErrorCodes.InvalidRequestCode,
+                        string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddPermissionNames.Scopes));
+                }
+
+                var resourceSet = resourceSets.FirstOrDefault(r => addPermissionParameter.ResourceSetId == r.Id);
+                if (resourceSet == null)
+                {
+                    throw new BaseUmaException(
+                        ErrorCodes.InvalidResourceSetId,
+                        string.Format(ErrorDescriptions.TheResourceSetDoesntExist, addPermissionParameter.ResourceSetId));
+                }
+
+                if (resourceSet.Scopes == null ||
+                    addPermissionParameter.Scopes.Any(s => !resourceSet.Scopes.Contains(s)))
+                {
+                    throw new BaseUmaException(
+                        ErrorCodes.InvalidScope,
+                        ErrorDescriptions.TheScopeAreNotValid);
+                }
             }
         }
     }

@@ -45,18 +45,11 @@ namespace SimpleIdentityServer.Proxy
     internal class SecurityProxy : ISecurityProxy
     {
         private const string UmaProtectionScope = "uma_protection";
-
         private const string UmaAuthorizationScope = "uma_authorization";
-
         private readonly SecurityOptions _securityOptions;
-
         private readonly IIdentityServerClientFactory _identityServerClientFactory;
-
         private readonly IIdentityServerUmaManagerClientFactory _identityServerUmaManagerClientFactory;
-
         private readonly IIdentityServerUmaClientFactory _identityServerUmaClientFactory;
-
-        #region Constructor
 
         public SecurityProxy(
             SecurityOptions securityOptions,
@@ -70,9 +63,6 @@ namespace SimpleIdentityServer.Proxy
             _identityServerUmaClientFactory = identityServerUmaClientFactory;
         }
 
-        #endregion
-
-        #region Public methods
 
         public async Task<string> GetRpt(string resourceUrl,
             string umaProtectionToken,
@@ -156,12 +146,8 @@ namespace SimpleIdentityServer.Proxy
                 umaProtectionToken,
                 resourceToken,
                 callback);
-        }        
-
-        #endregion
-
-        #region Private methods
-
+        }
+        
         private async Task<string> CommonGetRpt(string resourceUrl,
             List<string> permissions,
             string umaAuthorizationToken,
@@ -228,8 +214,7 @@ namespace SimpleIdentityServer.Proxy
                 Scopes = scopes
             };
 
-            return await _identityServerUmaClientFactory.GetPermissionClient()
-                .AddByResolution(postPermission, _securityOptions.UmaConfigurationUrl, accessToken);
+            return await _identityServerUmaClientFactory.GetPermissionClient().AddByResolution(postPermission, _securityOptions.UmaConfigurationUrl, accessToken);
         }
 
         private async Task<AuthorizationResponse> GetAuthorization(
@@ -266,7 +251,5 @@ namespace SimpleIdentityServer.Proxy
             return await _identityServerUmaClientFactory.GetAuthorizationClient()
                 .GetByResolution(postAuthorization, _securityOptions.UmaConfigurationUrl, accessToken);
         }
-
-        #endregion
     }
 }

@@ -16,15 +16,15 @@
 
 using SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions;
 using SimpleIdentityServer.Uma.Core.Parameters;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.PermissionController
 {
     public interface IPermissionControllerActions
     {
-        Task<string> AddPermission(
-               AddPermissionParameter addPermissionParameter,
-               string clientId);
+        Task<string> Add(AddPermissionParameter addPermissionParameter, string clientId);
+        Task<IEnumerable<string>> Add(IEnumerable<AddPermissionParameter> addPermissionParameters, string clientId);
     }
 
     internal class PermissionControllerActions : IPermissionControllerActions
@@ -36,11 +36,14 @@ namespace SimpleIdentityServer.Uma.Core.Api.PermissionController
             _addPermissionAction = addPermissionAction;
         }
 
-        public Task<string> AddPermission(
-            AddPermissionParameter addPermissionParameter,
-            string clientId)
+        public Task<string> Add(AddPermissionParameter addPermissionParameter, string clientId)
         {
-            return _addPermissionAction.Execute(addPermissionParameter, clientId);
+            return _addPermissionAction.Execute(clientId, addPermissionParameter);
+        }
+
+        public Task<IEnumerable<string>> Add(IEnumerable<AddPermissionParameter> addPermissionParameters, string clientId)
+        {
+            return _addPermissionAction.Execute(clientId, addPermissionParameters);
         }
     }
 }

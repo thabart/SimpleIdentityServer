@@ -27,5 +27,6 @@ namespace SimpleIdentityServer.Uma.Core.Repositories
         Task<bool> Update(ResourceSet resourceSet);
         Task<ICollection<ResourceSet>> GetAll();
         Task<bool> Delete(string id);
+        Task<IEnumerable<ResourceSet>> Get(IEnumerable<string> ids);
     }
 }
