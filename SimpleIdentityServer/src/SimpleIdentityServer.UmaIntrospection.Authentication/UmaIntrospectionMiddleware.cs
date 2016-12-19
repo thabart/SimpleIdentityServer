@@ -20,8 +20,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using SimpleIdentityServer.Authentication.Common.Authentication;
 using SimpleIdentityServer.Client;
-using SimpleIdentityServer.Client.DTOs.Responses;
 using SimpleIdentityServer.Uma.Common;
+using SimpleIdentityServer.Uma.Common.DTOs;
 using SimpleIdentityServer.UmaManager.Client;
 using SimpleIdentityServer.UmaManager.Client.DTOs.Requests;
 using System;
@@ -41,8 +41,6 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
         private readonly UmaIntrospectionOptions _options;
         private readonly IServiceProvider _serviceProvider;
         private readonly RequestDelegate _nullAuthenticationNext;
-
-        #region Constructor
 
         public UmaIntrospectionMiddleware(
             RequestDelegate next,
@@ -82,10 +80,6 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
             nullAuthenticationBuilder.Run(ctx => next(ctx));
             _nullAuthenticationNext = nullAuthenticationBuilder.Build();
         }
-        
-        #endregion
-
-        #region Public methods
 
         public async Task Invoke(HttpContext context)
         {
@@ -96,12 +90,6 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
                 // FAKE USER
                 await _nullAuthenticationNext(context);
                 return;
-            }
-
-            Uri umaConfigurationUri = null;
-            if (!Uri.TryCreate(_options.UmaConfigurationUrl, UriKind.Absolute, out umaConfigurationUri))
-            {
-                throw new ArgumentException($"url {_options.UmaConfigurationUrl} is not well formatted");
             }
 
             Uri resourceUrl = null;
@@ -116,7 +104,7 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
             {
                 var introspectionResponse = await identityServerUmaClientFactory
                     .GetIntrospectionClient()
-                    .GetIntrospectionByResolvingUrlAsync(rpt, umaConfigurationUri);
+                    .GetByResolution(rpt, _options.UmaConfigurationUrl);
                 // Add the permissions
                 if (introspectionResponse.IsActive)
                 {
@@ -129,10 +117,6 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
 
             await _nullAuthenticationNext(context);
         }
-
-        #endregion
-
-        #region Private methods
         
         private async Task AddPermissions(
             HttpContext context, 
@@ -185,7 +169,7 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
             try
             {
                 var serverClientFactory = (IIdentityServerClientFactory)_serviceProvider.GetService(typeof(IIdentityServerClientFactory));
-                var response = await serverClientFactory.CreateTokenClient()
+                var response = await serverClientFactory.CreateAuthSelector()
                     .UseClientSecretPostAuth(_options.ClientId, _options.ClientSecret)
                     .UseClientCredentials("website_api")
                     .ResolveAsync(_options.OpenIdWellKnownConfigurationUrl);
@@ -201,10 +185,6 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
                 return null;
             }
         }
-
-        #endregion
-
-        #region Private static methods
 
         private static string GetRpt(IHeaderDictionary header)
         {
@@ -254,7 +234,5 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
                 serviceCollection.AddTransient<IIdentityServerClientFactory, IdentityServerClientFactory>();
             }
         }
-
-        #endregion
     }
 }

@@ -36,18 +36,11 @@ namespace SimpleIdentityServer.UserInformation.Authentication
     public class UserInformationMiddleware<TOptions> where TOptions : UserInformationOptions, new()
     {
         private const string AuthorizationName = "Authorization";
-
         private const string BearerName = "Bearer";
-
         private readonly UserInformationOptions _options;
-
         private readonly HttpClient _httpClient;
-
         private readonly RequestDelegate _next;
-
         private readonly RequestDelegate _nullAuthenticationNext;
-
-        #region Constructor
 
         public UserInformationMiddleware(
             RequestDelegate next,
@@ -79,10 +72,6 @@ namespace SimpleIdentityServer.UserInformation.Authentication
             _nullAuthenticationNext = nullAuthenticationBuilder.Build();
         }
 
-        #endregion
-
-        #region Public methods
-
         public async Task Invoke(HttpContext context)
         {
             // 1. Try to authenticate the user against the introspection endpoint
@@ -110,10 +99,6 @@ namespace SimpleIdentityServer.UserInformation.Authentication
 
             await _nullAuthenticationNext(context);
         }
-
-        #endregion
-
-        #region Private methods
 
         private string GetAccessToken(string authorizationValue)
         {
@@ -164,10 +149,6 @@ namespace SimpleIdentityServer.UserInformation.Authentication
 #endif
         }
 
-#endregion
-
-        #region Private static methods
-
         private static ClaimsPrincipal CreateClaimPrincipal(Dictionary<string, string> userInformationResponse)
         {
             var claims = new List<Claim>();
@@ -179,7 +160,5 @@ namespace SimpleIdentityServer.UserInformation.Authentication
             var claimsIdentity = new ClaimsIdentity(claims, "UserInformation");
             return new ClaimsPrincipal(claimsIdentity);
         }
-
-        #endregion
     }
 }

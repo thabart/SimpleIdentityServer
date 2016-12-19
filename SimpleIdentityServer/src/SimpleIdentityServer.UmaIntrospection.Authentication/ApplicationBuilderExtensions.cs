@@ -22,8 +22,6 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
 {
     public static class ApplicationBuilderExtensions
     {
-        #region Public static methods
-
         public static IApplicationBuilder UseAuthenticationWithUmaIntrospection(this IApplicationBuilder app)
         {
             if (app == null)
@@ -48,7 +46,5 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
 
             return app.UseMiddleware<UmaIntrospectionMiddleware<UmaIntrospectionOptions>>(app, Options.Create(umaIntrospectionOptions));
         }
-
-        #endregion
     }
 }

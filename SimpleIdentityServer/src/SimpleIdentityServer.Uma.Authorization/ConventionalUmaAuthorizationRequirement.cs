@@ -30,16 +30,10 @@ namespace SimpleIdentityServer.Uma.Authorization
     {
         private readonly ConventionalUmaOptions _conventionalUmaOptions;
 
-        #region Constructor
-
         public ConventionalUmaAuthorizationRequirement(ConventionalUmaOptions conventionalUmaOptions)
         {
             _conventionalUmaOptions = conventionalUmaOptions;
         }
-
-        #endregion
-
-        #region Protected methods
 
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, ConventionalUmaAuthorizationRequirement requirement)
         {
@@ -105,7 +99,5 @@ namespace SimpleIdentityServer.Uma.Authorization
 
             return actionName;
         }
-
-        #endregion
     }
 }

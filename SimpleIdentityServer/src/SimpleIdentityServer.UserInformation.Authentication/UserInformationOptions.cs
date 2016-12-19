@@ -21,7 +21,6 @@ namespace SimpleIdentityServer.UserInformation.Authentication
     public class UserInformationOptions
     {
         public string UserInformationEndPoint { get; set; }
-
         public HttpClientHandler BackChannelHttpHandler { get; set; }
     }
 }
