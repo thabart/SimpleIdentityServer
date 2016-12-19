@@ -180,41 +180,46 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 
         public async Task<bool> UpdateAsync(Domains.ResourceOwner resourceOwner)
         {
-            try
+            using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
-                var record = await _context.ResourceOwners
-                    .Include(r => r.Claims)
-                    .FirstOrDefaultAsync(r => r.Id == resourceOwner.Id).ConfigureAwait(false);
-                if (record == null)
+                try
                 {
+                    var record = await _context.ResourceOwners
+                        .Include(r => r.Claims)
+                        .FirstOrDefaultAsync(r => r.Id == resourceOwner.Id).ConfigureAwait(false);
+                    if (record == null)
+                    {
+                        return false;
+                    }
+
+                    record.Password = resourceOwner.Password;
+                    record.IsLocalAccount = resourceOwner.IsLocalAccount;
+                    record.TwoFactorAuthentication = (int)resourceOwner.TwoFactorAuthentication;
+                    _context.ResourceOwnerClaims.RemoveRange(record.Claims);
+                    if (resourceOwner.Claims != null)
+                    {
+                        foreach (var claim in resourceOwner.Claims)
+                        {
+                            record.Claims.Add(new ResourceOwnerClaim
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                ResourceOwnerId = record.Id,
+                                ClaimCode = claim.Type,
+                                Value = claim.Value
+                            });
+                        }
+                    }
+
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
+                    transaction.Commit();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    _managerEventSource.Failure(ex);
+                    transaction.Rollback();
                     return false;
                 }
-
-                record.Password = resourceOwner.Password;
-                record.IsLocalAccount = resourceOwner.IsLocalAccount;
-                record.TwoFactorAuthentication = (int)resourceOwner.TwoFactorAuthentication;
-                record.Claims = new List<ResourceOwnerClaim>();
-                if (resourceOwner.Claims != null)
-                {
-                    foreach (var claim in resourceOwner.Claims)
-                    {
-                        record.Claims.Add(new ResourceOwnerClaim
-                        {
-                            Id = Guid.NewGuid().ToString(),
-                            ResourceOwnerId = record.Id,
-                            ClaimCode = claim.Type,
-                            Value = claim.Value
-                        });
-                    }
-                }
-
-                await _context.SaveChangesAsync().ConfigureAwait(false);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _managerEventSource.Failure(ex);
-                return false;
             }
         }
     }

@@ -127,15 +127,6 @@ namespace SimpleIdentityServer.Host
                 serviceCollection.AddTransient(typeof(IAuthenticateResourceOwnerService), options.AuthenticateResourceOwner);
             }
 
-            if (options.TwoFactorServiceStore == null)
-            {
-                serviceCollection.AddTransient<ITwoFactorServiceStore, TwoFactorServiceStore>();
-            }
-            else
-            {
-                serviceCollection.AddTransient(typeof(IConfigurationService), options.TwoFactorServiceStore);
-            }
-
             if (options.ConfigurationService == null)
             {
                 serviceCollection.AddTransient<IConfigurationService, DefaultConfigurationService>();

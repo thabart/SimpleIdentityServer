@@ -21,7 +21,7 @@ using System.Linq;
 
 namespace SimpleIdentityServer.Host.Services
 {
-    internal class TwoFactorServiceStore : ITwoFactorServiceStore
+    public class TwoFactorServiceStore : ITwoFactorServiceStore
     {
         private readonly List<ITwoFactorAuthenticationService> _services;
 

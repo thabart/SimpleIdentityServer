@@ -132,10 +132,6 @@ namespace SimpleIdentityServer.Host
         /// </summary>
         public Type AuthenticateResourceOwner { get; set; }
         /// <summary>
-        /// Service used for Two factor authentication (send a validation token).
-        /// </summary>
-        public Type TwoFactorServiceStore { get; set; }
-        /// <summary>
         /// Service used to retrieve configurations (expiration date time etc ...)
         /// </summary>
         public Type ConfigurationService { get; set; }

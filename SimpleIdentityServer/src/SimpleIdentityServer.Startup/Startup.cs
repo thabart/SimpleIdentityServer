@@ -22,7 +22,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SimpleIdentityServer.Authentication.Middleware;
 using SimpleIdentityServer.Authentication.Middleware.Extensions;
+using SimpleIdentityServer.Configuration.Client;
+using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Host;
+using SimpleIdentityServer.Host.Services;
 using System.Collections.Generic;
 using WebApiContrib.Core.Storage;
 using WebApiContrib.Core.Storage.InMemory;
@@ -161,6 +164,13 @@ namespace SimpleIdentityServer.Startup
             services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader()));
+
+            // 3. Configure two factor authentication.
+            var twoFactorServiceStore = new TwoFactorServiceStore();
+            var factory = new SimpleIdServerConfigurationClientFactory();
+            twoFactorServiceStore.Add(new DefaultTwilioSmsService(factory, Configuration["ConfigurationEdp:Url"]));
+            twoFactorServiceStore.Add(new DefaultEmailService(factory, Configuration["ConfigurationEdp:Url"]));
+            services.AddSingleton<ITwoFactorServiceStore>(twoFactorServiceStore);
             // 3. Configure the rate limitation
             /*
             services.Configure<RateLimitationOptions>(opt =>
