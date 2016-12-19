@@ -42,9 +42,9 @@ namespace SimpleIdentityServer.Manager.Host.Startup
             Configuration = builder.Build();
             var isLogFileEnabled = bool.Parse(Configuration["Log:File:Enabled"]);
             var isElasticSearchEnabled = bool.Parse(Configuration["Log:Elasticsearch:Enabled"]);
-            var introspectionUrl = Configuration["AuthorizationServer"] + "/introspect";
-            var clientId = Configuration["ClientId"];
-            var clientSecret = Configuration["ClientSecret"];
+            var introspectionUrl = Configuration["OpenId:IntrospectUrl"];
+            var clientId = Configuration["OpenId:ClientId"];
+            var clientSecret = Configuration["OpenId:ClientSecret"];
             _options = new ManagerOptions
             {
                  Logging = new LoggingOptions
@@ -73,30 +73,19 @@ namespace SimpleIdentityServer.Manager.Host.Startup
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var cachingDatabase = Configuration["Caching:Database"];
-            var cachingConnectionPath = Configuration["Caching:ConnectionPath"];
-            var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
-            var databaseType = Configuration["DatabaseType"];
-            if (string.IsNullOrWhiteSpace(cachingDatabase))
-            {
-                cachingDatabase = "INMEMORY";
-            }
-
-            if (string.IsNullOrWhiteSpace(databaseType))
-            {
-                databaseType = "INMEMORY";
-            }
+            var cachingType = Configuration["Caching:Type"];
+            var databaseType = Configuration["Db:Type"];
 
             // 1. Configure the caching
-            if (cachingDatabase == "REDIS")
+            if (cachingType == "REDIS")
             {
                 services.AddConcurrency(opt => opt.UseRedis(o =>
                 {
-                    o.Configuration = Configuration[cachingConnectionPath + ":ConnectionString"];
-                    o.InstanceName = Configuration[cachingConnectionPath + ":InstanceName"];
+                    o.Configuration = Configuration["Caching:ConnectionString"];
+                    o.InstanceName = Configuration["Caching:InstanceName"];
                 }));
             }
-            else if (cachingDatabase == "INMEMORY")
+            else
             {
                 services.AddConcurrency(opt => opt.UseInMemory());
             }
@@ -104,15 +93,15 @@ namespace SimpleIdentityServer.Manager.Host.Startup
             // 2. Configure database
             if (databaseType == "SQLITE")
             {
-                services.AddSimpleIdentityServerSqlLite(connectionString);
+                services.AddSimpleIdentityServerSqlLite(Configuration["Db:ConnectionString"]);
             }
-            else if (databaseType == "POSTGRES")
+            else if (databaseType == "POSTGRE")
             {
-                services.AddSimpleIdentityServerPostgre(connectionString);
+                services.AddSimpleIdentityServerPostgre(Configuration["Db:ConnectionString"]);
             }
-            else if (databaseType == "SQL")
+            else if (databaseType == "SQLSERVER")
             {
-                services.AddSimpleIdentityServerSqlServer(connectionString);
+                services.AddSimpleIdentityServerSqlServer(Configuration["Db:ConnectionString"]);
             }
             else
             {
