@@ -21,6 +21,21 @@ namespace SimpleIdentityServer.Uma.Core.Services
 {
     public class DefaultConfigurationService : IConfigurationService
     {
+        public Task<string> GetAuthorizationOperation()
+        {
+            return Task.FromResult("https://localhost:5443/authorization");
+        }
+
+        public Task<string> GetRegisterOperation()
+        {
+            return Task.FromResult("https://localhost:5443/registration");
+        }
+
+        public Task<string> GetTokenOperation()
+        {
+            return Task.FromResult("https://localhost:5443/token");
+        }
+
         public Task<int> GetRptLifeTime()
         {
             return Task.FromResult(3000);

@@ -125,14 +125,7 @@ namespace SimpleIdentityServer.Uma.Host
             var isLogFileEnabled = bool.Parse(Configuration["Log:File:Enabled"]);
             var isElasticSearchEnabled = bool.Parse(Configuration["Log:Elasticsearch:Enabled"]);
             var parametersProvider = new ParametersProvider(Configuration["OpenId:WellKnownConfiguration"]);
-            services.AddSimpleIdServerUmaCore(opt =>
-            {
-                opt.AuthorizeOperation = Configuration["OpenId:AuthorizationEndPoint"];
-                opt.RegisterOperation = Configuration["OpenId:RegisterEndPoint"];
-                opt.TokenOperation = Configuration["OpenId:TokenEndPoint"];
-                opt.RptLifeTime = 3000;
-                opt.TicketLifeTime = 3000;
-            });
+            services.AddSimpleIdServerUmaCore();
 
             // 1. Enable caching.
             if (string.Equals(cachingType, "REDIS", StringComparison.CurrentCultureIgnoreCase))

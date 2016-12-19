@@ -16,13 +16,15 @@
 
 using SimpleIdentityServer.Uma.Core.Providers;
 using SimpleIdentityServer.Uma.Core.Responses;
+using SimpleIdentityServer.Uma.Core.Services;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ConfigurationController.Actions
 {
     public interface IGetConfigurationAction
     {
-        ConfigurationResponse Execute();
+        Task<ConfigurationResponse> Execute();
     }
     
     public class GetConfigurationAction : IGetConfigurationAction
@@ -62,15 +64,15 @@ namespace SimpleIdentityServer.Uma.Core.Api.ConfigurationController.Actions
         private const string IntrospectionApi = "/status";
         private const string ScopeApi = "/scopes";
         private readonly IHostingProvider _hostingProvider;
-        private readonly UmaServerOptions _umaServerOptions;
+        private readonly IConfigurationService _configurationService;
 
-        public GetConfigurationAction(IHostingProvider hostingProvider, UmaServerOptions umaServerOptions)
+        public GetConfigurationAction(IHostingProvider hostingProvider, IConfigurationService configurationService)
         {
             _hostingProvider = hostingProvider;
-            _umaServerOptions = umaServerOptions;
+            _configurationService = configurationService;
         }
         
-        public ConfigurationResponse Execute()
+        public async Task<ConfigurationResponse> Execute()
         {
             var absoluteUriWithVirtualPath = _hostingProvider.GetAbsoluteUriWithVirtualPath();
             var result = new ConfigurationResponse
@@ -84,9 +86,9 @@ namespace SimpleIdentityServer.Uma.Core.Api.ConfigurationController.Actions
                 AatGrantTypesSupported = _aatGrantTypesSupported,
                 ClaimTokenProfilesSupported = new List<string>(),
                 UmaProfilesSupported = _umaProfilesSupported,
-                DynamicClientEndPoint = _umaServerOptions.RegisterOperation,
-                TokenEndPoint = _umaServerOptions.TokenOperation,
-                AuthorizationEndPoint = _umaServerOptions.AuthorizeOperation,
+                DynamicClientEndPoint = await _configurationService.GetRegisterOperation(),
+                TokenEndPoint = await _configurationService.GetTokenOperation(),
+                AuthorizationEndPoint = await _configurationService.GetAuthorizationOperation(),
                 RequestingPartyClaimsEndPoint = string.Empty,
                 IntrospectionEndPoint = absoluteUriWithVirtualPath + IntrospectionApi,
                 ResourceSetRegistrationEndPoint = absoluteUriWithVirtualPath + ResourceSetApi,

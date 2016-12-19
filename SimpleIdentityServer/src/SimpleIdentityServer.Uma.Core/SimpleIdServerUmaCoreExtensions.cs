@@ -47,14 +47,14 @@ namespace SimpleIdentityServer.Uma.Core
     {
         public static IServiceCollection AddSimpleIdServerUmaCore(
             this IServiceCollection serviceCollection,
-            UmaServerOptions umaServerOptions)
+            UmaServerOptions options = null)
         {
-            if (umaServerOptions == null)
+            if (options == null)
             {
-                throw new ArgumentNullException(nameof(umaServerOptions));
+                options = new UmaServerOptions();
             }
 
-            RegisterDependencies(serviceCollection, umaServerOptions);
+            RegisterDependencies(serviceCollection, options);
             return serviceCollection;
         }
 
@@ -129,7 +129,6 @@ namespace SimpleIdentityServer.Uma.Core
             }
 
             serviceCollection.AddSimpleIdentityServerJwt();
-            serviceCollection.AddSingleton(umaServerOptions);
         }
     }
 }

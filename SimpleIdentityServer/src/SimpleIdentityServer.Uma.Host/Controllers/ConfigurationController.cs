@@ -17,6 +17,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Uma.Core.Api.ConfigurationController;
 using SimpleIdentityServer.Uma.Host.Extensions;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Host.Controllers
 {
@@ -31,9 +32,9 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetConfiguration()
+        public async Task<ActionResult> GetConfiguration()
         {
-            var result = _configurationActions.GetConfiguration().ToResponse();
+            var result = (await _configurationActions.GetConfiguration()).ToResponse();
             return new OkObjectResult(result);
         }
     }

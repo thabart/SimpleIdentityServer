@@ -103,11 +103,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             // 2. Enable DB store.
             services.AddSimpleIdServerUmaInMemory();
             // 3. Add uma core
-            services.AddSimpleIdServerUmaCore(opt =>
-            {
-                opt.RptLifeTime = 3000;
-                opt.TicketLifeTime = 3000;
-            });
+            services.AddSimpleIdServerUmaCore();
             // 4. Enable logging.
             var parametersProvider = new ParametersProvider("http://localhost");
             services.AddLogging();

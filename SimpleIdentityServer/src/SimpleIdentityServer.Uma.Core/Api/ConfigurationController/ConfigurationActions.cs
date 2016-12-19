@@ -16,12 +16,13 @@
 
 using SimpleIdentityServer.Uma.Core.Api.ConfigurationController.Actions;
 using SimpleIdentityServer.Uma.Core.Responses;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ConfigurationController
 {
     public interface IConfigurationActions
     {
-        ConfigurationResponse GetConfiguration();
+        Task<ConfigurationResponse> GetConfiguration();
     }
 
     public class ConfigurationActions : IConfigurationActions
@@ -33,7 +34,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ConfigurationController
             _getConfigurationAction = getConfigurationAction;
         }
                 
-        public ConfigurationResponse GetConfiguration()
+        public Task<ConfigurationResponse> GetConfiguration()
         {
             return _getConfigurationAction.Execute();
         }
