@@ -25,6 +25,6 @@ namespace SimpleIdentityServer.Uma.Common.DTOs
         [DataMember(Name = PostPermissionNames.ResourceSetId)]
         public string ResourceSetId { get; set; }
         [DataMember(Name = PostPermissionNames.Scopes)]
-        public List<string> Scopes { get; set; }
+        public IEnumerable<string> Scopes { get; set; }
     }
 }

@@ -28,18 +28,10 @@ namespace SimpleIdentityServer.Proxy
 {
     public interface ISecurityProxy
     {
-        Task<string> GetRpt(string resourceUrl,
-            string umaProtectionToken,
-            string umaAuthorizationToken,
-            string resourceToken,
-            List<string> permissions);
-
-        Task<string> GetRpt(string resourceUrl,
-            string identityToken,
-            string umaProtectionToken,
-            string umaAuthorizationToken,
-            string resourceToken,
-            List<string> permissions);
+        Task<IEnumerable<string>> GetRpts(IEnumerable<string> resourceIds, string umaProtectionToken, string umaAuthorizationToken, IEnumerable<string> permissions);
+        Task<IEnumerable<string>> GetRpts(IEnumerable<string> resourceIds, string identityToken, string umaProtectionToken, string umaAuthorizationToken, IEnumerable<string> permissions);
+        Task<string> GetRpt(string resourceId, string umaProtectionToken, string umaAuthorizationToken, IEnumerable<string> permissions);
+        Task<string> GetRpt(string resourceId, string identityToken, string umaProtectionToken, string umaAuthorizationToken, IEnumerable<string> permissions);
     }
 
     internal class SecurityProxy : ISecurityProxy
@@ -63,12 +55,70 @@ namespace SimpleIdentityServer.Proxy
             _identityServerUmaClientFactory = identityServerUmaClientFactory;
         }
 
+        public async Task<IEnumerable<string>> GetRpts(IEnumerable<string> resourceIds, string umaProtectionToken, string umaAuthorizationToken, IEnumerable<string> permissions)
+        {
+            if (string.IsNullOrWhiteSpace(umaProtectionToken))
+            {
+                throw new ArgumentNullException(nameof(umaProtectionToken));
+            }
 
-        public async Task<string> GetRpt(string resourceUrl,
-            string umaProtectionToken,
-            string umaAuthorizationToken,
-            string resourceToken,
-            List<string> permissions)
+            if (string.IsNullOrWhiteSpace(umaAuthorizationToken))
+            {
+                throw new ArgumentNullException(nameof(umaAuthorizationToken));
+            }
+
+            Func<IEnumerable<string>, string, Task<IEnumerable<string>>> callback = new Func<IEnumerable<string>, string, Task<IEnumerable<string>>>(async (t, a) => {
+                BulkAuthorizationResponse resp = null;
+                try
+                {
+                    resp = await GetAuthorizations(t, a);
+                }
+                catch
+                {
+                    throw new InvalidOperationException("you're not allowed to access to the resource");
+                }
+
+                return resp.Rpts;
+            });
+
+            return await CommonGetRpts(resourceIds, permissions, umaAuthorizationToken, umaProtectionToken, callback);
+        }
+
+        public async Task<IEnumerable<string>> GetRpts(IEnumerable<string> resourceIds, string identityToken, string umaProtectionToken, string umaAuthorizationToken, IEnumerable<string> permissions)
+        {
+            if (string.IsNullOrWhiteSpace(identityToken))
+            {
+                throw new ArgumentNullException(nameof(identityToken));
+            }
+
+            if (string.IsNullOrWhiteSpace(umaProtectionToken))
+            {
+                throw new ArgumentNullException(nameof(umaProtectionToken));
+            }
+
+            if (string.IsNullOrWhiteSpace(umaAuthorizationToken))
+            {
+                throw new ArgumentNullException(nameof(umaAuthorizationToken));
+            }
+
+            Func<IEnumerable<string>, string, Task<IEnumerable<string>>> callback = new Func<IEnumerable<string>, string, Task<IEnumerable<string>>>(async (t, a) => {
+                BulkAuthorizationResponse resp = null;
+                try
+                {
+                    resp = await GetAuthorizations(t, a, identityToken);
+                }
+                catch
+                {
+                    throw new InvalidOperationException("you're not allowed to access to the resource");
+                }
+
+                return resp.Rpts;
+            });
+
+            return await CommonGetRpts(resourceIds, permissions, umaAuthorizationToken, umaProtectionToken, callback);
+        }
+
+        public async Task<string> GetRpt(string resourceId, string umaProtectionToken, string umaAuthorizationToken, IEnumerable<string> permissions)
         {
             if (string.IsNullOrWhiteSpace(umaProtectionToken))
             {
@@ -94,21 +144,10 @@ namespace SimpleIdentityServer.Proxy
                 return resp.Rpt;
             });
 
-            return await CommonGetRpt(
-                resourceUrl, 
-                permissions, 
-                umaAuthorizationToken, 
-                umaProtectionToken,
-                resourceToken,
-                callback);
+            return await CommonGetRpt(resourceId, permissions, umaAuthorizationToken, umaProtectionToken, callback);
         }
 
-        public async Task<string> GetRpt(string resourceUrl,
-            string identityToken,
-            string umaProtectionToken,
-            string umaAuthorizationToken,
-            string resourceToken,
-            List<string> permissions)
+        public async Task<string> GetRpt(string resourceId, string identityToken, string umaProtectionToken, string umaAuthorizationToken, IEnumerable<string> permissions)
         {
             if (string.IsNullOrWhiteSpace(identityToken))
             {
@@ -139,39 +178,26 @@ namespace SimpleIdentityServer.Proxy
                 return resp.Rpt;
             });
 
-            return await CommonGetRpt(
-                resourceUrl, 
-                permissions, 
-                umaAuthorizationToken, 
-                umaProtectionToken,
-                resourceToken,
-                callback);
+            return await CommonGetRpt(resourceId, permissions, umaAuthorizationToken, umaProtectionToken, callback);
         }
         
-        private async Task<string> CommonGetRpt(string resourceUrl,
-            List<string> permissions,
-            string umaAuthorizationToken,
-            string umaProtectionToken,
-            string resourceToken,
-            Func<string, string, Task<string>> callback)
+        private async Task<string> CommonGetRpt(string resourceId, IEnumerable<string> permissions, string umaAuthorizationToken, string umaProtectionToken, Func<string, string, Task<string>> callback)
         {
-            if (string.IsNullOrWhiteSpace(resourceUrl))
+            if (string.IsNullOrWhiteSpace(resourceId))
             {
-                throw new ArgumentNullException(nameof(resourceUrl));
+                throw new ArgumentNullException(nameof(resourceId));
             }
 
             if (permissions == null || !permissions.Any())
             {
                 throw new ArgumentNullException(nameof(permissions));
             }
-
-            // 1. Get resource
-            var resource = await GetResource(resourceUrl, resourceToken);
-            // 2. Get permission
+            
+            // 1. Add permission
             AddPermissionResponse permission;
             try
             {
-                permission = await AddPermission(resource.ResourceSetId, permissions, umaProtectionToken);
+                permission = await AddPermission(resourceId, permissions, umaProtectionToken);
             }
             catch
             {
@@ -179,6 +205,32 @@ namespace SimpleIdentityServer.Proxy
             }
 
             return await callback(permission.TicketId, umaAuthorizationToken);
+        }
+
+        private async Task<IEnumerable<string>> CommonGetRpts(IEnumerable<string> resourceIds, IEnumerable<string> permissions, string umaAuthorizationToken, string umaProtectionToken, Func<IEnumerable<string>, string, Task<IEnumerable<string>>> callback)
+        {
+            if (resourceIds == null)
+            {
+                throw new ArgumentNullException(nameof(resourceIds));
+            }
+
+            if (permissions == null || !permissions.Any())
+            {
+                throw new ArgumentNullException(nameof(permissions));
+            }
+
+            // 1. Add permission
+            AddPermissionsResponse permission;
+            try
+            {
+                permission = await AddPermissions(resourceIds, permissions, umaProtectionToken);
+            }
+            catch
+            {
+                throw new InvalidOperationException("Either the access token is wrong, resource id doesn't exist or permissions are not correct");
+            }
+
+            return await callback(permission.TicketIds, umaAuthorizationToken);
         }
 
         private async Task<ResourceResponse> GetResource(string req, string resourceToken)
@@ -203,23 +255,29 @@ namespace SimpleIdentityServer.Proxy
             return resource;
         }
 
-        private async Task<AddPermissionResponse> AddPermission(
-            string resourceSetId,
-            List<string> scopes,
-            string accessToken)
+        private async Task<AddPermissionResponse> AddPermission(string resourceId, IEnumerable<string> scopes, string accessToken)
         {
             var postPermission = new PostPermission
             {
-                ResourceSetId = resourceSetId,
+                ResourceSetId = resourceId,
                 Scopes = scopes
             };
 
             return await _identityServerUmaClientFactory.GetPermissionClient().AddByResolution(postPermission, _securityOptions.UmaConfigurationUrl, accessToken);
         }
+        
+        private async Task<AddPermissionsResponse> AddPermissions(IEnumerable<string> resourceIds, IEnumerable<string> scopes, string accessToken)
+        {
+            var permissions = resourceIds.Select(i => new PostPermission
+            {
+                ResourceSetId = i,
+                Scopes = scopes
+            });
 
-        private async Task<AuthorizationResponse> GetAuthorization(
-            string ticketId,
-            string accessToken)
+            return await _identityServerUmaClientFactory.GetPermissionClient().AddByResolution(permissions, _securityOptions.UmaConfigurationUrl, accessToken);
+        }
+
+        private async Task<AuthorizationResponse> GetAuthorization(string ticketId, string accessToken)
         {
             var postAuthorization = new PostAuthorization
             {
@@ -230,10 +288,32 @@ namespace SimpleIdentityServer.Proxy
                 .GetByResolution(postAuthorization, _securityOptions.UmaConfigurationUrl, accessToken);
         }
 
-        private async Task<AuthorizationResponse> GetAuthorization(
-            string ticketId,
-            string accessToken,
-            string identityToken)
+        private async Task<BulkAuthorizationResponse> GetAuthorizations(IEnumerable<string> ticketIds, string accessToken)
+        {
+            var requests = ticketIds.Select(t => new PostAuthorization { TicketId = t });
+            return await _identityServerUmaClientFactory.GetAuthorizationClient()
+                .GetByResolution(requests, _securityOptions.UmaConfigurationUrl, accessToken);
+        }
+
+        private async Task<BulkAuthorizationResponse> GetAuthorizations(IEnumerable<string> ticketIds, string accessToken, string identityToken)
+        {
+            var requests = ticketIds.Select(t => new PostAuthorization
+            {
+                TicketId = t,
+                ClaimTokens = new List<PostClaimToken>
+                {
+                    new PostClaimToken
+                    {
+                        Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
+                        Token = identityToken
+                    }
+                }
+            });
+            return await _identityServerUmaClientFactory.GetAuthorizationClient()
+                .GetByResolution(requests, _securityOptions.UmaConfigurationUrl, accessToken);
+        }
+
+        private async Task<AuthorizationResponse> GetAuthorization(string ticketId, string accessToken, string identityToken)
         {
             var postAuthorization = new PostAuthorization
             {

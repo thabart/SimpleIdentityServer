@@ -34,11 +34,11 @@ namespace SimpleIdentityServer.Uma.Common.DTOs
             }
         }
 
-        public List<string> Scopes
+        public IEnumerable<string> Scopes
         {
             get
             {
-                return this.GetObject<List<string>>(IntrospectPermissionNames.ScopesName);
+                return this.GetObject<IEnumerable<string>>(IntrospectPermissionNames.ScopesName);
             }
             set
             {

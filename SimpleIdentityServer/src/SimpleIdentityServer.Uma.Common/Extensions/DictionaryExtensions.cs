@@ -50,9 +50,7 @@ namespace SimpleIdentityServer.Uma.Common.Extensions
             dic[name] = value;
         }
 
-        public static T GetObject<T>(
-            this Dictionary<string, object> dic,
-            string name) where T : new()
+        public static T GetObject<T>(this Dictionary<string, object> dic, string name)
         {
             if (!dic.ContainsKey(name))
             {

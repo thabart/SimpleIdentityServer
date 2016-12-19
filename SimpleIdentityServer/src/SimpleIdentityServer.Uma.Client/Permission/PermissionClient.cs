@@ -19,7 +19,6 @@ using SimpleIdentityServer.Client.Extensions;
 using SimpleIdentityServer.Uma.Common.DTOs;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System;
 
 namespace SimpleIdentityServer.Client.Permission
 {
