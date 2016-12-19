@@ -65,10 +65,8 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             }
 
             var parameter = postAuthorization.ToParameter();
-            var claims = this.GetClaims();
-            var result = await _authorizationActions.GetAuthorization(
-                parameter,
-                claims);
+            var clientId = this.GetClientId();
+            var result = await _authorizationActions.GetAuthorization(parameter, clientId);
             if (result.AuthorizationPolicyResult != AuthorizationPolicyResultEnum.Authorized)
             {
                 return GetErrorResponse(result.AuthorizationPolicyResult);

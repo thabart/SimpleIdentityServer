@@ -58,7 +58,7 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
             try
             {
                 var resourceSet = await _context.ResourceSets
-                    .Include(r => r.PolicyResources)
+                    .Include(r => r.PolicyResources).ThenInclude(p => p.Policy)
                     .FirstOrDefaultAsync(r => r.Id == id)
                     .ConfigureAwait(false);
                 return resourceSet == null ? null : resourceSet.ToDomain();

@@ -31,7 +31,6 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
 {
     public class AuthorizationPolicyValidatorFixture
     {
-        private Mock<IPolicyRepository> _policyRepositoryStub;
         private Mock<IBasicAuthorizationPolicy> _basicAuthorizationPolicyStub;
         private Mock<IResourceSetRepository> _resourceSetRepositoryStub;
         private Mock<IUmaServerEventSource> _umaServerEventSourceStub;
@@ -72,15 +71,10 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
         {
             // ARRANGE
             var ticket = new Ticket();
-            var resourceSet = new ResourceSet
-            {
-                AuthorizationPolicyIds = new List<string> { "authorization_policy_id" }
-            };
+            var resourceSet = new ResourceSet();
             InitializeFakeObjects();
             _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>()))
                 .Returns(Task.FromResult(resourceSet));
-            _policyRepositoryStub.Setup(p => p.Get(It.IsAny<string>()))
-                .Returns(() => Task.FromResult((Policy)null));
 
             // ACT
             var result = await _authorizationPolicyValidator.IsAuthorized(ticket, "client_id", null);
@@ -96,14 +90,15 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             var ticket = new Ticket();
             var resourceSet = new ResourceSet
             {
-                AuthorizationPolicyIds = new List<string> { "authorization_policy_id" }
+                AuthorizationPolicyIds = new List<string> { "authorization_policy_id" },
+                Policies = new List<Policy>
+                {
+                    new Policy()
+                }
             };
-            var policy = new Policy();
             InitializeFakeObjects();
             _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>()))
                 .Returns(Task.FromResult(resourceSet));
-            _policyRepositoryStub.Setup(p => p.Get(It.IsAny<string>()))
-                .Returns(Task.FromResult(policy));
             _basicAuthorizationPolicyStub.Setup(b => b.Execute(It.IsAny<Ticket>(), It.IsAny<Policy>(), It.IsAny<List<ClaimTokenParameter>>()))
                 .Returns(Task.FromResult(new AuthorizationPolicyResult
                 {
@@ -119,12 +114,10 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
 
         private void InitializeFakeObjects()
         {
-            _policyRepositoryStub = new Mock<IPolicyRepository>();
             _basicAuthorizationPolicyStub = new Mock<IBasicAuthorizationPolicy>();
             _resourceSetRepositoryStub = new Mock<IResourceSetRepository>();
             _umaServerEventSourceStub = new Mock<IUmaServerEventSource>();
             _authorizationPolicyValidator = new AuthorizationPolicyValidator(
-                _policyRepositoryStub.Object,
                 _basicAuthorizationPolicyStub.Object,
                 _resourceSetRepositoryStub.Object,
                 _umaServerEventSourceStub.Object);

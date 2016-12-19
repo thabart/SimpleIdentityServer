@@ -24,13 +24,13 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
 {
     internal static class MappingExtensions
     {
-        #region To Domains
-
         public static Domain.ResourceSet ToDomain(this Model.ResourceSet resourceSet)
         {
             var policyIds = resourceSet.PolicyResources != null ?
                 resourceSet.PolicyResources.Select(p => p.PolicyId)
                 .ToList() : new List<string>();
+            var policies = resourceSet.PolicyResources == null ? new Domain.Policy[0] :
+                resourceSet.PolicyResources.Where(p => p.Policy != null).Select(p => p.Policy.ToDomain());
             return new Domain.ResourceSet
             {
                 IconUri = resourceSet.IconUri,
@@ -39,7 +39,8 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
                 Id = resourceSet.Id,
                 Type = resourceSet.Type,
                 Uri = resourceSet.Uri,
-                AuthorizationPolicyIds = policyIds
+                AuthorizationPolicyIds = policyIds,
+                Policies = policies
             };
         }
 
@@ -121,10 +122,6 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
                 Claims = claims
             };
         }
-
-        #endregion
-
-        #region To Models
 
         public static Model.ResourceSet ToModel(this Domain.ResourceSet resourceSet)
         {
@@ -229,10 +226,6 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
             };
         }
 
-        #endregion
-
-        #region Private methods
-
         public static List<string> GetList(string concatenatedList)
         {
 
@@ -245,18 +238,15 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
             return scopes;
         }
 
-        public static string GetConcatenatedList(List<string> list)
+        public static string GetConcatenatedList(IEnumerable<string> list)
         {
             var concatenatedList = string.Empty;
-            if (list != null &&
-                list.Any())
+            if (list != null && list.Any())
             {
                 concatenatedList = string.Join(",", list);
             }
 
             return concatenatedList;
         }
-
-        #endregion
     }
 }

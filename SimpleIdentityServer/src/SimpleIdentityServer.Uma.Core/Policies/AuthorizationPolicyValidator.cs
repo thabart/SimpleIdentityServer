@@ -29,35 +29,26 @@ namespace SimpleIdentityServer.Uma.Core.Policies
 {
     public interface IAuthorizationPolicyValidator
     {
-        Task<AuthorizationPolicyResult> IsAuthorized(
-            Ticket validTicket,
-            string clientId,
-            List<ClaimTokenParameter> claimTokenParameters);
+        Task<AuthorizationPolicyResult> IsAuthorized(Ticket validTicket, string clientId, List<ClaimTokenParameter> claimTokenParameters);
     }
 
     internal class AuthorizationPolicyValidator : IAuthorizationPolicyValidator
     {
-        private readonly IPolicyRepository _policyRepository;
         private readonly IBasicAuthorizationPolicy _basicAuthorizationPolicy;
         private readonly IResourceSetRepository _resourceSetRepository;
         private readonly IUmaServerEventSource _umaServerEventSource;
 
         public AuthorizationPolicyValidator(
-            IPolicyRepository policyRepository,
             IBasicAuthorizationPolicy basicAuthorizationPolicy,
             IResourceSetRepository resourceSetRepository,
             IUmaServerEventSource umaServerEventSource)
         {
-            _policyRepository = policyRepository;
             _basicAuthorizationPolicy = basicAuthorizationPolicy;
             _resourceSetRepository = resourceSetRepository;
             _umaServerEventSource = umaServerEventSource;
         }
         
-        public async Task<AuthorizationPolicyResult> IsAuthorized(
-            Ticket validTicket,
-            string clientId,
-            List<ClaimTokenParameter> claimTokenParameters)
+        public async Task<AuthorizationPolicyResult> IsAuthorized(Ticket validTicket, string clientId, List<ClaimTokenParameter> claimTokenParameters)
         {
             if (validTicket == null)
             {
@@ -76,8 +67,8 @@ namespace SimpleIdentityServer.Uma.Core.Policies
                     string.Format(ErrorDescriptions.TheResourceSetDoesntExist, validTicket.ResourceSetId));
             }
 
-            if (resourceSet.AuthorizationPolicyIds == null ||
-                !resourceSet.AuthorizationPolicyIds.Any())
+            if (resourceSet.Policies == null ||
+                !resourceSet.Policies.Any())
             {
                 return new AuthorizationPolicyResult
                 {
@@ -85,14 +76,8 @@ namespace SimpleIdentityServer.Uma.Core.Policies
                 };
             }
 
-            foreach(var authorizationPolicyId in resourceSet.AuthorizationPolicyIds)
+            foreach(var authorizationPolicy in resourceSet.Policies)
             {
-                var authorizationPolicy = await _policyRepository.Get(authorizationPolicyId);
-                if (authorizationPolicy == null)
-                {
-                    continue;
-                }
-
                 var result = await _basicAuthorizationPolicy.Execute(validTicket, authorizationPolicy, claimTokenParameters);
                 if (result.Type != AuthorizationPolicyResultEnum.Authorized)
                 {

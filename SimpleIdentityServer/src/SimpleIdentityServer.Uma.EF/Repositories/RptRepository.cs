@@ -19,6 +19,8 @@ using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.EF.Extensions;
 using System.Threading.Tasks;
+using System;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Uma.EF.Repositories
 {
@@ -33,11 +35,31 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
 
         public async Task<bool> Insert(Rpt rpt)
         {
+            return await Insert(new[] { rpt });
+        }
+
+        public async Task<Rpt> Get(string value)
+        {
+            var record = await _context.Rpts.FirstOrDefaultAsync(r => r.Value == value).ConfigureAwait(false);
+            return record == null ? null : record.ToDomain();
+        }
+
+        public async Task<bool> Insert(IEnumerable<Rpt> rptLst)
+        {
+            if (rptLst == null)
+            {
+                throw new ArgumentNullException(nameof(rptLst));
+            }
+
             using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
                 try
                 {
-                    _context.Add(rpt.ToModel());
+                    foreach(var rpt in rptLst)
+                    {
+                        _context.Add(rpt.ToModel());
+                    }
+
                     await _context.SaveChangesAsync().ConfigureAwait(false);
                     transaction.Commit();
                     return true;
@@ -48,12 +70,6 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
                     return false;
                 }
             }
-        }
-
-        public async Task<Rpt> Get(string value)
-        {
-            var record = await _context.Rpts.FirstOrDefaultAsync(r => r.Value == value).ConfigureAwait(false);
-            return record == null ? null : record.ToDomain();
         }
     }
 }

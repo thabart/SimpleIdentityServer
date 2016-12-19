@@ -31,7 +31,7 @@ namespace SimpleIdentityServer.Uma.Common.DTOs
         [DataMember(Name = ResourceSetResponseNames.Type)]
         public string Type { get; set; }
         [DataMember(Name = ResourceSetResponseNames.Scopes)]
-        public List<string> Scopes { get; set; }
+        public IEnumerable<string> Scopes { get; set; }
         [DataMember(Name = ResourceSetResponseNames.IconUri)]
         public string IconUri { get; set; }
     }

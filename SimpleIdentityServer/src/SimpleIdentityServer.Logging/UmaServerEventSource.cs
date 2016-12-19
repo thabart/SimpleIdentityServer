@@ -129,7 +129,7 @@ namespace SimpleIdentityServer.Uma.Logging
             {
                 Id = 1,
                 Task = Tasks.Authorization,
-                Message = $"Start getting RPT token : {request}"
+                Message = $"Start getting RPT tokens : {request}"
             };
 
             LogInformation(evt);

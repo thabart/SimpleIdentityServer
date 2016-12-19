@@ -18,15 +18,15 @@ using SimpleIdentityServer.Uma.Core.Api.Authorization.Actions;
 using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Responses;
 using System.Collections.Generic;
-using System.Security.Claims;
 using System.Threading.Tasks;
+using System;
 
 namespace SimpleIdentityServer.Uma.Core.Api.Authorization
 {
     public interface IAuthorizationActions
     {
-        Task<AuthorizationResponse> GetAuthorization(GetAuthorizationActionParameter getAuthorizationActionParameter,
-            IEnumerable<Claim> claims);
+        Task<AuthorizationResponse> GetAuthorization(GetAuthorizationActionParameter getAuthorizationActionParameter, string clientId);
+        Task<IEnumerable<AuthorizationResponse>> GetAuthorization(IEnumerable<GetAuthorizationActionParameter> getAuthorizationActionParameters, string clientId);
     }
 
     internal class AuthorizationActions : IAuthorizationActions
@@ -38,11 +38,16 @@ namespace SimpleIdentityServer.Uma.Core.Api.Authorization
             _getAuthorizationAction = getAuthorizationAction;
         }
 
-        public async Task<AuthorizationResponse> GetAuthorization(GetAuthorizationActionParameter getAuthorizationActionParameter,
-            IEnumerable<Claim> claims)
+        public async Task<AuthorizationResponse> GetAuthorization(
+            GetAuthorizationActionParameter getAuthorizationActionParameter,
+            string clientId)
         {
-            return await _getAuthorizationAction.Execute(getAuthorizationActionParameter,
-                claims);
+            return await _getAuthorizationAction.Execute(getAuthorizationActionParameter, clientId);
+        }
+
+        public async Task<IEnumerable<AuthorizationResponse>> GetAuthorization(IEnumerable<GetAuthorizationActionParameter> getAuthorizationActionParameters, string clientId)
+        {
+            return await _getAuthorizationAction.Execute(getAuthorizationActionParameters, clientId);
         }
     }
 }

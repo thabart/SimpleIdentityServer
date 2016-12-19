@@ -15,6 +15,7 @@
 #endregion
 
 using Newtonsoft.Json;
+using SimpleIdentityServer.Uma.Common;
 using SimpleIdentityServer.Uma.Core.Errors;
 using SimpleIdentityServer.Uma.Core.Exceptions;
 using SimpleIdentityServer.Uma.Core.Helpers;
@@ -23,26 +24,26 @@ using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Policies;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.Core.Responses;
+using SimpleIdentityServer.Uma.Core.Services;
 using SimpleIdentityServer.Uma.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.Authorization.Actions
 {
     public interface IGetAuthorizationAction
     {
-        Task<AuthorizationResponse> Execute(GetAuthorizationActionParameter parameter, IEnumerable<System.Security.Claims.Claim> claims);
-        Task<IEnumerable<AuthorizationResponse>> Execute(IEnumerable<GetAuthorizationActionParameter> parameters, IEnumerable<System.Security.Claims.Claim> claims);
+        Task<AuthorizationResponse> Execute(GetAuthorizationActionParameter parameter, string clientId);
+        Task<IEnumerable<AuthorizationResponse>> Execute(IEnumerable<GetAuthorizationActionParameter> parameters, string clientId);
     }
 
     internal class GetAuthorizationAction : IGetAuthorizationAction
     {
         private readonly ITicketRepository _ticketRepository;
         private readonly IAuthorizationPolicyValidator _authorizationPolicyValidator;
-        private readonly UmaServerOptions _umaServerOptions;
+        private readonly IConfigurationService _configurationService;
         private readonly IRptRepository _rptRepository;
         private readonly IRepositoryExceptionHelper _repositoryExceptionHelper;
         private readonly IUmaServerEventSource _umaServerEventSource;
@@ -50,120 +51,52 @@ namespace SimpleIdentityServer.Uma.Core.Api.Authorization.Actions
         public GetAuthorizationAction(
             ITicketRepository ticketRepository,
             IAuthorizationPolicyValidator authorizationPolicyValidator,
-            UmaServerOptions umaServerOptions,
+            IConfigurationService configurationService,
             IRptRepository rptRepository,
             IRepositoryExceptionHelper repositoryExceptionHelper,
             IUmaServerEventSource umaServerEventSource)
         {
             _ticketRepository = ticketRepository;
             _authorizationPolicyValidator = authorizationPolicyValidator;
-            _umaServerOptions = umaServerOptions;
+            _configurationService = configurationService;
             _rptRepository = rptRepository;
             _repositoryExceptionHelper = repositoryExceptionHelper;
             _umaServerEventSource = umaServerEventSource;
         }
 
-        public async Task<AuthorizationResponse> Execute(GetAuthorizationActionParameter getAuthorizationActionParameter, IEnumerable<System.Security.Claims.Claim> claims)
+        public async Task<AuthorizationResponse> Execute(GetAuthorizationActionParameter getAuthorizationActionParameter, string clientId)
         {
-            var json = getAuthorizationActionParameter == null ? string.Empty : JsonConvert.SerializeObject(getAuthorizationActionParameter);
-            _umaServerEventSource.StartGettingAuthorization(json);
-            if (getAuthorizationActionParameter == null)
-            {
-                throw new ArgumentNullException(nameof(getAuthorizationActionParameter));
-            }
-
-            if (claims == null ||
-                !claims.Any())
-            {
-                throw new ArgumentNullException(nameof(claims));
-            }
-
-            if (string.IsNullOrWhiteSpace(getAuthorizationActionParameter.TicketId))
-            {
-                throw new BaseUmaException(ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "ticket_id"));
-            }
-
-            var ticket = await _ticketRepository.Get(getAuthorizationActionParameter.TicketId);
-            if (ticket == null)
-            {
-                throw new BaseUmaException(ErrorCodes.InvalidTicket,
-                    string.Format(ErrorDescriptions.TheTicketDoesntExist, getAuthorizationActionParameter.TicketId));
-            }
-
-            var clientId = GetClientId(claims);
-            if (ticket.ClientId != clientId)
-            {
-                throw new BaseUmaException(ErrorCodes.InvalidTicket,
-                    ErrorDescriptions.TheTicketIssuerIsDifferentFromTheClient);
-            }
-
-            if (ticket.ExpirationDateTime < DateTime.UtcNow)
-            {
-                throw new BaseUmaException(ErrorCodes.ExpiredTicket,
-                    ErrorDescriptions.TheTicketIsExpired);
-            }
-
-            _umaServerEventSource.CheckAuthorizationPolicy(json);
-            var authorizationResult = await _authorizationPolicyValidator.IsAuthorized(ticket,
-                clientId,
-                getAuthorizationActionParameter.ClaimTokenParameters);
-            if (authorizationResult.Type != AuthorizationPolicyResultEnum.Authorized)
-            {
-                _umaServerEventSource.RequestIsNotAuthorized(json);
-                return new AuthorizationResponse
-                {
-                    AuthorizationPolicyResult = authorizationResult.Type,
-                    ErrorDetails = authorizationResult.ErrorDetails
-                };
-            }
-
-            var rpt = new Rpt
-            {
-                ExpirationDateTime = DateTime.UtcNow.AddSeconds(_umaServerOptions.RptLifeTime),
-                Value = Guid.NewGuid().ToString(),
-                TicketId = ticket.Id,
-                ResourceSetId = ticket.ResourceSetId,
-                CreateDateTime = DateTime.UtcNow
-            };
-
-            await _repositoryExceptionHelper.HandleException(
-                ErrorDescriptions.TheRptCannotBeInserted,
-                () => _rptRepository.Insert(rpt));
-            _umaServerEventSource.RequestIsAuthorized(json);
-            return new AuthorizationResponse
-            {
-                AuthorizationPolicyResult = AuthorizationPolicyResultEnum.Authorized,
-                Rpt = rpt.Value
-            };
+            var result = await Execute(new[] { getAuthorizationActionParameter }, clientId);
+            return result.First();
         }
 
-        public async Task<IEnumerable<AuthorizationResponse>> Execute(IEnumerable<GetAuthorizationActionParameter> parameters, IEnumerable<System.Security.Claims.Claim> claims)
+        public async Task<IEnumerable<AuthorizationResponse>> Execute(IEnumerable<GetAuthorizationActionParameter> parameters, string clientId)
         {
+            var result = new List<AuthorizationResponse>();
+            var rptLifeTime = await _configurationService.GetRptLifeTime();
             // 1. Check parameters.
             if (parameters == null)
             {
                 throw new ArgumentNullException(nameof(parameters));
             }
 
-            if (claims == null ||
-                !claims.Any())
+            if (string.IsNullOrWhiteSpace(clientId))
             {
-                throw new ArgumentNullException(nameof(claims));
+                throw new ArgumentNullException(nameof(clientId));
             }
 
             // 2. Retrieve the tickets.
-            var clientId = GetClientId(claims);
-            var json = JsonConvert.SerializeObject(parameters);
-            _umaServerEventSource.StartGettingAuthorization(json);
+            _umaServerEventSource.StartGettingAuthorization(JsonConvert.SerializeObject(parameters));
             var tickets = await _ticketRepository.Get(parameters.Select(p => p.TicketId));
+            var rptLst = new List<Rpt>();
             // 3. Check parameters.
             foreach(var parameter in parameters)
             {
+                var json = JsonConvert.SerializeObject(parameter);
                 if (string.IsNullOrWhiteSpace(parameter.TicketId))
                 {
                     throw new BaseUmaException(ErrorCodes.InvalidRequestCode,
-                        string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "ticket_id"));
+                        string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, PostAuthorizationNames.TicketId));
                 }
 
                 var ticket = tickets.FirstOrDefault(t => t.Id == parameter.TicketId);
@@ -175,27 +108,53 @@ namespace SimpleIdentityServer.Uma.Core.Api.Authorization.Actions
 
                 if (ticket.ClientId != clientId)
                 {
-                    throw new BaseUmaException(ErrorCodes.InvalidTicket,
-                        ErrorDescriptions.TheTicketIssuerIsDifferentFromTheClient);
+                    throw new BaseUmaException(ErrorCodes.InvalidTicket, ErrorDescriptions.TheTicketIssuerIsDifferentFromTheClient);
                 }
 
                 if (ticket.ExpirationDateTime < DateTime.UtcNow)
                 {
                     throw new BaseUmaException(ErrorCodes.ExpiredTicket, ErrorDescriptions.TheTicketIsExpired);
                 }
-            }
-            return null;
-        }
 
-        private static string GetClientId(IEnumerable<System.Security.Claims.Claim> claims)
-        {
-            var clientClaim = claims.FirstOrDefault(c => c.Type == "client_id");
-            if (clientClaim == null)
+                _umaServerEventSource.CheckAuthorizationPolicy(json);
+                var authorizationResult = await _authorizationPolicyValidator.IsAuthorized(ticket, clientId, parameter.ClaimTokenParameters);
+                if (authorizationResult.Type != AuthorizationPolicyResultEnum.Authorized)
+                {
+                    _umaServerEventSource.RequestIsNotAuthorized(json);
+                    result.Add(new AuthorizationResponse
+                    {
+                        AuthorizationPolicyResult = authorizationResult.Type,
+                        ErrorDetails = authorizationResult.ErrorDetails
+                    });
+                    continue;
+                }
+
+                var rpt = new Rpt
+                {
+                    Value = Guid.NewGuid().ToString(),
+                    TicketId = ticket.Id,
+                    ResourceSetId = ticket.ResourceSetId,
+                    CreateDateTime = DateTime.UtcNow,
+                    ExpirationDateTime = DateTime.UtcNow.AddSeconds(rptLifeTime)
+                };
+                rptLst.Add(rpt);
+                result.Add(new AuthorizationResponse
+                {
+                    AuthorizationPolicyResult = AuthorizationPolicyResultEnum.Authorized,
+                    Rpt = rpt.Value
+                });
+                _umaServerEventSource.RequestIsAuthorized(json);
+            }
+
+            // 4. Persist the RPTs.
+            if (rptLst.Any())
             {
-                return string.Empty;
+                await _repositoryExceptionHelper.HandleException(
+                    ErrorDescriptions.TheRptCannotBeInserted,
+                    () => _rptRepository.Insert(rptLst));
             }
 
-            return clientClaim.Value;
+            return result;
         }
     }
 }

@@ -15,6 +15,7 @@
 #endregion
 
 using SimpleIdentityServer.Uma.Core.Models;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Repositories
@@ -22,6 +23,7 @@ namespace SimpleIdentityServer.Uma.Core.Repositories
     public interface IRptRepository
     {
         Task<bool> Insert(Rpt rpt);
+        Task<bool> Insert(IEnumerable<Rpt> rpt);
         Task<Rpt> Get(string value);
     }
 }

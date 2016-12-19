@@ -14,12 +14,18 @@
 // limitations under the License.
 #endregion
 
+using System;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Services
 {
     public class DefaultConfigurationService : IConfigurationService
     {
+        public Task<int> GetRptLifeTime()
+        {
+            return Task.FromResult(3000);
+        }
+
         public Task<int> GetTicketLifeTime()
         {
             return Task.FromResult(3000);
