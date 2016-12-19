@@ -86,7 +86,6 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
                     record.Type = resourceSet.Type;
                     record.Uri = resourceSet.Uri;
                     record.IconUri = resourceSet.IconUri;
-
                     await _context.SaveChangesAsync().ConfigureAwait(false);
                     transaction.Commit();
                     return true;
@@ -129,10 +128,12 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
 
                     _context.ResourceSets.Remove(record);
                     await _context.SaveChangesAsync().ConfigureAwait(false);
+                    transaction.Commit();
                     return true;
                 }
                 catch
                 {
+                    transaction.Rollback();
                     return false;
                 }
             }
