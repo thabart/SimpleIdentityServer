@@ -17,6 +17,7 @@
 using SimpleIdentityServer.Client.Configuration;
 using SimpleIdentityServer.Client.Extensions;
 using SimpleIdentityServer.Uma.Common.DTOs;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Client.Authorization
@@ -25,6 +26,8 @@ namespace SimpleIdentityServer.Client.Authorization
     {
         Task<AuthorizationResponse> Get(PostAuthorization request, string url, string token);
         Task<AuthorizationResponse> GetByResolution(PostAuthorization request, string url, string token);
+        Task<BulkAuthorizationResponse> Get(IEnumerable<PostAuthorization> parameters, string url, string token);
+        Task<BulkAuthorizationResponse> GetByResolution(IEnumerable<PostAuthorization> parameters, string url, string token);
     }
 
     internal class AuthorizationClient : IAuthorizationClient
@@ -49,6 +52,17 @@ namespace SimpleIdentityServer.Client.Authorization
         {
             var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url));
             return await Get(request, configuration.RptEndPoint, token);
+        }
+
+        public Task<BulkAuthorizationResponse> Get(IEnumerable<PostAuthorization> parameters, string url, string token)
+        {
+            return _getAuthorizationOperation.ExecuteAsync(parameters, url, token);
+        }
+
+        public async Task<BulkAuthorizationResponse> GetByResolution(IEnumerable<PostAuthorization> parameters, string url, string token)
+        {
+            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url));
+            return await Get(parameters, configuration.RptEndPoint, token);
         }
     }
 }

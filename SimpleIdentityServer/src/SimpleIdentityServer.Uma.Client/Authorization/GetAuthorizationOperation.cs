@@ -18,6 +18,7 @@ using Newtonsoft.Json;
 using SimpleIdentityServer.Uma.Client.Factory;
 using SimpleIdentityServer.Uma.Common.DTOs;
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,6 +28,7 @@ namespace SimpleIdentityServer.Client.Authorization
     public interface IGetAuthorizationOperation
     {
         Task<AuthorizationResponse> ExecuteAsync(PostAuthorization request, string url, string token);
+        Task<BulkAuthorizationResponse> ExecuteAsync(IEnumerable<PostAuthorization> parameters, string url, string token);
     }
 
     internal class GetAuthorizationOperation : IGetAuthorizationOperation
@@ -69,6 +71,46 @@ namespace SimpleIdentityServer.Client.Authorization
             result.EnsureSuccessStatusCode();
             var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
             return JsonConvert.DeserializeObject<AuthorizationResponse>(content);
+        }
+
+        public async Task<BulkAuthorizationResponse> ExecuteAsync(IEnumerable<PostAuthorization> parameters, string url, string token)
+        {
+            if (parameters == null)
+            {
+                throw new ArgumentNullException(nameof(parameters));
+            }
+
+            if (string.IsNullOrWhiteSpace(url))
+            {
+                throw new ArgumentNullException(nameof(url));
+            }
+
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                throw new ArgumentNullException(nameof(token));
+            }
+
+            if (url.EndsWith("/"))
+            {
+                url = url.Remove(0, url.Length - 1);
+            }
+
+            url = url + "/bulk";
+
+            var httpClient = _httpClientFactory.GetHttpClient();
+            var serializedPostAuthorization = JsonConvert.SerializeObject(parameters);
+            var body = new StringContent(serializedPostAuthorization, Encoding.UTF8, "application/json");
+            var httpRequest = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri(url)
+            };
+            httpRequest.Headers.Add("Authorization", "Bearer " + token);
+            var result = await httpClient.SendAsync(httpRequest).ConfigureAwait(false);
+            result.EnsureSuccessStatusCode();
+            var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+            return JsonConvert.DeserializeObject<BulkAuthorizationResponse>(content);
         }
     }
 }

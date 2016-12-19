@@ -23,6 +23,7 @@ using SimpleIdentityServer.Client.ResourceSet;
 using SimpleIdentityServer.Uma.Client.Factory;
 using SimpleIdentityServer.Uma.Common.DTOs;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -103,6 +104,104 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             Assert.NotEmpty(authResponse.Rpt);
         }
 
+        [Fact]
+        public async Task When_Requesting_Multiple_Authorizations_Then_Rpt_Tokens_Are_Returned()
+        {
+            const string baseUrl = "http://localhost:5000";
+            // ARRANGE
+            InitializeFakeObjects();
+            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+            // 1. Add resource.
+            var addResource = await _resourceSetClient.AddByResolution(new PostResourceSet
+            {
+                Name = "picture",
+                Scopes = new List<string>
+                {
+                    "read",
+                    "write"
+                }
+            }, baseUrl + "/.well-known/uma-configuration", "header");
+            // 2. Add authorization policy.
+            var addFirstPolicy = await _policyClient.AddByResolution(new PostPolicy
+            {
+                Rules = new List<PostPolicyRule>
+                {
+                    new PostPolicyRule
+                    {
+                        IsResourceOwnerConsentNeeded = false,
+                        Scopes = new List<string>
+                        {
+                            "read"
+                        },
+                        ClientIdsAllowed = new List<string>
+                        {
+                            "client"
+                        }
+                    }
+                },
+                ResourceSetIds = new List<string>
+                {
+                    addResource.Id
+                }
+            }, baseUrl + "/.well-known/uma-configuration", "header");
+            var addSecondPolicy = await _policyClient.AddByResolution(new PostPolicy
+            {
+                Rules = new List<PostPolicyRule>
+                {
+                    new PostPolicyRule
+                    {
+                        IsResourceOwnerConsentNeeded = false,
+                        Scopes = new List<string>
+                        {
+                            "write"
+                        },
+                        ClientIdsAllowed = new List<string>
+                        {
+                            "client"
+                        }
+                    }
+                },
+                ResourceSetIds = new List<string>
+                {
+                    addResource.Id
+                }
+            }, baseUrl + "/.well-known/uma-configuration", "header");
+            // 3. Add the permission.
+            var addFirstPermission = await _permissionClient.AddByResolution(new PostPermission
+            {
+                ResourceSetId = addResource.Id,
+                Scopes = new List<string>
+                {
+                    "read"
+                }
+            }, baseUrl + "/.well-known/uma-configuration", "header");
+            var addSecondPermission = await _permissionClient.AddByResolution(new PostPermission
+            {
+                ResourceSetId = addResource.Id,
+                Scopes = new List<string>
+                {
+                    "write"
+                }
+            }, baseUrl + "/.well-known/uma-configuration", "header");
+
+            // ACT
+            // 4. Get authorizations
+            var response = await _authorizationClient.GetByResolution(new[] {
+                new PostAuthorization
+                {
+                    TicketId = addFirstPermission.TicketId
+                },
+                new PostAuthorization
+                {
+                    TicketId = addSecondPermission.TicketId
+                }
+            }, baseUrl + "/.well-known/uma-configuration", "header");
+
+            // ASSERT
+            Assert.NotNull(response);
+            Assert.True(response.Rpts != null && response.Rpts.Count() == 2);
+        }
+        
         private void InitializeFakeObjects()
         {
             _httpClientFactoryStub = new Mock<IHttpClientFactory>();

@@ -105,6 +105,11 @@ namespace SimpleIdentityServer.Uma.Common
         public const string Rpt = "rpt";
     }
 
+    public static class BulkAuthorizationResponseNames
+    {
+        public const string Rpts = "rpts";
+    }
+
     public static class IntrospectPermissionNames
     {
         public const string ResourceSetIdName = "resource_set_id";

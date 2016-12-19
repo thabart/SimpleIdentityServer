@@ -24,6 +24,7 @@ using SimpleIdentityServer.Uma.Host.Errors;
 using SimpleIdentityServer.Uma.Host.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -88,8 +89,21 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 throw new ArgumentNullException(nameof(postAuthorizations));
             }
 
-            return null;
-        }
+            var parameters = postAuthorizations.Select(p => p.ToParameter());
+            var clientId = this.GetClientId();
+            var responses = await _authorizationActions.GetAuthorization(parameters, clientId);
+            if (!responses.Any(r => r.AuthorizationPolicyResult == AuthorizationPolicyResultEnum.Authorized))
+            {
+                return new StatusCodeResult((int)HttpStatusCode.Forbidden);
+            }
+
+            var content = new BulkAuthorizationResponse
+            {
+                Rpts = responses.Where(r => r.AuthorizationPolicyResult == AuthorizationPolicyResultEnum.Authorized)
+                    .Select(r => r.Rpt)
+            };
+            return new OkObjectResult(content);
+    }
 
         private static ActionResult GetErrorResponse(AuthorizationPolicyResultEnum authorizationPolicyResult)
         {
