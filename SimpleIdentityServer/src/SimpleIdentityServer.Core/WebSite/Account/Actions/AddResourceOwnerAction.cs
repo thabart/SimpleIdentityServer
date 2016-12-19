@@ -76,7 +76,7 @@ namespace SimpleIdentityServer.Core.WebSite.Account.Actions
             };
             var newResourceOwner = new ResourceOwner
             {
-                Id = Guid.NewGuid().ToString(),
+                Id = addUserParameter.Login,
                 Claims = claims,
                 TwoFactorAuthentication = TwoFactorAuthentications.NONE,
                 IsLocalAccount = true,

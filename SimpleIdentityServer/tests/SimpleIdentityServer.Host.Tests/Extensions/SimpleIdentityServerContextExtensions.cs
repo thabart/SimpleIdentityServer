@@ -40,7 +40,7 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
             {
                 context.SaveChanges();
             }
-            catch (Exception ex)
+            catch
             {
                 Trace.WriteLine("items already exists");
             }

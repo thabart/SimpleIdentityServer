@@ -502,7 +502,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                 {
                     new ResourceOwner
                     {
-                        Id = Guid.NewGuid().ToString(),
+                        Id = "administrator",
                         Claims = new List<ResourceOwnerClaim>
                         {
                             new ResourceOwnerClaim

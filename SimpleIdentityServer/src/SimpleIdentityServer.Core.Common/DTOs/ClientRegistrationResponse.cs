@@ -19,6 +19,7 @@ using System.Runtime.Serialization;
 
 namespace SimpleIdentityServer.Core.Common.DTOs
 {
+    [DataContract]
     public class ClientRegistrationResponse
     {
         [DataMember(Name = ClientAuthNames.ClientId)]

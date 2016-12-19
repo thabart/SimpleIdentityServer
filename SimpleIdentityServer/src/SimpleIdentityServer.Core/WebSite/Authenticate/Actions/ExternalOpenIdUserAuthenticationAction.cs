@@ -100,7 +100,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                 var standardClaims = await _claimRepository.GetAllAsync();
                 resourceOwner = new ResourceOwner
                 {
-                    Id = Guid.NewGuid().ToString(),
+                    Id = subject,
                     IsLocalAccount = false,
                     TwoFactorAuthentication = TwoFactorAuthentications.NONE,
                     Claims = claims.Where(c => standardClaims.Any(sc => sc == c.Type)).ToList()
