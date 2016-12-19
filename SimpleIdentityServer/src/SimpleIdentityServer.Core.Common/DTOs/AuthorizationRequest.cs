@@ -15,6 +15,7 @@
 #endregion
 
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using SimpleIdentityServer.Core.Common.Serializers;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +23,7 @@ using System.Runtime.Serialization;
 
 namespace SimpleIdentityServer.Core.Common.DTOs
 {
-    [DataContract]
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum ResponseModes
     {
         [EnumMember(Value = ResponseModeNames.None)]
@@ -35,7 +36,7 @@ namespace SimpleIdentityServer.Core.Common.DTOs
         FormPost
     }
 
-    [DataContract]
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum ResponseTypes
     {
         [EnumMember(Value = ResponseTypeNames.Code)]
@@ -46,7 +47,7 @@ namespace SimpleIdentityServer.Core.Common.DTOs
         IdToken
     }
 
-    [DataContract]
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum DisplayModes
     {
         [EnumMember(Value = PageNames.Page)]
