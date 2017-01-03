@@ -58,7 +58,7 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
             try
             {
                 var resourceSet = await _context.ResourceSets
-                    .Include(r => r.PolicyResources).ThenInclude(p => p.Policy)
+                    .Include(r => r.PolicyResources).ThenInclude(p => p.Policy).ThenInclude(p => p.Rules)
                     .FirstOrDefaultAsync(r => r.Id == id)
                     .ConfigureAwait(false);
                 return resourceSet == null ? null : resourceSet.ToDomain();
@@ -144,7 +144,7 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
             try
             {
                 return await _context.ResourceSets
-                    .Include(r => r.PolicyResources)
+                    .Include(r => r.PolicyResources).ThenInclude(p => p.Policy).ThenInclude(p => p.Rules)
                     .Where(r => ids.Contains(r.Id))
                     .Select(r => r.ToDomain())
                     .ToListAsync()
