@@ -24,6 +24,7 @@ using SimpleIdentityServer.Client.ResourceSet;
 using SimpleIdentityServer.Uma.Client.Factory;
 using SimpleIdentityServer.Uma.Common.DTOs;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -107,6 +108,89 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             Assert.True(introspectionResult.IsActive);
         }
 
+        [Fact]
+        public async Task When_Introspecting_RptsToken_Then_Information_Are_Returned()
+        {
+            const string baseUrl = "http://localhost:5000";
+            // ARRANGE
+            InitializeFakeObjects();
+            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+            // 1. Add resource.
+            var addResource = await _resourceSetClient.AddByResolution(new PostResourceSet
+            {
+                Name = "picture",
+                Scopes = new List<string>
+                {
+                    "read",
+                    "write"
+                }
+            }, baseUrl + "/.well-known/uma-configuration", "header");
+            // 2. Add authorization policy.
+            await _policyClient.AddByResolution(new PostPolicy
+            {
+                Rules = new List<PostPolicyRule>
+                {
+                    new PostPolicyRule
+                    {
+                        IsResourceOwnerConsentNeeded = false,
+                        Scopes = new List<string>
+                        {
+                            "read",
+                            "write"
+                        },
+                        ClientIdsAllowed = new List<string>
+                        {
+                            "client"
+                        }
+                    }
+                },
+                ResourceSetIds = new List<string>
+                {
+                    addResource.Id
+                }
+            }, baseUrl + "/.well-known/uma-configuration", "header");
+            // 3. Add the permission.
+            var readPermission = await _permissionClient.AddByResolution(new PostPermission
+            {
+                ResourceSetId = addResource.Id,
+                Scopes = new List<string>
+                {
+                    "read"
+                }
+            }, baseUrl + "/.well-known/uma-configuration", "header");
+            var writePermission = await _permissionClient.AddByResolution(new PostPermission
+            {
+                ResourceSetId = addResource.Id,
+                Scopes = new List<string>
+                {
+                    "write"
+                }
+            }, baseUrl + "/.well-known/uma-configuration", "header");
+            // 4. Get RPT token
+            var authResponse = await _authorizationClient.GetByResolution(new List<PostAuthorization>
+            {
+                new PostAuthorization
+                {
+                    TicketId = readPermission.TicketId
+                },
+                new PostAuthorization
+                {
+                    TicketId = writePermission.TicketId
+                }
+            }, baseUrl + "/.well-known/uma-configuration", "header");
+
+            // ACT
+            // 5. Introspect the RPT token.
+            var introspectionsResult = await _introspectionClient.GetByResolution(new PostIntrospection
+            {
+                Rpts = authResponse.Rpts
+            }, baseUrl + "/.well-known/uma-configuration");
+
+            // ASSERT
+            Assert.NotNull(introspectionsResult);
+            Assert.True(introspectionsResult.Count() == 2);
+        }
+
         private void InitializeFakeObjects()
         {
             _httpClientFactoryStub = new Mock<IHttpClientFactory>();
@@ -131,6 +215,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                 new GetConfigurationOperation(_httpClientFactoryStub.Object));
             _introspectionClient = new IntrospectionClient(
                 new GetIntrospectionAction(_httpClientFactoryStub.Object),
+                new GetIntrospectionsAction(_httpClientFactoryStub.Object),
                 new GetConfigurationOperation(_httpClientFactoryStub.Object));
         }
     }

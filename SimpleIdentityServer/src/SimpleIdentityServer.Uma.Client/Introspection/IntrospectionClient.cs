@@ -18,6 +18,7 @@ using SimpleIdentityServer.Client.Configuration;
 using SimpleIdentityServer.Client.Extensions;
 using SimpleIdentityServer.Uma.Common.DTOs;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Client.Introspection
@@ -26,18 +27,23 @@ namespace SimpleIdentityServer.Client.Introspection
     {
         Task<IntrospectionResponse> Get(string rpt, string url);
         Task<IntrospectionResponse> GetByResolution(string rpt, string url);
+        Task<IEnumerable<IntrospectionResponse>> Get(PostIntrospection parameter, string url);
+        Task<IEnumerable<IntrospectionResponse>> GetByResolution(PostIntrospection parameter, string url);
     }
 
     internal class IntrospectionClient : IIntrospectionClient
     {
         private readonly IGetIntrospectionAction _getIntrospectionAction;
+        private readonly IGetIntrospectionsAction _getIntrospectionsAction;
         private readonly IGetConfigurationOperation _getConfigurationOperation;
 
         public IntrospectionClient(
             IGetIntrospectionAction getIntrospectionAction,
+            IGetIntrospectionsAction getIntrospectionsAction,
             IGetConfigurationOperation getConfigurationOperation)
         {
             _getIntrospectionAction = getIntrospectionAction;
+            _getIntrospectionsAction = getIntrospectionsAction;
             _getConfigurationOperation = getConfigurationOperation;
         }
 
@@ -50,6 +56,17 @@ namespace SimpleIdentityServer.Client.Introspection
         {
             var introspectionEndPoint = await GetIntrospectionEndpoint(UriHelpers.GetUri(url));
             return await Get(rpt, introspectionEndPoint);
+        }
+
+        public Task<IEnumerable<IntrospectionResponse>> Get(PostIntrospection parameter, string url)
+        {
+            return _getIntrospectionsAction.ExecuteAsync(parameter, url);
+        }
+
+        public async Task<IEnumerable<IntrospectionResponse>> GetByResolution(PostIntrospection parameter, string url)
+        {
+            var introspectionEndPoint = await GetIntrospectionEndpoint(UriHelpers.GetUri(url));
+            return await Get(parameter, introspectionEndPoint);
         }
 
         private async Task<string> GetIntrospectionEndpoint(Uri configurationUri)

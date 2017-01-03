@@ -119,6 +119,7 @@ namespace SimpleIdentityServer.Client
             serviceCollection.AddTransient<IDeleteScopeOperation, DeleteScopeOperation>();
             serviceCollection.AddTransient<IUpdateScopeOperation, UpdateScopeOperation>();
             serviceCollection.AddTransient<IAddScopeOperation, AddScopeOperation>();
+            serviceCollection.AddTransient<IGetIntrospectionsAction, GetIntrospectionsAction>();
 
         }
     }
