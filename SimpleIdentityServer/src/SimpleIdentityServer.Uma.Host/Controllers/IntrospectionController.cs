@@ -16,6 +16,7 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
+using SimpleIdentityServer.Uma.Common.DTOs;
 using SimpleIdentityServer.Uma.Core.Api.IntrospectionController;
 using System;
 using System.Linq;
@@ -45,6 +46,18 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         public async Task<ActionResult> Post()
         {
             return await Introspect();
+        }
+
+        [HttpPost("bulk")]
+        public async Task<ActionResult> PostBulk([FromBody] PostIntrospection parameter)
+        {
+            if (parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter));
+            }
+
+            var result = await _introspectionActions.GetIntrospection(parameter.Rpts);
+            return new OkObjectResult(result);
         }
 
         private async Task<ActionResult> Introspect()

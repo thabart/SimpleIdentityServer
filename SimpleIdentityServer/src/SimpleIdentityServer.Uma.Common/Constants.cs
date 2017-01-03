@@ -100,6 +100,11 @@ namespace SimpleIdentityServer.Uma.Common
         public const string ClaimTokens = "claim_tokens";
     }
 
+    public static class PostIntrospectionNames
+    {
+        public const string Rpts = "rpts";
+    }
+
     public static class AuthorizationResponseNames
     {
         public const string Rpt = "rpt";

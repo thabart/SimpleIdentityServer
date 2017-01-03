@@ -1,5 +1,5 @@
 ﻿#region copyright
-// Copyright 2015 Habart Thierry
+// Copyright 2017 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.IntrospectionController.Actions
@@ -30,6 +31,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.IntrospectionController.Actions
     public interface IGetIntrospectAction
     {
         Task<IntrospectionResponse> Execute(string rpt);
+        Task<IEnumerable<IntrospectionResponse>> Execute(IEnumerable<string> rpts);
     }
 
     internal class GetIntrospectAction : IGetIntrospectAction
@@ -47,54 +49,74 @@ namespace SimpleIdentityServer.Uma.Core.Api.IntrospectionController.Actions
             _ticketRepository = ticketRepository;
             _umaServerEventSource = umaServerEventSource;
         }
-        
+
         public async Task<IntrospectionResponse> Execute(string rpt)
         {
-            _umaServerEventSource.StartToIntrospect(rpt);
             if (string.IsNullOrWhiteSpace(rpt))
             {
                 throw new ArgumentNullException(nameof(rpt));
             }
 
-            var rptInformation = await _rptRepository.Get(rpt);
-            if (rptInformation == null)
+            return (await Execute(new[] { rpt })).First();
+        }
+
+        public async Task<IEnumerable<IntrospectionResponse>> Execute(IEnumerable<string> rpts)
+        {
+            if (rpts == null || !rpts.Any())
+            {
+                throw new ArgumentNullException(nameof(rpts));
+            }
+
+            var concatenatedRpts = string.Join(",", rpts);
+            _umaServerEventSource.StartToIntrospect(concatenatedRpts);
+            var rptsInformation = await _rptRepository.Get(rpts);
+            if (rptsInformation == null || !rptsInformation.Any())
             {
                 throw new BaseUmaException(ErrorCodes.InvalidRpt,
-                    string.Format(ErrorDescriptions.TheRptDoesntExist, rpt));
+                    string.Format(ErrorDescriptions.TheRptsDontExist, concatenatedRpts));
             }
 
-            var ticket = await _ticketRepository.Get(rptInformation.TicketId);
-            if (ticket == null)
+            var tickets = await _ticketRepository.Get(rptsInformation.Select(r => r.TicketId));
+            if (tickets == null || !tickets.Any() || tickets.Count() != rptsInformation.Count())
             {
                 throw new BaseUmaException(ErrorCodes.InternalError,
-                    string.Format(ErrorDescriptions.TheTicketDoesntExist, rptInformation.TicketId));
+                    ErrorDescriptions.AtLeastOneTicketDoesntExist);
             }
 
-            var result = new IntrospectionResponse
+            var result = new List<IntrospectionResponse>();
+            foreach(var rptInformation in rptsInformation)
             {
-                Expiration = rptInformation.ExpirationDateTime.ConvertToUnixTimestamp(),
-                IssuedAt = rptInformation.CreateDateTime.ConvertToUnixTimestamp()
-            };
-
-            if (rptInformation.ExpirationDateTime < DateTime.UtcNow ||
-                ticket.ExpirationDateTime < DateTime.UtcNow)
-            {
-                _umaServerEventSource.RptHasExpired(rpt);
-                result.IsActive = false;
-                return result;
-            }
-
-            result.Permissions = new List<PermissionResponse>
-            {
-                new PermissionResponse
+                var record = new IntrospectionResponse
                 {
-                    ResourceSetId = rptInformation.ResourceSetId,
-                    Scopes = ticket.Scopes,
-                    Expiration = ticket.ExpirationDateTime.ConvertToUnixTimestamp()
-                }
-            };
+                    Expiration = rptInformation.ExpirationDateTime.ConvertToUnixTimestamp(),
+                    IssuedAt = rptInformation.CreateDateTime.ConvertToUnixTimestamp()
+                };
 
-            result.IsActive = true;
+                var ticket = tickets.First(t => t.Id == rptInformation.TicketId);
+                if (rptInformation.ExpirationDateTime < DateTime.UtcNow ||
+                    ticket.ExpirationDateTime < DateTime.UtcNow)
+                {
+                    _umaServerEventSource.RptHasExpired(rptInformation.Value);
+                    record.IsActive = false;
+                }
+                else
+                {
+                    record.Permissions = new List<PermissionResponse>
+                    {
+                        new PermissionResponse
+                        {
+                            ResourceSetId = rptInformation.ResourceSetId,
+                            Scopes = ticket.Scopes,
+                            Expiration = ticket.ExpirationDateTime.ConvertToUnixTimestamp()
+                        }
+                    };
+
+                    record.IsActive = true;
+                }
+
+                result.Add(record);
+            }
+
             _umaServerEventSource.EndIntrospection(JsonConvert.SerializeObject(result));
             return result;
         }

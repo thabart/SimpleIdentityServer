@@ -44,7 +44,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.IntrospectionController.Ac
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _getIntrospectAction.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getIntrospectAction.Execute(string.Empty));
         }
 
         [Fact]
@@ -60,7 +60,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.IntrospectionController.Ac
             var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _getIntrospectAction.Execute(rpt));
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidRpt);
-            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheRptDoesntExist, rpt));
+            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheRptsDontExist, rpt));
         }
 
         [Fact]
@@ -69,22 +69,26 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.IntrospectionController.Ac
             // ARRANGE
             const string rpt = "rpt";
             const string ticketId = "invalid_ticket_id";
-            var rptInfo = new Rpt
+            IEnumerable<Rpt> rptsInfo = new List<Rpt>
             {
-                TicketId = ticketId,
-                Value = rpt
+                new Rpt
+                {
+                    TicketId = ticketId,
+                    Value = rpt
+                }
             };
+            IEnumerable<Ticket> tickets = null;
             InitializeFakeObjects();
-            _rptRepositoryStub.Setup(r => r.Get(It.IsAny<string>()))
-                .Returns(Task.FromResult(rptInfo));
-            _ticketRepositoryStub.Setup(t => t.Get(It.IsAny<string>()))
-                .Returns(Task.FromResult((Ticket)null));
+            _rptRepositoryStub.Setup(r => r.Get(It.IsAny<IEnumerable<string>>()))
+                .Returns(Task.FromResult(rptsInfo));
+            _ticketRepositoryStub.Setup(t => t.Get(It.IsAny<IEnumerable<string>>()))
+                .Returns(Task.FromResult(tickets));
 
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _getIntrospectAction.Execute(rpt));
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InternalError);
-            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheTicketDoesntExist, ticketId));
+            Assert.True(exception.Message == ErrorDescriptions.AtLeastOneTicketDoesntExist);
         }
 
         [Fact]
@@ -93,19 +97,28 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.IntrospectionController.Ac
             // ARRANGE
             const string rpt = "rpt";
             const string ticketId = "ticket_id";
-            var rptInfo = new Rpt
+            IEnumerable<Rpt> rptsInfo = new List<Rpt>
             {
-                TicketId = ticketId,
-                Value = rpt,
-                ExpirationDateTime = DateTime.UtcNow.AddSeconds(-30),
-                CreateDateTime = DateTime.UtcNow.AddMinutes(-2)
+                new Rpt
+                {
+                    TicketId = ticketId,
+                    Value = rpt,
+                    ExpirationDateTime = DateTime.UtcNow.AddSeconds(30),
+                    CreateDateTime = DateTime.UtcNow
+                }
             };
-            var ticket = new Ticket();
+            IEnumerable<Ticket> tickets = new List<Ticket>
+            {
+                new Ticket
+                {
+                    Id = ticketId
+                }
+            };
             InitializeFakeObjects();
-            _rptRepositoryStub.Setup(r => r.Get(It.IsAny<string>()))
-                .Returns(Task.FromResult(rptInfo));
-            _ticketRepositoryStub.Setup(t => t.Get(It.IsAny<string>()))
-                .Returns(Task.FromResult(ticket));
+            _rptRepositoryStub.Setup(r => r.Get(It.IsAny<IEnumerable<string>>()))
+                .Returns(Task.FromResult(rptsInfo));
+            _ticketRepositoryStub.Setup(t => t.Get(It.IsAny<IEnumerable<string>>()))
+                .Returns(Task.FromResult(tickets));
 
             // ACT
             var result = await _getIntrospectAction.Execute(rpt);
@@ -113,8 +126,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.IntrospectionController.Ac
             // ASSERTS
             Assert.NotNull(result);
             Assert.False(result.IsActive);
-            Assert.True(result.Expiration == rptInfo.ExpirationDateTime.ConvertToUnixTimestamp());
-            Assert.True(result.IssuedAt == rptInfo.CreateDateTime.ConvertToUnixTimestamp());
+            Assert.True(result.Expiration == rptsInfo.First().ExpirationDateTime.ConvertToUnixTimestamp());
+            Assert.True(result.IssuedAt == rptsInfo.First().CreateDateTime.ConvertToUnixTimestamp());
         }
 
         [Fact]
@@ -123,22 +136,29 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.IntrospectionController.Ac
             // ARRANGE
             const string rpt = "rpt";
             const string ticketId = "ticket_id";
-            var rptInfo = new Rpt
+            IEnumerable<Rpt> rptsInfo = new List<Rpt>
             {
-                TicketId = ticketId,
-                Value = rpt,
-                ExpirationDateTime = DateTime.UtcNow.AddSeconds(30),
-                CreateDateTime = DateTime.UtcNow
+                new Rpt
+                {
+                    TicketId = ticketId,
+                    Value = rpt,
+                    ExpirationDateTime = DateTime.UtcNow.AddSeconds(30),
+                    CreateDateTime = DateTime.UtcNow
+                }
             };
-            var ticket = new Ticket
+            IEnumerable<Ticket> tickets = new List<Ticket>
             {
-                ExpirationDateTime = DateTime.UtcNow.AddSeconds(-30)
+                new Ticket
+                {
+                    ExpirationDateTime = DateTime.UtcNow.AddSeconds(-30),
+                    Id = ticketId
+                }
             };
             InitializeFakeObjects();
-            _rptRepositoryStub.Setup(r => r.Get(It.IsAny<string>()))
-                .Returns(Task.FromResult(rptInfo));
-            _ticketRepositoryStub.Setup(t => t.Get(It.IsAny<string>()))
-                .Returns(Task.FromResult(ticket));
+            _rptRepositoryStub.Setup(r => r.Get(It.IsAny<IEnumerable<string>>()))
+                .Returns(Task.FromResult(rptsInfo));
+            _ticketRepositoryStub.Setup(t => t.Get(It.IsAny<IEnumerable<string>>()))
+                .Returns(Task.FromResult(tickets));
 
             // ACT
             var result = await _getIntrospectAction.Execute(rpt);
@@ -146,8 +166,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.IntrospectionController.Ac
             // ASSERTS
             Assert.NotNull(result);
             Assert.False(result.IsActive);
-            Assert.True(result.Expiration == rptInfo.ExpirationDateTime.ConvertToUnixTimestamp());
-            Assert.True(result.IssuedAt == rptInfo.CreateDateTime.ConvertToUnixTimestamp());
+            Assert.True(result.Expiration == rptsInfo.First().ExpirationDateTime.ConvertToUnixTimestamp());
+            Assert.True(result.IssuedAt == rptsInfo.First().CreateDateTime.ConvertToUnixTimestamp());
         }
 
         [Fact]
@@ -157,27 +177,34 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.IntrospectionController.Ac
             const string rpt = "rpt";
             const string ticketId = "ticket_id";
             const string resourceSetId = "resource_set";
-            var rptInfo = new Rpt
+            IEnumerable<Rpt> rptInfo = new List<Rpt>
             {
-                TicketId = ticketId,
-                Value = rpt,
-                ExpirationDateTime = DateTime.UtcNow.AddSeconds(30),
-                CreateDateTime = DateTime.UtcNow,
-                ResourceSetId = resourceSetId
-            };
-            var ticket = new Ticket
-            {
-                Scopes = new List<string>
+                new Rpt
                 {
-                    "scope",
-                    "scope_2"
-                },
-                ExpirationDateTime = DateTime.UtcNow.AddSeconds(30)
+                    TicketId = ticketId,
+                    Value = rpt,
+                    ExpirationDateTime = DateTime.UtcNow.AddSeconds(30),
+                    CreateDateTime = DateTime.UtcNow,
+                    ResourceSetId = resourceSetId
+                }
+            };
+            IEnumerable<Ticket> ticket = new List<Ticket>
+            {
+                new Ticket
+                {
+                    Scopes = new List<string>
+                    {
+                        "scope",
+                        "scope_2"
+                    },
+                    ExpirationDateTime = DateTime.UtcNow.AddSeconds(30),
+                    Id = ticketId
+                }
             };
             InitializeFakeObjects();
-            _rptRepositoryStub.Setup(r => r.Get(It.IsAny<string>()))
+            _rptRepositoryStub.Setup(r => r.Get(It.IsAny<IEnumerable<string>>()))
                 .Returns(Task.FromResult(rptInfo));
-            _ticketRepositoryStub.Setup(t => t.Get(It.IsAny<string>()))
+            _ticketRepositoryStub.Setup(t => t.Get(It.IsAny<IEnumerable<string>>()))
                 .Returns(Task.FromResult(ticket));
 
             // ACT
@@ -186,13 +213,13 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.IntrospectionController.Ac
             // ASSERTS
             Assert.NotNull(result);
             Assert.True(result.IsActive);
-            Assert.True(result.Expiration == rptInfo.ExpirationDateTime.ConvertToUnixTimestamp());
-            Assert.True(result.IssuedAt == rptInfo.CreateDateTime.ConvertToUnixTimestamp());
+            Assert.True(result.Expiration == rptInfo.First().ExpirationDateTime.ConvertToUnixTimestamp());
+            Assert.True(result.IssuedAt == rptInfo.First().CreateDateTime.ConvertToUnixTimestamp());
             Assert.True(result.Permissions.Count == 1);
             var permission = result.Permissions.First();
             Assert.True(permission.ResourceSetId == resourceSetId);
-            Assert.True(permission.Scopes.Count() == ticket.Scopes.Count());
-            Assert.True(permission.Expiration == ticket.ExpirationDateTime.ConvertToUnixTimestamp());
+            Assert.True(permission.Scopes.Count() == ticket.First().Scopes.Count());
+            Assert.True(permission.Expiration == ticket.First().ExpirationDateTime.ConvertToUnixTimestamp());
         }
 
         private void InitializeFakeObjects()

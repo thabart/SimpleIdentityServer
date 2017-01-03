@@ -16,6 +16,7 @@
 
 using SimpleIdentityServer.Uma.Common.DTOs;
 using SimpleIdentityServer.Uma.Core.Api.IntrospectionController.Actions;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.IntrospectionController
@@ -23,6 +24,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.IntrospectionController
     public interface IIntrospectionActions
     {
         Task<IntrospectionResponse> GetIntrospection(string rpt);
+        Task<IEnumerable<IntrospectionResponse>> GetIntrospection(IEnumerable<string> rpts);
     }
 
     internal class IntrospectionActions : IIntrospectionActions
@@ -37,6 +39,11 @@ namespace SimpleIdentityServer.Uma.Core.Api.IntrospectionController
         public Task<IntrospectionResponse> GetIntrospection(string rpt)
         {
             return _getIntrospectAction.Execute(rpt);
+        }
+
+        public Task<IEnumerable<IntrospectionResponse>> GetIntrospection(IEnumerable<string> rpts)
+        {
+            return _getIntrospectAction.Execute(rpts);
         }
     }
 }

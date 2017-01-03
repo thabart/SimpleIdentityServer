@@ -18,9 +18,10 @@ using Microsoft.EntityFrameworkCore;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.EF.Extensions;
-using System.Threading.Tasks;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.EF.Repositories
 {
@@ -70,6 +71,16 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
                     return false;
                 }
             }
+        }
+
+        public async Task<IEnumerable<Rpt>> Get(IEnumerable<string> rpts)
+        {
+            if (rpts == null)
+            {
+                throw new ArgumentNullException(nameof(rpts));
+            }
+
+            return await _context.Rpts.Where(r => rpts.Contains(r.Value)).Select(r => r.ToDomain()).ToListAsync();
         }
     }
 }

@@ -37,9 +37,10 @@ namespace SimpleIdentityServer.Uma.Core.Errors
         public const string TheScopeAreNotValid = "one or more scopes are not valid";
         public const string TheSchemeIsNotCorrect = "authorization scheme is not correct";
         public const string AtLeastOneTicketCannotBeInserted = "at least one ticket cannot be inserted";
-        public const string TheTicketDoesntExist = "the ticket {0} doesn't exist";
+        public const string AtLeastOneTicketDoesntExist = "at least one ticket doesn't exist";
         public const string TheTicketIssuerIsDifferentFromTheClient = "the ticket issuer is different from the client";
         public const string TheTicketIsExpired = "the ticket is expired";
+        public const string TheTicketDoesntExist = "the ticket {0} doesn't exist";
         public const string TheRptCannotBeInserted = "the rpt cannot be inserted";
         public const string ThePolicyCannotBeInserted = "the authorization policy cannot be inserted";
         public const string ThePolicyCannotBeUpdated = "the authorization policy cannot be updated";
@@ -47,7 +48,7 @@ namespace SimpleIdentityServer.Uma.Core.Errors
         public const string TheAuthorizationPolicyCannotBeRetrieved = "the authorization policy {0} cannot be retrieved";
         public const string TheAuthorizationPolicyCannotBeUpdated = "the authorization policy {0} cannot be updated";
         public const string TheAutorizationPoliciesCannotBeRetrieved = "the authorization policies cannot be retrieved";
-        public const string TheRptDoesntExist = "the rpt {0} doesn't exist";
+        public const string TheRptsDontExist = "the rpts {0} don't exist";
         public const string TheRptIsExpired = "the rpt is expired";
         public const string TheAuthorizationPolicyDoesntExist = "the authorization policy {0} doesn't exist";
     }

@@ -25,5 +25,6 @@ namespace SimpleIdentityServer.Uma.Core.Repositories
         Task<bool> Insert(Rpt rpt);
         Task<bool> Insert(IEnumerable<Rpt> rpt);
         Task<Rpt> Get(string value);
+        Task<IEnumerable<Rpt>> Get(IEnumerable<string> values);
     }
 }
