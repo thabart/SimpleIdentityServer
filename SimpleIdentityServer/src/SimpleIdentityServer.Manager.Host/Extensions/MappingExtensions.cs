@@ -44,6 +44,7 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
                 Id = request.Login,
                 Password = request.Password,
                 IsLocalAccount = request.IsLocalAccount,
+                TwoFactorAuthentication = (SimpleIdentityServer.Core.Models.TwoFactorAuthentications)request.TwoFactorAuthentication,
                 Claims = claims
             };
         }
@@ -443,7 +444,8 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
                 Login = resourceOwner.Id,
                 Password = resourceOwner.Password,
                 IsLocalAccount = resourceOwner.IsLocalAccount,
-                Claims = claims
+                Claims = claims,
+                TwoFactorAuthentication = (DTOs.Responses.TwoFactorAuthentications)resourceOwner.TwoFactorAuthentication
             };
         }
 

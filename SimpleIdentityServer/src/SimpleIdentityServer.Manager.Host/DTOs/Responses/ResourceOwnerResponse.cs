@@ -14,11 +14,24 @@
 // limitations under the License.
 #endregion
 
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace SimpleIdentityServer.Manager.Host.DTOs.Responses
 {
+    [JsonConverter(typeof(StringEnumConverter))]
+    public enum TwoFactorAuthentications
+    {
+        [EnumMember(Value = Constants.TwoFactorAuthenticationNames.None)]
+        None,
+        [EnumMember(Value = Constants.TwoFactorAuthenticationNames.Email)]
+        Email,
+        [EnumMember(Value = Constants.TwoFactorAuthenticationNames.Sms)]
+        Sms
+    }
+
     [DataContract]
     public class ResourceOwnerResponse
     {       
@@ -30,6 +43,9 @@ namespace SimpleIdentityServer.Manager.Host.DTOs.Responses
         
         [DataMember(Name = Constants.ResourceOwnerResponseNames.IsLocalAccount)]
         public bool IsLocalAccount { get; set; }
+
+        [DataMember(Name = Constants.ResourceOwnerResponseNames.TwoFactorAuthentication)]
+        public TwoFactorAuthentications TwoFactorAuthentication { get; set; }
 
         [DataMember(Name = Constants.ResourceOwnerResponseNames.Claims)]
         public List<KeyValuePair<string, string>> Claims { get; set; }

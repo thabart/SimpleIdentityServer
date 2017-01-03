@@ -97,6 +97,7 @@ namespace SimpleIdentityServer.Manager.Host
             public const string Password = "password";
             public const string IsLocalAccount = "is_localaccount";
             public const string Claims = "claims";
+            public const string TwoFactorAuthentication = "two_factor_auth";
         }
 
         public static class ClientNames
@@ -153,6 +154,13 @@ namespace SimpleIdentityServer.Manager.Host
         public static class ExportResponseNames
         {
             public const string Clients = "clients";
+        }
+
+        public static class TwoFactorAuthenticationNames
+        {
+            public const string None = "none";
+            public const string Email = "email";
+            public const string Sms = "sms";
         }
     }
 }
