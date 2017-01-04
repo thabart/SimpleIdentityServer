@@ -24,6 +24,7 @@ using SimpleIdentityServer.Scim.Core.Parsers;
 using SimpleIdentityServer.Scim.Core.Stores;
 using SimpleIdentityServer.Scim.Core.Tests.Fixture;
 using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
@@ -45,35 +46,35 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
         #region Parse
 
         [Fact]
-        public void When_Null_Or_Empty_Parameters_Are_Parsed_Then_Exceptions_Are_Thrown()
+        public async Task When_Null_Or_Empty_Parameters_Are_Parsed_Then_Exceptions_Are_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            Assert.Throws<ArgumentNullException>(() => _responseParser.Parse(null, "http://localhost/{id}", null, OperationTypes.Modification));
-            Assert.Throws<ArgumentNullException>(() => _responseParser.Parse(new Representation(), "http://localhost/{id}", null, OperationTypes.Modification));
-            Assert.Throws<ArgumentNullException>(() => _responseParser.Parse(new Representation(), "http://localhost/{id}", null, OperationTypes.Modification));
-            Assert.Throws<ArgumentNullException>(() => _responseParser.Parse(new Representation(), "http://localhost/{id}", null, OperationTypes.Modification));
-            Assert.Throws<ArgumentNullException>(() => _responseParser.Parse(new Representation(), "http://localhost/{id}", string.Empty, OperationTypes.Modification));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _responseParser.Parse(null, "http://localhost/{id}", null, OperationTypes.Modification));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _responseParser.Parse(new Representation(), "http://localhost/{id}", null, OperationTypes.Modification));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _responseParser.Parse(new Representation(), "http://localhost/{id}", null, OperationTypes.Modification));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _responseParser.Parse(new Representation(), "http://localhost/{id}", null, OperationTypes.Modification));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _responseParser.Parse(new Representation(), "http://localhost/{id}", string.Empty, OperationTypes.Modification));
         }
 
         [Fact]
-        public void When_Schema_Doesnt_Exist_Then_Exception_Is_Thrown()
+        public async Task When_Schema_Doesnt_Exist_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             const string schemaId = "schema_id";
             InitializeFakeObjects();
             _schemaStoreStub.Setup(s => s.GetSchema(It.IsAny<string>()))
-                .Returns(() => (SchemaResponse)null);
+                .Returns(() => Task.FromResult((SchemaResponse)null));
 
             // ACT & ASSERT
-            var exception = Assert.Throws<InvalidOperationException>(() => _responseParser.Parse(new Representation(), "http://localhost/{id}", "schema_id", OperationTypes.Modification));
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _responseParser.Parse(new Representation(), "http://localhost/{id}", "schema_id", OperationTypes.Modification));
             Assert.True(exception.Message == string.Format(ErrorMessages.TheSchemaDoesntExist, schemaId));
         }
         
         [Fact]
-        public void When_Parsing_GroupRepresentation_Then_Response_Is_Returned()
+        public async Task When_Parsing_GroupRepresentation_Then_Response_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -87,15 +88,14 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
                "'value': 'bulkId:ytrewq'" +
              "}" +
            "]}");
-            string error;
-            var result = _requestParser.Parse(jObj, Common.Constants.SchemaUrns.Group, CheckStrategies.Strong, out error);
+            var result = await _requestParser.Parse(jObj, Common.Constants.SchemaUrns.Group, CheckStrategies.Strong);
             _commonAttributesFactoryStub.Setup(c => c.CreateIdJson(It.IsAny<Representation>()))
                 .Returns(new JProperty(Common.Constants.IdentifiedScimResourceNames.Id, "id"));
             _commonAttributesFactoryStub.Setup(c => c.CreateMetaDataAttributeJson(It.IsAny<Representation>(), It.IsAny<string>()))
                 .Returns(new[] { new JProperty(Common.Constants.ScimResourceNames.Meta, "meta") });
 
             // ACT
-            var response = _responseParser.Parse(result, "http://localhost/{id}", Common.Constants.SchemaUrns.Group, OperationTypes.Modification);
+            var response = await _responseParser.Parse(result.Representation, "http://localhost/{id}", Common.Constants.SchemaUrns.Group, OperationTypes.Modification);
 
             // ASSERT
             Assert.NotNull(response);
@@ -117,7 +117,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
         }
 
         [Fact]
-        public void When_Filtering_Groups_Then_Correct_Results_Are_Returned()
+        public async Task When_Filtering_Groups_Then_Correct_Results_Are_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -147,11 +147,10 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
                "'value': 'bulkId:ytrewq'" +
              "}" +
            "]}");
-            string error;
-            var firstGroup = _requestParser.Parse(firstObj, Common.Constants.SchemaUrns.Group, CheckStrategies.Strong, out error);
-            var secondGroup = _requestParser.Parse(secondObj, Common.Constants.SchemaUrns.Group, CheckStrategies.Strong, out error);
-            var thirdGroup = _requestParser.Parse(thirdObj, Common.Constants.SchemaUrns.Group, CheckStrategies.Strong, out error);
-            var groups = new[] { firstGroup, secondGroup, thirdGroup };
+            var firstGroup = await _requestParser.Parse(firstObj, Common.Constants.SchemaUrns.Group, CheckStrategies.Strong);
+            var secondGroup = await _requestParser.Parse(secondObj, Common.Constants.SchemaUrns.Group, CheckStrategies.Strong);
+            var thirdGroup = await _requestParser.Parse(thirdObj, Common.Constants.SchemaUrns.Group, CheckStrategies.Strong);
+            var groups = new[] { firstGroup.Representation, secondGroup.Representation, thirdGroup.Representation };
             var searchOrderAscending = new SearchParameter
             {
                 Filter = null,

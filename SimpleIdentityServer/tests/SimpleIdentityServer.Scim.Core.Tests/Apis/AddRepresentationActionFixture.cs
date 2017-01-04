@@ -9,6 +9,7 @@ using SimpleIdentityServer.Scim.Core.Stores;
 using SimpleIdentityServer.Scim.Core.Validators;
 using System;
 using System.Net;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Scim.Core.Tests.Apis
@@ -23,51 +24,51 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
         private IAddRepresentationAction _addRepresentationAction;
 
         [Fact]
-        public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             Initialize();
 
             // ACTS & ASSERTS
-            Assert.Throws<ArgumentNullException>(() => _addRepresentationAction.Execute(null, string.Empty, string.Empty, string.Empty, string.Empty));
-            Assert.Throws<ArgumentNullException>(() => _addRepresentationAction.Execute(new JObject(), string.Empty, string.Empty, string.Empty, null));
-            Assert.Throws<ArgumentNullException>(() => _addRepresentationAction.Execute(new JObject(), string.Empty, null, string.Empty, null));
-            Assert.Throws<ArgumentNullException>(() => _addRepresentationAction.Execute(new JObject(), string.Empty, "schemaid", string.Empty, null));
-            Assert.Throws<ArgumentNullException>(() => _addRepresentationAction.Execute(new JObject(), string.Empty, "schemaid", null, null));
-            Assert.Throws<ArgumentNullException>(() => _addRepresentationAction.Execute(new JObject(), string.Empty, "schemaid", "resourcetype", string.Empty));
-            Assert.Throws<ArgumentNullException>(() => _addRepresentationAction.Execute(new JObject(), string.Empty, "schemaid", "resourcetype", null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _addRepresentationAction.Execute(null, string.Empty, string.Empty, string.Empty, string.Empty));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _addRepresentationAction.Execute(new JObject(), string.Empty, string.Empty, string.Empty, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _addRepresentationAction.Execute(new JObject(), string.Empty, null, string.Empty, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _addRepresentationAction.Execute(new JObject(), string.Empty, "schemaid", string.Empty, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _addRepresentationAction.Execute(new JObject(), string.Empty, "schemaid", null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _addRepresentationAction.Execute(new JObject(), string.Empty, "schemaid", "resourcetype", string.Empty));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _addRepresentationAction.Execute(new JObject(), string.Empty, "schemaid", "resourcetype", null));
         }
 
         [Fact]
-        public void When_Resource_Doesnt_Exist_Then_ErrorIsReturned()
+        public async Task When_Resource_Doesnt_Exist_Then_ErrorIsReturned()
         {
             // ARRANGE
             const string id = "id";
             Initialize();
             _representationStoreStub.Setup(r => r.GetRepresentation(It.IsAny<string>()))
-                .Returns(new Representation());
+                .Returns(Task.FromResult(new Representation()));
 
             // ACT
-            _addRepresentationAction.Execute(new JObject(), string.Empty, "schema_id", "resource_type", id);
+            await _addRepresentationAction.Execute(new JObject(), string.Empty, "schema_id", "resource_type", id);
 
             // ASSERT
             _apiResponseFactoryStub.Verify(a => a.CreateError(HttpStatusCode.InternalServerError, string.Format(ErrorMessages.TheResourceAlreadyExist, id)));
         }
 
         [Fact]
-        public void When_Request_Cannot_Be_Parsed_Then_Error_Is_Returned()
+        public async Task When_Request_Cannot_Be_Parsed_Then_Error_Is_Returned()
         {
             // ARRANGE
             const string id = "id";
             string error;
             Initialize();
             _representationStoreStub.Setup(r => r.GetRepresentation(It.IsAny<string>()))
-                .Returns(new Representation());
-            _representationRequestParserStub.Setup(r => r.Parse(It.IsAny<JObject>(), It.IsAny<string>(), CheckStrategies.Strong, out error))
-                .Returns((Representation)null);
+                .Returns(Task.FromResult(new Representation()));
+            _representationRequestParserStub.Setup(r => r.Parse(It.IsAny<JObject>(), It.IsAny<string>(), CheckStrategies.Strong))
+                .Returns(Task.FromResult((ParseRepresentationResult)null));
 
             // ACT
-            _addRepresentationAction.Execute(new JObject(), string.Empty, "schema_id", "resource_type", id);
+            await _addRepresentationAction.Execute(new JObject(), string.Empty, "schema_id", "resource_type", id);
 
             // ASSERT
             _apiResponseFactoryStub.Verify(a => a.CreateError(HttpStatusCode.InternalServerError, It.IsAny<string>()));

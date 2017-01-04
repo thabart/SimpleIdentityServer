@@ -1,5 +1,5 @@
 ﻿#region copyright
-// Copyright 2015 Habart Thierry
+// Copyright 2017 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ using SimpleIdentityServer.Scim.Core;
 using SimpleIdentityServer.Scim.Core.Apis;
 using SimpleIdentityServer.Scim.Startup.Extensions;
 using System;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Startup.Controllers
 {
@@ -34,14 +35,14 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
         }
 
         [HttpPost]
-        public ActionResult Post([FromBody] JObject jObj)
+        public async Task<ActionResult> Post([FromBody] JObject jObj)
         {
             if (jObj == null)
             {
                 throw new ArgumentNullException(nameof(jObj));
             }
 
-            var result = _bulkAction.Execute(jObj, GetLocationPattern());
+            var result = await _bulkAction.Execute(jObj, GetLocationPattern());
             return this.GetActionResult(result);
         }
 

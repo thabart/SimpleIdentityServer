@@ -24,6 +24,7 @@ using SimpleIdentityServer.Scim.Core.Stores;
 using SimpleIdentityServer.Scim.Core.Tests.Fixture;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
@@ -43,36 +44,34 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
         #region Parse
 
         [Fact]
-        public void When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
+        public async Task When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
-            string error;
 
             // ACTS & ASSERTS
-            Assert.Throws<ArgumentNullException>(() => _requestParser.Parse(null, null, CheckStrategies.Strong, out error));
-            Assert.Throws<ArgumentNullException>(() => _requestParser.Parse(new JObject(), null, CheckStrategies.Strong, out error));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _requestParser.Parse(null, null, CheckStrategies.Strong));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _requestParser.Parse(new JObject(), null, CheckStrategies.Strong));
         }
 
         [Fact]
-        public void When_Schema_Doesnt_Exist_Then_Null_Is_Returned()
+        public async Task When_Schema_Doesnt_Exist_Then_Null_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
             _schemaStoreStub.Setup(s => s.GetSchema(It.IsAny<string>()))
-                .Returns((SchemaResponse)null);
-            string error;
+                .Returns(Task.FromResult((SchemaResponse)null));
 
             // ACT
-            var result = _requestParser.Parse(new JObject(), "invalid", CheckStrategies.Strong, out error);
+            var result = await _requestParser.Parse(new JObject(), "invalid", CheckStrategies.Strong);
 
             // ASSERT
-            Assert.Null(result);
-            Assert.True(error == string.Format(ErrorMessages.TheSchemaDoesntExist, "invalid"));
+            Assert.NotNull(result);
+            Assert.True(result.ErrorMessage == string.Format(ErrorMessages.TheSchemaDoesntExist, "invalid"));
         }
 
         [Fact]
-        public void When_Expecting_Array_But_Its_Singular_Then_Null_Is_Returned()
+        public async Task When_Expecting_Array_But_Its_Singular_Then_Null_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -82,18 +81,17 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             "'displayName': 'Group A'," +
             "'members': 'members'" +
            "}");
-            var errorMessage = string.Empty;
 
             // ACT
-            var result =_requestParser.Parse(jObj, Common.Constants.SchemaUrns.Group, CheckStrategies.Strong, out errorMessage);
+            var result = await _requestParser.Parse(jObj, Common.Constants.SchemaUrns.Group, CheckStrategies.Strong);
 
             // ASSERT
-            Assert.Null(result);
-            Assert.True(errorMessage == string.Format(ErrorMessages.TheAttributeIsNotAnArray, "members"));
+            Assert.NotNull(result);
+            Assert.True(result.ErrorMessage == string.Format(ErrorMessages.TheAttributeIsNotAnArray, "members"));
         }
         
         [Fact]
-        public void When_Expecting_Boolean_But_Its_A_String_Then_Null_Is_Returned()
+        public async Task When_Expecting_Boolean_But_Its_A_String_Then_Null_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -107,18 +105,17 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
                 "'givenName':'Barbara'" +
             "},"+
             "'active': 'active'}");
-            string error;
 
             // ACT
-            var result = _requestParser.Parse(jObj, Common.Constants.SchemaUrns.User, CheckStrategies.Strong, out error);
+            var result = await _requestParser.Parse(jObj, Common.Constants.SchemaUrns.User, CheckStrategies.Strong);
 
             // ASSERTS
-            Assert.Null(result);
-            Assert.True(error == string.Format(ErrorMessages.TheAttributeTypeIsNotCorrect, "active", Common.Constants.SchemaAttributeTypes.Boolean));
+            Assert.NotNull(result);
+            Assert.True(result.ErrorMessage == string.Format(ErrorMessages.TheAttributeTypeIsNotCorrect, "active", Common.Constants.SchemaAttributeTypes.Boolean));
         }
 
         [Fact]
-        public void When_Simple_PostGroupRequest_Is_Parsed_Then_CorrectValues_Are_Returned()
+        public async Task When_Simple_PostGroupRequest_Is_Parsed_Then_CorrectValues_Are_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -132,15 +129,14 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
                "'value': 'bulkId:ytrewq'"+
              "}"+
            "]}");
-            string error;
 
             // ACT
-            var result = _requestParser.Parse(jObj, Common.Constants.SchemaUrns.Group, CheckStrategies.Strong, out error);
+            var result = await _requestParser.Parse(jObj, Common.Constants.SchemaUrns.Group, CheckStrategies.Strong);
 
             // ASSERTS
             Assert.NotNull(result);
-            Assert.True(result.Attributes.Any(s => s.SchemaAttribute.Name == "displayName"));
-            var members = result.Attributes.First(s => s.SchemaAttribute.Name == "members") as ComplexRepresentationAttribute;
+            Assert.True(result.Representation.Attributes.Any(s => s.SchemaAttribute.Name == "displayName"));
+            var members = result.Representation.Attributes.First(s => s.SchemaAttribute.Name == "members") as ComplexRepresentationAttribute;
             Assert.NotNull(members);
             Assert.True(members.SchemaAttribute.Name == "members");
             Assert.True(members.Values.Count() == 1);
@@ -158,7 +154,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
         }
 
         [Fact]
-        public void When_Complex_PostGroupRequest_Is_Parsed_Then_CorrectValues_Are_Returned()
+        public async Task When_Complex_PostGroupRequest_Is_Parsed_Then_CorrectValues_Are_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -180,16 +176,15 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
                "'value': 'bulkId:ytrewq'" +
              "}" +
            "]}");
-            string error;
 
             // ACT
-            var result = _requestParser.Parse(jObj, Common.Constants.SchemaUrns.Group, CheckStrategies.Strong, out error);
+            var result = await _requestParser.Parse(jObj, Common.Constants.SchemaUrns.Group, CheckStrategies.Strong);
 
 
             // ASSERTS
             Assert.NotNull(result);
-            Assert.True(result.Attributes.Any(s => s.SchemaAttribute.Name == "displayName"));
-            var members = result.Attributes.First(s => s.SchemaAttribute.Name == "members") as ComplexRepresentationAttribute;
+            Assert.True(result.Representation.Attributes.Any(s => s.SchemaAttribute.Name == "displayName"));
+            var members = result.Representation.Attributes.First(s => s.SchemaAttribute.Name == "members") as ComplexRepresentationAttribute;
             Assert.NotNull(members);
             Assert.True(members.SchemaAttribute.Name == "members");
             Assert.True(members.Values.Count() == 3);
@@ -207,7 +202,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
         }
 
         [Fact]
-        public void When_Simple_PostUserRequest_Is_Parsed_Then_CorrectValues_Are_Returned()
+        public async Task When_Simple_PostUserRequest_Is_Parsed_Then_CorrectValues_Are_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -220,15 +215,14 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
                 "'familyName': 'Jensen',"+
                 "'givenName':'Barbara'" +
             "}}");
-            string error;
 
             // ACT
-            var result = _requestParser.Parse(jObj, Common.Constants.SchemaUrns.User, CheckStrategies.Strong, out error);
+            var result = await _requestParser.Parse(jObj, Common.Constants.SchemaUrns.User, CheckStrategies.Strong);
 
 
             // ASSERTS
             Assert.NotNull(result);
-            Assert.True(result.Attributes.Any());
+            Assert.True(result.Representation.Attributes.Any());
         }
 
         #endregion

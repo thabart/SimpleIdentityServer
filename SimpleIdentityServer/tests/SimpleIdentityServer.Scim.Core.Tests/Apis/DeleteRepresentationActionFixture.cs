@@ -23,6 +23,7 @@ using SimpleIdentityServer.Scim.Core.Results;
 using SimpleIdentityServer.Scim.Core.Stores;
 using System;
 using System.Net;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Scim.Core.Tests.Apis
@@ -34,23 +35,23 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
         private IDeleteRepresentationAction _deleteRepresentationAction;
 
         [Fact]
-        public void When_Passing_Null_Parameters_Then_Exception_Is_Thrown()
+        public async Task When_Passing_Null_Parameters_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _deleteRepresentationAction.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _deleteRepresentationAction.Execute(null));
         }
 
         [Fact]
-        public void When_Representation_Doesnt_Exist_Then_404_Code_Is_Returned()
+        public async Task When_Representation_Doesnt_Exist_Then_404_Code_Is_Returned()
         {
             // ARRANGE
             const string identifier = "identifier";
             InitializeFakeObjects();
             _representationStoreStub.Setup(r => r.GetRepresentation(It.IsAny<string>()))
-                .Returns((Representation)null);
+                .Returns(Task.FromResult((Representation)null));
             _apiResponseFactoryStub.Setup(a => a.CreateError(HttpStatusCode.NotFound, string.Format(ErrorMessages.TheResourceDoesntExist, identifier)))
                 .Returns(new ApiActionResult
                 {
@@ -58,7 +59,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                 });
 
             // ACT
-            var result = _deleteRepresentationAction.Execute(identifier);
+            var result = await _deleteRepresentationAction.Execute(identifier);
 
             // ASSERT
             Assert.NotNull(result);
@@ -66,23 +67,23 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
         }
 
         [Fact]
-        public void When_Representation_Cannot_Be_Removed_Then_InternalError_Is_Returned()
+        public async Task When_Representation_Cannot_Be_Removed_Then_InternalError_Is_Returned()
         {
             // ARRANGE
             const string identifier = "identifier";
             InitializeFakeObjects();
             _representationStoreStub.Setup(r => r.GetRepresentation(It.IsAny<string>()))
-                .Returns(new Representation());
+                .Returns(Task.FromResult(new Representation()));
             _apiResponseFactoryStub.Setup(a => a.CreateError(HttpStatusCode.InternalServerError, ErrorMessages.TheRepresentationCannotBeRemoved))
                 .Returns(new ApiActionResult
                 {
                     StatusCode = (int)HttpStatusCode.InternalServerError
                 });
             _representationStoreStub.Setup(r => r.RemoveRepresentation(It.IsAny<Representation>()))
-                .Returns(false);
+                .Returns(Task.FromResult(false));
 
             // ACT
-            var result = _deleteRepresentationAction.Execute(identifier);
+            var result = await _deleteRepresentationAction.Execute(identifier);
 
             // ASSERT
             Assert.NotNull(result);

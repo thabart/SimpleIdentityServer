@@ -48,7 +48,7 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
                 throw new ArgumentNullException(nameof(jObj));
             }
 
-            var result = _usersAction.AddUser(jObj, GetLocationPattern());
+            var result = await _usersAction.AddUser(jObj, GetLocationPattern());
             if (result.IsSucceed())
             {
                 await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(UsersName, result.Id), result.Version, true);
@@ -70,7 +70,7 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
                 throw new ArgumentNullException(nameof(jObj));
             }
 
-            var result = _usersAction.PatchUser(id, jObj, GetLocationPattern());
+            var result = await _usersAction.PatchUser(id, jObj, GetLocationPattern());
             if (result.IsSucceed())
             {
                 await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(UsersName, result.Id), result.Version, true);
@@ -92,7 +92,7 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
                 throw new ArgumentNullException(nameof(jObj));
             }
 
-            var result = _usersAction.UpdateUser(id, jObj, GetLocationPattern());
+            var result = await _usersAction.UpdateUser(id, jObj, GetLocationPattern());
             if (result.IsSucceed())
             {
                 await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(UsersName, result.Id), result.Version, true);
@@ -109,7 +109,7 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
                 throw new ArgumentNullException(nameof(id));
             }
 
-            var result = _usersAction.RemoveUser(id);
+            var result = await _usersAction.RemoveUser(id);
             if (result.IsSucceed())
             {
                 await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(UsersName, result.Id), result.Version, false);
@@ -134,7 +134,7 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
                 };
             }
 
-            var result = _usersAction.GetUser(id, GetLocationPattern());
+            var result = await _usersAction.GetUser(id, GetLocationPattern());
             if (result.IsSucceed())
             {
                 await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(UsersName, result.Id), result.Version, true);
@@ -144,16 +144,16 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
         }
 
         [HttpGet]
-        public ActionResult SearchUsers()
+        public async Task<ActionResult> SearchUsers()
         {
-            var result = _usersAction.SearchUsers(Request.Query, GetLocationPattern());
+            var result = await _usersAction.SearchUsers(Request.Query, GetLocationPattern());
             return this.GetActionResult(result);
         }
 
         [HttpPost(".search")]
-        public ActionResult SearchUsers([FromBody] JObject jObj)
+        public async Task<ActionResult> SearchUsers([FromBody] JObject jObj)
         {
-            var result = _usersAction.SearchUsers(jObj, GetLocationPattern());
+            var result = await _usersAction.SearchUsers(jObj, GetLocationPattern());
             return this.GetActionResult(result);
         }
 

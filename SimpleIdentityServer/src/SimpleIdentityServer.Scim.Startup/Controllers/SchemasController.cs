@@ -17,6 +17,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Scim.Core;
 using SimpleIdentityServer.Scim.Core.Stores;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Startup.Controllers
 {
@@ -31,15 +32,15 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult Get(string id)
+        public async Task<ActionResult> Get(string id)
         {
-            return new OkObjectResult(_schemaStore.GetSchema(id));
+            return new OkObjectResult(await _schemaStore.GetSchema(id));
         }
 
         [HttpGet]
-        public ActionResult All()
+        public async Task<ActionResult> All()
         {
-            return new OkObjectResult(_schemaStore.GetSchemas());
+            return new OkObjectResult(await _schemaStore.GetSchemas());
         }
     }
 }

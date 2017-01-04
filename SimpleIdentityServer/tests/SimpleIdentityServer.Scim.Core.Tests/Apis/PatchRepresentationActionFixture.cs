@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Scim.Core.Tests.Apis
@@ -48,37 +49,37 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
         #region Global
 
         [Fact]
-        public void When_Passing_Null_Or_Empty_Parameters_Then_Exceptions_Are_Thrown()
+        public async Task When_Passing_Null_Or_Empty_Parameters_Then_Exceptions_Are_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            Assert.Throws<ArgumentNullException>(() => _patchRepresentationAction.Execute(null, null, null, null));
-            Assert.Throws<ArgumentNullException>(() => _patchRepresentationAction.Execute(string.Empty, null, null, null));
-            Assert.Throws<ArgumentNullException>(() => _patchRepresentationAction.Execute("id", null, null, null));
-            Assert.Throws<ArgumentNullException>(() => _patchRepresentationAction.Execute("id", new JObject(), null, null));
-            Assert.Throws<ArgumentNullException>(() => _patchRepresentationAction.Execute("id", new JObject(), string.Empty, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _patchRepresentationAction.Execute(null, null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _patchRepresentationAction.Execute(string.Empty, null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _patchRepresentationAction.Execute("id", null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _patchRepresentationAction.Execute("id", new JObject(), null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _patchRepresentationAction.Execute("id", new JObject(), string.Empty, null));
         }
 
         [Fact]
-        public void When_Representation_Doesnt_Exist_Then_NotFound_Is_Returned()
+        public async Task When_Representation_Doesnt_Exist_Then_NotFound_Is_Returned()
         {
             // ARRANGE
             const string id = "id";
             InitializeFakeObjects();
             _representationStoreStub.Setup(r => r.GetRepresentation(It.IsAny<string>()))
-                .Returns((Representation)null);
+                .Returns(Task.FromResult((Representation)null));
 
             // ACT
-            _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
+            await _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
 
             // ASSERTS
             _apiResponseFactoryStub.Verify(a => a.CreateError(HttpStatusCode.NotFound, string.Format(ErrorMessages.TheResourceDoesntExist, id)));
         }
 
         [Fact]
-        public void When_Request_Is_Invalid_Then_BadRequest_Is_Returned()
+        public async Task When_Request_Is_Invalid_Then_BadRequest_Is_Returned()
         {
             // ARRANGE
             const string id = "id";
@@ -88,19 +89,19 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
             };
             InitializeFakeObjects();
             _representationStoreStub.Setup(r => r.GetRepresentation(It.IsAny<string>()))
-                .Returns(new Representation());
+                .Returns(Task.FromResult(new Representation()));
             _patchRequestParserStub.Setup(p => p.Parse(It.IsAny<JObject>(), out errorResponse))
                 .Returns((IEnumerable<PatchOperation>)null);
 
             // ACT
-            _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
+            await _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
 
             // ASSERT
             _apiResponseFactoryStub.Verify(a => a.CreateError((HttpStatusCode)errorResponse.Status, errorResponse));
         }
 
         [Fact]
-        public void When_Passing_Remove_Operation_And_Path_Is_Not_Specified_Then_BadRequest_Is_Returned()
+        public async Task When_Passing_Remove_Operation_And_Path_Is_Not_Specified_Then_BadRequest_Is_Returned()
         {
             // ARRANGE
             const string id = "id";
@@ -110,7 +111,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
             };
             InitializeFakeObjects();
             _representationStoreStub.Setup(r => r.GetRepresentation(It.IsAny<string>()))
-                .Returns(new Representation());
+                .Returns(Task.FromResult(new Representation()));
             _patchRequestParserStub.Setup(p => p.Parse(It.IsAny<JObject>(), out errorResponse))
                 .Returns(new []
                 {
@@ -121,14 +122,14 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                 });
 
             // ACT
-            _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
+            await _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
 
             // ASSERT
             _errorResponseFactoryStub.Verify(a => a.CreateError(ErrorMessages.ThePathNeedsToBeSpecified, HttpStatusCode.BadRequest, Common.Constants.ScimTypeValues.InvalidSyntax));
         }
 
         [Fact]
-        public void When_Passing_Invalid_Filter_Then_BadRequest_Is_Returned()
+        public async Task When_Passing_Invalid_Filter_Then_BadRequest_Is_Returned()
         {
             // ARRANGE
             const string id = "id";
@@ -138,7 +139,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
             };
             InitializeFakeObjects();
             _representationStoreStub.Setup(r => r.GetRepresentation(It.IsAny<string>()))
-                .Returns(new Representation
+                .Returns(Task.FromResult(new Representation
                 {
                     Attributes = new []
                     {
@@ -150,7 +151,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                             }
                         }
                     }
-                });
+                }));
             _patchRequestParserStub.Setup(p => p.Parse(It.IsAny<JObject>(), out errorResponse))
                 .Returns(new[]
                 {
@@ -173,14 +174,14 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                 });
             
             // ACT
-            _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
+            await _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
 
             // ASSERT
             _errorResponseFactoryStub.Verify(a => a.CreateError(ErrorMessages.TheFilterIsNotCorrect, HttpStatusCode.BadRequest, Common.Constants.ScimTypeValues.InvalidFilter));
         }
 
         [Fact]
-        public void When_Trying_To_Modify_Immutable_Attribute_Then_BadRequest_Is_Returned()
+        public async Task When_Trying_To_Modify_Immutable_Attribute_Then_BadRequest_Is_Returned()
         {
             // ARRANGE
             const string id = "id";
@@ -190,7 +191,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
             };
             InitializeFakeObjects();
             _representationStoreStub.Setup(r => r.GetRepresentation(It.IsAny<string>()))
-                .Returns(new Representation
+                .Returns(Task.FromResult(new Representation
                 {
                     Attributes = new[]
                     {
@@ -202,7 +203,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                             }
                         }
                     }
-                });
+                }));
             _patchRequestParserStub.Setup(p => p.Parse(It.IsAny<JObject>(), out errorResponse))
                 .Returns(new[]
                 {
@@ -225,14 +226,14 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                 });
 
             // ACT
-            _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
+            await _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
 
             // ASSERT
             _errorResponseFactoryStub.Verify(a => a.CreateError(string.Format(ErrorMessages.TheImmutableAttributeCannotBeUpdated, "members"), HttpStatusCode.BadRequest, Common.Constants.ScimTypeValues.Mutability));
         }
 
         [Fact]
-        public void When_Trying_To_Set_A_Unique_Attribute_Then_BadRequest_Is_Returned()
+        public async Task When_Trying_To_Set_A_Unique_Attribute_Then_BadRequest_Is_Returned()
         {
             // ARRANGE
             const string id = "id";
@@ -242,7 +243,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
             };
             InitializeFakeObjects();
             _representationStoreStub.Setup(r => r.GetRepresentation(It.IsAny<string>()))
-                .Returns(new Representation
+                .Returns(Task.FromResult(new Representation
                 {
                     Attributes = new[]
                     {
@@ -254,7 +255,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                             }
                         }
                     }
-                });
+                }));
             _patchRequestParserStub.Setup(p => p.Parse(It.IsAny<JObject>(), out errorResponse))
                 .Returns(new[]
                 {
@@ -276,7 +277,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                     }
                 });
             _representationStoreStub.Setup(r => r.GetRepresentations(It.IsAny<string>()))
-                .Returns(new List<Representation>
+                .Returns(Task.FromResult((IEnumerable<Representation>)new List<Representation>
                 {
                     new Representation
                     {
@@ -291,10 +292,10 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                             }
                         }
                     }
-                });
+                }));
 
             // ACT
-            _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
+            await _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
 
             // ASSERT
             _errorResponseFactoryStub.Verify(a => a.CreateError(string.Format(ErrorMessages.TheAttributeMustBeUnique, "members"), HttpStatusCode.BadRequest, Common.Constants.ScimTypeValues.Uniqueness));
@@ -305,7 +306,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
         #region Remove
 
         [Fact]
-        public void When_Trying_To_Remove_Singular_Attribute_Then_It_Is_Removed_From_The_Representation()
+        public async Task When_Trying_To_Remove_Singular_Attribute_Then_It_Is_Removed_From_The_Representation()
         {
             // ARRANGE
             const string id = "id";
@@ -321,7 +322,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                 new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Common.Constants.SchemaAttributeTypes.String }, "thierry")
             };
             _representationStoreStub.Setup(r => r.GetRepresentation(It.IsAny<string>()))
-                .Returns(representation);
+                .Returns(Task.FromResult(representation));
             _patchRequestParserStub.Setup(p => p.Parse(It.IsAny<JObject>(), out errorResponse))
                 .Returns(new[]
                 {
@@ -347,14 +348,14 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                 {
                     result = repr;
                 })
-                .Returns(new Response
+                .Returns(Task.FromResult(new Response
                 {
                     Location = "location",
                     Object = new JObject()
-                });
+                }));
 
             // ACT
-            _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
+            await _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
 
             // ASSERT
             Assert.NotNull(result);
@@ -362,7 +363,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
         }
 
         [Fact]
-        public void When_Trying_To_Remove_Person_FirstName_Then_It_Is_Removed_From_The_Representation()
+        public async Task When_Trying_To_Remove_Person_FirstName_Then_It_Is_Removed_From_The_Representation()
         {
             // ARRANGE
             const string id = "id";
@@ -383,7 +384,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
             };
             representation.Attributes = new[] { person };
             _representationStoreStub.Setup(r => r.GetRepresentation(It.IsAny<string>()))
-                .Returns(representation);
+                .Returns(Task.FromResult(representation));
             _patchRequestParserStub.Setup(p => p.Parse(It.IsAny<JObject>(), out errorResponse))
                 .Returns(new[]
                 {
@@ -413,14 +414,14 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                 {
                     result = repr;
                 })
-                .Returns(new Response
+                .Returns(Task.FromResult(new Response
                 {
                     Location = "location",
                     Object = new JObject()
-                });
+                }));
 
             // ACT
-            _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
+            await _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
 
             // ASSERT
             Assert.NotNull(result);
@@ -431,7 +432,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
         }
 
         [Fact]
-        public void When_Attribute_Cannot_Be_Removed_Then_BadRequest_Is_Returned()
+        public async Task When_Attribute_Cannot_Be_Removed_Then_BadRequest_Is_Returned()
         {
             // ARRANGE
             const string id = "id";
@@ -441,7 +442,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
             };
             InitializeFakeObjects();
             _representationStoreStub.Setup(r => r.GetRepresentation(It.IsAny<string>()))
-                .Returns(new Representation
+                .Returns(Task.FromResult(new Representation
                 {
                     Attributes = new[]
                     {
@@ -453,7 +454,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                             }
                         }
                     }
-                });
+                }));
             _patchRequestParserStub.Setup(p => p.Parse(It.IsAny<JObject>(), out errorResponse))
                 .Returns(new[]
                 {
@@ -476,7 +477,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                 });
 
             // ACT
-            _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
+            await _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
 
             // ASSERT
             _errorResponseFactoryStub.Verify(a => a.CreateError(ErrorMessages.TheRepresentationCannotBeRemoved, HttpStatusCode.BadRequest));
@@ -487,15 +488,14 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
         #region Add
 
         [Fact]
-        public void When_Sending_Add_Operation_But_No_Value_Is_Specified_In_Parameter_Then_BadRequest_Is_Returned()
+        public async Task When_Sending_Add_Operation_But_No_Value_Is_Specified_In_Parameter_Then_BadRequest_Is_Returned()
         {
             // ARRANGE
             const string id = "id";
-            string errorMessage;
             ErrorResponse errorResponse = new ErrorResponse();
             InitializeFakeObjects();
             _representationStoreStub.Setup(r => r.GetRepresentation(It.IsAny<string>()))
-                .Returns(new Representation
+                .Returns(Task.FromResult(new Representation
                 {
                     Attributes = new[]
                     {
@@ -507,7 +507,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                             }
                         }
                     }
-                });
+                }));
             _patchRequestParserStub.Setup(p => p.Parse(It.IsAny<JObject>(), out errorResponse))
                 .Returns(new[]
                 {
@@ -529,22 +529,21 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                         }
                     }
                 });
-            _jsonParserStub.Setup(j => j.GetRepresentation(It.IsAny<JToken>(), It.IsAny<SchemaAttributeResponse>(), CheckStrategies.Standard, out errorMessage))
-                .Returns((RepresentationAttribute)null);
+            _jsonParserStub.Setup(j => j.GetRepresentation(It.IsAny<JToken>(), It.IsAny<SchemaAttributeResponse>(), CheckStrategies.Standard))
+                .Returns((ParseRepresentationAttrResult)null);
 
             // ACT
-            _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
+            await _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
 
             // ASSERT
             _errorResponseFactoryStub.Verify(a => a.CreateError(ErrorMessages.TheValueNeedsToBeSpecified, HttpStatusCode.BadRequest, Common.Constants.ScimTypeValues.InvalidSyntax));
         }
 
         [Fact]
-        public void When_Sending_Add_Operation_And_Path_Parameter_Is_Not_Specified_Then_Values_Are_Added_To_The_Representation()
+        public async Task When_Sending_Add_Operation_And_Path_Parameter_Is_Not_Specified_Then_Values_Are_Added_To_The_Representation()
         {
             // ARRANGE
             const string id = "id";
-            string errorMessage;
             var representation = new Representation
             {
                 Attributes = new RepresentationAttribute[0]
@@ -553,21 +552,25 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
             ErrorResponse errorResponse = new ErrorResponse();
             InitializeFakeObjects();
             _representationStoreStub.Setup(s => s.GetRepresentation(It.IsAny<string>()))
-                .Returns(representation);
-            _representationRequestParserStub.Setup(r => r.Parse(It.IsAny<JToken>(), It.IsAny<string>(), CheckStrategies.Standard, out errorMessage))
-                .Returns(new Representation
+                .Returns(Task.FromResult(representation));
+            _representationRequestParserStub.Setup(r => r.Parse(It.IsAny<JToken>(), It.IsAny<string>(), CheckStrategies.Standard))
+                .Returns(Task.FromResult(new ParseRepresentationResult
                 {
-                    Attributes = new[]
+                    IsParsed = true,
+                    Representation = new Representation
                     {
-                        new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "members", MultiValued = false, Type = Common.Constants.SchemaAttributeTypes.Complex })
+                        Attributes = new[]
                         {
-                            Values = new []
+                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "members", MultiValued = false, Type = Common.Constants.SchemaAttributeTypes.Complex })
                             {
-                                new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Common.Constants.SchemaAttributeTypes.String }, "firstName")
+                                Values = new []
+                                {
+                                    new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Common.Constants.SchemaAttributeTypes.String }, "firstName")
+                                }
                             }
                         }
                     }
-                });
+                }));
             _patchRequestParserStub.Setup(p => p.Parse(It.IsAny<JObject>(), out errorResponse))
                 .Returns(new[]
                 {
@@ -582,15 +585,15 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                 {
                     result = repr;
                 })
-                .Returns(new Response
+                .Returns(Task.FromResult(new Response
                 {
                     Location = "location",
                     Object = new JObject()
-                });
+                }));
                 
 
             // ACT
-            _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
+            await _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
 
             // ASSERT
             Assert.NotNull(result);
@@ -598,11 +601,10 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
         }
 
         [Fact]
-        public void When_Sending_Add_Operation_And_Path_Parameter_Is_Not_Passed_And_Value_Cannot_Be_Parsed_Then_BadRequest_Is_Returned()
+        public async Task When_Sending_Add_Operation_And_Path_Parameter_Is_Not_Passed_And_Value_Cannot_Be_Parsed_Then_BadRequest_Is_Returned()
         {
             // ARRANGE
             const string id = "id";
-            string errorMessage;
             var representation = new Representation
             {
                 Attributes = new RepresentationAttribute[0]
@@ -619,13 +621,16 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                     }
                 });
             _representationStoreStub.Setup(s => s.GetRepresentation(It.IsAny<string>()))
-                .Returns(representation);
-            _representationRequestParserStub.Setup(r => r.Parse(It.IsAny<JToken>(), It.IsAny<string>(), CheckStrategies.Standard, out errorMessage))
-                .Returns((Representation)null);
+                .Returns(Task.FromResult(representation));
+            _representationRequestParserStub.Setup(r => r.Parse(It.IsAny<JToken>(), It.IsAny<string>(), CheckStrategies.Standard))
+                .Returns(Task.FromResult(new ParseRepresentationResult
+                {
+                    IsParsed = false
+                }));
 
 
             // ACT
-            _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
+            await _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
 
             // ASSERT
             _apiResponseFactoryStub.Verify(a => a.CreateError(HttpStatusCode.BadRequest, It.IsAny<ErrorResponse>()));
@@ -636,15 +641,14 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
         #region Replace
 
         [Fact]
-        public void When_Sending_Replace_Operation_But_No_Value_Is_Passed_In_Parameter_Then_BadRequest_Is_Returned()
+        public async Task When_Sending_Replace_Operation_But_No_Value_Is_Passed_In_Parameter_Then_BadRequest_Is_Returned()
         {
             // ARRANGE
             const string id = "id";
-            string errorMessage;
             ErrorResponse errorResponse = new ErrorResponse();
             InitializeFakeObjects();
             _representationStoreStub.Setup(r => r.GetRepresentation(It.IsAny<string>()))
-                .Returns(new Representation
+                .Returns(Task.FromResult(new Representation
                 {
                     Attributes = new[]
                     {
@@ -656,7 +660,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                             }
                         }
                     }
-                });
+                }));
             _patchRequestParserStub.Setup(p => p.Parse(It.IsAny<JObject>(), out errorResponse))
                 .Returns(new[]
                 {
@@ -678,26 +682,28 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                         }
                     }
                 });
-            _jsonParserStub.Setup(j => j.GetRepresentation(It.IsAny<JToken>(), It.IsAny<SchemaAttributeResponse>(), CheckStrategies.Standard, out errorMessage))
-                .Returns((RepresentationAttribute)null);
+            _jsonParserStub.Setup(j => j.GetRepresentation(It.IsAny<JToken>(), It.IsAny<SchemaAttributeResponse>(), CheckStrategies.Standard))
+                .Returns(new ParseRepresentationAttrResult
+                {
+                    IsParsed = false
+                });
 
             // ACT
-            _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
+            await _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
 
             // ASSERT
             _errorResponseFactoryStub.Verify(a => a.CreateError(ErrorMessages.TheValueNeedsToBeSpecified, HttpStatusCode.BadRequest, Common.Constants.ScimTypeValues.InvalidSyntax));
         }
 
         [Fact]
-        public void When_Trying_To_Replace_An_Element_And_Something_Goes_Wrong_Then_BadRequest_Is_Returned()
+        public async Task When_Trying_To_Replace_An_Element_And_Something_Goes_Wrong_Then_BadRequest_Is_Returned()
         {
             // ARRANGE
             const string id = "id";
             ErrorResponse errorResponse = new ErrorResponse();
             InitializeFakeObjects();
-            string errorMessage;
             _representationStoreStub.Setup(r => r.GetRepresentation(It.IsAny<string>()))
-                .Returns(new Representation
+                .Returns(Task.FromResult(new Representation
                 {
                     Attributes = new[]
                     {
@@ -709,7 +715,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                             }
                         }
                     }
-                });
+                }));
             _patchRequestParserStub.Setup(p => p.Parse(It.IsAny<JObject>(), out errorResponse))
                 .Returns(new[]
                 {
@@ -731,17 +737,21 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                         }
                     }
                 });
-            _jsonParserStub.Setup(j => j.GetRepresentation(It.IsAny<JToken>(), It.IsAny<SchemaAttributeResponse>(), CheckStrategies.Standard, out errorMessage))
-                .Returns(new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "members", MultiValued = false, Type = "invalid" })
+            _jsonParserStub.Setup(j => j.GetRepresentation(It.IsAny<JToken>(), It.IsAny<SchemaAttributeResponse>(), CheckStrategies.Standard))
+                .Returns(new ParseRepresentationAttrResult
                 {
-                    Values = new[]
+                    IsParsed = true,
+                    RepresentationAttribute = new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "members", MultiValued = false, Type = "invalid" })
                     {
-                        new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Common.Constants.SchemaAttributeTypes.String }, "thierry2")
+                        Values = new[]
+                        {
+                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Common.Constants.SchemaAttributeTypes.String }, "thierry2")
+                        }
                     }
                 });
 
             // ACT
-            _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
+            await _patchRepresentationAction.Execute(id, new JObject(), "schema_id", "http://localhost:{id}");
 
             // ASSERT
             _errorResponseFactoryStub.Verify(a => a.CreateError(ErrorMessages.TheRepresentationCannotBeSet, HttpStatusCode.BadRequest));

@@ -28,6 +28,7 @@ using SimpleIdentityServer.Scim.Core.Validators;
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SimpleIdentityServer.Scim.Core.Tests.Apis
@@ -44,32 +45,34 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
         private IUpdateRepresentationAction _updateRepresentationAction;
 
         [Fact]
-        public void When_Passing_Null_Or_Empty_Parameters_Then_Exceptions_Are_Thrown()
+        public async Task When_Passing_Null_Or_Empty_Parameters_Then_Exceptions_Are_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            Assert.Throws<ArgumentNullException>(() => _updateRepresentationAction.Execute(null, null, null, "http://localhost/{id}", null));
-            Assert.Throws<ArgumentNullException>(() => _updateRepresentationAction.Execute(string.Empty, null, null, "http://localhost/{id}", null));
-            Assert.Throws<ArgumentNullException>(() => _updateRepresentationAction.Execute("representation_id", null, null, "http://localhost/{id}", null));
-            Assert.Throws<ArgumentNullException>(() => _updateRepresentationAction.Execute("representation_id", new JObject(), null, "http://localhost/{id}", null));
-            Assert.Throws<ArgumentNullException>(() => _updateRepresentationAction.Execute("representation_id", new JObject(), string.Empty, "http://localhost/{id}", null));
-            Assert.Throws<ArgumentNullException>(() => _updateRepresentationAction.Execute("representation_id", new JObject(), "schema_id", "http://localhost/{id}", null));
-            Assert.Throws<ArgumentNullException>(() => _updateRepresentationAction.Execute("representation_id", new JObject(), "schema_id", "http://localhost/{id}", string.Empty));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _updateRepresentationAction.Execute(null, null, null, "http://localhost/{id}", null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _updateRepresentationAction.Execute(string.Empty, null, null, "http://localhost/{id}", null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _updateRepresentationAction.Execute("representation_id", null, null, "http://localhost/{id}", null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _updateRepresentationAction.Execute("representation_id", new JObject(), null, "http://localhost/{id}", null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _updateRepresentationAction.Execute("representation_id", new JObject(), string.Empty, "http://localhost/{id}", null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _updateRepresentationAction.Execute("representation_id", new JObject(), "schema_id", "http://localhost/{id}", null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _updateRepresentationAction.Execute("representation_id", new JObject(), "schema_id", "http://localhost/{id}", string.Empty));
         }
 
         [Fact]
-        public void When_Representation_Doesnt_Exist_Then_404_Is_Returned()
+        public async Task When_Representation_Doesnt_Exist_Then_404_Is_Returned()
         {
             // ARRANGE
             const string identifier = "id";
             InitializeFakeObjects();
-            string error;
-            _requestParserStub.Setup(r => r.Parse(It.IsAny<JObject>(), It.IsAny<string>(), CheckStrategies.Strong, out error))
-                .Returns(new Representation());
+            _requestParserStub.Setup(r => r.Parse(It.IsAny<JObject>(), It.IsAny<string>(), CheckStrategies.Strong))
+                .Returns(Task.FromResult(new ParseRepresentationResult
+                {
+                    IsParsed = true
+                }));
             _representationStoreStub.Setup(r => r.GetRepresentation(It.IsAny<string>()))
-                .Returns((Representation)null);
+                .Returns(Task.FromResult((Representation)null));
             _apiResponseFactoryStub.Setup(a => a.CreateError(HttpStatusCode.NotFound,
                 string.Format(ErrorMessages.TheResourceDoesntExist, identifier)))
                 .Returns(new ApiActionResult
@@ -78,7 +81,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                 });
 
             // ACT
-            var result = _updateRepresentationAction.Execute(identifier, new JObject(), "schema_id", "http://localhost/{id}", "resource_type");
+            var result = await _updateRepresentationAction.Execute(identifier, new JObject(), "schema_id", "http://localhost/{id}", "resource_type");
 
             // ASSERT
             Assert.NotNull(result);
@@ -86,7 +89,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
         }
 
         [Fact]
-        public void When_Trying_To_Update_Immutable_Parameter_Then_400_Is_Returned()
+        public async Task When_Trying_To_Update_Immutable_Parameter_Then_400_Is_Returned()
         {
             // ARRANGE
             const string identifier = "id";
@@ -94,22 +97,25 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
             string mutability = string.Empty,
                 message = string.Empty;
             InitializeFakeObjects();
-            string error;
-            _requestParserStub.Setup(r => r.Parse(It.IsAny<JObject>(), It.IsAny<string>(), CheckStrategies.Strong, out error))
-                .Returns(new Representation
+            _requestParserStub.Setup(r => r.Parse(It.IsAny<JObject>(), It.IsAny<string>(), CheckStrategies.Strong))
+                .Returns(Task.FromResult(new ParseRepresentationResult
                 {
-                    Attributes = new[] 
+                    IsParsed = true,
+                    Representation = new Representation
                     {
-                        new SingularRepresentationAttribute<string>(new SchemaAttributeResponse
+                        Attributes = new[]
                         {
-                            Name = "id",
-                            Mutability = Common.Constants.SchemaAttributeMutability.Immutable
-                        }, "representation_id")
-                    },
-                    Id = identifier
-                });
+                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse
+                            {
+                                Name = "id",
+                                Mutability = Common.Constants.SchemaAttributeMutability.Immutable
+                            }, "representation_id")
+                        },
+                        Id = identifier
+                    }
+                }));
             _representationStoreStub.Setup(r => r.GetRepresentation(It.IsAny<string>()))
-                .Returns(new Representation
+                .Returns(Task.FromResult(new Representation
                 {
                     Attributes = new[]
                     {
@@ -120,7 +126,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                         }, "representation_id_2")
                     },
                     Id = identifier
-                });
+                }));
             _apiResponseFactoryStub.Setup(a => a.CreateError(HttpStatusCode.BadRequest,
                 It.IsAny<ErrorResponse>()))
                 .Callback((HttpStatusCode c, ErrorResponse e) =>
@@ -135,7 +141,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                 .Returns(new ErrorResponse());
 
             // ACT
-            _updateRepresentationAction.Execute(identifier, new JObject(), "schema_id", "http://localhost/{id}", "resource_type");
+            await _updateRepresentationAction.Execute(identifier, new JObject(), "schema_id", "http://localhost/{id}", "resource_type");
 
             // ASSERT
             Assert.True(code == HttpStatusCode.BadRequest);
@@ -144,7 +150,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
         }
 
         [Fact]
-        public void When_Trying_To_Update_Unique_Parameter_Then_400_Is_Returned()
+        public async Task When_Trying_To_Update_Unique_Parameter_Then_400_Is_Returned()
         {
             // ARRANGE
             const string identifier = "id";
@@ -152,24 +158,27 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
             string mutability = string.Empty,
                 message = string.Empty;
             InitializeFakeObjects();
-            string error;
-            _requestParserStub.Setup(r => r.Parse(It.IsAny<JObject>(), It.IsAny<string>(), CheckStrategies.Strong, out error))
-                .Returns(new Representation
+            _requestParserStub.Setup(r => r.Parse(It.IsAny<JObject>(), It.IsAny<string>(), CheckStrategies.Strong))
+                .Returns(Task.FromResult(new ParseRepresentationResult
                 {
-                    Attributes = new[]
+                    IsParsed = true,
+                    Representation = new Representation
                     {
-                        new SingularRepresentationAttribute<string>(new SchemaAttributeResponse
+                        Attributes = new[]
                         {
-                            Name = "id",
-                            Mutability = Common.Constants.SchemaAttributeMutability.ReadWrite,
-                            Uniqueness = Common.Constants.SchemaAttributeUniqueness.Server,
-                            Type = Common.Constants.SchemaAttributeTypes.String
-                        }, "representation_id_2")
-                    },
-                    Id = identifier
-                });
+                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse
+                            {
+                                Name = "id",
+                                Mutability = Common.Constants.SchemaAttributeMutability.ReadWrite,
+                                Uniqueness = Common.Constants.SchemaAttributeUniqueness.Server,
+                                Type = Common.Constants.SchemaAttributeTypes.String
+                            }, "representation_id_2")
+                        },
+                        Id = identifier
+                    }
+                }));
             _representationStoreStub.Setup(r => r.GetRepresentation(It.IsAny<string>()))
-                .Returns(new Representation
+                .Returns(Task.FromResult(new Representation
                 {
                     Attributes = new[]
                     {
@@ -183,9 +192,9 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                         }, "representation_id_2")
                     },
                     Id = identifier
-                });
+                }));
             _representationStoreStub.Setup(r => r.GetRepresentations(It.IsAny<string>()))
-                .Returns(new List<Representation> { new Representation
+                .Returns(Task.FromResult((IEnumerable<Representation>)new List<Representation> { new Representation
                 {
                     Attributes = new[]
                     {
@@ -199,7 +208,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                         }, "representation_id_2")
                     },
                     Id = Guid.NewGuid().ToString()
-                } });
+                }}));
             _apiResponseFactoryStub.Setup(a => a.CreateError(HttpStatusCode.BadRequest,
                 It.IsAny<ErrorResponse>()))
                 .Callback((HttpStatusCode c, ErrorResponse e) =>
@@ -214,7 +223,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                 .Returns(new ErrorResponse());
 
             // ACT
-            _updateRepresentationAction.Execute(identifier, new JObject(), "schema_id", "http://localhost/{id}", "resource_type");
+            await _updateRepresentationAction.Execute(identifier, new JObject(), "schema_id", "http://localhost/{id}", "resource_type");
 
             // ASSERT
             Assert.True(code == HttpStatusCode.BadRequest);
@@ -229,24 +238,27 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
             const string identifier = "id";
             var code = HttpStatusCode.Accepted;
             var message = string.Empty;
-            string error;
             InitializeFakeObjects();
-            _requestParserStub.Setup(r => r.Parse(It.IsAny<JObject>(), It.IsAny<string>(), CheckStrategies.Strong, out error))
-                .Returns(new Representation
+            _requestParserStub.Setup(r => r.Parse(It.IsAny<JObject>(), It.IsAny<string>(), CheckStrategies.Strong))
+                .Returns(Task.FromResult(new ParseRepresentationResult
                 {
-                    Attributes = new[]
+                    IsParsed = true,
+                    Representation = new Representation
                     {
-                        new SingularRepresentationAttribute<string>(new SchemaAttributeResponse
+                        Attributes = new[]
                         {
-                            Name = "id",
-                            Mutability = Common.Constants.SchemaAttributeMutability.writeOnly,
-                            Type = Common.Constants.SchemaAttributeTypes.String
-                        }, "representation_id")
-                    },
-                    Id = identifier
-                });
+                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse
+                            {
+                                Name = "id",
+                                Mutability = Common.Constants.SchemaAttributeMutability.writeOnly,
+                                Type = Common.Constants.SchemaAttributeTypes.String
+                            }, "representation_id")
+                        },
+                        Id = identifier
+                    }
+                }));
             _representationStoreStub.Setup(r => r.GetRepresentation(It.IsAny<string>()))
-                .Returns(new Representation
+                .Returns(Task.FromResult(new Representation
                 {
                     Attributes = new[]
                     {
@@ -258,7 +270,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                         }, "representation_id_2")
                     },
                     Id = identifier
-                });
+                }));
             _apiResponseFactoryStub.Setup(a => a.CreateError(HttpStatusCode.InternalServerError,
                 It.IsAny<string>()))
                 .Callback((HttpStatusCode c, string msg) =>
@@ -267,7 +279,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                     message = msg;
                 });
             _representationStoreStub.Setup(r => r.UpdateRepresentation(It.IsAny<Representation>()))
-                .Returns(false);
+                .Returns(Task.FromResult(false));
 
             // ACT
             _updateRepresentationAction.Execute(identifier, new JObject(), "schema_id", "http://localhost/{id}", "resource_type");

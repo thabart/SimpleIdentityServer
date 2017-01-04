@@ -47,7 +47,7 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
                 throw new ArgumentNullException(nameof(jObj));
             }
 
-            var result = _groupsAction.AddGroup(jObj, GetLocationPattern());
+            var result = await _groupsAction.AddGroup(jObj, GetLocationPattern());
             if (result.IsSucceed())
             {
                 await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(GroupsName, result.Id), result.Version, true);
@@ -72,7 +72,7 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
                 };
             }
 
-            var result = _groupsAction.GetGroup(id, GetLocationPattern(), Request.Query);
+            var result = await _groupsAction.GetGroup(id, GetLocationPattern(), Request.Query);
             if (result.IsSucceed())
             {
                 await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(GroupsName, result.Id), result.Version, true);
@@ -82,16 +82,16 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
         }
 
         [HttpGet]
-        public ActionResult SearchGroups()
+        public async Task<ActionResult> SearchGroups()
         {
-            var result = _groupsAction.SearchGroups(Request.Query, GetLocationPattern());
+            var result = await _groupsAction.SearchGroups(Request.Query, GetLocationPattern());
             return this.GetActionResult(result);
         }
 
         [HttpPost(".search")]
-        public ActionResult SearchGroups([FromBody] JObject jObj)
+        public async Task<ActionResult> SearchGroups([FromBody] JObject jObj)
         {
-            var result = _groupsAction.SearchGroups(jObj, GetLocationPattern());
+            var result = await _groupsAction.SearchGroups(jObj, GetLocationPattern());
             return this.GetActionResult(result);
         }
 
@@ -103,7 +103,7 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
                 throw new ArgumentNullException(nameof(id));
             }
 
-            var result = _groupsAction.RemoveGroup(id);
+            var result = await _groupsAction.RemoveGroup(id);
             if (result.IsSucceed())
             {
                 await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(GroupsName, result.Id), false);
@@ -120,7 +120,7 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
                 throw new ArgumentNullException(nameof(jObj));
             }
 
-            var result = _groupsAction.UpdateGroup(id, jObj, GetLocationPattern());
+            var result = await _groupsAction.UpdateGroup(id, jObj, GetLocationPattern());
             if (result.IsSucceed())
             {
                 await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(GroupsName, result.Id), result.Version, true);
@@ -142,7 +142,7 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
                 throw new ArgumentNullException(nameof(jObj));
             }
 
-            var result = _groupsAction.PatchGroup(id, jObj, GetLocationPattern());
+            var result = await _groupsAction.PatchGroup(id, jObj, GetLocationPattern());
             if (result.IsSucceed())
             {
                 await _representationManager.AddOrUpdateRepresentationAsync(this, string.Format(GroupsName, result.Id), result.Version, true);

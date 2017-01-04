@@ -79,7 +79,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             }
 
             // 1. Check resource exists.
-            if (_representationStore.GetRepresentation(id) != null)
+            if (await _representationStore.GetRepresentation(id) != null)
             {
                 return _apiResponseFactory.CreateError(
                     HttpStatusCode.InternalServerError,
